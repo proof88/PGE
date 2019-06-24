@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugPR00FPS|Win32">
+      <Configuration>DebugPR00FPS</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleasePR00FPS|Win32">
+      <Configuration>ReleasePR00FPS</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{418F9932-64F4-42D5-9AC0-21D3B7B86A68}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>PGE</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SmallerTypeCheck>true</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderFile>PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PreprocessToFile>false</PreprocessToFile>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>opengl32.lib glu32.lib %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Lib>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SmallerTypeCheck>true</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeaderFile>PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PreprocessToFile>false</PreprocessToFile>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>opengl32.lib glu32.lib %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeaderFile>PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PreprocessToFile>false</PreprocessToFile>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>opengl32.lib glu32.lib %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+    </Lib>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeaderFile>PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <DebugInformationFormat>None</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\g3t\g3t\g3t.h" />
+    <ClInclude Include="..\CConsole\src\CConsole.h" />
+    <ClInclude Include="..\PFL\PFL.h" />
+    <ClInclude Include="PGE.h" />
+    <ClInclude Include="PGEallHeaders.h" />
+    <ClInclude Include="PGEcfgVariable.h" />
+    <ClInclude Include="PGEconsts.h" />
+    <ClInclude Include="PGEincludes.h" />
+    <ClInclude Include="PGEInputHandler.h" />
+    <ClInclude Include="PGEpragmas.h" />
+    <ClInclude Include="PGESysCFG.h" />
+    <ClInclude Include="PGESysGFX.h" />
+    <ClInclude Include="PGESysNET.h" />
+    <ClInclude Include="PGESysSFX.h" />
+    <ClInclude Include="PGEWorld.h" />
+    <ClInclude Include="PGEWorldTime.h" />
+    <ClInclude Include="PGEWorldWeather.h" />
+    <ClInclude Include="PRRE\PUREScissor.h" />
+    <ClInclude Include="PRRE\Render\PRREIIncrementalRenderPipeline.h" />
+    <ClInclude Include="PRRE\PR00FsReducedRenderingEngine.h" />
+    <ClInclude Include="PRRE\PRREallHeaders.h" />
+    <ClInclude Include="PRRE\PRREBaseClass.h" />
+    <ClInclude Include="PRRE\PRREbaseIncludes.h" />
+    <ClInclude Include="PRRE\PRRECamera.h" />
+    <ClInclude Include="PRRE\PRREColor.h" />
+    <ClInclude Include="PRRE\PRREconsts.h" />
+    <ClInclude Include="PRRE\PRREFiledManager.h" />
+    <ClInclude Include="PRRE\PRREGLextensionFuncs.h" />
+    <ClInclude Include="PRRE\PRREGLsnippets.h" />
+    <ClInclude Include="PRRE\PRREhwAudio.h" />
+    <ClInclude Include="PRRE\PRREhwBase.h" />
+    <ClInclude Include="PRRE\PRREhwCentralProcessor.h" />
+    <ClInclude Include="PRRE\Render\PRREIRenderable.h" />
+    <ClInclude Include="PRRE\Render\PRRERendererHWfixedPipe.h" />
+    <ClInclude Include="PRRE\PRREhwInfo.h" />
+    <ClInclude Include="PRRE\PRREhwSystemMemory.h" />
+    <ClInclude Include="PRRE\PRREhwVideo.h" />
+    <ClInclude Include="PRRE\PRREImageManager.h" />
+    <ClInclude Include="PRRE\PRREManager.h" />
+    <ClInclude Include="PRRE\PRREMaterialManager.h" />
+    <ClInclude Include="PRRE\PRREMatrix.h" />
+    <ClInclude Include="PRRE\PRREObject3DManager.h" />
+    <ClInclude Include="PRRE\PRREpragmas.h" />
+    <ClInclude Include="PRRE\Render\PRREIRenderer.h" />
+    <ClInclude Include="PRRE\Render\PRRERendererSWincremental.h" />
+    <ClInclude Include="PRRE\PRREScreen.h" />
+    <ClInclude Include="PRRE\PRRESharedSettings.h" />
+    <ClInclude Include="PRRE\PRRETextureManager.h" />
+    <ClInclude Include="PRRE\PRREtypes.h" />
+    <ClInclude Include="PRRE\PRREuiFontWin.h" />
+    <ClInclude Include="PRRE\PRREuiManager.h" />
+    <ClInclude Include="PRRE\PRREuiText.h" />
+    <ClInclude Include="PRRE\PRREVector.h" />
+    <ClInclude Include="PRRE\PRREWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PGE.cpp" />
+    <ClCompile Include="PGEcfgVariable.cpp" />
+    <ClCompile Include="PGEInputHandler.cpp" />
+    <ClCompile Include="PGESysCFG.cpp" />
+    <ClCompile Include="PGESysGFX.cpp" />
+    <ClCompile Include="PGESysNET.cpp" />
+    <ClCompile Include="PGESysSFX.cpp" />
+    <ClCompile Include="PGEWorld.cpp" />
+    <ClCompile Include="PGEWorldTime.cpp" />
+    <ClCompile Include="PGEWorldWeather.cpp" />
+    <ClCompile Include="PRRE\PR00FsReducedRenderingEngine.cpp" />
+    <ClCompile Include="PRRE\PRREBaseClass.cpp" />
+    <ClCompile Include="PRRE\PRREbaseIncludes.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="PRRE\PRRECamera.cpp" />
+    <ClCompile Include="PRRE\PRREColor.cpp" />
+    <ClCompile Include="PRRE\PRREFiledManager.cpp" />
+    <ClCompile Include="PRRE\PRREGLextensionFuncs.cpp" />
+    <ClCompile Include="PRRE\PRREGLsnippets.cpp" />
+    <ClCompile Include="PRRE\PRREhwAudio.cpp" />
+    <ClCompile Include="PRRE\PRREhwBase.cpp" />
+    <ClCompile Include="PRRE\PRREhwCentralProcessor.cpp" />
+    <ClCompile Include="PRRE\PUREScissor.cpp" />
+    <ClCompile Include="PRRE\Render\PRRERendererHWfixedPipe.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="PRRE\PRREhwInfo.cpp" />
+    <ClCompile Include="PRRE\PRREhwSystemMemory.cpp" />
+    <ClCompile Include="PRRE\PRREhwVideo.cpp" />
+    <ClCompile Include="PRRE\PRREImageManager.cpp" />
+    <ClCompile Include="PRRE\PRREManager.cpp" />
+    <ClCompile Include="PRRE\PRREMaterialManager.cpp" />
+    <ClCompile Include="PRRE\PRREMatrix.cpp" />
+    <ClCompile Include="PRRE\PRREObject3DManager.cpp" />
+    <ClCompile Include="PRRE\Render\PRRERendererSWincremental.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="PRRE\PRREScreen.cpp" />
+    <ClCompile Include="PRRE\PRRESharedSettings.cpp" />
+    <ClCompile Include="PRRE\PRRETextureManager.cpp" />
+    <ClCompile Include="PRRE\PRREuiFontWin.cpp" />
+    <ClCompile Include="PRRE\PRREuiManager.cpp" />
+    <ClCompile Include="PRRE\PRREuiText.cpp" />
+    <ClCompile Include="PRRE\PRREVector.cpp" />
+    <ClCompile Include="PRRE\PRREWindow.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
