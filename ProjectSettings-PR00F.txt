@@ -1,0 +1,114 @@
+/*
+    ###################################################################################
+    ProjectSettings-PR00F.txt
+    PR00F's Project Settings to apply in any Visual Studio 2012 C++ project
+    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
+    ###################################################################################
+*/
+
+########################################################################################################################
+                                     | CONFIGURATION
+########################################################################################################################
+                                     |                                                  |
+GENERAL                              | DEBUG                                            | RELEASE
+========================================================================================================================
+  Character Set                      | Use Multi-Byte Character Set                     | <Same>
+  ----------------------------------------------------------------------------------------------------------------------
+  Whole Program Optimization         | No Whole Program Optimization                    | Use Link Time Code Generation
+########################################################################################################################
+                                     |                                                  |
+DEBUGGING                            | DEBUG                                            | RELEASE
+========================================================================================================================
+  Command                            |                                                  |
+    Set this if you want to debug a  | d:\__PR00F__\___developing___\                   | <Same>
+    3rd party EXE, for example you   |  \projects\Delphi\PR00FPS\                       |
+    develop a DLL for it and want to |   \PR00FPS.exe                                   |
+    start debugging from VS, e.g.:   |                                                  |
+  ----------------------------------------------------------------------------------------------------------------------
+  Working Directory                  |                                                  | <Same>
+    Set this to the directory of the | d:\__PR00F__\___developing___\                   |
+    3rd party EXE specified above:   |  \projects\Delphi\PR00FPS\                       |
+########################################################################################################################
+                                     |                                                  |
+C/C++                                | DEBUG                                            | RELEASE
+========================================================================================================================
+  General                                                                               
+    - Warning Level                  | Level4 (/W4)                                     | Level3 (/W3)
+  ----------------------------------------------------------------------------------------------------------------------
+  Optimization                                                                          
+    - Optimization                   | Disabled                                         | Maximize Speed (/O2)
+    - Enable Intrinsic Functions     | No                                               | Yes (/Oi)
+  ----------------------------------------------------------------------------------------------------------------------
+  Preprocessor
+    - Preprocessor definition        |                                                  |
+      in case of .lib output         | WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)     | WIN32;_NDEBUG;_LIB;%(PreprocessorDefinitions)
+      in case of .exe output         | WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions) | WIN32;_NDEBUG;_WINDOWS;%(PreprocessorDefinitions)
+  ----------------------------------------------------------------------------------------------------------------------
+  Code generation
+    - Smaller type check             | Yes (/RTCc)                                      | No
+    - Runtime Library                | Multi-threaded Debug (/MTd)                      | Multi-threaded (/MT)
+    - Enable Function-Level Linking  | -                                                | Yes (/Gy)
+  ----------------------------------------------------------------------------------------------------------------------
+  Precompiled header (optional)
+    - Precompiled Header             | Use (/Yu)                                        | <Same>
+      Note: project setting here is always "Use" if using precompiled header.           |
+            A separate .cpp file should be created including the header.                |
+            This option should be set to "Create (/Yc)" for that single .cpp file.      |
+    - Precompiled Header File        | <name of header in the project to be used as PCH>| <Same>
+  ------------------------------------------------------------------------------------------
+  Browse Information
+    - Enable Browse Information      | Yes (/FR)                                        | No
+########################################################################################################################
+                                     |                                                  |
+LIBRARIAN (in case of .lib output)   | DEBUG                                            | RELEASE
+========================================================================================================================
+  General
+    - Additional Library Directories | ..\Debug;%(AdditionalLibraryDirectories)         | ..\Release;%(AdditionalLibraryDirectories)
+      (if using any custom lib       |                                                  |
+       built by me, example:         |                                                  |
+########################################################################################################################
+                                     |                                                  |
+LINKER (in case of exe/dll output)   | DEBUG                                            | RELEASE
+========================================================================================================================
+  General
+    - Enable Incremental Linking     | Yes (/INCREMENTAL)                               | No (/INCREMENTAL:NO)
+    - Additional Library Directories | ..\Debug;%(AdditionalLibraryDirectories)         | ..\Release;%(AdditionalLibraryDirectories)
+  ----------------------------------------------------------------------------------------------------------------------
+  Input
+    - Module Definition File:        |                                                  |
+      in case of .dll output, put    | gfxcore2.def                                     | <Same>
+      here the .def file containing  |                                                  |
+      all exported function names to |                                                  |
+      avoid function name mangling.  |                                                  |
+      This is needed for stdcall     |                                                  |
+      calling convention even if     |                                                  |
+      extern "C" is specified! E.g.: |                                                  |
+  ----------------------------------------------------------------------------------------------------------------------
+  Debugging
+    - Generate Debug Info            | Yes (/DEBUG)                                     | No
+  ----------------------------------------------------------------------------------------------------------------------
+  System
+    - Subsystem                      | Windows (/SUBSYSTEM:WINDOWS)                     | <Same>
+  ----------------------------------------------------------------------------------------------------------------------
+  Optimization
+    - References                     | -                                                | Yes (/OPT:REF)
+    - Enable COMDAT folding          | -                                                | Yes (/OPT:ICF)
+  ----------------------------------------------------------------------------------------------------------------------
+  Command Line
+    - Additional options             | opengl32.lib glu32.lib dwmapi.lib PGE.lib        | <Same>
+      (if using any 3rd party lib,   |                                                  |
+       example given:)               |                                                  |
+########################################################################################################################
+                                     |                                                  |
+BUILD EVENTS                         | DEBUG                                            | RELEASE
+========================================================================================================================
+  Post-Build Event
+    - Command Line                   |
+      if you develop a DLL for a 3rd | copy /y "$(OutDir)$(TargetName)$(TargetExt)" "..\..\..\..\..\Delphi\PR00FPS\gfxcore.dll"
+      party EXE and set VS to debug  |
+      that EXE, here you can tell VS | Same for release config.
+      to copy the DLL post-build to  |
+      the EXE's dir, eg.:            |
+    - Description                    | Copying generated $(TargetExt) to PR00FPS dir ...
+########################################################################################################################
+

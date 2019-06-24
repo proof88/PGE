@@ -1,0 +1,72 @@
+/*
+    ###################################################################################
+    PGE-WoW.txt
+    Way of Working snippets for PGE
+    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
+    ###################################################################################
+*/
+
+
+0)
+This is a multi-project solution.
+All projects are in 1 solution: PGE.
+The reason why the whole solution is called PGE is that the main project here is PGE and the other
+projects are side projects needed to be created for PGE during development. They are different projects
+so can be built separately but dependencies should be considered.
+Example: if someone wants to build CConsole, it has to get PFL.lib prior to building.
+
+Project dependency tree:
+  - PFL (.lib)
+    - CConsole (.lib)
+      - PGE (.lib)
+        - ELTE-FAIL (.exe)
+        - UnitTests (.exe)
+
+Build order is from top left to bottom right.
+So CConsole depends on PFL, PGE depends on CConsole and PFL, etc.
+ELTE-FAIL and UnitTests can be built in parallel since they have the same dependencies.
+
+
+We have the following repos:
+- rPFL
+- rConsole
+- rPGE
+- rELTE-FAIL
+- rUnitTests
+- rVS2012-PGE-sln (for solution and other textfiles like this txt)
+
+So as seen above, every project has its own repository.
+
+
+---
+
+
+1) PRREallHeaders.h and PGEallHeaders.h should be included in EVERY SINGLE PRRE header file
+
+2) PRREallHeaders.h and PGEallHeaders.h MUSTN'T include anything
+
+3) PRREpragmas.h and PGEpragmas.h MUSTN'T be included in any header files.
+   They should be included in cpp files only.
+
+4) We have EXTERNAL and INTERNAL header files.
+   EXTERNAL headers are public, meaning that they will be delivered
+	to API-users as well, so they should contain as minimal info about internals as they can.
+   INTERNAL headers are private headers, used for compiling the library, etc. They MUSTN'T be included in EXTERNAL headers.
+
+5) PGEconsts.h and PRREconsts.h are INTERNAL headers thus MUSTN'T be included in EXTERNAL headers.
+
+
+---
+   
+
+I) adding support for a new TC (texture compression) in PRRE
+	1. - new enum(s) should be added to both TPRRE_TEX_COMPRESSION_MODE and TPRRE_TEX_FORMAT
+	2. - texture format enum(s) should be handled in both PRRETexture::DescribeTexFormatAndSize() and PRRETexture::getTargetInternalFormat()
+	3. - PRREhwVideo::DiscoverTextureCompressionAvailability() should be also updated with checking for the new TC
+	4. - creating textures in unit tests with the new TC is not neccessarily needed but testGetInternalFormat() should handle them when PRRE_TC_AUTO is used:
+		 tex128x128x24_cmpAUTO and tex128x128x32_cmpAUTO cases.
+		 testGetUsedTextureMemory() should be also updated when the compression ratio is different than the already checked ratios (1:4, 1:8) for the cmpAUTO cases
+		 mentioned above.
+	5. - update relevant comments regarding to the TC. For example, if borders are supported by the TC or not: PRRETextureManager::SetDefaultCompressionMode().
+
+II) ...
