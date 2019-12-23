@@ -1,0 +1,10 @@
+# magyar_teszt.txt - Magyar nyelvi fájl
+#
+
+# Hibaüzenetek
+# --------------------------------------------------------
+asdasdasdasdasd
+#almaalmaalma
+asdasdasdasdasdasdasd
+asasdasdasasdasdasd
+asdasdasd

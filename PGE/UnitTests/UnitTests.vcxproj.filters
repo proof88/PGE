@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\CConsole">
+      <UniqueIdentifier>{78172d96-9e84-4b77-87c7-7715bf9f6be6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PGE">
+      <UniqueIdentifier>{3494da01-8940-4523-af71-24f9aa5e7ec6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PGE\PRRE">
+      <UniqueIdentifier>{4be74e34-3d87-418d-bebe-aca6f35fb1bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PFL">
+      <UniqueIdentifier>{463a06f9-cffb-4c37-baa4-b141edf7c4bc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PR00FsReducedRenderingEngineTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PR00FsReducedRenderingEngineTest2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREBaseClassTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREColorTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREFiledManagedTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREFiledManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREImageManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREImageTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREManagedTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREMatrixTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREScreenTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRESharedSettingsTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRETextureManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRETextureTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREVectorTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PGE.h">
+      <Filter>Header Files\PGE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PGESysCFG.h">
+      <Filter>Header Files\PGE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PR00FsReducedRenderingEngine.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREBaseClass.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREColor.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREFiledManager.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREImageManager.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREManager.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREMatrix.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREObject3DManager.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREScreen.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRRETextureManager.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREtypes.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREVector.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREWindow.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREWindowTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREWindowTest2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PGEInputHandler.h">
+      <Filter>Header Files\PGE</Filter>
+    </ClInclude>
+    <ClInclude Include="PFLTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREObject3DManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREObject3DTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREhwInfoTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREhwAudioTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREhwVideoTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREhwAudio.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREhwCentralProcessor.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREhwSystemMemory.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREhwVideo.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREhwCentralProcessorTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREhwSystemMemoryTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREhwInfo.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="PGESysCFGTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PGEcfgVariable.h">
+      <Filter>Header Files\PGE</Filter>
+    </ClInclude>
+    <ClInclude Include="PGEcfgVariableTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PGEWorld.h">
+      <Filter>Header Files\PGE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PGEWorldTime.h">
+      <Filter>Header Files\PGE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PGEWorldWeather.h">
+      <Filter>Header Files\PGE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREuiManager.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREuiText.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRRESharedSettings.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREallHeaders.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PGEallHeaders.h">
+      <Filter>Header Files\PGE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRREMaterialManager.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREMaterialManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREMaterialTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PUREScissor.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PGE\PRRE\PRRECamera.h">
+      <Filter>Header Files\PGE\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRECameraTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\CConsole\src\CConsole.h">
+      <Filter>Header Files\CConsole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PFL\PFL.h">
+      <Filter>Header Files\PFL</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREScissorTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="UnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
