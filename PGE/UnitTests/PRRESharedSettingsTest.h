@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PGE/PRRE/PRRESharedSettings.h"
+#include "../../../PGE/PGE/PRRE/PRRESharedSettings.h"
 
 #ifndef E
 #define E 0.0001f

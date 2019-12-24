@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PGE/PRRE/PRREColor.h"
+#include "../../../PGE/PGE/PRRE/PRREColor.h"
 #include <sstream>
 
 #ifndef E2

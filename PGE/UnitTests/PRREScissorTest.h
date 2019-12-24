@@ -10,8 +10,8 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PFL/PFL.h"
-#include "../PGE/PRRE/PUREScissor.h"
+#include "../../../PFL/PFL/PFL.h"
+#include "../../../PGE/PGE/PRRE/PUREScissor.h"
 
 #ifndef E
 #define E 0.0001f

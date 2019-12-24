@@ -165,7 +165,7 @@
     <ClInclude Include="PGEallHeaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\g3t\g3t\g3t.h">
+    <ClInclude Include="..\..\g3t\g3t\g3t.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PRRE\PRREMaterialManager.h">
@@ -189,10 +189,10 @@
     <ClInclude Include="PRRE\PUREScissor.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
-    <ClInclude Include="..\PFL\PFL.h">
+    <ClInclude Include="..\..\PFL\PFL\PFL.h">
       <Filter>Header Files\PFL</Filter>
     </ClInclude>
-    <ClInclude Include="..\CConsole\src\CConsole.h">
+    <ClInclude Include="..\..\CConsole\CConsole\src\CConsole.h">
       <Filter>Header Files\CConsole</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,8 +10,8 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PGE/PRRE/PRREMatrix.h"
-#include "../PGE/PRRE/PRREVector.h"
+#include "../../../PGE/PGE/PRRE/PRREMatrix.h"
+#include "../../../PGE/PGE/PRRE/PRREVector.h"
 
 #ifndef E
 #define E 0.0001f
