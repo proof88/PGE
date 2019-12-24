@@ -17,7 +17,7 @@
 #include "../PRREGLsnippets.h"
 #include "../PRREObject3DManager.h"
 #include "../PUREScissor.h"
-#include "../../../PFL/PFL.h"
+#include "../../../../PFL/PFL/PFL.h"
 
 using namespace std;
 

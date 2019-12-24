@@ -55,6 +55,6 @@
 // ---------------------------------------------------------------------------
 #include "PGEconsts.h"
 #include "PGEallHeaders.h"
-#include "../PFL/PFL.h"
-#include "../CConsole/src/CConsole.h"
+#include "../../PFL/PFL/PFL.h"
+#include "../../CConsole/CConsole/src/CConsole.h"
 

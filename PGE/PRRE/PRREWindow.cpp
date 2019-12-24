@@ -13,7 +13,7 @@
 #include "PRREWindow.h"
 #include "PRRESharedSettings.h"
 #include "../PGEInputHandler.h"
-#include "../../../../../g3t/g3t/g3t.h"
+#include "../../../g3t/g3t/g3t.h"
 
 using namespace std;
 

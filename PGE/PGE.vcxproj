@@ -181,9 +181,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\g3t\g3t\g3t.h" />
-    <ClInclude Include="..\CConsole\src\CConsole.h" />
-    <ClInclude Include="..\PFL\PFL.h" />
+    <ClInclude Include="..\..\g3t\g3t\g3t.h" />
+    <ClInclude Include="..\..\CConsole\CConsole\src\CConsole.h" />
+    <ClInclude Include="..\..\PFL\PFL\PFL.h" />
     <ClInclude Include="PGE.h" />
     <ClInclude Include="PGEallHeaders.h" />
     <ClInclude Include="PGEcfgVariable.h" />
