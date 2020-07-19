@@ -3,7 +3,7 @@
 /*
     ###################################################################################
     PRRECameraTest.h
-    Unit test for PRRECameraTest.
+    Unit test for PRRECamera.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
@@ -11,6 +11,7 @@
 
 #include "UnitTest.h"  // PCH
 #include "../../../PGE/PGE/PRRE/PRRECamera.h"
+#include "../../../PGE/PGE/PRRE/PRREMatrix.h"
 
 #ifndef E2
 #define E2 0.005f
@@ -33,12 +34,8 @@ public:
         AddSubTest("testSetNearPlane", (PFNUNITSUBTEST) &PRRECameraTest::testSetNearPlane);
         AddSubTest("testSetFarPlane", (PFNUNITSUBTEST) &PRRECameraTest::testSetFarPlane);
         AddSubTest("testSetFieldOfView", (PFNUNITSUBTEST) &PRRECameraTest::testSetFieldOfView);
-        AddSubTest("testMove", (PFNUNITSUBTEST) &PRRECameraTest::testMove);
-        AddSubTest("testStrafe", (PFNUNITSUBTEST) &PRRECameraTest::testStrafe);
-        AddSubTest("testElevate", (PFNUNITSUBTEST) &PRRECameraTest::testElevate);
-        AddSubTest("testRotation", (PFNUNITSUBTEST) &PRRECameraTest::testRotation);
 
-    } // PRRECameraTest()
+    } // PRREPosUpTargetTest()
 
 protected:
 
@@ -244,168 +241,6 @@ private:
         b = b & assertEquals(180.f, cam2.getFieldOfView(), "fov 180");
 
         return b;
-    }
-
-    bool testMove()
-    {
-        const float MOVE = 5.f;
-        const float ROT_X = 45.f;
-        const float ROT_Y = 45.f;
-
-        PRRECamera cam;
-
-        PRREVector vTargetOrig = cam.getTargetVec();
-        PRREVector vPosOrig    = cam.getPosVec();
-        PRREVector vUpOrig     = cam.getUpVec();
-
-        cam.Move(MOVE);
-
-        bool b = assertEquals(vTargetOrig.getX(),        cam.getTargetVec().getX(), E2, "target x 1") &
-                 assertEquals(vTargetOrig.getY(),        cam.getTargetVec().getY(), E2, "target y 1") &
-                 assertEquals(vTargetOrig.getZ() + MOVE, cam.getTargetVec().getZ(), E2, "target z 1") &
-                 assertEquals(vPosOrig.getX(),           cam.getPosVec().getX(), E2, "pos x 1") &
-                 assertEquals(vPosOrig.getY(),           cam.getPosVec().getY(), E2, "pos y 1") &
-                 assertEquals(vPosOrig.getZ() + MOVE,    cam.getPosVec().getZ(), E2, "pos z 1") &
-                 assertEquals(vUpOrig.getX(),            cam.getUpVec().getX(), E2, "up x 1") &
-                 assertEquals(vUpOrig.getY(),            cam.getUpVec().getY(), E2, "up y 1") &
-                 assertEquals(vUpOrig.getZ(),            cam.getUpVec().getZ(), E2, "up z 1");
-
-        cam.SetRotation(ROT_X, ROT_Y, 0);
-
-        vTargetOrig = cam.getTargetVec();
-        vPosOrig    = cam.getPosVec();
-        vUpOrig     = cam.getUpVec();
-
-        PRREVector vView = vTargetOrig - vPosOrig;
-        vView.Normalize();
-        const PRREVector vExpTarget = vTargetOrig + vView * MOVE;
-        const PRREVector vExpPos    = vPosOrig + vView * MOVE;
-        const PRREVector vExpUp     = vUpOrig;
-        
-        cam.Move(MOVE);
-                                                                   
-        b = b & assertEquals(vExpTarget.getX(), cam.getTargetVec().getX(), E2, "target x 2") &
-                assertEquals(vExpTarget.getY(), cam.getTargetVec().getY(), E2, "target y 2") &
-                assertEquals(vExpTarget.getZ(), cam.getTargetVec().getZ(), E2, "target z 2") &
-                assertEquals(vExpPos.getX(),    cam.getPosVec().getX(), E2, "pos x 2") &
-                assertEquals(vExpPos.getY(),    cam.getPosVec().getY(), E2, "pos y 2") &
-                assertEquals(vExpPos.getZ(),    cam.getPosVec().getZ(), E2, "pos z 2") &
-                assertEquals(vExpUp.getX(),     cam.getUpVec().getX(), E2, "up x 2") &
-                assertEquals(vExpUp.getY(),     cam.getUpVec().getY(), E2, "up y 2") &
-                assertEquals(vExpUp.getZ(),     cam.getUpVec().getZ(), E2, "up z 2");
-
-        return b;
-    }
-
-    bool testStrafe()
-    {
-        const float MOVE = 5.f;
-        const float ROT_X = 45.f;
-        const float ROT_Y = 45.f;
-
-        PRRECamera cam;
-
-        PRREVector vTargetOrig = cam.getTargetVec();
-        PRREVector vPosOrig    = cam.getPosVec();
-        PRREVector vUpOrig     = cam.getUpVec();
-
-        cam.Strafe(MOVE);
-
-        bool b = assertEquals(vTargetOrig.getX() + MOVE, cam.getTargetVec().getX(), E2, "target x 1") &
-                 assertEquals(vTargetOrig.getY(),        cam.getTargetVec().getY(), E2, "target y 1") &
-                 assertEquals(vTargetOrig.getZ(),        cam.getTargetVec().getZ(), E2, "target z 1") &
-                 assertEquals(vPosOrig.getX() + MOVE,    cam.getPosVec().getX(), E2, "pos x 1") &
-                 assertEquals(vPosOrig.getY(),           cam.getPosVec().getY(), E2, "pos y 1") &
-                 assertEquals(vPosOrig.getZ(),           cam.getPosVec().getZ(), E2, "pos z 1") &
-                 assertEquals(vUpOrig.getX(),            cam.getUpVec().getX(), E2, "up x 1") &
-                 assertEquals(vUpOrig.getY(),            cam.getUpVec().getY(), E2, "up y 1") &
-                 assertEquals(vUpOrig.getZ(),            cam.getUpVec().getZ(), E2, "up z 1");
-
-        cam.SetRotation(ROT_X, ROT_Y, 0);
-
-        vTargetOrig = cam.getTargetVec();
-        vPosOrig    = cam.getPosVec();
-        vUpOrig     = cam.getUpVec();
-
-        PRREVector vView = vTargetOrig - vPosOrig;
-        vView.Normalize();
-        PRREVector vStrafe = vUpOrig ^ vView;
-        vStrafe.Normalize();
-        const PRREVector vExpTarget = vTargetOrig + vStrafe * MOVE;
-        const PRREVector vExpPos    = vPosOrig + vStrafe * MOVE;
-        const PRREVector vExpUp     = vUpOrig;
-        
-        cam.Strafe(MOVE);
-                                                                   
-        b = b & assertEquals(vExpTarget.getX(), cam.getTargetVec().getX(), E2, "target x 2") &
-                assertEquals(vExpTarget.getY(), cam.getTargetVec().getY(), E2, "target y 2") &
-                assertEquals(vExpTarget.getZ(), cam.getTargetVec().getZ(), E2, "target z 2") &
-                assertEquals(vExpPos.getX(),    cam.getPosVec().getX(), E2, "pos x 2") &
-                assertEquals(vExpPos.getY(),    cam.getPosVec().getY(), E2, "pos y 2") &
-                assertEquals(vExpPos.getZ(),    cam.getPosVec().getZ(), E2, "pos z 2") &
-                assertEquals(vExpUp.getX(),     cam.getUpVec().getX(), E2, "up x 2") &
-                assertEquals(vExpUp.getY(),     cam.getUpVec().getY(), E2, "up y 2") &
-                assertEquals(vExpUp.getZ(),     cam.getUpVec().getZ(), E2, "up z 2");
-
-        return b;
-    }
-
-    bool testElevate()
-    {
-        const float MOVE = 5.f;
-
-        PRRECamera cam;
-
-        PRREVector vTargetOrig = cam.getTargetVec();
-        PRREVector vPosOrig    = cam.getPosVec();
-        PRREVector vUpOrig     = cam.getUpVec();
-
-        cam.Elevate(MOVE);
-
-        return assertEquals(vTargetOrig.getX(),        cam.getTargetVec().getX(), E2, "target x") &
-                 assertEquals(vTargetOrig.getY() + MOVE, cam.getTargetVec().getY(), E2, "target y") &
-                 assertEquals(vTargetOrig.getZ(),        cam.getTargetVec().getZ(), E2, "target z") &
-                 assertEquals(vPosOrig.getX(),           cam.getPosVec().getX(), E2, "pos x") &
-                 assertEquals(vPosOrig.getY() + MOVE,    cam.getPosVec().getY(), E2, "pos y") &
-                 assertEquals(vPosOrig.getZ(),           cam.getPosVec().getZ(), E2, "pos z") &
-                 assertEquals(vUpOrig.getX(),            cam.getUpVec().getX(), E2, "up x") &
-                 assertEquals(vUpOrig.getY(),            cam.getUpVec().getY(), E2, "up y") &
-                 assertEquals(vUpOrig.getZ(),            cam.getUpVec().getZ(), E2, "up z");
-    }
-
-    bool testRotation()
-    {
-        const float ROT_X = 45.f;
-        const float ROT_Y = 45.f;
-
-        PRRECamera cam;
-
-        PRREVector vTargetOrig = cam.getTargetVec();
-        PRREVector vPosOrig    = cam.getPosVec();
-        PRREVector vUpOrig     = cam.getUpVec();
-
-        PRREVector vView = vTargetOrig - vPosOrig;
-        vView.Normalize();
-        PRREMatrix mRotX, mRotY;
-        mRotX.SetRotationX(ROT_X);
-        mRotY.SetRotationY(ROT_Y);
-        vView *= mRotX * mRotY;
-
-        const PRREVector vExpTarget = vPosOrig + vView;
-        const PRREVector vExpPos    = vPosOrig;
-        const PRREVector vExpUp     = vUpOrig;
-        
-        cam.SetRotation(ROT_X, ROT_Y, 0);
-                                                                   
-        return assertEquals(vExpTarget.getX(), cam.getTargetVec().getX(), E2, "target x") &
-                assertEquals(vExpTarget.getY(), cam.getTargetVec().getY(), E2, "target y") &
-                assertEquals(vExpTarget.getZ(), cam.getTargetVec().getZ(), E2, "target z") &
-                assertEquals(vExpPos.getX(),    cam.getPosVec().getX(), E2, "pos x") &
-                assertEquals(vExpPos.getY(),    cam.getPosVec().getY(), E2, "pos y") &
-                assertEquals(vExpPos.getZ(),    cam.getPosVec().getZ(), E2, "pos z") &
-                assertEquals(vExpUp.getX(),     cam.getUpVec().getX(), E2, "up x") &
-                assertEquals(vExpUp.getY(),     cam.getUpVec().getY(), E2, "up y") &
-                assertEquals(vExpUp.getZ(),     cam.getUpVec().getZ(), E2, "up z");
     }
 
 }; // class PRRECameraTest

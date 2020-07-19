@@ -25,6 +25,7 @@
 #include "PRREScreenTest.h"
 #include "PRRESharedSettingsTest.h"
 #include "PRREVectorTest.h"
+#include "PRREPosUpTargetTest.h"
 #include "PRREMatrixTest.h"
 #include "PRREColorTest.h"
 #include "PRREBaseClassTest.h"
@@ -80,6 +81,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PRREScreenTest             testScreen;
     PRRESharedSettingsTest     testSharedSettings;
     PRREVectorTest             testPRREVector;
+    PRREPosUpTargetTest        testPosUpTarget;
     PRREMatrixTest             testPRREMatrix;
     PRREColorTest              testPRREColor;
     PRREBaseClassTest          testPRREBaseClass;
@@ -112,15 +114,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     
     tests.push_back(&testPFL);
-    /* */
+    /* 
     tests.push_back(&testPGEcfgVariable);
     tests.push_back(&testPGESysCFG);
+    */
 
+    /*
     tests.push_back(&testScreen);
     tests.push_back(&testSharedSettings);
+    */
+    tests.push_back(&testPosUpTarget);
     tests.push_back(&testPRREVector);  
     tests.push_back(&testPRREMatrix);  
 
+    /*
     tests.push_back(&testPRREColor);
     tests.push_back(&testPRREBaseClass);
     tests.push_back(&testPRREManager);
@@ -132,15 +139,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREhwSystemMemory);
     tests.push_back(&testPRREhwAudio);
     tests.push_back(&testPRREhwVideo); 
+    */
 
-    /* */
+    /* 
     tests.push_back(&testPRREImageManager);
     tests.push_back(&testPRREImage);
     tests.push_back(&testPRRETextureManager);
     tests.push_back(&testPRRETexture);   
     tests.push_back(&testPRREMaterialManager);
     tests.push_back(&testPRREMaterial);
-
+    */
     tests.push_back(&testPRRECamera);
 
     tests.push_back(&testPRREObject3DManager);
@@ -152,10 +160,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     tests.push_back(&testPRREScissor);
 
-    /* */
+    /* 
     tests.push_back(&testPRRE);
     tests.push_back(&testPRRE2);
-     
+    */ 
 
     vector<UnitTest*>::size_type nSucceededTests = 0;
     vector<UnitTest*>::size_type nTotalSubTests = 0;

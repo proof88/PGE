@@ -231,6 +231,9 @@
     <ClInclude Include="PRREScissorTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PRREPosUpTargetTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UnitTests.cpp">

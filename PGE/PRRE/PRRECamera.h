@@ -14,6 +14,7 @@
 #include "PRREallHeaders.h"
 #include "PRREBaseClass.h"
 #include "PRREVector.h"
+#include "PRREPosUpTarget.h"
 #include "PRREColor.h"
 
 
@@ -45,7 +46,7 @@ enum TPRRE_ASPECTRATIO_MODE
 */
 
 class PRRECamera : 
-    public PRREBaseClass
+    public PRREBaseClass, public PRREPosUpTarget
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRRECamera is included")
@@ -53,29 +54,12 @@ class PRRECamera :
 
 public:
 
-    PRRECamera();
+    PRRECamera();                               /**< Creates camera with default settings. */
 
     PRRECamera(const PRRECamera&);
     PRRECamera& operator=(const PRRECamera&);   /**< Assignment operator. */
 
     virtual ~PRRECamera();
-
-    PRREVector& getPosVec();                    /**< Gets camera's Position vector. */
-    const PRREVector& getPosVec() const;        /**< Gets camera's Position vector. */
-
-    PRREVector& getTargetVec();                 /**< Gets camera's Target vector. */
-    const PRREVector& getTargetVec() const;     /**< Gets camera's Target vector. */
-
-    PRREVector& getUpVec();                     /**< Gets camera's Up vector. */
-    const PRREVector& getUpVec() const;         /**< Gets camera's Up vector. */
-
-    void Move(TPRREfloat amount);               /**< Moves camera forward or backward from viewers perspective by the specified amount. */
-    void Strafe(TPRREfloat amount);             /**< Moves camera horizontally from viewers perspective by the specified amount. */
-    void Elevate(TPRREfloat amount);            /**< Changes camera's Y-position by the specified amount. */
-    void SetRotation(
-        TPRREfloat x,
-        TPRREfloat y,
-        TPRREfloat z);                          /**< Sets camera angle values. */
 
     const TRECT& getViewport() const;           /**< Gets camera viewport. */
     void SetViewport(

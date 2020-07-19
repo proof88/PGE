@@ -12,7 +12,6 @@
 
 #include "PRREbaseIncludes.h"  // PCH
 #include "PRREpragmas.h"
-#include "PRREBaseClass.h"
 #include "PRRECamera.h"
 #include "PRREMatrix.h"
 
@@ -42,20 +41,6 @@ public:
 
     virtual ~PRRECameraImpl();
 
-    PRREVector& getPosVec();
-    const PRREVector& getPosVec() const;
-
-    PRREVector& getTargetVec();
-    const PRREVector& getTargetVec() const;
-
-    PRREVector& getUpVec();
-    const PRREVector& getUpVec() const;
-
-    void Move(TPRREfloat amount);
-    void Strafe(TPRREfloat amount);
-    void Elevate(TPRREfloat amount);
-    void SetRotation(TPRREfloat x, TPRREfloat y, TPRREfloat z);
-
     const TRECT& getViewport() const;
     void SetViewport(TPRREuint vx, TPRREuint vy, TPRREuint vsx, TPRREuint vsy);
 
@@ -81,7 +66,7 @@ public:
     const PRREColor& getBackgroundColor() const;
 
 private:
-    PRREVector vPos, vTarget, vUp;     /**< Position (eye), target (focus or view), up vectors. */
+    
     TRECT      rectViewport;           /**< Viewport geometry. */
     TPRREfloat fPlaneNear, fPlaneFar;  /**< Near plane, far plane. */
     TPRREfloat fFOV, fAspectRatio;     /**< Field of view, aspect ratio. */
@@ -99,87 +84,6 @@ private:
     friend class PRRECamera;
 
 };
-
-
-// ############################### PUBLIC ################################
-
-
-PRREVector& PRRECamera::PRRECameraImpl::getPosVec()
-{
-    return vPos;
-}
-
-const PRREVector& PRRECamera::PRRECameraImpl::getPosVec() const
-{
-    return vPos;
-}
-
-PRREVector& PRRECamera::PRRECameraImpl::getTargetVec()
-{
-    return vTarget;
-}
-
-const PRREVector& PRRECamera::PRRECameraImpl::getTargetVec() const
-{
-    return vTarget;
-}
-
-PRREVector& PRRECamera::PRRECameraImpl::getUpVec()
-{
-    return vUp;
-}
-
-const PRREVector& PRRECamera::PRRECameraImpl::getUpVec() const
-{
-    return vUp;
-}
-
-
-void PRRECamera::PRRECameraImpl::Move(TPRREfloat amount)
-{
-    PRREVector tmpView(vTarget - vPos);
-    tmpView.Normalize();
-    vPos += amount * tmpView;
-    vTarget += amount * tmpView;
-}
-
-void PRRECamera::PRRECameraImpl::Strafe(TPRREfloat amount)
-{
-    PRREVector tmpView(vTarget - vPos);
-    tmpView.Normalize();
-    PRREVector tmpCross(vUp ^ tmpView);
-    tmpCross.Normalize();
-    vPos += amount * tmpCross;
-    vTarget += amount * tmpCross;
-    // todo: xz values only, not altering Y ?
-}
-
-void PRRECamera::PRRECameraImpl::Elevate(TPRREfloat amount)
-{
-    vPos.SetY( vPos.getY() + amount );
-    vTarget.SetY( vTarget.getY() + amount );
-}
-
-void PRRECamera::PRRECameraImpl::SetRotation(TPRREfloat x, TPRREfloat y, TPRREfloat z)
-{
-    const PRREVector vDefTarget(0, 0, 1);
-    const PRREVector vDefPos(0, 0, 0);
-    // Note: we set absolute rotation here so our initial Target vec is the default in +Z direction and Pos vec is zero.
-    // To implement Rotate() instead of SetRotation(), use the current vTarget and vPos vectors to calculate tmpView.
-    PRREVector tmpView(vDefTarget - vDefPos);  
-    tmpView.Normalize();
-
-    PRREMatrix matRotX, matRotY, matRotZ;
-    matRotX.SetRotationX(x);
-    matRotY.SetRotationY(y);
-    matRotZ.SetRotationZ(z);
-    // todo: 3 matrices, are u kidding me?
-
-    tmpView *= matRotX * matRotY * matRotZ;
-    tmpView.Normalize();
-    vTarget = vPos + tmpView;
-}
-
 
 const TRECT& PRRECamera::PRRECameraImpl::getViewport() const
 {
@@ -307,6 +211,19 @@ const PRREColor& PRRECamera::PRRECameraImpl::getBackgroundColor() const
 // ############################### PUBLIC ################################
 
 
+/**
+    Creates camera with default settings.
+    Default settings:
+     - clear mode: PRRE_CLEAR_ZBUFFER_COLORBUFFER;
+     - near plane: 1.0;
+     - far plane: 10.0;
+     - viewport X,Y: 0,0;
+     - viewport W,H: 800,600;
+     - field of view: 80.0;
+     - aspect mode: PRRE_AM_FIX;
+     - aspect ratio: 800 / 600.0;
+     - position, up and target vectors as initialized by PRREPosUpTarget ctor.
+*/
 PRRECamera::PRRECamera()
 {
     p = new PRRECameraImpl();
@@ -314,7 +231,6 @@ PRRECamera::PRRECamera()
 
 PRRECamera::PRRECamera(const PRRECamera& other)
 {
-
     *this = other;
 }
 
@@ -351,95 +267,6 @@ PRRECamera::~PRRECamera()
     delete p;
     p = NULL;
 }
-
-
-/**
-    Gets camera's Position vector.
-*/
-PRREVector& PRRECamera::getPosVec()
-{
-    return p->getPosVec();
-}
-
-
-/**
-    Gets camera's Position vector.
-*/
-const PRREVector& PRRECamera::getPosVec() const
-{
-    return p->getPosVec();
-}
-
-
-/**
-    Gets camera's Target vector.
-*/
-PRREVector& PRRECamera::getTargetVec()
-{
-    return p->getTargetVec();
-}
-
-
-/**
-    Gets camera's Target vector.
-*/
-const PRREVector& PRRECamera::getTargetVec() const
-{
-    return p->getTargetVec();
-}
-
-/**
-    Gets camera's Up vector.
-*/
-PRREVector& PRRECamera::getUpVec()
-{
-    return p->getUpVec();
-}
-
-
-/**
-    Gets camera's Up vector.
-*/
-const PRREVector& PRRECamera::getUpVec() const
-{
-    return p->getUpVec();
-}
-
-
-/**
-    Moves camera forward or backward from viewers perspective by the specified amount.
-*/
-void PRRECamera::Move(TPRREfloat amount)
-{
-    p->Move(amount);
-}
-
-/**
-    Moves camera horizontally from viewers perspective by the specified amount.
-*/
-void PRRECamera::Strafe(TPRREfloat amount)
-{
-    p->Strafe(amount);
-}
-
-
-/**
-    Changes camera's Y-position by the specified amount.
-*/
-void PRRECamera::Elevate(TPRREfloat amount)
-{
-    p->Elevate(amount);
-}
-
-
-/**
-    Sets camera angle values.
-*/
-void PRRECamera::SetRotation(TPRREfloat x, TPRREfloat y, TPRREfloat z)
-{
-    p->SetRotation(x, y, z);
-}
-
 
 /**
     Gets camera viewport.
@@ -612,8 +439,6 @@ const PRREColor& PRRECamera::getBackgroundColor() const
 
 
 PRRECamera::PRRECameraImpl::PRRECameraImpl() :
-    vUp(0.0f, 1.0f, 0.0f),
-    vTarget(0.0f, 0.0f, 1.0f),
     aspectMode(PRRE_AM_FIX),
     clearMode(PRRE_CLEAR_ZBUFFER_COLORBUFFER),
     fPlaneNear(1.f),

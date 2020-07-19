@@ -195,6 +195,9 @@
     <ClInclude Include="..\..\CConsole\CConsole\src\CConsole.h">
       <Filter>Header Files\CConsole</Filter>
     </ClInclude>
+    <ClInclude Include="PRRE\PRREPosUpTarget.h">
+      <Filter>Header Files\PRRE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -315,6 +318,9 @@
       <Filter>Source Files\PRRE\Render</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\PUREScissor.cpp">
+      <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\PRREPosUpTarget.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
   </ItemGroup>
