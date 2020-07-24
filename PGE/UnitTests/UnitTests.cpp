@@ -27,6 +27,7 @@
 #include "PRREVectorTest.h"
 #include "PRREPosUpTargetTest.h"
 #include "PRREMatrixTest.h"
+#include "PRRETransformMatrixTest.h"
 #include "PRREColorTest.h"
 #include "PRREBaseClassTest.h"
 #include "PRREManagerTest.h"
@@ -83,6 +84,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PRREVectorTest             testPRREVector;
     PRREPosUpTargetTest        testPosUpTarget;
     PRREMatrixTest             testPRREMatrix;
+    PRRETransformMatrixTest    testPRRETransformMatrix;
     PRREColorTest              testPRREColor;
     PRREBaseClassTest          testPRREBaseClass;
     PRREManagerTest            testPRREManager;
@@ -126,6 +128,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPosUpTarget);
     tests.push_back(&testPRREVector);  
     tests.push_back(&testPRREMatrix);  
+    tests.push_back(&testPRRETransformMatrix);
 
     /*
     tests.push_back(&testPRREColor);

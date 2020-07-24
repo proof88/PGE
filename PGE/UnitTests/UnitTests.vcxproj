@@ -246,6 +246,7 @@
     <ClInclude Include="PRRESharedSettingsTest.h" />
     <ClInclude Include="PRRETextureManagerTest.h" />
     <ClInclude Include="PRRETextureTest.h" />
+    <ClInclude Include="PRRETransformMatrixTest.h" />
     <ClInclude Include="PRREVectorTest.h" />
     <ClInclude Include="PRREWindowTest.h" />
     <ClInclude Include="PRREWindowTest2.h" />

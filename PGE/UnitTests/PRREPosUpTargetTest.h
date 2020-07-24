@@ -11,7 +11,7 @@
 
 #include "UnitTest.h"  // PCH
 #include "../../../PGE/PGE/PRRE/PRREPosUpTarget.h"
-#include "../../../PGE/PGE/PRRE/PRREMatrix.h"
+#include "../../../PGE/PGE/PRRE/PRRETransformMatrix.h"
 
 #ifndef E2
 #define E2 0.005f
@@ -224,7 +224,7 @@ private:
 
         PRREVector vView = vTargetOrig - vPosOrig;
         vView.Normalize();
-        PRREMatrix mRotX, mRotY;
+        PRRETransformMatrix mRotX, mRotY;
         mRotX.SetRotationX(ROT_X);
         mRotY.SetRotationY(ROT_Y);
         vView *= mRotX * mRotY;

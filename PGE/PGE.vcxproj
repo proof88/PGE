@@ -199,6 +199,7 @@
     <ClInclude Include="PGEWorldTime.h" />
     <ClInclude Include="PGEWorldWeather.h" />
     <ClInclude Include="PRRE\PRREPosUpTarget.h" />
+    <ClInclude Include="PRRE\PRRETransformMatrix.h" />
     <ClInclude Include="PRRE\PUREScissor.h" />
     <ClInclude Include="PRRE\Render\PRREIIncrementalRenderPipeline.h" />
     <ClInclude Include="PRRE\PR00FsReducedRenderingEngine.h" />
@@ -265,6 +266,7 @@
     <ClCompile Include="PRRE\PRREhwBase.cpp" />
     <ClCompile Include="PRRE\PRREhwCentralProcessor.cpp" />
     <ClCompile Include="PRRE\PRREPosUpTarget.cpp" />
+    <ClCompile Include="PRRE\PRRETransformMatrix.cpp" />
     <ClCompile Include="PRRE\PUREScissor.cpp" />
     <ClCompile Include="PRRE\Render\PRRERendererHWfixedPipe.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>

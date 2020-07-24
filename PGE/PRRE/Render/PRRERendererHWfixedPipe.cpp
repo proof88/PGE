@@ -12,7 +12,7 @@
 #include "../PRREpragmas.h"
 #include "PRRERendererHWfixedPipe.h"
 #include "../PRREVector.h"
-#include "../PRREMatrix.h"
+#include "../PRRETransformMatrix.h"
 #include "../PRREGLsnippets.h"
 #include "../PRREGLextensionFuncs.h"
 #include "../PRREObject3DManager.h"
@@ -535,7 +535,7 @@ void PRRERendererHWfixedPipeImpl::BeginRendering()
 */
 void PRRERendererHWfixedPipeImpl::SwitchToPerspectiveProjection()
 {
-    PRREMatrix mProj;
+    PRRETransformMatrix mProj;
     mProj.SetFrustumByFovY(pCamera->getFieldOfView(), pCamera->getAspectRatio(), pCamera->getNearPlane(), pCamera->getFarPlane());
 
     glMatrixMode(GL_PROJECTION);
@@ -554,7 +554,7 @@ void PRRERendererHWfixedPipeImpl::SwitchToPerspectiveProjection()
     } */
 
     
-    PRREMatrix mView;
+    PRRETransformMatrix mView;
     mView.SetLookAt(pCamera->getPosVec(), pCamera->getTargetVec(), pCamera->getUpVec());
 
     glMatrixMode(GL_MODELVIEW);

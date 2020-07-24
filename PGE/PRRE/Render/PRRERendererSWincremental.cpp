@@ -13,7 +13,7 @@
 #include "PRRERendererSWincremental.h"
 #include "PRREIIncrementalRenderPipeline.h"
 #include "../PRREVector.h"
-#include "../PRREMatrix.h"
+#include "../PRRETransformMatrix.h"
 #include "../PRREGLsnippets.h"
 #include "../PRREObject3DManager.h"
 #include "../PUREScissor.h"
@@ -514,15 +514,15 @@ void PRRERendererSWincrementalImpl::VertexProcessing(
         PRREVector transfdVertex(vertex.x, vertex.y, vertex.z);
 
         /* Model -> World */
-        PRREMatrix mModelTr;
+        PRRETransformMatrix mModelTr;
         mModelTr.SetTranslation(pos.x, pos.y, pos.z);
 
-        PRREMatrix mScalingTr;
+        PRRETransformMatrix mScalingTr;
         mScalingTr.SetScale(scaling.x, scaling.y, scaling.z);
         transfdVertex = mScalingTr * transfdVertex;
         // Note that we need to detect negative scaling factor and change front face winding order on-the-fly, see details in PRREObject3D::PRREObject3DImpl::ApplyTransformations()
         
-        PRREMatrix mRotation;
+        PRRETransformMatrix mRotation;
         // TODO: we should set rotation on all axes with 1 matrix but unfortunately currently we just have separate setrotation methods for each axes
         // so we need 3 different rotation matrices for each axis, and this also introduces the rotation order problem.
        
@@ -537,13 +537,13 @@ void PRRERendererSWincrementalImpl::VertexProcessing(
         transfdVertex = mModelTr * transfdVertex;
 
         /* World -> View/Eye */
-        PRREMatrix mViewTr;
+        PRRETransformMatrix mViewTr;
         mViewTr.SetLookAt(pCamera->getPosVec(), pCamera->getTargetVec(), pCamera->getUpVec());
         transfdVertex = mViewTr * transfdVertex;
 
         /* View/Eye -> Clip */
         /* The pyramidal frustum in eye space becomes a cube, therefore, the clipping plane equations in clip space are: X + Wc = 0, Y + Wc = 0, Z + Wc = 0, etc. */
-        PRREMatrix mProjTr;
+        PRRETransformMatrix mProjTr;
         mProjTr.SetFrustumByFovY(pCamera->getFieldOfView(), pCamera->getAspectRatio(), pCamera->getNearPlane(), pCamera->getFarPlane());
         transfdVertex = mProjTr * transfdVertex;
 

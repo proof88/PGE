@@ -11,7 +11,7 @@
 #include "PRREbaseIncludes.h"  // PCH
 #include "PRREpragmas.h"
 #include "PRREPosUpTarget.h"
-#include "PRREMatrix.h"
+#include "PRRETransformMatrix.h"
 
 
 // ############################### PUBLIC ################################
@@ -137,7 +137,7 @@ void PRREPosUpTarget::SetRotation(TPRREfloat x, TPRREfloat y, TPRREfloat z)
     PRREVector tmpView(vDefTarget - vDefPos);  
     tmpView.Normalize();
 
-    PRREMatrix matRotX, matRotY, matRotZ;
+    PRRETransformMatrix matRotX, matRotY, matRotZ;
     matRotX.SetRotationX(x);
     matRotY.SetRotationY(y);
     matRotZ.SetRotationZ(z);
