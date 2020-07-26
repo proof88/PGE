@@ -136,7 +136,7 @@ private:
     bool testGetRedAsFloat()
     {
         PRREColor clr;
-        clr.Setf(0.1f, 0.2f, 0.3f, 0.4f);
+        clr.SetAsFloats(0.1f, 0.2f, 0.3f, 0.4f);
 
         return assertEquals(0.1f, clr.getRedAsFloat(), E2);
     }
@@ -144,7 +144,7 @@ private:
     bool testGetGreenAsFloat()
     {
         PRREColor clr;
-        clr.Setf(0.1f, 0.2f, 0.3f, 0.4f);
+        clr.SetAsFloats(0.1f, 0.2f, 0.3f, 0.4f);
 
         return assertEquals(0.2f, clr.getGreenAsFloat(), E2);
     }
@@ -152,7 +152,7 @@ private:
     bool testGetBlueAsFloat()
     {
         PRREColor clr;
-        clr.Setf(0.1f, 0.2f, 0.3f, 0.4f);
+        clr.SetAsFloats(0.1f, 0.2f, 0.3f, 0.4f);
 
         return assertEquals(0.3f, clr.getBlueAsFloat(), E2);
     }
@@ -160,7 +160,7 @@ private:
     bool testGetAlphaAsFloat()
     {
         PRREColor clr;
-        clr.Setf(0.1f, 0.2f, 0.3f, 0.4f);
+        clr.SetAsFloats(0.1f, 0.2f, 0.3f, 0.4f);
 
         return assertEquals(0.4f, clr.getAlphaAsFloat(), E2);
     }
@@ -179,7 +179,7 @@ private:
     bool testSetf()
     {
         PRREColor clr;
-        clr.Setf(-2.0f, 0.2f, 0.3f, 3.0f);
+        clr.SetAsFloats(-2.0f, 0.2f, 0.3f, 3.0f);
 
         return assertEquals(0.0f, clr.getRedAsFloat(), E2, "red") &
             assertEquals(0.2f, clr.getGreenAsFloat(), E2, "green") &
@@ -198,7 +198,7 @@ private:
     bool testSetRedf()
     {
         PRREColor clr;
-        clr.SetRedf(0.5f);
+        clr.SetRedAsFloat(0.5f);
 
         return assertEquals(0.5f, clr.getRedAsFloat(), E2);
     }
@@ -214,7 +214,7 @@ private:
     bool testSetGreenf()
     {
         PRREColor clr;
-        clr.SetGreenf(0.5f);
+        clr.SetGreenAsFloat(0.5f);
 
         return assertEquals(0.5f, clr.getGreenAsFloat(), E2);
     }
@@ -230,7 +230,7 @@ private:
     bool testSetBluef()
     {
         PRREColor clr;
-        clr.SetBluef(0.5f);
+        clr.SetBlueAsFloat(0.5f);
 
         return assertEquals(0.5f, clr.getBlueAsFloat(), E2);
     }
@@ -246,7 +246,7 @@ private:
     bool testSetAlphaf()
     {
         PRREColor clr;
-        clr.SetAlphaf(0.5f);
+        clr.SetAlphaAsFloat(0.5f);
 
         return assertEquals(0.5f, clr.getAlphaAsFloat(), E2);
     }

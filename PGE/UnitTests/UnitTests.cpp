@@ -130,8 +130,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREMatrix);  
     tests.push_back(&testPRRETransformMatrix);
 
-    /*
+    
     tests.push_back(&testPRREColor);
+    /*
     tests.push_back(&testPRREBaseClass);
     tests.push_back(&testPRREManager);
     tests.push_back(&testPRREManaged);

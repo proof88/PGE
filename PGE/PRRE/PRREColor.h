@@ -63,16 +63,16 @@ public:
     TPRREfloat getBlueAsFloat() const;   /**< Gets blue component. */
     TPRREfloat getAlphaAsFloat() const;  /**< Gets alpha component. */
 
-    void Setf(
+    void SetAsFloats(
         TPRREfloat red,
         TPRREfloat green,
         TPRREfloat blue,
         TPRREfloat alpha = 0.0f);        /**< Sets all color components. */
 
-    void SetRedf(TPRREfloat red);        /**< Sets red component. */
-    void SetGreenf(TPRREfloat green);    /**< Sets green component. */
-    void SetBluef(TPRREfloat blue);      /**< Sets blue component. */
-    void SetAlphaf(TPRREfloat alpha);    /**< Sets alpha component. */
+    void SetRedAsFloat(TPRREfloat red);        /**< Sets red component. */
+    void SetGreenAsFloat(TPRREfloat green);    /**< Sets green component. */
+    void SetBlueAsFloat(TPRREfloat blue);      /**< Sets blue component. */
+    void SetAlphaAsFloat(TPRREfloat alpha);    /**< Sets alpha component. */
 
     TPRREbool operator==(const PRREColor& clr) const;  /**< Equals to operator. */
     TPRREbool operator!=(const PRREColor& clr) const;  /**< Not equals to operator. */

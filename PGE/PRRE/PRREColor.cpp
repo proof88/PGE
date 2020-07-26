@@ -210,12 +210,12 @@ TPRREfloat PRREColor::getAlphaAsFloat() const
     @param blue  Blue component in range [0.0f, 1.0f].
     @param alpha Alpha component in range [0.0f, 1.0f].
 */
-void PRREColor::Setf(TPRREfloat red, TPRREfloat green, TPRREfloat blue, TPRREfloat alpha)
+void PRREColor::SetAsFloats(TPRREfloat red, TPRREfloat green, TPRREfloat blue, TPRREfloat alpha)
 {
-    SetRedf(red);
-    SetGreenf(green);
-    SetBluef(blue);
-    SetAlphaf(alpha);
+    SetRedAsFloat(red);
+    SetGreenAsFloat(green);
+    SetBlueAsFloat(blue);
+    SetAlphaAsFloat(alpha);
 } // Set()
 
 
@@ -224,7 +224,7 @@ void PRREColor::Setf(TPRREfloat red, TPRREfloat green, TPRREfloat blue, TPRREflo
 
     @param red Red component in range [0.0f, 1.0f].
 */
-void PRREColor::SetRedf(TPRREfloat red)
+void PRREColor::SetRedAsFloat(TPRREfloat red)
 {
     r = (TPRREubyte) PFL::roundi(PFL::constrain(red, 0.0f, 1.0f) * 255);
 } // SetRed()
@@ -235,7 +235,7 @@ void PRREColor::SetRedf(TPRREfloat red)
 
     @param green Green component in range [0.0f, 1.0f].
 */
-void PRREColor::SetGreenf(TPRREfloat green)
+void PRREColor::SetGreenAsFloat(TPRREfloat green)
 {
     g = (TPRREubyte) PFL::roundi(PFL::constrain(green, 0.0f, 1.0f) * 255);
 } // SetGreen()
@@ -246,7 +246,7 @@ void PRREColor::SetGreenf(TPRREfloat green)
 
     @param blue Blue component in range [0.0f, 1.0f].
 */
-void PRREColor::SetBluef(TPRREfloat blue)
+void PRREColor::SetBlueAsFloat(TPRREfloat blue)
 {
     b = (TPRREubyte) PFL::roundi(PFL::constrain(blue, 0.0f, 1.0f) * 255);
 } // SetBlue()
@@ -257,7 +257,7 @@ void PRREColor::SetBluef(TPRREfloat blue)
 
     @param alpha Alpha component in range [0.0f, 1.0f].
 */
-void PRREColor::SetAlphaf(TPRREfloat alpha)
+void PRREColor::SetAlphaAsFloat(TPRREfloat alpha)
 {
     a = (TPRREubyte) PFL::roundi(PFL::constrain(alpha, 0.0f, 1.0f) * 255);
 } // SetAlpha()
