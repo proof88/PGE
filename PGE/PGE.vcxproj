@@ -198,7 +198,11 @@
     <ClInclude Include="PGEWorld.h" />
     <ClInclude Include="PGEWorldTime.h" />
     <ClInclude Include="PGEWorldWeather.h" />
+    <ClInclude Include="PRRE\PRREImageImpl.h" />
+    <ClInclude Include="PRRE\PRREMaterialImpl.h" />
+    <ClInclude Include="PRRE\PRREObject3DImpl.h" />
     <ClInclude Include="PRRE\PRREPosUpTarget.h" />
+    <ClInclude Include="PRRE\PRRETextureImpl.h" />
     <ClInclude Include="PRRE\PRRETransformMatrix.h" />
     <ClInclude Include="PRRE\PUREScissor.h" />
     <ClInclude Include="PRRE\Render\PRREIIncrementalRenderPipeline.h" />
@@ -265,7 +269,11 @@
     <ClCompile Include="PRRE\PRREhwAudio.cpp" />
     <ClCompile Include="PRRE\PRREhwBase.cpp" />
     <ClCompile Include="PRRE\PRREhwCentralProcessor.cpp" />
+    <ClCompile Include="PRRE\PRREImage.cpp" />
+    <ClCompile Include="PRRE\PRREMaterial.cpp" />
+    <ClCompile Include="PRRE\PRREObject3D.cpp" />
     <ClCompile Include="PRRE\PRREPosUpTarget.cpp" />
+    <ClCompile Include="PRRE\PRRETexture.cpp" />
     <ClCompile Include="PRRE\PRRETransformMatrix.cpp" />
     <ClCompile Include="PRRE\PUREScissor.cpp" />
     <ClCompile Include="PRRE\Render\PRRERendererHWfixedPipe.cpp">

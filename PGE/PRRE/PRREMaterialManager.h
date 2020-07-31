@@ -17,8 +17,6 @@
 #include "PRRETextureManager.h"
 
 
-
-
 /**
     Blend factors.
 

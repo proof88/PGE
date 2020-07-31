@@ -201,6 +201,18 @@
     <ClInclude Include="PRRE\PRRETransformMatrix.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
+    <ClInclude Include="PRRE\PRRETextureImpl.h">
+      <Filter>Header Files\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\PRREObject3DImpl.h">
+      <Filter>Header Files\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\PRREImageImpl.h">
+      <Filter>Header Files\PRRE</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\PRREMaterialImpl.h">
+      <Filter>Header Files\PRRE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -327,6 +339,18 @@
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\PRRETransformMatrix.cpp">
+      <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\PRREImage.cpp">
+      <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\PRREMaterial.cpp">
+      <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\PRREObject3D.cpp">
+      <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\PRRETexture.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
   </ItemGroup>
