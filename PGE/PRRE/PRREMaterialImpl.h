@@ -66,6 +66,7 @@ public:
             TPRREuint    getTexcoordIndicesCount(TPRREuint level = 0) const;
             void*        getTexcoordIndices(TPRREuint level = 0) const;
 
+            TPRREuint    getTextureCount() const;
             PRRETexture* getTexture(TPRREuint level = 0);
     const   PRRETexture* getTexture(TPRREuint level = 0) const;
             void         SetTexture(PRRETexture* tex, TPRREuint level = 0);

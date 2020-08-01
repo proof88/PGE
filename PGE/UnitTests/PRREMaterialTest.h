@@ -52,6 +52,7 @@ protected:
         AddSubTest("testDtor", (PFNUNITSUBTEST) &PRREMaterialTest::testDtor);
         AddSubTest("testAllocateArrays", (PFNUNITSUBTEST) &PRREMaterialTest::testAllocateArrays);
         AddSubTest("testSetTexture", (PFNUNITSUBTEST) &PRREMaterialTest::testSetTexture);
+        AddSubTest("testGetTextureCount", (PFNUNITSUBTEST) &PRREMaterialTest::testGetTextureCount);
         AddSubTest("testIsTextured", (PFNUNITSUBTEST) &PRREMaterialTest::testIsTextured);
         AddSubTest("testIsSingleTextured", (PFNUNITSUBTEST) &PRREMaterialTest::testIsSingleTextured);
         AddSubTest("testIsMultiTextured", (PFNUNITSUBTEST) &PRREMaterialTest::testIsMultiTextured);
@@ -202,6 +203,30 @@ private:
         b = b & 
             assertNotNull(mat->getTexture(1), "2nd tex 1") &
             assertNull(mat->getTexture(), "2nd tex 0");
+
+        return b;
+    }
+
+    bool testGetTextureCount()
+    {
+        if ( !mat )
+            return assertNotNull(mat, "notNull");
+
+        PRRETexture* tex128x128x24 = PR00FsReducedRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
+        if ( !tex128x128x24 )
+            return assertNotNull(tex128x128x24, "tex");
+
+        bool b = assertEquals((TPRREuint)0, mat->getTextureCount(), "1st");
+
+        mat->SetTexture(tex128x128x24);
+        b = b & assertEquals((TPRREuint)1, mat->getTextureCount(), "2nd");
+
+        mat->SetTexture(NULL);
+        mat->SetTexture(tex128x128x24, 1);
+        b = b & assertEquals((TPRREuint)1, mat->getTextureCount(), "3rd");
+
+        mat->SetTexture(tex128x128x24);
+        b = b & assertEquals((TPRREuint)2, mat->getTextureCount(), "4th");
 
         return b;
     }

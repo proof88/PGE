@@ -180,6 +180,7 @@ public:
     const   PRRETexture* getTexture(TPRREuint level = 0) const;               /**< Gets the texture of the material on the specified level. */
             void         SetTexture(PRRETexture* tex, TPRREuint level = 0);   /**< Sets the texture of the material on the specified level. */
 
+            TPRREuint    getTextureCount() const;                             /**< Gets the number of textures assigned to this material. */
             TPRREbool    isTextured() const;                                  /**< Gets whether the material has at least 1 textured layer. */
             TPRREbool    isSingleTextured() const;                            /**< Gets whether the material has only 1 textured layer. */
             TPRREbool    isMultiTextured() const;                             /**< Gets whether the material has at least 2 textured layers. */

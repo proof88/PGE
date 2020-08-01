@@ -243,47 +243,32 @@ void PRREMaterial::PRREMaterialImpl::SetTexture(PRRETexture* tex, TPRREuint leve
 }
 
 
-TPRREbool PRREMaterial::PRREMaterialImpl::isTextured() const
+TPRREuint PRREMaterial::PRREMaterialImpl::getTextureCount() const
 {
+    TPRREuint nFound = 0;
     for (TPRREuint i = 0; i < layers.size(); i++)
         if ( layers[i].tex != PGENULL )
-            return true;
+            nFound++;
 
-    return false;
+    return nFound;
+}
+
+
+TPRREbool PRREMaterial::PRREMaterialImpl::isTextured() const
+{
+    return getTextureCount() > 0;
 }
 
 
 TPRREbool PRREMaterial::PRREMaterialImpl::isSingleTextured() const
 {
-    // would be better to implement a getnumberoftextuers function and result of that
-    // would be used by isTextured(), isSingleTextured() and isMultitextured().
-    TPRREuint nFound = 0;
-
-    for (TPRREuint i = 0; i < layers.size(); i++)
-        if ( layers[i].tex != PGENULL )
-        {
-            nFound++;
-            if ( nFound > 1 )
-                return false;
-        }
-
-    return (nFound == 1);
+    return getTextureCount() == 1;
 }
 
 
 TPRREbool PRREMaterial::PRREMaterialImpl::isMultiTextured() const
 {
-    TPRREuint nFound = 0;
-
-    for (TPRREuint i = 0; i < layers.size(); i++)
-        if ( layers[i].tex != PGENULL )
-        {
-            nFound++;
-            if ( nFound > 1 )
-                return true;
-        }
-
-    return false;
+    return getTextureCount() > 1;
 }
 
 
@@ -722,6 +707,17 @@ const PRRETexture* PRREMaterial::getTexture(TPRREuint level) const
 void PRREMaterial::SetTexture(PRRETexture* tex, TPRREuint level)
 {
     p->SetTexture(tex, level);
+}
+
+
+/**
+    Gets the number of textures assigned to this material.
+
+    @return Number of textures assigned to this material on all levels.
+*/
+TPRREuint PRREMaterial::getTextureCount() const
+{
+    return p->getTextureCount();
 }
 
 
