@@ -37,6 +37,9 @@
     <Filter Include="Header Files\PGE\PRRE\Material">
       <UniqueIdentifier>{12a0fb52-cd97-4623-9cc0-e844fa4f62d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PGE\PRRE\Object3D">
+      <UniqueIdentifier>{4c7546c9-a147-487d-b264-d810e91eece3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PR00FsReducedRenderingEngineTest.h">
@@ -103,9 +106,6 @@
       <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="..\PRRE\PRREManager.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\PRREObject3DManager.h">
       <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="..\PRRE\PRREtypes.h">
@@ -257,6 +257,9 @@
     </ClInclude>
     <ClInclude Include="..\PRRE\Material\PRRETextureManager.h">
       <Filter>Header Files\PGE\PRRE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\Object3D\PRREObject3DManager.h">
+      <Filter>Header Files\PGE\PRRE\Object3D</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

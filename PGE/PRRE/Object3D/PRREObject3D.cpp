@@ -9,12 +9,12 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
-#include "PRREpragmas.h"
+#include "../PRREpragmas.h"
 #include "PRREObject3DManager.h"
 #include "PRREObject3DImpl.h"
-#include "PRREGLextensionFuncs.h"
-#include "PRREGLsnippets.h"
-#include "Hardware/PRREhwInfo.h"
+#include "../PRREGLextensionFuncs.h"
+#include "../PRREGLsnippets.h"
+#include "../Hardware/PRREhwInfo.h"
 
 using namespace std;
 

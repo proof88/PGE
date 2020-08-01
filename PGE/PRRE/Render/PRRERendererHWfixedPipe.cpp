@@ -15,7 +15,7 @@
 #include "../Math/PRRETransformMatrix.h"
 #include "../PRREGLsnippets.h"
 #include "../PRREGLextensionFuncs.h"
-#include "../PRREObject3DManager.h"
+#include "../Object3D/PRREObject3DManager.h"
 
 using namespace std;
 

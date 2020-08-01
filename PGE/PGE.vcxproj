@@ -219,7 +219,8 @@
     <ClInclude Include="PRRE\Math\PRRETransformMatrix.h" />
     <ClInclude Include="PRRE\Math\PRREVector.h" />
     <ClInclude Include="PRRE\Math\PUREScissor.h" />
-    <ClInclude Include="PRRE\PRREObject3DImpl.h" />
+    <ClInclude Include="PRRE\Object3D\PRREObject3DImpl.h" />
+    <ClInclude Include="PRRE\Object3D\PRREObject3DManager.h" />
     <ClInclude Include="PRRE\Render\PRREIIncrementalRenderPipeline.h" />
     <ClInclude Include="PRRE\PR00FsReducedRenderingEngine.h" />
     <ClInclude Include="PRRE\PRREallHeaders.h" />
@@ -233,7 +234,6 @@
     <ClInclude Include="PRRE\Render\PRREIRenderable.h" />
     <ClInclude Include="PRRE\Render\PRRERendererHWfixedPipe.h" />
     <ClInclude Include="PRRE\PRREManager.h" />
-    <ClInclude Include="PRRE\PRREObject3DManager.h" />
     <ClInclude Include="PRRE\PRREpragmas.h" />
     <ClInclude Include="PRRE\Render\PRREIRenderer.h" />
     <ClInclude Include="PRRE\Render\PRRERendererSWincremental.h" />
@@ -274,6 +274,8 @@
     <ClCompile Include="PRRE\Math\PRRETransformMatrix.cpp" />
     <ClCompile Include="PRRE\Math\PRREVector.cpp" />
     <ClCompile Include="PRRE\Math\PUREScissor.cpp" />
+    <ClCompile Include="PRRE\Object3D\PRREObject3D.cpp" />
+    <ClCompile Include="PRRE\Object3D\PRREObject3DManager.cpp" />
     <ClCompile Include="PRRE\PR00FsReducedRenderingEngine.cpp" />
     <ClCompile Include="PRRE\PRREBaseClass.cpp" />
     <ClCompile Include="PRRE\PRREbaseIncludes.cpp">
@@ -286,7 +288,6 @@
     <ClCompile Include="PRRE\PRREFiledManager.cpp" />
     <ClCompile Include="PRRE\PRREGLextensionFuncs.cpp" />
     <ClCompile Include="PRRE\PRREGLsnippets.cpp" />
-    <ClCompile Include="PRRE\PRREObject3D.cpp" />
     <ClCompile Include="PRRE\Render\PRRERendererHWfixedPipe.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
@@ -294,7 +295,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="PRRE\PRREManager.cpp" />
-    <ClCompile Include="PRRE\PRREObject3DManager.cpp" />
     <ClCompile Include="PRRE\Render\PRRERendererSWincremental.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>

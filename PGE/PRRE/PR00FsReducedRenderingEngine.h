@@ -20,7 +20,7 @@
 #include "Material/PRREImageManager.h"
 #include "Material/PRRETextureManager.h"
 #include "Material/PRREMaterialManager.h"
-#include "PRREObject3DManager.h"
+#include "Object3D/PRREObject3DManager.h"
 #include "PRRECamera.h"
 #include "PRREuiManager.h"
 #include "Render/PRREIRenderer.h"

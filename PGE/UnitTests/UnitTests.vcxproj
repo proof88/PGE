@@ -209,13 +209,13 @@
     <ClInclude Include="..\PRRE\Math\PRRETransformMatrix.h" />
     <ClInclude Include="..\PRRE\Math\PRREVector.h" />
     <ClInclude Include="..\PRRE\Math\PUREScissor.h" />
+    <ClInclude Include="..\PRRE\Object3D\PRREObject3DManager.h" />
     <ClInclude Include="..\PRRE\PR00FsReducedRenderingEngine.h" />
     <ClInclude Include="..\PRRE\PRREallHeaders.h" />
     <ClInclude Include="..\PRRE\PRREBaseClass.h" />
     <ClInclude Include="..\PRRE\PRRECamera.h" />
     <ClInclude Include="..\PRRE\PRREFiledManager.h" />
     <ClInclude Include="..\PRRE\PRREManager.h" />
-    <ClInclude Include="..\PRRE\PRREObject3DManager.h" />
     <ClInclude Include="..\PRRE\PRREtypes.h" />
     <ClInclude Include="..\PRRE\PRREuiManager.h" />
     <ClInclude Include="..\PRRE\PRREuiText.h" />

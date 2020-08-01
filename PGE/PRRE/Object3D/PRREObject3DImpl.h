@@ -11,9 +11,9 @@
     ###################################################################################
 */
 
-#include "PRREallHeaders.h"
+#include "../PRREallHeaders.h"
 #include "PRREObject3DManager.h"
-#include "gl/gl.h"  // for GLenum and similar, which should be removed from here soon ...
+#include "../gl/gl.h"  // for GLenum and similar, which should be removed from here soon ...
 
 class PRREObject3D::PRREObject3DImpl
 {

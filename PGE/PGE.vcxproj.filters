@@ -55,6 +55,12 @@
     <Filter Include="Header Files\PRRE\Material">
       <UniqueIdentifier>{fb719b1e-8198-4d03-96bb-c819666c1f46}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PRRE\Object3D">
+      <UniqueIdentifier>{794ea4f9-1e22-4d9a-a8ee-4b0775a0dda6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PRRE\Object3D">
+      <UniqueIdentifier>{7db81dcf-0921-4788-bcba-80b8862af787}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGE.h">
@@ -103,9 +109,6 @@
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PRRE\PRREManager.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREObject3DManager.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PRRE\PRREpragmas.h">
@@ -171,9 +174,6 @@
     <ClInclude Include="..\..\CConsole\CConsole\src\CConsole.h">
       <Filter>Header Files\CConsole</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\PRREObject3DImpl.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="PRRE\Hardware\PRREhwAudio.h">
       <Filter>Header Files\PRRE\Hardware</Filter>
     </ClInclude>
@@ -237,6 +237,12 @@
     <ClInclude Include="PRRE\Material\PRRETextureManager.h">
       <Filter>Header Files\PRRE\Material</Filter>
     </ClInclude>
+    <ClInclude Include="PRRE\Object3D\PRREObject3DImpl.h">
+      <Filter>Header Files\PRRE\Object3D</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Object3D\PRREObject3DManager.h">
+      <Filter>Header Files\PRRE\Object3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -253,9 +259,6 @@
     </ClCompile>
     <ClCompile Include="PGESysSFX.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREObject3DManager.cpp">
-      <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\PRREManager.cpp">
       <Filter>Source Files\PRRE</Filter>
@@ -310,9 +313,6 @@
     </ClCompile>
     <ClCompile Include="PRRE\Render\PRRERendererSWincremental.cpp">
       <Filter>Source Files\PRRE\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREObject3D.cpp">
-      <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\Hardware\PRREhwAudio.cpp">
       <Filter>Source Files\PRRE\Hardware</Filter>
@@ -376,6 +376,12 @@
     </ClCompile>
     <ClCompile Include="PRRE\Material\PRRETextureManager.cpp">
       <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Object3D\PRREObject3D.cpp">
+      <Filter>Source Files\PRRE\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Object3D\PRREObject3DManager.cpp">
+      <Filter>Source Files\PRRE\Object3D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
