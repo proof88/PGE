@@ -198,6 +198,9 @@
     <ClInclude Include="PGEWorld.h" />
     <ClInclude Include="PGEWorldTime.h" />
     <ClInclude Include="PGEWorldWeather.h" />
+    <ClInclude Include="PRRE\Display\PRREScreen.h" />
+    <ClInclude Include="PRRE\Display\PRRESharedSettings.h" />
+    <ClInclude Include="PRRE\Display\PRREWindow.h" />
     <ClInclude Include="PRRE\Hardware\PRREhwAudio.h" />
     <ClInclude Include="PRRE\Hardware\PRREhwBase.h" />
     <ClInclude Include="PRRE\Hardware\PRREhwCentralProcessor.h" />
@@ -233,14 +236,11 @@
     <ClInclude Include="PRRE\PRREpragmas.h" />
     <ClInclude Include="PRRE\Render\PRREIRenderer.h" />
     <ClInclude Include="PRRE\Render\PRRERendererSWincremental.h" />
-    <ClInclude Include="PRRE\PRREScreen.h" />
-    <ClInclude Include="PRRE\PRRESharedSettings.h" />
     <ClInclude Include="PRRE\PRRETextureManager.h" />
     <ClInclude Include="PRRE\PRREtypes.h" />
     <ClInclude Include="PRRE\PRREuiFontWin.h" />
     <ClInclude Include="PRRE\PRREuiManager.h" />
     <ClInclude Include="PRRE\PRREuiText.h" />
-    <ClInclude Include="PRRE\PRREWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp" />
@@ -253,6 +253,9 @@
     <ClCompile Include="PGEWorld.cpp" />
     <ClCompile Include="PGEWorldTime.cpp" />
     <ClCompile Include="PGEWorldWeather.cpp" />
+    <ClCompile Include="PRRE\Display\PRREScreen.cpp" />
+    <ClCompile Include="PRRE\Display\PRRESharedSettings.cpp" />
+    <ClCompile Include="PRRE\Display\PRREWindow.cpp" />
     <ClCompile Include="PRRE\Hardware\PRREhwAudio.cpp" />
     <ClCompile Include="PRRE\Hardware\PRREhwBase.cpp" />
     <ClCompile Include="PRRE\Hardware\PRREhwCentralProcessor.cpp" />
@@ -297,13 +300,10 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="PRRE\PRREScreen.cpp" />
-    <ClCompile Include="PRRE\PRRESharedSettings.cpp" />
     <ClCompile Include="PRRE\PRRETextureManager.cpp" />
     <ClCompile Include="PRRE\PRREuiFontWin.cpp" />
     <ClCompile Include="PRRE\PRREuiManager.cpp" />
     <ClCompile Include="PRRE\PRREuiText.cpp" />
-    <ClCompile Include="PRRE\PRREWindow.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

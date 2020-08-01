@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../../../PGE/PGE/PRRE/PRREImageManager.h"
+#include "../PRRE/PRREImageManager.h"
 
 #ifndef E
 #define E 0.0001f

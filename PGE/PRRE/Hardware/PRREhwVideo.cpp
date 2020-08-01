@@ -14,7 +14,7 @@
 #include "PRREhwVideo.h"
 #include "../PRREGLsnippets.h"
 #include "../PRREGLextensionFuncs.h"
-#include "../PRRESharedSettings.h"
+#include "../Display/PRRESharedSettings.h"
 
 using namespace std;
 

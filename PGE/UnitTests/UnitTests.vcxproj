@@ -191,6 +191,9 @@
     <ClInclude Include="..\PGEWorld.h" />
     <ClInclude Include="..\PGEWorldTime.h" />
     <ClInclude Include="..\PGEWorldWeather.h" />
+    <ClInclude Include="..\PRRE\Display\PRREScreen.h" />
+    <ClInclude Include="..\PRRE\Display\PRRESharedSettings.h" />
+    <ClInclude Include="..\PRRE\Display\PRREWindow.h" />
     <ClInclude Include="..\PRRE\Hardware\PRREhwAudio.h" />
     <ClInclude Include="..\PRRE\Hardware\PRREhwBase.h" />
     <ClInclude Include="..\PRRE\Hardware\PRREhwCentralProcessor.h" />
@@ -212,13 +215,10 @@
     <ClInclude Include="..\PRRE\PRREManager.h" />
     <ClInclude Include="..\PRRE\PRREMaterialManager.h" />
     <ClInclude Include="..\PRRE\PRREObject3DManager.h" />
-    <ClInclude Include="..\PRRE\PRREScreen.h" />
-    <ClInclude Include="..\PRRE\PRRESharedSettings.h" />
     <ClInclude Include="..\PRRE\PRRETextureManager.h" />
     <ClInclude Include="..\PRRE\PRREtypes.h" />
     <ClInclude Include="..\PRRE\PRREuiManager.h" />
     <ClInclude Include="..\PRRE\PRREuiText.h" />
-    <ClInclude Include="..\PRRE\PRREWindow.h" />
     <ClInclude Include="PFLTest.h" />
     <ClInclude Include="PGEcfgVariableTest.h" />
     <ClInclude Include="PGESysCFGTest.h" />

@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../../../PGE/PGE/PRRE/PR00FsReducedRenderingEngine.h"
+#include "../PRRE/PR00FsReducedRenderingEngine.h"
 
 class PR00FsReducedRenderingEngineTest :
     public UnitTest

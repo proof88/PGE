@@ -10,9 +10,9 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../../../PGE/PGE/PGEallHeaders.h"
-#include "../../../PGE/PGE/PRRE/PRRETextureManager.h"
-#include "../../../PGE/PGE/PRRE/PR00FsReducedRenderingEngine.h"
+#include "../PGEallHeaders.h"
+#include "../PRRE/PRRETextureManager.h"
+#include "../PRRE/PR00FsReducedRenderingEngine.h"
 
 #ifndef E
 #define E 0.0001f

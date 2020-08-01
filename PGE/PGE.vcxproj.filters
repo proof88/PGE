@@ -43,6 +43,12 @@
     <Filter Include="Header Files\PRRE\Math">
       <UniqueIdentifier>{e7a9dd7e-d7fe-4110-b954-6196c5c7cd9e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PRRE\Display">
+      <UniqueIdentifier>{824329f4-fa36-4e6c-8da6-2a6f294dcfe0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PRRE\Display">
+      <UniqueIdentifier>{b0958693-d94e-4333-9c51-a73234b962d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGE.h">
@@ -105,19 +111,10 @@
     <ClInclude Include="PRRE\PRREpragmas.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\PRREScreen.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRRESharedSettings.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="PRRE\PRRETextureManager.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PRRE\PRREtypes.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREWindow.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PGEInputHandler.h">
@@ -225,6 +222,15 @@
     <ClInclude Include="PRRE\Math\PUREScissor.h">
       <Filter>Header Files\PRRE\Math</Filter>
     </ClInclude>
+    <ClInclude Include="PRRE\Display\PRREScreen.h">
+      <Filter>Header Files\PRRE\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Display\PRRESharedSettings.h">
+      <Filter>Header Files\PRRE\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Display\PRREWindow.h">
+      <Filter>Header Files\PRRE\Display</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -241,9 +247,6 @@
     </ClCompile>
     <ClCompile Include="PGESysSFX.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREWindow.cpp">
-      <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\PRRETextureManager.cpp">
       <Filter>Source Files\PRRE</Filter>
@@ -294,12 +297,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\PRREColor.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREScreen.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRRESharedSettings.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\PRREuiFontWin.cpp">
@@ -364,6 +361,15 @@
     </ClCompile>
     <ClCompile Include="PRRE\Math\PUREScissor.cpp">
       <Filter>Source Files\PRRE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Display\PRREScreen.cpp">
+      <Filter>Source Files\PRRE\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Display\PRRESharedSettings.cpp">
+      <Filter>Source Files\PRRE\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Display\PRREWindow.cpp">
+      <Filter>Source Files\PRRE\Display</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

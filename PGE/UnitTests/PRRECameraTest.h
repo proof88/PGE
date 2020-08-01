@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../../../PGE/PGE/PRRE/PRRECamera.h"
+#include "../PRRE/PRRECamera.h"
 #include "../PRRE/Math/PRREMatrix.h"
 
 #ifndef E2

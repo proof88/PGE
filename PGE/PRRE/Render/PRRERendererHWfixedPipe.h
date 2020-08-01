@@ -12,8 +12,8 @@
 */
 
 #include "PRREIRenderer.h"
-#include "../PRREScreen.h"
-#include "../PRREWindow.h"
+#include "../Display/PRREScreen.h"
+#include "../Display/PRREWindow.h"
 #include "../Hardware/PRREhwInfo.h"
 
 /**

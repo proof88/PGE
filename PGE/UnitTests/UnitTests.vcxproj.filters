@@ -31,6 +31,9 @@
     <Filter Include="Header Files\PGE\PRRE\Math">
       <UniqueIdentifier>{edc024e1-949d-4697-bb4e-828a352fcfae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PGE\PRRE\Display">
+      <UniqueIdentifier>{cf6a6be9-8486-4a86-9dc0-28eb26835fa2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PR00FsReducedRenderingEngineTest.h">
@@ -108,16 +111,10 @@
     <ClInclude Include="..\PRRE\PRREObject3DManager.h">
       <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
-    <ClInclude Include="..\PRRE\PRREScreen.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="..\PRRE\PRRETextureManager.h">
       <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="..\PRRE\PRREtypes.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\PRREWindow.h">
       <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PRREWindowTest.h">
@@ -179,9 +176,6 @@
     </ClInclude>
     <ClInclude Include="UnitTest.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\PRRESharedSettings.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="..\PRRE\PRREallHeaders.h">
       <Filter>Header Files\PGE\PRRE</Filter>
@@ -251,6 +245,15 @@
     </ClInclude>
     <ClInclude Include="..\PRRE\Math\PUREScissor.h">
       <Filter>Header Files\PGE\PRRE\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\Display\PRREScreen.h">
+      <Filter>Header Files\PGE\PRRE\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\Display\PRRESharedSettings.h">
+      <Filter>Header Files\PGE\PRRE\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\Display\PRREWindow.h">
+      <Filter>Header Files\PGE\PRRE\Display</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

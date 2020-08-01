@@ -13,7 +13,7 @@
 #include "PRREpragmas.h"
 #include "PR00FsReducedRenderingEngine.h"
 #include "PRREBaseClass.h"
-#include "PRRESharedSettings.h"
+#include "Display/PRRESharedSettings.h"
 #include "PRREGLsnippets.h"
 #include "PRREGLextensionFuncs.h"
 #include "Render/PRRERendererHWfixedPipe.h"

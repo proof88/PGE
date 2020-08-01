@@ -12,8 +12,8 @@
 #include "PRREbaseIncludes.h"
 #include "PGEpragmas.h"
 #include "PGE.h"
-#include "PRRE/PRREWindow.h"
-#include "PRRE/PRREScreen.h"
+#include "PRRE/Display/PRREWindow.h"
+#include "PRRE/Display/PRREScreen.h"
 #include "PGEincludes.h"
 // Subsystems
 #include "PGESysGFX.h"
