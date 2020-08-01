@@ -12,7 +12,7 @@
 #include "PGEpragmas.h"
 #include "PGEWorldWeather.h"
 #include "PGEincludes.h"
-#include "PRRE/PRREVector.h"
+#include "PRRE/Math/PRREVector.h"
 
 using namespace std;
 

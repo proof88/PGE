@@ -13,8 +13,6 @@
 
 #include "PGEallHeaders.h"
 #include "PRRE/PR00FsReducedRenderingEngine.h"
-#include "PRRE/PRREVector.h"
-#include "PRRE/PRREMatrix.h"
 // #include "PURE/PURE.h"
 
 /**

@@ -85,6 +85,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PRREPosUpTargetTest        testPosUpTarget;
     PRREMatrixTest             testPRREMatrix;
     PRRETransformMatrixTest    testPRRETransformMatrix;
+    PRREScissorTest            testPRREScissor;
     PRREColorTest              testPRREColor;
     PRREBaseClassTest          testPRREBaseClass;
     PRREManagerTest            testPRREManager;
@@ -108,7 +109,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PRREObject3DTest           testPRREObject3D;
     PRREWindowTest             testPRREWindow;
     PRREWindowTest2            testPRREWindow2;
-    PRREScissorTest            testPRREScissor;
+    
     PR00FsReducedRenderingEngineTest  testPRRE;
     PR00FsReducedRenderingEngineTest2 testPRRE2;
     
@@ -129,7 +130,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREVector);  
     tests.push_back(&testPRREMatrix);  
     tests.push_back(&testPRRETransformMatrix);
-
+    tests.push_back(&testPRREScissor);
     
     tests.push_back(&testPRREColor);
     /*
@@ -146,24 +147,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREhwVideo); 
     
 
-    /*     */
+    /*     
     tests.push_back(&testPRREImageManager);
     tests.push_back(&testPRREImage);
     tests.push_back(&testPRRETextureManager);
     tests.push_back(&testPRRETexture);   
     tests.push_back(&testPRREMaterialManager);
     tests.push_back(&testPRREMaterial);
-    
     tests.push_back(&testPRRECamera);
-
     tests.push_back(&testPRREObject3DManager);
     tests.push_back(&testPRREObject3D);
+    */
 
     /* 
     tests.push_back(&testPRREWindow);
     tests.push_back(&testPRREWindow2);
-    
-    tests.push_back(&testPRREScissor);
     */
 
     /* 

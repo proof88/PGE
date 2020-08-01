@@ -9,7 +9,7 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
-#include "PRREpragmas.h"
+#include "../PRREpragmas.h"
 #include "PRREPosUpTarget.h"
 #include "PRRETransformMatrix.h"
 

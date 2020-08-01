@@ -17,7 +17,7 @@
 #include "PRREFiledManager.h"
 #include "PRRETextureManager.h"
 #include "PRREMaterialManager.h"
-#include "PRREVector.h"
+#include "Math/PRREVector.h"
 
 
 /**

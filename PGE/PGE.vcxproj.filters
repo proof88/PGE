@@ -37,6 +37,12 @@
     <Filter Include="Header Files\PRRE\Hardware">
       <UniqueIdentifier>{1010c20d-8e7c-4261-9db9-7e293ba50aa8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\PRRE\Math">
+      <UniqueIdentifier>{1dae44e2-944c-4368-9a7c-5424335f1f87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\Math">
+      <UniqueIdentifier>{e7a9dd7e-d7fe-4110-b954-6196c5c7cd9e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGE.h">
@@ -93,9 +99,6 @@
     <ClInclude Include="PRRE\PRREManager.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\PRREMatrix.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="PRRE\PRREObject3DManager.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
@@ -112,9 +115,6 @@
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PRRE\PRREtypes.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREVector.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PRRE\PRREWindow.h">
@@ -174,20 +174,11 @@
     <ClInclude Include="PRRE\Render\PRREIRenderable.h">
       <Filter>Header Files\PRRE\Render</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\PUREScissor.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\PFL\PFL\PFL.h">
       <Filter>Header Files\PFL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\CConsole\CConsole\src\CConsole.h">
       <Filter>Header Files\CConsole</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREPosUpTarget.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRRETransformMatrix.h">
-      <Filter>Header Files\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PRRE\PRRETextureImpl.h">
       <Filter>Header Files\PRRE</Filter>
@@ -219,6 +210,21 @@
     <ClInclude Include="PRRE\Hardware\PRREhwVideo.h">
       <Filter>Header Files\PRRE\Hardware</Filter>
     </ClInclude>
+    <ClInclude Include="PRRE\Math\PRREMatrix.h">
+      <Filter>Header Files\PRRE\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Math\PRREPosUpTarget.h">
+      <Filter>Header Files\PRRE\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Math\PRRETransformMatrix.h">
+      <Filter>Header Files\PRRE\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Math\PRREVector.h">
+      <Filter>Header Files\PRRE\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Math\PUREScissor.h">
+      <Filter>Header Files\PRRE\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -239,16 +245,10 @@
     <ClCompile Include="PRRE\PRREWindow.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
-    <ClCompile Include="PRRE\PRREVector.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
     <ClCompile Include="PRRE\PRRETextureManager.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\PRREObject3DManager.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREMatrix.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\PRREManager.cpp">
@@ -320,15 +320,6 @@
     <ClCompile Include="PRRE\Render\PRRERendererSWincremental.cpp">
       <Filter>Source Files\PRRE\Render</Filter>
     </ClCompile>
-    <ClCompile Include="PRRE\PUREScissor.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREPosUpTarget.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRRETransformMatrix.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
     <ClCompile Include="PRRE\PRREImage.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
@@ -358,6 +349,21 @@
     </ClCompile>
     <ClCompile Include="PRRE\Hardware\PRREhwVideo.cpp">
       <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Math\PRREMatrix.cpp">
+      <Filter>Source Files\PRRE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Math\PRREPosUpTarget.cpp">
+      <Filter>Source Files\PRRE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Math\PRRETransformMatrix.cpp">
+      <Filter>Source Files\PRRE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Math\PRREVector.cpp">
+      <Filter>Source Files\PRRE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Math\PUREScissor.cpp">
+      <Filter>Source Files\PRRE\Math</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

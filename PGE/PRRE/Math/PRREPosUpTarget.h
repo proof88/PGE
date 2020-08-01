@@ -12,8 +12,8 @@
 */
 
 
-#include "PRREallHeaders.h"
-#include "PRREtypes.h"
+#include "../PRREallHeaders.h"
+#include "../PRREtypes.h"
 #include "PRREVector.h"
 #include <sstream>
 

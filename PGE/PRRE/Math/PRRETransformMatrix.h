@@ -11,8 +11,8 @@
     ###################################################################################
 */
 
-#include "PRREallHeaders.h"
-#include "PRREtypes.h"
+#include "../PRREallHeaders.h"
+#include "../PRREtypes.h"
 #include "PRREMatrix.h"
 
 /**

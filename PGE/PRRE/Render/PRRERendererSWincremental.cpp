@@ -12,11 +12,11 @@
 #include "../PRREpragmas.h"
 #include "PRRERendererSWincremental.h"
 #include "PRREIIncrementalRenderPipeline.h"
-#include "../PRREVector.h"
-#include "../PRRETransformMatrix.h"
+#include "../Math/PRREVector.h"
+#include "../Math/PRRETransformMatrix.h"
 #include "../PRREGLsnippets.h"
 #include "../PRREObject3DManager.h"
-#include "../PUREScissor.h"
+#include "../Math/PUREScissor.h"
 #include "../../../../PFL/PFL/PFL.h"
 
 using namespace std;

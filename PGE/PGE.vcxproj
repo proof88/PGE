@@ -204,13 +204,15 @@
     <ClInclude Include="PRRE\Hardware\PRREhwInfo.h" />
     <ClInclude Include="PRRE\Hardware\PRREhwSystemMemory.h" />
     <ClInclude Include="PRRE\Hardware\PRREhwVideo.h" />
+    <ClInclude Include="PRRE\Math\PRREMatrix.h" />
+    <ClInclude Include="PRRE\Math\PRREPosUpTarget.h" />
+    <ClInclude Include="PRRE\Math\PRRETransformMatrix.h" />
+    <ClInclude Include="PRRE\Math\PRREVector.h" />
+    <ClInclude Include="PRRE\Math\PUREScissor.h" />
     <ClInclude Include="PRRE\PRREImageImpl.h" />
     <ClInclude Include="PRRE\PRREMaterialImpl.h" />
     <ClInclude Include="PRRE\PRREObject3DImpl.h" />
-    <ClInclude Include="PRRE\PRREPosUpTarget.h" />
     <ClInclude Include="PRRE\PRRETextureImpl.h" />
-    <ClInclude Include="PRRE\PRRETransformMatrix.h" />
-    <ClInclude Include="PRRE\PUREScissor.h" />
     <ClInclude Include="PRRE\Render\PRREIIncrementalRenderPipeline.h" />
     <ClInclude Include="PRRE\PR00FsReducedRenderingEngine.h" />
     <ClInclude Include="PRRE\PRREallHeaders.h" />
@@ -227,7 +229,6 @@
     <ClInclude Include="PRRE\PRREImageManager.h" />
     <ClInclude Include="PRRE\PRREManager.h" />
     <ClInclude Include="PRRE\PRREMaterialManager.h" />
-    <ClInclude Include="PRRE\PRREMatrix.h" />
     <ClInclude Include="PRRE\PRREObject3DManager.h" />
     <ClInclude Include="PRRE\PRREpragmas.h" />
     <ClInclude Include="PRRE\Render\PRREIRenderer.h" />
@@ -239,7 +240,6 @@
     <ClInclude Include="PRRE\PRREuiFontWin.h" />
     <ClInclude Include="PRRE\PRREuiManager.h" />
     <ClInclude Include="PRRE\PRREuiText.h" />
-    <ClInclude Include="PRRE\PRREVector.h" />
     <ClInclude Include="PRRE\PRREWindow.h" />
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +259,11 @@
     <ClCompile Include="PRRE\Hardware\PRREhwInfo.cpp" />
     <ClCompile Include="PRRE\Hardware\PRREhwSystemMemory.cpp" />
     <ClCompile Include="PRRE\Hardware\PRREhwVideo.cpp" />
+    <ClCompile Include="PRRE\Math\PRREMatrix.cpp" />
+    <ClCompile Include="PRRE\Math\PRREPosUpTarget.cpp" />
+    <ClCompile Include="PRRE\Math\PRRETransformMatrix.cpp" />
+    <ClCompile Include="PRRE\Math\PRREVector.cpp" />
+    <ClCompile Include="PRRE\Math\PUREScissor.cpp" />
     <ClCompile Include="PRRE\PR00FsReducedRenderingEngine.cpp" />
     <ClCompile Include="PRRE\PRREBaseClass.cpp" />
     <ClCompile Include="PRRE\PRREbaseIncludes.cpp">
@@ -275,10 +280,7 @@
     <ClCompile Include="PRRE\PRREImage.cpp" />
     <ClCompile Include="PRRE\PRREMaterial.cpp" />
     <ClCompile Include="PRRE\PRREObject3D.cpp" />
-    <ClCompile Include="PRRE\PRREPosUpTarget.cpp" />
     <ClCompile Include="PRRE\PRRETexture.cpp" />
-    <ClCompile Include="PRRE\PRRETransformMatrix.cpp" />
-    <ClCompile Include="PRRE\PUREScissor.cpp" />
     <ClCompile Include="PRRE\Render\PRRERendererHWfixedPipe.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
@@ -288,7 +290,6 @@
     <ClCompile Include="PRRE\PRREImageManager.cpp" />
     <ClCompile Include="PRRE\PRREManager.cpp" />
     <ClCompile Include="PRRE\PRREMaterialManager.cpp" />
-    <ClCompile Include="PRRE\PRREMatrix.cpp" />
     <ClCompile Include="PRRE\PRREObject3DManager.cpp" />
     <ClCompile Include="PRRE\Render\PRRERendererSWincremental.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
@@ -302,7 +303,6 @@
     <ClCompile Include="PRRE\PRREuiFontWin.cpp" />
     <ClCompile Include="PRRE\PRREuiManager.cpp" />
     <ClCompile Include="PRRE\PRREuiText.cpp" />
-    <ClCompile Include="PRRE\PRREVector.cpp" />
     <ClCompile Include="PRRE\PRREWindow.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

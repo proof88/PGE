@@ -13,8 +13,8 @@
 
 #include "PRREallHeaders.h"
 #include "PRREBaseClass.h"
-#include "PRREVector.h"
-#include "PRREPosUpTarget.h"
+#include "Math/PRREVector.h"
+#include "Math/PRREPosUpTarget.h"
 #include "PRREColor.h"
 
 

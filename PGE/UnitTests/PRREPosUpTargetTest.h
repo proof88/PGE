@@ -10,8 +10,8 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../../../PGE/PGE/PRRE/PRREPosUpTarget.h"
-#include "../../../PGE/PGE/PRRE/PRRETransformMatrix.h"
+#include "../PRRE/Math/PRREPosUpTarget.h"
+#include "../PRRE/Math/PRRETransformMatrix.h"
 
 #ifndef E2
 #define E2 0.005f

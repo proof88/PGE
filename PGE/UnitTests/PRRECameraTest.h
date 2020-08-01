@@ -11,7 +11,7 @@
 
 #include "UnitTest.h"  // PCH
 #include "../../../PGE/PGE/PRRE/PRRECamera.h"
-#include "../../../PGE/PGE/PRRE/PRREMatrix.h"
+#include "../PRRE/Math/PRREMatrix.h"
 
 #ifndef E2
 #define E2 0.005f

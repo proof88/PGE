@@ -11,8 +11,8 @@
 #include "../PRREbaseIncludes.h"  // PCH
 #include "../PRREpragmas.h"
 #include "PRRERendererHWfixedPipe.h"
-#include "../PRREVector.h"
-#include "../PRRETransformMatrix.h"
+#include "../Math/PRREVector.h"
+#include "../Math/PRRETransformMatrix.h"
 #include "../PRREGLsnippets.h"
 #include "../PRREGLextensionFuncs.h"
 #include "../PRREObject3DManager.h"
