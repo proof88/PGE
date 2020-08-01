@@ -25,6 +25,9 @@
     <Filter Include="Header Files\PFL">
       <UniqueIdentifier>{463a06f9-cffb-4c37-baa4-b141edf7c4bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PGE\PRRE\Hardware">
+      <UniqueIdentifier>{1e2455aa-9b57-4643-b32b-51848e39c2fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PR00FsReducedRenderingEngineTest.h">
@@ -147,26 +150,11 @@
     <ClInclude Include="PRREhwVideoTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\PRRE\PRREhwAudio.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\PRREhwCentralProcessor.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\PRREhwSystemMemory.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\PRREhwVideo.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="PRREhwCentralProcessorTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PRREhwSystemMemoryTest.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\PRREhwInfo.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PGESysCFGTest.h">
       <Filter>Header Files</Filter>
@@ -236,6 +224,21 @@
     </ClInclude>
     <ClInclude Include="PRRETransformMatrixTest.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\PRREhwAudio.h">
+      <Filter>Header Files\PGE\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\PRREhwCentralProcessor.h">
+      <Filter>Header Files\PGE\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\PRREhwInfo.h">
+      <Filter>Header Files\PGE\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\PRREhwSystemMemory.h">
+      <Filter>Header Files\PGE\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\PRREhwVideo.h">
+      <Filter>Header Files\PGE\PRRE\Hardware</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

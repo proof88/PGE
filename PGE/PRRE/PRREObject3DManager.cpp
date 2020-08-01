@@ -14,7 +14,7 @@
 #include "PRREObject3DImpl.h"
 #include "PRREGLextensionFuncs.h"
 #include "PRREGLsnippets.h"
-#include "PRREhwInfo.h"
+#include "Hardware/PRREhwInfo.h"
 
 using namespace std;
 

@@ -12,7 +12,7 @@
 #include "PRREpragmas.h"
 #include "PRREImageManager.h"
 #include "PRREImageImpl.h"
-#include "PRREhwInfo.h"
+#include "Hardware/PRREhwInfo.h"
 
 using namespace std;
 

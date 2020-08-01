@@ -198,6 +198,12 @@
     <ClInclude Include="PGEWorld.h" />
     <ClInclude Include="PGEWorldTime.h" />
     <ClInclude Include="PGEWorldWeather.h" />
+    <ClInclude Include="PRRE\Hardware\PRREhwAudio.h" />
+    <ClInclude Include="PRRE\Hardware\PRREhwBase.h" />
+    <ClInclude Include="PRRE\Hardware\PRREhwCentralProcessor.h" />
+    <ClInclude Include="PRRE\Hardware\PRREhwInfo.h" />
+    <ClInclude Include="PRRE\Hardware\PRREhwSystemMemory.h" />
+    <ClInclude Include="PRRE\Hardware\PRREhwVideo.h" />
     <ClInclude Include="PRRE\PRREImageImpl.h" />
     <ClInclude Include="PRRE\PRREMaterialImpl.h" />
     <ClInclude Include="PRRE\PRREObject3DImpl.h" />
@@ -216,14 +222,8 @@
     <ClInclude Include="PRRE\PRREFiledManager.h" />
     <ClInclude Include="PRRE\PRREGLextensionFuncs.h" />
     <ClInclude Include="PRRE\PRREGLsnippets.h" />
-    <ClInclude Include="PRRE\PRREhwAudio.h" />
-    <ClInclude Include="PRRE\PRREhwBase.h" />
-    <ClInclude Include="PRRE\PRREhwCentralProcessor.h" />
     <ClInclude Include="PRRE\Render\PRREIRenderable.h" />
     <ClInclude Include="PRRE\Render\PRRERendererHWfixedPipe.h" />
-    <ClInclude Include="PRRE\PRREhwInfo.h" />
-    <ClInclude Include="PRRE\PRREhwSystemMemory.h" />
-    <ClInclude Include="PRRE\PRREhwVideo.h" />
     <ClInclude Include="PRRE\PRREImageManager.h" />
     <ClInclude Include="PRRE\PRREManager.h" />
     <ClInclude Include="PRRE\PRREMaterialManager.h" />
@@ -253,6 +253,12 @@
     <ClCompile Include="PGEWorld.cpp" />
     <ClCompile Include="PGEWorldTime.cpp" />
     <ClCompile Include="PGEWorldWeather.cpp" />
+    <ClCompile Include="PRRE\Hardware\PRREhwAudio.cpp" />
+    <ClCompile Include="PRRE\Hardware\PRREhwBase.cpp" />
+    <ClCompile Include="PRRE\Hardware\PRREhwCentralProcessor.cpp" />
+    <ClCompile Include="PRRE\Hardware\PRREhwInfo.cpp" />
+    <ClCompile Include="PRRE\Hardware\PRREhwSystemMemory.cpp" />
+    <ClCompile Include="PRRE\Hardware\PRREhwVideo.cpp" />
     <ClCompile Include="PRRE\PR00FsReducedRenderingEngine.cpp" />
     <ClCompile Include="PRRE\PRREBaseClass.cpp" />
     <ClCompile Include="PRRE\PRREbaseIncludes.cpp">
@@ -266,9 +272,6 @@
     <ClCompile Include="PRRE\PRREFiledManager.cpp" />
     <ClCompile Include="PRRE\PRREGLextensionFuncs.cpp" />
     <ClCompile Include="PRRE\PRREGLsnippets.cpp" />
-    <ClCompile Include="PRRE\PRREhwAudio.cpp" />
-    <ClCompile Include="PRRE\PRREhwBase.cpp" />
-    <ClCompile Include="PRRE\PRREhwCentralProcessor.cpp" />
     <ClCompile Include="PRRE\PRREImage.cpp" />
     <ClCompile Include="PRRE\PRREMaterial.cpp" />
     <ClCompile Include="PRRE\PRREObject3D.cpp" />
@@ -282,9 +285,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="PRRE\PRREhwInfo.cpp" />
-    <ClCompile Include="PRRE\PRREhwSystemMemory.cpp" />
-    <ClCompile Include="PRRE\PRREhwVideo.cpp" />
     <ClCompile Include="PRRE\PRREImageManager.cpp" />
     <ClCompile Include="PRRE\PRREManager.cpp" />
     <ClCompile Include="PRRE\PRREMaterialManager.cpp" />

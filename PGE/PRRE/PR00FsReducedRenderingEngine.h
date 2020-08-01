@@ -16,7 +16,7 @@
 #include "PRREBaseClass.h"
 #include "PRREScreen.h"
 #include "PRREWindow.h"
-#include "PRREhwInfo.h"
+#include "Hardware/PRREhwInfo.h"
 #include "PRREImageManager.h"
 #include "PRRETextureManager.h"
 #include "PRREMaterialManager.h"

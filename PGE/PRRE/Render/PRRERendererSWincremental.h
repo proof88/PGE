@@ -14,7 +14,7 @@
 #include "PRREIRenderer.h"
 #include "../PRREScreen.h"
 #include "../PRREWindow.h"
-#include "../PRREhwInfo.h"
+#include "../Hardware/PRREhwInfo.h"
 
 /**
     Incremental software renderer path.

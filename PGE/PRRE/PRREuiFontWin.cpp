@@ -13,7 +13,7 @@
 #include "PRREbaseIncludes.h"  // PCH
 #include "PRREpragmas.h"
 #include "PRREuiFontWin.h"
-#include "PRREhwInfo.h"
+#include "Hardware/PRREhwInfo.h"
 
 
 // ############################### PUBLIC ################################

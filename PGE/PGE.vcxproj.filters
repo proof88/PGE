@@ -31,6 +31,12 @@
     <Filter Include="Source Files\PRRE\Render">
       <UniqueIdentifier>{ce068c33-71df-44ad-b814-61716f0005e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\PRRE\Hardware">
+      <UniqueIdentifier>{22a0f45d-d649-403d-9845-f63fd7c65827}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\Hardware">
+      <UniqueIdentifier>{1010c20d-8e7c-4261-9db9-7e293ba50aa8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGE.h">
@@ -120,24 +126,6 @@
     <ClInclude Include="PRRE\PRRECamera.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\PRREhwInfo.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREhwCentralProcessor.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREhwSystemMemory.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREhwVideo.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREhwAudio.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREhwBase.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="PGEcfgVariable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -213,6 +201,24 @@
     <ClInclude Include="PRRE\PRREMaterialImpl.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwAudio.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwBase.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwCentralProcessor.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwInfo.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwSystemMemory.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideo.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -264,24 +270,6 @@
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\PR00FsReducedRenderingEngine.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREhwInfo.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREhwCentralProcessor.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREhwSystemMemory.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREhwVideo.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREhwAudio.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREhwBase.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PGEcfgVariable.cpp">
@@ -352,6 +340,24 @@
     </ClCompile>
     <ClCompile Include="PRRE\PRRETexture.cpp">
       <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Hardware\PRREhwAudio.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Hardware\PRREhwBase.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Hardware\PRREhwCentralProcessor.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Hardware\PRREhwInfo.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Hardware\PRREhwSystemMemory.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Hardware\PRREhwVideo.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

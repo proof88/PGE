@@ -12,7 +12,7 @@
 #include "PRREpragmas.h"
 #include "PRRETextureManager.h"
 #include "PRRETextureImpl.h"
-#include "PRREhwInfo.h"
+#include "Hardware/PRREhwInfo.h"
 #include "PRREGLsnippets.h"
 
 using namespace std;

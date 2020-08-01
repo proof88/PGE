@@ -12,7 +12,7 @@
 #include "PRREpragmas.h"
 #include "PRREMaterialManager.h"
 #include "PRREMaterialImpl.h"
-#include "PRREhwInfo.h"
+#include "Hardware/PRREhwInfo.h"
 
 using namespace std;
 

@@ -138,12 +138,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREManaged);
     tests.push_back(&testPRREFiledManager);
     tests.push_back(&testPRREFiledManaged);
+    */
     tests.push_back(&testPRREhwInfo);
     tests.push_back(&testPRREhwCentralProcessor);
     tests.push_back(&testPRREhwSystemMemory);
     tests.push_back(&testPRREhwAudio);
     tests.push_back(&testPRREhwVideo); 
-    */
+    
 
     /*     */
     tests.push_back(&testPRREImageManager);
@@ -158,11 +159,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREObject3DManager);
     tests.push_back(&testPRREObject3D);
 
-    /* */
+    /* 
     tests.push_back(&testPRREWindow);
     tests.push_back(&testPRREWindow2);
     
     tests.push_back(&testPRREScissor);
+    */
 
     /* 
     tests.push_back(&testPRRE);
