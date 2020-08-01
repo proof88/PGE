@@ -34,6 +34,9 @@
     <Filter Include="Header Files\PGE\PRRE\Display">
       <UniqueIdentifier>{cf6a6be9-8486-4a86-9dc0-28eb26835fa2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PGE\PRRE\Material">
+      <UniqueIdentifier>{12a0fb52-cd97-4623-9cc0-e844fa4f62d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PR00FsReducedRenderingEngineTest.h">
@@ -96,22 +99,13 @@
     <ClInclude Include="..\PRRE\PRREBaseClass.h">
       <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
-    <ClInclude Include="..\PRRE\PRREColor.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="..\PRRE\PRREFiledManager.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\PRREImageManager.h">
       <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="..\PRRE\PRREManager.h">
       <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="..\PRRE\PRREObject3DManager.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\PRRETextureManager.h">
       <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="..\PRRE\PRREtypes.h">
@@ -183,9 +177,6 @@
     <ClInclude Include="..\PGEallHeaders.h">
       <Filter>Header Files\PGE</Filter>
     </ClInclude>
-    <ClInclude Include="..\PRRE\PRREMaterialManager.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="PRREMaterialManagerTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -254,6 +245,18 @@
     </ClInclude>
     <ClInclude Include="..\PRRE\Display\PRREWindow.h">
       <Filter>Header Files\PGE\PRRE\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\Material\PRREColor.h">
+      <Filter>Header Files\PGE\PRRE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\Material\PRREImageManager.h">
+      <Filter>Header Files\PGE\PRRE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\Material\PRREMaterialManager.h">
+      <Filter>Header Files\PGE\PRRE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\Material\PRRETextureManager.h">
+      <Filter>Header Files\PGE\PRRE\Material</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

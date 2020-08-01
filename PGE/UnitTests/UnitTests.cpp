@@ -117,15 +117,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     
     tests.push_back(&testPFL);
-    /* 
+    /*       
     tests.push_back(&testPGEcfgVariable);
     tests.push_back(&testPGESysCFG);
     */
 
-    /*
+    /*    
     tests.push_back(&testScreen);
     tests.push_back(&testSharedSettings);
     */
+    
     tests.push_back(&testPosUpTarget);
     tests.push_back(&testPRREVector);  
     tests.push_back(&testPRREMatrix);  
@@ -145,9 +146,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREhwSystemMemory);
     tests.push_back(&testPRREhwAudio);
     tests.push_back(&testPRREhwVideo); 
-    
 
-    /*     
+    /*  */   
     tests.push_back(&testPRREImageManager);
     tests.push_back(&testPRREImage);
     tests.push_back(&testPRRETextureManager);
@@ -157,9 +157,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRRECamera);
     tests.push_back(&testPRREObject3DManager);
     tests.push_back(&testPRREObject3D);
-    */
 
-    /* 
+    /*  
     tests.push_back(&testPRREWindow);
     tests.push_back(&testPRREWindow2);
     */

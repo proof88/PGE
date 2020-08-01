@@ -49,6 +49,12 @@
     <Filter Include="Source Files\PRRE\Display">
       <UniqueIdentifier>{b0958693-d94e-4333-9c51-a73234b962d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\PRRE\Material">
+      <UniqueIdentifier>{3f4b8d04-d2b0-49b3-93b7-21a3737248c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\Material">
+      <UniqueIdentifier>{fb719b1e-8198-4d03-96bb-c819666c1f46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGE.h">
@@ -84,9 +90,6 @@
     <ClInclude Include="PRRE\PRREbaseIncludes.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\PRREColor.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="PRRE\PRREconsts.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
@@ -99,9 +102,6 @@
     <ClInclude Include="PRRE\PRREGLsnippets.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\PRREImageManager.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="PRRE\PRREManager.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
@@ -109,9 +109,6 @@
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PRRE\PRREpragmas.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRRETextureManager.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PRRE\PRREtypes.h">
@@ -153,9 +150,6 @@
     <ClInclude Include="..\..\g3t\g3t\g3t.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\PRREMaterialManager.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="PRRE\Render\PRREIRenderer.h">
       <Filter>Header Files\PRRE\Render</Filter>
     </ClInclude>
@@ -177,16 +171,7 @@
     <ClInclude Include="..\..\CConsole\CConsole\src\CConsole.h">
       <Filter>Header Files\CConsole</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\PRRETextureImpl.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="PRRE\PRREObject3DImpl.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREImageImpl.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREMaterialImpl.h">
       <Filter>Header Files\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PRRE\Hardware\PRREhwAudio.h">
@@ -231,6 +216,27 @@
     <ClInclude Include="PRRE\Display\PRREWindow.h">
       <Filter>Header Files\PRRE\Display</Filter>
     </ClInclude>
+    <ClInclude Include="PRRE\Material\PRREColor.h">
+      <Filter>Header Files\PRRE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Material\PRREImageImpl.h">
+      <Filter>Header Files\PRRE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Material\PRREImageManager.h">
+      <Filter>Header Files\PRRE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Material\PRREMaterialImpl.h">
+      <Filter>Header Files\PRRE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Material\PRREMaterialManager.h">
+      <Filter>Header Files\PRRE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Material\PRRETextureImpl.h">
+      <Filter>Header Files\PRRE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Material\PRRETextureManager.h">
+      <Filter>Header Files\PRRE\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -248,16 +254,10 @@
     <ClCompile Include="PGESysSFX.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PRRE\PRRETextureManager.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
     <ClCompile Include="PRRE\PRREObject3DManager.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\PRREManager.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREImageManager.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\PRREGLsnippets.cpp">
@@ -296,16 +296,10 @@
     <ClCompile Include="PGEWorld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PRRE\PRREColor.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
     <ClCompile Include="PRRE\PRREuiFontWin.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\PRREuiText.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREMaterialManager.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\PRREbaseIncludes.cpp">
@@ -317,16 +311,7 @@
     <ClCompile Include="PRRE\Render\PRRERendererSWincremental.cpp">
       <Filter>Source Files\PRRE\Render</Filter>
     </ClCompile>
-    <ClCompile Include="PRRE\PRREImage.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREMaterial.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
     <ClCompile Include="PRRE\PRREObject3D.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRRETexture.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\Hardware\PRREhwAudio.cpp">
@@ -370,6 +355,27 @@
     </ClCompile>
     <ClCompile Include="PRRE\Display\PRREWindow.cpp">
       <Filter>Source Files\PRRE\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Material\PRREColor.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Material\PRREImage.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Material\PRREImageManager.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Material\PRREMaterial.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Material\PRREMaterialManager.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Material\PRRETexture.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Material\PRRETextureManager.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

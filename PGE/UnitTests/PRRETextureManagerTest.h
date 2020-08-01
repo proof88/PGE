@@ -11,7 +11,7 @@
 
 #include "UnitTest.h"  // PCH
 #include "../PGEallHeaders.h"
-#include "../PRRE/PRRETextureManager.h"
+#include "../PRRE/Material/PRRETextureManager.h"
 #include "../PRRE/PR00FsReducedRenderingEngine.h"
 
 #ifndef E

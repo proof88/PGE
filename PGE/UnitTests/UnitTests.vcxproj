@@ -200,6 +200,10 @@
     <ClInclude Include="..\PRRE\Hardware\PRREhwInfo.h" />
     <ClInclude Include="..\PRRE\Hardware\PRREhwSystemMemory.h" />
     <ClInclude Include="..\PRRE\Hardware\PRREhwVideo.h" />
+    <ClInclude Include="..\PRRE\Material\PRREColor.h" />
+    <ClInclude Include="..\PRRE\Material\PRREImageManager.h" />
+    <ClInclude Include="..\PRRE\Material\PRREMaterialManager.h" />
+    <ClInclude Include="..\PRRE\Material\PRRETextureManager.h" />
     <ClInclude Include="..\PRRE\Math\PRREMatrix.h" />
     <ClInclude Include="..\PRRE\Math\PRREPosUpTarget.h" />
     <ClInclude Include="..\PRRE\Math\PRRETransformMatrix.h" />
@@ -209,13 +213,9 @@
     <ClInclude Include="..\PRRE\PRREallHeaders.h" />
     <ClInclude Include="..\PRRE\PRREBaseClass.h" />
     <ClInclude Include="..\PRRE\PRRECamera.h" />
-    <ClInclude Include="..\PRRE\PRREColor.h" />
     <ClInclude Include="..\PRRE\PRREFiledManager.h" />
-    <ClInclude Include="..\PRRE\PRREImageManager.h" />
     <ClInclude Include="..\PRRE\PRREManager.h" />
-    <ClInclude Include="..\PRRE\PRREMaterialManager.h" />
     <ClInclude Include="..\PRRE\PRREObject3DManager.h" />
-    <ClInclude Include="..\PRRE\PRRETextureManager.h" />
     <ClInclude Include="..\PRRE\PRREtypes.h" />
     <ClInclude Include="..\PRRE\PRREuiManager.h" />
     <ClInclude Include="..\PRRE\PRREuiText.h" />

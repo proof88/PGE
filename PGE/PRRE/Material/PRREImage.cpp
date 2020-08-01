@@ -9,10 +9,10 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
-#include "PRREpragmas.h"
+#include "../PRREpragmas.h"
 #include "PRREImageManager.h"
 #include "PRREImageImpl.h"
-#include "Hardware/PRREhwInfo.h"
+#include "../Hardware/PRREhwInfo.h"
 
 using namespace std;
 

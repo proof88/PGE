@@ -15,8 +15,8 @@
 #include "PRREallHeaders.h"
 #include "../../../PFL/PFL/PFL.h"
 #include "PRREFiledManager.h"
-#include "PRRETextureManager.h"
-#include "PRREMaterialManager.h"
+#include "Material/PRRETextureManager.h"
+#include "Material/PRREMaterialManager.h"
 #include "Math/PRREVector.h"
 
 

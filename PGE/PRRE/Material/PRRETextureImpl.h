@@ -11,7 +11,7 @@
     ###################################################################################
 */
 
-#include "PRREallHeaders.h"
+#include "../PRREallHeaders.h"
 #include "PRRETextureManager.h"
 #include "gl/gl.h"  // for GLenum and similar, which should be removed from here soon ...
 
