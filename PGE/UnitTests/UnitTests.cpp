@@ -127,27 +127,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testSharedSettings);
     */
     
+    /* */
     tests.push_back(&testPosUpTarget);
     tests.push_back(&testPRREVector);  
     tests.push_back(&testPRREMatrix);  
     tests.push_back(&testPRRETransformMatrix);
     tests.push_back(&testPRREScissor);
     
+    /* */
     tests.push_back(&testPRREColor);
-    /*
     tests.push_back(&testPRREBaseClass);
     tests.push_back(&testPRREManager);
     tests.push_back(&testPRREManaged);
     tests.push_back(&testPRREFiledManager);
     tests.push_back(&testPRREFiledManaged);
-    */
+    
     tests.push_back(&testPRREhwInfo);
     tests.push_back(&testPRREhwCentralProcessor);
     tests.push_back(&testPRREhwSystemMemory);
     tests.push_back(&testPRREhwAudio);
     tests.push_back(&testPRREhwVideo); 
 
-    /*  */   
+    /* */   
     tests.push_back(&testPRREImageManager);
     tests.push_back(&testPRREImage);
     tests.push_back(&testPRRETextureManager);

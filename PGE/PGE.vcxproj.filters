@@ -243,6 +243,54 @@
     <ClInclude Include="PRRE\Object3D\PRREObject3DManager.h">
       <Filter>Header Files\PRRE\Object3D</Filter>
     </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGLbase.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_1.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_2.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_3.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_4.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_5.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_2_0.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_2_1.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_3_0.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_3_1.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_3_2.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_3_3.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_4_0.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_4_1.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_4_2.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_4_3.h">
+      <Filter>Header Files\PRRE\Hardware</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -382,6 +430,9 @@
     </ClCompile>
     <ClCompile Include="PRRE\Object3D\PRREObject3DManager.cpp">
       <Filter>Source Files\PRRE\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGLbase.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

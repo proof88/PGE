@@ -77,7 +77,7 @@ public:
     virtual const std::string& getVideocardOSName() const = 0;          /**< Gets the Windows-based VGA name. */
     virtual const std::string& getVideocardOGLName() const = 0;         /**< Gets the OpenGL-based VGA name. */
     virtual const std::string& getVideocardOGLVersion() const = 0;      /**< Gets the OpenGL version supported by the driver. */
-    virtual const std::string& getVideocardGLSLVersion() const = 0;     /**< Gets the GLSL version supported by the driver. */
+    virtual const std::string  getVideocardGLSLVersion() const = 0;     /**< Gets the GLSL version supported by the driver. */
     virtual const std::string& getVideocardOGLVendor() const = 0;       /**< Gets the OpenGL-based VGA vendor. */
     virtual const std::string& getVideocardOGLFeatureList() const = 0;  /**< Gets the OpenGL features supported by the driver. */
     virtual const std::string& getVideocardWGLFeatureList() const = 0;  /**< Gets the WGL features supported by the driver. */
