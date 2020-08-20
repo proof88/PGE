@@ -803,7 +803,11 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         LoadTextureIntoTMU( pMaterial->getTexture() );
     }
 
-    // If you want all vertices to be transformed then dont forget to disable culling and depth testing (maybe only 1 is needed to be disabled).
+    /* currently not supporting any vendor-specific mode */
+    if ( BITF_READ(getVertexTransferMode(),PRRE_VT_VENDOR_BITS,3) != 0 )
+        return;
+
+    // If you want all vertices to be transformed and catched in feedback mode then dont forget to disable culling and depth testing (maybe only 1 is needed to be disabled).
     //glDisable(GL_DEPTH_TEST);
     //glDisable(GL_CULL_FACE);
 
@@ -834,10 +838,6 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         glRenderMode(GL_FEEDBACK);
     }  
 
-    /* currently not supporting any vendor-specific mode */
-    if ( BITF_READ(getVertexTransferMode(),PRRE_VT_VENDOR_BITS,3) != 0 )
-        return;
-
     if ( BIT_READ(getVertexTransferMode(), PRRE_VT_VA_BIT) == 0u )
     {
         /* there is no array for geometry, so we either invoke a display list or pass vertices 1-by-1*/
@@ -848,54 +848,55 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         else
             // PRRE_VT_STA_..._DL
             glCallList( nDispList );
-        return;
-    }
+    } // PRRE_VT_VA_BIT == 1u
+    else
+    {
+        /* vertex array either in client or server */
+        const bool bServer = BIT_READ(getVertexTransferMode(), PRRE_VT_SVA_BIT) == 1u;
 
-    /* vertex array either in client or server */
-    bool bServer = BIT_READ(getVertexTransferMode(), PRRE_VT_SVA_BIT) == 1u;
+        SetArrayPointers( bServer );
 
-    SetArrayPointers( bServer );
+            // There is not much use of the CVA mode in this form, however sometime later
+            // the code could be somehow enhanced to do multitexturing with just 1 TMU
+            // by drawing the same geometry again with different texture blended between
+            // 1 lock-unlock, in that case vertices would be transformed only once!
+            // This would be useful when multitexturing is enabled on 1-TMU VPU/GPU.
+            // However even TNT had 2 TMUs, so I'm not planning to do this improvement.
+            // Just wanted to emphasize that locking the array and drawing it only once
+            // does not make much sense.
+            if ( BIT_READ(getVertexTransferMode(), PRRE_VT_CVA_BIT) == 1u )
+                glLockArraysEXT(0, nVertices_h);
 
-        // There is not much use of the CVA mode in this form, however sometime later
-        // the code could be somehow enhanced to do multitexturing with just 1 TMU
-        // by drawing the same geometry again with different texture blended between
-        // 1 lock-unlock, in that case vertices would be transformed only once!
-        // This would be useful when multitexturing is enabled on 1-TMU VPU/GPU.
-        // However even TNT had 2 TMUs, so I'm not planning to do this improvement.
-        // Just wanted to emphasize that locking the array and drawing it only once
-        // does not make much sense.
-        if ( BIT_READ(getVertexTransferMode(), PRRE_VT_CVA_BIT) == 1u )
-            glLockArraysEXT(0, nVertices_h);
+                // Static and dynamic vmods are not differentiated here but when creating the arrays.
+                // That is why we don't check for vmod in this code.
 
-            // Static and dynamic vmods are not differentiated here but when creating the arrays.
-            // That is why we don't check for vmod in this code.
-
-            if ( PRREObject3DManager::isVertexReferencingIndexed( getVertexTransferMode() ) )
-            {
-                if ( BIT_READ(getVertexTransferMode(), PRRE_VT_RNG_BIT) )
+                if ( PRREObject3DManager::isVertexReferencingIndexed( getVertexTransferMode() ) )
                 {
-                    // TODO: should call this in loop, do multiple batches based on the implementation-dependent values
-                    // (GL_MAX_ELEMENTS_VERTICES_EXT, GL_MAX_ELEMENTS_INDICES_EXT).
-                    glDrawRangeElementsEXT(
-                        getGLprimitiveFromPRREprimitive(primitiveFormat),
-                        nMinIndex, nMaxIndex, nVertexIndices_h, nIndicesType, bServer ? NULL : pVertexIndices );
+                    if ( BIT_READ(getVertexTransferMode(), PRRE_VT_RNG_BIT) )
+                    {
+                        // TODO: should call this in loop, do multiple batches based on the implementation-dependent values
+                        // (GL_MAX_ELEMENTS_VERTICES_EXT, GL_MAX_ELEMENTS_INDICES_EXT).
+                        glDrawRangeElementsEXT(
+                            getGLprimitiveFromPRREprimitive(primitiveFormat),
+                            nMinIndex, nMaxIndex, nVertexIndices_h, nIndicesType, bServer ? NULL : pVertexIndices );
+                    }
+                    else
+                    {
+                        glDrawElements(
+                            getGLprimitiveFromPRREprimitive(primitiveFormat), 
+                            nVertexIndices_h, nIndicesType, bServer ? NULL : pVertexIndices );
+                    }
                 }
                 else
                 {
-                    glDrawElements(
-                        getGLprimitiveFromPRREprimitive(primitiveFormat), 
-                        nVertexIndices_h, nIndicesType, bServer ? NULL : pVertexIndices );
+                    glDrawArrays( getGLprimitiveFromPRREprimitive(primitiveFormat), 0, nVertices_h );
                 }
-            }
-            else
-            {
-                glDrawArrays( getGLprimitiveFromPRREprimitive(primitiveFormat), 0, nVertices_h );
-            }
 
-        if ( BIT_READ(getVertexTransferMode(), PRRE_VT_CVA_BIT) == 1u )
-                glUnlockArraysEXT();
+            if ( BIT_READ(getVertexTransferMode(), PRRE_VT_CVA_BIT) == 1u )
+                    glUnlockArraysEXT();
 
-    ResetArrayPointers( bServer );
+        ResetArrayPointers( bServer );
+    } // PRRE_VT_VA_BIT == 0u
 
     /* The number of values (not vertices) transferred to the feedback buffer. */
     GLint nFbBufferWritten_h = glRenderMode(GL_RENDER);
@@ -1089,7 +1090,7 @@ void PRREObject3D::PRREObject3DImpl::ProcessGeometry(TPRREbool indexed) const
         {
             const TXYZ&       vertex = indexed ? pVertices[ getIndexFromArray(pVertexIndices, i) ]    : pVertices[i];
             const TXYZ&       normal = indexed ? pNormals[ getIndexFromArray(pNormalIndices, i) ]     : pNormals[i];
-            // const TRGBAFLOAT& color  = indexed ? pColors[ getIndexFromArray(pColorIndices, i) ]       : pColors[i];
+            //const TRGBAFLOAT& color  = indexed ? pColors[ getIndexFromArray(pColorIndices, i) ]       : pColors[i];
             const TUVW&       uvw    = indexed ? pTexcoords[ getIndexFromArray(pTexcoordIndices, i) ] : pTexcoords[i];
 
             if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
@@ -1113,7 +1114,7 @@ void PRREObject3D::PRREObject3DImpl::ProcessGeometry(TPRREbool indexed) const
             }
             
             // per-vertex color is disabled for compatibility with tmcsgfxlib wrapper, reason somewhere in setarraypointers()
-            // glColor4f(color.red, color.green, color.blue, color.alpha);
+            //glColor4f(color.red, color.green, color.blue, color.alpha);
             if ( bAffectedByLights )
                 glNormal3f(normal.x, normal.y, normal.z);
             glVertex3f(vertex.x, vertex.y, vertex.z);
