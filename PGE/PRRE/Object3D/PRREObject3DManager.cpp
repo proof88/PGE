@@ -471,11 +471,8 @@ PRREObject3D* PRREObject3DManager::PRREObject3DManagerImpl::loadOBJ(
         currSubObj->p->nFaces_h = lines_end[i] - lines_start[i] + 1;
         // currSubObj->p->pFaces = (TFACE4*) malloc( sizeof(TFACE4) * currSubObj->p->nFaces_h );
         currSubObj->p->nVertexIndices_h   = currSubObj->p->nFaces_h * 3;
-        currSubObj->p->nNormalIndices_h   = currSubObj->p->nVertexIndices_h;
         currSubObj->p->pVertexIndices   = malloc( PRREGLsnippets::getSizeofIndexType(currSubObj->p->nIndicesType) * currSubObj->p->nVertexIndices_h );
-        currSubObj->p->pNormalIndices   = malloc( PRREGLsnippets::getSizeofIndexType(currSubObj->p->nIndicesType) * currSubObj->p->nNormalIndices_h );
         currSubObj->p->nVertices_h  = currSubObj->p->nVertexIndices_h;
-        currSubObj->p->nNormals_h   = currSubObj->p->nNormalIndices_h;
         currSubObj->p->pVertices        = (TXYZ*)  malloc( sizeof(TXYZ) * currSubObj->p->nVertices_h );
         currSubObj->p->pVerticesTransf  = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX) * currSubObj->p->nVertices_h );
         currSubObj->p->pNormals         = (TXYZ*)  malloc( sizeof(TXYZ) * currSubObj->p->nNormals_h );
@@ -515,37 +512,22 @@ PRREObject3D* PRREObject3DManager::PRREObject3DManagerImpl::loadOBJ(
             // SetIndexInArray() stores indices with minimal storage size, eg. 1 as byte, 500 as short, so passing submesh-local indices here is CRITICAL to avoid chopping values.
             /* Note: exchange k*3 and k*3+2 for CW-CCW change. This maybe a feature in the future. */
             currSubObj->p->SetIndexInArray(currSubObj->p->pVertexIndices,                  k*3+2, tmpParseVertexIndices[0] - prevvertcount);
-            currSubObj->p->SetIndexInArray(currSubObj->p->pMaterial->getTexcoordIndices(), k*3+2, tmpParseTexcoordIndices[0] - prevtexcoordcount);
-            currSubObj->p->SetIndexInArray(currSubObj->p->pNormalIndices,                  k*3+2, tmpParseNormalIndices[0] - prevnormcount);
             currSubObj->p->SetIndexInArray(currSubObj->p->pVertexIndices,                  k*3+1, tmpParseVertexIndices[1] - prevvertcount);
-            currSubObj->p->SetIndexInArray(currSubObj->p->pMaterial->getTexcoordIndices(), k*3+1, tmpParseTexcoordIndices[1] - prevtexcoordcount);
-            currSubObj->p->SetIndexInArray(currSubObj->p->pNormalIndices,                  k*3+1, tmpParseNormalIndices[1] - prevnormcount);
             currSubObj->p->SetIndexInArray(currSubObj->p->pVertexIndices,                  k*3,   tmpParseVertexIndices[2] - prevvertcount);
-            currSubObj->p->SetIndexInArray(currSubObj->p->pMaterial->getTexcoordIndices(), k*3,   tmpParseTexcoordIndices[2] - prevtexcoordcount);
-            currSubObj->p->SetIndexInArray(currSubObj->p->pNormalIndices,                  k*3,   tmpParseNormalIndices[2] - prevnormcount);
 
             // Putting geometry data into arrays. We store geometry data redundantly.
             currSubObj->p->pVertices[k*3]    = tmpSubMeshesVertices[i][ currSubObj->p->getIndexFromArray(currSubObj->p->pVertexIndices, k*3) ];
             currSubObj->p->pVertices[k*3+1]  = tmpSubMeshesVertices[i][ currSubObj->p->getIndexFromArray(currSubObj->p->pVertexIndices, k*3+1) ];
             currSubObj->p->pVertices[k*3+2]  = tmpSubMeshesVertices[i][ currSubObj->p->getIndexFromArray(currSubObj->p->pVertexIndices, k*3+2) ];
             // don't need to fill pVerticesTransf array here, that task is for during rendering!
-            currSubObj->p->pMaterial->getTexcoords()[k*3]   = tmpSubMeshesTexcoords[i][ currSubObj->p->getIndexFromArray(currSubObj->p->pMaterial->getTexcoordIndices(), k*3) ];
-            currSubObj->p->pMaterial->getTexcoords()[k*3+1] = tmpSubMeshesTexcoords[i][ currSubObj->p->getIndexFromArray(currSubObj->p->pMaterial->getTexcoordIndices(), k*3+1) ];
-            currSubObj->p->pMaterial->getTexcoords()[k*3+2] = tmpSubMeshesTexcoords[i][ currSubObj->p->getIndexFromArray(currSubObj->p->pMaterial->getTexcoordIndices(), k*3+2) ];
-            currSubObj->p->pNormals[k*3]     = tmpSubMeshesNormals[i][ currSubObj->p->getIndexFromArray(currSubObj->p->pNormalIndices, k*3) ];
-            currSubObj->p->pNormals[k*3+1]   = tmpSubMeshesNormals[i][ currSubObj->p->getIndexFromArray(currSubObj->p->pNormalIndices, k*3+1) ];
-            currSubObj->p->pNormals[k*3+2]   = tmpSubMeshesNormals[i][ currSubObj->p->getIndexFromArray(currSubObj->p->pNormalIndices, k*3+2) ];
-            
+            currSubObj->p->pMaterial->getTexcoords()[k*3]   = tmpSubMeshesTexcoords[i][ tmpParseTexcoordIndices[2] - prevtexcoordcount ];
+            currSubObj->p->pMaterial->getTexcoords()[k*3+1] = tmpSubMeshesTexcoords[i][ tmpParseTexcoordIndices[1] - prevtexcoordcount ];
+            currSubObj->p->pMaterial->getTexcoords()[k*3+2] = tmpSubMeshesTexcoords[i][ tmpParseTexcoordIndices[0] - prevtexcoordcount ];
+
             // Update the index values because we now store geometry data redundantly.
             currSubObj->p->SetIndexInArray(currSubObj->p->pVertexIndices,   k*3,   k*3);
             currSubObj->p->SetIndexInArray(currSubObj->p->pVertexIndices,   k*3+1, k*3+1);
             currSubObj->p->SetIndexInArray(currSubObj->p->pVertexIndices,   k*3+2, k*3+2);
-            currSubObj->p->SetIndexInArray(currSubObj->p->pMaterial->getTexcoordIndices(), k*3,   k*3);
-            currSubObj->p->SetIndexInArray(currSubObj->p->pMaterial->getTexcoordIndices(), k*3+1, k*3+1);
-            currSubObj->p->SetIndexInArray(currSubObj->p->pMaterial->getTexcoordIndices(), k*3+2, k*3+2);
-            currSubObj->p->SetIndexInArray(currSubObj->p->pNormalIndices,   k*3,   k*3);
-            currSubObj->p->SetIndexInArray(currSubObj->p->pNormalIndices,   k*3+1, k*3+1);
-            currSubObj->p->SetIndexInArray(currSubObj->p->pNormalIndices,   k*3+2, k*3+2);
             k++;
         } 
         prevvertcount += tmpSubMeshesVertices_h[i];
@@ -601,8 +583,6 @@ PRREObject3D* PRREObject3DManager::PRREObject3DManagerImpl::loadOBJ(
             currSubObj->p->pMaterial->getColors()[j].blue = 1.0f;
             currSubObj->p->pMaterial->getColors()[j].alpha = 1.0f;
         }
-        for (TPRREuint j = 0; j < currSubObj->p->pMaterial->getColorIndicesCount(); j++)
-            currSubObj->p->SetIndexInArray(currSubObj->p->pMaterial->getColorIndices(), j, 0);
     }
     _pOwner->getConsole().OLnOO("submodel material settings done!");
 
@@ -952,7 +932,6 @@ PRREObject3D* PRREObject3DManager::createPlane(
     subobject->p->nFaces_h     = 1;
 
     subobject->p->nVertexIndices_h   = subobject->p->nVertices_h;
-    subobject->p->nNormalIndices_h   = subobject->p->nVertexIndices_h;
 
     subobject->p->pVertices       = (TXYZ*)       malloc( sizeof(TXYZ)   * subobject->p->nVertices_h );
     subobject->p->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*)      malloc( sizeof(TPRRE_TRANSFORMED_VERTEX)   * subobject->p->nVertices_h );
@@ -960,7 +939,6 @@ PRREObject3D* PRREObject3DManager::createPlane(
     //subobject->p->pFaces     = (TFACE4*)     malloc( sizeof(TFACE4) * subobject->p->nFaces_h );
     subobject->p->nIndicesType = GL_UNSIGNED_BYTE;
     subobject->p->pVertexIndices   = malloc( PRREGLsnippets::getSizeofIndexType(subobject->p->nIndicesType) * subobject->p->nVertexIndices_h );
-    subobject->p->pNormalIndices   = malloc( PRREGLsnippets::getSizeofIndexType(subobject->p->nIndicesType) * subobject->p->nNormalIndices_h );
 
     subobject->p->pMaterial->AllocateArrays(
         subobject->p->nVertices_h,
@@ -1035,9 +1013,6 @@ PRREObject3D* PRREObject3DManager::createPlane(
     for (TPRREuint i = 0; i < subobject->p->nVertexIndices_h; i++)
     {
         subobject->p->SetIndexInArray(subobject->p->pVertexIndices,   i, i);
-        subobject->p->SetIndexInArray(subobject->p->pMaterial->getColorIndices(),    i, i);
-        subobject->p->SetIndexInArray(subobject->p->pNormalIndices,   i, i);
-        subobject->p->SetIndexInArray(subobject->p->pMaterial->getTexcoordIndices(), i, i);
         if ( subobject->p->nMinIndex > i )
             subobject->p->nMinIndex = i;
         if ( subobject->p->nMaxIndex < i )
@@ -1108,7 +1083,6 @@ PRREObject3D* PRREObject3DManager::createBox(
     subobject->p->nFaces_h     = 6;
 
     subobject->p->nVertexIndices_h   = subobject->p->nVertices_h;
-    subobject->p->nNormalIndices_h   = subobject->p->nVertexIndices_h;
 
     subobject->p->pVertices       = (TXYZ*)  malloc( sizeof(TXYZ)       * subobject->p->nVertices_h );
     subobject->p->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX)       * subobject->p->nVertices_h );
@@ -1116,7 +1090,6 @@ PRREObject3D* PRREObject3DManager::createBox(
     //subobject->p->pFaces     = (TFACE4*)     malloc( sizeof(TFACE4)     * subobject->p->nFaces_h );
     subobject->p->nIndicesType = GL_UNSIGNED_BYTE;
     subobject->p->pVertexIndices   = malloc( PRREGLsnippets::getSizeofIndexType(subobject->p->nIndicesType) * subobject->p->nVertexIndices_h );
-    subobject->p->pNormalIndices   = malloc( PRREGLsnippets::getSizeofIndexType(subobject->p->nIndicesType) * subobject->p->nNormalIndices_h );
 
     subobject->p->pMaterial->AllocateArrays(
         subobject->p->nVertices_h,
@@ -1511,9 +1484,6 @@ PRREObject3D* PRREObject3DManager::createBox(
     for (TPRREuint i = 0; i < subobject->p->nVertexIndices_h; i++)
     {
         subobject->p->SetIndexInArray(subobject->p->pVertexIndices,   i, i);
-        subobject->p->SetIndexInArray(subobject->p->pMaterial->getColorIndices(),    i, i);
-        subobject->p->SetIndexInArray(subobject->p->pNormalIndices,   i, i);
-        subobject->p->SetIndexInArray(subobject->p->pMaterial->getTexcoordIndices(), i, i);
         if ( subobject->p->nMinIndex > i )
             subobject->p->nMinIndex = i;
         if ( subobject->p->nMaxIndex < i )

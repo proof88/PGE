@@ -706,48 +706,30 @@ private:
             assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getTexcoordsCount(), objPlane->getMaterial().getTexcoordsCount(), "texcoordcount plane 2") &
             assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getTexcoordsCount(), objBox->getMaterial().getTexcoordsCount(), "texcoordcount box 2") &
             assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getTexcoordsCount(), objCube->getMaterial().getTexcoordsCount(), "texcoordcount cube 2") &
-            assertEquals((TPRREuint) 4, objPlane->getMaterial().getTexcoordIndicesCount(), "texcoordindicescount plane") &
-            assertEquals((TPRREuint) 24, objBox->getMaterial().getTexcoordIndicesCount(), "texcoordindicescount box") &
-            assertEquals((TPRREuint) 24, objCube->getMaterial().getTexcoordIndicesCount(), "texcoordindicescount cube") &
-            assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getTexcoordIndicesCount(), objPlane->getMaterial().getTexcoordIndicesCount(), "texcoordindicescount plane 2") &
-            assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getTexcoordIndicesCount(), objBox->getMaterial().getTexcoordIndicesCount(), "texcoordindicescount box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getTexcoordIndicesCount(), objCube->getMaterial().getTexcoordIndicesCount(), "texcoordindicescount cube 2") &
             assertNotNull(objPlane->getMaterial().getTexcoords(), "texcoords plane") &
             assertNotNull(objBox->getMaterial().getTexcoords(), "texcoords box") &
             assertNotNull(objCube->getMaterial().getTexcoords(), "texcoords cube") &
             assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getTexcoords(), objPlane->getMaterial().getTexcoords(), "texcoords plane 2") &
             assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getTexcoords(), objBox->getMaterial().getTexcoords(), "texcoords box 2") &
             assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getTexcoords(), objCube->getMaterial().getTexcoords(), "texcoords cube 2") &
-            assertNotNull(objPlane->getMaterial().getTexcoordIndices(), "texcoordindices plane") &
-            assertNotNull(objBox->getMaterial().getTexcoordIndices(), "texcoordindices box") &
-            assertNotNull(objCube->getMaterial().getTexcoordIndices(), "texcoordindices cube") &
-            assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getTexcoordIndices(), objPlane->getMaterial().getTexcoordIndices(), "texcoordindices plane 2") &
-            assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getTexcoordIndices(), objBox->getMaterial().getTexcoordIndices(), "texcoordindices box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getTexcoordIndices(), objCube->getMaterial().getTexcoordIndices(), "texcoordindices cube 2") &
             assertEquals((TPRREuint) 4, objPlane->getMaterial().getColorsCount(), "colorscount plane") &
             assertEquals((TPRREuint) 24, objBox->getMaterial().getColorsCount(), "colorscount box") &
             assertEquals((TPRREuint) 24, objCube->getMaterial().getColorsCount(), "colorscount cube") &
             assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getColorsCount(), objPlane->getMaterial().getColorsCount(), "colorscount plane 2") &
             assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getColorsCount(), objBox->getMaterial().getColorsCount(), "colorscount box 2") &
             assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getColorsCount(), objCube->getMaterial().getColorsCount(), "colorscount cube 2") &
-            assertEquals((TPRREuint) 4, objPlane->getMaterial().getColorIndicesCount(), "colorindicescount plane") &
-            assertEquals((TPRREuint) 24, objBox->getMaterial().getColorIndicesCount(), "colorindicescount box") &
-            assertEquals((TPRREuint) 24, objCube->getMaterial().getColorIndicesCount(), "colorindicescount cube") &
-            assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getColorIndicesCount(), objPlane->getMaterial().getColorIndicesCount(), "colorindicescount plane 2") &
-            assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getColorIndicesCount(), objBox->getMaterial().getColorIndicesCount(), "colorindicescount box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getColorIndicesCount(), objCube->getMaterial().getColorIndicesCount(), "colorindicescount cube 2") &
+            assertEquals((TPRREuint) 4, objPlane->getMaterial().getIndicesCount(), "indicescount plane") &
+            assertEquals((TPRREuint) 24, objBox->getMaterial().getIndicesCount(), "indicescount box") &
+            assertEquals((TPRREuint) 24, objCube->getMaterial().getIndicesCount(), "indicescount cube") &
+            assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getIndicesCount(), objPlane->getMaterial().getIndicesCount(), "indicescount plane 2") &
+            assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getIndicesCount(), objBox->getMaterial().getIndicesCount(), "indicescount box 2") &
+            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getIndicesCount(), objCube->getMaterial().getIndicesCount(), "indicescount cube 2") &
             assertNotNull(objPlane->getMaterial().getColors(), "colors plane") &
             assertNotNull(objBox->getMaterial().getColors(), "colors box") &
             assertNotNull(objCube->getMaterial().getColors(), "colors cube") &
             assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getColors(), objPlane->getMaterial().getColors(), "colors plane 2") &
             assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getColors(), objBox->getMaterial().getColors(), "colors box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getColors(), objCube->getMaterial().getColors(), "colors cube 2") &
-            assertNotNull(objPlane->getMaterial().getColorIndices(), "colorindices plane") &
-            assertNotNull(objBox->getMaterial().getColorIndices(), "colorindices box") &
-            assertNotNull(objCube->getMaterial().getColorIndices(), "colorindices cube") &
-            assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getColorIndices(), objPlane->getMaterial().getColorIndices(), "colorindices plane 2") &
-            assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getColorIndices(), objBox->getMaterial().getColorIndices(), "colorindices box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getColorIndices(), objCube->getMaterial().getColorIndices(), "colorindices cube 2");
+            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getColors(), objCube->getMaterial().getColors(), "colors cube 2");
     }
 
     bool testGetMaterial2()

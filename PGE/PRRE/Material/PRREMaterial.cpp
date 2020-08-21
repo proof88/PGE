@@ -51,17 +51,14 @@ PRREMaterial::PRREMaterialImpl::~PRREMaterialImpl()
 
     for (TPRREuint i = 0; i < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount(); i++)
     {
-        layers[i].nColors_h = layers[i].nColorIndices_h = layers[i].nTexcoords_h = layers[i].nTexcoordIndices_h = 0;
+        layers[i].nColors_h = layers[i].nTexcoords_h = 0;
         free( layers[i].pColors );
-        free( layers[i].pColorIndices );
         free( layers[i].pTexcoords );
-        free( layers[i].pTexcoordIndices );
         layers[i].pColors = PGENULL;
-        layers[i].pColorIndices = PGENULL;
         layers[i].pTexcoords = PGENULL;
-        layers[i].pTexcoordIndices = PGENULL;
         layers[i].nIndexSize = 0;
     }
+    nIndices = 0;
 
     getConsole().SOLnOO("Done!");
 } // ~PRRETexture()
@@ -75,16 +72,14 @@ void PRREMaterial::PRREMaterialImpl::AllocateArrays(TPRREuint nColorCount, TPRRE
         return;
     }
 
+    nIndices = nIndexCount;
+
     for (TPRREuint i = 0; i < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount(); i++)
     {
         layers[i].nColors_h          = nColorCount;
         layers[i].pColors            = (TRGBAFLOAT*) malloc( sizeof(TRGBAFLOAT) * nColorCount );
-        layers[i].nColorIndices_h    = nIndexCount;
-        layers[i].pColorIndices      = malloc( nIndexSize * nIndexCount );
         layers[i].nTexcoords_h       = nTexcoordCount;
         layers[i].pTexcoords         = (TUVW*) malloc( sizeof(TUVW) * nTexcoordCount );
-        layers[i].nTexcoordIndices_h = nIndexCount;
-        layers[i].pTexcoordIndices   = malloc( nIndexSize * nIndexCount );
         layers[i].nIndexSize         = nIndexSize;
     }
 }
@@ -126,27 +121,9 @@ const TRGBAFLOAT* PRREMaterial::PRREMaterialImpl::getColors(TPRREuint level) con
 } // getTexcoords()
 
 
-TPRREuint PRREMaterial::PRREMaterialImpl::getColorIndicesCount(TPRREuint level) const
+TPRREuint PRREMaterial::PRREMaterialImpl::getIndicesCount() const
 {
-    if ( level < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount() )
-        return layers[level].nColorIndices_h;
-    else
-    {
-        // TODO: set lasterr
-        return 0;
-    }
-}
-
-
-void* PRREMaterial::PRREMaterialImpl::getColorIndices(TPRREuint level) const
-{
-    if ( level < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount() )
-        return layers[level].pColorIndices;
-    else
-    {
-        // TODO: set lasterr
-        return PGENULL;
-    }
+    return nIndices;
 }
 
 
@@ -184,30 +161,6 @@ const TUVW* PRREMaterial::PRREMaterialImpl::getTexcoords(TPRREuint level) const
         return PGENULL;
     }
 } // getTexcoords()
-
-
-TPRREuint PRREMaterial::PRREMaterialImpl::getTexcoordIndicesCount(TPRREuint level) const
-{
-    if ( level < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount() )
-        return layers[level].nTexcoordIndices_h;
-    else
-    {
-        // TODO: set lasterr
-        return 0;
-    }
-}
-
-
-void* PRREMaterial::PRREMaterialImpl::getTexcoordIndices(TPRREuint level) const
-{
-    if ( level < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount() )
-        return layers[level].pTexcoordIndices;
-    else
-    {
-        // TODO: set lasterr
-        return PGENULL;
-    }
-}
 
 
 PRRETexture* PRREMaterial::PRREMaterialImpl::getTexture(TPRREuint level)
@@ -395,19 +348,15 @@ TPRREbool PRREMaterial::PRREMaterialImpl::copyFromMaterial(PRREMaterial& srcMat,
         // we also want to make sure that we have the same memory layout of texcoords and indices
         // so we can safely copy data into our preallocated arrays
         if ( (layers[dstLevel].nTexcoords_h == srcMat.p->layers[srcLevel].nTexcoords_h) &&
-             (layers[dstLevel].nTexcoordIndices_h == srcMat.p->layers[srcLevel].nTexcoordIndices_h) &&
              (layers[dstLevel].nColors_h == srcMat.p->layers[srcLevel].nColors_h) &&
-             (layers[dstLevel].nColorIndices_h == srcMat.p->layers[srcLevel].nColorIndices_h) &&
+             (nIndices == srcMat.getIndicesCount()) &&
              (layers[dstLevel].nIndexSize == srcMat.p->layers[srcLevel].nIndexSize) )
         {
             if ( srcMat.getTexture(srcLevel) != NULL )
                 SetTexture( srcMat.getTexture(srcLevel), dstLevel );
 
             memcpy( layers[dstLevel].pTexcoords, srcMat.p->layers[srcLevel].pTexcoords, sizeof(TUVW) * layers[dstLevel].nTexcoords_h );
-            memcpy( layers[dstLevel].pTexcoordIndices, srcMat.p->layers[srcLevel].pTexcoordIndices, layers[dstLevel].nIndexSize * layers[dstLevel].nTexcoordIndices_h );
-
             memcpy( layers[dstLevel].pColors, srcMat.p->layers[srcLevel].pColors, sizeof(TRGBAFLOAT) * layers[dstLevel].nColors_h );
-            memcpy( layers[dstLevel].pColorIndices, srcMat.p->layers[srcLevel].pColorIndices, layers[dstLevel].nIndexSize * layers[dstLevel].nColorIndices_h );
 
             return true;
         }
@@ -445,13 +394,9 @@ PRREMaterial::PRREMaterialImpl::PRREMaterialImpl(
     {
         layers.push_back( TPRRE_MATERIAL_LAYER() );
         layers[ layers.size()-1 ].nColors_h = 0;
-        layers[ layers.size()-1 ].nColorIndices_h = 0;
         layers[ layers.size()-1 ].pColors = PGENULL;
-        layers[ layers.size()-1 ].pColorIndices = PGENULL;
         layers[ layers.size()-1 ].nTexcoords_h = 0;
-        layers[ layers.size()-1 ].nTexcoordIndices_h = 0;
         layers[ layers.size()-1 ].pTexcoords = PGENULL;
-        layers[ layers.size()-1 ].pTexcoordIndices = PGENULL;
         layers[ layers.size()-1 ].tex = PGENULL;
         layers[ layers.size()-1 ].texEnvMode = PRRE_TEX_FUNC_MODULATE;
         layers[ layers.size()-1 ].fTransparancy = 1.0f;
@@ -460,6 +405,7 @@ PRREMaterial::PRREMaterialImpl::PRREMaterialImpl(
         layers[ layers.size()-1 ].blendFactorDestination = PRRE_ZERO;
     }
 
+    nIndices = 0;
     fShininessBackFace = fShininessFrontFace = 1.0f;
 
     // we dont store nLayers because from now layers.size() is fix until this instance is deleted
@@ -572,30 +518,13 @@ const TRGBAFLOAT* PRREMaterial::getColors(TPRREuint level) const
 
 
 /**
-    Gets the number of color indices on the specified level.
-    0 is the default level.
+    Gets the number of indices.
 
-    @param  level The material level/layer we are interested in. Should be less than MaterialManager::getMaximumLayerCount().
-
-    @return Number of color indices on the specified layer, 0 on error.
+    @return Number of indices.
 */
-TPRREuint PRREMaterial::getColorIndicesCount(TPRREuint level) const
+TPRREuint PRREMaterial::getIndicesCount() const
 {
-    return p->getColorIndicesCount(level);
-}
-
-
-/**
-    Gets the pointer to color indices on the specified level.
-    0 is the default level.
-
-    @param  level The material level/layer we are interested in. Should be less than MaterialManager::getMaximumLayerCount().
-
-    @return Pointer to color indices on the specified layer, PGENULL on error.
-*/
-void* PRREMaterial::getColorIndices(TPRREuint level) const
-{
-    return p->getColorIndices(level);
+    return p->getIndicesCount();
 }
 
 
@@ -639,34 +568,6 @@ const TUVW* PRREMaterial::getTexcoords(TPRREuint level) const
 {
     return p->getTexcoords(level);
 } // getTexcoords()
-
-
-/**
-    Gets the number of texture coordinate indices on the specified level.
-    0 is the default level.
-
-    @param  level The material level/layer we are interested in. Should be less than MaterialManager::getMaximumLayerCount().
-
-    @return Number of texture coordinate indices on the specified layer, 0 on error.
-*/
-TPRREuint PRREMaterial::getTexcoordIndicesCount(TPRREuint level) const
-{
-    return p->getTexcoordIndicesCount(level);
-}
-
-
-/**
-    Gets the pointer to texture coordinate indices on the specified level.
-    0 is the default level, always used for single-textured materials.
-
-    @param  level The material level/layer we are interested in. Should be less than MaterialManager::getMaximumLayerCount().
-
-    @return Pointer to texture coordinate indices on the specified layer, PGENULL on error.
-*/
-void* PRREMaterial::getTexcoordIndices(TPRREuint level) const
-{
-    return p->getTexcoordIndices(level);
-}
 
 
 /**

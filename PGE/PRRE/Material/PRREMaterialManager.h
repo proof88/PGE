@@ -164,17 +164,15 @@ public:
                             TPRREuint nIndexCount,
                             TPRREuint nIndexSize);                            /**< Allocate color-, texture coordinate-, and index arrays on all available levels. */
 
+            TPRREuint    getIndicesCount() const;
+            
             TPRREuint    getColorsCount(TPRREuint level = 0) const;           /**< Gets the number of colors on the specified level. */
             TRGBAFLOAT*  getColors(TPRREuint level = 0);                      /**< Gets the pointer to colors on the specified level. */
     const   TRGBAFLOAT*  getColors(TPRREuint level = 0) const;                /**< Gets the pointer to colors on the specified level. */
-            TPRREuint    getColorIndicesCount(TPRREuint level = 0) const;
-            void*        getColorIndices(TPRREuint level = 0) const;
-
+            
             TPRREuint    getTexcoordsCount(TPRREuint level = 0) const;        /**< Gets the number of texture coordinates on the specified level. */
             TUVW*        getTexcoords(TPRREuint level = 0);                   /**< Gets the pointer to texture coordinates on the specified level. */
     const   TUVW*        getTexcoords(TPRREuint level = 0) const;             /**< Gets the pointer to texture coordinates on the specified level. */
-            TPRREuint    getTexcoordIndicesCount(TPRREuint level = 0) const;
-            void*        getTexcoordIndices(TPRREuint level = 0) const;
 
             PRRETexture* getTexture(TPRREuint level = 0);                     /**< Gets the texture of the material on the specified level. */
     const   PRRETexture* getTexture(TPRREuint level = 0) const;               /**< Gets the texture of the material on the specified level. */

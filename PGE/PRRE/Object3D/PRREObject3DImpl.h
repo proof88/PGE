@@ -156,8 +156,6 @@ private:
     TPRREuint   nMinIndex;          /**< Smallest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
     TPRREuint   nMaxIndex;          /**< Biggest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
     GLenum      nIndicesType;       /**< Type of indices stored in pVertexIndices array. Should be as small as possible per object. */
-    void*       pNormalIndices;     /**< Pointer to normal indices. TODO: maybe can be removed as pVertexIndices is enough. */
-    TPRREuint   nNormalIndices_h;
     TPRREuint   nVertices_h;        /**< Number of vertices. */
     TPRREuint   nNormals_h;         /**< Number of normals. TODO: maybe can be removed as nVertices_h is enough. */
     TPRREuint   nFaces_h;           /**< Number of faces. */

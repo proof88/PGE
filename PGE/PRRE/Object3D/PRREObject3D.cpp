@@ -220,12 +220,11 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
     free(pVerticesTransf);
     free(pNormals);
     free(pVertexIndices);
-    free(pNormalIndices);
     free(pFbBuffer);
     pVertices = PGENULL;
     pVerticesTransf = PGENULL;
     pNormals = PGENULL;
-    pVertexIndices = pNormalIndices;  /* TODO: why? Why not set to NULL? */
+    pVertexIndices = PGENULL;
     pFbBuffer = PGENULL;
 
     delete pMaterial;
@@ -733,7 +732,6 @@ TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
         nVertices_h * sizeof(TXYZ) +
         nVertexIndices_h * PRREGLsnippets::getSizeofIndexType(nIndicesType) +
         nNormals_h * sizeof(TXYZ) +
-        nNormalIndices_h * PRREGLsnippets::getSizeofIndexType(nIndicesType) +
         nFbBuffer_h +
         pMaterial ? pMaterial->getUsedSystemMemory() : 0
     );
@@ -988,15 +986,14 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
     pVerticesTransf = PGENULL;
     pNormals = PGENULL;
     pVertexIndices = PGENULL;
-    pNormalIndices = PGENULL;
     pFbBuffer = PGENULL;
 
     nMinIndex = UINT_MAX;  // todo: should make macros like PRRE_UINT_MAX into prretypes.h
     nMaxIndex = 0;
     nIndicesType = GL_UNSIGNED_INT;
 
-    nVertices_h = nVertexIndices_h = 0;
-    nNormals_h = nNormalIndices_h = 0;
+    nVertices_h = nNormals_h = 0;
+    nVertexIndices_h = 0;
     nFaces_h = 0;
     nFbBuffer_h = 0;
 
@@ -1080,24 +1077,23 @@ void PRREObject3D::PRREObject3DImpl::ProcessGeometry(TPRREbool indexed) const
     //const TRGBAFLOAT* const pColors = pMaterial->getColors(0);
     //const void* const pColorIndices = pMaterial->getColorIndices(0);
     const TUVW* const pTexcoords = pMaterial->getTexcoords(0);
-    const void* const pTexcoordIndices = pMaterial->getTexcoordIndices(0);
     // following can be NULL if material system supports only 1 level
     const TUVW* const pTexcoords2 = pMaterial->getTexcoords(1);
-    const void* const pTexcoordIndices2 = pMaterial->getTexcoordIndices(1);
+    //const void* const pTexcoordIndices2 = pMaterial->getTexcoordIndices(1);
 
     glBegin( getGLprimitiveFromPRREprimitive(primitiveFormat) );
         for (TPRREuint i = 0; i < nVertexIndices_h; i++)
         {
             const TXYZ&       vertex = indexed ? pVertices[ getIndexFromArray(pVertexIndices, i) ]    : pVertices[i];
-            const TXYZ&       normal = indexed ? pNormals[ getIndexFromArray(pNormalIndices, i) ]     : pNormals[i];
+            const TXYZ&       normal = indexed ? pNormals[ getIndexFromArray(pVertexIndices, i) ]     : pNormals[i];
             //const TRGBAFLOAT& color  = indexed ? pColors[ getIndexFromArray(pColorIndices, i) ]       : pColors[i];
-            const TUVW&       uvw    = indexed ? pTexcoords[ getIndexFromArray(pTexcoordIndices, i) ] : pTexcoords[i];
+            const TUVW&       uvw    = indexed ? pTexcoords[ getIndexFromArray(pVertexIndices, i) ] : pTexcoords[i];
 
             if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
             {
                 if ( getMaterial().isMultiTextured() )
                 {
-                    const TUVW& uvw2 = indexed ? pTexcoords2[ getIndexFromArray(pTexcoordIndices2, i) ] : pTexcoords2[i];
+                    const TUVW& uvw2 = indexed ? pTexcoords2[ getIndexFromArray(pVertexIndices, i) ] : pTexcoords2[i];
                     glMultiTexCoord2fARB(GL_TEXTURE0_ARB, uvw.u, uvw.v);
                     glMultiTexCoord2fARB(GL_TEXTURE1_ARB, uvw2.u, uvw2.v);
                 }

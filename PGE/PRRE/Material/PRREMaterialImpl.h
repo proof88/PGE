@@ -23,14 +23,10 @@
 struct TPRRE_MATERIAL_LAYER
 {
     TRGBAFLOAT*    pColors;             /**< Pointer to colors. */
-    void*          pColorIndices;       /**< Pointer to color indices. TODO: maybe can be removed as pVertexIndices is enough. */
-    TPRREuint      nColorIndices_h;     /**< Number of color indices. TODO: maybe can be removed as Object3D::nVertices_h is enough. */
     TPRREuint      nColors_h;           /**< Number of colors. TODO: maybe can be removed as nVertices_h is enough. */
     PRRETexture*   tex;                 /**< Texture on layer. */
     TUVW*          pTexcoords;          /**< Pointer to texture coordinates. */
     TPRREuint      nTexcoords_h;        /**< Number of texture coordinates. TODO: maybe can be removed as Object3D::nVertices_h is enough. */
-    void*          pTexcoordIndices;    /**< Pointer to texture coordinate indices. TODO: maybe can be removed as Object3D::pVertexIndices is enough. */
-    TPRREuint      nTexcoordIndices_h;  /**< Number of texture coordinate indices. TODO: maybe can be removed as Object3D::nVertices_h is enough. */
     TPRREuint      nIndexSize;          /**< Size of an index. */
 	PRREColor      clrTexEnv;           /**< Texture environment color. */
 	TPRRE_TEX_FUNC texEnvMode;          /**< Texture environment mode / function. */
@@ -57,14 +53,11 @@ public:
             TPRREuint    getColorsCount(TPRREuint level = 0) const;     
             TRGBAFLOAT*  getColors(TPRREuint level = 0);                
     const   TRGBAFLOAT*  getColors(TPRREuint level = 0) const;
-            TPRREuint    getColorIndicesCount(TPRREuint level = 0) const;
-            void*        getColorIndices(TPRREuint level = 0) const;
+            TPRREuint    getIndicesCount() const;
 
             TPRREuint    getTexcoordsCount(TPRREuint level = 0) const;     
             TUVW*        getTexcoords(TPRREuint level = 0);                
     const   TUVW*        getTexcoords(TPRREuint level = 0) const;
-            TPRREuint    getTexcoordIndicesCount(TPRREuint level = 0) const;
-            void*        getTexcoordIndices(TPRREuint level = 0) const;
 
             TPRREuint    getTextureCount() const;
             PRRETexture* getTexture(TPRREuint level = 0);
@@ -121,6 +114,7 @@ protected:
 private:
     PRREMaterial* _pOwner;            /**< The owner public object who creates this pimpl object. */
 
+    TPRREuint   nIndices;             /**< Number of indices. */
     PRREColor   clrAmbientFrontFace;
     PRREColor   clrAmbientBackFace;
     PRREColor   clrDiffuseFrontFace;

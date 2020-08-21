@@ -121,12 +121,9 @@ private:
             // by default no array is allocated
             b = b & assertEquals((TPRREuint) 0, mat->getColorsCount(i), "getColorsCount") &
                 assertNull(mat->getColors(i), "getColors") &
-                assertEquals((TPRREuint)0, mat->getColorIndicesCount(i), "getColorIndicesCount") &
-                assertNull(mat->getColorIndices(i), "getColorIndices") &
+                assertEquals((TPRREuint)0, mat->getIndicesCount(), "getIndicesCount") &
                 assertEquals((TPRREuint)0, mat->getTexcoordsCount(i), "getTexcoordsCount") &
                 assertNull(mat->getTexcoords(i), "getTexcoords") &
-                assertEquals((TPRREuint)0, mat->getTexcoordIndicesCount(i), "getTexcoordIndicesCount") &
-                assertNull(mat->getTexcoordIndices(i), "getTexcoordIndices") &
                 assertNull(mat->getTexture(i), "getTexture") &
                 assertTrue(clrWhite == mat->getTextureEnvColor(i), "getTextureEnvColor") &
                 assertEquals(TPRRE_BLENDFACTORS::PRRE_ONE, mat->getSourceBlendFunc(i), "getSourceBlendFunc") &
@@ -170,12 +167,9 @@ private:
         {
             b = b & assertEquals(nColors, mat->getColorsCount(i), "getColorsCount") &
                 assertNotNull(mat->getColors(i), "getColors") &
-                assertEquals(nIndices, mat->getColorIndicesCount(i), "getColorIndicesCount") &
-                assertNotNull(mat->getColorIndices(i), "getColorIndices") &
+                assertEquals(nIndices, mat->getIndicesCount(), "getIndicesCount") &
                 assertEquals(nTexCoords, mat->getTexcoordsCount(i), "getTexcoordsCount") &
-                assertNotNull(mat->getTexcoords(i), "getTexcoords") &
-                assertEquals(nIndices, mat->getTexcoordIndicesCount(i), "getTexcoordIndicesCount") &
-                assertNotNull(mat->getTexcoordIndices(i), "getTexcoordIndices");
+                assertNotNull(mat->getTexcoords(i), "getTexcoords");
             i++;
         }
 
@@ -418,12 +412,9 @@ private:
         {
             b = b & assertEquals((TPRREuint) 0, mat->getColorsCount(i), "getColorsCount") &
                 assertNull(mat->getColors(i), "getColors") &
-                assertEquals((TPRREuint)0, mat->getColorIndicesCount(i), "getColorIndicesCount") &
-                assertNull(mat->getColorIndices(i), "getColorIndices") &
+                assertEquals((TPRREuint)0, mat->getIndicesCount(), "getIndicesCount") &
                 assertEquals((TPRREuint)0, mat->getTexcoordsCount(i), "getTexcoordsCount") &
-                assertNull(mat->getTexcoords(i), "getTexcoords") &
-                assertEquals((TPRREuint)0, mat->getTexcoordIndicesCount(i), "getTexcoordIndicesCount") &
-                assertNull(mat->getTexcoordIndices(i), "getTexcoordIndices");
+                assertNull(mat->getTexcoords(i), "getTexcoords");
             i++;
         }
         std::stringstream ss;
@@ -440,12 +431,9 @@ private:
         {
             b = b & assertEquals((TPRREuint) 2, mat->getColorsCount(i), "getColorsCount") &
                 assertNotNull(mat->getColors(i), "getColors") &
-                assertEquals((TPRREuint)2, mat->getColorIndicesCount(i), "getColorIndicesCount") &
-                assertNotNull(mat->getColorIndices(i), "getColorIndices") &
+                assertEquals((TPRREuint)2, mat->getIndicesCount(), "getIndicesCount") &
                 assertEquals((TPRREuint)2, mat->getTexcoordsCount(i), "getTexcoordsCount") &
-                assertNotNull(mat->getTexcoords(i), "getTexcoords") &
-                assertEquals((TPRREuint)2, mat->getTexcoordIndicesCount(i), "getTexcoordIndicesCount") &
-                assertNotNull(mat->getTexcoordIndices(i), "getTexcoordIndices");
+                assertNotNull(mat->getTexcoords(i), "getTexcoords");
             i++;
         }
         ss.clear();
