@@ -1292,7 +1292,6 @@ void PRREObject3D::PRREObject3DImpl::SetArrayPointers(TPRREbool redirectToServer
     if ( pMaterial->isTextured() )
     {
         const TPRREuint iMaxTexLayer = pMaterial->isMultiTextured() ? 1 : 0;
-
         for (TPRREuint i = 0; i <= iMaxTexLayer; i++)
         {
             if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
@@ -1330,8 +1329,17 @@ void PRREObject3D::PRREObject3DImpl::ResetArrayPointers(TPRREbool redirectToServ
         if ( PRREObject3DManager::isVertexReferencingIndexed(vertexTransferMode) )
             glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
     }
-    if ( pMaterial->getTexture() != PGENULL )
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    if ( pMaterial->isTextured() )
+    {
+        const TPRREuint iMaxTexLayer = pMaterial->isMultiTextured() ? 1 : 0;
+        for (TPRREuint i = 0; i <= iMaxTexLayer; i++)
+        {
+            if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
+                glClientActiveTextureARB(GL_TEXTURE0_ARB + i);
+
+            glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        }
+    }
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
