@@ -23,11 +23,10 @@
 struct TPRRE_MATERIAL_LAYER
 {
     TRGBAFLOAT*    pColors;             /**< Pointer to colors. */
-    TPRREuint      nColors_h;           /**< Number of colors. TODO: maybe can be removed as nVertices_h is enough. */
+    TPRREuint      nColors_h;           /**< Number of colors. Note it is actually the same on all levels. In the future it could be moved from layer to material level. */
     PRRETexture*   tex;                 /**< Texture on layer. */
     TUVW*          pTexcoords;          /**< Pointer to texture coordinates. */
-    TPRREuint      nTexcoords_h;        /**< Number of texture coordinates. TODO: maybe can be removed as Object3D::nVertices_h is enough. */
-    TPRREuint      nIndexSize;          /**< Size of an index. */
+    TPRREuint      nTexcoords_h;        /**< Number of texture coordinates. Note it is actually the same on all levels. In the future it could be moved from layer to material level.*/
 	PRREColor      clrTexEnv;           /**< Texture environment color. */
 	TPRRE_TEX_FUNC texEnvMode;          /**< Texture environment mode / function. */
 	TPRREfloat     fTransparancy;       /**< Layer transparency. */
@@ -115,6 +114,7 @@ private:
     PRREMaterial* _pOwner;            /**< The owner public object who creates this pimpl object. */
 
     TPRREuint   nIndices;             /**< Number of indices. */
+    TPRREuint   nIndexSize;           /**< Size of an index. */
     PRREColor   clrAmbientFrontFace;
     PRREColor   clrAmbientBackFace;
     PRREColor   clrDiffuseFrontFace;

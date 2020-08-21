@@ -151,8 +151,8 @@ private:
     TXYZ*       pVertices;          /**< Pointer to vertices. */
     TPRRE_TRANSFORMED_VERTEX*      pVerticesTransf;    /**< Pointer to transformed vertices. */
     TXYZ*       pNormals;           /**< Pointer to normals. */
-    void*       pVertexIndices;     /**< Pointer to vertex indices. */
-    TPRREuint   nVertexIndices_h;
+    void*       pVertexIndices;     /**< Pointer to vertex indices. We use these to index into arrays of Material too. */
+    TPRREuint   nVertexIndices_h;   /**< Number of vertex indices. */
     TPRREuint   nMinIndex;          /**< Smallest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
     TPRREuint   nMaxIndex;          /**< Biggest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
     GLenum      nIndicesType;       /**< Type of indices stored in pVertexIndices array. Should be as small as possible per object. */
