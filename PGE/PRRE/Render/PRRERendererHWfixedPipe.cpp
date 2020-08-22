@@ -197,8 +197,7 @@ TPRREuint PRRERendererHWfixedPipeImpl::initialize(
                 screen.getColorBits(), screen.getDepthBits(),
                 screen.getStencilBits(), screen.getFSAAlevel() );
 
-            if ( (wglGetPixelFormatAttribivARB != PGENULL) && (wglGetPixelFormatAttribfvARB != PGENULL) &&
-                 (wglChoosePixelFormatARB != PGENULL) && hwInfo.getVideo().isAdvancedPixelFormatSetSupported() )
+            if ( hwInfo.getVideo().isAdvancedPixelFormatSetSupported() )
             {
                 if ( (samples > 0) && !bRequestAdvancedPixelFormat )
                 {

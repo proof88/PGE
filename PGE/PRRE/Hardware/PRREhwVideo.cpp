@@ -476,7 +476,8 @@ TPRREbool PRREhwVideoImpl::isLATCSupported() const
 */
 TPRREbool PRREhwVideoImpl::isAdvancedPixelFormatSetSupported() const
 {
-    return PRREhwVideoDiscoverOpenGLbase::isExtensionSupported("WGL_ARB_pixel_format", sVidFeaturesOGL, sVidFeaturesWGL);
+    return wglGetPixelFormatAttribivARB && wglGetPixelFormatAttribfvARB && wglChoosePixelFormatARB &&
+        PRREhwVideoDiscoverOpenGLbase::isExtensionSupported("WGL_ARB_pixel_format", sVidFeaturesOGL, sVidFeaturesWGL);
 } // isAdvancedPixelFormatSetSupported()
 
 
