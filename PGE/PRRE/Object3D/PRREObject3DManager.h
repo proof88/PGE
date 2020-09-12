@@ -13,11 +13,10 @@
 
 
 #include "../PRREallHeaders.h"
-#include "../../../../PFL/PFL/PFL.h"
 #include "../PRREFiledManager.h"
-#include "../Material/PRRETextureManager.h"
-#include "../Material/PRREMaterialManager.h"
+#include "PRREMesh3DManager.h"
 #include "../Math/PRREVector.h"
+#include "../../../../PFL/PFL/PFL.h"
 
 
 /**
@@ -32,22 +31,6 @@ enum TPRRE_ROTATION_ORDER
     PRRE_XZY,
     PRRE_ZXY
 }; // TPRRE_ROTATION_ORDER
-
-
-/**
-    Possible primitive formats.
-*/
-enum TPRRE_PRIMITIVE_FORMAT
-{
-    PRRE_PM_TRIANGLES,         /**< Geometry will be built up by triangles. */
-    PRRE_PM_TRIANGLE_STRIPS,   /**< Geometry will be built up by triangle strips. */
-    PRRE_PM_TRIANGLE_FANS,     /**< Geometry will be built up by triangle fans. */
-    PRRE_PM_QUADS,             /**< Geometry will be built up by quadrilaterals. */
-    PRRE_PM_QUAD_STRIPS,       /**< Geometry will be built up by quadrilateral strips. */
-    PRRE_PM_POINTS,            /**< Geometry will be built up by points. */
-    PRRE_PM_LINES,             /**< Geometry will be built up by lines. */
-    PRRE_PM_LINE_STRIPS        /**< Geometry will be built up by line strips. */
-}; // TPRRE_PRIMITIVE_FORMAT
 
 
 /**
@@ -212,11 +195,16 @@ class PRREObject3DManager;
 /**
     3D object class.
 
+    Object3D objects are 2-level entities:
+     - first level (parent) derives from a level-1 Mesh3D object, and owns properties such as world position, angle, etc.;
+     - second level objects derive from level-2 Mesh3D objects, particularly the submeshes of the level-1 mesh from where the level-1 Object3D is also derived.
+
+    The biggest addition of Object3D to Mesh3D is the renderability.
+
     This class directly uses OpenGL.
 */
 class PRREObject3D :
-    public PRREFiledManaged,
-    public PRREFiledManager
+    public PRREMesh3D
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRREObject3D is included")
@@ -227,8 +215,6 @@ public:
 
     PRREObject3D* getReferredObject() const;   /**< Gets the original object which was cloned to create this object. */
 
-    TPRRE_PRIMITIVE_FORMAT getPrimitiveFormat() const;   /**< Gets the primitives' format. */
-
     TPRRE_VERTEX_MODIFYING_HABIT getVertexModifyingHabit() const;      /**< Gets vertex modifying habit. */
     void SetVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod);   /**< Sets vertex modifying habit. */
     TPRRE_VERTEX_REFERENCING_MODE getVertexReferencingMode() const;    /**< Gets vertex referencing mode. */
@@ -236,32 +222,20 @@ public:
     TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;          /**< Gets vertex transfer mode. */
     void SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);     /**< Sets vertex transfer mode. */
 
-    TPRREuint   getVerticesCount() const;      /**< Gets the number of vertices. */
-    const TXYZ* getVertices() const;           /**< Gets the pointer to vertices. */
-          TXYZ* getVertices();                 /**< Gets the pointer to vertices. */
-    TPRRE_TRANSFORMED_VERTEX* getTransformedVertices();
+    TPRRE_TRANSFORMED_VERTEX* getTransformedVertices(
+        TPRREbool implicitAccessSubobject = true);                     /**< Gets the pointer to transformed vertices. */
 
-    TPRREuint   getVertexIndicesCount() const; /**< Gets the nmber of vertex indices. */
-    const void* getVertexIndices() const;      /**< Gets the pointer to vertex indices. */
-    /* HACK: using unsigned int here instead of GLenum to avoid using GL header. */
-    /* TODO: create own type for the index type. */
-    unsigned int getVertexIndicesType() const; /**< Gets the type of the indices. */
-
-    TPRREuint   getNormalsCount() const;       /**< Gets the number of normals. */
-    const TXYZ* getNormals() const;            /**< Gets the pointer to normals. */
-
-          PRREVector& getPosVec();                  /**< Gets the position. */
-    const PRREVector& getPosVec() const;            /**< Gets the position. */
           PRREVector& getAngleVec();                /**< Gets the rotation angles. */
     const PRREVector& getAngleVec() const;          /**< Gets the rotation angles. */
-    const PRREVector& getSizeVec() const;           /**< Gets the base sizes. */
-          PRREVector  getScaledSizeVec() const;     /**< Gets the real sizes. */
-    void              RecalculateSize();            /**< Recalculates the sizes. */
 
-    const PRREVector& getScaling() const;           /**< Gets the scaling. */
+    virtual const PRREVector& getSizeVec() const;   /**< Gets the base sizes. */
 
-    void  SetScaling(TPRREfloat value);             /**< Sets the scaling to given scalar. */
-    void  SetScaling(const PRREVector& value);      /**< Sets the scaling to given vector. */
+          PRREVector  getScaledSizeVec() const;     /**< Gets the real sizes considering the geometry size calculated from vertex data and the current scaling factor. */
+
+    const PRREVector& getScaling() const;           /**< Gets the scaling factor. */
+
+    void  SetScaling(TPRREfloat value);             /**< Sets the scaling factor to given scalar. */
+    void  SetScaling(const PRREVector& value);      /**< Sets the scaling factor to given vector. */
 
     void  Scale(TPRREfloat value);                  /**< Scales by the given scalar value. */
     void  Scale(const PRREVector& value);           /**< Scales by the given vector. */
@@ -289,19 +263,13 @@ public:
     TPRREbool isTestingAgainstZBuffer() const;            /**< Gets whether we test against the Z-Buffer while rendering. */
     void      SetTestingAgainstZBuffer(TPRREbool value);  /**< Sets whether we test against the Z-Buffer while rendering. */
     TPRREbool isStickedToScreen() const;                  /**< Gets the sticked-to-screen state. */
-    void      SetStickedToScreen(TPRREbool value);        /**< Sets the sticked-to-screen state. */
-
-    const PRREMaterial& getMaterial() const;  /**< Gets the material. */
-          PRREMaterial& getMaterial();        /**< Gets the material. */ 
+    void      SetStickedToScreen(TPRREbool value);        /**< Sets the sticked-to-screen state. */ 
 
     TPRREuint getUsedSystemMemory() const;    /**< Gets the amount of allocated system memory. */
 
     void Draw(bool bLighting);          /**< Draws the object. */
 
     // ---------------------------------------------------------------------------
-
-    class PRREObject3DImpl;
-    PRREObject3DImpl* p;
 
 protected:
 
@@ -312,11 +280,12 @@ protected:
         const TPRRE_VERTEX_REFERENCING_MODE& vref = PRRE_VREF_DIRECT,
         TPRREbool bForceUseClientMemory = false);                        /**< Only PRREObject3DManager creates it. */
     
-    PRREObject3D(const PRREObject3D&);
+    PRREObject3D(const PRREObject3D&);                                   
     PRREObject3D& operator=(const PRREObject3D&);
 
 private:
-    
+    class PRREObject3DImpl;
+    PRREObject3DImpl* p;
 
     friend class PRREObject3DManager;  
 
@@ -329,7 +298,7 @@ private:
     This class doesn't use any API directly, just constant values from OpenGL.
 */
 class PRREObject3DManager :
-    public PRREFiledManager
+    public PRREMesh3DManager
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRREObject3DManager is included")
@@ -364,9 +333,6 @@ public:
     virtual ~PRREObject3DManager();
 
     TPRREbool isInitialized() const;  /**< Tells whether the object is correctly initialized or not. */
-
-    TPRREbool isMinimalIndexStorageEnabled() const;              /**< Tells whether storage of indices is minimalized or not. */
-    void      SetMinimalIndexStorageEnabled(TPRREbool state);    /**< Sets whether storage of indices is minimalized or not. */
     
     PRREObject3D* createPlane(
         TPRREfloat a, TPRREfloat b,

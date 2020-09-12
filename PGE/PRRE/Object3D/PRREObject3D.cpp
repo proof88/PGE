@@ -10,6 +10,7 @@
 
 #include "PRREbaseIncludes.h"  // PCH
 #include "../PRREpragmas.h"
+#include "../../../../PFL/PFL/PFL.h"
 #include "PRREObject3DManager.h"
 #include "PRREObject3DImpl.h"
 #include "../PRREGLextensionFuncs.h"
@@ -84,7 +85,7 @@ using namespace std;
     Some performance gain may be observed also when using indices (drawElements) because shared vertices will be
     transformed and lit only once. This also means there is no such post-TnL cache optimisation with standard drawElements.
 
-    Korai gyártóspecifikus VBO-k:
+    Early vendor-specific "VBO"s:
      - GeForce2: VAR: NV_vertex_array_range, NV_vertex_array_range2
        VRAM or AGP memory. Write is slow. Write is fast only if Fast Writes is supported.
        Rule: allocate static geometry in VRAM, allocate AGP mem for dynamic geometry.
@@ -124,6 +125,38 @@ using namespace std;
 
 
 // ############################### PUBLIC ################################
+
+
+TPRRE_PRIMITIVE_FORMAT PRREObject3D::PRREObject3DImpl::getPRREprimitiveFromGLprimitive(GLenum glprim)
+{
+    switch (glprim)
+    {
+    case GL_TRIANGLES      : return PRRE_PM_TRIANGLES;
+    case GL_TRIANGLE_STRIP : return PRRE_PM_TRIANGLE_STRIPS;
+    case GL_TRIANGLE_FAN   : return PRRE_PM_TRIANGLE_FANS; 
+    case GL_QUADS          : return PRRE_PM_QUADS;
+    case GL_QUAD_STRIP     : return PRRE_PM_QUAD_STRIPS;
+    case GL_LINES          : return PRRE_PM_LINES;
+    case GL_LINE_STRIP     : return PRRE_PM_LINE_STRIPS;
+    default                : return PRRE_PM_POINTS;    
+    }
+} // getPRREprimitiveFromGLprimitive()
+
+
+GLenum PRREObject3D::PRREObject3DImpl::getGLprimitiveFromPRREprimitive(TPRRE_PRIMITIVE_FORMAT pf)
+{
+    switch (pf)
+    {
+    case PRRE_PM_TRIANGLES       : return GL_TRIANGLES;
+    case PRRE_PM_TRIANGLE_STRIPS : return GL_TRIANGLE_STRIP;
+    case PRRE_PM_TRIANGLE_FANS   : return GL_TRIANGLE_FAN; 
+    case PRRE_PM_QUADS           : return GL_QUADS;
+    case PRRE_PM_QUAD_STRIPS     : return GL_QUAD_STRIP;
+    case PRRE_PM_LINES           : return GL_LINES;
+    case PRRE_PM_LINE_STRIPS     : return GL_LINE_STRIP;
+    default                      : return GL_POINTS;
+    }
+} // getGLprimitiveFromPRREprimitive()
 
 
 /**
@@ -178,57 +211,16 @@ GLenum PRREObject3D::PRREObject3DImpl::getGLblendFromPRREblend(TPRRE_BLENDFACTOR
 } // getGLblendFromPRREblend()
 
 
-TPRRE_PRIMITIVE_FORMAT PRREObject3D::PRREObject3DImpl::getPRREprimitiveFromGLprimitive(GLenum glprim)
-{
-    switch (glprim)
-    {
-    case GL_TRIANGLES      : return PRRE_PM_TRIANGLES;
-    case GL_TRIANGLE_STRIP : return PRRE_PM_TRIANGLE_STRIPS;
-    case GL_TRIANGLE_FAN   : return PRRE_PM_TRIANGLE_FANS; 
-    case GL_QUADS          : return PRRE_PM_QUADS;
-    case GL_QUAD_STRIP     : return PRRE_PM_QUAD_STRIPS;
-    case GL_LINES          : return PRRE_PM_LINES;
-    case GL_LINE_STRIP     : return PRRE_PM_LINE_STRIPS;
-    default                : return PRRE_PM_POINTS;    
-    }
-} // getPRREprimitiveFromGLprimitive()
-
-
-GLenum PRREObject3D::PRREObject3DImpl::getGLprimitiveFromPRREprimitive(TPRRE_PRIMITIVE_FORMAT pf)
-{
-    switch (pf)
-    {
-    case PRRE_PM_TRIANGLES       : return GL_TRIANGLES;
-    case PRRE_PM_TRIANGLE_STRIPS : return GL_TRIANGLE_STRIP;
-    case PRRE_PM_TRIANGLE_FANS   : return GL_TRIANGLE_FAN; 
-    case PRRE_PM_QUADS           : return GL_QUADS;
-    case PRRE_PM_QUAD_STRIPS     : return GL_QUAD_STRIP;
-    case PRRE_PM_LINES           : return GL_LINES;
-    case PRRE_PM_LINE_STRIPS     : return GL_LINE_STRIP;
-    default                      : return GL_POINTS;
-    }
-} // getGLprimitiveFromPRREprimitive()
-
-
 PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
 {
     getConsole().OLnOI("~PRREObject3D() ...");
     
     FreeGLresources();
 
-    free(pVertices);
     free(pVerticesTransf);
-    free(pNormals);
-    free(pVertexIndices);
     free(pFbBuffer);
-    pVertices = PGENULL;
     pVerticesTransf = PGENULL;
-    pNormals = PGENULL;
-    pVertexIndices = PGENULL;
     pFbBuffer = PGENULL;
-
-    delete pMaterial;
-    pMaterial = PGENULL;
 
     _pOwner->DeleteAll();
 
@@ -246,12 +238,6 @@ PRREObject3D* PRREObject3D::PRREObject3DImpl::getReferredObject() const
 {
     return pRefersto; 
 }
-
-
-TPRRE_PRIMITIVE_FORMAT PRREObject3D::PRREObject3DImpl::getPrimitiveFormat() const
-{
-    return primitiveFormat;
-} // getPrimitiveFormat()
 
 
 TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::PRREObject3DImpl::getVertexModifyingHabit() const
@@ -286,7 +272,10 @@ TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::PRREObject3DImpl::getVertexTransferMode
 
 void PRREObject3D::PRREObject3DImpl::SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 {
+    // TODO DO NOT LET THIS FUNCTION DO ANYTHING IF THE OBJECT IS LEVEL-2!!!
     getConsole().OLnOI("PRREObject3D::SetVertexTransferMode()");
+
+    // TODO: DO NOT DO ANYTHING IF WE ARE CLONED OBJECT!
 
     // Note: we don't check if the selected transfer mode is already selected.
     // Reason: selecting an already selected transfer mode is a way to recreate buffers / refresh geometry.
@@ -340,106 +329,13 @@ void PRREObject3D::PRREObject3DImpl::SetVertexTransferMode(TPRRE_VERTEX_TRANSFER
 } // SetVertexTransferMode()
 
 
-TPRREuint PRREObject3D::PRREObject3DImpl::getVerticesCount() const
+TPRRE_TRANSFORMED_VERTEX* PRREObject3D::PRREObject3DImpl::getTransformedVertices(TPRREbool implicitAccessSubobject)
 {
-    if ( (nVertices_h == 0) && (_pOwner->getCount() == 1) )
-        return ((PRREObject3D*) (_pOwner->getAttachedAt(0)))->getVerticesCount();
-    else
-        return nVertices_h;
-} // getVerticesCount()
-
-
-const TXYZ* PRREObject3D::PRREObject3DImpl::getVertices() const
-{
-    if ( (nVertices_h == 0) && (_pOwner->getCount() == 1) )
-        return ((PRREObject3D*) (_pOwner->getAttachedAt(0)))->getVertices();
-    else
-        return pVertices;
-} // getVertices()
-
-
-TXYZ* PRREObject3D::PRREObject3DImpl::getVertices()
-{
-    if ( (nVertices_h == 0) && (_pOwner->getCount() == 1) )
-        return ((PRREObject3D*) (_pOwner->getAttachedAt(0)))->getVertices();
-    else
-        return pVertices;
-} // getVertices()
-
-
-TPRRE_TRANSFORMED_VERTEX* PRREObject3D::PRREObject3DImpl::getTransformedVertices()
-{
-    if ( (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && (_pOwner->getVerticesCount(false) == 0) && (_pOwner->getCount() == 1) )
         return ((PRREObject3D*) (_pOwner->getAttachedAt(0)))->getTransformedVertices();
     else
         return pVerticesTransf;
 }
-
-
-/**
-    Gets the nmber of vertex indices.
-*/
-TPRREuint PRREObject3D::PRREObject3DImpl::getVertexIndicesCount() const
-{
-    if ( (nVertices_h == 0) && (_pOwner->getCount() == 1) )
-        return ((PRREObject3D*) (_pOwner->getAttachedAt(0)))->getVertexIndicesCount();
-    else
-        return nVertexIndices_h; 
-}
-
-
-/**
-    Gets the pointer to vertex indices.
-*/
-const void* PRREObject3D::PRREObject3DImpl::getVertexIndices() const
-{
-    if ( (nVertices_h == 0) && (_pOwner->getCount() == 1) )
-        return ((PRREObject3D*) (_pOwner->getAttachedAt(0)))->getVertexIndices();
-    else
-        return pVertexIndices;
-}
-
-
-/**
-    Gets the type of the indices.
-*/
-unsigned int PRREObject3D::PRREObject3DImpl::getVertexIndicesType() const
-{
-    if ( (nVertices_h == 0) && (_pOwner->getCount() == 1) )
-        return ((PRREObject3D*) (_pOwner->getAttachedAt(0)))->getVertexIndicesType();
-    else
-        return nIndicesType;
-}
-
-
-TPRREuint PRREObject3D::PRREObject3DImpl::getNormalsCount() const
-{
-    if ( (nVertices_h == 0) && (_pOwner->getCount() == 1) )
-        return ((PRREObject3D*) (_pOwner->getAttachedAt(0)))->getNormalsCount();
-    else
-        return nNormals_h;
-} // getNormalsCount()
-
-
-const TXYZ* PRREObject3D::PRREObject3DImpl::getNormals() const
-{
-    if ( (nVertices_h == 0) && (_pOwner->getCount() == 1) )
-        return ((PRREObject3D*) (_pOwner->getAttachedAt(0)))->getNormals();
-    else
-        return pNormals;
-} // getNormals()
-
-
-PRREVector& PRREObject3D::PRREObject3DImpl::getPosVec()
-{
-    return vPos;
-} // getPosVec()
-
-
-const PRREVector& PRREObject3D::PRREObject3DImpl::getPosVec() const
-{
-    return vPos;
-} // getPosVec()
 
 
 PRREVector& PRREObject3D::PRREObject3DImpl::getAngleVec()
@@ -454,92 +350,14 @@ const PRREVector& PRREObject3D::PRREObject3DImpl::getAngleVec() const
 } // getAngleVec()
 
 
-const PRREVector& PRREObject3D::PRREObject3DImpl::getSizeVec() const
-{
-    return vSize;
-} // getSizeVec()
-
-
 PRREVector PRREObject3D::PRREObject3DImpl::getScaledSizeVec() const
 {
-    const PRREVector tmp(vSize.getX() * vScaling.getX(), vSize.getY() * vScaling.getY(), vSize.getZ() * vScaling.getZ());
+    const PRREVector tmp(
+        _pOwner->getSizeVec().getX() * vScaling.getX(),
+        _pOwner->getSizeVec().getY() * vScaling.getY(),
+        _pOwner->getSizeVec().getZ() * vScaling.getZ());
     return tmp;
 } // getScaledSizeVec()
-
-
-void PRREObject3D::PRREObject3DImpl::RecalculateSize()
-{
-
-    if ( _pOwner->getCount() > 0 )
-    {
-        // we are parent, ask our subobjects to determine their size and object-local position
-        for (TPRREint i = 0; i < _pOwner->getCount(); i++)
-            ((PRREObject3D*)_pOwner->getAttachedAt(i))->RecalculateSize();
-
-        // now we can determine our own size as parent based on min and max subobject positions and size
-        TXYZ minvals, maxvals;
-        minvals.x = ((PRREObject3D*)_pOwner->getAttachedAt(0))->getPosVec().getX() - ((PRREObject3D*)_pOwner->getAttachedAt(0))->getSizeVec().getX() / 2.0f;
-        minvals.y = ((PRREObject3D*)_pOwner->getAttachedAt(0))->getPosVec().getY() - ((PRREObject3D*)_pOwner->getAttachedAt(0))->getSizeVec().getY() / 2.0f;
-        minvals.z = ((PRREObject3D*)_pOwner->getAttachedAt(0))->getPosVec().getZ() - ((PRREObject3D*)_pOwner->getAttachedAt(0))->getSizeVec().getZ() / 2.0f;
-        maxvals.x = -minvals.x;
-        maxvals.y = -minvals.y;
-        maxvals.z = -minvals.z;
-
-        for (TPRREint i = 1; i < _pOwner->getCount(); i++)
-        {
-            if ( minvals.x > ((PRREObject3D*)_pOwner->getAttachedAt(i))->getPosVec().getX() - ((PRREObject3D*)_pOwner->getAttachedAt(i))->getSizeVec().getX() / 2.0f )
-                minvals.x = ((PRREObject3D*)_pOwner->getAttachedAt(i))->getPosVec().getX() - ((PRREObject3D*)_pOwner->getAttachedAt(i))->getSizeVec().getX() / 2.0f;
-            if ( maxvals.x < ((PRREObject3D*)_pOwner->getAttachedAt(i))->getPosVec().getX() + ((PRREObject3D*)_pOwner->getAttachedAt(i))->getSizeVec().getX() / 2.0f )
-                maxvals.x = ((PRREObject3D*)_pOwner->getAttachedAt(i))->getPosVec().getX() + ((PRREObject3D*)_pOwner->getAttachedAt(i))->getSizeVec().getX() / 2.0f;
-            if ( minvals.y > ((PRREObject3D*)_pOwner->getAttachedAt(i))->getPosVec().getY() - ((PRREObject3D*)_pOwner->getAttachedAt(i))->getSizeVec().getY() / 2.0f )
-                minvals.y = ((PRREObject3D*)_pOwner->getAttachedAt(i))->getPosVec().getY() - ((PRREObject3D*)_pOwner->getAttachedAt(i))->getSizeVec().getY() / 2.0f;
-            if ( maxvals.y < ((PRREObject3D*)_pOwner->getAttachedAt(i))->getPosVec().getY() + ((PRREObject3D*)_pOwner->getAttachedAt(i))->getSizeVec().getY() / 2.0f )
-                maxvals.y = ((PRREObject3D*)_pOwner->getAttachedAt(i))->getPosVec().getY() + ((PRREObject3D*)_pOwner->getAttachedAt(i))->getSizeVec().getY() / 2.0f;
-            if ( minvals.z > ((PRREObject3D*)_pOwner->getAttachedAt(i))->getPosVec().getZ() - ((PRREObject3D*)_pOwner->getAttachedAt(i))->getSizeVec().getZ() / 2.0f )
-                minvals.z = ((PRREObject3D*)_pOwner->getAttachedAt(i))->getPosVec().getZ() - ((PRREObject3D*)_pOwner->getAttachedAt(i))->getSizeVec().getZ() / 2.0f;
-            if ( maxvals.z < ((PRREObject3D*)_pOwner->getAttachedAt(i))->getPosVec().getZ() + ((PRREObject3D*)_pOwner->getAttachedAt(i))->getSizeVec().getZ() / 2.0f )
-                maxvals.z = ((PRREObject3D*)_pOwner->getAttachedAt(i))->getPosVec().getZ() + ((PRREObject3D*)_pOwner->getAttachedAt(i))->getSizeVec().getZ() / 2.0f;
-        }
-
-        vSize.SetX( abs( minvals.x - maxvals.x ) );
-        vSize.SetY( abs( minvals.y - maxvals.y ) );
-        vSize.SetZ( abs( minvals.z - maxvals.z ) );
-
-        // since we are parent we dont need to modify our world-space position at all based on our subobjects
-    }
-
-    if ( (nVertices_h == 0) || (pVertices == PGENULL ) )
-        return;
-
-    // we are subobject, so we need to calculate our own size and object-local position based on min and max vertex positions
-
-    TXYZ minvals, maxvals;
-    minvals.x = pVertices[0].x;
-    minvals.y = pVertices[0].y;
-    minvals.z = pVertices[0].z;
-    maxvals.x = minvals.x;
-    maxvals.y = minvals.y;
-    maxvals.z = minvals.z;
-
-    for (TPRREuint i = 1; i < nVertices_h; i++)
-    {
-        if ( minvals.x > pVertices[i].x ) minvals.x = pVertices[i].x;
-        if ( maxvals.x < pVertices[i].x ) maxvals.x = pVertices[i].x;
-        if ( minvals.y > pVertices[i].y ) minvals.y = pVertices[i].y;
-        if ( maxvals.y < pVertices[i].y ) maxvals.y = pVertices[i].y;
-        if ( minvals.z > pVertices[i].z ) minvals.z = pVertices[i].z;
-        if ( maxvals.z < pVertices[i].z ) maxvals.z = pVertices[i].z;
-    } 
-
-    vSize.SetX( abs( minvals.x - maxvals.x ) );
-    vSize.SetY( abs( minvals.y - maxvals.y ) );
-    vSize.SetZ( abs( minvals.z - maxvals.z ) );
-
-    vPos.SetX( minvals.x + vSize.getX() / 2.0f );
-    vPos.SetY( minvals.y + vSize.getY() / 2.0f );
-    vPos.SetZ( minvals.z + vSize.getZ() / 2.0f );
-    
-} // RecalculateSize()
 
 
 const PRREVector& PRREObject3D::PRREObject3DImpl::getScaling() const
@@ -550,24 +368,28 @@ const PRREVector& PRREObject3D::PRREObject3DImpl::getScaling() const
 
 void PRREObject3D::PRREObject3DImpl::SetScaling(TPRREfloat value)
 {
+    // TODO: ignore the setting if this is level-2 object!!!
     vScaling.Set(value, value, value);
 } // SetScaling()
 
 
 void PRREObject3D::PRREObject3DImpl::SetScaling(const PRREVector& value)
 {
+    // TODO: ignore the setting if this is level-2 object!!!
     vScaling = value;
 } // SetScaling()
 
 
 void PRREObject3D::PRREObject3DImpl::Scale(TPRREfloat value)
 {
+    // TODO: ignore the setting if this is level-2 object!!!
     vScaling.Set( vScaling.getX() * value, vScaling.getY() * value, vScaling.getZ() * value );
 } // Scale()
 
 
 void PRREObject3D::PRREObject3DImpl::Scale(const PRREVector& value)
 {
+    // TODO: ignore the setting if this is level-2 object!!!
     vScaling.Set( vScaling.getX() * value.getX(), vScaling.getY() * value.getY(), vScaling.getZ() * value.getZ() );
 } // Scale()
 
@@ -580,6 +402,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isVisible() const
 
 void PRREObject3D::PRREObject3DImpl::SetVisible(TPRREbool state)
 {
+    // TODO: ignore the setting if this is level-2 object!!!
     bVisible = state;
 } // SetVisible()
 
@@ -616,6 +439,7 @@ TPRRE_ROTATION_ORDER PRREObject3D::PRREObject3DImpl::getRotationOrder() const
 
 void PRREObject3D::PRREObject3DImpl::SetRotationOrder(TPRRE_ROTATION_ORDER value)
 {
+    // TODO: ignore this if this is a level-2 subobject!
     rotation = value;
 } // SetRotationOrder()
 
@@ -628,6 +452,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isLit() const
 
 void PRREObject3D::PRREObject3DImpl::SetLit(TPRREbool value)
 {
+    // TODO: ignore this if this is a level-2 subobject!
     bAffectedByLights = value;
 } // SetLit()
 
@@ -640,6 +465,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isDoubleSided() const
 
 void PRREObject3D::PRREObject3DImpl::SetDoubleSided(TPRREbool value)
 {
+    // TODO: ignore this if this is a level-2 subobject!
     bDoubleSided = value;
 } // SetDoubleSided()
 
@@ -652,6 +478,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isWireframed() const
 
 void PRREObject3D::PRREObject3DImpl::SetWireframed(TPRREbool value)
 {
+    // TODO: ignore this if this is a level-2 subobject!
     bWireframe = value;
 } // SetWireframed()
 
@@ -664,6 +491,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isWireframedCulled() const
 
 void PRREObject3D::PRREObject3DImpl::SetWireframedCulled(TPRREbool value)
 {
+    // TODO: ignore this if this is a level-2 subobject!
     bWireframedCull = value;
 } // SetWireframedCulled()
 
@@ -676,6 +504,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isAffectingZBuffer() const
 
 void PRREObject3D::PRREObject3DImpl::SetAffectingZBuffer(TPRREbool value)
 {
+    // TODO: ignore this if this is a level-2 subobject!
     bAffectZBuffer = value;
 } // SetAffectingZBuffer()
 
@@ -688,6 +517,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isTestingAgainstZBuffer() const
 
 void PRREObject3D::PRREObject3DImpl::SetTestingAgainstZBuffer(TPRREbool value)
 {
+    // TODO: ignore this if this is a level-2 subobject!
     bAllowZTesting = value;
 } // SetTestingAgainstZBuffer()
 
@@ -700,6 +530,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isStickedToScreen() const
 
 void PRREObject3D::PRREObject3DImpl::SetStickedToScreen(TPRREbool value)
 {
+    // TODO: ignore this if this is a level-2 subobject!
     bStickedToScreen = value;
     SetDoubleSided(true);
     SetLit(false);
@@ -707,33 +538,11 @@ void PRREObject3D::PRREObject3DImpl::SetStickedToScreen(TPRREbool value)
 } // SetStickedToScreen()
 
 
-const PRREMaterial& PRREObject3D::PRREObject3DImpl::getMaterial() const
-{
-    if ( (nVertices_h == 0) && (_pOwner->getCount() == 1) )
-        return ((PRREObject3D*) (_pOwner->getAttachedAt(0)))->getMaterial();
-    else
-        return *pMaterial;
-} // getMaterial()
-
-
-PRREMaterial& PRREObject3D::PRREObject3DImpl::getMaterial()
-{
-    if ( (nVertices_h == 0) && (_pOwner->getCount() == 1) )
-        return ((PRREObject3D*) (_pOwner->getAttachedAt(0)))->getMaterial();
-    else
-        return *pMaterial;
-} // getMaterial()
-
-
 TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
 {
     return (
         sizeof(*this) +
-        nVertices_h * sizeof(TXYZ) +
-        nVertexIndices_h * PRREGLsnippets::getSizeofIndexType(nIndicesType) +
-        nNormals_h * sizeof(TXYZ) +
-        nFbBuffer_h +
-        pMaterial ? pMaterial->getUsedSystemMemory() : 0
+        nFbBuffer_h
     );
 } // getUsedSystemMemory()     
 
@@ -748,6 +557,12 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         DrawSW();
         return;
     }
+
+    // TODO: add a mechanism for ignoring user-triggered draw of subobjects.
+    // This can be done if parent maintains a variable that is set to true
+    // at the beginning of draw and its subobjects check for the value of this var,
+    // and draw only if that is true. At the end, parent resets this to false.
+    // TODO: add public comment about this once implemented!
 
     // see if we are parent or referring to another object i.e. we are cloned object
     if ( (_pOwner->getCount() > 0) || pRefersto )
@@ -770,44 +585,40 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
     }
 
     // before trying to draw anything, see if we actually have anything to draw ...
-    if ( (nVertexIndices_h == 0) && (nVertices_h == 0) && (nVerticesVBO == 0) && (nDispList == 0) )
+    if ( (_pOwner->getVertexIndicesCount(false) == 0) && (_pOwner->getVerticesCount(false) == 0) && (nVerticesVBO == 0) && (nDispList == 0) )
         return;  // we return here if we are parent or we are cloned object
 
     // if we reach this point then either our parent is drawing us as its subobject, or a cloned object is drawing us on behalf of our parent
     if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
     {
-        if ( getMaterial().isMultiTextured() )
+        if ( _pOwner->getMaterial().isMultiTextured() )
         {
             // enable blending of 2nd layer
             glEnable(GL_BLEND);
-	          glBlendFunc(getGLblendFromPRREblend(getMaterial().getSourceBlendFunc(1)), getGLblendFromPRREblend(getMaterial().getDestinationBlendFunc(1)));
-            LoadTextureIntoTMU( pMaterial->getTexture(0), 0 );
-            LoadTextureIntoTMU( pMaterial->getTexture(1), 1 );
+	          glBlendFunc(getGLblendFromPRREblend(_pOwner->getMaterial().getSourceBlendFunc(1)), getGLblendFromPRREblend(_pOwner->getMaterial().getDestinationBlendFunc(1)));
+            LoadTextureIntoTMU( _pOwner->getMaterial().getTexture(0), 0 );
+            LoadTextureIntoTMU( _pOwner->getMaterial().getTexture(1), 1 );
         }
         else
         {
             // disable blending only if base layer is not blended ...
-            if ( ! PRREObject3DManager::isBlendFuncBlends(getMaterial().getSourceBlendFunc(), getMaterial().getDestinationBlendFunc()) )
+            if ( ! PRREObject3DManager::isBlendFuncBlends(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
                 glDisable(GL_BLEND);
-            LoadTextureIntoTMU( pMaterial->getTexture(0), 0 );
+            LoadTextureIntoTMU( _pOwner->getMaterial().getTexture(0), 0 );
             LoadTextureIntoTMU( PGENULL, 1 );
         }
     }
     else
     {
         // disable blending only if base layer is not blended ...
-        if ( ! PRREObject3DManager::isBlendFuncBlends(getMaterial().getSourceBlendFunc(), getMaterial().getDestinationBlendFunc()) )
+        if ( ! PRREObject3DManager::isBlendFuncBlends(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
             glDisable(GL_BLEND);
-        LoadTextureIntoTMU( pMaterial->getTexture() );
+        LoadTextureIntoTMU( _pOwner->getMaterial().getTexture() );
     }
 
     /* currently not supporting any vendor-specific mode */
     if ( BITF_READ(getVertexTransferMode(),PRRE_VT_VENDOR_BITS,3) != 0 )
         return;
-
-    // If you want all vertices to be transformed and catched in feedback mode then dont forget to disable culling and depth testing (maybe only 1 is needed to be disabled).
-    //glDisable(GL_DEPTH_TEST);
-    //glDisable(GL_CULL_FACE);
 
     if ( pFbBuffer == NULL )
     {
@@ -824,13 +635,15 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
             So the total num of values is: numOfTriangles * (2+3*12)
             Example with some real data is in later comment with debugbuffer[]. */
 
-        nFbBuffer_h = (nVertices_h / 3) * (2+3*12);
+        nFbBuffer_h = (_pOwner->getVerticesCount(false) / 3) * (2+3*12);
         /* TODO: probably in future we should rather use pVerticesTransf here as well since we already have it for that purpose, right? ;) */
         pFbBuffer = (GLfloat*) realloc(pFbBuffer, nFbBuffer_h * sizeof(GLfloat));
 
         /* unfortunately only the most detailed option GL_4D_COLOR_TEXTURE will give us the w-coord of vertices so we need to use that */
         glFeedbackBuffer(nFbBuffer_h, GL_4D_COLOR_TEXTURE, pFbBuffer);
         
+        // If you want all vertices to be transformed and catched in feedback mode then dont forget to disable culling and depth testing (maybe only 1 is needed to be disabled).
+        //glDisable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE); /* otherwise only the front facing side of cube would be written to feedback buffer */
 
         glRenderMode(GL_FEEDBACK);
@@ -838,7 +651,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
 
     if ( BIT_READ(getVertexTransferMode(), PRRE_VT_VA_BIT) == 0u )
     {
-        /* there is no array for geometry, so we either invoke a display list or pass vertices 1-by-1*/
+        /* there is no array for geometry, so we either invoke a display list or pass vertices 1-by-1 */
 
         if ( PRREObject3DManager::isVertexModifyingDynamic( getVertexTransferMode() ) )
             // PRRE_VT_DYN_..._1_BY_1
@@ -846,7 +659,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         else
             // PRRE_VT_STA_..._DL
             glCallList( nDispList );
-    } // PRRE_VT_VA_BIT == 1u
+    } // PRRE_VT_VA_BIT == 0u
     else
     {
         /* vertex array either in client or server */
@@ -863,7 +676,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
             // Just wanted to emphasize that locking the array and drawing it only once
             // does not make much sense.
             if ( BIT_READ(getVertexTransferMode(), PRRE_VT_CVA_BIT) == 1u )
-                glLockArraysEXT(0, nVertices_h);
+                glLockArraysEXT(0, _pOwner->getVerticesCount(false));
 
                 // Static and dynamic vmods are not differentiated here but when creating the arrays.
                 // That is why we don't check for vmod in this code.
@@ -874,27 +687,31 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
                     {
                         // TODO: should call this in loop, do multiple batches based on the implementation-dependent values
                         // (GL_MAX_ELEMENTS_VERTICES_EXT, GL_MAX_ELEMENTS_INDICES_EXT).
+                        if ( ((PRREObject3D*)(_pOwner->getManager()))->getFilename() == "pistol.obj" )
+                        {
+                        }
                         glDrawRangeElementsEXT(
-                            getGLprimitiveFromPRREprimitive(primitiveFormat),
-                            nMinIndex, nMaxIndex, nVertexIndices_h, nIndicesType, bServer ? NULL : pVertexIndices );
+                            getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()),
+                            _pOwner->getMinIndexValue(false), _pOwner->getMaxIndexValue(false),
+                            _pOwner->getVertexIndicesCount(false), _pOwner->getVertexIndicesType(false), bServer ? NULL : _pOwner->getVertexIndices(false) );
                     }
                     else
                     {
                         glDrawElements(
-                            getGLprimitiveFromPRREprimitive(primitiveFormat), 
-                            nVertexIndices_h, nIndicesType, bServer ? NULL : pVertexIndices );
+                            getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()), 
+                            _pOwner->getVertexIndicesCount(false), _pOwner->getVertexIndicesType(false), bServer ? NULL : _pOwner->getVertexIndices(false) );
                     }
                 }
                 else
                 {
-                    glDrawArrays( getGLprimitiveFromPRREprimitive(primitiveFormat), 0, nVertices_h );
+                    glDrawArrays( getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()), 0, _pOwner->getVerticesCount(false) );
                 }
 
             if ( BIT_READ(getVertexTransferMode(), PRRE_VT_CVA_BIT) == 1u )
-                    glUnlockArraysEXT();
+                glUnlockArraysEXT();
 
         ResetArrayPointers( bServer );
-    } // PRRE_VT_VA_BIT == 0u
+    } // PRRE_VT_VA_BIT == 1u
 
     /* The number of values (not vertices) transferred to the feedback buffer. */
     GLint nFbBufferWritten_h = glRenderMode(GL_RENDER);
@@ -978,23 +795,11 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
     nDispList = 0;
     nVerticesVBO = nColorsVBO = nNormalsVBO = nIndicesVBO = 0;
     // nTexcoordsVBO to be resized by manager outside
-    pMaterial = PGENULL;
 
-    primitiveFormat = PRRE_PM_QUADS;
     vertexTransferMode = PRREObject3DManager::selectVertexTransferMode(vmod, vref, bForceUseClientMemory);
-    pVertices = PGENULL;
     pVerticesTransf = PGENULL;
-    pNormals = PGENULL;
-    pVertexIndices = PGENULL;
     pFbBuffer = PGENULL;
 
-    nMinIndex = UINT_MAX;  // todo: should make macros like PRRE_UINT_MAX into prretypes.h
-    nMaxIndex = 0;
-    nIndicesType = GL_UNSIGNED_INT;
-
-    nVertices_h = nNormals_h = 0;
-    nVertexIndices_h = 0;
-    nFaces_h = 0;
     nFbBuffer_h = 0;
 
     getConsole().SOLnOO("Done!");
@@ -1027,24 +832,6 @@ CConsole& PRREObject3D::PRREObject3DImpl::getConsole() const
 
 
 /**
-    Gets an index value from a given index array.
-*/
-TPRREuint PRREObject3D::PRREObject3DImpl::getIndexFromArray(const void* arr, TPRREuint index) const
-{
-    return PRREGLsnippets::getIndexFromArray(arr, index, this->nIndicesType);
-}
-
-
-/**
-    Sets an index value in a given index array.
-*/
-void PRREObject3D::PRREObject3DImpl::SetIndexInArray(void* arr, TPRREuint index, TPRREuint value)
-{
-    PRREGLsnippets::SetIndexInArray(arr, index, value, this->nIndicesType);
-}
-
-
-/**
     Tells whether it is allowed to switch from indexed to non-indexed vertex referencing mode.
     It is allowed when geometry data is stored redundantly so direct referencing is available.
     Geometry data is stored redundantly when multiple vertices are defined with the same position
@@ -1055,16 +842,20 @@ void PRREObject3D::PRREObject3DImpl::SetIndexInArray(void* arr, TPRREuint index,
 */
 TPRREbool PRREObject3D::PRREObject3DImpl::isSwitchFromIndexedAllowed() const
 {
+    // TODO: ALL subobjects should check if their vertex index count equals to vertex count, 1 false is enough to return false!
     if ( _pOwner->getCount() > 0 )
         return ((PRREObject3D*)_pOwner->getAttachedAt(0))->p->isSwitchFromIndexedAllowed();
     else
-        return (nVertexIndices_h == nVertices_h) && (nVertices_h > 0);
+        return (_pOwner->getVertexIndicesCount(false) == _pOwner->getVerticesCount(false)) && (_pOwner->getVerticesCount(false) > 0);
 }
 
 
 /**
     Goes thru vertices and feeds them to OpenGL.
-    Used by direct and indexed immediate modes and during display list building.
+    Used by any vertex transfer mode not utilizing vertex arrays, such as:
+     - immediate mode;
+     - display lists.
+    Handles both direct and indexed vertex reference modes.
 
     @param indexed If true, will go thru vertices by using pVertexIndices for ordering, otherwise won't use it.
 */
@@ -1074,38 +865,38 @@ void PRREObject3D::PRREObject3DImpl::ProcessGeometry(TPRREbool indexed) const
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         return;
 
-    //const TRGBAFLOAT* const pColors = pMaterial->getColors(0);
-    //const void* const pColorIndices = pMaterial->getColorIndices(0);
-    const TUVW* const pTexcoords = pMaterial->getTexcoords(0);
+    //const TRGBAFLOAT* const pColors = _pOwner->getMaterial(false).getColors(0);
+    //const void* const pColorIndices = _pOwner->getMaterial(false).getColorIndices(0);
+    const TUVW* const pTexcoords = _pOwner->getMaterial(false).getTexcoords(0);
     // following can be NULL if material system supports only 1 level
-    const TUVW* const pTexcoords2 = pMaterial->getTexcoords(1);
-    //const void* const pTexcoordIndices2 = pMaterial->getTexcoordIndices(1);
+    const TUVW* const pTexcoords2 = _pOwner->getMaterial(false).getTexcoords(1);
+    //const void* const pTexcoordIndices2 = _pOwner->getMaterial(false).getTexcoordIndices(1);
 
-    glBegin( getGLprimitiveFromPRREprimitive(primitiveFormat) );
-        for (TPRREuint i = 0; i < nVertexIndices_h; i++)
+    glBegin( getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()) );
+        for (TPRREuint i = 0; i < _pOwner->getVertexIndicesCount(false); i++)
         {
-            const TXYZ&       vertex = indexed ? pVertices[ getIndexFromArray(pVertexIndices, i) ]    : pVertices[i];
-            const TXYZ&       normal = indexed ? pNormals[ getIndexFromArray(pVertexIndices, i) ]     : pNormals[i];
-            //const TRGBAFLOAT& color  = indexed ? pColors[ getIndexFromArray(pColorIndices, i) ]       : pColors[i];
-            const TUVW&       uvw    = indexed ? pTexcoords[ getIndexFromArray(pVertexIndices, i) ] : pTexcoords[i];
+            const TXYZ&       vertex = indexed ? _pOwner->getVertices(false)[ _pOwner->getIndexFromArray(_pOwner->getVertexIndices(false), i) ]    : _pOwner->getVertices(false)[i];
+            const TXYZ&       normal = indexed ? _pOwner->getNormals(false)[ _pOwner->getIndexFromArray(_pOwner->getVertexIndices(false), i) ]     : _pOwner->getNormals(false)[i];
+            //const TRGBAFLOAT& color  = indexed ? pColors[ _pOwner->getIndexFromArray(pColorIndices, i) ]       : pColors[i];
+            const TUVW&       uvw    = indexed ? pTexcoords[ _pOwner->getIndexFromArray(_pOwner->getVertexIndices(false), i) ] : pTexcoords[i];
 
             if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
             {
-                if ( getMaterial().isMultiTextured() )
+                if ( _pOwner->getMaterial(false).isMultiTextured() )
                 {
-                    const TUVW& uvw2 = indexed ? pTexcoords2[ getIndexFromArray(pVertexIndices, i) ] : pTexcoords2[i];
+                    const TUVW& uvw2 = indexed ? pTexcoords2[ _pOwner->getIndexFromArray(_pOwner->getVertexIndices(false), i) ] : pTexcoords2[i];
                     glMultiTexCoord2fARB(GL_TEXTURE0_ARB, uvw.u, uvw.v);
                     glMultiTexCoord2fARB(GL_TEXTURE1_ARB, uvw2.u, uvw2.v);
                 }
                 else
                 {
-                    if ( pMaterial->getTexture() != PGENULL )
+                    if ( _pOwner->getMaterial(false).getTexture() != PGENULL )
                         glMultiTexCoord2fARB(GL_TEXTURE0_ARB, uvw.u, uvw.v);
                 }
             }
             else
             {
-                if ( pMaterial->getTexture() != PGENULL )
+                if ( _pOwner->getMaterial(false).getTexture() != PGENULL )
                     glTexCoord2f(uvw.u, uvw.v);
             }
             
@@ -1130,7 +921,7 @@ void PRREObject3D::PRREObject3DImpl::CompileIntoDisplayList(TPRREbool indexed)
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         return;
 
-    if ( pVertices == NULL )
+    if ( _pOwner->getVertices(false) == NULL )
         return;
 
     nDispList = glGenLists(1);
@@ -1153,43 +944,43 @@ void PRREObject3D::PRREObject3DImpl::CompileIntoVertexBufferObjects(TPRREbool in
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         return;
 
-    if ( indexed && (nIndicesVBO == 0) && (pVertexIndices != NULL) )
+    if ( indexed && (nIndicesVBO == 0) && (_pOwner->getVertexIndices(false) != NULL) )
     {
         glGenBuffersARB(1, &nIndicesVBO);
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, nIndicesVBO);
-        glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, nVertexIndices_h * PRREGLsnippets::getSizeofIndexType(nIndicesType), pVertexIndices, GL_STATIC_DRAW_ARB);
+        glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, _pOwner->getVertexIndicesCount(false) * PRREGLsnippets::getSizeofIndexType(_pOwner->getVertexIndicesType()), _pOwner->getVertexIndices(false), GL_STATIC_DRAW_ARB);
         // Note: we always store indices in static buffer but could be in client memory, too.
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
     }
 
-    if ( (nVerticesVBO == 0) && (pVertices != NULL) )
+    if ( (nVerticesVBO == 0) && (_pOwner->getVertices(false) != NULL) )
     {
         GLenum usage = dynamic ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB;
         glGenBuffersARB(1, &nVerticesVBO);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, nVerticesVBO);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB,  nVertices_h * sizeof(TXYZ), pVertices, usage);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB,  _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getVertices(false), usage);
  
         glGenBuffersARB(1, &nColorsVBO);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, nColorsVBO);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, pMaterial->getColorsCount() * sizeof(TRGBAFLOAT), pMaterial->getColors(), usage);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getColorsCount() * sizeof(TRGBAFLOAT), _pOwner->getMaterial(false).getColors(), usage);
 
         glGenBuffersARB(1, &nTexcoordsVBO[0]);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[0]);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, pMaterial->getTexcoordsCount() * sizeof(TUVW), pMaterial->getTexcoords(), usage);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount() * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(), usage);
 
         if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
         {
-            if ( getMaterial().isMultiTextured() )
+            if ( _pOwner->getMaterial(false).isMultiTextured() )
             {
                 glGenBuffersARB(1, &nTexcoordsVBO[1]);
                 glBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[1]);
-                glBufferDataARB(GL_ARRAY_BUFFER_ARB, pMaterial->getTexcoordsCount(1) * sizeof(TUVW), pMaterial->getTexcoords(1), usage);
+                glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount(1) * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(1), usage);
             }
         }
 
         glGenBuffersARB(1, &nNormalsVBO);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, nNormalsVBO);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, nNormals_h * sizeof(TXYZ), pNormals, usage);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getNormalsCount(false) * sizeof(TXYZ), _pOwner->getNormals(false), usage);
 
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
@@ -1283,15 +1074,15 @@ void PRREObject3D::PRREObject3DImpl::SetArrayPointers(TPRREbool redirectToServer
     }
     else
     {
-        glVertexPointer(3, GL_FLOAT, 0, pVertices);
+        glVertexPointer(3, GL_FLOAT, 0, _pOwner->getVertices(false));
         // per-vertex color is disabled for compatibility with tmcsgfxlib wrapper, reason somewhere above
-        //glColorPointer(4, GL_FLOAT, 0, pMaterial->getColors());
-        glNormalPointer(GL_FLOAT, 0, pNormals);
+        //glColorPointer(4, GL_FLOAT, 0, _pOwner->getMaterial(false).getColors());
+        glNormalPointer(GL_FLOAT, 0, _pOwner->getNormals(false));
     }
 
-    if ( pMaterial->isTextured() )
+    if ( _pOwner->getMaterial(false).isTextured() )
     {
-        const TPRREuint iMaxTexLayer = pMaterial->isMultiTextured() ? 1 : 0;
+        const TPRREuint iMaxTexLayer = _pOwner->getMaterial(false).isMultiTextured() ? 1 : 0;
         for (TPRREuint i = 0; i <= iMaxTexLayer; i++)
         {
             if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
@@ -1304,7 +1095,7 @@ void PRREObject3D::PRREObject3DImpl::SetArrayPointers(TPRREbool redirectToServer
                 glTexCoordPointer(3, GL_FLOAT, 0, NULL);
             }
             else
-                glTexCoordPointer(3, GL_FLOAT, 0, pMaterial->getTexcoords(i));
+                glTexCoordPointer(3, GL_FLOAT, 0, _pOwner->getMaterial(false).getTexcoords(i));
         }
     }
 
@@ -1329,9 +1120,9 @@ void PRREObject3D::PRREObject3DImpl::ResetArrayPointers(TPRREbool redirectToServ
         if ( PRREObject3DManager::isVertexReferencingIndexed(vertexTransferMode) )
             glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
     }
-    if ( pMaterial->isTextured() )
+    if ( _pOwner->getMaterial(false).isTextured() )
     {
-        const TPRREuint iMaxTexLayer = pMaterial->isMultiTextured() ? 1 : 0;
+        const TPRREuint iMaxTexLayer = _pOwner->getMaterial(false).isMultiTextured() ? 1 : 0;
         for (TPRREuint i = 0; i <= iMaxTexLayer; i++)
         {
             if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
@@ -1406,7 +1197,7 @@ void PRREObject3D::PRREObject3DImpl::ApplyTransformations() const
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         return;
 
-    glTranslatef(getPosVec().getX(), getPosVec().getY(), getPosVec().getZ());
+    glTranslatef(_pOwner->getPosVec().getX(), _pOwner->getPosVec().getY(), _pOwner->getPosVec().getZ());
     
     switch ( getRotationOrder() )
     {
@@ -1532,16 +1323,16 @@ void PRREObject3D::PRREObject3DImpl::PrepareGLbeforeDraw(bool bLighting) const
     // we should rather use glBlendColor() for this with GL_*_CONSTANT_* blendfunc, or modify the code not to specify color per-vertex
     
     glColor4f(
-        getMaterial().getTextureEnvColor().getRedAsFloat(),
-        getMaterial().getTextureEnvColor().getGreenAsFloat(),
-        getMaterial().getTextureEnvColor().getBlueAsFloat(),
-        getMaterial().getTextureEnvColor().getAlphaAsFloat() );
+        _pOwner->getMaterial().getTextureEnvColor().getRedAsFloat(),
+        _pOwner->getMaterial().getTextureEnvColor().getGreenAsFloat(),
+        _pOwner->getMaterial().getTextureEnvColor().getBlueAsFloat(),
+        _pOwner->getMaterial().getTextureEnvColor().getAlphaAsFloat() );
                 
                 
-    if ( PRREObject3DManager::isBlendFuncBlends(getMaterial().getSourceBlendFunc(), getMaterial().getDestinationBlendFunc()) )
+    if ( PRREObject3DManager::isBlendFuncBlends(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
     {
         glEnable(GL_BLEND);
-        glBlendFunc(getGLblendFromPRREblend(getMaterial().getSourceBlendFunc()), getGLblendFromPRREblend(getMaterial().getDestinationBlendFunc()));
+        glBlendFunc(getGLblendFromPRREblend(_pOwner->getMaterial().getSourceBlendFunc()), getGLblendFromPRREblend(_pOwner->getMaterial().getDestinationBlendFunc()));
         glAlphaFunc(GL_GREATER, 0.1f);
         glEnable(GL_ALPHA_TEST);
     }
@@ -1577,7 +1368,7 @@ void PRREObject3D::PRREObject3DImpl::DrawSW()
     }
 
     // before trying to draw anything, see if we actually have anything to draw ...
-    if ( (nVertexIndices_h == 0) && (nVertices_h == 0) )
+    if ( (_pOwner->getVertexIndicesCount(false) == 0) && (_pOwner->getVerticesCount(false) == 0) )
         return;  // we return here if we are parent or we are cloned object
 
     // actual draw here
@@ -1612,16 +1403,10 @@ PRREObject3D* PRREObject3D::getReferredObject() const
 
 
 /**
-    Gets the primitives' format.
-*/
-TPRRE_PRIMITIVE_FORMAT PRREObject3D::getPrimitiveFormat() const
-{
-    return p->getPrimitiveFormat();
-} // getPrimitiveFormat()
-
-
-/**
     Gets vertex modifying habit.
+    It applies to the entire geometry of the object, including all of its subobjects.
+    Level-2 objects use the property of their 
+    parent object.
 */
 TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::getVertexModifyingHabit() const
 {
@@ -1631,6 +1416,8 @@ TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::getVertexModifyingHabit() const
 
 /**
     Sets vertex modifying habit.
+    It applies to the entire geometry of the object, including all of its subobjects.
+    The setting is ignored for level-2 objects as it is applied by their level-1 parent object.
 */
 void PRREObject3D::SetVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod)
 {
@@ -1640,6 +1427,8 @@ void PRREObject3D::SetVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod)
 
 /**
     Gets vertex referencing mode.
+    It applies to the entire geometry of the object, including all of its subobjects.
+    Level-2 objects use the property of their level-1 parent object.
 */
 TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::getVertexReferencingMode() const
 {
@@ -1649,6 +1438,8 @@ TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::getVertexReferencingMode() const
  
 /**
     Sets vertex referencing mode.
+    It applies to the entire geometry of the object, including all of its subobjects.
+    The setting is ignored for level-2 objects as it is applied by their level-1 parent object.
 */
 void PRREObject3D::SetVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref)
 {
@@ -1658,6 +1449,8 @@ void PRREObject3D::SetVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref)
 
 /**
     Gets vertex transfer mode.
+    It applies to the entire geometry of the object, including all of its subobjects.
+    Level-2 objects use the property of their level-1 parent object.
 */
 TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::getVertexTransferMode() const
 {
@@ -1671,50 +1464,13 @@ TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::getVertexTransferMode() const
     However, it can be also set manually for custom reasons.
     The setting may not happen if the selected transfer mode is not available for some reason, for
     example, if the selected mode is not supported on the current hardware.
+    It applies to the entire geometry of the object, including all of its subobjects.
+    The setting is ignored for level-2 objects as it is applied by their level-1 parent object.
 */
 void PRREObject3D::SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 {
     p->SetVertexTransferMode(vtrans);
 } // SetVertexTransferMode()
-
-
-/**
-    Gets the number of vertices.
-
-    @return Number of vertices. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
-            count is the subobject's vertex count. This implicit behavior is for convenience for objects storing
-            only 1 subobject like internally created objects.
-*/
-TPRREuint PRREObject3D::getVerticesCount() const
-{
-    return p->getVerticesCount();
-} // getVerticesCount()
-
-
-/**
-    Gets the pointer to vertices.
-
-    @return Pointer to vertices. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
-            pointer is the subobject's vertices pointer. This implicit behavior is for convenience for objects storing
-            only 1 subobject like internally created objects.
-*/
-const TXYZ* PRREObject3D::getVertices() const
-{
-    return p->getVertices();
-} // getVertices()
-
-
-/**
-    Gets the pointer to vertices.
-
-    @return Pointer to vertices. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
-            pointer is the subobject's vertices pointer. This implicit behavior is for convenience for objects storing
-            only 1 subobject like internally created objects.
-*/
-TXYZ* PRREObject3D::getVertices()
-{
-    return p->getVertices();
-} // getVertices()
 
 
 /**
@@ -1725,87 +1481,16 @@ TXYZ* PRREObject3D::getVertices()
             pointer is the subobject's transformed vertices pointer. This implicit behavior is for convenience for objects storing
             only 1 subobject like internally created objects.
 */
-TPRRE_TRANSFORMED_VERTEX* PRREObject3D::getTransformedVertices()
+TPRRE_TRANSFORMED_VERTEX* PRREObject3D::getTransformedVertices(TPRREbool implicitAccessSubobject)
 {
-    return p->getTransformedVertices();
-} // getVertices()
-
-
-/**
-    Gets the number of vertex indices.
-*/
-TPRREuint PRREObject3D::getVertexIndicesCount() const
-{
-    return p->getVertexIndicesCount();
-}
-
-
-/**
-    Gets the pointer to vertex indices.
-*/
-const void* PRREObject3D::getVertexIndices() const
-{
-    return p->getVertexIndices();
-}
-
-
-/**
-    Gets the type of the indices.
-*/
-unsigned int PRREObject3D::getVertexIndicesType() const
-{
-    return p->getVertexIndicesType();
-}
-
-
-/**
-    Gets the number of normals.
-
-    @return Number of normals. If the object's own normal count is 0 but it has exactly 1 subobject, the returned
-            count is the subobject's normal count. This implicit behavior is for convenience for objects storing
-            only 1 subobject like internally created objects.
-*/
-TPRREuint PRREObject3D::getNormalsCount() const
-{
-    return p->getNormalsCount();
-} // getNormalsCount()
-
-
-/**
-    Gets the pointer to normals.
-
-    @return Pointer to normals. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
-            pointer is the subobject's normals pointer. This implicit behavior is for convenience for objects storing
-            only 1 subobject like internally created objects.
-*/
-const TXYZ* PRREObject3D::getNormals() const
-{
-    return p->getNormals();
-} // getNormals()
-
-
-/**
-    Gets the position.
-    @return Position vector.
-*/
-PRREVector& PRREObject3D::getPosVec()
-{
-    return p->getPosVec();
-} // getPosVec()
-
-
-/**
-    Gets the position.
-    @return Position vector.
-*/
-const PRREVector& PRREObject3D::getPosVec() const
-{
-    return p->getPosVec();
-} // getPosVec()
+    // TODO: add unit test for TPRREbool implicitAccessSubobject parameter!
+    return p->getTransformedVertices(implicitAccessSubobject);
+} // getVertices(false)
 
 
 /**
     Gets the rotation angles.
+    Rotation angle is currently ignored for level-2 objects, they are rotated by the same factor as their level-1 parent object using the same pivot point.
     @return Rotation angles vector.
 */
 PRREVector& PRREObject3D::getAngleVec()
@@ -1816,6 +1501,7 @@ PRREVector& PRREObject3D::getAngleVec()
 
 /**
     Gets the rotation angles.
+    Rotation angle is currently ignored for level-2 objects, they are rotated by the same factor as their level-1 parent object using the same pivot point.
     @return Rotation angles vector.
 */
 const PRREVector& PRREObject3D::getAngleVec() const
@@ -1826,16 +1512,16 @@ const PRREVector& PRREObject3D::getAngleVec() const
 
 /**
     Gets the base sizes.
-    @return Base sizes vector.
+    Need to override Mesh3D method because if we are a cloned object, we need to return the size of the object we are referring to.
 */
 const PRREVector& PRREObject3D::getSizeVec() const
 {
-    return p->getSizeVec();
-} // getSizeVec()
+    return (p->pRefersto == PGENULL) ? PRREMesh3D::getSizeVec() : p->pRefersto->getSizeVec();
+}
 
 
 /**
-    Gets the real sizes.
+    Gets the real sizes considering the geometry size calculated from vertex data and the current scaling factor.
     @return Real sizes vector.
 */
 PRREVector PRREObject3D::getScaledSizeVec() const
@@ -1845,16 +1531,7 @@ PRREVector PRREObject3D::getScaledSizeVec() const
 
 
 /**
-    Recalculates the sizes.
-*/
-void PRREObject3D::RecalculateSize()
-{
-    p->RecalculateSize();
-} // RecalculateSize()
-
-
-/**
-    Gets the scaling.
+    Gets the scaling factor.
     @return Scaling.
 */
 const PRREVector& PRREObject3D::getScaling() const
@@ -1864,7 +1541,8 @@ const PRREVector& PRREObject3D::getScaling() const
 
 
 /**
-    Sets the scaling to given scalar.
+    Sets the scaling factor to given scalar.
+    Scaling factor is currently ignored for level-2 objects, they are scaled by the same factor as their level-1 parent object.
 */
 void PRREObject3D::SetScaling(TPRREfloat value)
 {
@@ -1873,7 +1551,8 @@ void PRREObject3D::SetScaling(TPRREfloat value)
 
 
 /**
-    Sets the scaling to given vector.
+    Sets the scaling factor to given vector.
+    Scaling factor is currently ignored for level-2 objects, they are scaled by the same factor as their level-1 parent object.
 */
 void PRREObject3D::SetScaling(const PRREVector& value)
 {
@@ -1883,6 +1562,7 @@ void PRREObject3D::SetScaling(const PRREVector& value)
 
 /**
     Scales by the given scalar value. 
+    Scaling factor is currently ignored for level-2 objects, they are scaled by the same factor as their level-1 parent object.
 */
 void PRREObject3D::Scale(TPRREfloat value)
 {
@@ -1892,6 +1572,7 @@ void PRREObject3D::Scale(TPRREfloat value)
 
 /**
     Scales by the given vector.
+    Scaling factor is currently ignored for level-2 objects, they are scaled by the same factor as their level-1 parent object.
 */
 void PRREObject3D::Scale(const PRREVector& value)
 {
@@ -1901,6 +1582,8 @@ void PRREObject3D::Scale(const PRREVector& value)
 
 /**
     Gets the visibility state.
+    If an object is not visible, it is not rendered.
+    Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
     @return True, if visible, false otherwise.
 */
 TPRREbool PRREObject3D::isVisible() const
@@ -1911,6 +1594,8 @@ TPRREbool PRREObject3D::isVisible() const
 
 /**
     Sets the visibility state.
+    If an object is not visible, it is not rendered.
+    Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
 */
 void PRREObject3D::SetVisible(TPRREbool state)
 {
@@ -1921,6 +1606,8 @@ void PRREObject3D::SetVisible(TPRREbool state)
 /**
     Sets the visibility state to true.
     Equivalent to SetVisible(true).
+    If an object is not visible, it is not rendered.
+    Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
 */
 void PRREObject3D::Show()
 {
@@ -1931,6 +1618,8 @@ void PRREObject3D::Show()
 /**
     Sets the visibility state to false.
     Equivalent to SetVisible(false).
+    If an object is not visible, it is not rendered.
+    Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
 */
 void PRREObject3D::Hide()
 {
@@ -1940,6 +1629,7 @@ void PRREObject3D::Hide()
 
 /**
     Gets whether colliding is enabled.
+    Legacy function unrelated to the purpose of this class, will need to be removed!
     @return True, if colliding is enabled, false otherwise.
 */
 TPRREbool PRREObject3D::isColliding_TO_BE_REMOVED() const
@@ -1950,6 +1640,7 @@ TPRREbool PRREObject3D::isColliding_TO_BE_REMOVED() const
 
 /**
     Sets whether colliding is enabled.
+    Legacy function unrelated to the purpose of this class, will need to be removed!
 */
 void PRREObject3D::SetColliding_TO_BE_REMOVED(TPRREbool value)
 {
@@ -1959,6 +1650,7 @@ void PRREObject3D::SetColliding_TO_BE_REMOVED(TPRREbool value)
 
 /**
     Gets the rotation order.
+    Rotation order is currently ignored for level-2 objects, they are rotated the same way as their level-1 parent object.
     @return Rotation order.
 */
 TPRRE_ROTATION_ORDER PRREObject3D::getRotationOrder() const
@@ -1969,6 +1661,7 @@ TPRRE_ROTATION_ORDER PRREObject3D::getRotationOrder() const
 
 /**
     Sets the rotation order.
+    Rotation order is currently ignored for level-2 objects, they are rotated the same way as their level-1 parent object.
 */
 void PRREObject3D::SetRotationOrder(TPRRE_ROTATION_ORDER value)
 {
@@ -1978,6 +1671,7 @@ void PRREObject3D::SetRotationOrder(TPRRE_ROTATION_ORDER value)
 
 /**
     Gets the lit state.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     @return True if lit, false otherwise.
 */
 TPRREbool PRREObject3D::isLit() const
@@ -1988,6 +1682,7 @@ TPRREbool PRREObject3D::isLit() const
 
 /**
     Sets the lit state.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
 */
 void PRREObject3D::SetLit(TPRREbool value)
 {
@@ -1997,6 +1692,7 @@ void PRREObject3D::SetLit(TPRREbool value)
 
 /**
     Gets the double sided state.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     @return True if double sided, false otherwise.
 */
 TPRREbool PRREObject3D::isDoubleSided() const
@@ -2007,6 +1703,7 @@ TPRREbool PRREObject3D::isDoubleSided() const
 
 /**
     Sets the double sided state.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
 */
 void PRREObject3D::SetDoubleSided(TPRREbool value)
 {
@@ -2016,6 +1713,7 @@ void PRREObject3D::SetDoubleSided(TPRREbool value)
 
 /**
     Gets the wireframed state.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     @return True if wireframed, false otherwise.
 */
 TPRREbool PRREObject3D::isWireframed() const
@@ -2026,6 +1724,7 @@ TPRREbool PRREObject3D::isWireframed() const
 
 /**
     Sets the wireframed state.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
 */
 void PRREObject3D::SetWireframed(TPRREbool value)
 {
@@ -2035,6 +1734,7 @@ void PRREObject3D::SetWireframed(TPRREbool value)
 
 /**
     Gets the wireframed culling state.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     @return True if culling is enabled in wireframed state, false otherwise.
 */
 TPRREbool PRREObject3D::isWireframedCulled() const
@@ -2045,6 +1745,7 @@ TPRREbool PRREObject3D::isWireframedCulled() const
 
 /**
     Sets the wireframed culling state.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
 */
 void PRREObject3D::SetWireframedCulled(TPRREbool value)
 {
@@ -2054,6 +1755,7 @@ void PRREObject3D::SetWireframedCulled(TPRREbool value)
 
 /**
     Gets whether we write to the Z-Buffer while rendering.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     @return True if we write to Z-Buffer while rendering, false otherwise.
 */
 TPRREbool PRREObject3D::isAffectingZBuffer() const
@@ -2064,6 +1766,7 @@ TPRREbool PRREObject3D::isAffectingZBuffer() const
 
 /**
     Sets whether we write to the Z-Buffer while rendering.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
 */
 void PRREObject3D::SetAffectingZBuffer(TPRREbool value)
 {
@@ -2073,6 +1776,7 @@ void PRREObject3D::SetAffectingZBuffer(TPRREbool value)
 
 /**
     Gets whether we test against the Z-Buffer while rendering.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     @return True if we test against the Z-Buffer while rendering, false otherwise.
 */
 TPRREbool PRREObject3D::isTestingAgainstZBuffer() const
@@ -2083,6 +1787,7 @@ TPRREbool PRREObject3D::isTestingAgainstZBuffer() const
 
 /**
     Sets whether we test against the Z-Buffer while rendering.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
 */
 void PRREObject3D::SetTestingAgainstZBuffer(TPRREbool value)
 {
@@ -2092,6 +1797,7 @@ void PRREObject3D::SetTestingAgainstZBuffer(TPRREbool value)
 
 /**
     Gets the sticked-to-screen state.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     @return True if sticked to screen, false otherwise.
 */
 TPRREbool PRREObject3D::isStickedToScreen() const
@@ -2108,6 +1814,7 @@ TPRREbool PRREObject3D::isStickedToScreen() const
      - SetDoubleSided(true);
      - SetLit(false);
      - SetTestingAgainstZBuffer(false).
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
 */
 void PRREObject3D::SetStickedToScreen(TPRREbool value)
 {
@@ -2116,37 +1823,16 @@ void PRREObject3D::SetStickedToScreen(TPRREbool value)
 
 
 /**
-    Gets the material.
-
-    @return Material. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned material is the subobject's material.
-            This implicit behavior is for convenience for objects storing only 1 subobject like internally created objects.
-*/
-const PRREMaterial& PRREObject3D::getMaterial() const
-{
-    return p->getMaterial();
-} // getMaterial()
-
-
-/**
-    Gets the material.
-    @return Material. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned material is the subobject's material.
-            This implicit behavior is for convenience for objects storing only 1 subobject like internally created objects.
-*/
-PRREMaterial& PRREObject3D::getMaterial()
-{
-    return p->getMaterial();
-} // getMaterial()
-
-
-/**
     Gets the amount of allocated system memory.
-    It includes the allocated Material size as well (getMaterial()).
+    It includes the allocated Material size as well (getMaterial(false)).
 
     @return Amount if allocated system memory in Bytes.
 */
 TPRREuint PRREObject3D::getUsedSystemMemory() const
 {
-    return PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) + sizeof(*this) + p->getUsedSystemMemory();
+    return PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) +
+        PRREMesh3D::getUsedSystemMemory() - sizeof(PRREMesh3D) + 
+        sizeof(*this) + p->getUsedSystemMemory();
 } // getUsedSystemMemory()
 
 
@@ -2165,6 +1851,7 @@ void PRREObject3D::Draw(bool bLighting)
 /**
     Only PRREObject3DManager creates it.
 
+    @param prfmt                 Primitive format for the underlying Mesh3D.
     @param vmod                  What vertex modifying habit to be set for the new Object3D instance.
     @param vref                  What vertex referencing mode to be set for the new Object3D instance.
     @param bForceUseClientMemory Force-select a vertex transfer mode storing geometry in client memory instead of server memory.
@@ -2176,13 +1863,15 @@ PRREObject3D::PRREObject3D(
     const TPRRE_VERTEX_REFERENCING_MODE& vref,
     TPRREbool bForceUseClientMemory )
 {
+    PRREFiledManaged::getConsole().OLnOI("PRREObject3D() ...");
     p = new PRREObject3DImpl(this, vmod, vref, bForceUseClientMemory);
+    PRREFiledManaged::getConsole().SOLnOO("Done!");
 } // PRREObject3D()
 
 
-PRREObject3D::PRREObject3D(const PRREObject3D&)
+PRREObject3D::PRREObject3D(const PRREObject3D& other)
+    : PRREMesh3D(other.getPrimitiveFormat())
 {
-
 }
 
 

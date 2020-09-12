@@ -279,6 +279,7 @@ void PRREManager::PRREManagerImpl::DeleteAttachedInstance(PRREManaged& m)
         {
             _pOwner->getConsole().SOLn("  > Found managed instance @ pManageds[%d]!", i);
             delete pManageds[i];
+            // no need to set element to NULL because manageds' dtor always calls DetachFrom() which takes care of that!
             found = true;
             break;
         }

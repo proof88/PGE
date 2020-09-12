@@ -261,6 +261,15 @@
     <ClInclude Include="..\PRRE\Object3D\PRREObject3DManager.h">
       <Filter>Header Files\PGE\PRRE\Object3D</Filter>
     </ClInclude>
+    <ClInclude Include="PRREMesh3DManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PRREMesh3DTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PRRE\Object3D\PRREMesh3DManager.h">
+      <Filter>Header Files\PGE\PRRE\Object3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UnitTests.cpp">

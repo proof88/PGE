@@ -291,6 +291,12 @@
     <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_4_3.h">
       <Filter>Header Files\PRRE\Hardware</Filter>
     </ClInclude>
+    <ClInclude Include="PRRE\Object3D\PRREMesh3DImpl.h">
+      <Filter>Header Files\PRRE\Object3D</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\Object3D\PRREMesh3DManager.h">
+      <Filter>Header Files\PRRE\Object3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -433,6 +439,12 @@
     </ClCompile>
     <ClCompile Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGLbase.cpp">
       <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Object3D\PRREMesh3D.cpp">
+      <Filter>Source Files\PRRE\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\Object3D\PRREMesh3DManager.cpp">
+      <Filter>Source Files\PRRE\Object3D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

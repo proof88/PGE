@@ -50,6 +50,7 @@ public:
     PRREImageManager&     getImageManager() const;  
     PRRETextureManager&   getTextureManager() const;  
     PRREMaterialManager&  getMaterialManager() const;
+    PRREMesh3DManager&    getMesh3DManager() const; 
     PRREObject3DManager&  getObject3DManager() const; 
     PRRECamera&           getCamera() const;      
     PRREuiManager&        getUImanager() const;
@@ -68,6 +69,7 @@ private:
     PRREImageManager*    pImageMgr;    /**< ImageManager, at least 1 instance. */
     PRRETextureManager*  pTextureMgr;  /**< TextureManager, at least 1 instance. */
     PRREMaterialManager* pMaterialMgr; /**< MaterialManager, at least 1 instance. */
+    PRREMesh3DManager*   pMesh3DMgr;   /**< MeshManager, at least 1 instance. */
     PRREObject3DManager* pObject3DMgr; /**< ObjectManager, at least 1 instance. */
     PRRECamera*          pCamera;      /**< Camera, at least 1 instance. */
     PRREuiManager&       uiMgr;        /**< UI manager, singleton. */
@@ -175,6 +177,15 @@ TPRREuint PR00FsReducedRenderingEngineImpl::initialize(
         return 1;
     }
 
+    pMesh3DMgr = new PRREMesh3DManager(*pMaterialMgr);
+    if ( !pMesh3DMgr->isInitialized() )
+    {
+        getConsole().EOLn("ERROR: failed to initialize PRREMesh3DManager!");
+        shutdown();
+        getConsole().OO();
+        return 1;
+    }
+
     pObject3DMgr = new PRREObject3DManager(*pTextureMgr, *pMaterialMgr);
     if ( !pObject3DMgr->isInitialized() )
     {
@@ -236,6 +247,9 @@ TPRREbool PR00FsReducedRenderingEngineImpl::shutdown()
 
     delete pObject3DMgr;
     pObject3DMgr = PGENULL;
+
+    delete pMesh3DMgr;
+    pMesh3DMgr = PGENULL;
 
     delete pMaterialMgr;
     pMaterialMgr = PGENULL;
@@ -332,6 +346,12 @@ PRRETextureManager& PR00FsReducedRenderingEngineImpl::getTextureManager() const
 PRREMaterialManager& PR00FsReducedRenderingEngineImpl::getMaterialManager() const
 {
     return *pMaterialMgr;
+}
+
+
+PRREMesh3DManager& PR00FsReducedRenderingEngineImpl::getMesh3DManager() const
+{
+    return *pMesh3DMgr;
 }
 
 

@@ -46,6 +46,8 @@
 #include "PRREMaterialManagerTest.h"
 #include "PRREMaterialTest.h"
 #include "PRRECameraTest.h"
+#include "PRREMesh3DManagerTest.h"
+#include "PRREMesh3DTest.h"
 #include "PRREObject3DManagerTest.h"
 #include "PRREObject3DTest.h"
 #include "PRREWindowTest.h"
@@ -105,6 +107,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PRREMaterialTest           testPRREMaterial;
 
     PRRECameraTest             testPRRECamera;
+    PRREMesh3DManagerTest      testPRREMesh3DManager;
+    PRREMesh3DTest             testPRREMesh3D;
     PRREObject3DManagerTest    testPRREObject3DManager;
     PRREObject3DTest           testPRREObject3D;
     PRREWindowTest             testPRREWindow;
@@ -128,7 +132,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     */
     
     
-    /* 
+    /*      
     tests.push_back(&testPosUpTarget);
     tests.push_back(&testPRREVector);  
     tests.push_back(&testPRREMatrix);  
@@ -136,22 +140,24 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREScissor);
     */
     
-    /*
+    /*    
     tests.push_back(&testPRREColor);
     tests.push_back(&testPRREBaseClass);
     tests.push_back(&testPRREManager);
     tests.push_back(&testPRREManaged);
     tests.push_back(&testPRREFiledManager);
     tests.push_back(&testPRREFiledManaged);
-     */
+    */
     
+    /*
     tests.push_back(&testPRREhwInfo);
     tests.push_back(&testPRREhwCentralProcessor);
     tests.push_back(&testPRREhwSystemMemory);
     tests.push_back(&testPRREhwAudio);
     tests.push_back(&testPRREhwVideo); 
+    */
 
-    /*   
+    /*     
     tests.push_back(&testPRREImageManager);
     tests.push_back(&testPRREImage);
     tests.push_back(&testPRRETextureManager);
@@ -159,9 +165,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREMaterialManager);
     tests.push_back(&testPRREMaterial);
     tests.push_back(&testPRRECamera);
+    */
+    tests.push_back(&testPRREMesh3DManager);
+    tests.push_back(&testPRREMesh3D);
     tests.push_back(&testPRREObject3DManager);
     tests.push_back(&testPRREObject3D);
-    */ 
+     
 
     /*  
     tests.push_back(&testPRREWindow);

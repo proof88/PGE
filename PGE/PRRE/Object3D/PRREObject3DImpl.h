@@ -12,6 +12,8 @@
 */
 
 #include "../PRREallHeaders.h"
+#include <vector>
+#include "PRREMesh3DManager.h"
 #include "PRREObject3DManager.h"
 #include "../gl/gl.h"  // for GLenum and similar, which should be removed from here soon ...
 
@@ -20,23 +22,21 @@ class PRREObject3D::PRREObject3DImpl
 
 public:
 
-    static TPRRE_BLENDFACTORS
-        getPRREblendFromGLblend(GLenum glb);             /**< Gets the appropriate PRRE blend factor for the given GL enum. */
-    static GLenum
-        getGLblendFromPRREblend(TPRRE_BLENDFACTORS bf);  /**< Gets the appropriate GL enum for the given PRRE blend factor. */
-
     static TPRRE_PRIMITIVE_FORMAT
         getPRREprimitiveFromGLprimitive(GLenum glprim);
     static GLenum
         getGLprimitiveFromPRREprimitive(TPRRE_PRIMITIVE_FORMAT pf);
 
+    static TPRRE_BLENDFACTORS
+        getPRREblendFromGLblend(GLenum glb);             /**< Gets the appropriate PRRE blend factor for the given GL enum. */
+    static GLenum
+        getGLblendFromPRREblend(TPRRE_BLENDFACTORS bf);  /**< Gets the appropriate GL enum for the given PRRE blend factor. */
+
     // ---------------------------------------------------------------------------
 
     virtual ~PRREObject3DImpl();
 
-    PRREObject3D* getReferredObject() const;
-
-    TPRRE_PRIMITIVE_FORMAT getPrimitiveFormat() const;   
+    PRREObject3D* getReferredObject() const; 
 
     TPRRE_VERTEX_MODIFYING_HABIT getVertexModifyingHabit() const;      
     void SetVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod);   
@@ -45,26 +45,14 @@ public:
     TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;          
     void SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);     
 
-    TPRREuint   getVerticesCount() const;      
-    const TXYZ* getVertices() const;  
-          TXYZ* getVertices();
-    TPRRE_TRANSFORMED_VERTEX* getTransformedVertices();
-
-    TPRREuint   getVertexIndicesCount() const;
-    const void* getVertexIndices() const;
-
-    unsigned int getVertexIndicesType() const;
-
-    TPRREuint   getNormalsCount() const;       
-    const TXYZ* getNormals() const;  
-    
-    PRREVector&       getPosVec();                  
-    const PRREVector& getPosVec() const;            
+    TPRRE_TRANSFORMED_VERTEX* getTransformedVertices(
+        TPRREbool implicitAccessSubobject = true);
+                
     PRREVector&       getAngleVec();                
     const PRREVector& getAngleVec() const;          
-    const PRREVector& getSizeVec() const;           
+              
     PRREVector        getScaledSizeVec() const;     
-    void              RecalculateSize();            
+                
     const PRREVector& getScaling() const;           
     void              SetScaling(TPRREfloat value);
     void              SetScaling(const PRREVector& value);
@@ -96,9 +84,6 @@ public:
     TPRREbool isStickedToScreen() const;               
     void      SetStickedToScreen(TPRREbool value);  
 
-    const PRREMaterial& getMaterial() const;
-          PRREMaterial& getMaterial();
-
     TPRREuint getUsedSystemMemory() const; 
 
     void Draw(bool bLighting);                  
@@ -122,8 +107,6 @@ private:
     PRREObject3D* _pOwner;    /**< The owner public object who creates this pimpl object. */
     PRREObject3D* pRefersto;  /**< Pointer to the original object when we are just a cloned object. */
 
-    PRREVector vPos;                /**< 3D Position. */
-    PRREVector vSize;               /**< 3D Size. */
     PRREVector vAngle;              /**< 3D Angle. */
     PRREVector vScaling;            /**< 3D Scaling. */
     TPRREbool bVisible;             /**< Visible state. */
@@ -142,31 +125,17 @@ private:
     GLuint nNormalsVBO;             /**< OpenGL VBO index of normals. */
     GLuint nIndicesVBO;             /**< OpenGL VBO index of indices. */
     TPRREbool bReadyToDraw;         /**< Ready to draw. */
-    PRREMaterial* pMaterial;        /**< Pointer to material. */
 
     TPRREbool bColliding;           /**< Colliding state. DEPRECATED: to be removed ... */
 
-    TPRRE_PRIMITIVE_FORMAT primitiveFormat;              /**< Primitives' format. */
     TPRRE_VERTEX_TRANSFER_MODE vertexTransferMode;       /**< Vertices storage. */
-    TXYZ*       pVertices;          /**< Pointer to vertices. */
     TPRRE_TRANSFORMED_VERTEX*      pVerticesTransf;    /**< Pointer to transformed vertices. */
-    TXYZ*       pNormals;           /**< Pointer to normals. */
-    void*       pVertexIndices;     /**< Pointer to vertex indices. We use these to index into arrays of Material too. */
-    TPRREuint   nVertexIndices_h;   /**< Number of vertex indices. */
-    TPRREuint   nMinIndex;          /**< Smallest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
-    TPRREuint   nMaxIndex;          /**< Biggest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
-    GLenum      nIndicesType;       /**< Type of indices stored in pVertexIndices array. Should be as small as possible per object. */
-    TPRREuint   nVertices_h;        /**< Number of vertices. */
-    TPRREuint   nNormals_h;         /**< Number of normals. TODO: maybe can be removed as nVertices_h is enough. */
-    TPRREuint   nFaces_h;           /**< Number of faces. */
     GLfloat*    pFbBuffer;          /**< Feedback buffer. */
     GLsizei     nFbBuffer_h;        /**< Size of feedback buffer. */
 
     // ---------------------------------------------------------------------------
 
     CConsole& getConsole() const;               /**< Hack to be able to use CConsole singleton instance instead of owner's protected console instance. */
-    TPRREuint getIndexFromArray(const void* arr, TPRREuint index) const;     /**< Gets an index value from a given index array. */
-    void      SetIndexInArray(void* arr, TPRREuint index, TPRREuint value);  /**< Sets an index value in a given index array. */
     TPRREbool isSwitchFromIndexedAllowed() const;                            /**< Tells whether it is allowed to switch from indexed to non-indexed vertex transfer mode. */
     void      ProcessGeometry(TPRREbool indexed) const;                      /**< Goes thru vertices and feeds them to OpenGL. */
     void      CompileIntoDisplayList(TPRREbool indexed);                     /**< Compiles OpenGL drawing commands into display list. */

@@ -73,6 +73,7 @@ public:
     virtual PRREImageManager&    getImageManager() const = 0;     /**< Get access to image handler functions. */
     virtual PRRETextureManager&  getTextureManager() const = 0;   /**< Get access to texture handler functions. */
     virtual PRREMaterialManager& getMaterialManager() const = 0;  /**< Get access to material handler functions. */
+    virtual PRREMesh3DManager&   getMesh3DManager() const = 0;    /**< Get access to Mesh3D handler functions. */
     virtual PRREObject3DManager& getObject3DManager() const = 0;  /**< Get access to Object3D handler functions. */
     virtual PRRECamera&          getCamera() const = 0;           /**< Get access to camera handler functions. */
     virtual PRREuiManager&       getUImanager() const = 0;        /**< Get access to user interface functions. */

@@ -209,6 +209,7 @@
     <ClInclude Include="..\PRRE\Math\PRRETransformMatrix.h" />
     <ClInclude Include="..\PRRE\Math\PRREVector.h" />
     <ClInclude Include="..\PRRE\Math\PUREScissor.h" />
+    <ClInclude Include="..\PRRE\Object3D\PRREMesh3DManager.h" />
     <ClInclude Include="..\PRRE\Object3D\PRREObject3DManager.h" />
     <ClInclude Include="..\PRRE\PR00FsReducedRenderingEngine.h" />
     <ClInclude Include="..\PRRE\PRREallHeaders.h" />
@@ -241,6 +242,8 @@
     <ClInclude Include="PRREMaterialManagerTest.h" />
     <ClInclude Include="PRREMaterialTest.h" />
     <ClInclude Include="PRREMatrixTest.h" />
+    <ClInclude Include="PRREMesh3DManagerTest.h" />
+    <ClInclude Include="PRREMesh3DTest.h" />
     <ClInclude Include="PRREObject3DManagerTest.h" />
     <ClInclude Include="PRREObject3DTest.h" />
     <ClInclude Include="PRREPosUpTargetTest.h" />

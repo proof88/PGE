@@ -73,11 +73,8 @@ protected:
         AddSubTest("testGetVertices", (PFNUNITSUBTEST) &PRREObject3DTest::testGetVertices);
         AddSubTest("testGetNormalsCount", (PFNUNITSUBTEST) &PRREObject3DTest::testGetNormalsCount);
         AddSubTest("testGetNormals", (PFNUNITSUBTEST) &PRREObject3DTest::testGetNormals);
-        AddSubTest("testGetPosVec", (PFNUNITSUBTEST) &PRREObject3DTest::testGetPosVec);
         AddSubTest("testGetAngleVec", (PFNUNITSUBTEST) &PRREObject3DTest::testGetAngleVec);
-        AddSubTest("testGetSizeVec", (PFNUNITSUBTEST) &PRREObject3DTest::testGetSizeVec);
         AddSubTest("testGetScaledSizeVec", (PFNUNITSUBTEST) &PRREObject3DTest::testGetScaledSizeVec);
-        AddSubTest("testRecalculateSize", (PFNUNITSUBTEST) &PRREObject3DTest::testRecalculateSize);
         AddSubTest("testGetScaling", (PFNUNITSUBTEST) &PRREObject3DTest::testGetScaling);
         AddSubTest("testSetScalingToScalar", (PFNUNITSUBTEST) &PRREObject3DTest::testSetScalingToScalar);
         AddSubTest("testSetScalingToVector", (PFNUNITSUBTEST) &PRREObject3DTest::testSetScalingToVector);
@@ -105,9 +102,6 @@ protected:
         AddSubTest("testSetTestingAgainstZBuffer", (PFNUNITSUBTEST) &PRREObject3DTest::testSetTestingAgainstZBuffer);
         AddSubTest("testIsStickedToScreen", (PFNUNITSUBTEST) &PRREObject3DTest::testIsStickedToScreen);
         AddSubTest("testSetStickedToScreen", (PFNUNITSUBTEST) &PRREObject3DTest::testSetStickedToScreen);
-        AddSubTest("testGetMaterial1", (PFNUNITSUBTEST) &PRREObject3DTest::testGetMaterial1);
-        AddSubTest("testGetMaterial2", (PFNUNITSUBTEST) &PRREObject3DTest::testGetMaterial2);
-        AddSubTest("testGetMaterial3", (PFNUNITSUBTEST) &PRREObject3DTest::testGetMaterial3);
         AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PRREObject3DTest::testGetUsedSystemMemory);
 
         // since Object3D became a Manager also, we should test these capabalities here as well for possible changed behavior
@@ -294,76 +288,58 @@ private:
 
     bool testGetVerticesCount()
     {
+        // comes from Mesh3D but make sure behavior of this functionality stayed the same
         return assertEquals((TPRREuint) 4, objPlane->getVerticesCount(), "plane") &
             assertEquals((TPRREuint) 24, objBox->getVerticesCount(), "box") &
             assertEquals((TPRREuint) 24, objCube->getVerticesCount(), "cube") &
             assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getVerticesCount(), objPlane->getVerticesCount(), "plane 2") &
             assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getVerticesCount(), objBox->getVerticesCount(), "box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getVerticesCount(), objCube->getVerticesCount(), "cube 2");
+            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getVerticesCount(), objCube->getVerticesCount(), "cube 2") &
+            assertEquals((TPRREuint) 0, objPlane->getVerticesCount(false), "plane noimplicit") &
+            assertEquals((TPRREuint) 0, objBox->getVerticesCount(false), "box noimplicit") &
+            assertEquals((TPRREuint) 0, objCube->getVerticesCount(false), "cube noimplicit");
     }
 
     bool testGetVertices()
     {
+        // comes from Mesh3D but make sure behavior of this functionality stayed the same
         return assertNotNull(objPlane->getVertices(), "plane") &
             assertNotNull(objBox->getVertices(), "box") &
             assertNotNull(objCube->getVertices(), "cube") &
             assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getVertices(), objPlane->getVertices(), "plane 2") &
             assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getVertices(), objBox->getVertices(), "box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getVertices(), objCube->getVertices(), "cube 2");
+            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getVertices(), objCube->getVertices(), "cube 2") &
+            assertNull(objPlane->getVertices(false), "plane noimplicit") &
+            assertNull(objBox->getVertices(false), "box noimplicit") &
+            assertNull(objCube->getVertices(false), "cube noimplicit");
     }
 
     bool testGetNormalsCount()
     {
+        // comes from Mesh3D but make sure behavior of this functionality stayed the same
         return assertEquals((TPRREuint) 4, objPlane->getNormalsCount(), "plane") &
             assertEquals((TPRREuint) 24, objBox->getNormalsCount(), "box") &
             assertEquals((TPRREuint) 24, objCube->getNormalsCount(), "cube") &
             assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getNormalsCount(), objPlane->getNormalsCount(), "plane 2") &
             assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getNormalsCount(), objBox->getNormalsCount(), "box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getNormalsCount(), objCube->getNormalsCount(), "cube 2");
+            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getNormalsCount(), objCube->getNormalsCount(), "cube 2") &
+            assertEquals((TPRREuint) 0, objPlane->getNormalsCount(false), "plane noimplicit") &
+            assertEquals((TPRREuint) 0, objBox->getNormalsCount(false), "box noimplicit") &
+            assertEquals((TPRREuint) 0, objCube->getNormalsCount(false), "cube noimplicit");
     }
 
     bool testGetNormals()
     {
+        // comes from Mesh3D but make sure behavior of this functionality stayed the same
         return assertNotNull(objPlane->getNormals(), "plane") &
             assertNotNull(objBox->getNormals(), "box") &
             assertNotNull(objCube->getNormals(), "cube") &
             assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getNormals(), objPlane->getNormals(), "plane 2") &
             assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getNormals(), objBox->getNormals(), "box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getNormals(), objCube->getNormals(), "cube 2");
-    }
-
-    bool testGetPosVec()
-    {
-        const PRREObject3D* const obj = om->createFromFile("_res/models/snail_proofps/snail.obj");
-
-        // in our loaded object, there shouldn't be any subobject in pos(0,0,0)
-        bool b1 = true;
-        for (TPRREint i = 0; i < obj->getCount(); i++)
-            b1 = b1 & assertFalse( ((PRREObject3D*)obj->getAttachedAt(i))->getPosVec().isZero(), "pos zero obj sub" );
-
-        // in our other objects, all subobjects should be at pos(0,0,0)
-        bool b2 = true;
-        for (TPRREint i = 0; i < objPlane->getCount(); i++)
-            b2 = b2 & assertTrue( ((PRREObject3D*)objPlane->getAttachedAt(i))->getPosVec().isZero(), "pos zero plane sub" );
-
-        bool b3 = true;
-        for (TPRREint i = 0; i < objBox->getCount(); i++)
-            b3 = b3 & assertTrue( ((PRREObject3D*)objBox->getAttachedAt(i))->getPosVec().isZero(), "pos zero box sub" );
-
-        bool b4 = true;
-        for (TPRREint i = 0; i < objCube->getCount(); i++)
-            b4 = b4 & assertTrue( ((PRREObject3D*)objCube->getAttachedAt(i))->getPosVec().isZero(), "pos zero cube sub" );
-
-        return assertEquals(0.0f, objPlane->getPosVec().getX(), E, "plane x") &        
-            assertEquals(0.0f, objPlane->getPosVec().getY(), E, "plane y") &
-            assertEquals(0.0f, objPlane->getPosVec().getZ(), E, "plane z") &
-            assertEquals(0.0f, objBox->getPosVec().getX(), E, "box x") &        
-            assertEquals(0.0f, objBox->getPosVec().getY(), E, "box y") &
-            assertEquals(0.0f, objBox->getPosVec().getZ(), E, "box z") &
-            assertEquals(0.0f, objCube->getPosVec().getX(), E, "cube x") &        
-            assertEquals(0.0f, objCube->getPosVec().getY(), E, "cube y") &
-            assertEquals(0.0f, objCube->getPosVec().getZ(), E, "cube z") &
-            assertTrue(b1 & b2 & b3 & b4, "subobject position");
+            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getNormals(), objCube->getNormals(), "cube 2") &
+            assertNull(objPlane->getNormals(false), "plane noimplicit") &
+            assertNull(objBox->getNormals(false), "box noimplicit") &
+            assertNull(objCube->getNormals(false), "cube noimplicit");
     }
 
     bool testGetAngleVec()
@@ -377,40 +353,6 @@ private:
             assertEquals(0.0f, objCube->getAngleVec().getX(), E, "cube x") &        
             assertEquals(0.0f, objCube->getAngleVec().getY(), E, "cube y") &
             assertEquals(0.0f, objCube->getAngleVec().getZ(), E, "cube z");
-    }
-
-    bool testGetSizeVec()
-    {
-        const PRREObject3D* const obj = om->createFromFile("_res/models/snail_proofps/snail.obj");
-
-        // in our loaded object, there shouldn't be any subobject with size(0,0,0)
-        bool b1 = true;
-        for (TPRREint i = 0; i < obj->getCount(); i++)
-            b1 = b1 & assertFalse( ((PRREObject3D*)obj->getAttachedAt(i))->getSizeVec().isZero(), "size zero obj sub" );
-
-        // in our other objects, all subobjects size should be same as object size
-        bool b2 = true;
-        for (TPRREint i = 0; i < objPlane->getCount(); i++)
-            b2 = b2 & assertTrue( ((PRREObject3D*)objPlane->getAttachedAt(i))->getSizeVec() == objPlane->getSizeVec(), "size plane sub" );
-
-        bool b3 = true;
-        for (TPRREint i = 0; i < objBox->getCount(); i++)
-            b3 = b3 & assertTrue( ((PRREObject3D*)objBox->getAttachedAt(i))->getSizeVec() == objBox->getSizeVec(), "size box sub" );
-
-        bool b4 = true;
-        for (TPRREint i = 0; i < objCube->getCount(); i++)
-            b4 = b4 & assertTrue( ((PRREObject3D*)objCube->getAttachedAt(i))->getSizeVec() == objCube->getSizeVec(), "size cube sub" );
-
-        return assertEquals(1.0f, objPlane->getSizeVec().getX(), E, "plane x") &        
-            assertEquals(2.0f, objPlane->getSizeVec().getY(), E, "plane y") &
-            assertEquals(0.0f, objPlane->getSizeVec().getZ(), E, "plane z") &
-            assertEquals(1.0f, objBox->getSizeVec().getX(), E, "box x") &        
-            assertEquals(2.0f, objBox->getSizeVec().getY(), E, "box y") &
-            assertEquals(3.0f, objBox->getSizeVec().getZ(), E, "box z") &
-            assertEquals(1.0f, objCube->getSizeVec().getX(), E, "cube x") &        
-            assertEquals(1.0f, objCube->getSizeVec().getY(), E, "cube y") &
-            assertEquals(1.0f, objCube->getSizeVec().getZ(), E, "cube z") &
-            assertTrue(b1 & b2 & b3 & b4, "subobject size");;
     }
 
     bool testGetScaledSizeVec()
@@ -429,14 +371,6 @@ private:
             assertEquals(2.0f, obj->getScaledSizeVec().getX(), E, "obj x") &        
             assertEquals(4.0f, obj->getScaledSizeVec().getY(), E, "obj y") &
             assertEquals(6.0f, obj->getScaledSizeVec().getZ(), E, "obj z");
-    }
-
-    bool testRecalculateSize()
-    {
-        const PRREVector vOld = obj->getSizeVec();
-        obj->RecalculateSize();
-
-        return assertTrue(vOld == obj->getSizeVec());
     }
 
     bool testGetScaling()
@@ -664,105 +598,6 @@ private:
         obj->SetStickedToScreen(true);
 
         return assertTrue(obj->isStickedToScreen());
-    }
-
-    bool testGetMaterial1()
-    {
-        return assertEquals((TPRREubyte) 255, obj->getMaterial().getTextureEnvColor().getRed(), "env obj r") &
-            assertEquals((TPRREubyte) 255, obj->getMaterial().getTextureEnvColor().getGreen(), "env obj g") &
-            assertEquals((TPRREubyte) 255, obj->getMaterial().getTextureEnvColor().getBlue(), "env obj b") &
-            assertEquals((TPRREubyte) 255, obj->getMaterial().getTextureEnvColor().getAlpha(), "env obj a") &
-            assertEquals((TPRREubyte) 255, objPlane->getMaterial().getTextureEnvColor().getRed(), "env plane r") &
-            assertEquals((TPRREubyte) 255, objPlane->getMaterial().getTextureEnvColor().getGreen(), "env plane g") &
-            assertEquals((TPRREubyte) 255, objPlane->getMaterial().getTextureEnvColor().getBlue(), "env plane b") &
-            assertEquals((TPRREubyte) 255, objPlane->getMaterial().getTextureEnvColor().getAlpha(), "env plane a") &
-            assertEquals((TPRREubyte) 255, objBox->getMaterial().getTextureEnvColor().getRed(), "env box r") &
-            assertEquals((TPRREubyte) 255, objBox->getMaterial().getTextureEnvColor().getGreen(), "env box g") &
-            assertEquals((TPRREubyte) 255, objBox->getMaterial().getTextureEnvColor().getBlue(), "env box b") &
-            assertEquals((TPRREubyte) 255, objBox->getMaterial().getTextureEnvColor().getAlpha(), "env box a") &
-            assertEquals((TPRREubyte) 255, objCube->getMaterial().getTextureEnvColor().getRed(), "env cube r") &
-            assertEquals((TPRREubyte) 255, objCube->getMaterial().getTextureEnvColor().getGreen(), "env cube g") &
-            assertEquals((TPRREubyte) 255, objCube->getMaterial().getTextureEnvColor().getBlue(), "env cube b") &
-            assertEquals((TPRREubyte) 255, objCube->getMaterial().getTextureEnvColor().getAlpha(), "env cube a") &
-            assertNull(obj->getMaterial().getTexture(), "tex obj") &
-            assertNull(objPlane->getMaterial().getTexture(), "tex plane") &
-            assertNull(objBox->getMaterial().getTexture(), "tex box") &
-            assertNull(objCube->getMaterial().getTexture(), "tex cube") &
-            assertFalse(obj->getMaterial().isTextured(), "isTex obj") &
-            assertFalse(objPlane->getMaterial().isTextured(), "isTex plane") &
-            assertFalse(objBox->getMaterial().isTextured(), "isTex box") &
-            assertFalse(objCube->getMaterial().isTextured(), "isTex cube") &
-            assertFalse(obj->getMaterial().isSingleTextured(), "isTexSingle obj") &
-            assertFalse(objPlane->getMaterial().isSingleTextured(), "isTexSingle plane") &
-            assertFalse(objBox->getMaterial().isSingleTextured(), "isTexSingle box") &
-            assertFalse(objCube->getMaterial().isSingleTextured(), "isTexSingle cube") &
-            assertFalse(obj->getMaterial().isMultiTextured(), "isTexMulti obj") &
-            assertFalse(objPlane->getMaterial().isMultiTextured(), "isTexMulti plane") &
-            assertFalse(objBox->getMaterial().isMultiTextured(), "isTexMulti box") &
-            assertFalse(objCube->getMaterial().isMultiTextured(), "isTexMulti cube") &
-            assertEquals((TPRREuint) 4, objPlane->getMaterial().getTexcoordsCount(), "texcoordcount plane") &
-            assertEquals((TPRREuint) 24, objBox->getMaterial().getTexcoordsCount(), "texcoordcount box") &
-            assertEquals((TPRREuint) 24, objCube->getMaterial().getTexcoordsCount(), "texcoordcount cube") &
-            assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getTexcoordsCount(), objPlane->getMaterial().getTexcoordsCount(), "texcoordcount plane 2") &
-            assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getTexcoordsCount(), objBox->getMaterial().getTexcoordsCount(), "texcoordcount box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getTexcoordsCount(), objCube->getMaterial().getTexcoordsCount(), "texcoordcount cube 2") &
-            assertNotNull(objPlane->getMaterial().getTexcoords(), "texcoords plane") &
-            assertNotNull(objBox->getMaterial().getTexcoords(), "texcoords box") &
-            assertNotNull(objCube->getMaterial().getTexcoords(), "texcoords cube") &
-            assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getTexcoords(), objPlane->getMaterial().getTexcoords(), "texcoords plane 2") &
-            assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getTexcoords(), objBox->getMaterial().getTexcoords(), "texcoords box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getTexcoords(), objCube->getMaterial().getTexcoords(), "texcoords cube 2") &
-            assertEquals((TPRREuint) 4, objPlane->getMaterial().getColorsCount(), "colorscount plane") &
-            assertEquals((TPRREuint) 24, objBox->getMaterial().getColorsCount(), "colorscount box") &
-            assertEquals((TPRREuint) 24, objCube->getMaterial().getColorsCount(), "colorscount cube") &
-            assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getColorsCount(), objPlane->getMaterial().getColorsCount(), "colorscount plane 2") &
-            assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getColorsCount(), objBox->getMaterial().getColorsCount(), "colorscount box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getColorsCount(), objCube->getMaterial().getColorsCount(), "colorscount cube 2") &
-            assertEquals((TPRREuint) 4, objPlane->getMaterial().getIndicesCount(), "indicescount plane") &
-            assertEquals((TPRREuint) 24, objBox->getMaterial().getIndicesCount(), "indicescount box") &
-            assertEquals((TPRREuint) 24, objCube->getMaterial().getIndicesCount(), "indicescount cube") &
-            assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getIndicesCount(), objPlane->getMaterial().getIndicesCount(), "indicescount plane 2") &
-            assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getIndicesCount(), objBox->getMaterial().getIndicesCount(), "indicescount box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getIndicesCount(), objCube->getMaterial().getIndicesCount(), "indicescount cube 2") &
-            assertNotNull(objPlane->getMaterial().getColors(), "colors plane") &
-            assertNotNull(objBox->getMaterial().getColors(), "colors box") &
-            assertNotNull(objCube->getMaterial().getColors(), "colors cube") &
-            assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getMaterial().getColors(), objPlane->getMaterial().getColors(), "colors plane 2") &
-            assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getMaterial().getColors(), objBox->getMaterial().getColors(), "colors box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getMaterial().getColors(), objCube->getMaterial().getColors(), "colors cube 2");
-    }
-
-    bool testGetMaterial2()
-    {
-        PRRETextureManager& tm = engine->getTextureManager();
-        PRRETexture* const tex24 = tm.createFromFile(BMP128x128x24);
-
-        if ( !assertNotNull(tex24, "tex24 = NULL") )
-            return false;
-
-        obj->getMaterial().SetTexture(tex24);
-
-        return assertNotNull(obj->getMaterial().getTexture(), "tex") &
-            assertTrue(obj->getMaterial().isTextured(), "isTex") &
-            assertTrue(obj->getMaterial().isSingleTextured(), "isTexSingle") &
-            assertFalse(obj->getMaterial().isMultiTextured(), "isTexMulti");
-    }
-
-    bool testGetMaterial3()
-    {
-        PRRETextureManager& tm = engine->getTextureManager();
-        PRRETexture* const tex24 = tm.createFromFile(BMP128x128x24);
-
-        if ( !assertNotNull(tex24, "tex24 = NULL") )
-            return false;
-
-        obj->getMaterial().SetTexture(tex24);
-        obj->getMaterial().SetTexture(tex24, 1);
-
-        return assertNotNull(obj->getMaterial().getTexture(), "tex") &
-            assertTrue(obj->getMaterial().isTextured(), "isTex") &
-            assertFalse(obj->getMaterial().isSingleTextured(), "isTexSingle") &
-            assertTrue(obj->getMaterial().isMultiTextured(), "isTexMulti");
     }
 
     bool testGetUsedSystemMemory()

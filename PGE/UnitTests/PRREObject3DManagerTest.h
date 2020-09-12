@@ -264,6 +264,7 @@ private:
 
         return assertNotNull( obj, "not null" ) &
             assertLess( nTexturesBeforeLoad, engine->getTextureManager().getCount(), "textures count") &
+            assertEquals((TPRREint)9, obj->getCount(), "subobject count") &
             b1;
     }
 

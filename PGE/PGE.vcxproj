@@ -235,6 +235,8 @@
     <ClInclude Include="PRRE\Math\PRRETransformMatrix.h" />
     <ClInclude Include="PRRE\Math\PRREVector.h" />
     <ClInclude Include="PRRE\Math\PUREScissor.h" />
+    <ClInclude Include="PRRE\Object3D\PRREMesh3DImpl.h" />
+    <ClInclude Include="PRRE\Object3D\PRREMesh3DManager.h" />
     <ClInclude Include="PRRE\Object3D\PRREObject3DImpl.h" />
     <ClInclude Include="PRRE\Object3D\PRREObject3DManager.h" />
     <ClInclude Include="PRRE\Render\PRREIIncrementalRenderPipeline.h" />
@@ -291,6 +293,8 @@
     <ClCompile Include="PRRE\Math\PRRETransformMatrix.cpp" />
     <ClCompile Include="PRRE\Math\PRREVector.cpp" />
     <ClCompile Include="PRRE\Math\PUREScissor.cpp" />
+    <ClCompile Include="PRRE\Object3D\PRREMesh3D.cpp" />
+    <ClCompile Include="PRRE\Object3D\PRREMesh3DManager.cpp" />
     <ClCompile Include="PRRE\Object3D\PRREObject3D.cpp" />
     <ClCompile Include="PRRE\Object3D\PRREObject3DManager.cpp" />
     <ClCompile Include="PRRE\PR00FsReducedRenderingEngine.cpp" />
