@@ -672,15 +672,7 @@ PRREMesh3D::PRREMesh3D(TPRRE_PRIMITIVE_FORMAT prfmt)
 
 PRREMesh3D::PRREMesh3D(const PRREMesh3D& mesh)
 {
-    /*
-    p = new PRREMesh3DImpl(*(mesh.p));
-    p->_pOwner = this;                             
-    for (TPRREint i = 0; i < mesh.getCount(); i++) 
-    {
-        PRREMesh3D* subobj = new PRREMesh3D(*(PRREMesh3D*) (mesh.getAttachedAt(i)));
-        Attach(*subobj);
-    }
-    */
+
 }
 
 
@@ -692,7 +684,7 @@ PRREMesh3D& PRREMesh3D::operator=(const PRREMesh3D&)
 
 /**
     Acquires the resources and properties of the given Mesh3D object, meaning that
-    the given mesh will lost the geometry and other resources.
+    the given mesh will lose the geometry and other resources.
     This is a way of moving assets of a mesh to another mesh, MOVING, so no array copy is involved.
     Can be done only for level-2 meshes by level-2 meshes, or for level-1 meshes by level-1 meshes.
     This means that in order to fully cannibalize a level-1 mesh, this function should be called for

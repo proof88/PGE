@@ -690,7 +690,7 @@ void PRRETextureManager::SetPixelPreservingEnabled(TPRREbool state)
 /**
     Creates texture from the given image.
     This method may change the color component order of the given image temporarily but restores it after creating the texture.
-    Based on lazy instancing setting, this function may return an already existing Texture instance if such exists with same image data.
+    Based on lazy instancing setting, this function may return an already existing Texture instance if such exists with same file name.
     Lazy instancing is controlled by SetLazyInstancingEnabled().
 
     @return The constructed texture object on success, PGENULL otherwise.
@@ -787,40 +787,53 @@ PRRETexture* PRRETextureManager::createFromFile(const char* filename)
         return texture;
     }
 
-    string sFileExt = PFL::getExtension(filename);
-    if ( sFileExt == "" )
-    {                                              
-        getConsole().EOLnOO("ERROR: no file extension!");
-        getConsole().OLn("");
-        return PGENULL;    
-    }
-    if ( !PFL::fileExists(filename) )
+    getConsole().OI();
+    PRREImage* tmpImg = PRREImageManager::createFromFile(filename);
+    getConsole().OO();
+    if ( tmpImg == PGENULL )
     {
-        getConsole().EOLnOO("ERROR: file doesn't exist!");
+        getConsole().EOLnOO("ERROR: failed to create Image from file!");
         getConsole().OLn("");
         return PGENULL;
     }
 
-    transform(sFileExt.begin(), sFileExt.end(), sFileExt.begin(), ::toupper);
-    getConsole().OLn("ext: .%s", sFileExt.c_str());
-    const PRREImage* img = PGENULL;
-    if ( sFileExt == "BMP" )
-    {
-        getConsole().OI();
-        img = loadBMP(filename);
-        getConsole().OO();
-    }    
+    texture = new PRRETexture();
+    texture->Cannibalize(*tmpImg);
+    DeleteAttachedInstance(*tmpImg);
+    Attach(*texture);
+
+    if ( (getDefaultMinFilteringMode() == PRRE_ISO_NEAREST) || (getDefaultMinFilteringMode() == PRRE_ISO_LINEAR) )
+        texture->p->nMIPmapCount = 1;
     else
+        texture->p->nMIPmapCount = PRRETextureManager::getMIPmapCount( texture->getWidth(), texture->getHeight() );
+
+    if ( p->pHWInfo.getVideo().isAcceleratorDetected() )
     {
-        getConsole().EOLnOO("ERROR: unsupported extension!");
-        getConsole().OLn("");
-        return PGENULL;
+        glGenTextures(1, &(texture->p->nInternalNum));
+        glBindTexture(GL_TEXTURE_2D, texture->p->nInternalNum);
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     }
-    getConsole().OI();
-    texture = createTextureFromImage(*img);
-    getConsole().OO();
-    getConsole().SOLnOO("> Texture loaded successfully!");
+    texture->SetMagFilteringMode( getDefaultMagFilteringMode() );
+    texture->SetMinFilteringMode( getDefaultMinFilteringMode() );
+    texture->SetAnisoFilteringMode( getDefaultAnisoFilteringMode() );
+    texture->SetTextureWrappingMode( getDefaultTextureWrappingModeS(), getDefaultTextureWrappingModeT() );
+    texture->SetBorder( getDefaultBorder() );
+    texture->SetBorderColor( getDefaultBorderColor() );
+    if ( !texture->uploadPixels() )
+    {
+        getConsole().EOLn("ERROR: uploadPixels() failed, will return defective texture object!");
+        // TODO: probably here we should delete the texture object and return NULL.
+    }
+
+    if ( !isPixelPreservingEnabled() )
+        texture->FlushResources();
+
+    getConsole().OLn("Texture nWidth and nHeight: %d %d", texture->getWidth(), texture->getHeight());
+    getConsole().OLn("final nSize is %d Byte(s).", texture->p->nSize);
+    getConsole().OLn("internalnum = %d", texture->p->nInternalNum);
     getConsole().OLn("");
+    getConsole().SOLn("> Texture created!");
+    getConsole().OOOLn("");
     return texture;
 } // createFromFile()
 

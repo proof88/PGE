@@ -95,6 +95,8 @@ protected:
     PRREImage(const PRREImage&);
     PRREImage& operator=(const PRREImage&);
 
+    void Cannibalize(PRREImage& victim);
+
 private:
 
     class PRREImageImpl;

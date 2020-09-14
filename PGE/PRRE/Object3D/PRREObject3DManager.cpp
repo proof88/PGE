@@ -350,6 +350,11 @@ PRREObject3D* PRREObject3DManager::createPlane(
 
     getConsole().OLnOI("PRREObject3DManager::createPlane(%f, %f)", a, b);
 
+    if ( (a == 2.0f) && (b == 2.0f) )
+    {
+        Sleep(1);
+    }
+
     PRREObject3D* const obj = new PRREObject3D(vmod, vref, bForceUseClientMemory);
     Attach( *obj );
     PRREObject3D* const subobj = new PRREObject3D(vmod, vref, bForceUseClientMemory);
@@ -526,12 +531,15 @@ PRREObject3D* PRREObject3DManager::createFromFile(
             
             // Legacy tmcsgfxlib behavior: auto-load textures for subobjects where pipe character is present in name
             const std::string::size_type nPipePos = subobject->getName().find('|');
-            if ( nPipePos != NULL )
+            if ( nPipePos != std::string::npos )
             {
                 const std::string sTexName = subobject->getName().substr(nPipePos+1);
                 getConsole().OLn("Legacy: loading texture implicitly by submodel name: %s", sTexName.c_str());
                 PRRETexture* const tex = p->textureMgr.createFromFile( PFL::getDirectory(filename).append(sTexName).c_str() );
-                subobject->getMaterial().SetTexture(tex);
+                if ( tex )
+                {
+                    subobject->getMaterial().SetTexture(tex);
+                }
                 // since we have loaded texture from submodelname, we can get rid of the texture filename part of it
                 subobject->SetName( subobject->getName().substr(0, nPipePos) ); 
             }
@@ -620,12 +628,12 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
     // for the material, no need to copy texcoords, etc ...
     // however we need to set blendfunc and envcolor, because renderer would not get referredobj blendfunc ...
     // probably this should be treated as bug of renderer, however I fix it from objectmanager side here.
-    obj->getMaterial(false).SetBlendFuncs( referredobj.getMaterial(false).getSourceBlendFunc(), referredobj.getMaterial(false).getDestinationBlendFunc() );
-    obj->getMaterial(false).getTextureEnvColor().Set(
-        referredobj.getMaterial(false).getTextureEnvColor().getRed(),
-        referredobj.getMaterial(false).getTextureEnvColor().getGreen(),
-        referredobj.getMaterial(false).getTextureEnvColor().getBlue(),
-        referredobj.getMaterial(false).getTextureEnvColor().getAlpha() );
+    obj->getMaterial().SetBlendFuncs( referredobj.getMaterial().getSourceBlendFunc(), referredobj.getMaterial().getDestinationBlendFunc() );
+    obj->getMaterial().getTextureEnvColor().Set(
+        referredobj.getMaterial().getTextureEnvColor().getRed(),
+        referredobj.getMaterial().getTextureEnvColor().getGreen(),
+        referredobj.getMaterial().getTextureEnvColor().getBlue(),
+        referredobj.getMaterial().getTextureEnvColor().getAlpha() );
 
     obj->p->nTexcoordsVBO.resize( p->materialMgr.getMaximumLayerCount() );
 

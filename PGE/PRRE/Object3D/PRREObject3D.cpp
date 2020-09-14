@@ -558,6 +558,12 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         return;
     }
 
+     if ( (_pOwner->getSizeVec().getX() == 2.0f) && (_pOwner->getSizeVec().getY() == 2.0f) )
+     {
+         // for placing breakpoint ...
+         getConsole().OLn("");
+     }
+
     // TODO: add a mechanism for ignoring user-triggered draw of subobjects.
     // This can be done if parent maintains a variable that is set to true
     // at the beginning of draw and its subobjects check for the value of this var,
@@ -635,7 +641,8 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
             So the total num of values is: numOfTriangles * (2+3*12)
             Example with some real data is in later comment with debugbuffer[]. */
 
-        nFbBuffer_h = (_pOwner->getVerticesCount(false) / 3) * (2+3*12);
+       
+        nFbBuffer_h = GLsizei(ceil((_pOwner->getVerticesCount(false) / 3.0f))) * (2+3*12);
         /* TODO: probably in future we should rather use pVerticesTransf here as well since we already have it for that purpose, right? ;) */
         pFbBuffer = (GLfloat*) realloc(pFbBuffer, nFbBuffer_h * sizeof(GLfloat));
 
@@ -687,9 +694,6 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
                     {
                         // TODO: should call this in loop, do multiple batches based on the implementation-dependent values
                         // (GL_MAX_ELEMENTS_VERTICES_EXT, GL_MAX_ELEMENTS_INDICES_EXT).
-                        if ( ((PRREObject3D*)(_pOwner->getManager()))->getFilename() == "pistol.obj" )
-                        {
-                        }
                         glDrawRangeElementsEXT(
                             getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()),
                             _pOwner->getMinIndexValue(false), _pOwner->getMaxIndexValue(false),
@@ -723,7 +727,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         // we are happy
         for (int i = 0; i < min(500,nFbBufferWritten_h); i++)
             debugbuffer[i] = pFbBuffer[i];
-        Sleep(1); // suitable for placing breakpoint
+        //Sleep(1); // suitable for placing breakpoint
         /*
             debugbuffer[0] = GL_POLYGON_TOKEN;
             debugbuffer[1] = 3;

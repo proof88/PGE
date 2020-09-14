@@ -286,22 +286,18 @@ TPIXCOMPORD PRREImage::PRREImageImpl::getIntermediatePixelCompOrder(TPIXCOMPORD 
 PRREImage::PRREImageImpl::PRREImageImpl(PRREImage* parent)
 {
     _pOwner = parent;
-    _pOwner->getConsole().OLnOI("PRREImage() ...");
     initMembers(0, 0, 0, PRRE_RGBA, PRRE_RGBA, false, false, PGENULL, 0);
     nImagesTotal++;
-    _pOwner->getConsole().SOLnOO("> Done!");
 } // PRREImage()
 
 
 PRREImage::PRREImageImpl::PRREImageImpl(const PRREImage::PRREImageImpl& img)
 {
-    _pOwner->getConsole().OLnOI("PRREImage(img) ...");
     // do not copy _pOwner!
     _pOwner = NULL;
     initMembers(img.nBits, img.nWidth, img.nHeight, img.clrCompOrderOrig, img.clrCompOrder,
                 img.bUpsideDown, img.bChanged, img.pPixels, img.nSizePixels);
     nImagesTotal++;
-    _pOwner->getConsole().SOLnOO("> Done!");
 } // PRREImage(...)
 
 
@@ -798,22 +794,61 @@ TPRREuint PRREImage::getUsedSystemMemory() const
 */
 PRREImage::PRREImage()
 {
+    getConsole().OLnOI("PRREImage() ...");
     p = new PRREImageImpl(this);
+    getConsole().SOLnOO("> Done!");
 } // PRREImage()
 
 
 PRREImage::PRREImage(const PRREImage& img)
     : PRREFiledManaged( img )
 {
-    p = new PRREImageImpl(this);
-    *p = *(img.p);
+    getConsole().OLnOI("PRREImage(img) ...");
+    p = new PRREImageImpl(*img.p);
     p->_pOwner = this;
+    getConsole().SOLnOO("> Done!");
 } // PRREImage(...)
 
 
 PRREImage& PRREImage::operator=(const PRREImage&)
 {
     return *this;
+}
+
+
+/**
+    Acquires the resources and properties of the given PRREImage object, meaning that
+    the given image will lose the pixels and other resources.
+    This is a way of moving assets of an image to another image, MOVING, so no array copy is involved.
+*/
+void PRREImage::Cannibalize(PRREImage& victim)
+{
+    // Note that we cannot easily copy victim's Impl since copy ctor and assignment operators are empty!
+    // Thus the following assignment cannot be used: *(this->p) = *(victim.p)
+    // We wouldn't even want to use copy ctor or assignment here since we do not want any array copy.
+    // That is why this function is written, to "steal" the arrays of the victim so victim will be "empty".
+    // In C++11 this could be done with a move ctor.
+
+    SetName(victim.getName());          // copy the Managed part
+    SetFilename(victim.getFilename());  // copy the FiledManaged part
+
+    p->nBits = victim.p->nBits;
+    p->nWidth = victim.p->nWidth;
+    p->nHeight = victim.p->nHeight;
+    p->clrCompOrderOrig = victim.p->clrCompOrderOrig;
+    p->clrCompOrder = victim.p->clrCompOrder;
+    p->bUpsideDown = victim.p->bUpsideDown;
+    p->bChanged = victim.p->bChanged;
+    p->nSizePixels = victim.p->nSizePixels;
+    p->pPixels = victim.p->pPixels;
+
+    victim.p->nBits = 0;
+    victim.p->nWidth = 0;
+    victim.p->nHeight = 0;
+    victim.p->bChanged = true;
+    victim.p->nSizePixels = 0;
+    victim.p->pPixels = PGENULL;
+
 }
 
 

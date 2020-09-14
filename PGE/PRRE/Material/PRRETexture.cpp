@@ -418,8 +418,6 @@ TPRREuint PRRETexture::PRRETextureImpl::getUsedTextureMemory() const
 PRRETexture::PRRETextureImpl::PRRETextureImpl(PRRETexture* owner)
 {
     _pOwner = owner;
-    _pOwner->getConsole().OLnOI("PRRETexture() ...");
-    _pOwner->getConsole().SOLnOO("Done!");
 } // PRRETexture()
 
 
@@ -909,7 +907,9 @@ TPRREuint PRRETexture::getUsedTextureMemory() const
 */
 PRRETexture::PRRETexture()
 {
+    getConsole().OLnOI("PRRETexture() ...");
     p = new PRRETextureImpl(this);
+    getConsole().SOLnOO("Done!");
 } // PRRETexture()
 
 
