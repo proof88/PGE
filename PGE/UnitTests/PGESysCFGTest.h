@@ -50,8 +50,10 @@ protected:
         AddSubTest("testWriteConfiguration", (PFNUNITSUBTEST) &PGESysCFGTest::testWriteConfiguration);
     }
 
-    virtual void SetUp()
-    {}
+    virtual bool setUp()
+    {
+        return true;
+    }
 
     virtual void TearDown()
     {}

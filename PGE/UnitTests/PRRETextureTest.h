@@ -109,15 +109,19 @@ protected:
         AddSubTest("testGetUsedTextureMemory", (PFNUNITSUBTEST) &PRRETextureTest::testGetUsedTextureMemory);
     }
 
-    virtual void SetUp()
+    virtual bool setUp()
     {
         tex128x128x24 = tm->createFromFile(BMP128x128x24);
+        return assertNotNull(tex128x128x24, "BMP128x128x24 null");
     }
 
     virtual void TearDown()
     {
-        delete tex128x128x24;
-        tex128x128x24 = NULL;
+        if ( tex128x128x24 )
+        {
+            delete tex128x128x24;
+            tex128x128x24 = NULL;
+        }
     }
 
     virtual void Finalize()

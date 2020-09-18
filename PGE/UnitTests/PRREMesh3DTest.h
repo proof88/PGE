@@ -38,6 +38,7 @@ public:
     {
         engine = NULL;
         mesh = NULL;
+        meshFromFile = NULL;
         meshPlane = NULL;
         meshBox = NULL;
         meshCube = NULL;
@@ -56,6 +57,7 @@ protected:
         engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         mm = &engine->getMesh3DManager();
         mesh = NULL;
+        meshFromFile = NULL;
         meshPlane = mm->createPlane(1.0f, 2.0f);
         meshBox   = mm->createBox(1.0f, 2.0f, 3.0f);
         meshCube  = mm->createCube(1.0f);
@@ -93,20 +95,32 @@ protected:
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRREMesh3DTest::testWriteList);
     }
 
-    virtual void SetUp()
+    virtual bool setUp()
     {
         mesh = mm->createBox(1.0f, 2.0f, 3.0f);
+        meshFromFile = mm->createFromFile("_res/models/snail_proofps/snail.obj");
+        return assertNotNull(mesh, "mesh = NULL" ) &
+            assertNotNull(meshFromFile, "meshFromFile = NULL" );
     }
 
     virtual void TearDown()
     {
-        delete mesh;
-        mesh = NULL;
+        if ( mesh != PGENULL )
+        {
+            delete mesh;
+            mesh = NULL;
+        }
+        if ( meshFromFile != PGENULL )
+        {
+            delete meshFromFile;
+            meshFromFile = NULL;
+        }
     }
 
     virtual void Finalize()
     {
         mesh = NULL;
+        meshFromFile = NULL;
         mm = NULL;
 
         if ( engine )
@@ -120,6 +134,7 @@ private:
     PR00FsReducedRenderingEngine* engine;
     PRREMesh3DManager* mm;
     PRREMesh3D* mesh;
+    PRREMesh3D* meshFromFile;
     const PRREMesh3D* meshPlane,
                       *meshBox,
                       *meshCube;
@@ -143,7 +158,7 @@ private:
     {
         delete mesh;
         mesh = NULL;
-        return assertEquals(3, mm->getCount());
+        return assertEquals(4, mm->getCount());
     }
 
     bool testGetPrimitiveFormat()

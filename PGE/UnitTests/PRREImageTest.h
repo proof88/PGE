@@ -89,15 +89,19 @@ protected:
         AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PRREImageTest::testGetUsedSystemMemory);
     }
 
-    virtual void SetUp()
+    virtual bool setUp()
     {
         img128x128x24 = im->createFromFile(BMP128x128x24);
+        return assertNotNull(img128x128x24, "img128x128x24");
     }
 
     virtual void TearDown()
     {
-        delete img128x128x24;
-        img128x128x24 = NULL;
+        if ( img128x128x24 )
+        {
+            delete img128x128x24;
+            img128x128x24 = NULL;
+        }
     }
 
 private:

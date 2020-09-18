@@ -65,9 +65,10 @@ protected:
 
     }
 
-    virtual void SetUp()
+    virtual bool setUp()
     {
         mat = mm->createMaterial();
+        return assertNotNull(mat, "mat null");
     }
 
     virtual void TearDown()
@@ -113,9 +114,6 @@ private:
         bool b = true;
         TPRREuint i = 0;
 
-        if ( !mat )
-            return assertNotNull(mat, "notNull");
-
         while ( i < nMaxLayers )
         {
             // by default no array is allocated
@@ -151,9 +149,6 @@ private:
 
     bool testAllocateArrays()
     {
-        if ( !mat )
-            return assertNotNull(mat, "notNull");
-
         const TPRREuint nColors    = 5;
         const TPRREuint nTexCoords = 6;
         const TPRREuint nIndices   = 7;
@@ -181,9 +176,6 @@ private:
 
     bool testSetTexture()
     {
-        if ( !mat )
-            return assertNotNull(mat, "notNull");
-
         PRRETexture* tex128x128x24 = PR00FsReducedRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
@@ -203,9 +195,6 @@ private:
 
     bool testGetTextureCount()
     {
-        if ( !mat )
-            return assertNotNull(mat, "notNull");
-
         PRRETexture* tex128x128x24 = PR00FsReducedRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
@@ -227,9 +216,6 @@ private:
 
     bool testIsTextured()
     {
-        if ( !mat )
-            return assertNotNull(mat, "notNull");
-
         PRRETexture* tex128x128x24 = PR00FsReducedRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
@@ -248,9 +234,6 @@ private:
 
     bool testIsSingleTextured()
     {
-        if ( !mat )
-            return assertNotNull(mat, "notNull");
-
         PRRETexture* tex128x128x24 = PR00FsReducedRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
@@ -272,9 +255,6 @@ private:
 
     bool testIsMultiTextured()
     {
-        if ( !mat )
-            return assertNotNull(mat, "notNull");
-
         PRRETexture* tex128x128x24 = PR00FsReducedRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
@@ -296,9 +276,6 @@ private:
 
     bool testSetSourceBlendFunc()
     {
-        if ( !mat )
-            return assertNotNull(mat, "notNull");
-
         mat->SetSourceBlendFunc(TPRRE_BLENDFACTORS::PRRE_CONSTANT_ALPHA);
         bool b = assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(), "1st");
 
@@ -316,9 +293,6 @@ private:
 
     bool testSetDestinationBlendFunc()
     {
-        if ( !mat )
-            return assertNotNull(mat, "notNull");
-
         mat->SetDestinationBlendFunc(TPRRE_BLENDFACTORS::PRRE_CONSTANT_ALPHA);
         bool b = assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_ALPHA, mat->getDestinationBlendFunc(), "1st");
 
@@ -339,9 +313,6 @@ private:
 
     bool testSetBlendFuncs()
     {
-        if ( !mat )
-            return assertNotNull(mat, "notNull");
-
         mat->SetBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_CONSTANT_COLOR);
         bool b = assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(), "1st src") &
             assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(), "1st dst");
@@ -375,9 +346,6 @@ private:
 
     bool testSetBlendMode()
     {
-        if ( !mat )
-            return assertNotNull(mat, "notNull");
-
         mat->SetBlendMode(TPRRE_BLENDMODES::PRRE_BM_STANDARD_TRANSPARENCY);
         bool b = assertEquals( PRRE_BM_STANDARD_TRANSPARENCY, mat->getBlendMode(), "1st mode") & 
             assertEquals( PRRE_SRC_ALPHA, mat->getSourceBlendFunc(), "1st src") &
@@ -393,9 +361,6 @@ private:
 
     bool testCopyFromMaterial()
     {
-        if ( !mat )
-            return assertNotNull(mat, "notNull");
-
         PRREMaterial* mat2 = mm->createMaterial();
         if ( !mat2 )
             return assertNotNull(mat2, "notNull 2");

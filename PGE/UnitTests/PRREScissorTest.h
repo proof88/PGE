@@ -38,9 +38,9 @@ protected:
         AddSubTest("testDoScissor", (PFNUNITSUBTEST) &PRREScissorTest::testDoScissor);
     }
 
-    virtual void SetUp()
+    virtual bool setUp()
     {
-        
+        return true;    
     }
 
     virtual void TearDown()

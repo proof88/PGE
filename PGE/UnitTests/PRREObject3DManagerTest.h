@@ -52,15 +52,17 @@ protected:
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testWriteList);
     }
 
-    virtual void SetUp()
+    virtual bool setUp()
     {
+        bool ret = true;
         if ( engine == NULL )
         {
             engine = &PR00FsReducedRenderingEngine::createAndGet();
-            engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
+            ret &= assertEquals((TPRREuint)0, engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
             om = &engine->getObject3DManager();
+            ret &= assertNotNull(om, "om null");
         }
-        
+        return ret;
     }
 
     virtual void TearDown()

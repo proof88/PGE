@@ -36,9 +36,9 @@ public:
 
 protected:
 
-    virtual void SetUp()
+    virtual bool setUp()
     {
-
+        return true;
     }
 
     virtual void TearDown()

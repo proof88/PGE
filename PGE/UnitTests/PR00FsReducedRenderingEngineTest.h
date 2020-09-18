@@ -51,9 +51,10 @@ protected:
         AddSubTest("testCopyScreenToTexture", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest::testCopyScreenToTexture);
     }
 
-    virtual void SetUp()
+    virtual bool setUp()
     {
         engine = &PR00FsReducedRenderingEngine::createAndGet();
+        return assertNotNull(engine, "engine null");
     }
 
     virtual void TearDown()

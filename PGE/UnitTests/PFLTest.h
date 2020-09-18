@@ -51,9 +51,9 @@ protected:
         AddSubTest("testRadToDeg", (PFNUNITSUBTEST) &PFLTest::testRadToDeg);
     }
 
-    virtual void SetUp()
+    virtual bool setUp()
     {
-        
+        return true;    
     }
 
     virtual void TearDown()

@@ -17,16 +17,6 @@
 #define E 0.0001f
 #endif // EPSILON
 
-#ifndef PRREIMAGETEST_FILENAMES
-#define PRREIMAGETEST_FILENAMES
-#define BMP128x128x32op "_res/proba128x128x32_opaque.bmp"
-#define BMP128x128x32tr "_res/proba128x128x32_transparent.bmp"
-#define BMP128x128x24 "_res/proba128x128x24.bmp"
-#define BMP128x128x8 "_res/proba128x128x8.bmp"
-#define BMP128x128x4 "_res/proba128x128x4.bmp"
-#define BMP128x128x1 "_res/proba128x128x1.bmp"
-#endif
-
 class PRREObject3DTest :
     public UnitTest
 {
@@ -118,15 +108,19 @@ protected:
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRREObject3DTest::testWriteList);
     }
 
-    virtual void SetUp()
+    virtual bool setUp()
     {
         obj = om->createBox(1.0f, 2.0f, 3.0f);
+        return assertNotNull(obj, "obj null");
     }
 
     virtual void TearDown()
     {
-        delete obj;
-        obj = NULL;
+        if ( obj )
+        {
+            delete obj;
+            obj = NULL;
+        }
     }
 
     virtual void Finalize()

@@ -40,12 +40,12 @@
     1. - Create the actual unit test class by deriving from this class (mandatory);
     2. - Override Initialize() (optional):
          it will be called by run() only once before running any test;
-    3. - Override SetUp() (optional):
+    3. - Override setUp() (optional):
          it will be called by run() right before any test (after Initialize());
     4. - Override testMethod() (optional):
-         write the actual test code into it;
+         write the actual test code into it; note that it won't be invoked if setUp() failed;
     5. - Override TearDown() (optional):
-         it will be called by run() right after any test;
+         it will be called by run() right after any test, also if no test was invoked due to setUp() failed;
     6. - You can create unit-subtests (optional):
          use AddSubTest() in Initialize() or the class constructor to add your subtest methods to the test;
     7. - call run() to run the test(s).
@@ -643,11 +643,11 @@ public:
         Executes the test. Runs the overridable testMethod() and every unit-subtests.
         run() calls functions in the following order:
          - Initialize();
-         - SetUp();
+         - if ( setUp() )
            - TestMethod();
          - TearDown();
          - for all subtests:
-           - SetUp();
+           - if ( setUp() )
              - subtest();
            - TearDown();
          - Finalize();
@@ -659,18 +659,36 @@ public:
         Reset();
         bTestRan = true;
         Initialize();
-        SetUp();
-        TestMethod();
-        TearDown();
-        for (std::vector<TUNITSUBTESTFUNCNAMEPAIR>::size_type i = 0; i < tSubTests.size(); ++i)
+        bool bSkipAllSubTests;
+        if ( setUp() )
         {
-            PFNUNITSUBTEST func = tSubTests[i].first;
-            SetUp();
-            if ( (this->* func)() )
-                ++nSucceededSubTests;
-            else
-                AddToMessages(std::string("  <").append(tSubTests[i].second).append("> failed!").c_str());
-            TearDown();
+            bSkipAllSubTests = false;
+            TestMethod();
+        }
+        else
+        {
+            bSkipAllSubTests = true;
+            AddToMessages(std::string("  <").append(sTestFile).append("> setUp() failed!").c_str());
+        }
+        TearDown();
+        if ( !bSkipAllSubTests )
+        {
+            for (std::vector<TUNITSUBTESTFUNCNAMEPAIR>::size_type i = 0; i < tSubTests.size(); ++i)
+            {
+                PFNUNITSUBTEST func = tSubTests[i].first;
+                if ( setUp() )
+                {
+                    if ( (this->* func)() )
+                        ++nSucceededSubTests;
+                    else
+                        AddToMessages(std::string("  <").append(tSubTests[i].second).append("> failed!").c_str());
+                }
+                else
+                {
+                     AddToMessages(std::string("  <").append(tSubTests[i].second).append("> SKIPPED due to setUp() failed!").c_str());
+                }
+                TearDown();
+            }
         }
         Finalize();
         return isPassed();
@@ -702,11 +720,11 @@ protected:
 
     virtual void Initialize() {}; /**< This gets called before running the test, use this instead of a ctor. */ 
 
-    virtual void TestMethod() {}; /**< This may be overridden in actual unit tests. */
+    virtual void TestMethod() {}; /**< This may be overridden in actual unit tests. It won't be invoked if setUp() returned false! */
 
-    virtual void SetUp() {};      /**< This gets called before testMethod() and every subtest. */
+    virtual bool setUp() { return true; };   /**< This gets called before testMethod() and every subtest. */
 
-    virtual void TearDown() {};   /**< This gets called after testMethod() and every subtest. */
+    virtual void TearDown() {};   /**< This gets called after TestMethod() and every subtest. This is invoked even if TestMethod() or a subtest got skipped due to setUp() returned false! */
 
     virtual void Finalize() {};   /**< This gets called after running the whole tests, use this instead of a dtor. */
 

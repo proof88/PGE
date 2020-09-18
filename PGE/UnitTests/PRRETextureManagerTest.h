@@ -85,15 +85,19 @@ protected:
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRRETextureManagerTest::testWriteList);
     }
 
-    virtual void SetUp()
+    virtual bool setUp()
     {
+        bool ret = true;
         if ( engine == NULL )
         {
             engine = &PR00FsReducedRenderingEngine::createAndGet();
-            engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
+            ret &= assertEquals((TPRREuint)0, engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0), "engine" );  // pretty standard display mode, should work on most systems
             im = &engine->getImageManager();
             tm = &engine->getTextureManager();
+            ret &= assertNotNull(im, "im null");
+            ret &= assertNotNull(tm, "tm null");
         }
+        return ret;
     }
 
     virtual void TearDown()
