@@ -163,7 +163,8 @@ private:
 
     bool testGetPrimitiveFormat()
     {
-        return assertEquals(PRRE_PM_QUADS, mesh->getPrimitiveFormat(), "mesh") &
+        return assertEquals(PRRE_PM_TRIANGLES, meshFromFile->getPrimitiveFormat(), "meshFromFile") &
+            assertEquals(PRRE_PM_QUADS, mesh->getPrimitiveFormat(), "mesh") &
             assertEquals(PRRE_PM_QUADS, meshPlane->getPrimitiveFormat(), "plane") &
             assertEquals(PRRE_PM_QUADS, meshBox->getPrimitiveFormat(), "box") &
             assertEquals(PRRE_PM_QUADS, meshCube->getPrimitiveFormat(), "cube");
@@ -174,12 +175,16 @@ private:
         return assertEquals((TPRREuint) 4, meshPlane->getVerticesCount(), "plane") &
             assertEquals((TPRREuint) 24, meshBox->getVerticesCount(), "box") &
             assertEquals((TPRREuint) 24, meshCube->getVerticesCount(), "cube") &
+            assertEquals((TPRREuint) 0, meshFromFile->getVerticesCount(), "meshFromFile") &
             assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getVerticesCount(), meshPlane->getVerticesCount(), "plane 2") &
             assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getVerticesCount(), meshBox->getVerticesCount(), "box 2") &
             assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getVerticesCount(), meshCube->getVerticesCount(), "cube 2") &
+            assertNotEquals(((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getVerticesCount(), meshFromFile->getVerticesCount(), "meshFromFile 2") &
+            assertEquals((TPRREuint)144, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getVerticesCount(), "meshFromFile 3") &
             assertEquals((TPRREuint) 0, meshPlane->getVerticesCount(false), "plane noimplicit") &
             assertEquals((TPRREuint) 0, meshBox->getVerticesCount(false), "box noimplicit") &
-            assertEquals((TPRREuint) 0, meshCube->getVerticesCount(false), "cube noimplicit");
+            assertEquals((TPRREuint) 0, meshCube->getVerticesCount(false), "cube noimplicit") &
+            assertEquals((TPRREuint) 0, meshFromFile->getVerticesCount(false), "meshFromFile noimplicit");
     }
 
     bool testGetVertices()
@@ -187,12 +192,15 @@ private:
         return assertNotNull(meshPlane->getVertices(), "plane") &
             assertNotNull(meshBox->getVertices(), "box") &
             assertNotNull(meshCube->getVertices(), "cube") &
+            assertNull(meshFromFile->getVertices(), "meshFromFile") &
             assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getVertices(), meshPlane->getVertices(), "plane 2") &
             assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getVertices(), meshBox->getVertices(), "box 2") &
             assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getVertices(), meshCube->getVertices(), "cube 2") &
+            assertNotEquals(((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getVertices(), meshFromFile->getVertices(), "meshFromFile 2") &
             assertNull(meshPlane->getVertices(false), "plane noimplicit") &
             assertNull(meshBox->getVertices(false), "box noimplicit") &
-            assertNull(meshCube->getVertices(false), "cube noimplicit");
+            assertNull(meshCube->getVertices(false), "cube noimplicit") &
+            assertNull(meshFromFile->getVertices(false), "meshFromFile noimplicit");
     }
 
     bool testGetVertexIndicesType()
@@ -203,7 +211,8 @@ private:
             /* intentionally comparing level-1 parent vs level-2 submesh vertex index types since they must be equal anyway */
             assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getVertexIndicesType(), meshPlane->getVertexIndicesType(false), "plane noimplicit") &
             assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getVertexIndicesType(), meshBox->getVertexIndicesType(false), "box noimplicit") &
-            assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getVertexIndicesType(), meshCube->getVertexIndicesType(false), "cube noimplicit");
+            assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getVertexIndicesType(), meshCube->getVertexIndicesType(false), "cube noimplicit") &
+            assertEquals((unsigned int)GL_UNSIGNED_BYTE, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getVertexIndicesType(), "meshFromFile noimplicit");
     }
 
     bool testGetMinIndexValue()
@@ -211,13 +220,16 @@ private:
         return assertEquals((TPRREuint)0, meshPlane->getMinIndexValue(), "plane") &
             assertEquals((TPRREuint)0, meshBox->getMinIndexValue(), "box") &
             assertEquals((TPRREuint)0, meshCube->getMinIndexValue(), "cube") &
+            assertEquals((TPRREuint)UINT_MAX, meshFromFile->getMinIndexValue(), "meshFromFile") &
             /* doesn't matter if implicit access or not, if there is vertex or not, 0 is the expected anyway */
             assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getMinIndexValue(), meshPlane->getMinIndexValue(false), "plane sub noimplicit") &
             assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getMinIndexValue(), meshBox->getMinIndexValue(false), "box sub noimplicit") &
             assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getMinIndexValue(), meshCube->getMinIndexValue(false), "cube sub noimplicit") &
+            assertNotEquals(((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getMinIndexValue(), meshFromFile->getMinIndexValue(false), "meshFromFile sub noimplicit") &
             assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getMinIndexValue(), meshPlane->getMinIndexValue(), "plane sub") &
             assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getMinIndexValue(), meshBox->getMinIndexValue(), "box sub") &
-            assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getMinIndexValue(), meshCube->getMinIndexValue(), "cube sub");
+            assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getMinIndexValue(), meshCube->getMinIndexValue(), "cube sub") &
+            assertEquals((TPRREuint) 0, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getMinIndexValue(), "meshFromFile sub");
     }
 
     bool testGetMaxIndexValue()
@@ -225,12 +237,15 @@ private:
         return assertEquals((TPRREuint)3, meshPlane->getMaxIndexValue(), "plane") &
             assertEquals((TPRREuint)23, meshBox->getMaxIndexValue(), "box") &
             assertEquals((TPRREuint)23, meshCube->getMaxIndexValue(), "cube") &
+            assertEquals((TPRREuint)0, meshFromFile->getMaxIndexValue(), "meshFromFile") &
             assertEquals((TPRREuint)0, meshPlane->getMaxIndexValue(false), "plane noimplicit") &
             assertEquals((TPRREuint)0, meshBox->getMaxIndexValue(false), "box noimplicit") &
             assertEquals((TPRREuint)0, meshCube->getMaxIndexValue(false), "cube noimplicit") &
+            assertEquals((TPRREuint)0, meshFromFile->getMaxIndexValue(false), "meshFromFile noimplicit") &
             assertEquals((TPRREuint)3, ((PRREMesh3D*)meshPlane->getAttachedAt(0))->getMaxIndexValue(), "plane sub") &
             assertEquals((TPRREuint)23, ((PRREMesh3D*)meshBox->getAttachedAt(0))->getMaxIndexValue(), "box sub") &
-            assertEquals((TPRREuint)23, ((PRREMesh3D*)meshCube->getAttachedAt(0))->getMaxIndexValue(), "cube sub");
+            assertEquals((TPRREuint)23, ((PRREMesh3D*)meshCube->getAttachedAt(0))->getMaxIndexValue(), "cube sub") &
+            assertEquals((TPRREuint)143, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getMaxIndexValue(), "meshFromFile sub");
     }
 
     bool testGetIndexFromArray()
@@ -261,6 +276,14 @@ private:
             (std::string("cube ") + std::to_string(i)).c_str());
         }
 
+        const PRREMesh3D& submeshFile = * ((PRREMesh3D*) (meshFromFile->getAttachedAt(0)));
+        for (TPRREuint i = 0; i < submeshFile.getVertexIndicesCount(); i++)
+        {
+            b &= assertEquals(i,
+            submeshFile.getIndexFromArray(submeshFile.getVertexIndices(), i),
+            (std::string("meshFromFile ") + std::to_string(i)).c_str());
+        }
+
         return b;
     }
 
@@ -269,12 +292,16 @@ private:
         return assertEquals((TPRREuint) 4, meshPlane->getNormalsCount(), "plane") &
             assertEquals((TPRREuint) 24, meshBox->getNormalsCount(), "box") &
             assertEquals((TPRREuint) 24, meshCube->getNormalsCount(), "cube") &
+            assertEquals((TPRREuint) 0, meshFromFile->getNormalsCount(), "meshFromFile") &
             assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getNormalsCount(), meshPlane->getNormalsCount(), "plane 2") &
             assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getNormalsCount(), meshBox->getNormalsCount(), "box 2") &
             assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getNormalsCount(), meshCube->getNormalsCount(), "cube 2") &
+            assertNotEquals(((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getNormalsCount(), meshFromFile->getNormalsCount(), "meshFromFile 2") &
+            assertEquals((TPRREuint)144, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getNormalsCount(), "meshFromFile 3") &
             assertEquals((TPRREuint) 0, meshPlane->getNormalsCount(false), "plane noimplicit") &
             assertEquals((TPRREuint) 0, meshBox->getNormalsCount(false), "box noimplicit") &
-            assertEquals((TPRREuint) 0, meshCube->getNormalsCount(false), "cube noimplicit");
+            assertEquals((TPRREuint) 0, meshCube->getNormalsCount(false), "cube noimplicit") &
+            assertEquals((TPRREuint) 0, meshFromFile->getNormalsCount(false), "meshFromFile noimplicit");
     }
 
     bool testGetNormals()
@@ -282,25 +309,23 @@ private:
         return assertNotNull(meshPlane->getNormals(), "plane") &
             assertNotNull(meshBox->getNormals(), "box") &
             assertNotNull(meshCube->getNormals(), "cube") &
+            assertNull(meshFromFile->getNormals(), "meshFromFile") &
             assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getNormals(), meshPlane->getNormals(), "plane 2") &
             assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getNormals(), meshBox->getNormals(), "box 2") &
             assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getNormals(), meshCube->getNormals(), "cube 2") &
+            assertNotEquals(((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getNormals(), meshFromFile->getNormals(), "meshFromFile 2") &
             assertNull(meshPlane->getNormals(false), "plane noimplicit") &
             assertNull(meshBox->getNormals(false), "box noimplicit") &
-            assertNull(meshCube->getNormals(false), "cube noimplicit");
+            assertNull(meshCube->getNormals(false), "cube noimplicit") &
+            assertNull(meshFromFile->getNormals(false), "meshFromFile noimplicit");
     }
 
     bool testGetPosVec()
     {
-        const PRREMesh3D* const mesh = mm->createFromFile("../../../PGE/PGE/UnitTests/_res/models/snail_proofps/snail.obj");
-
-        if ( !assertNotNull(mesh, "mesh = NULL") )
-            return false;
-
         // in our loaded object, there shouldn't be any subobject in pos(0,0,0)
         bool b1 = true;
-        for (TPRREint i = 0; i < mesh->getCount(); i++)
-            b1 = b1 & assertFalse( ((PRREMesh3D*)mesh->getAttachedAt(i))->getPosVec().isZero(), "pos zero mesh sub" );
+        for (TPRREint i = 0; i < meshFromFile->getCount(); i++)
+            b1 = b1 & assertFalse( ((PRREMesh3D*)meshFromFile->getAttachedAt(i))->getPosVec().isZero(), "pos zero mesh sub" );
 
         // in our other objects, all subobjects should be at pos(0,0,0)
         bool b2 = true;
@@ -329,15 +354,10 @@ private:
 
     bool testGetSizeVec()
     {
-        const PRREMesh3D* const mesh = mm->createFromFile("../../../PGE/PGE/UnitTests/_res/models/snail_proofps/snail.obj");
-
-        if ( !assertNotNull(mesh, "mesh = NULL") )
-            return false;
-
         // in our loaded object, there shouldn't be any subobject with size(0,0,0)
         bool b1 = true;
-        for (TPRREint i = 0; i < mesh->getCount(); i++)
-            b1 = b1 & assertFalse( ((PRREMesh3D*)mesh->getAttachedAt(i))->getSizeVec().isZero(), "size zero mesh sub" );
+        for (TPRREint i = 0; i < meshFromFile->getCount(); i++)
+            b1 = b1 & assertFalse( ((PRREMesh3D*)meshFromFile->getAttachedAt(i))->getSizeVec().isZero(), "size zero mesh sub" );
 
         // in our other objects, all subobjects size should be same as object size
         bool b2 = true;
@@ -489,12 +509,7 @@ private:
 
     bool testGetCount()
     {
-        const PRREMesh3D* const mesh = mm->createFromFile("../../../PGE/PGE/UnitTests/_res/models/snail_proofps/snail.obj");
-
-        if ( !assertNotNull(mesh, "mesh = NULL") )
-            return false;
-
-        return assertEquals(9, mesh->getCount(), "mesh") &
+        return assertEquals(9, meshFromFile->getCount(), "meshFromFile") &
             assertEquals(1, meshPlane->getCount(), "plane") &
             assertEquals(1, meshBox->getCount(), "box") &
             assertEquals(1, meshCube->getCount(), "cube");
@@ -502,12 +517,7 @@ private:
 
     bool testIsEmpty()
     {
-        const PRREMesh3D* const mesh = mm->createFromFile("../../../PGE/PGE/UnitTests/_res/models/snail_proofps/snail.obj");
-
-        if ( !assertNotNull(mesh, "mesh = NULL") )
-            return false;
-
-        return assertFalse(mesh->isEmpty(), "mesh") &
+        return assertFalse(meshFromFile->isEmpty(), "meshFromFile") &
             assertFalse(meshPlane->isEmpty(), "plane") &
             assertFalse(meshBox->isEmpty(), "box") &
             assertFalse(meshCube->isEmpty(), "cube");
@@ -515,12 +525,7 @@ private:
 
     bool testGetSize()
     {
-        const PRREMesh3D* const mesh = mm->createFromFile("../../../PGE/PGE/UnitTests/_res/models/snail_proofps/snail.obj");
-
-        if ( !assertNotNull(mesh, "mesh = NULL") )
-            return false;
-
-        return assertGequals(mesh->getSize(),   mesh->getCount(),      "mesh") &
+        return assertGequals(meshFromFile->getSize(),   meshFromFile->getCount(),      "meshFromFile") &
             assertGequals(meshPlane->getSize(), meshPlane->getCount(), "plane") &
             assertGequals(meshBox->getSize(),   meshBox->getCount(),   "box") &
             assertGequals(meshCube->getSize(),  meshCube->getCount(),  "cube");
@@ -528,12 +533,7 @@ private:
 
     bool testGetAttachedAt()
     {
-        const PRREMesh3D* const mesh = mm->createFromFile("../../../PGE/PGE/UnitTests/_res/models/snail_proofps/snail.obj");
-
-        if ( !assertNotNull(mesh, "mesh = NULL") )
-            return false;
-
-        return assertNotNull(mesh->getAttachedAt(0),   "mesh") &
+        return assertNotNull(meshFromFile->getAttachedAt(0),   "meshFromFile") &
             assertNotNull(meshPlane->getAttachedAt(0), "plane") &
             assertNotNull(meshBox->getAttachedAt(0),   "box") &
             assertNotNull(meshCube->getAttachedAt(0),  "cube");

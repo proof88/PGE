@@ -669,14 +669,14 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
 
         SetArrayPointers( bServer );
 
-            // There is not much use of the CVA mode in this form, however sometime later
-            // the code could be somehow enhanced to do multitexturing with just 1 TMU
-            // by drawing the same geometry again with different texture blended between
-            // 1 lock-unlock, in that case vertices would be transformed only once!
-            // This would be useful when multitexturing is enabled on 1-TMU VPU/GPU.
-            // However even TNT had 2 TMUs, so I'm not planning to do this improvement.
-            // Just wanted to emphasize that locking the array and drawing it only once
-            // does not make much sense.
+            // 1 big benefit of using CVA is when we want to do multitexturing with only
+            // 1 TMU, meaning that we need to do it in at least 2 passes, specifying
+            // vertex geometry twice! However even TNT had 2 TMUs, so I'm not planning to do this improvement.
+            // Another big benefit is when we have shared vertices, in indexed rendering
+            // all vertices are transformed if lock is enabled, thus shared vertices
+            // can be used multiple times EVEN THOUGH THEY ARE TRANSFORMED ONLY ONCE!
+            // Too bad we currently create redundant vertex geometry when loading OBJ mesh,
+            // however we have backlog item for that ...
             if ( BIT_READ(getVertexTransferMode(), PRRE_VT_CVA_BIT) == 1u )
                 glLockArraysEXT(0, _pOwner->getVerticesCount(false));
 
