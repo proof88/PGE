@@ -413,6 +413,9 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
         for (TPRREuint j = lines_start[i]; j <= lines_end[i]; j++)
         {
             // there will be submesh-local indices in the end, all starting from nMinIndex = 0 to nMaxIndex = k*3+2
+            // TODO: since we use submesh-local indices, there is no use for nMinIndex, as it must be always 0 in all submeshes!
+            // also, I'm not sure about the use of nMaxIndex, since I guess it always equals to nVertexIndices_h-1.
+            // So, I would rather decide nIndicesType based on the value nVertexIndices_h.
             if ( currSubObj->p->nMinIndex > k*3 )
                 currSubObj->p->nMinIndex = k*3;
             if ( currSubObj->p->nMaxIndex < k*3+2 )
@@ -454,6 +457,7 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
         currSubObj->p->nVertexIndices_h   = currSubObj->p->nFaces_h * 3;
         currSubObj->p->pVertexIndices   = malloc( PRREGLsnippets::getSizeofIndexType(currSubObj->p->nIndicesType) * currSubObj->p->nVertexIndices_h );
         currSubObj->p->nVertices_h  = currSubObj->p->nVertexIndices_h;
+        currSubObj->p->nNormals_h   = currSubObj->p->nVertices_h;
         currSubObj->p->pVertices        = (TXYZ*)  malloc( sizeof(TXYZ) * currSubObj->p->nVertices_h );
         currSubObj->p->pNormals         = (TXYZ*)  malloc( sizeof(TXYZ) * currSubObj->p->nNormals_h );
 

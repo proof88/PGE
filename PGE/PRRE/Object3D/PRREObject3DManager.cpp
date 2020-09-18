@@ -350,11 +350,6 @@ PRREObject3D* PRREObject3DManager::createPlane(
 
     getConsole().OLnOI("PRREObject3DManager::createPlane(%f, %f)", a, b);
 
-    if ( (a == 2.0f) && (b == 2.0f) )
-    {
-        Sleep(1);
-    }
-
     PRREObject3D* const obj = new PRREObject3D(vmod, vref, bForceUseClientMemory);
     Attach( *obj );
     PRREObject3D* const subobj = new PRREObject3D(vmod, vref, bForceUseClientMemory);

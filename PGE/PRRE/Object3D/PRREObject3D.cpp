@@ -9,6 +9,7 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
+#include <cassert>
 #include "../PRREpragmas.h"
 #include "../../../../PFL/PFL/PFL.h"
 #include "PRREObject3DManager.h"
@@ -558,12 +559,6 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         return;
     }
 
-     if ( (_pOwner->getSizeVec().getX() == 2.0f) && (_pOwner->getSizeVec().getY() == 2.0f) )
-     {
-         // for placing breakpoint ...
-         getConsole().OLn("");
-     }
-
     // TODO: add a mechanism for ignoring user-triggered draw of subobjects.
     // This can be done if parent maintains a variable that is set to true
     // at the beginning of draw and its subobjects check for the value of this var,
@@ -654,7 +649,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         glDisable(GL_CULL_FACE); /* otherwise only the front facing side of cube would be written to feedback buffer */
 
         glRenderMode(GL_FEEDBACK);
-    }  
+    } 
 
     if ( BIT_READ(getVertexTransferMode(), PRRE_VT_VA_BIT) == 0u )
     {
@@ -763,7 +758,6 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
     {
         // we were already in GL_RENDER (0) mode, OR nothing was returned, OR we were in FEEDBACK but buffer was not enough to hold all values (<0) ...
     }
-
 } // Draw()
 
 
@@ -952,6 +946,7 @@ void PRREObject3D::PRREObject3DImpl::CompileIntoVertexBufferObjects(TPRREbool in
     {
         glGenBuffersARB(1, &nIndicesVBO);
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, nIndicesVBO);
+        assert(_pOwner->getVertexIndices(false) != NULL);
         glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, _pOwner->getVertexIndicesCount(false) * PRREGLsnippets::getSizeofIndexType(_pOwner->getVertexIndicesType()), _pOwner->getVertexIndices(false), GL_STATIC_DRAW_ARB);
         // Note: we always store indices in static buffer but could be in client memory, too.
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
@@ -962,14 +957,17 @@ void PRREObject3D::PRREObject3DImpl::CompileIntoVertexBufferObjects(TPRREbool in
         GLenum usage = dynamic ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB;
         glGenBuffersARB(1, &nVerticesVBO);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, nVerticesVBO);
+        assert(_pOwner->getVertices(false) != NULL);
         glBufferDataARB(GL_ARRAY_BUFFER_ARB,  _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getVertices(false), usage);
  
         glGenBuffersARB(1, &nColorsVBO);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, nColorsVBO);
+        assert(_pOwner->getMaterial(false).getColors() != NULL);
         glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getColorsCount() * sizeof(TRGBAFLOAT), _pOwner->getMaterial(false).getColors(), usage);
 
         glGenBuffersARB(1, &nTexcoordsVBO[0]);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[0]);
+        assert(_pOwner->getMaterial(false).getTexcoords() != NULL);
         glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount() * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(), usage);
 
         if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
@@ -978,12 +976,15 @@ void PRREObject3D::PRREObject3DImpl::CompileIntoVertexBufferObjects(TPRREbool in
             {
                 glGenBuffersARB(1, &nTexcoordsVBO[1]);
                 glBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[1]);
+                assert(_pOwner->getMaterial(false).getTexcoords(1) != NULL);
                 glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount(1) * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(1), usage);
             }
         }
 
         glGenBuffersARB(1, &nNormalsVBO);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, nNormalsVBO);
+        assert(_pOwner->getNormals(false) != NULL);
+        assert(_pOwner->getNormalsCount(false) != 0);
         glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getNormalsCount(false) * sizeof(TXYZ), _pOwner->getNormals(false), usage);
 
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
@@ -1102,7 +1103,6 @@ void PRREObject3D::PRREObject3DImpl::SetArrayPointers(TPRREbool redirectToServer
                 glTexCoordPointer(3, GL_FLOAT, 0, _pOwner->getMaterial(false).getTexcoords(i));
         }
     }
-
 } // SetArrayPointers()
 
 
