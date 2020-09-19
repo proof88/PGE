@@ -285,7 +285,7 @@ protected:
 
 private:
     class PRREObject3DImpl;
-    PRREObject3DImpl* p;
+    PRREObject3DImpl* pImpl;
 
     friend class PRREObject3DManager;  
 
@@ -371,6 +371,6 @@ protected:
 
 private:
     class PRREObject3DManagerImpl;
-    PRREObject3DManagerImpl* p;  
+    PRREObject3DManagerImpl* pImpl;  
 
 }; // class PRREObject3DManager

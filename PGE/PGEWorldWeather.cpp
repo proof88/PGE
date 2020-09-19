@@ -146,14 +146,14 @@ void WorldWeatherCell::SetCellSize(float size)
 
 WorldWeatherCell::WorldWeatherCell()
 {
-    p = new WorldWeatherCellImpl();
+    pImpl = new WorldWeatherCellImpl();
 }
 
 
 WorldWeatherCell::~WorldWeatherCell()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 }
 
 
@@ -162,13 +162,13 @@ WorldWeatherCell::~WorldWeatherCell()
 
 WorldWeatherCell::WorldWeatherCell(const WorldWeatherCell&)
 {
-    p = NULL;
+    pImpl = NULL;
 };     
 
 
 WorldWeatherCell& WorldWeatherCell::operator=(const WorldWeatherCell&)
 {
-    p = NULL;
+    pImpl = NULL;
     return *this;
 }
 

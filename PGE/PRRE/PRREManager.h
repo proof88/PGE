@@ -110,7 +110,7 @@ protected:
 
 private:
     class PRREManagerImpl;
-    PRREManagerImpl* p;
+    PRREManagerImpl* pImpl;
 
 }; // class PRREManager
 

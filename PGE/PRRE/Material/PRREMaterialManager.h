@@ -226,7 +226,7 @@ protected:
 
 private:
     class PRREMaterialImpl;
-    PRREMaterialImpl* p;
+    PRREMaterialImpl* pImpl;
 
     friend class PRREMaterialManager;  
 
@@ -267,6 +267,6 @@ protected:
 
 private:
     class PRREMaterialManagerImpl;
-    PRREMaterialManagerImpl* p;  
+    PRREMaterialManagerImpl* pImpl;  
 
 }; // class PRREMaterialManager

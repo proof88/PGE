@@ -683,8 +683,8 @@ void PRRETexture::PRRETextureImpl::DescribeTexFormatAndSize(GLint internalfmt)
 
 PRRETexture::~PRRETexture()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRRETexture()
 
 
@@ -694,7 +694,7 @@ PRRETexture::~PRRETexture()
 */
 TPRRE_TEX_FORMAT PRRETexture::getInternalFormat() const
 {
-    return p->getInternalFormat();
+    return pImpl->getInternalFormat();
 } // getInternalFormat()
 
 
@@ -704,7 +704,7 @@ TPRRE_TEX_FORMAT PRRETexture::getInternalFormat() const
 */
 TPRREuint PRRETexture::getInternalNum() const
 {
-    return (TPRREuint) p->getInternalNum();
+    return (TPRREuint) pImpl->getInternalNum();
     // todo: later this should be fixed: the method should be protected and GLuint can be used explicitly as return value type
 } // getInternalNum()
 
@@ -715,7 +715,7 @@ TPRREuint PRRETexture::getInternalNum() const
 */
 TPRRE_ISO_TEX_FILTERING PRRETexture::getMinFilteringMode() const
 {
-    return p->getMinFilteringMode();
+    return pImpl->getMinFilteringMode();
 } // getMinFilteringMode()
 
 
@@ -725,7 +725,7 @@ TPRRE_ISO_TEX_FILTERING PRRETexture::getMinFilteringMode() const
 */
 TPRRE_ISO_TEX_FILTERING PRRETexture::getMagFilteringMode() const
 {
-    return p->getMagFilteringMode();
+    return pImpl->getMagFilteringMode();
 } // getMagFilteringMode()
 
 
@@ -735,7 +735,7 @@ TPRRE_ISO_TEX_FILTERING PRRETexture::getMagFilteringMode() const
 */
 void PRRETexture::SetMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 {
-    p->SetMinFilteringMode(filtering);
+    pImpl->SetMinFilteringMode(filtering);
 } // SetMinFilteringMode()
 
 
@@ -745,7 +745,7 @@ void PRRETexture::SetMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 */
 void PRRETexture::SetMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 {
-    p->SetMagFilteringMode(filtering);
+    pImpl->SetMagFilteringMode(filtering);
 } // SetMagFilteringMode()
 
 
@@ -755,7 +755,7 @@ void PRRETexture::SetMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 */
 void PRRETexture::SetIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter, TPRRE_ISO_TEX_FILTERING magfilter)
 {
-    p->SetIsoFilteringMode(minfilter, magfilter);
+    pImpl->SetIsoFilteringMode(minfilter, magfilter);
 } // SetIsoFilteringMode()
 
 
@@ -765,7 +765,7 @@ void PRRETexture::SetIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter, TPRRE_I
 */
 TPRREuint PRRETexture::getMIPmapCount() const 
 {
-    return p->getMIPmapCount();
+    return pImpl->getMIPmapCount();
 } // getMIPmapCount()
 
 
@@ -775,7 +775,7 @@ TPRREuint PRRETexture::getMIPmapCount() const
 */
 TPRRE_ANISO_TEX_FILTERING PRRETexture::getAnisoFilteringMode() const
 {
-    return p->getAnisoFilteringMode();
+    return pImpl->getAnisoFilteringMode();
 } // getAnisoFilteringMode()
 
 
@@ -784,7 +784,7 @@ TPRRE_ANISO_TEX_FILTERING PRRETexture::getAnisoFilteringMode() const
 */
 void PRRETexture::SetAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING filtering)
 {
-    p->SetAnisoFilteringMode(filtering);
+    pImpl->SetAnisoFilteringMode(filtering);
 } // SetAnisoFilteringMode()
 
 
@@ -793,7 +793,7 @@ void PRRETexture::SetAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING filtering)
 */
 TPRRE_TEX_WRAPPING PRRETexture::getTextureWrappingModeS() const
 {
-    return p->getTextureWrappingModeS();
+    return pImpl->getTextureWrappingModeS();
 }
 
 
@@ -802,7 +802,7 @@ TPRRE_TEX_WRAPPING PRRETexture::getTextureWrappingModeS() const
 */
 TPRRE_TEX_WRAPPING PRRETexture::getTextureWrappingModeT() const
 {
-    return p->getTextureWrappingModeT();
+    return pImpl->getTextureWrappingModeT();
 }
 
 
@@ -813,7 +813,7 @@ TPRRE_TEX_WRAPPING PRRETexture::getTextureWrappingModeT() const
 */
 void PRRETexture::SetTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, TPRRE_TEX_WRAPPING tw_t )
 {
-    p->SetTextureWrappingMode(tw_s, tw_t);
+    pImpl->SetTextureWrappingMode(tw_s, tw_t);
 }
 
 
@@ -822,7 +822,7 @@ void PRRETexture::SetTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, TPRRE_TEX_WRAP
 */
 TPRREbool PRRETexture::getBorder() const
 {
-    return p->getBorder();
+    return pImpl->getBorder();
 }
 
 
@@ -833,7 +833,7 @@ TPRREbool PRRETexture::getBorder() const
 */
 void PRRETexture::SetBorder(TPRREbool state)
 {
-    p->SetBorder(state);
+    pImpl->SetBorder(state);
 }
 
 
@@ -843,7 +843,7 @@ void PRRETexture::SetBorder(TPRREbool state)
 */
 const PRREColor& PRRETexture::getBorderColor() const
 {
-    return p->getBorderColor();
+    return pImpl->getBorderColor();
 }
 
 
@@ -855,7 +855,7 @@ const PRREColor& PRRETexture::getBorderColor() const
 */
 void PRRETexture::SetBorderColor(const PRREColor& clr)
 {
-    return p->SetBorderColor(clr);
+    return pImpl->SetBorderColor(clr);
 }
 
 
@@ -875,7 +875,7 @@ void PRRETexture::SetBorderColor(const PRREColor& clr)
 */
 TPRREbool PRRETexture::uploadPixels()
 {
-    return p->uploadPixels();
+    return pImpl->uploadPixels();
 } // uploadPixels()
 
 
@@ -885,7 +885,7 @@ TPRREbool PRRETexture::uploadPixels()
 */
 TPRREuint PRRETexture::getUsedSystemMemory() const
 {
-    return PRREImage::getUsedSystemMemory() + sizeof(*this) + p->getUsedSystemMemory();
+    return PRREImage::getUsedSystemMemory() + sizeof(*this) + pImpl->getUsedSystemMemory();
 } // getUsedSystemMemory()
 
 
@@ -895,7 +895,7 @@ TPRREuint PRRETexture::getUsedSystemMemory() const
 */
 TPRREuint PRRETexture::getUsedTextureMemory() const
 {
-    return p->getUsedTextureMemory();
+    return pImpl->getUsedTextureMemory();
 } // getUsedTextureMemory()
 
 
@@ -908,7 +908,7 @@ TPRREuint PRRETexture::getUsedTextureMemory() const
 PRRETexture::PRRETexture()
 {
     getConsole().OLnOI("PRRETexture() ...");
-    p = new PRRETextureImpl(this);
+    pImpl = new PRRETextureImpl(this);
     getConsole().SOLnOO("Done!");
 } // PRRETexture()
 
@@ -920,7 +920,7 @@ PRRETexture::PRRETexture(const PRREImage& img) :
    PRREImage(img)
 {
     getConsole().OLnOI("PRRETexture(img) ...");
-    p = new PRRETextureImpl(this, img);
+    pImpl = new PRRETextureImpl(this, img);
     getConsole().SOLnOO("Done!");
 } // PRRETexture(...)
 

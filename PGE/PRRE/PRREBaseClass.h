@@ -46,7 +46,7 @@ protected:
 
 private:
     class PRREBaseClassImpl;
-    PRREBaseClassImpl* p;
+    PRREBaseClassImpl* pImpl;
 
     // ---------------------------------------------------------------------------
 

@@ -100,7 +100,7 @@ protected:
 private:
 
     class PRREImageImpl;
-    PRREImageImpl* p;
+    PRREImageImpl* pImpl;
 
     // ---------------------------------------------------------------------------
 
@@ -147,6 +147,6 @@ protected:
 private:
 
     class PRREImageManagerImpl;
-    PRREImageManagerImpl* p;
+    PRREImageManagerImpl* pImpl;
 
 }; // class PRREImageManager

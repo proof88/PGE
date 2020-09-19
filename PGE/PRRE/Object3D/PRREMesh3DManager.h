@@ -106,7 +106,7 @@ protected:
 private:
 
     class PRREMesh3DImpl;
-    PRREMesh3DImpl* p;
+    PRREMesh3DImpl* pImpl;
 
     friend class PRREMesh3DManager;  
     friend class Object3DManager;
@@ -161,6 +161,6 @@ protected:
 
 private:
     class PRREMesh3DManagerImpl;
-    PRREMesh3DManagerImpl* p;  
+    PRREMesh3DManagerImpl* pImpl;  
 
 }; // class PRREMesh3DManager

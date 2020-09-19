@@ -605,8 +605,8 @@ bool PRREImage::PRREImageImpl::readBMPpixels(HANDLE f, const RGBQUAD* palette, W
 
 PRREImage::~PRREImage()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRREImage()
 
 
@@ -616,7 +616,7 @@ PRREImage::~PRREImage()
 */
 TPRREuint PRREImage::getWidth() const
 {
-    return p->getWidth();
+    return pImpl->getWidth();
 } // getWidth()
 
 
@@ -626,7 +626,7 @@ TPRREuint PRREImage::getWidth() const
 */
 TPRREuint PRREImage::getHeight() const
 {
-    return p->getHeight();
+    return pImpl->getHeight();
 } // getHeight()
 
 
@@ -640,7 +640,7 @@ TPRREuint PRREImage::getHeight() const
 */
 TPRREuint PRREImage::getBitsPerPixels() const
 {
-    return p->getBitsPerPixels();
+    return pImpl->getBitsPerPixels();
 } // getBitsPerPixels()
 
 
@@ -652,7 +652,7 @@ TPRREuint PRREImage::getBitsPerPixels() const
 */
 TPRRE_PIXEL_COMPONENT_ORDER PRREImage::getPixelComponentOrder() const
 {
-    return p->getPixelComponentOrder();
+    return pImpl->getPixelComponentOrder();
 } // getPixelComponentOrder()
 
 
@@ -667,7 +667,7 @@ TPRRE_PIXEL_COMPONENT_ORDER PRREImage::getPixelComponentOrder() const
 */
 TPRRE_PIXEL_COMPONENT_ORDER PRREImage::getOriginalPixelComponentOrder() const
 {
-    return p->getOriginalPixelComponentOrder();
+    return pImpl->getOriginalPixelComponentOrder();
 } // getOriginalPixelComponentOrder()
 
 
@@ -677,7 +677,7 @@ TPRRE_PIXEL_COMPONENT_ORDER PRREImage::getOriginalPixelComponentOrder() const
 */
 void PRREImage::SetPixelComponentOrder(TPRRE_PIXEL_COMPONENT_ORDER cord)
 {
-    p->SetPixelComponentOrder(cord);
+    pImpl->SetPixelComponentOrder(cord);
 } // SetPixelComponentOrder()
 
 
@@ -689,7 +689,7 @@ void PRREImage::SetPixelComponentOrder(TPRRE_PIXEL_COMPONENT_ORDER cord)
 */
 PRREColor PRREImage::getPixel(TPRREuint x, TPRREuint y)
 {
-    return p->getPixel(x, y);
+    return pImpl->getPixel(x, y);
 } // getPixel()
 
 
@@ -701,7 +701,7 @@ PRREColor PRREImage::getPixel(TPRREuint x, TPRREuint y)
 */
 PRREColor PRREImage::getPixel(TPRREuint x, TPRREuint y) const
 {
-    return p->getPixel(x, y);
+    return pImpl->getPixel(x, y);
 } // getPixel()
 
 
@@ -711,7 +711,7 @@ PRREColor PRREImage::getPixel(TPRREuint x, TPRREuint y) const
 */
 void PRREImage::SetPixel(TPRREuint x, TPRREuint y, TPRREubyte r, TPRREubyte g, TPRREubyte b, TPRREubyte a)                                   
 {
-    p->SetPixel(x, y, r, g, b, a);
+    pImpl->SetPixel(x, y, r, g, b, a);
 } // SetPixel()
 
 
@@ -721,7 +721,7 @@ void PRREImage::SetPixel(TPRREuint x, TPRREuint y, TPRREubyte r, TPRREubyte g, T
 */
 void PRREImage::SetPixel(TPRREuint x, TPRREuint y, PRREColor clr)
 {
-    p->SetPixel(x, y, clr);
+    pImpl->SetPixel(x, y, clr);
 } // SetPixel()
 
 
@@ -730,7 +730,7 @@ void PRREImage::SetPixel(TPRREuint x, TPRREuint y, PRREColor clr)
 */
 TPRREbool PRREImage::isChanged() const
 {
-    return p->isChanged();
+    return pImpl->isChanged();
 } // isChanged()
 
 
@@ -740,7 +740,7 @@ TPRREbool PRREImage::isChanged() const
 */
 const TPRREubyte* PRREImage::getPixels() const
 {
-    return p->getPixels();
+    return pImpl->getPixels();
 } // getPixels()
 
 
@@ -750,7 +750,7 @@ const TPRREubyte* PRREImage::getPixels() const
 */
 TPRREubyte* PRREImage::getPixels()
 {
-    return p->getPixels();
+    return pImpl->getPixels();
 } // getPixels()
 
 
@@ -761,7 +761,7 @@ TPRREubyte* PRREImage::getPixels()
 */
 TPRREuint PRREImage::getPixelsSize() const
 {
-    return p->getPixelsSize();
+    return pImpl->getPixelsSize();
 } // getPixelsSize()
 
 
@@ -770,7 +770,7 @@ TPRREuint PRREImage::getPixelsSize() const
 */
 void PRREImage::FlushResources()
 {
-    p->FlushResources();
+    pImpl->FlushResources();
 } // FlushResources()
 
 
@@ -781,7 +781,7 @@ void PRREImage::FlushResources()
 */
 TPRREuint PRREImage::getUsedSystemMemory() const
 {
-    return PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) + sizeof(*this) + p->getUsedSystemMemory();
+    return PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) + sizeof(*this) + pImpl->getUsedSystemMemory();
 } // getUsedSystemMemory()
 
 
@@ -795,7 +795,7 @@ TPRREuint PRREImage::getUsedSystemMemory() const
 PRREImage::PRREImage()
 {
     getConsole().OLnOI("PRREImage() ...");
-    p = new PRREImageImpl(this);
+    pImpl = new PRREImageImpl(this);
     getConsole().SOLnOO("> Done!");
 } // PRREImage()
 
@@ -804,8 +804,8 @@ PRREImage::PRREImage(const PRREImage& img)
     : PRREFiledManaged( img )
 {
     getConsole().OLnOI("PRREImage(img) ...");
-    p = new PRREImageImpl(*img.p);
-    p->_pOwner = this;
+    pImpl = new PRREImageImpl(*img.pImpl);
+    pImpl->_pOwner = this;
     getConsole().SOLnOO("> Done!");
 } // PRREImage(...)
 
@@ -824,7 +824,7 @@ PRREImage& PRREImage::operator=(const PRREImage&)
 void PRREImage::Cannibalize(PRREImage& victim)
 {
     // Note that we cannot easily copy victim's Impl since copy ctor and assignment operators are empty!
-    // Thus the following assignment cannot be used: *(this->p) = *(victim.p)
+    // Thus the following assignment cannot be used: *(this->pImpl) = *(victim.pImpl)
     // We wouldn't even want to use copy ctor or assignment here since we do not want any array copy.
     // That is why this function is written, to "steal" the arrays of the victim so victim will be "empty".
     // In C++11 this could be done with a move ctor.
@@ -832,22 +832,22 @@ void PRREImage::Cannibalize(PRREImage& victim)
     SetName(victim.getName());          // copy the Managed part
     SetFilename(victim.getFilename());  // copy the FiledManaged part
 
-    p->nBits = victim.p->nBits;
-    p->nWidth = victim.p->nWidth;
-    p->nHeight = victim.p->nHeight;
-    p->clrCompOrderOrig = victim.p->clrCompOrderOrig;
-    p->clrCompOrder = victim.p->clrCompOrder;
-    p->bUpsideDown = victim.p->bUpsideDown;
-    p->bChanged = victim.p->bChanged;
-    p->nSizePixels = victim.p->nSizePixels;
-    p->pPixels = victim.p->pPixels;
+    pImpl->nBits = victim.pImpl->nBits;
+    pImpl->nWidth = victim.pImpl->nWidth;
+    pImpl->nHeight = victim.pImpl->nHeight;
+    pImpl->clrCompOrderOrig = victim.pImpl->clrCompOrderOrig;
+    pImpl->clrCompOrder = victim.pImpl->clrCompOrder;
+    pImpl->bUpsideDown = victim.pImpl->bUpsideDown;
+    pImpl->bChanged = victim.pImpl->bChanged;
+    pImpl->nSizePixels = victim.pImpl->nSizePixels;
+    pImpl->pPixels = victim.pImpl->pPixels;
 
-    victim.p->nBits = 0;
-    victim.p->nWidth = 0;
-    victim.p->nHeight = 0;
-    victim.p->bChanged = true;
-    victim.p->nSizePixels = 0;
-    victim.p->pPixels = PGENULL;
+    victim.pImpl->nBits = 0;
+    victim.pImpl->nWidth = 0;
+    victim.pImpl->nHeight = 0;
+    victim.pImpl->bChanged = true;
+    victim.pImpl->nSizePixels = 0;
+    victim.pImpl->pPixels = PGENULL;
 
 }
 

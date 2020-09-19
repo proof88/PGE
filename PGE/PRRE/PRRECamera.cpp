@@ -226,7 +226,7 @@ const PRREColor& PRRECamera::PRRECameraImpl::getBackgroundColor() const
 */
 PRRECamera::PRRECamera()
 {
-    p = new PRRECameraImpl();
+    pImpl = new PRRECameraImpl();
 }
 
 PRRECamera::PRRECamera(const PRRECamera& other)
@@ -240,7 +240,7 @@ PRRECamera::PRRECamera(const PRRECamera& other)
 */
 PRRECamera& PRRECamera::operator=(const PRRECamera& other)
 {
-    p = new PRRECameraImpl();
+    pImpl = new PRRECameraImpl();
     getPosVec()    = other.getPosVec();
     getUpVec()     = other.getUpVec();
     getTargetVec() = other.getTargetVec();
@@ -264,8 +264,8 @@ PRRECamera& PRRECamera::operator=(const PRRECamera& other)
 
 PRRECamera::~PRRECamera()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 }
 
 /**
@@ -273,7 +273,7 @@ PRRECamera::~PRRECamera()
 */
 const TRECT& PRRECamera::getViewport() const
 {
-    return p->getViewport();
+    return pImpl->getViewport();
 }
     
 /**
@@ -284,7 +284,7 @@ const TRECT& PRRECamera::getViewport() const
 */
 void PRRECamera::SetViewport(TPRREuint vx, TPRREuint vy, TPRREuint vsx, TPRREuint vsy)
 {
-    p->SetViewport(vx, vy, vsx, vsy);
+    pImpl->SetViewport(vx, vy, vsx, vsy);
 }
 
 
@@ -293,7 +293,7 @@ void PRRECamera::SetViewport(TPRREuint vx, TPRREuint vy, TPRREuint vsx, TPRREuin
 */
 TPRREfloat PRRECamera::getNearPlane() const
 {
-    return p->getNearPlane();
+    return pImpl->getNearPlane();
 }
 
 /**
@@ -303,7 +303,7 @@ TPRREfloat PRRECamera::getNearPlane() const
 */
 void PRRECamera::SetNearPlane(TPRREfloat value)
 {
-    p->SetNearPlane(value);
+    pImpl->SetNearPlane(value);
 }
 
 
@@ -312,7 +312,7 @@ void PRRECamera::SetNearPlane(TPRREfloat value)
 */
 TPRREfloat PRRECamera::getFarPlane() const
 {
-    return p->getFarPlane();
+    return pImpl->getFarPlane();
 }
 
 
@@ -323,7 +323,7 @@ TPRREfloat PRRECamera::getFarPlane() const
 */
 void PRRECamera::SetFarPlane(TPRREfloat value)
 {
-    p->SetFarPlane(value);
+    pImpl->SetFarPlane(value);
 }
 
 
@@ -333,7 +333,7 @@ void PRRECamera::SetFarPlane(TPRREfloat value)
 */
 TPRREfloat PRRECamera::getFieldOfView() const
 {
-    return p->getFieldOfView();
+    return pImpl->getFieldOfView();
 }
 
 /**
@@ -344,7 +344,7 @@ TPRREfloat PRRECamera::getFieldOfView() const
 */
 void PRRECamera::SetFieldOfView(TPRREfloat value)
 {
-    p->SetFieldOfView(value);
+    pImpl->SetFieldOfView(value);
 }
 
 
@@ -353,7 +353,7 @@ void PRRECamera::SetFieldOfView(TPRREfloat value)
 */
 TPRREfloat PRRECamera::getAspectRatio() const
 {
-    return p->getAspectRatio();
+    return pImpl->getAspectRatio();
 }
 
 /**
@@ -364,7 +364,7 @@ TPRREfloat PRRECamera::getAspectRatio() const
 */
 void PRRECamera::SetAspectRatio(TPRREfloat value)
 {
-    p->SetAspectRatio(value);
+    pImpl->SetAspectRatio(value);
 }
 
 
@@ -375,7 +375,7 @@ void PRRECamera::SetAspectRatio(TPRREfloat value)
 */
 TPRRE_CLEAR_MODE PRRECamera::getClearMode() const
 {
-    return p->getClearMode();
+    return pImpl->getClearMode();
 }
 
 /**
@@ -385,7 +385,7 @@ TPRRE_CLEAR_MODE PRRECamera::getClearMode() const
 */
 void PRRECamera::SetClearMode(TPRRE_CLEAR_MODE mode)
 {
-    p->SetClearMode(mode);
+    pImpl->SetClearMode(mode);
 }
 
 
@@ -396,7 +396,7 @@ void PRRECamera::SetClearMode(TPRRE_CLEAR_MODE mode)
 */
 TPRRE_ASPECTRATIO_MODE PRRECamera::getAspectRatioMode() const
 {
-    return p->getAspectRatioMode();
+    return pImpl->getAspectRatioMode();
 }
 
 /**
@@ -406,7 +406,7 @@ TPRRE_ASPECTRATIO_MODE PRRECamera::getAspectRatioMode() const
 */
 void PRRECamera::SetAspectRatioMode(TPRRE_ASPECTRATIO_MODE mode)
 {
-    p->SetAspectRatioMode(mode);
+    pImpl->SetAspectRatioMode(mode);
 }
 
 
@@ -417,7 +417,7 @@ void PRRECamera::SetAspectRatioMode(TPRRE_ASPECTRATIO_MODE mode)
 */
 PRREColor& PRRECamera::getBackgroundColor()
 {
-    return p->getBackgroundColor();
+    return pImpl->getBackgroundColor();
 }
 
 
@@ -428,7 +428,7 @@ PRREColor& PRRECamera::getBackgroundColor()
 */
 const PRREColor& PRRECamera::getBackgroundColor() const
 {
-    return p->getBackgroundColor();
+    return pImpl->getBackgroundColor();
 }
 
 

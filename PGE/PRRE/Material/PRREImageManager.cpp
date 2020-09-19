@@ -188,14 +188,14 @@ TPIXCOMPORD PRREImageManager::getMirroredPixelComponentOrder(TPIXCOMPORD corder)
 PRREImageManager::PRREImageManager() :
     PRREFiledManager()
 {
-    p = new PRREImageManagerImpl(this);
+    pImpl = new PRREImageManagerImpl(this);
 } // PRREImageManager(...)
 
 
 PRREImageManager::~PRREImageManager()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRREImageManager()
 
 
@@ -214,14 +214,14 @@ PRREImage* PRREImageManager::createFromFile(const char* filename)
     getConsole().OLnOI("PRREImageManager::createFromFile(\"%s\")", filename);
 
     if ( filename == NULL )
-        return p->createFromFileFail("ERROR: NULLPOINTER!");
+        return pImpl->createFromFileFail("ERROR: NULLPOINTER!");
 
     if ( !PFL::fileExists(filename) )
-        return p->createFromFileFail("ERROR: file doesn't exist!");
+        return pImpl->createFromFileFail("ERROR: file doesn't exist!");
 
     string sFileExt = PFL::getExtension(filename);
     if ( sFileExt == "" )
-        return p->createFromFileFail("ERROR: no file extension!");
+        return pImpl->createFromFileFail("ERROR: no file extension!");
     
     transform(sFileExt.begin(), sFileExt.end(), sFileExt.begin(), ::toupper);
     getConsole().O("ext: .%s, ", sFileExt.c_str());
@@ -232,10 +232,10 @@ PRREImage* PRREImageManager::createFromFile(const char* filename)
         getConsole().OLn("calling loadBMP()... ");
         pNewImage = loadBMP(filename);
     }
-    else return p->createFromFileFail("ERROR: unsupported extension!");
+    else return pImpl->createFromFileFail("ERROR: unsupported extension!");
 
     if ( pNewImage == PGENULL )
-        return p->createFromFileFail("ERROR: loadXXX() returned PGENULL!");
+        return pImpl->createFromFileFail("ERROR: loadXXX() returned PGENULL!");
     
     Attach( *pNewImage );
 
@@ -263,7 +263,7 @@ PRREImage* PRREImageManager::createBlank(TPRREuint width, TPRREuint height, TPRR
     PRREImage* const pNewImage = new PRREImage();
 
     // ppxls = PGENULL means it won't try to copy anything to the allocated buffer so the content of the buffer will be undefined.
-    if ( !pNewImage->p->initMembers(bpp, width, height, PRRE_RGB, PRRE_RGB, true, false, PGENULL, width * height * bpp/8) )
+    if ( !pNewImage->pImpl->initMembers(bpp, width, height, PRRE_RGB, PRRE_RGB, true, false, PGENULL, width * height * bpp/8) )
     {
         delete pNewImage;
         getConsole().EOLn("Failed initMembers(%d, %d, %d, ...)", bpp, width, height);
@@ -318,7 +318,7 @@ PRREImage* PRREImageManager::loadBMP(const char* filename)
 
     getConsole().OLnOI("PRREImageManager::loadBMP(\"%s\")", filename);
     if ( bitmapfile == INVALID_HANDLE_VALUE )
-        return p->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bitmapfile == INVALID_HANDLE_VALUE, returning PGENULL!");
+        return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bitmapfile == INVALID_HANDLE_VALUE, returning PGENULL!");
                                                    
     ReadFile(bitmapfile, &file_header, sizeof(BITMAPFILEHEADER), &bytesread, NULL);
     getConsole().OLn("Read %d bytes of total %d bytes BITMAPFILEHEADER", bytesread, sizeof(BITMAPFILEHEADER));
@@ -326,7 +326,7 @@ PRREImage* PRREImageManager::loadBMP(const char* filename)
     getConsole().OLn("Read %d bytes of total %d bytes BITMAPINFOHEADER", bytesread, sizeof(BITMAPINFOHEADER));
     
     if ( info_header.biCompression != BI_RGB )
-        return p->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: info_header.biCompression != BI_RGB, returning PGENULL!");
+        return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: info_header.biCompression != BI_RGB, returning PGENULL!");
     
     getConsole().OLn("W x H x Bpp: %d x %d x %d", info_header.biWidth, info_header.biHeight, info_header.biBitCount);
 
@@ -336,7 +336,7 @@ PRREImage* PRREImageManager::loadBMP(const char* filename)
     info_header.biBitCount = (WORD) abs((int) info_header.biBitCount);
 
     if ( (bitmaplength = info_header.biWidth * info_header.biHeight * (info_header.biBitCount < 32 ? 3 : 4)) == 0 )
-        return p->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bitmaplength == 0, returning returning PGENULL!");
+        return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bitmaplength == 0, returning returning PGENULL!");
 
     if ( info_header.biClrUsed > 0 )
     {
@@ -345,20 +345,20 @@ PRREImage* PRREImageManager::loadBMP(const char* filename)
         ReadFile(bitmapfile, palette, palettesize, &bytesread, NULL);
         getConsole().OLn("Read %d bytes of total %d bytes of RGBQUAD array for palette", bytesread, palettesize);
         if ( bytesread != palettesize )
-            return p->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bytesread != palettesize, returning PGENULL!");
+            return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bytesread != palettesize, returning PGENULL!");
     }
     
     pNewImage = new PRREImage();
     pNewImage->SetFilename( filename );
     // PRRE_RGB is just a fake value at this point
-    if ( !pNewImage->p->initMembers(info_header.biBitCount, info_header.biWidth, info_header.biHeight,
+    if ( !pNewImage->pImpl->initMembers(info_header.biBitCount, info_header.biWidth, info_header.biHeight,
                                 PRRE_RGB, PRRE_RGB, true, false, PGENULL, bitmaplength) )
-        return p->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: initMembers() failed, returning PGENULL!");
+        return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: initMembers() failed, returning PGENULL!");
 
     getConsole().OLn("offset: %d", file_header.bfOffBits);
 
-    if ( !pNewImage->p->readBMPpixels(bitmapfile, palette, info_header.biBitCount) )
-        return p->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: readBMPpixels() failed!");
+    if ( !pNewImage->pImpl->readBMPpixels(bitmapfile, palette, info_header.biBitCount) )
+        return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: readBMPpixels() failed!");
 
     CloseHandle(bitmapfile);
     free(palette);

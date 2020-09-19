@@ -119,14 +119,14 @@ PRREFiledManaged::PRREFiledManagedImpl& PRREFiledManaged::PRREFiledManagedImpl::
 
 PRREFiledManaged::PRREFiledManaged()
 {
-    p = new PRREFiledManagedImpl();
+    pImpl = new PRREFiledManagedImpl();
 } // PRREFiledManaged()
 
 
 PRREFiledManaged::~PRREFiledManaged()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRREFiledManaged
 
 
@@ -138,7 +138,7 @@ PRREFiledManaged::~PRREFiledManaged()
 TPRREuint PRREFiledManaged::getUsedSystemMemory() const
 {
     // both PRREManaged::getUsedSystemMemory() and sizeof(*this) includes sizeof(PRREManaged) hence we subtract that
-    return PRREManaged::getUsedSystemMemory() - sizeof(PRREManaged) + sizeof(*this) + sizeof(*p) + p->sFilename.capacity() * sizeof(char);
+    return PRREManaged::getUsedSystemMemory() - sizeof(PRREManaged) + sizeof(*this) + sizeof(*pImpl) + pImpl->sFilename.capacity() * sizeof(char);
 } // getUsedSystemMemory()
 
 
@@ -149,7 +149,7 @@ TPRREuint PRREFiledManaged::getUsedSystemMemory() const
 */
 const string& PRREFiledManaged::getFilename() const
 {
-    return p->getFilename();
+    return pImpl->getFilename();
 } // getFilename()
 
 
@@ -158,7 +158,7 @@ const string& PRREFiledManaged::getFilename() const
 
 PRREFiledManaged::PRREFiledManaged(const PRREFiledManaged& other)
 {
-    p = new PRREFiledManagedImpl();
+    pImpl = new PRREFiledManagedImpl();
     SetFilename(other.getFilename());
 }
 
@@ -175,7 +175,7 @@ PRREFiledManaged& PRREFiledManaged::operator=(const PRREFiledManaged& other)
 */
 void PRREFiledManaged::SetFilename(const string& filename)
 {
-    p->SetFilename(filename);
+    pImpl->SetFilename(filename);
 } // SetFilename()
 
 

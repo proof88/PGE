@@ -842,7 +842,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isSwitchFromIndexedAllowed() const
 {
     // TODO: ALL subobjects should check if their vertex index count equals to vertex count, 1 false is enough to return false!
     if ( _pOwner->getCount() > 0 )
-        return ((PRREObject3D*)_pOwner->getAttachedAt(0))->p->isSwitchFromIndexedAllowed();
+        return ((PRREObject3D*)_pOwner->getAttachedAt(0))->pImpl->isSwitchFromIndexedAllowed();
     else
         return (_pOwner->getVertexIndicesCount(false) == _pOwner->getVerticesCount(false)) && (_pOwner->getVerticesCount(false) > 0);
 }
@@ -1004,7 +1004,7 @@ void PRREObject3D::PRREObject3DImpl::FreeGLresources()
         return;
 
     for (TPRREint i = 0; i < _pOwner->getCount(); i++)
-        ((PRREObject3D*)_pOwner->getAttachedAt(i))->p->FreeGLresources();
+        ((PRREObject3D*)_pOwner->getAttachedAt(i))->pImpl->FreeGLresources();
 
     if ( nDispList != 0 )
     {
@@ -1391,8 +1391,8 @@ void PRREObject3D::PRREObject3DImpl::DrawSW()
 
 PRREObject3D::~PRREObject3D()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRRETexture()
 
 
@@ -1402,7 +1402,7 @@ PRREObject3D::~PRREObject3D()
 */
 PRREObject3D* PRREObject3D::getReferredObject() const
 {
-    return p->getReferredObject();
+    return pImpl->getReferredObject();
 }
 
 
@@ -1414,7 +1414,7 @@ PRREObject3D* PRREObject3D::getReferredObject() const
 */
 TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::getVertexModifyingHabit() const
 {
-    return p->getVertexModifyingHabit();
+    return pImpl->getVertexModifyingHabit();
 } // getVertexModifyingHabit()
 
 
@@ -1425,7 +1425,7 @@ TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::getVertexModifyingHabit() const
 */
 void PRREObject3D::SetVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod)
 {
-    p->SetVertexModifyingHabit(vmod);
+    pImpl->SetVertexModifyingHabit(vmod);
 } // SetVertexModifyingHabit()
 
 
@@ -1436,7 +1436,7 @@ void PRREObject3D::SetVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod)
 */
 TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::getVertexReferencingMode() const
 {
-    return p->getVertexReferencingMode();
+    return pImpl->getVertexReferencingMode();
 } // getVertexReferencingMode()
 
  
@@ -1447,7 +1447,7 @@ TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::getVertexReferencingMode() const
 */
 void PRREObject3D::SetVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref)
 {
-    p->SetVertexReferencingMode(vref);
+    pImpl->SetVertexReferencingMode(vref);
 } // SetVertexReferencingMode()
 
 
@@ -1458,7 +1458,7 @@ void PRREObject3D::SetVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref)
 */
 TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::getVertexTransferMode() const
 {
-    return p->getVertexTransferMode();
+    return pImpl->getVertexTransferMode();
 } // getVertexTransferMode()
 
 
@@ -1473,7 +1473,7 @@ TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::getVertexTransferMode() const
 */
 void PRREObject3D::SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 {
-    p->SetVertexTransferMode(vtrans);
+    pImpl->SetVertexTransferMode(vtrans);
 } // SetVertexTransferMode()
 
 
@@ -1488,7 +1488,7 @@ void PRREObject3D::SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 TPRRE_TRANSFORMED_VERTEX* PRREObject3D::getTransformedVertices(TPRREbool implicitAccessSubobject)
 {
     // TODO: add unit test for TPRREbool implicitAccessSubobject parameter!
-    return p->getTransformedVertices(implicitAccessSubobject);
+    return pImpl->getTransformedVertices(implicitAccessSubobject);
 } // getVertices(false)
 
 
@@ -1499,7 +1499,7 @@ TPRRE_TRANSFORMED_VERTEX* PRREObject3D::getTransformedVertices(TPRREbool implici
 */
 PRREVector& PRREObject3D::getAngleVec()
 {
-    return p->getAngleVec();
+    return pImpl->getAngleVec();
 } // getAngleVec()
 
 
@@ -1510,7 +1510,7 @@ PRREVector& PRREObject3D::getAngleVec()
 */
 const PRREVector& PRREObject3D::getAngleVec() const
 {
-    return p->getAngleVec();
+    return pImpl->getAngleVec();
 } // getAngleVec()
 
 
@@ -1520,7 +1520,7 @@ const PRREVector& PRREObject3D::getAngleVec() const
 */
 const PRREVector& PRREObject3D::getSizeVec() const
 {
-    return (p->pRefersto == PGENULL) ? PRREMesh3D::getSizeVec() : p->pRefersto->getSizeVec();
+    return (pImpl->pRefersto == PGENULL) ? PRREMesh3D::getSizeVec() : pImpl->pRefersto->getSizeVec();
 }
 
 
@@ -1530,7 +1530,7 @@ const PRREVector& PRREObject3D::getSizeVec() const
 */
 PRREVector PRREObject3D::getScaledSizeVec() const
 {
-    return p->getScaledSizeVec();
+    return pImpl->getScaledSizeVec();
 } // getScaledSizeVec()
 
 
@@ -1540,7 +1540,7 @@ PRREVector PRREObject3D::getScaledSizeVec() const
 */
 const PRREVector& PRREObject3D::getScaling() const
 {
-    return p->getScaling();
+    return pImpl->getScaling();
 } // getScaling()
 
 
@@ -1550,7 +1550,7 @@ const PRREVector& PRREObject3D::getScaling() const
 */
 void PRREObject3D::SetScaling(TPRREfloat value)
 {
-    p->SetScaling(value);
+    pImpl->SetScaling(value);
 } // SetScaling()
 
 
@@ -1560,7 +1560,7 @@ void PRREObject3D::SetScaling(TPRREfloat value)
 */
 void PRREObject3D::SetScaling(const PRREVector& value)
 {
-    p->SetScaling(value);
+    pImpl->SetScaling(value);
 } // SetScaling()
 
 
@@ -1570,7 +1570,7 @@ void PRREObject3D::SetScaling(const PRREVector& value)
 */
 void PRREObject3D::Scale(TPRREfloat value)
 {
-    p->Scale(value);
+    pImpl->Scale(value);
 } // Scale()
 
 
@@ -1580,7 +1580,7 @@ void PRREObject3D::Scale(TPRREfloat value)
 */
 void PRREObject3D::Scale(const PRREVector& value)
 {
-    p->Scale(value);
+    pImpl->Scale(value);
 } // Scale()
 
 
@@ -1592,7 +1592,7 @@ void PRREObject3D::Scale(const PRREVector& value)
 */
 TPRREbool PRREObject3D::isVisible() const
 {
-    return p->isVisible();
+    return pImpl->isVisible();
 } // isVisible()
 
 
@@ -1603,7 +1603,7 @@ TPRREbool PRREObject3D::isVisible() const
 */
 void PRREObject3D::SetVisible(TPRREbool state)
 {
-    p->SetVisible(state);
+    pImpl->SetVisible(state);
 } // SetVisible()
 
 
@@ -1615,7 +1615,7 @@ void PRREObject3D::SetVisible(TPRREbool state)
 */
 void PRREObject3D::Show()
 {
-    p->Show();
+    pImpl->Show();
 } // Show()
 
 
@@ -1627,7 +1627,7 @@ void PRREObject3D::Show()
 */
 void PRREObject3D::Hide()
 {
-    p->Hide();
+    pImpl->Hide();
 } // Hide()
 
 
@@ -1638,7 +1638,7 @@ void PRREObject3D::Hide()
 */
 TPRREbool PRREObject3D::isColliding_TO_BE_REMOVED() const
 {
-    return p->isColliding_TO_BE_REMOVED();
+    return pImpl->isColliding_TO_BE_REMOVED();
 }
 
 
@@ -1648,7 +1648,7 @@ TPRREbool PRREObject3D::isColliding_TO_BE_REMOVED() const
 */
 void PRREObject3D::SetColliding_TO_BE_REMOVED(TPRREbool value)
 {
-    p->SetColliding_TO_BE_REMOVED(value);
+    pImpl->SetColliding_TO_BE_REMOVED(value);
 }
 
 
@@ -1659,7 +1659,7 @@ void PRREObject3D::SetColliding_TO_BE_REMOVED(TPRREbool value)
 */
 TPRRE_ROTATION_ORDER PRREObject3D::getRotationOrder() const
 {
-    return p->getRotationOrder();
+    return pImpl->getRotationOrder();
 } // getRotationOrder()
 
 
@@ -1669,7 +1669,7 @@ TPRRE_ROTATION_ORDER PRREObject3D::getRotationOrder() const
 */
 void PRREObject3D::SetRotationOrder(TPRRE_ROTATION_ORDER value)
 {
-    p->SetRotationOrder(value);
+    pImpl->SetRotationOrder(value);
 } // SetRotationOrder()
 
 
@@ -1680,7 +1680,7 @@ void PRREObject3D::SetRotationOrder(TPRRE_ROTATION_ORDER value)
 */
 TPRREbool PRREObject3D::isLit() const
 {
-    return p->isLit();
+    return pImpl->isLit();
 } // isLit()
 
 
@@ -1690,7 +1690,7 @@ TPRREbool PRREObject3D::isLit() const
 */
 void PRREObject3D::SetLit(TPRREbool value)
 {
-    p->SetLit(value);
+    pImpl->SetLit(value);
 } // SetLit()
 
 
@@ -1701,7 +1701,7 @@ void PRREObject3D::SetLit(TPRREbool value)
 */
 TPRREbool PRREObject3D::isDoubleSided() const
 {
-    return p->isDoubleSided();
+    return pImpl->isDoubleSided();
 } // isDoubleSided()
 
 
@@ -1711,7 +1711,7 @@ TPRREbool PRREObject3D::isDoubleSided() const
 */
 void PRREObject3D::SetDoubleSided(TPRREbool value)
 {
-    p->SetDoubleSided(value);
+    pImpl->SetDoubleSided(value);
 } // SetDoubleSided()
 
 
@@ -1722,7 +1722,7 @@ void PRREObject3D::SetDoubleSided(TPRREbool value)
 */
 TPRREbool PRREObject3D::isWireframed() const
 {
-    return p->isWireframed();
+    return pImpl->isWireframed();
 } // isWireframed()
 
 
@@ -1732,7 +1732,7 @@ TPRREbool PRREObject3D::isWireframed() const
 */
 void PRREObject3D::SetWireframed(TPRREbool value)
 {
-    p->SetWireframed(value);
+    pImpl->SetWireframed(value);
 } // SetWireframed()
 
 
@@ -1743,7 +1743,7 @@ void PRREObject3D::SetWireframed(TPRREbool value)
 */
 TPRREbool PRREObject3D::isWireframedCulled() const
 {
-    return p->isWireframedCulled();
+    return pImpl->isWireframedCulled();
 } // isWireframedCulled()
 
 
@@ -1753,7 +1753,7 @@ TPRREbool PRREObject3D::isWireframedCulled() const
 */
 void PRREObject3D::SetWireframedCulled(TPRREbool value)
 {
-    p->SetWireframedCulled(value);
+    pImpl->SetWireframedCulled(value);
 } // SetWireframedCulled()
 
 
@@ -1764,7 +1764,7 @@ void PRREObject3D::SetWireframedCulled(TPRREbool value)
 */
 TPRREbool PRREObject3D::isAffectingZBuffer() const
 {
-    return p->isAffectingZBuffer();
+    return pImpl->isAffectingZBuffer();
 } // isAffectingZBuffer()
 
 
@@ -1774,7 +1774,7 @@ TPRREbool PRREObject3D::isAffectingZBuffer() const
 */
 void PRREObject3D::SetAffectingZBuffer(TPRREbool value)
 {
-    p->SetAffectingZBuffer(value);
+    pImpl->SetAffectingZBuffer(value);
 } // SetAffectingZBuffer()
 
 
@@ -1785,7 +1785,7 @@ void PRREObject3D::SetAffectingZBuffer(TPRREbool value)
 */
 TPRREbool PRREObject3D::isTestingAgainstZBuffer() const
 {
-    return p->isTestingAgainstZBuffer();
+    return pImpl->isTestingAgainstZBuffer();
 } // isTestingAgainstZBuffer()
 
 
@@ -1795,7 +1795,7 @@ TPRREbool PRREObject3D::isTestingAgainstZBuffer() const
 */
 void PRREObject3D::SetTestingAgainstZBuffer(TPRREbool value)
 {
-    p->SetTestingAgainstZBuffer(value);
+    pImpl->SetTestingAgainstZBuffer(value);
 } // SetTestingAgainstZBuffer()
 
 
@@ -1806,7 +1806,7 @@ void PRREObject3D::SetTestingAgainstZBuffer(TPRREbool value)
 */
 TPRREbool PRREObject3D::isStickedToScreen() const
 {
-    return p->isStickedToScreen();
+    return pImpl->isStickedToScreen();
 } // isStickedToScreen()
 
 
@@ -1822,7 +1822,7 @@ TPRREbool PRREObject3D::isStickedToScreen() const
 */
 void PRREObject3D::SetStickedToScreen(TPRREbool value)
 {
-    p->SetStickedToScreen(value);
+    pImpl->SetStickedToScreen(value);
 } // SetStickedToScreen()
 
 
@@ -1836,7 +1836,7 @@ TPRREuint PRREObject3D::getUsedSystemMemory() const
 {
     return PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) +
         PRREMesh3D::getUsedSystemMemory() - sizeof(PRREMesh3D) + 
-        sizeof(*this) + p->getUsedSystemMemory();
+        sizeof(*this) + pImpl->getUsedSystemMemory();
 } // getUsedSystemMemory()
 
 
@@ -1845,7 +1845,7 @@ TPRREuint PRREObject3D::getUsedSystemMemory() const
 */
 void PRREObject3D::Draw(bool bLighting)
 {
-    p->Draw(bLighting);
+    pImpl->Draw(bLighting);
 } // Draw()
 
 
@@ -1868,7 +1868,7 @@ PRREObject3D::PRREObject3D(
     TPRREbool bForceUseClientMemory )
 {
     PRREFiledManaged::getConsole().OLnOI("PRREObject3D() ...");
-    p = new PRREObject3DImpl(this, vmod, vref, bForceUseClientMemory);
+    pImpl = new PRREObject3DImpl(this, vmod, vref, bForceUseClientMemory);
     PRREFiledManaged::getConsole().SOLnOO("Done!");
 } // PRREObject3D()
 

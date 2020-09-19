@@ -302,14 +302,14 @@ TPRRE_VERTEX_TRANSFER_MODE PRREObject3DManager::selectVertexTransferMode(
 PRREObject3DManager::PRREObject3DManager(PRRETextureManager& texMgr, PRREMaterialManager& matMgr)
     : PRREMesh3DManager(matMgr)
 {
-    p = new PRREObject3DManagerImpl(this, texMgr, matMgr);
+    pImpl = new PRREObject3DManagerImpl(this, texMgr, matMgr);
 } // PRREObject3DManager(...)
 
 
 PRREObject3DManager::~PRREObject3DManager()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRREObject3DManager()
 
 
@@ -319,7 +319,7 @@ PRREObject3DManager::~PRREObject3DManager()
 */
 TPRREbool PRREObject3DManager::isInitialized() const
 {
-    return p->isInitialized();
+    return pImpl->isInitialized();
 } // isInitialized()
 
 
@@ -343,7 +343,7 @@ PRREObject3D* PRREObject3DManager::createPlane(
     TPRRE_VERTEX_REFERENCING_MODE vref,
     TPRREbool bForceUseClientMemory)
 {
-    if ( !p->isInitialized() )
+    if ( !pImpl->isInitialized() )
     {
         return PGENULL;
     }
@@ -355,9 +355,9 @@ PRREObject3D* PRREObject3DManager::createPlane(
     PRREObject3D* const subobj = new PRREObject3D(vmod, vref, bForceUseClientMemory);
     obj->Attach( *subobj );
     ConvertToPlane(*obj, a, b);
-    obj->p->nTexcoordsVBO.resize( p->materialMgr.getMaximumLayerCount() );
-    subobj->p->nTexcoordsVBO.resize( p->materialMgr.getMaximumLayerCount() );
-    subobj->p->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX) * subobj->getVerticesCount() );
+    obj->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
+    subobj->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
+    subobj->pImpl->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX) * subobj->getVerticesCount() );
 
     // although PPP has already selected the vtransmode, we set it again
     // to actually allocate the needed resources for the geometry
@@ -399,7 +399,7 @@ PRREObject3D* PRREObject3DManager::createBox(
     TPRRE_VERTEX_REFERENCING_MODE vref,
     TPRREbool bForceUseClientMemory )
 {
-    if ( !p->isInitialized() )
+    if ( !pImpl->isInitialized() )
     {
         return PGENULL;
     }
@@ -411,9 +411,9 @@ PRREObject3D* PRREObject3DManager::createBox(
     PRREObject3D* const subobj = new PRREObject3D(vmod, vref, bForceUseClientMemory);
     obj->Attach( *subobj );
     ConvertToBox(*obj, a, b, c);
-    obj->p->nTexcoordsVBO.resize( p->materialMgr.getMaximumLayerCount() );
-    subobj->p->nTexcoordsVBO.resize( p->materialMgr.getMaximumLayerCount() );
-    subobj->p->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX) * subobj->getVerticesCount() );
+    obj->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
+    subobj->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
+    subobj->pImpl->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX) * subobj->getVerticesCount() );
 
     // although PPP has already selected the vtransmode, we set it again
     // to actually allocate the needed resources for the geometry
@@ -476,7 +476,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
     TPRRE_VERTEX_REFERENCING_MODE vref,
     TPRREbool bForceUseClientMemory )
 {
-    if ( !p->isInitialized() )
+    if ( !pImpl->isInitialized() )
     {
         return PGENULL;
     }
@@ -514,15 +514,15 @@ PRREObject3D* PRREObject3DManager::createFromFile(
         PRREMesh3D* const tmpMesh = PRREMesh3DManager::createFromFile(filename);
         obj = new PRREObject3D(vmod, vref, bForceUseClientMemory);
         obj->Cannibalize(*tmpMesh);
-        obj->p->nTexcoordsVBO.resize( p->materialMgr.getMaximumLayerCount() );
+        obj->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
 
         for (TPRREint i = 0; i < tmpMesh->getCount(); i++) 
         {
             PRREObject3D* const subobject = new PRREObject3D(vmod, vref, bForceUseClientMemory);
             obj->Attach( *subobject );
             subobject->Cannibalize(*(PRREMesh3D*)(tmpMesh->getAttachedAt(i)));
-            subobject->p->nTexcoordsVBO.resize( p->materialMgr.getMaximumLayerCount() );
-            subobject->p->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX) * subobject->getVerticesCount() );
+            subobject->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
+            subobject->pImpl->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX) * subobject->getVerticesCount() );
             
             // Legacy tmcsgfxlib behavior: auto-load textures for subobjects where pipe character is present in name
             const std::string::size_type nPipePos = subobject->getName().find('|');
@@ -530,7 +530,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
             {
                 const std::string sTexName = subobject->getName().substr(nPipePos+1);
                 getConsole().OLn("Legacy: loading texture implicitly by submodel name: %s", sTexName.c_str());
-                PRRETexture* const tex = p->textureMgr.createFromFile( PFL::getDirectory(filename).append(sTexName).c_str() );
+                PRRETexture* const tex = pImpl->textureMgr.createFromFile( PFL::getDirectory(filename).append(sTexName).c_str() );
                 if ( tex )
                 {
                     subobject->getMaterial().SetTexture(tex);
@@ -589,7 +589,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(const char* filename)
 */
 PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
 {
-    if ( !p->isInitialized() )
+    if ( !pImpl->isInitialized() )
     {
         return PGENULL;
     }
@@ -603,21 +603,21 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
     obj->SetName( referredobj.getName() );
     obj->SetFilename( referredobj.getFilename() );
     
-    obj->p->vertexTransferMode = referredobj.getVertexTransferMode();
-    obj->p->pRefersto = &referredobj;
+    obj->pImpl->vertexTransferMode = referredobj.getVertexTransferMode();
+    obj->pImpl->pRefersto = &referredobj;
     obj->getPosVec() = referredobj.getPosVec();
-    obj->p->vAngle = referredobj.getAngleVec();
+    obj->pImpl->vAngle = referredobj.getAngleVec();
 
-    obj->p->bAffectedByLights = referredobj.isLit();
-    obj->p->bDoubleSided = referredobj.isDoubleSided();
-    obj->p->bWireframe = referredobj.isWireframed();
-    obj->p->bWireframedCull = referredobj.isWireframedCulled();
-    obj->p->bAffectZBuffer = referredobj.isAffectingZBuffer();
-    obj->p->vScaling = referredobj.getScaling();
-    obj->p->bVisible = referredobj.isVisible();
-    obj->p->rotation = referredobj.getRotationOrder();
-    obj->p->bStickedToScreen = referredobj.isStickedToScreen();
-    obj->p->vertexTransferMode = referredobj.getVertexTransferMode();
+    obj->pImpl->bAffectedByLights = referredobj.isLit();
+    obj->pImpl->bDoubleSided = referredobj.isDoubleSided();
+    obj->pImpl->bWireframe = referredobj.isWireframed();
+    obj->pImpl->bWireframedCull = referredobj.isWireframedCulled();
+    obj->pImpl->bAffectZBuffer = referredobj.isAffectingZBuffer();
+    obj->pImpl->vScaling = referredobj.getScaling();
+    obj->pImpl->bVisible = referredobj.isVisible();
+    obj->pImpl->rotation = referredobj.getRotationOrder();
+    obj->pImpl->bStickedToScreen = referredobj.isStickedToScreen();
+    obj->pImpl->vertexTransferMode = referredobj.getVertexTransferMode();
 
     CreateMaterialForMesh(*obj);
     // for the material, no need to copy texcoords, etc ...
@@ -630,7 +630,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         referredobj.getMaterial().getTextureEnvColor().getBlue(),
         referredobj.getMaterial().getTextureEnvColor().getAlpha() );
 
-    obj->p->nTexcoordsVBO.resize( p->materialMgr.getMaximumLayerCount() );
+    obj->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
 
     Attach( *obj );
 

@@ -59,7 +59,7 @@ protected:
 private:
 
     class WorldWeatherCellImpl;
-    WorldWeatherCellImpl* p;
+    WorldWeatherCellImpl* pImpl;
 
 
 };

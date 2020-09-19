@@ -104,7 +104,7 @@ PRREBaseClass::PRREBaseClassImpl& PRREBaseClass::PRREBaseClassImpl::operator=(co
 
 PRREBaseClass::PRREBaseClass()
 {
-    p = new PRREBaseClassImpl();
+    pImpl = new PRREBaseClassImpl();
     getConsole().OLn("PRREBaseClass() ...");
 } // PRREBaseClass(...)
 
@@ -112,8 +112,8 @@ PRREBaseClass::PRREBaseClass()
 PRREBaseClass::~PRREBaseClass()
 {
     getConsole().OLn("~PRREBaseClass() ...");
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRREBaseClass()
 
 
@@ -123,7 +123,7 @@ PRREBaseClass::~PRREBaseClass()
 */
 CConsole& PRREBaseClass::getConsole() const
 {
-    return p->con;
+    return pImpl->con;
 } // getConsole()
 
 
@@ -132,7 +132,7 @@ CConsole& PRREBaseClass::getConsole() const
 
 PRREBaseClass::PRREBaseClass(const PRREBaseClass&)
 {
-    p = new PRREBaseClassImpl();
+    pImpl = new PRREBaseClassImpl();
 }
 
 

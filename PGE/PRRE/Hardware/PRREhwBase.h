@@ -60,6 +60,6 @@ private:
     // ---------------------------------------------------------------------------
 
     class PRREhwBaseImpl;
-    PRREhwBaseImpl* p;
+    PRREhwBaseImpl* pImpl;
 
 };

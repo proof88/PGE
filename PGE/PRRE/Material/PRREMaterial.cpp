@@ -347,16 +347,16 @@ TPRREbool PRREMaterial::PRREMaterialImpl::copyFromMaterial(PRREMaterial& srcMat,
     {
         // we also want to make sure that we have the same memory layout of texcoords and indices
         // so we can safely copy data into our preallocated arrays
-        if ( (layers[dstLevel].nTexcoords_h == srcMat.p->layers[srcLevel].nTexcoords_h) &&
-             (layers[dstLevel].nColors_h == srcMat.p->layers[srcLevel].nColors_h) &&
+        if ( (layers[dstLevel].nTexcoords_h == srcMat.pImpl->layers[srcLevel].nTexcoords_h) &&
+             (layers[dstLevel].nColors_h == srcMat.pImpl->layers[srcLevel].nColors_h) &&
              (nIndices == srcMat.getIndicesCount()) &&
-             (nIndexSize == srcMat.p->nIndexSize) )
+             (nIndexSize == srcMat.pImpl->nIndexSize) )
         {
             if ( srcMat.getTexture(srcLevel) != NULL )
                 SetTexture( srcMat.getTexture(srcLevel), dstLevel );
 
-            memcpy( layers[dstLevel].pTexcoords, srcMat.p->layers[srcLevel].pTexcoords, sizeof(TUVW) * layers[dstLevel].nTexcoords_h );
-            memcpy( layers[dstLevel].pColors, srcMat.p->layers[srcLevel].pColors, sizeof(TRGBAFLOAT) * layers[dstLevel].nColors_h );
+            memcpy( layers[dstLevel].pTexcoords, srcMat.pImpl->layers[srcLevel].pTexcoords, sizeof(TUVW) * layers[dstLevel].nTexcoords_h );
+            memcpy( layers[dstLevel].pColors, srcMat.pImpl->layers[srcLevel].pColors, sizeof(TRGBAFLOAT) * layers[dstLevel].nColors_h );
 
             return true;
         }
@@ -450,8 +450,8 @@ CConsole& PRREMaterial::PRREMaterialImpl::getConsole() const
 
 PRREMaterial::~PRREMaterial()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRRETexture()
 
 
@@ -471,7 +471,7 @@ void PRREMaterial::AllocateArrays(
                             TPRREuint nIndexCount,
                             TPRREuint nIndexSize)
 {
-    p->AllocateArrays(nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
+    pImpl->AllocateArrays(nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
 }
 
 
@@ -485,7 +485,7 @@ void PRREMaterial::AllocateArrays(
 */
 TPRREuint PRREMaterial::getColorsCount(TPRREuint level) const
 {
-    return p->getColorsCount(level);
+    return pImpl->getColorsCount(level);
 } // getTexcoordsCount()
 
 
@@ -499,7 +499,7 @@ TPRREuint PRREMaterial::getColorsCount(TPRREuint level) const
 */
 TRGBAFLOAT* PRREMaterial::getColors(TPRREuint level)
 {
-    return p->getColors(level);
+    return pImpl->getColors(level);
 } // getTexcoords()
 
 
@@ -513,7 +513,7 @@ TRGBAFLOAT* PRREMaterial::getColors(TPRREuint level)
 */
 const TRGBAFLOAT* PRREMaterial::getColors(TPRREuint level) const
 {
-    return p->getColors(level);
+    return pImpl->getColors(level);
 } // getTexcoords()
 
 
@@ -524,7 +524,7 @@ const TRGBAFLOAT* PRREMaterial::getColors(TPRREuint level) const
 */
 TPRREuint PRREMaterial::getIndicesCount() const
 {
-    return p->getIndicesCount();
+    return pImpl->getIndicesCount();
 }
 
 
@@ -538,7 +538,7 @@ TPRREuint PRREMaterial::getIndicesCount() const
 */
 TPRREuint PRREMaterial::getTexcoordsCount(TPRREuint level) const
 {
-    return p->getTexcoordsCount(level);
+    return pImpl->getTexcoordsCount(level);
 } // getTexcoordsCount()
 
 
@@ -552,7 +552,7 @@ TPRREuint PRREMaterial::getTexcoordsCount(TPRREuint level) const
 */
 TUVW* PRREMaterial::getTexcoords(TPRREuint level)
 {
-    return p->getTexcoords(level);
+    return pImpl->getTexcoords(level);
 } // getTexcoords()
 
 
@@ -566,7 +566,7 @@ TUVW* PRREMaterial::getTexcoords(TPRREuint level)
 */
 const TUVW* PRREMaterial::getTexcoords(TPRREuint level) const
 {
-    return p->getTexcoords(level);
+    return pImpl->getTexcoords(level);
 } // getTexcoords()
 
 
@@ -580,7 +580,7 @@ const TUVW* PRREMaterial::getTexcoords(TPRREuint level) const
 */
 PRRETexture* PRREMaterial::getTexture(TPRREuint level)
 {
-    return p->getTexture(level);
+    return pImpl->getTexture(level);
 }
 
 
@@ -594,7 +594,7 @@ PRRETexture* PRREMaterial::getTexture(TPRREuint level)
 */
 const PRRETexture* PRREMaterial::getTexture(TPRREuint level) const
 {
-    return p->getTexture(level);
+    return pImpl->getTexture(level);
 }
 
 
@@ -607,7 +607,7 @@ const PRRETexture* PRREMaterial::getTexture(TPRREuint level) const
 */
 void PRREMaterial::SetTexture(PRRETexture* tex, TPRREuint level)
 {
-    p->SetTexture(tex, level);
+    pImpl->SetTexture(tex, level);
 }
 
 
@@ -618,7 +618,7 @@ void PRREMaterial::SetTexture(PRRETexture* tex, TPRREuint level)
 */
 TPRREuint PRREMaterial::getTextureCount() const
 {
-    return p->getTextureCount();
+    return pImpl->getTextureCount();
 }
 
 
@@ -629,7 +629,7 @@ TPRREuint PRREMaterial::getTextureCount() const
 */
 TPRREbool PRREMaterial::isTextured() const
 {
-    return p->isTextured();
+    return pImpl->isTextured();
 }
 
 
@@ -640,7 +640,7 @@ TPRREbool PRREMaterial::isTextured() const
 */
 TPRREbool PRREMaterial::isSingleTextured() const
 {
-    return p->isSingleTextured();
+    return pImpl->isSingleTextured();
 }
 
 
@@ -651,7 +651,7 @@ TPRREbool PRREMaterial::isSingleTextured() const
 */
 TPRREbool PRREMaterial::isMultiTextured() const
 {
-    return p->isMultiTextured();
+    return pImpl->isMultiTextured();
 }
 
 
@@ -671,7 +671,7 @@ TPRREbool PRREMaterial::isMultiTextured() const
 */
 PRREColor& PRREMaterial::getTextureEnvColor(TPRREuint level)
 {
-    return p->getTextureEnvColor(level);
+    return pImpl->getTextureEnvColor(level);
 }
 
 
@@ -690,7 +690,7 @@ PRREColor& PRREMaterial::getTextureEnvColor(TPRREuint level)
 */
 const PRREColor& PRREMaterial::getTextureEnvColor(TPRREuint level) const
 {
-    return p->getTextureEnvColor(level);
+    return pImpl->getTextureEnvColor(level);
 }
 
 
@@ -704,7 +704,7 @@ const PRREColor& PRREMaterial::getTextureEnvColor(TPRREuint level) const
 */
 TPRRE_BLENDFACTORS PRREMaterial::getSourceBlendFunc(TPRREuint level) const
 {
-    return p->getSourceBlendFunc(level);
+    return pImpl->getSourceBlendFunc(level);
 } // getSourceBlendFunc()
 
 
@@ -718,7 +718,7 @@ TPRRE_BLENDFACTORS PRREMaterial::getSourceBlendFunc(TPRREuint level) const
 */
 void PRREMaterial::SetSourceBlendFunc(TPRRE_BLENDFACTORS value, TPRREuint level)
 {
-    p->SetSourceBlendFunc(value, level);
+    pImpl->SetSourceBlendFunc(value, level);
 } // SetSourceBlendFunc()
 
 
@@ -732,7 +732,7 @@ void PRREMaterial::SetSourceBlendFunc(TPRRE_BLENDFACTORS value, TPRREuint level)
 */
 TPRRE_BLENDFACTORS PRREMaterial::getDestinationBlendFunc(TPRREuint level) const
 {
-    return p->getDestinationBlendFunc(level);
+    return pImpl->getDestinationBlendFunc(level);
 } // getDestinationBlendFunc()
 
 
@@ -747,7 +747,7 @@ TPRRE_BLENDFACTORS PRREMaterial::getDestinationBlendFunc(TPRREuint level) const
 */
 void PRREMaterial::SetDestinationBlendFunc(TPRRE_BLENDFACTORS value, TPRREuint level)
 {
-    p->SetDestinationBlendFunc(value, level);
+    pImpl->SetDestinationBlendFunc(value, level);
 } // SetDestinationBlendFunc()
 
 
@@ -762,7 +762,7 @@ void PRREMaterial::SetDestinationBlendFunc(TPRRE_BLENDFACTORS value, TPRREuint l
 */
 void PRREMaterial::SetBlendFuncs(TPRRE_BLENDFACTORS src, TPRRE_BLENDFACTORS dst, TPRREuint level)
 {
-    p->SetBlendFuncs(src, dst, level);
+    pImpl->SetBlendFuncs(src, dst, level);
 } // SetBlendFuncs()
 
 
@@ -777,7 +777,7 @@ void PRREMaterial::SetBlendFuncs(TPRRE_BLENDFACTORS src, TPRRE_BLENDFACTORS dst,
 */
 TPRRE_BLENDMODES PRREMaterial::getBlendMode(TPRREuint level) const
 {
-    return p->getBlendMode(level);
+    return pImpl->getBlendMode(level);
 } // getBlendMode()
 
 
@@ -791,7 +791,7 @@ TPRRE_BLENDMODES PRREMaterial::getBlendMode(TPRREuint level) const
 */
 void PRREMaterial::SetBlendMode(TPRRE_BLENDMODES mode, TPRREuint level)
 {
-    p->SetBlendMode(mode, level);
+    pImpl->SetBlendMode(mode, level);
 } // SetBlendMode()
 
 
@@ -807,7 +807,7 @@ void PRREMaterial::SetBlendMode(TPRRE_BLENDMODES mode, TPRREuint level)
 */
 TPRREbool PRREMaterial::copyFromMaterial(PRREMaterial& srcMat, TPRREuint dstLevel, TPRREuint srcLevel)
 {
-    return p->copyFromMaterial(srcMat, dstLevel, srcLevel);
+    return pImpl->copyFromMaterial(srcMat, dstLevel, srcLevel);
 }
 
 
@@ -818,7 +818,7 @@ TPRREbool PRREMaterial::copyFromMaterial(PRREMaterial& srcMat, TPRREuint dstLeve
 */
 TPRREuint PRREMaterial::getUsedSystemMemory() const
 {
-    return PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) + sizeof(*this) + p->getUsedSystemMemory();
+    return PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) + sizeof(*this) + pImpl->getUsedSystemMemory();
 } // getUsedSystemMemory()
 
 
@@ -830,7 +830,7 @@ TPRREuint PRREMaterial::getUsedSystemMemory() const
 */
 PRREMaterial::PRREMaterial(TPRREuint nLayers)
 {
-    p = new PRREMaterialImpl(this, nLayers);
+    pImpl = new PRREMaterialImpl(this, nLayers);
 } // PRREObject3D()
 
 

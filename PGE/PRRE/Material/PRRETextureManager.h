@@ -174,7 +174,7 @@ protected:
 private:
 
     class PRRETextureImpl;
-    PRRETextureImpl* p;
+    PRRETextureImpl* pImpl;
 
     friend class PRRETextureManager;  
 
@@ -286,6 +286,6 @@ protected:
 private:
 
     class PRRETextureManagerImpl;
-    PRRETextureManagerImpl* p;
+    PRRETextureManagerImpl* pImpl;
 
 }; // class PRRETextureManager

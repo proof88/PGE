@@ -130,14 +130,14 @@ PRREMaterialManager::PRREMaterialManagerImpl& PRREMaterialManager::PRREMaterialM
 
 PRREMaterialManager::PRREMaterialManager()
 {
-    p = new PRREMaterialManagerImpl(this);
+    pImpl = new PRREMaterialManagerImpl(this);
 } // PRREObject3DManager(...)
 
 
 PRREMaterialManager::~PRREMaterialManager()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRREObject3DManager()
 
 
@@ -147,7 +147,7 @@ PRREMaterialManager::~PRREMaterialManager()
 */
 TPRREbool PRREMaterialManager::isInitialized() const
 {
-    return p->isInitialized();
+    return pImpl->isInitialized();
 } // isInitialized()
 
 
@@ -157,7 +157,7 @@ TPRREbool PRREMaterialManager::isInitialized() const
 */
 TPRREuint PRREMaterialManager::getMaximumLayerCount() const
 {
-    return p->getMaximumLayerCount();
+    return pImpl->getMaximumLayerCount();
 }
 
 
@@ -169,14 +169,14 @@ TPRREuint PRREMaterialManager::getMaximumLayerCount() const
 
 PRREMaterial* PRREMaterialManager::createMaterial()
 {
-    if ( !p->isInitialized() )
+    if ( !pImpl->isInitialized() )
     {
         return PGENULL;
     }
 
     getConsole().OLnOI("PRREMaterialManager::createMaterial()");
 
-    PRREMaterial* const mat = new PRREMaterial(p->nMaxLayers);
+    PRREMaterial* const mat = new PRREMaterial(pImpl->nMaxLayers);
     Attach( *mat );
 
     getConsole().SOLnOO("> Material created successfully!");

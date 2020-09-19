@@ -563,14 +563,14 @@ TPRREuint PRRETextureManager::getUIntFromPRREanisoTexFilteringName(TPRRE_ANISO_T
 PRRETextureManager::PRRETextureManager() :
     PRREImageManager()
 {
-    p = new PRRETextureManagerImpl(this);
+    pImpl = new PRRETextureManagerImpl(this);
 } // PRRETextureManager(...)
 
 
 PRRETextureManager::~PRRETextureManager()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRRETextureManager()
 
 
@@ -580,7 +580,7 @@ PRRETextureManager::~PRRETextureManager()
 */
 TPRREbool PRRETextureManager::isInitialized() const
 {
-    return p->isInitialized();
+    return pImpl->isInitialized();
 } // isInitialized()
 
 
@@ -590,7 +590,7 @@ TPRREbool PRRETextureManager::isInitialized() const
 */
 TPRREuint PRRETextureManager::getUsedTextureMemory() const
 {
-    return p->getUsedTextureMemory();
+    return pImpl->getUsedTextureMemory();
 } // getUsedTextureMemory()
 
 
@@ -602,7 +602,7 @@ TPRREuint PRRETextureManager::getUsedTextureMemory() const
 */
 TPRREbool PRRETextureManager::isHardwareMipMapGenerationEnabled() const
 {
-    return p->isHardwareMipMapGenerationEnabled();
+    return pImpl->isHardwareMipMapGenerationEnabled();
 } // isHardwareMipMapGenerationEnabled()
 
 
@@ -613,7 +613,7 @@ TPRREbool PRRETextureManager::isHardwareMipMapGenerationEnabled() const
 */
 void PRRETextureManager::SetHardwareMipMapGenerationEnabled(TPRREbool state)
 {
-    p->SetHardwareMipMapGenerationEnabled(state);
+    pImpl->SetHardwareMipMapGenerationEnabled(state);
 } // SetHardwareMipMapGenerationEnabled()
 
 
@@ -625,7 +625,7 @@ void PRRETextureManager::SetHardwareMipMapGenerationEnabled(TPRREbool state)
 */
 TPRREbool PRRETextureManager::isNativeDIBFormatSupportEnabled() const
 {
-    return p->isNativeDIBFormatSupportEnabled();
+    return pImpl->isNativeDIBFormatSupportEnabled();
 } // isNativeDIBFormatSupportEnabled()
 
 
@@ -636,7 +636,7 @@ TPRREbool PRRETextureManager::isNativeDIBFormatSupportEnabled() const
 */
 void PRRETextureManager::SetNativeDIBFormatSupportEnabled(TPRREbool state)
 {
-    p->SetNativeDIBFormatSupportEnabled(state);
+    pImpl->SetNativeDIBFormatSupportEnabled(state);
 } // SetNativeDIBFormatSupportEnabled()
 
 
@@ -646,7 +646,7 @@ void PRRETextureManager::SetNativeDIBFormatSupportEnabled(TPRREbool state)
 */
 TPRREbool PRRETextureManager::isLazyInstancingEnabled() const
 {
-    return p->isLazyInstancingEnabled();
+    return pImpl->isLazyInstancingEnabled();
 } // isLazyInstancingEnabled()
 
 
@@ -657,7 +657,7 @@ TPRREbool PRRETextureManager::isLazyInstancingEnabled() const
 */
 void PRRETextureManager::SetLazyInstancingEnabled(TPRREbool state)
 {
-    p->SetLazyInstancingEnabled(state);
+    pImpl->SetLazyInstancingEnabled(state);
 } // SetLazyInstancingEnabled()
 
 
@@ -670,7 +670,7 @@ void PRRETextureManager::SetLazyInstancingEnabled(TPRREbool state)
 */
 TPRREbool PRRETextureManager::isPixelPreservingEnabled() const
 {
-    return p->isPixelPreservingEnabled();
+    return pImpl->isPixelPreservingEnabled();
 } // isPixelPreservingEnabled()
 
 
@@ -683,7 +683,7 @@ TPRREbool PRRETextureManager::isPixelPreservingEnabled() const
 */
 void PRRETextureManager::SetPixelPreservingEnabled(TPRREbool state)
 {
-    p->SetPixelPreservingEnabled(state);
+    pImpl->SetPixelPreservingEnabled(state);
 } // SetPixelPreservingEnabled()
 
 
@@ -719,14 +719,14 @@ PRRETexture* PRRETextureManager::createTextureFromImage(const PRREImage& img)
     Attach(*texture);
 
     if ( (getDefaultMinFilteringMode() == PRRE_ISO_NEAREST) || (getDefaultMinFilteringMode() == PRRE_ISO_LINEAR) )
-        texture->p->nMIPmapCount = 1;
+        texture->pImpl->nMIPmapCount = 1;
     else
-        texture->p->nMIPmapCount = PRRETextureManager::getMIPmapCount( texture->getWidth(), texture->getHeight() );
+        texture->pImpl->nMIPmapCount = PRRETextureManager::getMIPmapCount( texture->getWidth(), texture->getHeight() );
 
-    if ( p->pHWInfo.getVideo().isAcceleratorDetected() )
+    if ( pImpl->pHWInfo.getVideo().isAcceleratorDetected() )
     {
-        glGenTextures(1, &(texture->p->nInternalNum));
-        glBindTexture(GL_TEXTURE_2D, texture->p->nInternalNum);
+        glGenTextures(1, &(texture->pImpl->nInternalNum));
+        glBindTexture(GL_TEXTURE_2D, texture->pImpl->nInternalNum);
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     }
     texture->SetMagFilteringMode( getDefaultMagFilteringMode() );
@@ -745,8 +745,8 @@ PRRETexture* PRRETextureManager::createTextureFromImage(const PRREImage& img)
         texture->FlushResources();
 
     getConsole().OLn("Texture nWidth and nHeight: %d %d", texture->getWidth(), texture->getHeight());
-    getConsole().OLn("final nSize is %d Byte(s).", texture->p->nSize);
-    getConsole().OLn("internalnum = %d", texture->p->nInternalNum);
+    getConsole().OLn("final nSize is %d Byte(s).", texture->pImpl->nSize);
+    getConsole().OLn("internalnum = %d", texture->pImpl->nInternalNum);
     getConsole().OLn("");
     getConsole().SOLn("> Texture created!");
     getConsole().OOOLn("");
@@ -803,14 +803,14 @@ PRRETexture* PRRETextureManager::createFromFile(const char* filename)
     Attach(*texture);
 
     if ( (getDefaultMinFilteringMode() == PRRE_ISO_NEAREST) || (getDefaultMinFilteringMode() == PRRE_ISO_LINEAR) )
-        texture->p->nMIPmapCount = 1;
+        texture->pImpl->nMIPmapCount = 1;
     else
-        texture->p->nMIPmapCount = PRRETextureManager::getMIPmapCount( texture->getWidth(), texture->getHeight() );
+        texture->pImpl->nMIPmapCount = PRRETextureManager::getMIPmapCount( texture->getWidth(), texture->getHeight() );
 
-    if ( p->pHWInfo.getVideo().isAcceleratorDetected() )
+    if ( pImpl->pHWInfo.getVideo().isAcceleratorDetected() )
     {
-        glGenTextures(1, &(texture->p->nInternalNum));
-        glBindTexture(GL_TEXTURE_2D, texture->p->nInternalNum);
+        glGenTextures(1, &(texture->pImpl->nInternalNum));
+        glBindTexture(GL_TEXTURE_2D, texture->pImpl->nInternalNum);
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     }
     texture->SetMagFilteringMode( getDefaultMagFilteringMode() );
@@ -829,8 +829,8 @@ PRRETexture* PRRETextureManager::createFromFile(const char* filename)
         texture->FlushResources();
 
     getConsole().OLn("Texture nWidth and nHeight: %d %d", texture->getWidth(), texture->getHeight());
-    getConsole().OLn("final nSize is %d Byte(s).", texture->p->nSize);
-    getConsole().OLn("internalnum = %d", texture->p->nInternalNum);
+    getConsole().OLn("final nSize is %d Byte(s).", texture->pImpl->nSize);
+    getConsole().OLn("internalnum = %d", texture->pImpl->nInternalNum);
     getConsole().OLn("");
     getConsole().SOLn("> Texture created!");
     getConsole().OOOLn("");
@@ -847,7 +847,7 @@ PRRETexture* PRRETextureManager::createFromFile(const char* filename)
 */
 TPRRE_ISO_TEX_FILTERING PRRETextureManager::getDefaultMinFilteringMode() const
 {
-    return p->getDefaultMinFilteringMode();
+    return pImpl->getDefaultMinFilteringMode();
 } // getDefaultMinFilteringMode()
 
 
@@ -860,7 +860,7 @@ TPRRE_ISO_TEX_FILTERING PRRETextureManager::getDefaultMinFilteringMode() const
 */
 TPRRE_ISO_TEX_FILTERING PRRETextureManager::getDefaultMagFilteringMode() const
 {
-    return p->getDefaultMagFilteringMode();
+    return pImpl->getDefaultMagFilteringMode();
 } // getDefaultMagFilteringMode()
 
 
@@ -871,7 +871,7 @@ TPRRE_ISO_TEX_FILTERING PRRETextureManager::getDefaultMagFilteringMode() const
 */
 void PRRETextureManager::SetDefaultMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 {
-    p->SetDefaultMinFilteringMode(filtering);
+    pImpl->SetDefaultMinFilteringMode(filtering);
 } // SetDefaultMinFilteringMode()
 
 
@@ -883,7 +883,7 @@ void PRRETextureManager::SetDefaultMinFilteringMode(TPRRE_ISO_TEX_FILTERING filt
 */
 void PRRETextureManager::SetDefaultMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 {
-    p->SetDefaultMagFilteringMode(filtering);
+    pImpl->SetDefaultMagFilteringMode(filtering);
 } // SetDefaultMagFilteringMode()
 
 
@@ -893,7 +893,7 @@ void PRRETextureManager::SetDefaultMagFilteringMode(TPRRE_ISO_TEX_FILTERING filt
 */ 
 void PRRETextureManager::SetDefaultIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter, TPRRE_ISO_TEX_FILTERING magfilter)
 {
-    p->SetDefaultIsoFilteringMode(minfilter, magfilter);
+    pImpl->SetDefaultIsoFilteringMode(minfilter, magfilter);
 } // SetDefaultIsoFilteringMode()
 
 
@@ -906,7 +906,7 @@ void PRRETextureManager::SetDefaultIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minf
 */
 TPRRE_ANISO_TEX_FILTERING PRRETextureManager::getDefaultAnisoFilteringMode() const
 {
-    return p->getDefaultAnisoFilteringMode();
+    return pImpl->getDefaultAnisoFilteringMode();
 } // getDefaultAnisoFilteringMode()
 
 
@@ -918,7 +918,7 @@ TPRRE_ANISO_TEX_FILTERING PRRETextureManager::getDefaultAnisoFilteringMode() con
 */
 void PRRETextureManager::SetDefaultAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING filtering)
 {
-    p->SetDefaultAnisoFilteringMode(filtering);
+    pImpl->SetDefaultAnisoFilteringMode(filtering);
 } // SetDefaultAnisoFilteringMode()
 
 
@@ -930,7 +930,7 @@ void PRRETextureManager::SetDefaultAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING 
 */
 TPRRE_ANISO_TEX_FILTERING PRRETextureManager::getMaximumAnisoFiltering() const
 {
-    return p->getMaximumAnisoFiltering();
+    return pImpl->getMaximumAnisoFiltering();
 } // getMaximumAnisoFiltering()
 
 
@@ -941,7 +941,7 @@ TPRRE_ANISO_TEX_FILTERING PRRETextureManager::getMaximumAnisoFiltering() const
 */
 TPRRE_TEX_WRAPPING PRRETextureManager::getDefaultTextureWrappingModeS() const
 {
-    return p->getDefaultTextureWrappingModeS();
+    return pImpl->getDefaultTextureWrappingModeS();
 }
 
 
@@ -952,7 +952,7 @@ TPRRE_TEX_WRAPPING PRRETextureManager::getDefaultTextureWrappingModeS() const
 */
 TPRRE_TEX_WRAPPING PRRETextureManager::getDefaultTextureWrappingModeT() const
 {
-    return p->getDefaultTextureWrappingModeT();
+    return pImpl->getDefaultTextureWrappingModeT();
 }
 
 
@@ -963,7 +963,7 @@ TPRRE_TEX_WRAPPING PRRETextureManager::getDefaultTextureWrappingModeT() const
 */
 void PRRETextureManager::SetDefaultTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, TPRRE_TEX_WRAPPING tw_t )
 {
-    p->SetDefaultTextureWrappingMode(tw_s, tw_t);
+    pImpl->SetDefaultTextureWrappingMode(tw_s, tw_t);
 }
 
 
@@ -977,7 +977,7 @@ void PRRETextureManager::SetDefaultTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, 
 */
 TPRRE_TEX_COMPRESSION_MODE PRRETextureManager::getDefaultCompressionMode() const
 {
-    return p->getDefaultCompressionMode();
+    return pImpl->getDefaultCompressionMode();
 } // getDefaultCompressionMode()
 
 
@@ -995,7 +995,7 @@ TPRRE_TEX_COMPRESSION_MODE PRRETextureManager::getDefaultCompressionMode() const
 */
 void PRRETextureManager::SetDefaultCompressionMode(TPRRE_TEX_COMPRESSION_MODE mode)
 {
-    p->SetDefaultCompressionMode(mode);
+    pImpl->SetDefaultCompressionMode(mode);
 } // SetDefaultCompressionMode()
 
 
@@ -1006,7 +1006,7 @@ void PRRETextureManager::SetDefaultCompressionMode(TPRRE_TEX_COMPRESSION_MODE mo
 */
 TPRREbool PRRETextureManager::getDefaultBorder() const
 {
-    return p->getDefaultBorder();
+    return pImpl->getDefaultBorder();
 }
 
 
@@ -1017,7 +1017,7 @@ TPRREbool PRRETextureManager::getDefaultBorder() const
 */
 void PRRETextureManager::SetDefaultBorder(TPRREbool state)
 {
-    p->SetDefaultBorder(state);
+    pImpl->SetDefaultBorder(state);
 }
 
 
@@ -1029,7 +1029,7 @@ void PRRETextureManager::SetDefaultBorder(TPRREbool state)
 */
 PRREColor& PRRETextureManager::getDefaultBorderColor()
 {
-    return p->getDefaultBorderColor();
+    return pImpl->getDefaultBorderColor();
 }
 
 
@@ -1041,7 +1041,7 @@ PRREColor& PRRETextureManager::getDefaultBorderColor()
 */
 const PRREColor& PRRETextureManager::getDefaultBorderColor() const
 {
-    return p->getDefaultBorderColor();
+    return pImpl->getDefaultBorderColor();
 }
 
 
@@ -1087,7 +1087,7 @@ void PRRETextureManager::WriteListCallback(const PRREManaged& mngd) const
 {
     PRREImageManager::WriteListCallback(mngd);
     PRRETexture& tex = (PRRETexture&) mngd;
-    getConsole().OIOLnOO("texture memory: %d kB; internal num.: %d", tex.getUsedTextureMemory()/1024, tex.p->nInternalNum);
+    getConsole().OIOLnOO("texture memory: %d kB; internal num.: %d", tex.getUsedTextureMemory()/1024, tex.pImpl->nInternalNum);
 } // WriteListCallback()
 
 

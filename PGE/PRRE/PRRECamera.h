@@ -91,7 +91,7 @@ public:
 
 private:
     class PRRECameraImpl;
-    PRRECameraImpl* p;
+    PRRECameraImpl* pImpl;
 
     // ---------------------------------------------------------------------------
 

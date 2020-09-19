@@ -167,7 +167,7 @@ PRREhwBase::PRREhwBaseImpl::~PRREhwBaseImpl()
 */
 void PRREhwBase::Initialize()
 {
-    p->Initialize();
+    pImpl->Initialize();
 } // Initialize()
 
 
@@ -176,7 +176,7 @@ void PRREhwBase::Initialize()
 */
 void PRREhwBase::Deinitialize()
 {
-    p->Deinitialize();
+    pImpl->Deinitialize();
 } // Deinitialize()
 
 
@@ -185,7 +185,7 @@ void PRREhwBase::Deinitialize()
 */
 TPRREbool PRREhwBase::isInitialized() const
 {
-    return p->isInitialized();
+    return pImpl->isInitialized();
 } // isInitialized()
 
 
@@ -197,7 +197,7 @@ TPRREbool PRREhwBase::isInitialized() const
 */
 PRREhwBase::PRREhwBase()
 {
-    p = new PRREhwBase::PRREhwBaseImpl(this);
+    pImpl = new PRREhwBase::PRREhwBaseImpl(this);
 } // PRREhwBase()
 
 
@@ -215,8 +215,8 @@ PRREhwBase& PRREhwBase::operator=(const PRREhwBase&)
 
 PRREhwBase::~PRREhwBase()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRREhwBase
 
 

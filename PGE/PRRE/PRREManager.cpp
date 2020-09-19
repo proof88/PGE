@@ -436,14 +436,14 @@ void PRREManager::PRREManagerImpl::Detach(TPRREint ind)
 
 PRREManager::PRREManager()
 {
-    p = new PRREManagerImpl(this);
+    pImpl = new PRREManagerImpl(this);
 } // PRREManager(...)
 
 
 PRREManager::~PRREManager()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRREManager()
 
 
@@ -453,7 +453,7 @@ PRREManager::~PRREManager()
 */
 TPRREint PRREManager::getCount() const
 {
-    return p->getCount();
+    return pImpl->getCount();
 } // getCount()
 
 
@@ -463,7 +463,7 @@ TPRREint PRREManager::getCount() const
 */
 TPRREbool PRREManager::isEmpty() const
 {
-    return p->isEmpty();
+    return pImpl->isEmpty();
 } // isEmpty()
 
 
@@ -475,7 +475,7 @@ TPRREbool PRREManager::isEmpty() const
 */
 TPRREint PRREManager::getSize() const
 {
-    return p->getSize();
+    return pImpl->getSize();
 } // getSize()
 
 
@@ -485,7 +485,7 @@ TPRREint PRREManager::getSize() const
 */
 PRREManaged* PRREManager::getAttachedAt(TPRREint ind) const
 {
-    return p->getAttachedAt(ind);
+    return pImpl->getAttachedAt(ind);
 } // getAttachedAt()
 
 
@@ -495,7 +495,7 @@ PRREManaged* PRREManager::getAttachedAt(TPRREint ind) const
 */
 TPRREint PRREManager::getAttachedIndex(const PRREManaged& m) const
 {
-    return p->getAttachedIndex(m);
+    return pImpl->getAttachedIndex(m);
 }
 
 
@@ -504,7 +504,7 @@ TPRREint PRREManager::getAttachedIndex(const PRREManaged& m) const
 */
 void PRREManager::PreAlloc(TPRREint count)
 {
-    p->PreAlloc(count);
+    pImpl->PreAlloc(count);
 } // PreAlloc()
 
 
@@ -514,7 +514,7 @@ void PRREManager::PreAlloc(TPRREint count)
 */
 TPRREbool PRREManager::hasAttached(const PRREManaged& m) const
 {
-    return p->hasAttached(m);
+    return pImpl->hasAttached(m);
 } // hasAttached()
 
 
@@ -525,7 +525,7 @@ TPRREbool PRREManager::hasAttached(const PRREManaged& m) const
 */
 void PRREManager::Attach(PRREManaged& m)
 {
-    p->Attach(m);
+    pImpl->Attach(m);
 } // Attach()
 
 
@@ -536,7 +536,7 @@ void PRREManager::Attach(PRREManaged& m)
 */
 void PRREManager::Detach(PRREManaged& m)
 {
-    p->Detach(m);
+    pImpl->Detach(m);
 } // Detach()
 
 
@@ -546,7 +546,7 @@ void PRREManager::Detach(PRREManaged& m)
 */
 void PRREManager::DeleteAttachedInstance(PRREManaged& m)
 {
-    p->DeleteAttachedInstance(m);
+    pImpl->DeleteAttachedInstance(m);
 } // DeleteAttachedInstance()
 
 
@@ -555,7 +555,7 @@ void PRREManager::DeleteAttachedInstance(PRREManaged& m)
 */
 void PRREManager::DeleteAll()
 {
-    p->DeleteAll();
+    pImpl->DeleteAll();
 } // DeleteAll()
 
 
@@ -591,14 +591,14 @@ void PRREManager::WriteList() const
 
 PRREManager::PRREManager(const PRREManager& other)
 {
-    p = new PRREManagerImpl(this);
-    *p = *(other.p);
+    pImpl = new PRREManagerImpl(this);
+    *pImpl = *(other.pImpl);
 }
 
 
 PRREManager& PRREManager::operator=(const PRREManager& other)
 {
-    *p = *(other.p);
+    *pImpl = *(other.pImpl);
     return *this;
 }
 

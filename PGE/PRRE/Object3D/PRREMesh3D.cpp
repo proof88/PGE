@@ -397,8 +397,8 @@ CConsole& PRREMesh3D::PRREMesh3DImpl::getConsole() const
 
 PRREMesh3D::~PRREMesh3D()
 {
-    delete p;
-    p = NULL;
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRRETexture()
 
 
@@ -408,7 +408,7 @@ PRREMesh3D::~PRREMesh3D()
 */
 TPRRE_PRIMITIVE_FORMAT PRREMesh3D::getPrimitiveFormat() const
 {
-    return p->getPrimitiveFormat();
+    return pImpl->getPrimitiveFormat();
 } // getPrimitiveFormat()
 
 
@@ -424,7 +424,7 @@ TPRRE_PRIMITIVE_FORMAT PRREMesh3D::getPrimitiveFormat() const
 */
 TPRREuint PRREMesh3D::getVerticesCount(TPRREbool implicitAccessSubobject) const
 {
-    return p->getVerticesCount(implicitAccessSubobject);
+    return pImpl->getVerticesCount(implicitAccessSubobject);
 } // getVerticesCount()
 
 
@@ -439,7 +439,7 @@ TPRREuint PRREMesh3D::getVerticesCount(TPRREbool implicitAccessSubobject) const
 */
 const TXYZ* PRREMesh3D::getVertices(TPRREbool implicitAccessSubobject) const
 {
-    return p->getVertices(implicitAccessSubobject);
+    return pImpl->getVertices(implicitAccessSubobject);
 } // getVertices()
 
 
@@ -454,7 +454,7 @@ const TXYZ* PRREMesh3D::getVertices(TPRREbool implicitAccessSubobject) const
 */
 TXYZ* PRREMesh3D::getVertices(TPRREbool implicitAccessSubobject)
 {
-    return p->getVertices(implicitAccessSubobject);
+    return pImpl->getVertices(implicitAccessSubobject);
 } // getVertices()
 
 
@@ -470,7 +470,7 @@ TXYZ* PRREMesh3D::getVertices(TPRREbool implicitAccessSubobject)
 */
 TPRREuint PRREMesh3D::getVertexIndicesCount(TPRREbool implicitAccessSubobject) const
 {
-    return p->getVertexIndicesCount(implicitAccessSubobject);
+    return pImpl->getVertexIndicesCount(implicitAccessSubobject);
 }
 
 
@@ -485,7 +485,7 @@ TPRREuint PRREMesh3D::getVertexIndicesCount(TPRREbool implicitAccessSubobject) c
 */
 const void* PRREMesh3D::getVertexIndices(TPRREbool implicitAccessSubobject) const
 {
-    return p->getVertexIndices(implicitAccessSubobject);
+    return pImpl->getVertexIndices(implicitAccessSubobject);
 }
 
 
@@ -500,7 +500,7 @@ const void* PRREMesh3D::getVertexIndices(TPRREbool implicitAccessSubobject) cons
 */
 unsigned int PRREMesh3D::getVertexIndicesType(TPRREbool implicitAccessSubobject) const
 {
-    return p->getVertexIndicesType(implicitAccessSubobject);
+    return pImpl->getVertexIndicesType(implicitAccessSubobject);
 }
 
 
@@ -515,7 +515,7 @@ unsigned int PRREMesh3D::getVertexIndicesType(TPRREbool implicitAccessSubobject)
 */
 TPRREuint PRREMesh3D::getMinIndexValue(TPRREbool implicitAccessSubobject) const
 {
-    return p->getMinIndexValue(implicitAccessSubobject);
+    return pImpl->getMinIndexValue(implicitAccessSubobject);
 }
 
 /**
@@ -529,7 +529,7 @@ TPRREuint PRREMesh3D::getMinIndexValue(TPRREbool implicitAccessSubobject) const
 */
 TPRREuint PRREMesh3D::getMaxIndexValue(TPRREbool implicitAccessSubobject) const
 {
-    return p->getMaxIndexValue(implicitAccessSubobject);
+    return pImpl->getMaxIndexValue(implicitAccessSubobject);
 }
 
 /**
@@ -545,7 +545,7 @@ TPRREuint PRREMesh3D::getMaxIndexValue(TPRREbool implicitAccessSubobject) const
 */
 TPRREuint PRREMesh3D::getIndexFromArray(const void* arr, TPRREuint index) const
 {
-    return p->getIndexFromArray(arr, index);
+    return pImpl->getIndexFromArray(arr, index);
 }
 
 
@@ -561,7 +561,7 @@ TPRREuint PRREMesh3D::getIndexFromArray(const void* arr, TPRREuint index) const
 */
 TPRREuint PRREMesh3D::getNormalsCount(TPRREbool implicitAccessSubobject) const
 {
-    return p->getNormalsCount(implicitAccessSubobject);
+    return pImpl->getNormalsCount(implicitAccessSubobject);
 } // getNormalsCount()
 
 
@@ -576,7 +576,7 @@ TPRREuint PRREMesh3D::getNormalsCount(TPRREbool implicitAccessSubobject) const
 */
 const TXYZ* PRREMesh3D::getNormals(TPRREbool implicitAccessSubobject) const
 {
-    return p->getNormals(implicitAccessSubobject);
+    return pImpl->getNormals(implicitAccessSubobject);
 } // getNormals()
 
 
@@ -588,7 +588,7 @@ const TXYZ* PRREMesh3D::getNormals(TPRREbool implicitAccessSubobject) const
 */
 PRREVector& PRREMesh3D::getPosVec()
 {
-    return p->getPosVec();
+    return pImpl->getPosVec();
 } // getPosVec()
 
 
@@ -600,7 +600,7 @@ PRREVector& PRREMesh3D::getPosVec()
 */
 const PRREVector& PRREMesh3D::getPosVec() const
 {
-    return p->getPosVec();
+    return pImpl->getPosVec();
 } // getPosVec()
 
 
@@ -610,7 +610,7 @@ const PRREVector& PRREMesh3D::getPosVec() const
 */
 const PRREVector& PRREMesh3D::getSizeVec() const
 {
-    return p->getSizeVec();
+    return pImpl->getSizeVec();
 } // getSizeVec()
 
 
@@ -619,7 +619,7 @@ const PRREVector& PRREMesh3D::getSizeVec() const
 */
 void PRREMesh3D::RecalculateSize()
 {
-    p->RecalculateSize();
+    pImpl->RecalculateSize();
 } // RecalculateSize()
 
 
@@ -631,7 +631,7 @@ void PRREMesh3D::RecalculateSize()
 */
 const PRREMaterial& PRREMesh3D::getMaterial(TPRREbool implicitAccessSubobject) const
 {
-    return p->getMaterial(implicitAccessSubobject);
+    return pImpl->getMaterial(implicitAccessSubobject);
 } // getMaterial()
 
 
@@ -642,7 +642,7 @@ const PRREMaterial& PRREMesh3D::getMaterial(TPRREbool implicitAccessSubobject) c
 */
 PRREMaterial& PRREMesh3D::getMaterial(TPRREbool implicitAccessSubobject)
 {
-    return p->getMaterial(implicitAccessSubobject);
+    return pImpl->getMaterial(implicitAccessSubobject);
 } // getMaterial()
 
 
@@ -654,7 +654,7 @@ PRREMaterial& PRREMesh3D::getMaterial(TPRREbool implicitAccessSubobject)
 */
 TPRREuint PRREMesh3D::getUsedSystemMemory() const
 {
-    return PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) + sizeof(*this) + p->getUsedSystemMemory();
+    return PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) + sizeof(*this) + pImpl->getUsedSystemMemory();
 } // getUsedSystemMemory()
 
 
@@ -666,7 +666,7 @@ TPRREuint PRREMesh3D::getUsedSystemMemory() const
 */
 PRREMesh3D::PRREMesh3D(TPRRE_PRIMITIVE_FORMAT prfmt)
 {
-    p = new PRREMesh3DImpl(this, prfmt);
+    pImpl = new PRREMesh3DImpl(this, prfmt);
 } // PRREMesh3D()
 
 
@@ -694,7 +694,7 @@ PRREMesh3D& PRREMesh3D::operator=(const PRREMesh3D&)
 void PRREMesh3D::Cannibalize(PRREMesh3D& victim)
 {
     // Note that we cannot easily copy victim's Impl since copy ctor and assignment operators are empty!
-    // Thus the following assignment cannot be used: *(this->p) = *(victim.p)
+    // Thus the following assignment cannot be used: *(this->pImpl) = *(victim.pImpl)
     // We wouldn't even want to use copy ctor or assignment here since we do not want any array copy.
     // That is why this function is written, to "steal" the arrays of the victim so victim will be "empty".
     // In C++11 this could be done with a move ctor.
@@ -704,10 +704,10 @@ void PRREMesh3D::Cannibalize(PRREMesh3D& victim)
     // invoked manually for all submeshes too.
     
     // we should not have any submesh at this point, and no geometry yet
-    if ( (getCount() != 0) || (p->pVertices != PGENULL) || (p->nVertices_h > 0) )
+    if ( (getCount() != 0) || (pImpl->pVertices != PGENULL) || (pImpl->nVertices_h > 0) )
     {
         PRREFiledManaged::getConsole().EOLn(
-            "PRREMesh3D::Cannibalize() ERROR: cannibalizer has non-zero managed count (%d) or has geometry (%d)!", getCount(), p->nVertices_h);
+            "PRREMesh3D::Cannibalize() ERROR: cannibalizer has non-zero managed count (%d) or has geometry (%d)!", getCount(), pImpl->nVertices_h);
         return;
     }
 
@@ -716,35 +716,35 @@ void PRREMesh3D::Cannibalize(PRREMesh3D& victim)
     SetName(victim.getName());          // copy the Managed part
     SetFilename(victim.getFilename());  // copy the FiledManaged part
 
-    p->primitiveFormat = victim.p->primitiveFormat;
+    pImpl->primitiveFormat = victim.pImpl->primitiveFormat;
 
-    p->pVertices = victim.p->pVertices;
-    p->pNormals = victim.p->pNormals;
-    p->pVertexIndices = victim.p->pVertexIndices;
-    p->nMinIndex = victim.p->nMinIndex;
-    p->nMaxIndex = victim.p->nMaxIndex;
-    p->nIndicesType = victim.p->nIndicesType;
+    pImpl->pVertices = victim.pImpl->pVertices;
+    pImpl->pNormals = victim.pImpl->pNormals;
+    pImpl->pVertexIndices = victim.pImpl->pVertexIndices;
+    pImpl->nMinIndex = victim.pImpl->nMinIndex;
+    pImpl->nMaxIndex = victim.pImpl->nMaxIndex;
+    pImpl->nIndicesType = victim.pImpl->nIndicesType;
 
-    p->nVertices_h = victim.p->nVertices_h;
-    p->nNormals_h = victim.p->nNormals_h;
-    p->nVertexIndices_h = victim.p->nVertexIndices_h;
-    p->nFaces_h = victim.p->nFaces_h;
+    pImpl->nVertices_h = victim.pImpl->nVertices_h;
+    pImpl->nNormals_h = victim.pImpl->nNormals_h;
+    pImpl->nVertexIndices_h = victim.pImpl->nVertexIndices_h;
+    pImpl->nFaces_h = victim.pImpl->nFaces_h;
 
-    p->vPos = victim.p->vPos;
-    p->vSize = victim.p->vSize;
+    pImpl->vPos = victim.pImpl->vPos;
+    pImpl->vSize = victim.pImpl->vSize;
 
-    p->pMaterial = victim.p->pMaterial;
+    pImpl->pMaterial = victim.pImpl->pMaterial;
 
-    victim.p->pVertices = PGENULL;
-    victim.p->pNormals = PGENULL;
-    victim.p->pVertexIndices = PGENULL;
-    victim.p->pMaterial = PGENULL;
-    victim.p->nMinIndex = UINT_MAX;
-    victim.p->nMaxIndex = 0;
-    victim.p->nIndicesType = GL_UNSIGNED_BYTE;
-    victim.p->nVertices_h = victim.p->nNormals_h = 0;
-    victim.p->nVertexIndices_h = 0;
-    victim.p->nFaces_h = 0;
+    victim.pImpl->pVertices = PGENULL;
+    victim.pImpl->pNormals = PGENULL;
+    victim.pImpl->pVertexIndices = PGENULL;
+    victim.pImpl->pMaterial = PGENULL;
+    victim.pImpl->nMinIndex = UINT_MAX;
+    victim.pImpl->nMaxIndex = 0;
+    victim.pImpl->nIndicesType = GL_UNSIGNED_BYTE;
+    victim.pImpl->nVertices_h = victim.pImpl->nNormals_h = 0;
+    victim.pImpl->nVertexIndices_h = 0;
+    victim.pImpl->nFaces_h = 0;
 }
 
 

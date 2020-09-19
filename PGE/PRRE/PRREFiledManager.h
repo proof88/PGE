@@ -54,7 +54,7 @@ private:
     // ---------------------------------------------------------------------------
 
     class PRREFiledManagedImpl;
-    PRREFiledManagedImpl* p;
+    PRREFiledManagedImpl* pImpl;
 
 }; // class PRREFiledManaged
 
