@@ -71,7 +71,6 @@ protected:
         AddSubTest("testGetMinIndexValue", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetMinIndexValue);
         AddSubTest("testGetMaxIndexValue", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetMaxIndexValue);
         AddSubTest("testGetIndexFromArray", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetIndexFromArray);
-        AddSubTest("testGetNormalsCount", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetNormalsCount);
         AddSubTest("testGetNormals", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetNormals);
         AddSubTest("testGetPosVec", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetPosVec);
         AddSubTest("testGetSizeVec", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetSizeVec);
@@ -285,23 +284,6 @@ private:
         }
 
         return b;
-    }
-
-    bool testGetNormalsCount()
-    {
-        return assertEquals((TPRREuint) 4, meshPlane->getNormalsCount(), "plane") &
-            assertEquals((TPRREuint) 24, meshBox->getNormalsCount(), "box") &
-            assertEquals((TPRREuint) 24, meshCube->getNormalsCount(), "cube") &
-            assertEquals((TPRREuint) 0, meshFromFile->getNormalsCount(), "meshFromFile") &
-            assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getNormalsCount(), meshPlane->getNormalsCount(), "plane 2") &
-            assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getNormalsCount(), meshBox->getNormalsCount(), "box 2") &
-            assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getNormalsCount(), meshCube->getNormalsCount(), "cube 2") &
-            assertNotEquals(((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getNormalsCount(), meshFromFile->getNormalsCount(), "meshFromFile 2") &
-            assertEquals((TPRREuint)144, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getNormalsCount(), "meshFromFile 3") &
-            assertEquals((TPRREuint) 0, meshPlane->getNormalsCount(false), "plane noimplicit") &
-            assertEquals((TPRREuint) 0, meshBox->getNormalsCount(false), "box noimplicit") &
-            assertEquals((TPRREuint) 0, meshCube->getNormalsCount(false), "cube noimplicit") &
-            assertEquals((TPRREuint) 0, meshFromFile->getNormalsCount(false), "meshFromFile noimplicit");
     }
 
     bool testGetNormals()

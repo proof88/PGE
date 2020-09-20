@@ -148,15 +148,6 @@ TPRREuint PRREMesh3D::PRREMesh3DImpl::getIndexFromArray(const void* arr, TPRREui
 }
 
 
-TPRREuint PRREMesh3D::PRREMesh3DImpl::getNormalsCount(TPRREbool implicitAccessSubobject) const
-{
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
-        return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getNormalsCount();
-    else
-        return nNormals_h;
-} // getNormalsCount()
-
-
 const TXYZ* PRREMesh3D::PRREMesh3DImpl::getNormals(TPRREbool implicitAccessSubobject) const
 {
     if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
@@ -302,7 +293,7 @@ PRREMesh3D::PRREMesh3DImpl::PRREMesh3DImpl(PRREMesh3D* owner, TPRRE_PRIMITIVE_FO
     nMaxIndex = 0;
     nIndicesType = GL_UNSIGNED_BYTE;
 
-    nVertices_h = nNormals_h = 0;
+    nVertices_h = 0;
     nVertexIndices_h = 0;
     nFaces_h = 0;
 
@@ -550,22 +541,6 @@ TPRREuint PRREMesh3D::getIndexFromArray(const void* arr, TPRREuint index) const
 
 
 /**
-    Gets the number of normals.
-    Number of normals is 0 for a level-1 mesh since the geometry is owned by its level-2 submeshes.
-    The total number of normals within a mesh can be calculated by summing the number of normals of its submeshes.
-    Note: in special case this returns positive value even for a level-1 mesh, see below.
-
-    @return Number of normals. If the object's own normal count is 0 but it has exactly 1 subobject, the returned
-            count is the subobject's normal count. This implicit behavior is for convenience for objects storing
-            only 1 subobject like internally created objects.
-*/
-TPRREuint PRREMesh3D::getNormalsCount(TPRREbool implicitAccessSubobject) const
-{
-    return pImpl->getNormalsCount(implicitAccessSubobject);
-} // getNormalsCount()
-
-
-/**
     Gets the pointer to normals.
     Pointer to normals is NULL for a level-1 mesh since the geometry is owned by its level-2 submeshes.
     Note: in special case this returns non-NULL value even for a level-1 mesh, see below.
@@ -726,7 +701,6 @@ void PRREMesh3D::Cannibalize(PRREMesh3D& victim)
     pImpl->nIndicesType = victim.pImpl->nIndicesType;
 
     pImpl->nVertices_h = victim.pImpl->nVertices_h;
-    pImpl->nNormals_h = victim.pImpl->nNormals_h;
     pImpl->nVertexIndices_h = victim.pImpl->nVertexIndices_h;
     pImpl->nFaces_h = victim.pImpl->nFaces_h;
 
@@ -742,7 +716,7 @@ void PRREMesh3D::Cannibalize(PRREMesh3D& victim)
     victim.pImpl->nMinIndex = UINT_MAX;
     victim.pImpl->nMaxIndex = 0;
     victim.pImpl->nIndicesType = GL_UNSIGNED_BYTE;
-    victim.pImpl->nVertices_h = victim.pImpl->nNormals_h = 0;
+    victim.pImpl->nVertices_h = 0;
     victim.pImpl->nVertexIndices_h = 0;
     victim.pImpl->nFaces_h = 0;
 }

@@ -61,7 +61,6 @@ protected:
         AddSubTest("testSetVertexTransferMode", (PFNUNITSUBTEST) &PRREObject3DTest::testSetVertexTransferMode);
         AddSubTest("testGetVerticesCount", (PFNUNITSUBTEST) &PRREObject3DTest::testGetVerticesCount);
         AddSubTest("testGetVertices", (PFNUNITSUBTEST) &PRREObject3DTest::testGetVertices);
-        AddSubTest("testGetNormalsCount", (PFNUNITSUBTEST) &PRREObject3DTest::testGetNormalsCount);
         AddSubTest("testGetNormals", (PFNUNITSUBTEST) &PRREObject3DTest::testGetNormals);
         AddSubTest("testGetAngleVec", (PFNUNITSUBTEST) &PRREObject3DTest::testGetAngleVec);
         AddSubTest("testGetScaledSizeVec", (PFNUNITSUBTEST) &PRREObject3DTest::testGetScaledSizeVec);
@@ -306,20 +305,6 @@ private:
             assertNull(objPlane->getVertices(false), "plane noimplicit") &
             assertNull(objBox->getVertices(false), "box noimplicit") &
             assertNull(objCube->getVertices(false), "cube noimplicit");
-    }
-
-    bool testGetNormalsCount()
-    {
-        // comes from Mesh3D but make sure behavior of this functionality stayed the same
-        return assertEquals((TPRREuint) 4, objPlane->getNormalsCount(), "plane") &
-            assertEquals((TPRREuint) 24, objBox->getNormalsCount(), "box") &
-            assertEquals((TPRREuint) 24, objCube->getNormalsCount(), "cube") &
-            assertEquals(((PRREObject3D*)objPlane->getAttachedAt(0))->getNormalsCount(), objPlane->getNormalsCount(), "plane 2") &
-            assertEquals(((PRREObject3D*)objBox->getAttachedAt(0))->getNormalsCount(), objBox->getNormalsCount(), "box 2") &
-            assertEquals(((PRREObject3D*)objCube->getAttachedAt(0))->getNormalsCount(), objCube->getNormalsCount(), "cube 2") &
-            assertEquals((TPRREuint) 0, objPlane->getNormalsCount(false), "plane noimplicit") &
-            assertEquals((TPRREuint) 0, objBox->getNormalsCount(false), "box noimplicit") &
-            assertEquals((TPRREuint) 0, objCube->getNormalsCount(false), "cube noimplicit");
     }
 
     bool testGetNormals()

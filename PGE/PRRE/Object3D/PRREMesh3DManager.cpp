@@ -457,9 +457,8 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
         currSubObj->pImpl->nVertexIndices_h   = currSubObj->pImpl->nFaces_h * 3;
         currSubObj->pImpl->pVertexIndices   = malloc( PRREGLsnippets::getSizeofIndexType(currSubObj->pImpl->nIndicesType) * currSubObj->pImpl->nVertexIndices_h );
         currSubObj->pImpl->nVertices_h  = currSubObj->pImpl->nVertexIndices_h;
-        currSubObj->pImpl->nNormals_h   = currSubObj->pImpl->nVertices_h;
         currSubObj->pImpl->pVertices        = (TXYZ*)  malloc( sizeof(TXYZ) * currSubObj->pImpl->nVertices_h );
-        currSubObj->pImpl->pNormals         = (TXYZ*)  malloc( sizeof(TXYZ) * currSubObj->pImpl->nNormals_h );
+        currSubObj->pImpl->pNormals         = (TXYZ*)  malloc( sizeof(TXYZ) * currSubObj->pImpl->nVertices_h );
 
         currSubObj->pImpl->pMaterial->AllocateArrays(
             currSubObj->pImpl->nVertices_h,
@@ -909,7 +908,6 @@ void PRREMesh3DManager::ConvertToPlane(
     submesh->pImpl->vSize.Set(a, b, 0.0f);
     mesh.pImpl->nIndicesType = GL_UNSIGNED_BYTE;
     submesh->pImpl->nVertices_h  = 4;
-    submesh->pImpl->nNormals_h   = submesh->pImpl->nVertices_h;
     submesh->pImpl->nFaces_h     = 1;
     submesh->pImpl->nVertexIndices_h   = submesh->pImpl->nVertices_h;
 
@@ -925,8 +923,8 @@ void PRREMesh3DManager::ConvertToPlane(
     {
         free(submesh->pImpl->pVertexIndices);
     }
-    submesh->pImpl->pVertices       = (TXYZ*)       malloc( sizeof(TXYZ)   * submesh->pImpl->nVertices_h );
-    submesh->pImpl->pNormals   = (TXYZ*)       malloc( sizeof(TXYZ)   * submesh->pImpl->nNormals_h );
+    submesh->pImpl->pVertices  = (TXYZ*)       malloc( sizeof(TXYZ)   * submesh->pImpl->nVertices_h );
+    submesh->pImpl->pNormals   = (TXYZ*)       malloc( sizeof(TXYZ)   * submesh->pImpl->nVertices_h );
     //submesh->pImpl->pFaces     = (TFACE4*)     malloc( sizeof(TFACE4) * submesh->pImpl->nFaces_h );
     submesh->pImpl->nIndicesType = mesh.pImpl->nIndicesType;
     submesh->pImpl->pVertexIndices   = malloc( PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) * submesh->pImpl->nVertexIndices_h );
@@ -1060,7 +1058,6 @@ void PRREMesh3DManager::ConvertToBox(
     submesh->pImpl->vPos.Set(0.0f, 0.0f, 0.0f);
     submesh->pImpl->vSize.Set(a, b, c);
     submesh->pImpl->nVertices_h  = 24;
-    submesh->pImpl->nNormals_h   = submesh->pImpl->nVertices_h;
     submesh->pImpl->nFaces_h     = 6;
 
     submesh->pImpl->nVertexIndices_h   = submesh->pImpl->nVertices_h;
@@ -1077,9 +1074,9 @@ void PRREMesh3DManager::ConvertToBox(
     {
         free(submesh->pImpl->pVertexIndices);
     }
-    submesh->pImpl->pVertices       = (TXYZ*)  malloc( sizeof(TXYZ)       * submesh->pImpl->nVertices_h );
-    submesh->pImpl->pNormals        = (TXYZ*)  malloc( sizeof(TXYZ)       * submesh->pImpl->nNormals_h );
-    //submesh->pImpl->pFaces     = (TFACE4*)     malloc( sizeof(TFACE4)     * submesh->pImpl->nFaces_h );
+    submesh->pImpl->pVertices  = (TXYZ*)  malloc( sizeof(TXYZ) * submesh->pImpl->nVertices_h );
+    submesh->pImpl->pNormals   = (TXYZ*)  malloc( sizeof(TXYZ) * submesh->pImpl->nVertices_h );
+    //submesh->pImpl->pFaces     = (TFACE4*)  malloc( sizeof(TFACE4)     * submesh->pImpl->nFaces_h );
     submesh->pImpl->nIndicesType = mesh.pImpl->nIndicesType;
     submesh->pImpl->pVertexIndices   = malloc( PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) * submesh->pImpl->nVertexIndices_h );
 

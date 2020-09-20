@@ -72,7 +72,6 @@ public:
     TPRREuint    getMaxIndexValue(TPRREbool implicitAccessSubobject = true) const;     /**< Gets the greatest index in the vertex indices array. */
     TPRREuint    getIndexFromArray(const void* arr, TPRREuint index) const;            /**< Gets an index value from a given index array. */
 
-    TPRREuint   getNormalsCount(TPRREbool implicitAccessSubobject = true) const;       /**< Gets the number of normals. */
     const TXYZ* getNormals(TPRREbool implicitAccessSubobject = true) const;            /**< Gets the pointer to normals. */
 
           PRREVector& getPosVec();                  /**< Gets the position. */
@@ -82,11 +81,6 @@ public:
 
     const PRREMaterial& getMaterial(TPRREbool implicitAccessSubobject = true) const;   /**< Gets the material. */
           PRREMaterial& getMaterial(TPRREbool implicitAccessSubobject = true);         /**< Gets the material. */
-
-    // TODO: probably something will be needed here
-    /*const PRREVector& getSizeVec() const;*/           /**< Gets the base sizes. */
-          /*PRREVector  getScaledSizeVec() const; */    /**< Gets the real sizes. */
-    /*void              RecalculateSize(); */           /**< Recalculates the sizes. */
 
     TPRREuint getUsedSystemMemory() const;    /**< Gets the amount of allocated system memory. */
 

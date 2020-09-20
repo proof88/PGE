@@ -37,8 +37,7 @@ public:
     TPRREuint    getMinIndexValue(TPRREbool implicitAccessSubobject = true) const;
     TPRREuint    getMaxIndexValue(TPRREbool implicitAccessSubobject = true) const;
     TPRREuint    getIndexFromArray(const void* arr, TPRREuint index) const;
-
-    TPRREuint   getNormalsCount(TPRREbool implicitAccessSubobject = true) const;       
+     
     const TXYZ* getNormals(TPRREbool implicitAccessSubobject = true) const;  
 
     PRREVector&       getPosVec();                  
@@ -66,7 +65,6 @@ protected:
     TPRREuint   nMaxIndex;          /**< Biggest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
     GLenum      nIndicesType;       /**< Type of indices stored in pVertexIndices array. Should be as small as possible per object. */
     TPRREuint   nVertices_h;        /**< Number of vertices. */
-    TPRREuint   nNormals_h;         /**< Number of normals. TODO: maybe can be removed as nVertices_h is enough. */
     TPRREuint   nFaces_h;           /**< Number of faces. */
 
     PRREVector vPos;                /**< 3D Position. */

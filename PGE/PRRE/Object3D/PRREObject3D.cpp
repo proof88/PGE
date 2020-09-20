@@ -353,11 +353,10 @@ const PRREVector& PRREObject3D::PRREObject3DImpl::getAngleVec() const
 
 PRREVector PRREObject3D::PRREObject3DImpl::getScaledSizeVec() const
 {
-    const PRREVector tmp(
+    return PRREVector(
         _pOwner->getSizeVec().getX() * vScaling.getX(),
         _pOwner->getSizeVec().getY() * vScaling.getY(),
         _pOwner->getSizeVec().getZ() * vScaling.getZ());
-    return tmp;
 } // getScaledSizeVec()
 
 
@@ -984,8 +983,7 @@ void PRREObject3D::PRREObject3DImpl::CompileIntoVertexBufferObjects(TPRREbool in
         glGenBuffersARB(1, &nNormalsVBO);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, nNormalsVBO);
         assert(_pOwner->getNormals(false) != NULL);
-        assert(_pOwner->getNormalsCount(false) != 0);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getNormalsCount(false) * sizeof(TXYZ), _pOwner->getNormals(false), usage);
+        glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getNormals(false), usage);
 
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
@@ -1516,7 +1514,8 @@ const PRREVector& PRREObject3D::getAngleVec() const
 
 /**
     Gets the base sizes.
-    Need to override Mesh3D method because if we are a cloned object, we need to return the size of the object we are referring to.
+    The Mesh3D part of a cloned object does not have its own geometry, thus even Mesh3D::RecalculateSize() would calculate it to 0.
+    Thus if we are a cloned object, we need to return the size of the object we are referring to.
 */
 const PRREVector& PRREObject3D::getSizeVec() const
 {
