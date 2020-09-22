@@ -222,6 +222,9 @@ public:
     TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;          /**< Gets vertex transfer mode. */
     void SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);     /**< Sets vertex transfer mode. */
 
+    const TPRRE_TRANSFORMED_VERTEX* getTransformedVertices(
+        TPRREbool implicitAccessSubobject = true) const;               /**< Gets the pointer to transformed vertices. */
+
     TPRRE_TRANSFORMED_VERTEX* getTransformedVertices(
         TPRREbool implicitAccessSubobject = true);                     /**< Gets the pointer to transformed vertices. */
 

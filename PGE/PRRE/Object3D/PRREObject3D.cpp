@@ -1477,7 +1477,25 @@ void PRREObject3D::SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 
 /**
     Gets the pointer to transformed vertices.
-    These are generated after rendering.
+    These are generated only during first rendering.
+    This value is irrelevant for a level-1 object since the geometry is owned by its level-2 subobjects.
+    Still the returned value for a level-1 object can be a non-NULL value, see below.
+
+    @return Pointer to transformed vertices. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
+            pointer is the subobject's transformed vertices pointer. This implicit behavior is for convenience for objects storing
+            only 1 subobject like internally created objects.
+*/
+const TPRRE_TRANSFORMED_VERTEX* PRREObject3D::getTransformedVertices(TPRREbool implicitAccessSubobject) const
+{
+    return pImpl->getTransformedVertices(implicitAccessSubobject);
+} // getVertices(false)
+
+
+/**
+    Gets the pointer to transformed vertices.
+    These are generated only during first rendering.
+    This value is irrelevant for a level-1 object since the geometry is owned by its level-2 subobjects.
+    Still the returned value for a level-1 object can be a non-NULL value, see below.
 
     @return Pointer to transformed vertices. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
             pointer is the subobject's transformed vertices pointer. This implicit behavior is for convenience for objects storing
@@ -1485,7 +1503,6 @@ void PRREObject3D::SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 */
 TPRRE_TRANSFORMED_VERTEX* PRREObject3D::getTransformedVertices(TPRREbool implicitAccessSubobject)
 {
-    // TODO: add unit test for TPRREbool implicitAccessSubobject parameter!
     return pImpl->getTransformedVertices(implicitAccessSubobject);
 } // getVertices(false)
 
