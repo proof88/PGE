@@ -644,11 +644,11 @@ private:
 
     bool testGetUsedSystemMemory()
     {
-        return assertGreater(obj->getUsedSystemMemory(),      sizeof(PRREObject3D), "obj") &
-               assertGreater(objFromFile->getUsedSystemMemory(),      sizeof(PRREObject3D), "objFromFile") &
-               assertGreater(objPlane->getUsedSystemMemory(), sizeof(PRREObject3D), "plane") &
-               assertGreater(objBox->getUsedSystemMemory(),   sizeof(PRREObject3D), "box") &
-               assertGreater(objCube->getUsedSystemMemory(),  sizeof(PRREObject3D), "cube");
+        return assertGreater(obj->getUsedSystemMemory(),          sizeof(PRREObject3D), "obj") &
+               assertGreater(objFromFile->getUsedSystemMemory(),  sizeof(PRREObject3D), "objFromFile") &
+               assertGreater(objPlane->getUsedSystemMemory(),     sizeof(PRREObject3D), "plane") &
+               assertGreater(objBox->getUsedSystemMemory(),       sizeof(PRREObject3D), "box") &
+               assertGreater(objCube->getUsedSystemMemory(),      sizeof(PRREObject3D), "cube");
     }
 
     bool testGetCount()

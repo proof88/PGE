@@ -542,7 +542,8 @@ TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
 {
     return (
         sizeof(*this) +
-        nFbBuffer_h
+        nFbBuffer_h * sizeof(GLfloat) +
+        sizeof(TPRRE_TRANSFORMED_VERTEX) * _pOwner->getVertexIndicesCount(false)
     );
 } // getUsedSystemMemory()     
 
@@ -1845,13 +1846,22 @@ void PRREObject3D::SetStickedToScreen(TPRREbool value)
 /**
     Gets the amount of allocated system memory.
     It includes the allocated Material size as well (getMaterial(false)).
+    Level-1 (parent) objects summarize the memory usage of their level-2 subobjects and include it in the returned value.
 
     @return Amount if allocated system memory in Bytes.
 */
 TPRREuint PRREObject3D::getUsedSystemMemory() const
 {
-    return PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) +
-        PRREMesh3D::getUsedSystemMemory() - sizeof(PRREMesh3D) + 
+    TPRREuint sumSubObjectMemoryUsage = 0;
+    for (TPRREint i = 0; i < getSize(); i++)
+    {
+        if ( getAttachedAt(i) == PGENULL )
+            continue;
+        sumSubObjectMemoryUsage += getAttachedAt(i)->getUsedSystemMemory();
+    }
+    return sumSubObjectMemoryUsage +
+        PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) +
+        PRREMesh3D::getUsedSystemMemory() - sizeof(PRREMesh3D) +
         sizeof(*this) + pImpl->getUsedSystemMemory();
 } // getUsedSystemMemory()
 

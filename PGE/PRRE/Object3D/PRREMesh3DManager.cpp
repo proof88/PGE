@@ -227,9 +227,20 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
     // At the end, we fill the subObjects' vertices, texcoords and normals arrays with redundant
     // data based on the temporary arrays, so both direct referencing and indexing modes will be available.
     // Redundant storage is essential for indexed vertex arrays (element arrays). Indexing in non-redundant
-    // format is only ok when multiple index arrays can be used for the same mesh: 1 for vertices, 1 for texcoords, etc.
+    // format is only ok when multiple index arrays could be used for the same mesh: 1 for vertices, 1 for texcoords, etc.
     // But when only 1 element array can be used for all of these, like glDrawElements(), these must be stored
-    // redundantly.
+    // redundantly without implementing extra logic.
+    // Update: actually we could still use only 1 element array with any glDrawElements()-style command without
+    // much redundancy in vertex data, but we need to fill that element array in a smart way, considering that
+    // OBJ format still uses different indices for vertex position, normals, and texture coordinates. We need to
+    // unify these into 1 index array, and to avoid redundancy, we need to check if the specified vertex data
+    // is new data or we already encountered such, if so, we can use same index, no need to put same vertex data
+    // into data array. But this requires some extra logic. If this gets solved, huge speedup is expected with
+    // indexed referencing compared to direct referencing because shared vertices will be actually shared.
+    // Note that, if we reach this and minimize redundancy, direct referencing wont be available.
+    // Also, this can be taken to a next level, by analysing the vertex indices used by the faces, and then
+    // the faces could be ordered by the referenced vertices, so that faces using shared vertices will be
+    // rendered after each other, benefiting from vertex cache.
     TXYZ** tmpSubMeshesVertices  = (TXYZ**) malloc(submeshes_h * sizeof(TXYZ*));
     TUVW** tmpSubMeshesTexcoords = (TUVW**) malloc(submeshes_h * sizeof(TUVW*));
     TXYZ** tmpSubMeshesNormals   = (TXYZ**) malloc(submeshes_h * sizeof(TXYZ*));

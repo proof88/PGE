@@ -269,7 +269,9 @@ PRREMaterial& PRREMesh3D::PRREMesh3DImpl::getMaterial(TPRREbool implicitAccessSu
 
 TPRREuint PRREMesh3D::PRREMesh3DImpl::getUsedSystemMemory() const
 {
-    return sizeof(*this) + (pMaterial ? pMaterial->getUsedSystemMemory() : 0);
+    return sizeof(*this) + (pMaterial ? pMaterial->getUsedSystemMemory() : 0) + 
+        nVertices_h * sizeof(TXYZ) * 2 /* normals and vertices */  +
+        ( PRREGLsnippets::getSizeofIndexType(nIndicesType) * nVertexIndices_h );
 } // getUsedSystemMemory() 
 
 
@@ -624,12 +626,22 @@ PRREMaterial& PRREMesh3D::getMaterial(TPRREbool implicitAccessSubobject)
 /**
     Gets the amount of allocated system memory.
     It includes the allocated Material size as well (getMaterial()).
+    Level-1 (parent) meshes summarize the memory usage of their level-2 submeshes and include it in the returned value.
 
-    @return Amount if allocated system memory in Bytes.
+    @return Amount of allocated system memory in Bytes.
 */
 TPRREuint PRREMesh3D::getUsedSystemMemory() const
 {
-    return PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) + sizeof(*this) + pImpl->getUsedSystemMemory();
+    TPRREuint sumSubMeshMemoryUsage = 0;
+    for (TPRREint i = 0; i < getSize(); i++)
+    {
+        if ( getAttachedAt(i) == PGENULL )
+            continue;
+        sumSubMeshMemoryUsage += getAttachedAt(i)->getUsedSystemMemory();
+    }
+    return sumSubMeshMemoryUsage +
+        PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) +
+        sizeof(*this) + pImpl->getUsedSystemMemory();
 } // getUsedSystemMemory()
 
 

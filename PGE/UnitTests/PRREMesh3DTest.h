@@ -484,9 +484,10 @@ private:
     bool testGetUsedSystemMemory()
     {
         return assertGreater(mesh->getUsedSystemMemory(),      sizeof(PRREMesh3D), "mesh") &
-               assertGreater(meshPlane->getUsedSystemMemory(), sizeof(PRREMesh3D), "plane") &
-               assertGreater(meshBox->getUsedSystemMemory(),   sizeof(PRREMesh3D), "box") &
-               assertGreater(meshCube->getUsedSystemMemory(),  sizeof(PRREMesh3D), "cube");
+            assertGreater(meshFromFile->getUsedSystemMemory(),      sizeof(PRREMesh3D), "meshFromFile") &
+            assertGreater(meshPlane->getUsedSystemMemory(), sizeof(PRREMesh3D), "plane") &
+            assertGreater(meshBox->getUsedSystemMemory(),   sizeof(PRREMesh3D), "box") &
+            assertGreater(meshCube->getUsedSystemMemory(),  sizeof(PRREMesh3D), "cube");
     }
 
     bool testGetCount()
