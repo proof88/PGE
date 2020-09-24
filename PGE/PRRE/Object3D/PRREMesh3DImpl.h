@@ -34,9 +34,9 @@ public:
     const void* getVertexIndices(TPRREbool implicitAccessSubobject = true) const;
 
     unsigned int getVertexIndicesType(TPRREbool implicitAccessSubobject = true) const;
-    TPRREuint    getMinIndexValue(TPRREbool implicitAccessSubobject = true) const;
-    TPRREuint    getMaxIndexValue(TPRREbool implicitAccessSubobject = true) const;
-    TPRREuint    getIndexFromArray(const void* arr, TPRREuint index) const;
+    TPRREuint    getMinVertexIndex(TPRREbool implicitAccessSubobject = true) const;
+    TPRREuint    getMaxVertexIndex(TPRREbool implicitAccessSubobject = true) const;
+    TPRREuint    getVertexIndex(TPRREuint index, TPRREbool implicitAccessSubobject = true) const;
      
     const TXYZ* getNormals(TPRREbool implicitAccessSubobject = true) const;  
 
@@ -61,8 +61,8 @@ protected:
     TXYZ*       pNormals;           /**< Pointer to normals. */
     void*       pVertexIndices;     /**< Pointer to vertex indices. We use these to index into arrays of Material too. */
     TPRREuint   nVertexIndices_h;   /**< Number of vertex indices. */
-    TPRREuint   nMinIndex;          /**< Smallest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
-    TPRREuint   nMaxIndex;          /**< Biggest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
+    TPRREuint   nMinVertexIndex;    /**< Smallest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
+    TPRREuint   nMaxVertexIndex;    /**< Biggest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
     GLenum      nIndicesType;       /**< Type of indices stored in pVertexIndices array. Should be as small as possible per object. */
     TPRREuint   nVertices_h;        /**< Number of vertices. */
     TPRREuint   nFaces_h;           /**< Number of faces. */
@@ -75,7 +75,7 @@ protected:
     PRREMesh3DImpl(const PRREMesh3DImpl&);
     PRREMesh3DImpl& operator=(const PRREMesh3DImpl&);
 
-    void      SetIndexInArray(void* arr, TPRREuint index, TPRREuint value);  /**< Sets an index value in a given index array. */
+    void      SetVertexIndex(TPRREuint index, TPRREuint value);  /**< Sets an index value in the vertex index array. */
 
 private:
     PRREMesh3D* _pOwner;            /**< The owner public object who creates this pimpl object. */

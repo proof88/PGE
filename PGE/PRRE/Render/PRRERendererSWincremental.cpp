@@ -510,7 +510,7 @@ void PRRERendererSWincrementalImpl::VertexProcessing(
 
     for (TPRREuint i = 0; i < nVertexIndices_h; i++)
     {
-        const TXYZ& vertex = bIndexed ? pVertices[ PRREGLsnippets::getIndexFromArray(pVertexIndices, i, nIndicesType) ] : pVertices[i];
+        const TXYZ& vertex = bIndexed ? pVertices[ PRREGLsnippets::getVertexIndex(pVertexIndices, i, nIndicesType) ] : pVertices[i];
         PRREVector transfdVertex(vertex.x, vertex.y, vertex.z);
 
         /* Model -> World */

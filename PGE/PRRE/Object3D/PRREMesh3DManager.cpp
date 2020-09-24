@@ -423,23 +423,23 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
         // todo: later this loop can be replaced by a simple assignment like: k = lines_end[i] - lines_start[i] +/-1 or sg like that
         for (TPRREuint j = lines_start[i]; j <= lines_end[i]; j++)
         {
-            // there will be submesh-local indices in the end, all starting from nMinIndex = 0 to nMaxIndex = k*3+2
-            // TODO: since we use submesh-local indices, there is no use for nMinIndex, as it must be always 0 in all submeshes!
-            // also, I'm not sure about the use of nMaxIndex, since I guess it always equals to nVertexIndices_h-1.
+            // there will be submesh-local indices in the end, all starting from nMinVertexIndex = 0 to nMaxVertexIndex = k*3+2
+            // TODO: since we use submesh-local indices, there is no use for nMinVertexIndex, as it must be always 0 in all submeshes!
+            // also, I'm not sure about the use of nMaxVertexIndex, since I guess it always equals to nVertexIndices_h-1.
             // So, I would rather decide nIndicesType based on the value nVertexIndices_h.
-            if ( currSubObj->pImpl->nMinIndex > k*3 )
-                currSubObj->pImpl->nMinIndex = k*3;
-            if ( currSubObj->pImpl->nMaxIndex < k*3+2 )
-                currSubObj->pImpl->nMaxIndex = k*3+2;
+            if ( currSubObj->pImpl->nMinVertexIndex > k*3 )
+                currSubObj->pImpl->nMinVertexIndex = k*3;
+            if ( currSubObj->pImpl->nMaxVertexIndex < k*3+2 )
+                currSubObj->pImpl->nMaxVertexIndex = k*3+2;
             k++;
         }
         // determining what type of values to be stored in the index arrays ...
-        if ( currSubObj->pImpl->nMaxIndex <= UCHAR_MAX )
+        if ( currSubObj->pImpl->nMaxVertexIndex <= UCHAR_MAX )
         {
             currSubObj->pImpl->nIndicesType = GL_UNSIGNED_BYTE;
             _pOwner->getConsole().OLn("submeshes_h[%d] nIndicesType = GL_UNSIGNED_BYTE", i);
         }
-        else if ( currSubObj->pImpl->nMaxIndex <= USHRT_MAX )
+        else if ( currSubObj->pImpl->nMaxVertexIndex <= USHRT_MAX )
         {
             currSubObj->pImpl->nIndicesType = GL_UNSIGNED_SHORT;
             _pOwner->getConsole().OLn("submeshes_h[%d] nIndicesType = GL_UNSIGNED_SHORT", i);
@@ -449,9 +449,9 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
             currSubObj->pImpl->nIndicesType = GL_UNSIGNED_INT;
             _pOwner->getConsole().OLn("submeshes_h[%d] nIndicesType = GL_UNSIGNED_INT", i);
         }
-        if ( currSubObj->pImpl->nMinIndex != 0 )
+        if ( currSubObj->pImpl->nMinVertexIndex != 0 )
         {
-            _pOwner->getConsole().EOLn("ERROR: submeshes_h[%d] nMinIndex == %d", i, currSubObj->pImpl->nMinIndex);
+            _pOwner->getConsole().EOLn("ERROR: submeshes_h[%d] nMinVertexIndex == %d", i, currSubObj->pImpl->nMinVertexIndex);
             _ASSERT( false );
         }
     }
@@ -503,25 +503,25 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
 
             // Putting parsed indices into index arrays.
             // We decrease the parsed index values by the previously accumulated index values because OBJ stores global indices but we need submesh-local indices.
-            // SetIndexInArray() stores indices with minimal storage size, eg. 1 as byte, 500 as short, so passing submesh-local indices here is CRITICAL to avoid chopping values.
+            // SetVertexIndex() stores indices with minimal storage size, eg. 1 as byte, 500 as short, so passing submesh-local indices here is CRITICAL to avoid chopping values.
             /* Note: exchange k*3 and k*3+2 for CW-CCW change. This maybe a feature in the future. */
-            currSubObj->pImpl->SetIndexInArray(currSubObj->pImpl->pVertexIndices,                  k*3+2, tmpParseVertexIndices[0] - prevvertcount);
-            currSubObj->pImpl->SetIndexInArray(currSubObj->pImpl->pVertexIndices,                  k*3+1, tmpParseVertexIndices[1] - prevvertcount);
-            currSubObj->pImpl->SetIndexInArray(currSubObj->pImpl->pVertexIndices,                  k*3,   tmpParseVertexIndices[2] - prevvertcount);
+            currSubObj->pImpl->SetVertexIndex(k*3+2, tmpParseVertexIndices[0] - prevvertcount);
+            currSubObj->pImpl->SetVertexIndex(k*3+1, tmpParseVertexIndices[1] - prevvertcount);
+            currSubObj->pImpl->SetVertexIndex(k*3,   tmpParseVertexIndices[2] - prevvertcount);
 
             // Putting geometry data into arrays. We store geometry data redundantly.
-            currSubObj->pImpl->pVertices[k*3]    = tmpSubMeshesVertices[i][ currSubObj->pImpl->getIndexFromArray(currSubObj->pImpl->pVertexIndices, k*3) ];
-            currSubObj->pImpl->pVertices[k*3+1]  = tmpSubMeshesVertices[i][ currSubObj->pImpl->getIndexFromArray(currSubObj->pImpl->pVertexIndices, k*3+1) ];
-            currSubObj->pImpl->pVertices[k*3+2]  = tmpSubMeshesVertices[i][ currSubObj->pImpl->getIndexFromArray(currSubObj->pImpl->pVertexIndices, k*3+2) ];
+            currSubObj->pImpl->pVertices[k*3]    = tmpSubMeshesVertices[i][ currSubObj->pImpl->getVertexIndex(k*3) ];
+            currSubObj->pImpl->pVertices[k*3+1]  = tmpSubMeshesVertices[i][ currSubObj->pImpl->getVertexIndex(k*3+1) ];
+            currSubObj->pImpl->pVertices[k*3+2]  = tmpSubMeshesVertices[i][ currSubObj->pImpl->getVertexIndex(k*3+2) ];
             // don't need to fill pVerticesTransf array here, that task is for during rendering!
             currSubObj->pImpl->pMaterial->getTexcoords()[k*3]   = tmpSubMeshesTexcoords[i][ tmpParseTexcoordIndices[2] - prevtexcoordcount ];
             currSubObj->pImpl->pMaterial->getTexcoords()[k*3+1] = tmpSubMeshesTexcoords[i][ tmpParseTexcoordIndices[1] - prevtexcoordcount ];
             currSubObj->pImpl->pMaterial->getTexcoords()[k*3+2] = tmpSubMeshesTexcoords[i][ tmpParseTexcoordIndices[0] - prevtexcoordcount ];
 
             // Update the index values because we now store geometry data redundantly.
-            currSubObj->pImpl->SetIndexInArray(currSubObj->pImpl->pVertexIndices,   k*3,   k*3);
-            currSubObj->pImpl->SetIndexInArray(currSubObj->pImpl->pVertexIndices,   k*3+1, k*3+1);
-            currSubObj->pImpl->SetIndexInArray(currSubObj->pImpl->pVertexIndices,   k*3+2, k*3+2);
+            currSubObj->pImpl->SetVertexIndex(k*3,   k*3);
+            currSubObj->pImpl->SetVertexIndex(k*3+1, k*3+1);
+            currSubObj->pImpl->SetVertexIndex(k*3+2, k*3+2);
             k++;
         } 
         prevvertcount += tmpSubMeshesVertices_h[i];
@@ -909,8 +909,8 @@ void PRREMesh3DManager::ConvertToPlane(
     }
     CreateMaterialForMesh(mesh);
 
-    mesh.pImpl->nMinIndex = 0;
-    mesh.pImpl->nMaxIndex = 0;
+    mesh.pImpl->nMinVertexIndex = 0;
+    mesh.pImpl->nMaxVertexIndex = 0;
 
     PRREMesh3D* const submesh = (PRREMesh3D*) mesh.getAttachedAt(0);
 
@@ -1017,11 +1017,11 @@ void PRREMesh3DManager::ConvertToPlane(
 
     for (TPRREuint i = 0; i < submesh->pImpl->nVertexIndices_h; i++)
     {
-        submesh->pImpl->SetIndexInArray(submesh->pImpl->pVertexIndices, i, i);
-        if ( submesh->pImpl->nMinIndex > i )
-            submesh->pImpl->nMinIndex = i;
-        if ( submesh->pImpl->nMaxIndex < i )
-            submesh->pImpl->nMaxIndex = i;
+        if ( submesh->pImpl->nMinVertexIndex > i )
+            submesh->pImpl->nMinVertexIndex = i;
+        if ( submesh->pImpl->nMaxVertexIndex < i )
+            submesh->pImpl->nMaxVertexIndex = i;
+        submesh->pImpl->SetVertexIndex(i, i);
     }
 }
 
@@ -1061,8 +1061,8 @@ void PRREMesh3DManager::ConvertToBox(
     }
     CreateMaterialForMesh(mesh);
 
-    mesh.pImpl->nMinIndex = 0;
-    mesh.pImpl->nMaxIndex = 0;
+    mesh.pImpl->nMinVertexIndex = 0;
+    mesh.pImpl->nMaxVertexIndex = 0;
 
     PRREMesh3D* const submesh = (PRREMesh3D*) mesh.getAttachedAt(0);
     submesh->pImpl->primitiveFormat = mesh.pImpl->primitiveFormat;
@@ -1488,11 +1488,11 @@ void PRREMesh3DManager::ConvertToBox(
 
     for (TPRREuint i = 0; i < submesh->pImpl->nVertexIndices_h; i++)
     {
-        submesh->pImpl->SetIndexInArray(submesh->pImpl->pVertexIndices,   i, i);
-        if ( submesh->pImpl->nMinIndex > i )
-            submesh->pImpl->nMinIndex = i;
-        if ( submesh->pImpl->nMaxIndex < i )
-            submesh->pImpl->nMaxIndex = i;
+        if ( submesh->pImpl->nMinVertexIndex > i )
+            submesh->pImpl->nMinVertexIndex = i;
+        if ( submesh->pImpl->nMaxVertexIndex < i )
+            submesh->pImpl->nMaxVertexIndex = i;
+        submesh->pImpl->SetVertexIndex(i, i);
     }
 }
 

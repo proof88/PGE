@@ -68,9 +68,10 @@ public:
     /* HACK: using unsigned int here instead of GLenum to avoid using GL header. */
     /* TODO: create own type for the index type. */
     unsigned int getVertexIndicesType(TPRREbool implicitAccessSubobject = true) const; /**< Gets the type of the indices. */
-    TPRREuint    getMinIndexValue(TPRREbool implicitAccessSubobject = true) const;     /**< Gets the smallest index in the vertex indices array. */
-    TPRREuint    getMaxIndexValue(TPRREbool implicitAccessSubobject = true) const;     /**< Gets the greatest index in the vertex indices array. */
-    TPRREuint    getIndexFromArray(const void* arr, TPRREuint index) const;            /**< Gets an index value from a given index array. */
+    TPRREuint    getMinVertexIndex(TPRREbool implicitAccessSubobject = true) const;     /**< Gets the smallest index in the vertex indices array. */
+    TPRREuint    getMaxVertexIndex(TPRREbool implicitAccessSubobject = true) const;     /**< Gets the greatest index in the vertex indices array. */
+    TPRREuint    getVertexIndex(
+        TPRREuint index, TPRREbool implicitAccessSubobject = true) const;              /**< Gets an index value from the vertex indices array. */
 
     const TXYZ* getNormals(TPRREbool implicitAccessSubobject = true) const;            /**< Gets the pointer to normals. */
 

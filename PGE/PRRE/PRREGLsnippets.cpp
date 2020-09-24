@@ -99,7 +99,7 @@ TPRREuint PRREGLsnippets::getSizeofIndexType(GLenum iType)
 
     @return An iType type element from arr[index] position, casted to TPRREuint.
 */
-TPRREuint PRREGLsnippets::getIndexFromArray(const void* arr, TPRREuint index, GLenum iType)
+TPRREuint PRREGLsnippets::getVertexIndex(const void* arr, TPRREuint index, GLenum iType)
 {
     switch (iType)
     {
@@ -114,18 +114,18 @@ TPRREuint PRREGLsnippets::getIndexFromArray(const void* arr, TPRREuint index, GL
     Sets arr[index] element of the given array of iType type elements to value.
     If the given value doesn't fit into given iType element type, an error message will be logged to console, but the value will be casted to the given type anyway and stored in the array.
 */
-void PRREGLsnippets::SetIndexInArray(void* arr, TPRREuint index, TPRREuint value, GLenum iType)
+void PRREGLsnippets::SetVertexIndex(void* arr, TPRREuint index, TPRREuint value, GLenum iType)
 {
     switch (iType)
     {
     case GL_UNSIGNED_BYTE :
         if ( value > UCHAR_MAX )
-            CConsole::getConsoleInstance().EOLn("SetIndexInArray() ERROR: storing %d as BYTE (MAX=%d)!", value, UCHAR_MAX);
+            CConsole::getConsoleInstance().EOLn("SetVertexIndex() ERROR: storing %d as BYTE (MAX=%d)!", value, UCHAR_MAX);
         ((TPRREubyte*)arr)[index]  = (TPRREubyte) value;
         break;
     case GL_UNSIGNED_SHORT:
         if ( value > USHRT_MAX )
-            CConsole::getConsoleInstance().EOLn("SetIndexInArray() ERROR: storing %d as SHORT (MAX=%d)!", value, USHRT_MAX);
+            CConsole::getConsoleInstance().EOLn("SetVertexIndex() ERROR: storing %d as SHORT (MAX=%d)!", value, USHRT_MAX);
         ((TPRREushort*)arr)[index] = (TPRREushort) value;
         break;
     default: // GL_UNSIGNED_INT

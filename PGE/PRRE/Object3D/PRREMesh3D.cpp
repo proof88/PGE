@@ -80,9 +80,6 @@ TXYZ* PRREMesh3D::PRREMesh3DImpl::getVertices(TPRREbool implicitAccessSubobject)
 } // getVertices()
 
 
-/**
-    Gets the number of vertex indices.
-*/
 TPRREuint PRREMesh3D::PRREMesh3DImpl::getVertexIndicesCount(TPRREbool implicitAccessSubobject) const
 {
     if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
@@ -92,9 +89,6 @@ TPRREuint PRREMesh3D::PRREMesh3DImpl::getVertexIndicesCount(TPRREbool implicitAc
 }
 
 
-/**
-    Gets the pointer to vertex indices.
-*/
 const void* PRREMesh3D::PRREMesh3DImpl::getVertexIndices(TPRREbool implicitAccessSubobject) const
 {
     if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
@@ -104,9 +98,6 @@ const void* PRREMesh3D::PRREMesh3DImpl::getVertexIndices(TPRREbool implicitAcces
 }
 
 
-/**
-    Gets the type of the indices.
-*/
 unsigned int PRREMesh3D::PRREMesh3DImpl::getVertexIndicesType(TPRREbool implicitAccessSubobject) const
 {
     if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
@@ -116,35 +107,46 @@ unsigned int PRREMesh3D::PRREMesh3DImpl::getVertexIndicesType(TPRREbool implicit
 }
 
 
-/**
-    Gets the smallest index in the vertex indices array.
-*/
-TPRREuint PRREMesh3D::PRREMesh3DImpl::getMinIndexValue(TPRREbool implicitAccessSubobject) const
+TPRREuint PRREMesh3D::PRREMesh3DImpl::getMinVertexIndex(TPRREbool implicitAccessSubobject) const
 {
     if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
-        return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getMinIndexValue();
+        return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getMinVertexIndex();
     else
-        return nMinIndex;
-}
-
-/**
-    Gets the greatest index in the vertex indices array.
-*/
-TPRREuint PRREMesh3D::PRREMesh3DImpl::getMaxIndexValue(TPRREbool implicitAccessSubobject) const
-{
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
-        return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getMaxIndexValue();
-    else
-        return nMaxIndex;
+        return nMinVertexIndex;
 }
 
 
-/**
-    Gets an index value from a given index array.
-*/
-TPRREuint PRREMesh3D::PRREMesh3DImpl::getIndexFromArray(const void* arr, TPRREuint index) const
+TPRREuint PRREMesh3D::PRREMesh3DImpl::getMaxVertexIndex(TPRREbool implicitAccessSubobject) const
 {
-    return PRREGLsnippets::getIndexFromArray(arr, index, this->nIndicesType);
+    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+        return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getMaxVertexIndex();
+    else
+        return nMaxVertexIndex;
+}
+
+
+TPRREuint PRREMesh3D::PRREMesh3DImpl::getVertexIndex(TPRREuint index, TPRREbool implicitAccessSubobject) const
+{
+    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    {
+        return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getVertexIndex(index);
+    }
+
+    if ( (index >= nVertexIndices_h) || (index > nMaxVertexIndex) || (index < nMinVertexIndex) )
+    {
+        getConsole().EOLn("getVertexIndex(%d) out of range: nVertexIndices_h: %d, nMinVertexIndex: %d, nMaxVertexIndex: %d!",
+            index, nVertexIndices_h, nMinVertexIndex, nMaxVertexIndex);
+        return 0;
+    }
+
+    if ( !pVertexIndices )
+    {
+        getConsole().EOLn("getVertexIndex(%d) pVertexIndices is NULL! Range looks ok though: nVertexIndices_h: %d, nMinVertexIndex: %d, nMaxVertexIndex: %d!",
+            index, nVertexIndices_h, nMinVertexIndex, nMaxVertexIndex);
+        return 0;
+    }
+
+    return PRREGLsnippets::getVertexIndex(pVertexIndices, index, nIndicesType);
 }
 
 
@@ -291,8 +293,8 @@ PRREMesh3D::PRREMesh3DImpl::PRREMesh3DImpl(PRREMesh3D* owner, TPRRE_PRIMITIVE_FO
     pNormals = PGENULL;
     pVertexIndices = PGENULL;
 
-    nMinIndex = UINT_MAX;  // todo: should make macros like PRRE_UINT_MAX into prretypes.h
-    nMaxIndex = 0;
+    nMinVertexIndex = UINT_MAX;  // todo: should make macros like PRRE_UINT_MAX into prretypes.h
+    nMaxVertexIndex = 0;
     nIndicesType = GL_UNSIGNED_BYTE;
 
     nVertices_h = 0;
@@ -309,8 +311,8 @@ PRREMesh3D::PRREMesh3DImpl::PRREMesh3DImpl(const PRREMesh3DImpl& mimpl)
 {
     /*
     // _pOwner must not be set here, owner will overwrite anyway
-    nMinIndex = mimpl.nMinIndex;
-    nMaxIndex = mimpl.nMaxIndex;
+    nMinVertexIndex = mimpl.nMinVertexIndex;
+    nMaxVertexIndex = mimpl.nMaxVertexIndex;
     nIndicesType = mimpl.nIndicesType;
 
     nVertices_h = mimpl.nVertices_h;
@@ -356,11 +358,20 @@ PRREMesh3D::PRREMesh3DImpl& PRREMesh3D::PRREMesh3DImpl::operator=(const PRREMesh
 
 
 /**
-    Sets an index value in a given index array.
+    Sets an index value in the vertex index array.
+    Since this also checks for violating range defined by nMinVertexIndex and nMaxVertexIndex, even during building up a geometry,
+    those limits should be properly updated before using this function.
 */
-void PRREMesh3D::PRREMesh3DImpl::SetIndexInArray(void* arr, TPRREuint index, TPRREuint value)
+void PRREMesh3D::PRREMesh3DImpl::SetVertexIndex(TPRREuint index, TPRREuint value)
 {
-    PRREGLsnippets::SetIndexInArray(arr, index, value, this->nIndicesType);
+    if ( (index >= nVertexIndices_h) || (index > nMaxVertexIndex) || (index < nMinVertexIndex) )
+    {
+        getConsole().EOLn("SetVertexIndex(%d) out of range: nVertexIndices_h: %d, nMinVertexIndex: %d, nMaxVertexIndex: %d!",
+            index, nVertexIndices_h, nMinVertexIndex, nMaxVertexIndex);
+        return;
+    }
+
+    PRREGLsnippets::SetVertexIndex(pVertexIndices, index, value, this->nIndicesType);
 }
 
 
@@ -506,9 +517,9 @@ unsigned int PRREMesh3D::getVertexIndicesType(TPRREbool implicitAccessSubobject)
             the returned index is the subobject's smallest index. This implicit behavior is for convenience for objects storing
             only 1 subobject like internally created objects.
 */
-TPRREuint PRREMesh3D::getMinIndexValue(TPRREbool implicitAccessSubobject) const
+TPRREuint PRREMesh3D::getMinVertexIndex(TPRREbool implicitAccessSubobject) const
 {
-    return pImpl->getMinIndexValue(implicitAccessSubobject);
+    return pImpl->getMinVertexIndex(implicitAccessSubobject);
 }
 
 /**
@@ -520,13 +531,13 @@ TPRREuint PRREMesh3D::getMinIndexValue(TPRREbool implicitAccessSubobject) const
             the returned index is the subobject's greatest index. This implicit behavior is for convenience for objects storing
             only 1 subobject like internally created objects.
 */
-TPRREuint PRREMesh3D::getMaxIndexValue(TPRREbool implicitAccessSubobject) const
+TPRREuint PRREMesh3D::getMaxVertexIndex(TPRREbool implicitAccessSubobject) const
 {
-    return pImpl->getMaxIndexValue(implicitAccessSubobject);
+    return pImpl->getMaxVertexIndex(implicitAccessSubobject);
 }
 
 /**
-    Gets an index value from a given index array.
+    Gets an index value from the vertex indices array.
     This function is highly recommended to be used for reading indices from the index array since the type of indices can vary
     from subobject to subobject and this function considers the index type.
     This function is irrelevant for a level-1 mesh since the geometry is owned by its level-2 submeshes. Still the returned value
@@ -536,9 +547,9 @@ TPRREuint PRREMesh3D::getMaxIndexValue(TPRREbool implicitAccessSubobject) const
             the returned index is the subobject's index. This implicit behavior is for convenience for objects storing
             only 1 subobject like internally created objects.
 */
-TPRREuint PRREMesh3D::getIndexFromArray(const void* arr, TPRREuint index) const
+TPRREuint PRREMesh3D::getVertexIndex(TPRREuint index, TPRREbool implicitAccessSubobject) const
 {
-    return pImpl->getIndexFromArray(arr, index);
+    return pImpl->getVertexIndex(index, implicitAccessSubobject);
 }
 
 
@@ -546,6 +557,9 @@ TPRREuint PRREMesh3D::getIndexFromArray(const void* arr, TPRREuint index) const
     Gets the pointer to normals.
     Pointer to normals is NULL for a level-1 mesh since the geometry is owned by its level-2 submeshes.
     Note: in special case this returns non-NULL value even for a level-1 mesh, see below.
+
+    In indexed vertex referencing mode, the vertex indices can be used to reference normals in the array, same way
+    as how vertices can be referenced.
 
     @return Pointer to normals. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
             pointer is the subobject's normals pointer. This implicit behavior is for convenience for objects storing
@@ -708,8 +722,8 @@ void PRREMesh3D::Cannibalize(PRREMesh3D& victim)
     pImpl->pVertices = victim.pImpl->pVertices;
     pImpl->pNormals = victim.pImpl->pNormals;
     pImpl->pVertexIndices = victim.pImpl->pVertexIndices;
-    pImpl->nMinIndex = victim.pImpl->nMinIndex;
-    pImpl->nMaxIndex = victim.pImpl->nMaxIndex;
+    pImpl->nMinVertexIndex = victim.pImpl->nMinVertexIndex;
+    pImpl->nMaxVertexIndex = victim.pImpl->nMaxVertexIndex;
     pImpl->nIndicesType = victim.pImpl->nIndicesType;
 
     pImpl->nVertices_h = victim.pImpl->nVertices_h;
@@ -725,8 +739,8 @@ void PRREMesh3D::Cannibalize(PRREMesh3D& victim)
     victim.pImpl->pNormals = PGENULL;
     victim.pImpl->pVertexIndices = PGENULL;
     victim.pImpl->pMaterial = PGENULL;
-    victim.pImpl->nMinIndex = UINT_MAX;
-    victim.pImpl->nMaxIndex = 0;
+    victim.pImpl->nMinVertexIndex = UINT_MAX;
+    victim.pImpl->nMaxVertexIndex = 0;
     victim.pImpl->nIndicesType = GL_UNSIGNED_BYTE;
     victim.pImpl->nVertices_h = 0;
     victim.pImpl->nVertexIndices_h = 0;

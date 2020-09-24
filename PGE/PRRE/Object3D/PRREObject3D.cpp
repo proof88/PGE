@@ -691,7 +691,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
                         // (GL_MAX_ELEMENTS_VERTICES_EXT, GL_MAX_ELEMENTS_INDICES_EXT).
                         glDrawRangeElementsEXT(
                             getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()),
-                            _pOwner->getMinIndexValue(false), _pOwner->getMaxIndexValue(false),
+                            _pOwner->getMinVertexIndex(false), _pOwner->getMaxVertexIndex(false),
                             _pOwner->getVertexIndicesCount(false), _pOwner->getVertexIndicesType(false), bServer ? NULL : _pOwner->getVertexIndices(false) );
                     }
                     else
@@ -873,16 +873,16 @@ void PRREObject3D::PRREObject3DImpl::ProcessGeometry(TPRREbool indexed) const
     glBegin( getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()) );
         for (TPRREuint i = 0; i < _pOwner->getVertexIndicesCount(false); i++)
         {
-            const TXYZ&       vertex = indexed ? _pOwner->getVertices(false)[ _pOwner->getIndexFromArray(_pOwner->getVertexIndices(false), i) ]    : _pOwner->getVertices(false)[i];
-            const TXYZ&       normal = indexed ? _pOwner->getNormals(false)[ _pOwner->getIndexFromArray(_pOwner->getVertexIndices(false), i) ]     : _pOwner->getNormals(false)[i];
-            //const TRGBAFLOAT& color  = indexed ? pColors[ _pOwner->getIndexFromArray(pColorIndices, i) ]       : pColors[i];
-            const TUVW&       uvw    = indexed ? pTexcoords[ _pOwner->getIndexFromArray(_pOwner->getVertexIndices(false), i) ] : pTexcoords[i];
+            const TXYZ&       vertex = indexed ? _pOwner->getVertices(false)[ _pOwner->getVertexIndex(i) ]    : _pOwner->getVertices(false)[i];
+            const TXYZ&       normal = indexed ? _pOwner->getNormals(false)[ _pOwner->getVertexIndex(i) ]     : _pOwner->getNormals(false)[i];
+            //const TRGBAFLOAT& color  = indexed ? pColors[ _pOwner->getVertexIndex(pColorIndices, i) ]       : pColors[i];
+            const TUVW&       uvw    = indexed ? pTexcoords[ _pOwner->getVertexIndex(i) ] : pTexcoords[i];
 
             if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
             {
                 if ( _pOwner->getMaterial(false).isMultiTextured() )
                 {
-                    const TUVW& uvw2 = indexed ? pTexcoords2[ _pOwner->getIndexFromArray(_pOwner->getVertexIndices(false), i) ] : pTexcoords2[i];
+                    const TUVW& uvw2 = indexed ? pTexcoords2[ _pOwner->getVertexIndex(i) ] : pTexcoords2[i];
                     glMultiTexCoord2fARB(GL_TEXTURE0_ARB, uvw.u, uvw.v);
                     glMultiTexCoord2fARB(GL_TEXTURE1_ARB, uvw2.u, uvw2.v);
                 }

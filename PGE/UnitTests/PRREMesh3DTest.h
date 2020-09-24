@@ -68,9 +68,9 @@ protected:
         AddSubTest("testGetVerticesCount", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetVerticesCount);
         AddSubTest("testGetVertices", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetVertices);
         AddSubTest("testGetVertexIndicesType", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetVertexIndicesType);
-        AddSubTest("testGetMinIndexValue", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetMinIndexValue);
-        AddSubTest("testGetMaxIndexValue", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetMaxIndexValue);
-        AddSubTest("testGetIndexFromArray", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetIndexFromArray);
+        AddSubTest("testGetMinVertexIndex", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetMinVertexIndex);
+        AddSubTest("testGetMaxVertexIndex", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetMaxVertexIndex);
+        AddSubTest("testGetVertexIndex", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetVertexIndex);
         AddSubTest("testGetNormals", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetNormals);
         AddSubTest("testGetPosVec", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetPosVec);
         AddSubTest("testGetSizeVec", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetSizeVec);
@@ -214,73 +214,90 @@ private:
             assertEquals((unsigned int)GL_UNSIGNED_BYTE, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getVertexIndicesType(), "meshFromFile noimplicit");
     }
 
-    bool testGetMinIndexValue()
+    bool testGetMinVertexIndex()
     {
-        return assertEquals((TPRREuint)0, meshPlane->getMinIndexValue(), "plane") &
-            assertEquals((TPRREuint)0, meshBox->getMinIndexValue(), "box") &
-            assertEquals((TPRREuint)0, meshCube->getMinIndexValue(), "cube") &
-            assertEquals((TPRREuint)UINT_MAX, meshFromFile->getMinIndexValue(), "meshFromFile") &
+        return assertEquals((TPRREuint)0, meshPlane->getMinVertexIndex(), "plane") &
+            assertEquals((TPRREuint)0, meshBox->getMinVertexIndex(), "box") &
+            assertEquals((TPRREuint)0, meshCube->getMinVertexIndex(), "cube") &
+            assertEquals((TPRREuint)UINT_MAX, meshFromFile->getMinVertexIndex(), "meshFromFile") &
             /* doesn't matter if implicit access or not, if there is vertex or not, 0 is the expected anyway */
-            assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getMinIndexValue(), meshPlane->getMinIndexValue(false), "plane sub noimplicit") &
-            assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getMinIndexValue(), meshBox->getMinIndexValue(false), "box sub noimplicit") &
-            assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getMinIndexValue(), meshCube->getMinIndexValue(false), "cube sub noimplicit") &
-            assertNotEquals(((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getMinIndexValue(), meshFromFile->getMinIndexValue(false), "meshFromFile sub noimplicit") &
-            assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getMinIndexValue(), meshPlane->getMinIndexValue(), "plane sub") &
-            assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getMinIndexValue(), meshBox->getMinIndexValue(), "box sub") &
-            assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getMinIndexValue(), meshCube->getMinIndexValue(), "cube sub") &
-            assertEquals((TPRREuint) 0, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getMinIndexValue(), "meshFromFile sub");
+            assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getMinVertexIndex(), meshPlane->getMinVertexIndex(false), "plane sub noimplicit") &
+            assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getMinVertexIndex(), meshBox->getMinVertexIndex(false), "box sub noimplicit") &
+            assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getMinVertexIndex(), meshCube->getMinVertexIndex(false), "cube sub noimplicit") &
+            assertNotEquals(((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getMinVertexIndex(), meshFromFile->getMinVertexIndex(false), "meshFromFile sub noimplicit") &
+            assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getMinVertexIndex(), meshPlane->getMinVertexIndex(), "plane sub") &
+            assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getMinVertexIndex(), meshBox->getMinVertexIndex(), "box sub") &
+            assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getMinVertexIndex(), meshCube->getMinVertexIndex(), "cube sub") &
+            assertEquals((TPRREuint) 0, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getMinVertexIndex(), "meshFromFile sub");
     }
 
-    bool testGetMaxIndexValue()
+    bool testGetMaxVertexIndex()
     {
-        return assertEquals((TPRREuint)3, meshPlane->getMaxIndexValue(), "plane") &
-            assertEquals((TPRREuint)23, meshBox->getMaxIndexValue(), "box") &
-            assertEquals((TPRREuint)23, meshCube->getMaxIndexValue(), "cube") &
-            assertEquals((TPRREuint)0, meshFromFile->getMaxIndexValue(), "meshFromFile") &
-            assertEquals((TPRREuint)0, meshPlane->getMaxIndexValue(false), "plane noimplicit") &
-            assertEquals((TPRREuint)0, meshBox->getMaxIndexValue(false), "box noimplicit") &
-            assertEquals((TPRREuint)0, meshCube->getMaxIndexValue(false), "cube noimplicit") &
-            assertEquals((TPRREuint)0, meshFromFile->getMaxIndexValue(false), "meshFromFile noimplicit") &
-            assertEquals((TPRREuint)3, ((PRREMesh3D*)meshPlane->getAttachedAt(0))->getMaxIndexValue(), "plane sub") &
-            assertEquals((TPRREuint)23, ((PRREMesh3D*)meshBox->getAttachedAt(0))->getMaxIndexValue(), "box sub") &
-            assertEquals((TPRREuint)23, ((PRREMesh3D*)meshCube->getAttachedAt(0))->getMaxIndexValue(), "cube sub") &
-            assertEquals((TPRREuint)143, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getMaxIndexValue(), "meshFromFile sub");
+        return assertEquals((TPRREuint)3, meshPlane->getMaxVertexIndex(), "plane") &
+            assertEquals((TPRREuint)23, meshBox->getMaxVertexIndex(), "box") &
+            assertEquals((TPRREuint)23, meshCube->getMaxVertexIndex(), "cube") &
+            assertEquals((TPRREuint)0, meshFromFile->getMaxVertexIndex(), "meshFromFile") &
+            assertEquals((TPRREuint)0, meshPlane->getMaxVertexIndex(false), "plane noimplicit") &
+            assertEquals((TPRREuint)0, meshBox->getMaxVertexIndex(false), "box noimplicit") &
+            assertEquals((TPRREuint)0, meshCube->getMaxVertexIndex(false), "cube noimplicit") &
+            assertEquals((TPRREuint)0, meshFromFile->getMaxVertexIndex(false), "meshFromFile noimplicit") &
+            assertEquals((TPRREuint)3, ((PRREMesh3D*)meshPlane->getAttachedAt(0))->getMaxVertexIndex(), "plane sub") &
+            assertEquals((TPRREuint)23, ((PRREMesh3D*)meshBox->getAttachedAt(0))->getMaxVertexIndex(), "box sub") &
+            assertEquals((TPRREuint)23, ((PRREMesh3D*)meshCube->getAttachedAt(0))->getMaxVertexIndex(), "cube sub") &
+            assertEquals((TPRREuint)143, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getMaxVertexIndex(), "meshFromFile sub");
     }
 
-    bool testGetIndexFromArray()
+    bool testGetVertexIndex()
     {
         bool b = true;
         
         const PRREMesh3D& submeshPlane = * ((PRREMesh3D*) (meshPlane->getAttachedAt(0)));
         for (TPRREuint i = 0; i < submeshPlane.getVertexIndicesCount(); i++)
         {
-            b &= assertEquals(i,
-            submeshPlane.getIndexFromArray(submeshPlane.getVertexIndices(), i),
-            (std::string("plane ") + std::to_string(i)).c_str());
+            b &= assertEquals(i, submeshPlane.getVertexIndex(i),
+            (std::string("plane sub ") + std::to_string(i)).c_str());
+            b &= assertEquals(i, meshPlane->getVertexIndex(i),
+            (std::string("plane implicit ") + std::to_string(i)).c_str());
+            // here explicit should return 0 since meshPlane is level-1 mesh without own geometry
+            b &= assertEquals((TPRREuint)0, meshPlane->getVertexIndex(i, false),
+            (std::string("plane explicit ") + std::to_string(i)).c_str());
         }
 
         const PRREMesh3D& submeshBox = * ((PRREMesh3D*) (meshBox->getAttachedAt(0)));
         for (TPRREuint i = 0; i < submeshBox.getVertexIndicesCount(); i++)
         {
-            b &= assertEquals(i,
-            submeshBox.getIndexFromArray(submeshBox.getVertexIndices(), i),
-            (std::string("box ") + std::to_string(i)).c_str());
+            b &= assertEquals(i, submeshBox.getVertexIndex(i),
+            (std::string("box sub ") + std::to_string(i)).c_str());
+            b &= assertEquals(i, meshBox->getVertexIndex(i),
+            (std::string("box implicit ") + std::to_string(i)).c_str());
+            // here explicit should return 0 since meshBox is level-1 mesh without own geometry
+            b &= assertEquals((TPRREuint)0, meshBox->getVertexIndex(i, false),
+            (std::string("box explicit ") + std::to_string(i)).c_str());
         }
 
         const PRREMesh3D& submeshCube = * ((PRREMesh3D*) (meshCube->getAttachedAt(0)));
         for (TPRREuint i = 0; i < submeshCube.getVertexIndicesCount(); i++)
         {
-            b &= assertEquals(i,
-            submeshCube.getIndexFromArray(submeshCube.getVertexIndices(), i),
-            (std::string("cube ") + std::to_string(i)).c_str());
+            b &= assertEquals(i, submeshCube.getVertexIndex(i),
+            (std::string("cube sub ") + std::to_string(i)).c_str());
+            b &= assertEquals(i, meshCube->getVertexIndex(i),
+            (std::string("cube implicit ") + std::to_string(i)).c_str());
+            // here explicit should return 0 since meshCube is level-1 mesh without own geometry
+            b &= assertEquals((TPRREuint)0, meshCube->getVertexIndex(i, false),
+            (std::string("cube explicit ") + std::to_string(i)).c_str());
         }
 
         const PRREMesh3D& submeshFile = * ((PRREMesh3D*) (meshFromFile->getAttachedAt(0)));
         for (TPRREuint i = 0; i < submeshFile.getVertexIndicesCount(); i++)
         {
-            b &= assertEquals(i,
-            submeshFile.getIndexFromArray(submeshFile.getVertexIndices(), i),
-            (std::string("meshFromFile ") + std::to_string(i)).c_str());
+            b &= assertEquals(i, submeshFile.getVertexIndex(i),
+            (std::string("meshFromFile sub ") + std::to_string(i)).c_str());
+            // here implicit should return 0 since submesh is not selected implicitly for multi-submesh objects!
+            b &= assertEquals((TPRREuint)0, meshFromFile->getVertexIndex(i),
+            (std::string("meshFromFile implicit ") + std::to_string(i)).c_str());
+            // here explicit should return 0 since meshFromFile is level-1 mesh without own geometry
+            b &= assertEquals((TPRREuint)0, meshFromFile->getVertexIndex(i, false),
+            (std::string("meshFromFile explicit ") + std::to_string(i)).c_str());
         }
 
         return b;
