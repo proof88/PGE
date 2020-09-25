@@ -124,7 +124,7 @@ private:
     std::vector<GLuint> nTexcoordsVBO;   /**< OpenGL VBO indices of texture mapping coordinates per layer. */
     GLuint nNormalsVBO;             /**< OpenGL VBO index of normals. */
     GLuint nIndicesVBO;             /**< OpenGL VBO index of indices. */
-    TPRREbool bReadyToDraw;         /**< Ready to draw. */
+    TPRREbool bParentStartedDraw;   /**< Parent objects set this to true at the beginning of draw, subobjects ignore draw if this is not true in parent. */
 
     TPRREbool bColliding;           /**< Colliding state. DEPRECATED: to be removed ... */
 

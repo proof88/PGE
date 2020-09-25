@@ -559,12 +559,6 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         return;
     }
 
-    // TODO: add a mechanism for ignoring user-triggered draw of subobjects.
-    // This can be done if parent maintains a variable that is set to true
-    // at the beginning of draw and its subobjects check for the value of this var,
-    // and draw only if that is true. At the end, parent resets this to false.
-    // TODO: add public comment about this once implemented!
-
     // see if we are parent or referring to another object i.e. we are cloned object
     if ( (_pOwner->getCount() > 0) || pRefersto )
     {
@@ -581,8 +575,10 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         // take care of attached objects (subobjects)
         // note that either we have our own subobjects, OR we are just a cloned object and we need to draw original object's subobjects
         PRREObject3D* pWhichParent = pRefersto ? pRefersto : _pOwner;
+        pWhichParent->pImpl->bParentStartedDraw = true;
         for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
             ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(bLighting);
+        pWhichParent->pImpl->bParentStartedDraw = false;
     }
 
     // before trying to draw anything, see if we actually have anything to draw ...
@@ -590,6 +586,14 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         return;  // we return here if we are parent or we are cloned object
 
     // if we reach this point then either our parent is drawing us as its subobject, or a cloned object is drawing us on behalf of our parent
+
+    // subobject must ignore draw if its Draw() was not called by its parent level-1 object but someone else from outside ...
+    if ( !((PRREObject3D*)_pOwner->getManager())->pImpl->bParentStartedDraw )
+    {
+        getConsole().EOLn("Draw() of subobject called outside of its level-1 parent object, ignoring draw!");
+        return;
+    }
+
     if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
     {
         if ( _pOwner->getMaterial().isMultiTextured() )
@@ -784,7 +788,8 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
 
     pRefersto = NULL;
     bAffectedByLights = bAffectZBuffer = bAllowZTesting = true;
-    bReadyToDraw = bVisible = true;
+    bVisible = true;
+    bParentStartedDraw = false;
     bColliding = bDoubleSided = false;
     bWireframe = bWireframedCull = bStickedToScreen = false;
 
@@ -1868,6 +1873,8 @@ TPRREuint PRREObject3D::getUsedSystemMemory() const
 
 /**
     Draws the object.
+    This is only valid from outside for level-1 objects.
+    The call is ignored by level-2 subobjects. Only their level-1 parent object can call on its subobjects.
 */
 void PRREObject3D::Draw(bool bLighting)
 {
