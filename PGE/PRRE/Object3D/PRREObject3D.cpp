@@ -276,10 +276,24 @@ void PRREObject3D::PRREObject3DImpl::SetVertexTransferMode(TPRRE_VERTEX_TRANSFER
     // TODO DO NOT LET THIS FUNCTION DO ANYTHING IF THE OBJECT IS LEVEL-2!!!
     getConsole().OLnOI("PRREObject3D::SetVertexTransferMode()");
 
-    // TODO: DO NOT DO ANYTHING IF WE ARE CLONED OBJECT!
+    if ( pRefersto )
+    {
+        getConsole().EOLn("PRREObject3D::SetVertexTransferMode() ignored because we are cloned object!");
+        return;
+    }
+
+    if ( _pOwner->getCount() == 0 )
+    {
+        // subobject must reject if its SetVertexTransferMode() was not called by its parent level-1 object but someone else from outside ...
+        if ( !((PRREObject3D*)_pOwner->getManager())->pImpl->bParentInitiatedOperation )
+        {
+            getConsole().EOLn("SetVertexTransferMode() of subobject called outside of its level-1 parent object, rejecting!");
+            return;
+        }
+    }
 
     // Note: we don't check if the selected transfer mode is already selected.
-    // Reason: selecting an already selected transfer mode is a way to recreate buffers / refresh geometry.
+    // Reason: selecting an already selected transfer mode is a way to recreate buffers / refresh geometry on server side.
     // Modify geometry in system RAM and simply issue SetVertexTransferMode( getVertexTransferMode() ) to apply changes.
 
     if ( PRREObject3DManager::isVertexReferencingIndexed(vertexTransferMode) &&
@@ -320,10 +334,15 @@ void PRREObject3D::PRREObject3DImpl::SetVertexTransferMode(TPRRE_VERTEX_TRANSFER
 
     if ( vertexTransferMode == vtrans )
     {   // if succeeded, apply the new transfer mode to the subobjects too
-        getConsole().OLn("Ok, applying for subobjects ...");
-        for (TPRREint i = 0; i < _pOwner->getCount(); i++)
-            ((PRREObject3D*)(_pOwner->getAttachedAt)(i))->SetVertexTransferMode( vertexTransferMode );
-        getConsole().OLn("Done!");
+        if ( _pOwner->getCount() > 0 )
+        {
+            bParentInitiatedOperation = true;
+            getConsole().OLn("Ok, applying for subobjects ...");
+            for (TPRREint i = 0; i < _pOwner->getCount(); i++)
+                ((PRREObject3D*)(_pOwner->getAttachedAt)(i))->SetVertexTransferMode( vertexTransferMode );
+            getConsole().OLn("Done!");
+            bParentInitiatedOperation = false;
+        }
     }
 
     getConsole().OO();
@@ -575,10 +594,10 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         // take care of attached objects (subobjects)
         // note that either we have our own subobjects, OR we are just a cloned object and we need to draw original object's subobjects
         PRREObject3D* pWhichParent = pRefersto ? pRefersto : _pOwner;
-        pWhichParent->pImpl->bParentStartedDraw = true;
+        pWhichParent->pImpl->bParentInitiatedOperation = true;
         for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
             ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(bLighting);
-        pWhichParent->pImpl->bParentStartedDraw = false;
+        pWhichParent->pImpl->bParentInitiatedOperation = false;
     }
 
     // before trying to draw anything, see if we actually have anything to draw ...
@@ -588,7 +607,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
     // if we reach this point then either our parent is drawing us as its subobject, or a cloned object is drawing us on behalf of our parent
 
     // subobject must ignore draw if its Draw() was not called by its parent level-1 object but someone else from outside ...
-    if ( !((PRREObject3D*)_pOwner->getManager())->pImpl->bParentStartedDraw )
+    if ( !((PRREObject3D*)_pOwner->getManager())->pImpl->bParentInitiatedOperation )
     {
         getConsole().EOLn("Draw() of subobject called outside of its level-1 parent object, ignoring draw!");
         return;
@@ -789,7 +808,7 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
     pRefersto = NULL;
     bAffectedByLights = bAffectZBuffer = bAllowZTesting = true;
     bVisible = true;
-    bParentStartedDraw = false;
+    bParentInitiatedOperation = false;
     bColliding = bDoubleSided = false;
     bWireframe = bWireframedCull = bStickedToScreen = false;
 
