@@ -273,12 +273,11 @@ TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::PRREObject3DImpl::getVertexTransferMode
 
 void PRREObject3D::PRREObject3DImpl::SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 {
-    // TODO DO NOT LET THIS FUNCTION DO ANYTHING IF THE OBJECT IS LEVEL-2!!!
     getConsole().OLnOI("PRREObject3D::SetVertexTransferMode()");
 
     if ( pRefersto )
     {
-        getConsole().EOLn("PRREObject3D::SetVertexTransferMode() ignored because we are cloned object!");
+        getConsole().EOLnOO("PRREObject3D::SetVertexTransferMode() ignored because we are cloned object!");
         return;
     }
 
@@ -287,7 +286,7 @@ void PRREObject3D::PRREObject3DImpl::SetVertexTransferMode(TPRRE_VERTEX_TRANSFER
         // subobject must reject if its SetVertexTransferMode() was not called by its parent level-1 object but someone else from outside ...
         if ( !((PRREObject3D*)_pOwner->getManager())->pImpl->bParentInitiatedOperation )
         {
-            getConsole().EOLn("SetVertexTransferMode() of subobject called outside of its level-1 parent object, rejecting!");
+            getConsole().EOLnOO("SetVertexTransferMode() of subobject called outside of its level-1 parent object, rejecting!");
             return;
         }
     }
