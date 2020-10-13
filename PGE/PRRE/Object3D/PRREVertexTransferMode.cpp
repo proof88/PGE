@@ -418,16 +418,25 @@ CConsole& PRREVertexTransfer::PRREVertexTransferImpl::getConsole() const
     Geometry data is stored redundantly when multiple vertices are defined with the same position
     for different faces. In this situation, the number of vertex indices is equal to the number of
     defined vertices so the number of defined vertices is the adequate number for rendering the
-    whole geometry. So switching to non-indexed is disallowed only when the number of defined
-    vertices is less then the number of indices.
+    whole geometry even without using indices.
+    So switching to non-indexed is disallowed only when the number of defined vertices is less
+    than the number of indices.
+
+    @return True if swithing from indexed to non-indexed vertex referencing mode is allowed, false otherwise.
 */
 TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::isSwitchFromIndexedAllowed() const
 {
-    // TODO: ALL subobjects should check if their vertex index count equals to vertex count, 1 false is enough to return false!
     if ( _pOwner->isLevel1() )
     {
-        const PRREMesh3D& submesh0 = (const PRREMesh3D&) *(_pOwner->getAttachedAt(0));
-        return (submesh0.getVertexIndicesCount(false) == submesh0.getVerticesCount(false)) && (submesh0.getVerticesCount(false) > 0);
+        for (TPRREint i = 0; i < _pOwner->getCount(); i++)
+        {
+            const PRREVertexTransfer& submesh = (const PRREVertexTransfer&) *(_pOwner->getAttachedAt(i));
+            if ( !submesh.pImpl->isSwitchFromIndexedAllowed() )
+            {
+                return false;
+            }
+        }
+        return true;
     }
     else
         return (_pOwner->getVertexIndicesCount(false) == _pOwner->getVerticesCount(false)) && (_pOwner->getVerticesCount(false) > 0);
