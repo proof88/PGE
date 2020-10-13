@@ -239,6 +239,8 @@
     <ClInclude Include="PRRE\Object3D\PRREMesh3DManager.h" />
     <ClInclude Include="PRRE\Object3D\PRREObject3DImpl.h" />
     <ClInclude Include="PRRE\Object3D\PRREObject3DManager.h" />
+    <ClInclude Include="PRRE\Object3D\PRREVertexTransferMode.h" />
+    <ClInclude Include="PRRE\Object3D\PRREVertexTransferModeImpl.h" />
     <ClInclude Include="PRRE\Render\PRREIIncrementalRenderPipeline.h" />
     <ClInclude Include="PRRE\PR00FsReducedRenderingEngine.h" />
     <ClInclude Include="PRRE\PRREallHeaders.h" />
@@ -297,6 +299,7 @@
     <ClCompile Include="PRRE\Object3D\PRREMesh3DManager.cpp" />
     <ClCompile Include="PRRE\Object3D\PRREObject3D.cpp" />
     <ClCompile Include="PRRE\Object3D\PRREObject3DManager.cpp" />
+    <ClCompile Include="PRRE\Object3D\PRREVertexTransferMode.cpp" />
     <ClCompile Include="PRRE\PR00FsReducedRenderingEngine.cpp" />
     <ClCompile Include="PRRE\PRREBaseClass.cpp" />
     <ClCompile Include="PRRE\PRREbaseIncludes.cpp">

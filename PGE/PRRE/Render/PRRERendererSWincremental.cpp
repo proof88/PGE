@@ -916,7 +916,7 @@ void PRRERendererSWincrementalImpl::Draw3DObjects()
                 GeometricStage(
                     subobj->getVertices(),
                     subobj->getVerticesCount(),
-                    PRREObject3DManager::isVertexReferencingIndexed( subobj->getVertexTransferMode() ),
+                    PRREVertexTransfer::isVertexReferencingIndexed( subobj->getVertexTransferMode() ),
                     subobj->getVertexIndices(),
                     subobj->getVertexIndicesCount(),
                     subobj->getVertexIndicesType(),

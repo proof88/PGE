@@ -64,7 +64,7 @@ private:
 
 PRREObject3DManager::PRREObject3DManagerImpl::~PRREObject3DManagerImpl()
 {
-    _pOwner->getConsole().OLnOI("~PRREObject3DManager() ...");
+    _pOwner->getConsole().OLnOI("~PRREObject3DManagerImpl() ...");
     _pOwner->DeleteAll();
     _pOwner->getConsole().OO();    
     _pOwner = NULL;
@@ -101,7 +101,7 @@ PRREObject3DManager::PRREObject3DManagerImpl::PRREObject3DManagerImpl(PRREObject
     materialMgr(matMgr)
 {
     _pOwner = owner;
-    _pOwner->getConsole().OLnOI("PRREObject3DManager() ...");
+    _pOwner->getConsole().OLnOI("PRREObject3DManagerImpl() ...");
     bInited = false;
     bMinimalIndexStorage = true;
     // we rely on texture manager initialized state since that also relies on initialized state of hwinfo
@@ -154,145 +154,6 @@ TPRREbool PRREObject3DManager::isBFB(TPRRE_BLENDFACTORS sfactor, TPRRE_BLENDFACT
 {
     return isBlendFuncBlends(sfactor, dfactor);
 } // isBFB()
-
-
-/**
-    Tells whether the given Vertex Transfer Mode is available on the current hardware.
-    The following modes are always available with accelerated renderer:
-    - dynamic modifying:
-      - direct referencing:  PRRE_VT_DYN_DIR_1_BY_1, PRRE_VT_DYN_DIR_RVA
-      - indexed referencing: PRRE_VT_DYN_IND_1_BY_1, PRRE_VT_DYN_IND_RVA
-    - static modifying:
-      - direct referencing:  PRRE_VT_STA_DIR_DL
-      - indexed referencing: PRRE_VT_STA_IND_DL
-
-    The following modes are always available with non-accelerated renderer:
-    - dynamic modifying:
-      - direct referencing:  PRRE_VT_DYN_DIR_1_BY_1
-      - indexed referencing: PRRE_VT_DYN_IND_1_BY_1
-    - static modifying:
-      - direct referencing:  same as for dynamic modifying above
-      - indexed referencing: same as for dynamic modifying above
-
-    @return True if the given transfer mode is available on the current hardware, false otherwise.
-*/
-TPRREbool PRREObject3DManager::isVertexTransferModeSelectable(TPRRE_VERTEX_TRANSFER_MODE vtrans)
-{
-    if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
-    {   /* only these 2 modes are supported in non-accelerated mode */
-        if ( (vtrans == (PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT)) ||
-             (vtrans == (PRRE_VMOD_DYNAMIC | PRRE_VREF_INDEXED)) )
-           return true;
-        else
-           return false;
-    }
-
-    /* at this point we are accelerated */
-
-    /* currently not supporting any vendor-specific mode */
-    if ( BITF_READ(vtrans,PRRE_VT_VENDOR_BITS,3) != 0 )
-        return false;
-
-    /* first need to check for CVA and RNG capability, as both may apply to VBO */
-
-    if ( BIT_READ(vtrans, PRRE_VT_RNG_BIT) && !PRREhwInfo::get().getVideo().isDrawRangeElementsSupported()  )
-        return false;
-
-    if ( BIT_READ(vtrans, PRRE_VT_CVA_BIT) && !PRREhwInfo::get().getVideo().isCompiledVertexArraySupported()  )
-        return false;
-
-    if ( BIT_READ(vtrans, PRRE_VT_SVA_BIT) && !PRREhwInfo::get().getVideo().isVertexBufferObjectSupported()  )
-        return false;
-
-    return true;
-} // isVertexTransferModeSelectable()
-
-
-/**
-    Tells whether the given Vertex Transfer Mode references vertices by indexing.
-    @return True if the given mode references vertices by indexing.
-*/
-TPRREbool PRREObject3DManager::isVertexReferencingIndexed(TPRRE_VERTEX_TRANSFER_MODE vtrans)
-{
-    return BIT_READ(vtrans, PRRE_VT_VREF_BIT) == 1u;
-} // isVertexReferencingIndexed()
-
-
-/**
-    Tells whether the given Vertex Transfer Mode means dynamic modifying habit.
-    @return True if the given mode means dynamic modifying habit.
-*/
-TPRREbool PRREObject3DManager::isVertexModifyingDynamic(TPRRE_VERTEX_TRANSFER_MODE vtrans)
-{
-    return BIT_READ(vtrans, PRRE_VT_VMOD_BIT) == 1u;
-} // isVertexModifyingDynamic()
-
-
-/**
-    Selects a suitable vertex transfer mode.
-    The selected mode is compatible with the current hardware and complies with the given arguments.
-    Please note that bForceUseClientMemory = true is considered only if dynamic modifying habit is specified.
-    Specifying static modifying habit will always select a mode which places geometry data into server memory.
-    
-    @return A suitable vertex transfer mode selected by PPP based on the given arguments and
-            the current hardware capabilities.
-*/
-TPRRE_VERTEX_TRANSFER_MODE PRREObject3DManager::selectVertexTransferMode(
-    TPRRE_VERTEX_MODIFYING_HABIT vmod,
-    TPRRE_VERTEX_REFERENCING_MODE vref,
-    TPRREbool bForceUseClientMemory)
-{
-    TPRRE_VERTEX_TRANSFER_MODE ret = 0;
-
-    if ( vref == PRRE_VREF_INDEXED )
-        ret = ret | PRRE_VREF_INDEXED;
-
-    // dont go further if CPU is rendering
-    if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
-        return ret | PRRE_VMOD_DYNAMIC;
-
-    if ( vmod == PRRE_VMOD_DYNAMIC )
-        ret = ret | PRRE_VMOD_DYNAMIC;
-
-    if ( PRREhwInfo::get().getVideo().isDrawRangeElementsSupported() )
-        ret = ret | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_RNG_BIT);
-
-    if ( PRREhwInfo::get().getVideo().isCompiledVertexArraySupported() )
-        ret = ret | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_CVA_BIT);
-
-    // bForceUseClientMemory is considered only if modifying habit is dynamic
-    if ( bForceUseClientMemory && (vmod == PRRE_VMOD_DYNAMIC) )
-        return ret | BIT(PRRE_VT_VA_BIT); // client-side should use an array, even if none of RNG and CVA bits are available, to avoid selecting immediate mode
-
-    // At this point we want to use host/server memory, but it could be still either client- or server-side array, or display list or immediate mode, so
-    // we should set PRRE_VT_VA_BIT only in case of some arraying.
-
-    // if general VBO is supported, return with that immediately as we don't want to stick to any vendor-specific magical stuff.
-    if ( PRREhwInfo::get().getVideo().isVertexBufferObjectSupported() )
-        return ret | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
-
-    if ( PRREhwInfo::get().getVideo().isATIVertexArrayObjectSupported() )
-    {
-        if ( PRREhwInfo::get().getVideo().isATIElementArraySupported() )
-            ret = ret | BIT(PRRE_VT_RNG_BIT) | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT) | BITF_PREP(PRRE_VT_VENDOR_ATI_2,PRRE_VT_VENDOR_BITS,3);
-        else
-            ret = ret | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT) | BITF_PREP(PRRE_VT_VENDOR_ATI_1,PRRE_VT_VENDOR_BITS,3);
-    }
-    else
-    {
-        if ( PRREhwInfo::get().getVideo().isNVVertexArrayRangeSupported() )
-        {
-            if ( PRREhwInfo::get().getVideo().isNVElementArraySupported() )
-                ret = ret | BIT(PRRE_VT_RNG_BIT) | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT) | BITF_PREP(PRRE_VT_VENDOR_NVIDIA_2,PRRE_VT_VENDOR_BITS,3);
-            else
-                ret = ret | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT) | BITF_PREP(PRRE_VT_VENDOR_NVIDIA_1,PRRE_VT_VENDOR_BITS,3);
-        }
-    }
-
-    // at this point, if VA_BIT is not set, the selected mode is either display list or immediate mode, depending on vmod
-
-    return ret;
-} // selectVertexTransferMode()
 
 
 /**
@@ -350,13 +211,11 @@ PRREObject3D* PRREObject3DManager::createPlane(
 
     getConsole().OLnOI("PRREObject3DManager::createPlane(%f, %f)", a, b);
 
-    PRREObject3D* const obj = new PRREObject3D(vmod, vref, bForceUseClientMemory);
+    PRREObject3D* const obj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
     Attach( *obj );
-    PRREObject3D* const subobj = new PRREObject3D(vmod, vref, bForceUseClientMemory);
+    PRREObject3D* const subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
     obj->Attach( *subobj );
     ConvertToPlane(*obj, a, b);
-    obj->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
-    subobj->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
     subobj->pImpl->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX) * subobj->getVerticesCount() );
 
     // although PPP has already selected the vtransmode, we set it again
@@ -406,13 +265,11 @@ PRREObject3D* PRREObject3DManager::createBox(
 
     getConsole().OLnOI("PRREObject3DManager::createBox(%f, %f, %f)", a, b, c);
 
-    PRREObject3D* const obj = new PRREObject3D(vmod, vref, bForceUseClientMemory);
+    PRREObject3D* const obj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
     Attach( *obj );
-    PRREObject3D* const subobj = new PRREObject3D(vmod, vref, bForceUseClientMemory);
+    PRREObject3D* const subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
     obj->Attach( *subobj );
     ConvertToBox(*obj, a, b, c);
-    obj->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
-    subobj->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
     subobj->pImpl->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX) * subobj->getVerticesCount() );
 
     // although PPP has already selected the vtransmode, we set it again
@@ -512,16 +369,14 @@ PRREObject3D* PRREObject3DManager::createFromFile(
     {
         getConsole().OI();
         PRREMesh3D* const tmpMesh = PRREMesh3DManager::createFromFile(filename);
-        obj = new PRREObject3D(vmod, vref, bForceUseClientMemory);
+        obj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
         obj->Cannibalize(*tmpMesh);
-        obj->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
 
         for (TPRREint i = 0; i < tmpMesh->getCount(); i++) 
         {
-            PRREObject3D* const subobject = new PRREObject3D(vmod, vref, bForceUseClientMemory);
+            PRREObject3D* const subobject = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
             obj->Attach( *subobject );
             subobject->Cannibalize(*(PRREMesh3D*)(tmpMesh->getAttachedAt(i)));
-            subobject->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
             subobject->pImpl->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX) * subobject->getVerticesCount() );
             
             // Legacy tmcsgfxlib behavior: auto-load textures for subobjects where pipe character is present in name
@@ -598,16 +453,19 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         "PRREObject3DManager::createCloned(\"%s\")",
         (referredobj.getFilename().length() > 0) ? referredobj.getFilename().c_str() : referredobj.getName().c_str() );
 
-    PRREObject3D* obj = new PRREObject3D();
+    PRREObject3D* obj = new PRREObject3D(pImpl->materialMgr);
 
     obj->SetName( referredobj.getName() );
     obj->SetFilename( referredobj.getFilename() );
     
-    obj->pImpl->vertexTransferMode = referredobj.getVertexTransferMode();
+    // attach right now, otherwise SetVertexTransferMode() would fail
+    Attach( *obj );
+    obj->SetVertexTransferMode(referredobj.getVertexTransferMode());
+    // SetVertexTransferMode() would fail if referred object would be set earlier
     obj->pImpl->pRefersto = &referredobj;
+
     obj->getPosVec() = referredobj.getPosVec();
     obj->pImpl->vAngle = referredobj.getAngleVec();
-
     obj->pImpl->bAffectedByLights = referredobj.isLit();
     obj->pImpl->bDoubleSided = referredobj.isDoubleSided();
     obj->pImpl->bWireframe = referredobj.isWireframed();
@@ -617,7 +475,6 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
     obj->pImpl->bVisible = referredobj.isVisible();
     obj->pImpl->rotation = referredobj.getRotationOrder();
     obj->pImpl->bStickedToScreen = referredobj.isStickedToScreen();
-    obj->pImpl->vertexTransferMode = referredobj.getVertexTransferMode();
 
     CreateMaterialForMesh(*obj);
     // for the material, no need to copy texcoords, etc ...
@@ -630,9 +487,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         referredobj.getMaterial().getTextureEnvColor().getBlue(),
         referredobj.getMaterial().getTextureEnvColor().getAlpha() );
 
-    obj->pImpl->nTexcoordsVBO.resize( pImpl->materialMgr.getMaximumLayerCount() );
-
-    Attach( *obj );
+    
 
     getConsole().SOLnOO("> Object cloned successfully!");
     getConsole().OLn("");
@@ -643,8 +498,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
 // ############################## PROTECTED ##############################
 
 
-PRREObject3DManager::PRREObject3DManager() :
-    PRREMesh3DManager()
+PRREObject3DManager::PRREObject3DManager()
 {
 
 }

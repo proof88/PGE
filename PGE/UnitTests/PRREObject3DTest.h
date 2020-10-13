@@ -54,12 +54,15 @@ protected:
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREObject3DTest::testCtor);
         AddSubTest("testDtor", (PFNUNITSUBTEST) &PRREObject3DTest::testDtor);
         AddSubTest("testGetReferredObject", (PFNUNITSUBTEST) &PRREObject3DTest::testGetReferredObject);
+
+        // Object3D contains some slight modifications in these functions compared to the original VertexTransfer functions
         AddSubTest("testGetVertexModifyingHabit", (PFNUNITSUBTEST) &PRREObject3DTest::testGetVertexModifyingHabit);
         AddSubTest("testSetVertexModifyingHabit", (PFNUNITSUBTEST) &PRREObject3DTest::testSetVertexModifyingHabit);
         AddSubTest("testGetVertexReferencingMode", (PFNUNITSUBTEST) &PRREObject3DTest::testGetVertexReferencingMode);
         AddSubTest("testSetVertexReferencingMode", (PFNUNITSUBTEST) &PRREObject3DTest::testSetVertexReferencingMode);
         AddSubTest("testGetVertexTransferMode", (PFNUNITSUBTEST) &PRREObject3DTest::testGetVertexTransferMode);
         AddSubTest("testSetVertexTransferMode", (PFNUNITSUBTEST) &PRREObject3DTest::testSetVertexTransferMode);
+
         AddSubTest("testGetTransformedVertices", (PFNUNITSUBTEST) &PRREObject3DTest::testGetTransformedVertices);
         AddSubTest("testGetAngleVec", (PFNUNITSUBTEST) &PRREObject3DTest::testGetAngleVec);
         AddSubTest("testGetScaledSizeVec", (PFNUNITSUBTEST) &PRREObject3DTest::testGetScaledSizeVec);
@@ -111,7 +114,10 @@ protected:
         obj = om->createBox(1.0f, 2.0f, 3.0f);
         objFromFile = om->createFromFile("_res/models/snail_proofps/snail.obj");
         return assertNotNull(obj, "obj null") &
-            assertNotNull(objFromFile, "objFromFile null");
+            assertNotNull(objFromFile, "objFromFile null") &
+            assertNotNull(objPlane, "objPlane null") &
+            assertNotNull(objCube, "objCube null") &
+            assertNotNull(objBox, "objBox null");
     }
 
     virtual void TearDown()
@@ -133,6 +139,11 @@ protected:
         obj = NULL;
         objFromFile = NULL;
         om = NULL;
+
+        // engine shutdown will take care of these
+        objBox = NULL;
+        objPlane = NULL;
+        objCube = NULL;
 
         if ( engine )
         {
@@ -195,7 +206,14 @@ private:
 
     bool testGetVertexModifyingHabit()
     {
-        return assertEquals(PRRE_VMOD_STATIC, obj->getVertexModifyingHabit(), "obj") &
+        const TPRRE_VERTEX_MODIFYING_HABIT originalVertexModifyingHabit = obj->getVertexModifyingHabit();
+        // if we change the modifying habit of the referred object, cloned object returns the updated vertex modifying habit of the referred object
+        const PRREObject3D* const objCloned = om->createCloned( *obj );
+        obj->SetVertexModifyingHabit(PRRE_VMOD_DYNAMIC);
+
+        return assertEquals(PRRE_VMOD_STATIC, originalVertexModifyingHabit, "obj original") &
+            assertEquals(PRRE_VMOD_DYNAMIC, obj->getVertexModifyingHabit(), "obj") &
+            assertEquals(PRRE_VMOD_DYNAMIC, objCloned->getVertexModifyingHabit(), "objCloned") &
             assertEquals(PRRE_VMOD_STATIC, objFromFile->getVertexModifyingHabit(), "objFromFile") &
             assertEquals(PRRE_VMOD_STATIC, objPlane->getVertexModifyingHabit(), "plane") &
             assertEquals(PRRE_VMOD_STATIC, objBox->getVertexModifyingHabit(), "box") &
@@ -221,17 +239,24 @@ private:
         PRREObject3D* const objFromFileCloned = om->createCloned( *objFromFile );
         objFromFileCloned->SetVertexModifyingHabit( PRRE_VMOD_STATIC );
 
-        return assertTrue( PRREObject3DManager::isVertexModifyingDynamic(obj->getVertexTransferMode()), "obj" ) &
-            assertTrue( PRREObject3DManager::isVertexModifyingDynamic(objFromFile->getVertexTransferMode()), "objFromFile" ) &
-            assertTrue( PRREObject3DManager::isVertexModifyingDynamic(subobj1Obj->getVertexTransferMode()), "subobj1Obj" ) &
-            assertTrue( PRREObject3DManager::isVertexModifyingDynamic(subobj1ObjFromFile->getVertexTransferMode()), "subobj1ObjFromFile" ) &
-            assertTrue( PRREObject3DManager::isVertexModifyingDynamic(objCloned->getVertexTransferMode()), "objCloned" ) &
-            assertTrue( PRREObject3DManager::isVertexModifyingDynamic(objFromFileCloned->getVertexTransferMode()), "objFromFileCloned" );
+        return assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(obj->getVertexTransferMode()), "obj" ) &
+            assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(objFromFile->getVertexTransferMode()), "objFromFile" ) &
+            assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(subobj1Obj->getVertexTransferMode()), "subobj1Obj" ) &
+            assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(subobj1ObjFromFile->getVertexTransferMode()), "subobj1ObjFromFile" ) &
+            assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(objCloned->getVertexTransferMode()), "objCloned" ) &
+            assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(objFromFileCloned->getVertexTransferMode()), "objFromFileCloned" );
     }
 
     bool testGetVertexReferencingMode()
     {
-        return assertEquals(PRRE_VREF_DIRECT, obj->getVertexReferencingMode(), "obj") &
+        const TPRRE_VERTEX_REFERENCING_MODE originalVertexRefMode = obj->getVertexReferencingMode();
+        // if we change the referencing mode of the referred object, cloned object returns the updated vertex referencing mode of the referred object
+        const PRREObject3D* const objCloned = om->createCloned( *obj );
+        obj->SetVertexReferencingMode(PRRE_VREF_INDEXED);
+
+        return assertEquals(PRRE_VREF_DIRECT, originalVertexRefMode, "obj original") &
+            assertEquals(PRRE_VREF_INDEXED, obj->getVertexReferencingMode(), "obj") &
+            assertEquals(PRRE_VREF_INDEXED, objCloned->getVertexReferencingMode(), "objCloned") &
             assertEquals(PRRE_VREF_INDEXED, objFromFile->getVertexReferencingMode(), "objFromFile") &
             assertEquals(PRRE_VREF_DIRECT, objPlane->getVertexReferencingMode(), "plane") &
             assertEquals(PRRE_VREF_DIRECT, objBox->getVertexReferencingMode(), "box") &
@@ -257,12 +282,12 @@ private:
         PRREObject3D* const objFromFileCloned = om->createCloned( *objFromFile );
         objFromFileCloned->SetVertexReferencingMode( PRRE_VREF_DIRECT );
 
-        return assertTrue( PRREObject3DManager::isVertexReferencingIndexed(obj->getVertexTransferMode()), "obj" ) &
-            assertFalse( PRREObject3DManager::isVertexReferencingIndexed(objFromFile->getVertexTransferMode()), "objFromFile" ) &
-            assertTrue( PRREObject3DManager::isVertexReferencingIndexed(subobj1Obj->getVertexTransferMode()), "subobj1Obj" ) &
-            assertFalse( PRREObject3DManager::isVertexReferencingIndexed(subobj1ObjFromFile->getVertexTransferMode()), "subobj1ObjFromFile" ) &
-            assertTrue( PRREObject3DManager::isVertexReferencingIndexed(objCloned->getVertexTransferMode()), "objCloned" ) &
-            assertFalse( PRREObject3DManager::isVertexReferencingIndexed(objFromFileCloned->getVertexTransferMode()), "objFromFileCloned" );
+        return assertTrue( PRREVertexTransfer::isVertexReferencingIndexed(obj->getVertexTransferMode()), "obj" ) &
+            assertFalse( PRREVertexTransfer::isVertexReferencingIndexed(objFromFile->getVertexTransferMode()), "objFromFile" ) &
+            assertTrue( PRREVertexTransfer::isVertexReferencingIndexed(subobj1Obj->getVertexTransferMode()), "subobj1Obj" ) &
+            assertFalse( PRREVertexTransfer::isVertexReferencingIndexed(subobj1ObjFromFile->getVertexTransferMode()), "subobj1ObjFromFile" ) &
+            assertTrue( PRREVertexTransfer::isVertexReferencingIndexed(objCloned->getVertexTransferMode()), "objCloned" ) &
+            assertFalse( PRREVertexTransfer::isVertexReferencingIndexed(objFromFileCloned->getVertexTransferMode()), "objFromFileCloned" );
     }
 
     bool testGetVertexTransferMode()
@@ -270,8 +295,15 @@ private:
         // Generic server-side vertex array should be selected, main test machine supports it
         const TPRRE_VERTEX_TRANSFER_MODE vtExpected = PRRE_VMOD_STATIC | PRRE_VREF_DIRECT | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
 
-        return assertEquals(vtExpected, obj->getVertexTransferMode() & vtExpected, "obj 1") &
+        // if we change the transfer mode of the referred object, cloned object returns the updated vertex transfer mode of the referred object
+        const TPRRE_VERTEX_TRANSFER_MODE vtExpectedForCloned = PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT;
+        const PRREObject3D* const objCloned = om->createCloned( *obj );
+        obj->SetVertexTransferMode(vtExpectedForCloned);
+
+        return assertEquals(vtExpectedForCloned, obj->getVertexTransferMode() & vtExpectedForCloned, "obj 1") &
             assertEquals(0u, BITF_READ(obj->getVertexTransferMode(), PRRE_VT_VENDOR_BITS, 3), "obj 2") &
+            assertEquals(vtExpectedForCloned, objCloned->getVertexTransferMode() & vtExpectedForCloned, "objCloned 1") &
+            assertEquals(0u, BITF_READ(objCloned->getVertexTransferMode(), PRRE_VT_VENDOR_BITS, 3), "objCloned 2") &
             assertEquals(vtExpected, objFromFile->getVertexTransferMode() & vtExpected, "objFromFile 1") &
             assertEquals(0u, BITF_READ(objFromFile->getVertexTransferMode(), PRRE_VT_VENDOR_BITS, 3), "objFromFile 2") &
             assertEquals(vtExpected, objPlane->getVertexTransferMode() & vtExpected, "plane 1") &

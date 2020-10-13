@@ -270,6 +270,9 @@
     <ClInclude Include="..\PRRE\Object3D\PRREMesh3DManager.h">
       <Filter>Header Files\PGE\PRRE\Object3D</Filter>
     </ClInclude>
+    <ClInclude Include="PRREVertexTransferTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UnitTests.cpp">

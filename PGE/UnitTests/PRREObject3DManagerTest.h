@@ -10,6 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
+#include "../PRRE/Object3D/PRREVertexTransferMode.h"
 #include "../PRRE/Object3D/PRREObject3DManager.h"
 #include "../PRRE/PR00FsReducedRenderingEngine.h"
 
@@ -36,12 +37,6 @@ protected:
         AddSubTest("testIsBFB", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testIsBFB);
         AddSubTest("testGetPRREblendFromGLblend", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testGetPRREblendFromGLblend);
         AddSubTest("testGetGLblendFromPRREblend", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testGetGLblendFromPRREblend);
-        AddSubTest("testGetPRREprimitiveFromGLprimitive", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testGetPRREprimitiveFromGLprimitive);
-        AddSubTest("testGetGLprimitiveFromPRREprimitive", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testGetGLprimitiveFromPRREprimitive);
-        AddSubTest("testIsVertexTransferModeSelectable", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testIsVertexTransferModeSelectable);
-        AddSubTest("testIsVertexReferencingIndexed", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testIsVertexReferencingIndexed);
-        AddSubTest("testIsVertexModifyingDynamic", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testIsVertexModifyingDynamic);
-        AddSubTest("testSelectVertexTransferMode", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testSelectVertexTransferMode);
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCtor);
         AddSubTest("testIsInitialized", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testIsInitialized);
         AddSubTest("testCreatePlane", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreatePlane);
@@ -137,94 +132,6 @@ private:
         return true;
     }
 
-    bool testGetPRREprimitiveFromGLprimitive()
-    {
-        // we believe its okay
-        return true;
-    }
-
-    bool testGetGLprimitiveFromPRREprimitive()
-    {
-        // we believe its okay
-        return true;
-    }
-
-    bool testIsVertexTransferModeSelectable()
-    {
-        // only testing HW-independent values
-        return assertTrue( PRREObject3DManager::isVertexTransferModeSelectable(PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT), "PRRE_VT_DYN_DIR_1_BY_1" ) &
-               assertTrue( PRREObject3DManager::isVertexTransferModeSelectable(PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT | BIT(PRRE_VT_VA_BIT)), "PRRE_VT_DYN_DIR_RVA" ) &
-               assertTrue( PRREObject3DManager::isVertexTransferModeSelectable(PRRE_VMOD_DYNAMIC | PRRE_VREF_INDEXED), "PRRE_VT_DYN_IND_1_BY_1" ) &
-               assertTrue( PRREObject3DManager::isVertexTransferModeSelectable(PRRE_VMOD_DYNAMIC | PRRE_VREF_INDEXED | BIT(PRRE_VT_VA_BIT)), "PRRE_VT_DYN_IND_RVA" ) &
-               assertTrue( PRREObject3DManager::isVertexTransferModeSelectable(PRRE_VMOD_STATIC  | PRRE_VREF_DIRECT), "PRRE_VT_STA_DIR_DL" ) &
-               assertTrue( PRREObject3DManager::isVertexTransferModeSelectable(PRRE_VMOD_STATIC  | PRRE_VREF_INDEXED), "PRRE_VT_STA_IND_DL" );
-    }
-
-    bool testIsVertexReferencingIndexed()
-    {
-        // we believe its okay
-        return true;
-    }
-
-    bool testIsVertexModifyingDynamic()
-    {
-        // we believe its okay
-        return true;
-    }
-
-    bool testSelectVertexTransferMode()
-    {
-        const TPRRE_VERTEX_TRANSFER_MODE vtransStaDirHost = PRREObject3DManager::selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_DIRECT, false);
-        const TPRRE_VERTEX_TRANSFER_MODE vtransStaIndHost = PRREObject3DManager::selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_INDEXED, false);
-        const TPRRE_VERTEX_TRANSFER_MODE vtransDynDirHost = PRREObject3DManager::selectVertexTransferMode(PRRE_VMOD_DYNAMIC, PRRE_VREF_DIRECT, false);
-        const TPRRE_VERTEX_TRANSFER_MODE vtransDynIndHost = PRREObject3DManager::selectVertexTransferMode(PRRE_VMOD_DYNAMIC, PRRE_VREF_INDEXED, false);
-
-        const TPRRE_VERTEX_TRANSFER_MODE vtransStaDirClient = PRREObject3DManager::selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_DIRECT, true);
-        const TPRRE_VERTEX_TRANSFER_MODE vtransStaIndClient = PRREObject3DManager::selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_INDEXED, true);
-        const TPRRE_VERTEX_TRANSFER_MODE vtransDynDirClient = PRREObject3DManager::selectVertexTransferMode(PRRE_VMOD_DYNAMIC, PRRE_VREF_DIRECT, true);
-        const TPRRE_VERTEX_TRANSFER_MODE vtransDynIndClient = PRREObject3DManager::selectVertexTransferMode(PRRE_VMOD_DYNAMIC, PRRE_VREF_INDEXED, true);
-
-        
-        // vtransDynDirClient and vtransDynIndClient should be clientside since habit is dynamic and bForceUseClientMemory is true
-
-        const bool bVTransDynDirClientIsClientside = assertTrue( PRREObject3DManager::isVertexModifyingDynamic(vtransDynDirClient), "vtransDynDirClient dyn" ) &
-            assertFalse( PRREObject3DManager::isVertexReferencingIndexed(vtransDynDirClient), "vtransDynDirClient ind" ) &
-            assertTrue(BIT_READ(vtransDynDirClient,PRRE_VT_VA_BIT), "vtransDynDirClient VA") &
-            assertFalse(BIT_READ(vtransDynDirClient,PRRE_VT_SVA_BIT), "vtransDynDirClient RVA"); // CVA and RNG bits are not checked here
-
-        const bool bVTransDynIndClientIsClientside = assertTrue( PRREObject3DManager::isVertexModifyingDynamic(vtransDynIndClient), "vtransDynIndClient dyn" ) &
-            assertTrue( PRREObject3DManager::isVertexReferencingIndexed(vtransDynIndClient), "vtransDynIndClient ind" ) &
-            assertTrue(BIT_READ(vtransDynIndClient,PRRE_VT_VA_BIT), "vtransDynIndClient VA") &
-            assertFalse(BIT_READ(vtransDynIndClient,PRRE_VT_SVA_BIT), "vtransDynIndClient RVA"); // CVA and RNG bits are not checked here
-
-        
-        // vtransStaDirClient and vtransStaIndClient should be serverside since habit is static hence bForceUseClientMemory is ignored
-
-        const bool bVTransStaDirClientIsServerside = assertFalse( PRREObject3DManager::isVertexModifyingDynamic(vtransStaDirHost), "vtransStaDirHost dyn" ) &
-            assertFalse( PRREObject3DManager::isVertexReferencingIndexed(vtransStaDirHost), "vtransStaDirHost ind" ) &
-            assertTrue(BIT_READ(vtransStaDirHost,PRRE_VT_VA_BIT), "vtransStaDirHost VA") &
-            assertTrue(BIT_READ(vtransStaDirHost,PRRE_VT_SVA_BIT), "vtransStaDirHost SVA"); // CVA and RNG bits are not checked here
-
-        const bool bVTransStaIndClientIsServerside = assertFalse( PRREObject3DManager::isVertexModifyingDynamic(vtransStaIndHost), "vtransStaIndHost dyn" ) &
-            assertTrue( PRREObject3DManager::isVertexReferencingIndexed(vtransStaIndHost), "vtransStaIndHost ind" ) &
-            assertTrue(BIT_READ(vtransStaIndHost,PRRE_VT_VA_BIT), "vtransStaIndHost VA") &
-            assertTrue(BIT_READ(vtransStaIndHost,PRRE_VT_SVA_BIT), "vtransStaIndHost SVA"); // CVA and RNG bits are not checked here
-
-        return 
-            assertFalse( PRREObject3DManager::isVertexReferencingIndexed( vtransDynDirHost ), "indexed ? vtransDynDirHost" ) &
-            assertTrue( PRREObject3DManager::isVertexReferencingIndexed( vtransDynIndHost ), "indexed ? vtransDynIndHost" ) &
-            assertTrue( PRREObject3DManager::isVertexModifyingDynamic( vtransDynDirHost ), "dynamic ? vtransDynDirHost" ) &
-            assertTrue( PRREObject3DManager::isVertexModifyingDynamic( vtransDynIndHost ), "dynamic ? vtransDynIndHost" ) &
-            assertFalse( PRREObject3DManager::isVertexReferencingIndexed( vtransStaDirClient ), "indexed ? vtransStaDirClient" ) &
-            assertTrue( PRREObject3DManager::isVertexReferencingIndexed( vtransStaIndClient ), "indexed ? vtransStaIndClient" ) &
-            assertFalse( PRREObject3DManager::isVertexModifyingDynamic( vtransStaDirClient ), "dynamic ? vtransStaDirClient" ) &
-            assertFalse( PRREObject3DManager::isVertexModifyingDynamic( vtransStaIndClient ), "dynamic ? vtransStaIndClient" ) &
-            bVTransDynDirClientIsClientside &
-            bVTransDynIndClientIsClientside &
-            bVTransStaDirClientIsServerside &
-            bVTransStaIndClientIsServerside;
-    }
-
     bool testCtor()
     {
         return assertNotNull(om);
@@ -237,17 +144,26 @@ private:
 
     bool testCreatePlane()
     {
-        return assertNotNull( om->createPlane(1.0f, 2.0f) );
+        // we could check for other default properties such as vertex transfer mode, etc but for some reason we check them in Object3DTest instead
+        const PRREObject3D* const obj = om->createPlane(1.0f, 2.0f);
+        return assertNotNull( obj, "null" ) &
+            assertEquals((TPRREuint)4, obj->getVerticesCount(), "vertices count") ;
     }
 
     bool testCreateBox()
     {
-        return assertNotNull( om->createBox(1.0f, 2.0f, 3.0f) );
+        // we could check for other default properties such as vertex transfer mode, etc but for some reason we check them in Object3DTest instead
+        const PRREObject3D* const obj = om->createBox(1.0f, 2.0f, 3.0f);
+        return assertNotNull( obj, "null" ) &
+            assertEquals((TPRREuint)24, obj->getVerticesCount(), "vertices count") ;
     }
 
     bool testCreateCube()
     {
-        return assertNotNull( om->createCube(1.0f) );
+        // we could check for other default properties such as vertex transfer mode, etc but for some reason we check them in Object3DTest instead
+        const PRREObject3D* const obj = om->createCube(1.0f);
+        return assertNotNull( obj, "null" ) &
+            assertEquals((TPRREuint)24, obj->getVerticesCount(), "vertices count") ;
     }
 
     bool testCreateFromFile()
@@ -282,7 +198,7 @@ private:
         objPlane->SetLit(false);
         objPlane->SetRotationOrder(TPRRE_ROTATION_ORDER::PRRE_ZYX);
         objPlane->SetStickedToScreen(true);
-        objPlane->SetVertexTransferMode( om->selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_DIRECT, false) );
+        objPlane->SetVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_DIRECT, false) );
         objPlane->SetVisible(false);
         objPlane->SetWireframed(true);
         objPlane->SetWireframedCulled(true);

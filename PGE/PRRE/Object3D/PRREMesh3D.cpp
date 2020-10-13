@@ -29,7 +29,7 @@ using namespace std;
 
 PRREMesh3D::PRREMesh3DImpl::~PRREMesh3DImpl()
 {
-    getConsole().OLnOI("~PRREMesh3D() ...");
+    getConsole().OLnOI("~PRREMesh3DImpl() ...");
 
     free(pVertices);
     free(pNormals);
@@ -286,7 +286,7 @@ TPRREuint PRREMesh3D::PRREMesh3DImpl::getUsedSystemMemory() const
 PRREMesh3D::PRREMesh3DImpl::PRREMesh3DImpl(PRREMesh3D* owner, TPRRE_PRIMITIVE_FORMAT prfmt)
 {
     _pOwner = owner;
-    getConsole().OLnOI("PRREMesh3D() ...");
+    getConsole().OLnOI("PRREMesh3DImpl() ...");
 
     primitiveFormat = prfmt;
     pVertices = PGENULL;

@@ -254,6 +254,7 @@
     <ClInclude Include="PRRETextureTest.h" />
     <ClInclude Include="PRRETransformMatrixTest.h" />
     <ClInclude Include="PRREVectorTest.h" />
+    <ClInclude Include="PRREVertexTransferTest.h" />
     <ClInclude Include="PRREWindowTest.h" />
     <ClInclude Include="PRREWindowTest2.h" />
     <ClInclude Include="UnitTest.h" />

@@ -43,6 +43,7 @@ class Object3DManager;
     Mesh objects are 2-level entities:
      - first level (parent) has no geometry, owns submeshes,
      - second level meshes own geometry.
+    This is why a Mesh is both a Managed and a Manager too: it is owned by Mesh3DManager but it owns its submeshes.
 
     This class API usage TODO.
 */
@@ -68,8 +69,8 @@ public:
     /* HACK: using unsigned int here instead of GLenum to avoid using GL header. */
     /* TODO: create own type for the index type. */
     unsigned int getVertexIndicesType(TPRREbool implicitAccessSubobject = true) const; /**< Gets the type of the indices. */
-    TPRREuint    getMinVertexIndex(TPRREbool implicitAccessSubobject = true) const;     /**< Gets the smallest index in the vertex indices array. */
-    TPRREuint    getMaxVertexIndex(TPRREbool implicitAccessSubobject = true) const;     /**< Gets the greatest index in the vertex indices array. */
+    TPRREuint    getMinVertexIndex(TPRREbool implicitAccessSubobject = true) const;    /**< Gets the smallest index in the vertex indices array. */
+    TPRREuint    getMaxVertexIndex(TPRREbool implicitAccessSubobject = true) const;    /**< Gets the greatest index in the vertex indices array. */
     TPRREuint    getVertexIndex(
         TPRREuint index, TPRREbool implicitAccessSubobject = true) const;              /**< Gets an index value from the vertex indices array. */
 
@@ -104,7 +105,7 @@ private:
     PRREMesh3DImpl* pImpl;
 
     friend class PRREMesh3DManager;  
-    friend class Object3DManager;
+    
 
 }; // class PRREMesh3D
 

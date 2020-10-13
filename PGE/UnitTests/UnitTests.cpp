@@ -48,6 +48,7 @@
 #include "PRRECameraTest.h"
 #include "PRREMesh3DManagerTest.h"
 #include "PRREMesh3DTest.h"
+#include "PRREVertexTransferTest.h"
 #include "PRREObject3DManagerTest.h"
 #include "PRREObject3DTest.h"
 #include "PRREWindowTest.h"
@@ -109,6 +110,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PRRECameraTest             testPRRECamera;
     PRREMesh3DManagerTest      testPRREMesh3DManager;
     PRREMesh3DTest             testPRREMesh3D;
+    PRREVertexTransferTest     testPRREVertexTransfer;
     PRREObject3DManagerTest    testPRREObject3DManager;
     PRREObject3DTest           testPRREObject3D;
     PRREWindowTest             testPRREWindow;
@@ -166,9 +168,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREMaterial);
     tests.push_back(&testPRRECamera);  
     */
-    /**/
+
     tests.push_back(&testPRREMesh3DManager);
-    tests.push_back(&testPRREMesh3D);  
+    tests.push_back(&testPRREMesh3D);
+    tests.push_back(&testPRREVertexTransfer);
     tests.push_back(&testPRREObject3DManager);
     tests.push_back(&testPRREObject3D);
      
