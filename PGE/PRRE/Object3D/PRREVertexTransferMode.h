@@ -224,7 +224,7 @@ protected:
     PRREVertexTransfer(const PRREVertexTransfer&);                                   
     PRREVertexTransfer& operator=(const PRREVertexTransfer&);
 
-    void TransferVertices();
+    void TransferVertices();  /**< Transfers vertices over the vertex pipeline. */
 
 private:
     class PRREVertexTransferImpl;

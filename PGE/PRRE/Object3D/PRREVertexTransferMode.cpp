@@ -166,7 +166,7 @@ PRREVertexTransfer::PRREVertexTransferImpl::~PRREVertexTransferImpl()
     getConsole().OLnOI("~PRREVertexTransferImpl() ...");
     
     FreeGLresources();
-    //_pOwner->DeleteAll();
+    _pOwner->DeleteAll();
 
     getConsole().SOLnOO("Done!");
 } // ~PRRETexture()
@@ -267,17 +267,14 @@ void PRREVertexTransfer::PRREVertexTransferImpl::SetVertexTransferMode(TPRRE_VER
     /* no other transfer mode needs further preparation */
     vertexTransferMode = vtrans;
 
-    if ( vertexTransferMode == vtrans )
-    {   // if succeeded, apply the new transfer mode to the subobjects too
-        if ( _pOwner->isLevel1() )
-        {
-            bParentInitiatedOperation = true;
-            getConsole().OLn("Ok, applying for subobjects ...");
-            for (TPRREint i = 0; i < _pOwner->getCount(); i++)
-                ((PRREVertexTransfer*)(_pOwner->getAttachedAt)(i))->SetVertexTransferMode( vertexTransferMode );
-            getConsole().OLn("Done!");
-            bParentInitiatedOperation = false;
-        }
+    if ( _pOwner->isLevel1() )
+    {
+        bParentInitiatedOperation = true;
+        getConsole().OLn("Ok, applying for subobjects ...");
+        for (TPRREint i = 0; i < _pOwner->getCount(); i++)
+            ((PRREVertexTransfer*)(_pOwner->getAttachedAt)(i))->SetVertexTransferMode( vertexTransferMode );
+        getConsole().OLn("Done!");
+        bParentInitiatedOperation = false;
     }
 
     getConsole().OO();
@@ -347,56 +344,58 @@ void PRREVertexTransfer::PRREVertexTransferImpl::TransferVertices()
         else
             // PRRE_VT_STA_..._DL
             glCallList( nDispList );
+
+        return;
     } // PRRE_VT_VA_BIT == 0u
-    else
-    {
-        /* vertex array either in client or server */
-        const bool bServer = BIT_READ(getVertexTransferMode(), PRRE_VT_SVA_BIT) == 1u;
 
-        SetArrayPointers( bServer );
+    /* vertex array either in client or server */
+    const bool bServer = BIT_READ(getVertexTransferMode(), PRRE_VT_SVA_BIT) == 1u;
 
-            // 1 big benefit of using CVA is when we want to do multitexturing with only
-            // 1 TMU, meaning that we need to do it in at least 2 passes, specifying
-            // vertex geometry twice! However even TNT had 2 TMUs, so I'm not planning to do this improvement.
-            // Another big benefit is when we have shared vertices, in indexed rendering
-            // all vertices are transformed if lock is enabled, thus shared vertices
-            // can be used multiple times EVEN THOUGH THEY ARE TRANSFORMED ONLY ONCE!
-            // Too bad we currently create redundant vertex geometry when loading OBJ mesh,
-            // however we have backlog item for that ...
-            if ( BIT_READ(getVertexTransferMode(), PRRE_VT_CVA_BIT) == 1u )
-                glLockArraysEXT(0, _pOwner->getVerticesCount(false));
+    SetArrayPointers( bServer );
 
-                // Static and dynamic vmods are not differentiated here but when creating the arrays.
-                // That is why we don't check for vmod in this code.
+        // 1 big benefit of using CVA is when we want to do multitexturing with only
+        // 1 TMU, meaning that we need to do it in at least 2 passes, specifying
+        // vertex geometry twice! However even TNT had 2 TMUs, so I'm not planning to do this improvement.
+        // Another big benefit is when we have shared vertices, in indexed rendering
+        // all vertices are transformed if lock is enabled, thus shared vertices
+        // can be used multiple times EVEN THOUGH THEY ARE TRANSFORMED ONLY ONCE!
+        // Too bad we currently create redundant vertex geometry when loading OBJ mesh,
+        // however we have backlog item for that ...
+        if ( BIT_READ(getVertexTransferMode(), PRRE_VT_CVA_BIT) == 1u )
+            glLockArraysEXT(0, _pOwner->getVerticesCount(false));
 
-                if ( PRREVertexTransfer::isVertexReferencingIndexed( getVertexTransferMode() ) )
-                {
-                    if ( BIT_READ(getVertexTransferMode(), PRRE_VT_RNG_BIT) )
-                    {
-                        // TODO: should call this in loop, do multiple batches based on the implementation-dependent values
-                        // (GL_MAX_ELEMENTS_VERTICES_EXT, GL_MAX_ELEMENTS_INDICES_EXT).
-                        glDrawRangeElementsEXT(
-                            getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()),
-                            _pOwner->getMinVertexIndex(false), _pOwner->getMaxVertexIndex(false),
-                            _pOwner->getVertexIndicesCount(false), _pOwner->getVertexIndicesType(false), bServer ? NULL : _pOwner->getVertexIndices(false) );
-                    }
-                    else
-                    {
-                        glDrawElements(
-                            getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()), 
-                            _pOwner->getVertexIndicesCount(false), _pOwner->getVertexIndicesType(false), bServer ? NULL : _pOwner->getVertexIndices(false) );
-                    }
-                }
-                else
-                {
-                    glDrawArrays( getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()), 0, _pOwner->getVerticesCount(false) );
-                }
+        // Static and dynamic vmods are not differentiated here but when creating the arrays.
+        // That is why we don't check for vmod in this code.
 
-            if ( BIT_READ(getVertexTransferMode(), PRRE_VT_CVA_BIT) == 1u )
-                glUnlockArraysEXT();
+        if ( PRREVertexTransfer::isVertexReferencingIndexed( getVertexTransferMode() ) )
+        {
+            assert(_pOwner->getVertexIndicesCount(false) != 0);
+            if ( BIT_READ(getVertexTransferMode(), PRRE_VT_RNG_BIT) )
+            {
+                // TODO: should call this in loop, do multiple batches based on the implementation-dependent values
+                // (GL_MAX_ELEMENTS_VERTICES_EXT, GL_MAX_ELEMENTS_INDICES_EXT).
+                glDrawRangeElementsEXT(
+                    getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()),
+                    _pOwner->getMinVertexIndex(false), _pOwner->getMaxVertexIndex(false),
+                    _pOwner->getVertexIndicesCount(false), _pOwner->getVertexIndicesType(false), bServer ? NULL : _pOwner->getVertexIndices(false) );
+            }
+            else
+            {
+                glDrawElements(
+                    getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()), 
+                    _pOwner->getVertexIndicesCount(false), _pOwner->getVertexIndicesType(false), bServer ? NULL : _pOwner->getVertexIndices(false) );
+            }
+        }
+        else
+        {
+            assert(_pOwner->getVerticesCount(false) != 0);
+            glDrawArrays( getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()), 0, _pOwner->getVerticesCount(false) );
+        }
 
-        ResetArrayPointers( bServer );
-    } // PRRE_VT_VA_BIT == 1u
+        if ( BIT_READ(getVertexTransferMode(), PRRE_VT_CVA_BIT) == 1u )
+            glUnlockArraysEXT();
+
+    ResetArrayPointers( bServer );
 }
 
 
@@ -511,7 +510,10 @@ void PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoDisplayList(TPRREboo
         return;
 
     if ( _pOwner->getVertices(false) == NULL )
+    {
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoDisplayList() getVertices() is NULL!");
         return;
+    }
 
     nDispList = glGenLists(1);
     glNewList(nDispList, GL_COMPILE);
@@ -533,52 +535,72 @@ void PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoVertexBufferObjects(
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         return;
 
-    if ( indexed && (nIndicesVBO == 0) && (_pOwner->getVertexIndices(false) != NULL) )
+    if ( nVerticesVBO != 0 )
     {
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoVertexBufferObjects() nVerticesVBO != 0!");
+        return;
+    }
+    if ( _pOwner->getVertices(false) == NULL )
+    {
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoVertexBufferObjects() getVertices() is NULL!");
+        return;
+    }
+    if ( _pOwner->getNormals(false) == NULL )
+    {
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoVertexBufferObjects() getNormals() is NULL!");
+        return;
+    }
+
+    if ( indexed )
+    {
+        if ( nIndicesVBO != 0 )
+        {
+            getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoVertexBufferObjects() nIndicesVBO != 0!");
+            return;
+        }
+        if ( _pOwner->getVertexIndices(false) == NULL )
+        {
+            getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoVertexBufferObjects() getVertexIndices() is NULL!");
+            return;
+        }
         glGenBuffersARB(1, &nIndicesVBO);
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, nIndicesVBO);
-        assert(_pOwner->getVertexIndices(false) != NULL);
         glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, _pOwner->getVertexIndicesCount(false) * PRREGLsnippets::getSizeofIndexType(_pOwner->getVertexIndicesType()), _pOwner->getVertexIndices(false), GL_STATIC_DRAW_ARB);
         // Note: we always store indices in static buffer but could be in client memory, too.
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
     }
 
-    if ( (nVerticesVBO == 0) && (_pOwner->getVertices(false) != NULL) )
-    {
-        GLenum usage = dynamic ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB;
-        glGenBuffersARB(1, &nVerticesVBO);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nVerticesVBO);
-        assert(_pOwner->getVertices(false) != NULL);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB,  _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getVertices(false), usage);
+    GLenum usage = dynamic ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB;
+    glGenBuffersARB(1, &nVerticesVBO);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, nVerticesVBO);
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB,  _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getVertices(false), usage);
  
-        glGenBuffersARB(1, &nColorsVBO);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nColorsVBO);
-        assert(_pOwner->getMaterial(false).getColors() != NULL);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getColorsCount() * sizeof(TRGBAFLOAT), _pOwner->getMaterial(false).getColors(), usage);
+    glGenBuffersARB(1, &nColorsVBO);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, nColorsVBO);
+    assert(_pOwner->getMaterial(false).getColors() != NULL);
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getColorsCount() * sizeof(TRGBAFLOAT), _pOwner->getMaterial(false).getColors(), usage);
 
-        glGenBuffersARB(1, &nTexcoordsVBO[0]);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[0]);
-        assert(_pOwner->getMaterial(false).getTexcoords() != NULL);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount() * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(), usage);
+    glGenBuffersARB(1, &nTexcoordsVBO[0]);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[0]);
+    assert(_pOwner->getMaterial(false).getTexcoords() != NULL);
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount() * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(), usage);
 
-        if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
+    if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
+    {
+        if ( _pOwner->getMaterial(false).isMultiTextured() )
         {
-            if ( _pOwner->getMaterial(false).isMultiTextured() )
-            {
-                glGenBuffersARB(1, &nTexcoordsVBO[1]);
-                glBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[1]);
-                assert(_pOwner->getMaterial(false).getTexcoords(1) != NULL);
-                glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount(1) * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(1), usage);
-            }
+            glGenBuffersARB(1, &nTexcoordsVBO[1]);
+            glBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[1]);
+            assert(_pOwner->getMaterial(false).getTexcoords(1) != NULL);
+            glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount(1) * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(1), usage);
         }
-
-        glGenBuffersARB(1, &nNormalsVBO);
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, nNormalsVBO);
-        assert(_pOwner->getNormals(false) != NULL);
-        glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getNormals(false), usage);
-
-        glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
     }
+
+    glGenBuffersARB(1, &nNormalsVBO);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, nNormalsVBO);
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getNormals(false), usage);
+
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 
 } // CompileIntoVertexBufferObjects()
 
@@ -593,9 +615,8 @@ void PRREVertexTransfer::PRREVertexTransferImpl::FreeGLresources()
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         return;
 
-    /*
     for (TPRREint i = 0; i < _pOwner->getCount(); i++)
-        ((PRREMesh3D*)_pOwner->getAttachedAt(i))->pImpl->FreeGLresources();*/
+        ((PRREVertexTransfer*)_pOwner->getAttachedAt(i))->pImpl->FreeGLresources();
 
     if ( nDispList != 0 )
     {
@@ -646,8 +667,13 @@ void PRREVertexTransfer::PRREVertexTransferImpl::SetArrayPointers(TPRREbool redi
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         return;
 
+    // since this is called every render frame, I dont check for values with if, instead I use only assertions!
+
     if ( (PRREVertexTransfer::isVertexReferencingIndexed(vertexTransferMode)) && redirectToServer )
+    {
+        assert(nIndicesVBO != 0);
         glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, nIndicesVBO);
+    }
 
     glEnableClientState(GL_VERTEX_ARRAY);
     // per-vertex color is disabled for compatibility with tmcsgfxlib wrapper, reason:
@@ -658,6 +684,7 @@ void PRREVertexTransfer::PRREVertexTransferImpl::SetArrayPointers(TPRREbool redi
     glEnableClientState(GL_NORMAL_ARRAY);
     if ( redirectToServer )
     {
+        assert(nVerticesVBO != 0);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, nVerticesVBO);
         glVertexPointer(3, GL_FLOAT, 0, NULL);
 
@@ -665,14 +692,17 @@ void PRREVertexTransfer::PRREVertexTransferImpl::SetArrayPointers(TPRREbool redi
         //glBindBufferARB(GL_ARRAY_BUFFER_ARB, nColorsVBO);
         //glColorPointer(4, GL_FLOAT, 0, NULL);
 
+        assert(nNormalsVBO != 0);
         glBindBufferARB(GL_ARRAY_BUFFER_ARB, nNormalsVBO);
         glNormalPointer(GL_FLOAT, 0, NULL);
     }
     else
     {
+        assert(_pOwner->getVertices(false) != NULL);
         glVertexPointer(3, GL_FLOAT, 0, _pOwner->getVertices(false));
         // per-vertex color is disabled for compatibility with tmcsgfxlib wrapper, reason somewhere above
         //glColorPointer(4, GL_FLOAT, 0, _pOwner->getMaterial(false).getColors());
+        assert(_pOwner->getNormals(false) != NULL);
         glNormalPointer(GL_FLOAT, 0, _pOwner->getNormals(false));
     }
 
@@ -687,11 +717,15 @@ void PRREVertexTransfer::PRREVertexTransferImpl::SetArrayPointers(TPRREbool redi
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
             if ( redirectToServer )
             {
+                assert(nTexcoordsVBO[i] != 0);
                 glBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[i]);
                 glTexCoordPointer(3, GL_FLOAT, 0, NULL);
             }
             else
+            {
+                assert(_pOwner->getMaterial(false).getTexcoords(i) != NULL);
                 glTexCoordPointer(3, GL_FLOAT, 0, _pOwner->getMaterial(false).getTexcoords(i));
+            }
         }
     }
 } // SetArrayPointers()
@@ -1012,6 +1046,10 @@ PRREVertexTransfer& PRREVertexTransfer::operator=(const PRREVertexTransfer&)
 }
 
 
+/**
+    Transfers vertices over the vertex pipeline.
+    This invokes the draw commands based on the current vertex transfer mode.
+*/
 void PRREVertexTransfer::TransferVertices()
 {
     pImpl->TransferVertices();
