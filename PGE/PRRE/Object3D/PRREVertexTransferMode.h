@@ -207,7 +207,7 @@ public:
     virtual TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;          /**< Gets vertex transfer mode. */
     virtual void SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);     /**< Sets vertex transfer mode. */
 
-    TPRREuint getUsedSystemMemory() const;    /**< Gets the amount of allocated system memory. */
+    virtual TPRREuint getUsedSystemMemory() const;    /**< Gets the amount of allocated system memory. */
 
 protected:
 

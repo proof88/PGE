@@ -123,7 +123,7 @@ public:
     TPRREbool isStickedToScreen() const;                  /**< Gets the sticked-to-screen state. */
     void      SetStickedToScreen(TPRREbool value);        /**< Sets the sticked-to-screen state. */ 
 
-    TPRREuint getUsedSystemMemory() const;    /**< Gets the amount of allocated system memory. */
+    virtual TPRREuint getUsedSystemMemory() const;    /**< Gets the amount of allocated system memory. */
 
     void Draw(bool bLighting);          /**< Draws the object. */
 

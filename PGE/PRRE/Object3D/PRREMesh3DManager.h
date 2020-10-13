@@ -86,7 +86,7 @@ public:
     const PRREMaterial& getMaterial(TPRREbool implicitAccessSubobject = true) const;   /**< Gets the material. */
           PRREMaterial& getMaterial(TPRREbool implicitAccessSubobject = true);         /**< Gets the material. */
 
-    TPRREuint getUsedSystemMemory() const;    /**< Gets the amount of allocated system memory. */
+    virtual TPRREuint getUsedSystemMemory() const;    /**< Gets the amount of allocated system memory. */
 
     // ---------------------------------------------------------------------------
 
@@ -107,7 +107,6 @@ private:
     PRREMesh3DImpl* pImpl;
 
     friend class PRREMesh3DManager;  
-    
 
 }; // class PRREMesh3D
 

@@ -273,6 +273,9 @@
     <ClInclude Include="PRREVertexTransferTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\PRRE\Object3D\PRREVertexTransferMode.h">
+      <Filter>Header Files\PGE\PRRE\Object3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UnitTests.cpp">
