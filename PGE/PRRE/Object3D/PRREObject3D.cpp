@@ -94,7 +94,7 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
     _pOwner->DeleteAll();
 
     // if we are just a cloned object, above code should have done essentially nothing
-    if ( pRefersto )
+    if ( getReferredObject() )
     {
         // TODO: probably we should decrement reference count in referred object ...
     }
@@ -105,7 +105,7 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
 
 TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::PRREObject3DImpl::getVertexModifyingHabit() const
 {
-    return pRefersto ? pRefersto->getVertexModifyingHabit() : _pOwner->PRREVertexTransfer::getVertexModifyingHabit();
+    return getReferredObject() ? getReferredObject()->getVertexModifyingHabit() : _pOwner->PRREVertexTransfer::getVertexModifyingHabit();
 } // getVertexModifyingHabit()
 
 
@@ -117,7 +117,7 @@ void PRREObject3D::PRREObject3DImpl::SetVertexModifyingHabit(TPRRE_VERTEX_MODIFY
 
 TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::PRREObject3DImpl::getVertexReferencingMode() const
 {
-    return pRefersto ? pRefersto->getVertexReferencingMode() : _pOwner->PRREVertexTransfer::getVertexReferencingMode();
+    return getReferredObject() ? getReferredObject()->getVertexReferencingMode() : _pOwner->PRREVertexTransfer::getVertexReferencingMode();
 } // getVertexReferencingMode()
 
 
@@ -129,7 +129,7 @@ void PRREObject3D::PRREObject3DImpl::SetVertexReferencingMode(TPRRE_VERTEX_REFER
 
 TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::PRREObject3DImpl::getVertexTransferMode() const
 {
-    return pRefersto ? pRefersto->getVertexTransferMode() : _pOwner->PRREVertexTransfer::getVertexTransferMode();
+    return getReferredObject() ? getReferredObject()->getVertexTransferMode() : _pOwner->PRREVertexTransfer::getVertexTransferMode();
 } // getVertexTransferMode()
 
 
@@ -137,7 +137,7 @@ void PRREObject3D::PRREObject3DImpl::SetVertexTransferMode(TPRRE_VERTEX_TRANSFER
 {
     getConsole().OLnOI("PRREObject3D::SetVertexTransferMode()");
 
-    if ( pRefersto )
+    if ( getReferredObject() )
     {
         getConsole().EOLnOO("PRREObject3D::SetVertexTransferMode() ignored because we are cloned object!");
         return;
@@ -192,28 +192,24 @@ const PRREVector& PRREObject3D::PRREObject3DImpl::getScaling() const
 
 void PRREObject3D::PRREObject3DImpl::SetScaling(TPRREfloat value)
 {
-    // TODO: ignore the setting if this is level-2 object!!!
     vScaling.Set(value, value, value);
 } // SetScaling()
 
 
 void PRREObject3D::PRREObject3DImpl::SetScaling(const PRREVector& value)
 {
-    // TODO: ignore the setting if this is level-2 object!!!
     vScaling = value;
 } // SetScaling()
 
 
 void PRREObject3D::PRREObject3DImpl::Scale(TPRREfloat value)
 {
-    // TODO: ignore the setting if this is level-2 object!!!
     vScaling.Set( vScaling.getX() * value, vScaling.getY() * value, vScaling.getZ() * value );
 } // Scale()
 
 
 void PRREObject3D::PRREObject3DImpl::Scale(const PRREVector& value)
 {
-    // TODO: ignore the setting if this is level-2 object!!!
     vScaling.Set( vScaling.getX() * value.getX(), vScaling.getY() * value.getY(), vScaling.getZ() * value.getZ() );
 } // Scale()
 
@@ -226,7 +222,6 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isVisible() const
 
 void PRREObject3D::PRREObject3DImpl::SetVisible(TPRREbool state)
 {
-    // TODO: ignore the setting if this is level-2 object!!!
     bVisible = state;
 } // SetVisible()
 
@@ -263,7 +258,6 @@ TPRRE_ROTATION_ORDER PRREObject3D::PRREObject3DImpl::getRotationOrder() const
 
 void PRREObject3D::PRREObject3DImpl::SetRotationOrder(TPRRE_ROTATION_ORDER value)
 {
-    // TODO: ignore this if this is a level-2 subobject!
     rotation = value;
 } // SetRotationOrder()
 
@@ -276,7 +270,6 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isLit() const
 
 void PRREObject3D::PRREObject3DImpl::SetLit(TPRREbool value)
 {
-    // TODO: ignore this if this is a level-2 subobject!
     bAffectedByLights = value;
 } // SetLit()
 
@@ -289,7 +282,6 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isDoubleSided() const
 
 void PRREObject3D::PRREObject3DImpl::SetDoubleSided(TPRREbool value)
 {
-    // TODO: ignore this if this is a level-2 subobject!
     bDoubleSided = value;
 } // SetDoubleSided()
 
@@ -302,7 +294,6 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isWireframed() const
 
 void PRREObject3D::PRREObject3DImpl::SetWireframed(TPRREbool value)
 {
-    // TODO: ignore this if this is a level-2 subobject!
     bWireframe = value;
 } // SetWireframed()
 
@@ -315,7 +306,6 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isWireframedCulled() const
 
 void PRREObject3D::PRREObject3DImpl::SetWireframedCulled(TPRREbool value)
 {
-    // TODO: ignore this if this is a level-2 subobject!
     bWireframedCull = value;
 } // SetWireframedCulled()
 
@@ -328,7 +318,6 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isAffectingZBuffer() const
 
 void PRREObject3D::PRREObject3DImpl::SetAffectingZBuffer(TPRREbool value)
 {
-    // TODO: ignore this if this is a level-2 subobject!
     bAffectZBuffer = value;
 } // SetAffectingZBuffer()
 
@@ -341,7 +330,6 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isTestingAgainstZBuffer() const
 
 void PRREObject3D::PRREObject3DImpl::SetTestingAgainstZBuffer(TPRREbool value)
 {
-    // TODO: ignore this if this is a level-2 subobject!
     bAllowZTesting = value;
 } // SetTestingAgainstZBuffer()
 
@@ -354,7 +342,6 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isStickedToScreen() const
 
 void PRREObject3D::PRREObject3DImpl::SetStickedToScreen(TPRREbool value)
 {
-    // TODO: ignore this if this is a level-2 subobject!
     bStickedToScreen = value;
     SetDoubleSided(true);
     SetLit(false);
@@ -384,7 +371,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
     }
 
     // see if we are parent or referring to another object i.e. we are cloned object
-    if ( _pOwner->isLevel1() || pRefersto )
+    if ( _pOwner->isLevel1() || getReferredObject() )
     {
         // Currently 3D objects are 2-level entities:
         // first level (parent) has no geometry, owns subobjects, sets basic things,
@@ -398,7 +385,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
 
         // take care of attached objects (subobjects)
         // note that either we have our own subobjects, OR we are just a cloned object and we need to draw original object's subobjects
-        PRREObject3D* pWhichParent = pRefersto ? pRefersto : _pOwner;
+        PRREObject3D* pWhichParent = getReferredObject() ? getReferredObject() : _pOwner;
         pWhichParent->pImpl->bParentInitiatedOperation = true;
         for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
             ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(bLighting);
@@ -808,7 +795,7 @@ void PRREObject3D::PRREObject3DImpl::DrawSW()
         return;
 
     // see if we are parent or referring to another object i.e. we are cloned object
-    if ( _pOwner->isLevel1() || pRefersto )
+    if ( _pOwner->isLevel1() || getReferredObject() )
     {
         // Currently 3D objects are 2-level things: first level (parent) has no geometry, owns subobjects, sets basic things,
         // while second level (subobjects) own geometry, inherit basic things set by parent.
@@ -820,7 +807,7 @@ void PRREObject3D::PRREObject3DImpl::DrawSW()
 
         // take care of attached objects (subobjects)
         // note that either we have our own subobjects, OR we are just a cloned object and we need to draw original object's subobjects
-        PRREObject3D* pWhichParent = pRefersto ? pRefersto : _pOwner;
+        PRREObject3D* pWhichParent = getReferredObject() ? getReferredObject() : _pOwner;
         for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
             ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(false);
         return;
@@ -981,7 +968,7 @@ const PRREVector& PRREObject3D::getAngleVec() const
 */
 const PRREVector& PRREObject3D::getSizeVec() const
 {
-    return (pImpl->pRefersto == PGENULL) ? PRREMesh3D::getSizeVec() : pImpl->pRefersto->getSizeVec();
+    return (getReferredObject() == PGENULL) ? PRREMesh3D::getSizeVec() : getReferredObject()->getSizeVec();
 }
 
 
