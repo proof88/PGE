@@ -156,7 +156,7 @@ PRREObject3D* PRREObject3D::PRREObject3DImpl::getReferredObject() const
 
 TPRRE_TRANSFORMED_VERTEX* PRREObject3D::PRREObject3DImpl::getTransformedVertices(TPRREbool implicitAccessSubobject)
 {
-    if ( implicitAccessSubobject && (_pOwner->getVerticesCount(false) == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && _pOwner->isLevel1() && (_pOwner->getCount() == 1) )
         return ((PRREObject3D*) (_pOwner->getAttachedAt(0)))->getTransformedVertices();
     else
         return pVerticesTransf;
@@ -384,7 +384,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
     }
 
     // see if we are parent or referring to another object i.e. we are cloned object
-    if ( (_pOwner->getCount() > 0) || pRefersto )
+    if ( _pOwner->isLevel1() || pRefersto )
     {
         // Currently 3D objects are 2-level entities:
         // first level (parent) has no geometry, owns subobjects, sets basic things,
@@ -403,11 +403,8 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
             ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(bLighting);
         pWhichParent->pImpl->bParentInitiatedOperation = false;
+        return;
     }
-
-    // before trying to draw anything, see if we actually have anything to draw ...
-    if ( (_pOwner->getVertexIndicesCount(false) == 0) && (_pOwner->getVerticesCount(false) == 0) /*&& (nVerticesVBO == 0) && (nDispList == 0)*/ )
-        return;  // we return here if we are parent or we are cloned object
 
     // if we reach this point then either our parent is drawing us as its subobject, or a cloned object is drawing us on behalf of our parent
 
@@ -481,7 +478,6 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
 
     _pOwner->TransferVertices();
 
-    
 
     /* The number of values (not vertices) transferred to the feedback buffer. */
     GLint nFbBufferWritten_h = glRenderMode(GL_RENDER);
@@ -812,7 +808,7 @@ void PRREObject3D::PRREObject3DImpl::DrawSW()
         return;
 
     // see if we are parent or referring to another object i.e. we are cloned object
-    if ( (_pOwner->getCount() > 0) || pRefersto )
+    if ( _pOwner->isLevel1() || pRefersto )
     {
         // Currently 3D objects are 2-level things: first level (parent) has no geometry, owns subobjects, sets basic things,
         // while second level (subobjects) own geometry, inherit basic things set by parent.
@@ -827,11 +823,8 @@ void PRREObject3D::PRREObject3DImpl::DrawSW()
         PRREObject3D* pWhichParent = pRefersto ? pRefersto : _pOwner;
         for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
             ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(false);
+        return;
     }
-
-    // before trying to draw anything, see if we actually have anything to draw ...
-    if ( (_pOwner->getVertexIndicesCount(false) == 0) && (_pOwner->getVerticesCount(false) == 0) )
-        return;  // we return here if we are parent or we are cloned object
 
     // actual draw here
     // todo: wtf, we should finally decide if it is renderer's responsibility to actually render an object or object's responsibility?

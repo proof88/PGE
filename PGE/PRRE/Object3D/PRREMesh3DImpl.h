@@ -24,6 +24,9 @@ public:
 
     virtual ~PRREMesh3DImpl();
 
+    TPRREbool isLevel1() const;
+    TPRREbool isLevel2() const;
+
     TPRRE_PRIMITIVE_FORMAT getPrimitiveFormat() const;     
 
     TPRREuint   getVerticesCount(TPRREbool implicitAccessSubobject = true) const;      

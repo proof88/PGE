@@ -64,6 +64,8 @@ protected:
 
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREMesh3DTest::testCtor);
         AddSubTest("testDtor", (PFNUNITSUBTEST) &PRREMesh3DTest::testDtor);
+        AddSubTest("testIsLevel1", (PFNUNITSUBTEST) &PRREMesh3DTest::testIsLevel1);
+        AddSubTest("testIsLevel2", (PFNUNITSUBTEST) &PRREMesh3DTest::testIsLevel2);
         AddSubTest("testGetPrimitiveFormat", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetPrimitiveFormat);
         AddSubTest("testGetVerticesCount", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetVerticesCount);
         AddSubTest("testGetVertices", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetVertices);
@@ -158,6 +160,34 @@ private:
         delete mesh;
         mesh = NULL;
         return assertEquals(4, mm->getCount());
+    }
+
+    bool testIsLevel1()
+    {
+        return assertTrue(meshFromFile->isLevel1(), "meshFromFile") &
+            assertTrue(mesh->isLevel1(), "mesh") &
+            assertTrue(meshPlane->isLevel1(), "plane") &
+            assertTrue(meshBox->isLevel1(), "box") &
+            assertTrue(meshCube->isLevel1(), "cube") &
+            assertFalse(((PRREMesh3D*)meshFromFile->getAttachedAt(0))->isLevel1(), "meshFromFile sub") &
+            assertFalse(((PRREMesh3D*)mesh->getAttachedAt(0))->isLevel1(), "mesh sub") &
+            assertFalse(((PRREMesh3D*)meshPlane->getAttachedAt(0))->isLevel1(), "plane sub") &
+            assertFalse(((PRREMesh3D*)meshBox->getAttachedAt(0))->isLevel1(), "box sub") &
+            assertFalse(((PRREMesh3D*)meshCube->getAttachedAt(0))->isLevel1(), "cube sub");
+    }
+
+    bool testIsLevel2()
+    {
+        return assertFalse(meshFromFile->isLevel2(), "meshFromFile") &
+            assertFalse(mesh->isLevel2(), "mesh") &
+            assertFalse(meshPlane->isLevel2(), "plane") &
+            assertFalse(meshBox->isLevel2(), "box") &
+            assertFalse(meshCube->isLevel2(), "cube") &
+            assertTrue(((PRREMesh3D*)meshFromFile->getAttachedAt(0))->isLevel2(), "meshFromFile sub") &
+            assertTrue(((PRREMesh3D*)mesh->getAttachedAt(0))->isLevel2(), "mesh sub") &
+            assertTrue(((PRREMesh3D*)meshPlane->getAttachedAt(0))->isLevel2(), "plane sub") &
+            assertTrue(((PRREMesh3D*)meshBox->getAttachedAt(0))->isLevel2(), "box sub") &
+            assertTrue(((PRREMesh3D*)meshCube->getAttachedAt(0))->isLevel2(), "cube sub");
     }
 
     bool testGetPrimitiveFormat()

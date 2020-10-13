@@ -166,6 +166,7 @@ PRREVertexTransfer::PRREVertexTransferImpl::~PRREVertexTransferImpl()
     getConsole().OLnOI("~PRREVertexTransferImpl() ...");
     
     FreeGLresources();
+    //_pOwner->DeleteAll();
 
     getConsole().SOLnOO("Done!");
 } // ~PRRETexture()
@@ -205,7 +206,7 @@ void PRREVertexTransfer::PRREVertexTransferImpl::SetVertexTransferMode(TPRRE_VER
 {
     getConsole().OLnOI("PRREVertexTransfer::SetVertexTransferMode()");
 
-    if ( _pOwner->getCount() == 0 )
+    if ( _pOwner->isLevel2() )
     {
         if ( !_pOwner->getManager() )
         {
@@ -268,7 +269,7 @@ void PRREVertexTransfer::PRREVertexTransferImpl::SetVertexTransferMode(TPRRE_VER
 
     if ( vertexTransferMode == vtrans )
     {   // if succeeded, apply the new transfer mode to the subobjects too
-        if ( _pOwner->getCount() > 0 )
+        if ( _pOwner->isLevel1() )
         {
             bParentInitiatedOperation = true;
             getConsole().OLn("Ok, applying for subobjects ...");
@@ -424,7 +425,7 @@ CConsole& PRREVertexTransfer::PRREVertexTransferImpl::getConsole() const
 TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::isSwitchFromIndexedAllowed() const
 {
     // TODO: ALL subobjects should check if their vertex index count equals to vertex count, 1 false is enough to return false!
-    if ( _pOwner->getCount() > 0 )
+    if ( _pOwner->isLevel1() )
     {
         const PRREMesh3D& submesh0 = (const PRREMesh3D&) *(_pOwner->getAttachedAt(0));
         return (submesh0.getVertexIndicesCount(false) == submesh0.getVerticesCount(false)) && (submesh0.getVerticesCount(false) > 0);

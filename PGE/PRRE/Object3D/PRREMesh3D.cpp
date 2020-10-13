@@ -47,6 +47,17 @@ PRREMesh3D::PRREMesh3DImpl::~PRREMesh3DImpl()
 } // ~PRRETexture()
 
 
+TPRREbool PRREMesh3D::PRREMesh3DImpl::isLevel1() const
+{
+    return _pOwner->getCount() > 0;
+}
+
+TPRREbool PRREMesh3D::PRREMesh3DImpl::isLevel2() const
+{
+    return !isLevel1();
+}
+
+
 TPRRE_PRIMITIVE_FORMAT PRREMesh3D::PRREMesh3DImpl::getPrimitiveFormat() const
 {
     return primitiveFormat;
@@ -55,7 +66,7 @@ TPRRE_PRIMITIVE_FORMAT PRREMesh3D::PRREMesh3DImpl::getPrimitiveFormat() const
 
 TPRREuint PRREMesh3D::PRREMesh3DImpl::getVerticesCount(TPRREbool implicitAccessSubobject) const
 {
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
         return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getVerticesCount();
     else
         return nVertices_h;
@@ -64,7 +75,7 @@ TPRREuint PRREMesh3D::PRREMesh3DImpl::getVerticesCount(TPRREbool implicitAccessS
 
 const TXYZ* PRREMesh3D::PRREMesh3DImpl::getVertices(TPRREbool implicitAccessSubobject) const
 {
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
         return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getVertices();
     else
         return pVertices;
@@ -73,7 +84,7 @@ const TXYZ* PRREMesh3D::PRREMesh3DImpl::getVertices(TPRREbool implicitAccessSubo
 
 TXYZ* PRREMesh3D::PRREMesh3DImpl::getVertices(TPRREbool implicitAccessSubobject)
 {
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
         return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getVertices();
     else
         return pVertices;
@@ -82,7 +93,7 @@ TXYZ* PRREMesh3D::PRREMesh3DImpl::getVertices(TPRREbool implicitAccessSubobject)
 
 TPRREuint PRREMesh3D::PRREMesh3DImpl::getVertexIndicesCount(TPRREbool implicitAccessSubobject) const
 {
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
         return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getVertexIndicesCount();
     else
         return nVertexIndices_h; 
@@ -91,7 +102,7 @@ TPRREuint PRREMesh3D::PRREMesh3DImpl::getVertexIndicesCount(TPRREbool implicitAc
 
 const void* PRREMesh3D::PRREMesh3DImpl::getVertexIndices(TPRREbool implicitAccessSubobject) const
 {
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
         return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getVertexIndices();
     else
         return pVertexIndices;
@@ -100,7 +111,7 @@ const void* PRREMesh3D::PRREMesh3DImpl::getVertexIndices(TPRREbool implicitAcces
 
 unsigned int PRREMesh3D::PRREMesh3DImpl::getVertexIndicesType(TPRREbool implicitAccessSubobject) const
 {
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
         return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getVertexIndicesType();
     else
         return nIndicesType;
@@ -109,7 +120,7 @@ unsigned int PRREMesh3D::PRREMesh3DImpl::getVertexIndicesType(TPRREbool implicit
 
 TPRREuint PRREMesh3D::PRREMesh3DImpl::getMinVertexIndex(TPRREbool implicitAccessSubobject) const
 {
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
         return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getMinVertexIndex();
     else
         return nMinVertexIndex;
@@ -118,7 +129,7 @@ TPRREuint PRREMesh3D::PRREMesh3DImpl::getMinVertexIndex(TPRREbool implicitAccess
 
 TPRREuint PRREMesh3D::PRREMesh3DImpl::getMaxVertexIndex(TPRREbool implicitAccessSubobject) const
 {
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
         return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getMaxVertexIndex();
     else
         return nMaxVertexIndex;
@@ -127,7 +138,7 @@ TPRREuint PRREMesh3D::PRREMesh3DImpl::getMaxVertexIndex(TPRREbool implicitAccess
 
 TPRREuint PRREMesh3D::PRREMesh3DImpl::getVertexIndex(TPRREuint index, TPRREbool implicitAccessSubobject) const
 {
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
     {
         return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getVertexIndex(index);
     }
@@ -152,7 +163,7 @@ TPRREuint PRREMesh3D::PRREMesh3DImpl::getVertexIndex(TPRREuint index, TPRREbool 
 
 const TXYZ* PRREMesh3D::PRREMesh3DImpl::getNormals(TPRREbool implicitAccessSubobject) const
 {
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
         return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getNormals();
     else
         return pNormals;
@@ -179,7 +190,7 @@ const PRREVector& PRREMesh3D::PRREMesh3DImpl::getSizeVec() const
 
 void PRREMesh3D::PRREMesh3DImpl::RecalculateSize()
 {
-    if ( _pOwner->getCount() > 0 )
+    if ( isLevel1() )
     {
         // we are parent, ask our submeshes to determine their sizes and object-local positions
         for (TPRREint i = 0; i < _pOwner->getCount(); i++)
@@ -217,8 +228,12 @@ void PRREMesh3D::PRREMesh3DImpl::RecalculateSize()
         // since we are parent we dont need to modify our world-space position at all based on our subobjects
     }
 
-    if ( (nVertices_h == 0) || (pVertices == PGENULL ) )
+    // as level-2 in theory we have geometry but check it for sure
+    if ( (nVertices_h == 0) || (pVertices == PGENULL) )
+    {
+        getConsole().EOLn("PRREMesh3D::PRREMesh3DImpl::RecalculateSize() in level-2 but vertex data is not present!");
         return;
+    }
 
     // we are subobject, so we need to calculate our own size and object-local position based on min and max vertex positions
 
@@ -253,7 +268,7 @@ void PRREMesh3D::PRREMesh3DImpl::RecalculateSize()
 
 const PRREMaterial& PRREMesh3D::PRREMesh3DImpl::getMaterial(TPRREbool implicitAccessSubobject) const
 {
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
         return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getMaterial();
     else
         return *pMaterial;
@@ -262,7 +277,7 @@ const PRREMaterial& PRREMesh3D::PRREMesh3DImpl::getMaterial(TPRREbool implicitAc
 
 PRREMaterial& PRREMesh3D::PRREMesh3DImpl::getMaterial(TPRREbool implicitAccessSubobject)
 {
-    if ( implicitAccessSubobject && (nVertices_h == 0) && (_pOwner->getCount() == 1) )
+    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
         return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getMaterial();
     else
         return *pMaterial;
@@ -404,6 +419,31 @@ PRREMesh3D::~PRREMesh3D()
     delete pImpl;
     pImpl = NULL;
 } // ~PRRETexture()
+
+
+/**
+    Tells if the mesh is a level-1 parent mesh.
+    A mesh cannot be both level-1 and level-2 at the same time.
+    A level-1 mesh does not have vertex data on its own, but its level-2 submeshes own vertex data.
+
+    @return True if the mesh is a level-1 parent mesh i.e. it has at least 1 submesh, false otherwise.
+*/
+TPRREbool PRREMesh3D::isLevel1() const
+{
+    return pImpl->isLevel1();
+}
+
+/**
+    Tells if the mesh is a level-2 submesh.
+    A mesh cannot be both level-1 and level-2 at the same time.
+    A level-1 mesh does not have vertex data on its own, but its level-2 submeshes own vertex data.
+
+    @return True if the mesh is a level-2 submesh i.e. it doesn't have any submesh, false otherwise.
+*/
+TPRREbool PRREMesh3D::isLevel2() const
+{
+    return pImpl->isLevel2();
+}
 
 
 /**

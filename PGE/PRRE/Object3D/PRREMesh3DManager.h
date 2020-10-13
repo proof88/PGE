@@ -36,7 +36,6 @@ enum TPRRE_PRIMITIVE_FORMAT
 
 
 class PRREMesh3DManager;
-class Object3DManager;
 
 /**
     3D Mesh class.
@@ -58,6 +57,9 @@ class PRREMesh3D :
 public:
     virtual ~PRREMesh3D();
 
+    TPRREbool isLevel1() const;   /**< Tells if the mesh is a level-1 parent mesh. */
+    TPRREbool isLevel2() const;   /**< Tells if the mesh is a level-2 submesh. */
+    
     TPRRE_PRIMITIVE_FORMAT getPrimitiveFormat() const;   /**< Gets the primitives' format. */
 
     TPRREuint   getVerticesCount(TPRREbool implicitAccessSubobject = true) const;      /**< Gets the number of vertices. */
