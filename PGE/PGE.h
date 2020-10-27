@@ -13,7 +13,7 @@
 
 #include "PGEallHeaders.h"
 #include <string>
-#include "PRRE/PR00FsReducedRenderingEngine.h"
+#include "PRRE/include/external/PR00FsReducedRenderingEngine.h"
 #include "PGEInputHandler.h"
 #include "PGEWorld.h"
 

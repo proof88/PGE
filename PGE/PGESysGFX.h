@@ -12,7 +12,7 @@
 */
 
 #include "PGEallHeaders.h"
-#include "PRRE/PR00FsReducedRenderingEngine.h"
+#include "PRRE/include/external/PR00FsReducedRenderingEngine.h"
 // #include "PURE/PURE.h"
 
 /**

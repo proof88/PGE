@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PRRE/Math/PRREVector.h"
+#include "../PRRE/include/external/Math/PRREVector.h"
 #include <sstream>
 
 #ifndef E

@@ -10,8 +10,8 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PRRE/PRRECamera.h"
-#include "../PRRE/Math/PRREMatrix.h"
+#include "../PRRE/include/external/PRRECamera.h"
+#include "../PRRE/include/external/Math/PRREMatrix.h"
 
 #ifndef E2
 #define E2 0.005f

@@ -10,8 +10,8 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PRRE/PR00FsReducedRenderingEngine.h"
-#include "../PRRE/Object3D/PRREObject3DManager.h"
+#include "../PRRE/include/external/PR00FsReducedRenderingEngine.h"
+#include "../PRRE/include/external/Object3D/PRREObject3DManager.h"
 
 #ifndef E
 #define E 0.0001f

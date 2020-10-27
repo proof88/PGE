@@ -25,41 +25,68 @@
     <Filter Include="Header Files\PFL">
       <UniqueIdentifier>{045be79d-9daf-4bc1-81b7-1a65a2074aec}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\PRRE\Render">
-      <UniqueIdentifier>{2d214126-eb63-49ed-ab0b-de61d3b73a66}</UniqueIdentifier>
+    <Filter Include="Header Files\PRRE\include">
+      <UniqueIdentifier>{6e77a6d9-31f6-4048-a4a8-b87b68640bf2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\PRRE\Render">
-      <UniqueIdentifier>{ce068c33-71df-44ad-b814-61716f0005e1}</UniqueIdentifier>
+    <Filter Include="Header Files\PRRE\include\internal">
+      <UniqueIdentifier>{6512a7fb-fd9a-4640-9a43-858e1666d40e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\PRRE\Hardware">
-      <UniqueIdentifier>{22a0f45d-d649-403d-9845-f63fd7c65827}</UniqueIdentifier>
+    <Filter Include="Header Files\PRRE\include\internal\gl">
+      <UniqueIdentifier>{0ab39cb0-a7e8-4477-8374-29a2c137f549}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\PRRE\Hardware">
-      <UniqueIdentifier>{1010c20d-8e7c-4261-9db9-7e293ba50aa8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\PRRE\Math">
-      <UniqueIdentifier>{1dae44e2-944c-4368-9a7c-5424335f1f87}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\PRRE\Math">
-      <UniqueIdentifier>{e7a9dd7e-d7fe-4110-b954-6196c5c7cd9e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\PRRE\Display">
-      <UniqueIdentifier>{824329f4-fa36-4e6c-8da6-2a6f294dcfe0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\PRRE\Display">
-      <UniqueIdentifier>{b0958693-d94e-4333-9c51-a73234b962d0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\PRRE\Material">
-      <UniqueIdentifier>{3f4b8d04-d2b0-49b3-93b7-21a3737248c7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\PRRE\Material">
-      <UniqueIdentifier>{fb719b1e-8198-4d03-96bb-c819666c1f46}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\PRRE\Object3D">
-      <UniqueIdentifier>{794ea4f9-1e22-4d9a-a8ee-4b0775a0dda6}</UniqueIdentifier>
+    <Filter Include="Header Files\PRRE\include\external">
+      <UniqueIdentifier>{11fc8dbb-c633-4fe0-86b6-18bbe46f1918}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\PRRE\Object3D">
-      <UniqueIdentifier>{7db81dcf-0921-4788-bcba-80b8862af787}</UniqueIdentifier>
+      <UniqueIdentifier>{9aaf081a-ef9e-43aa-8d39-53ebb86208d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PRRE\Material">
+      <UniqueIdentifier>{74799aae-0add-4235-997a-38b17f53bee6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PRRE\Math">
+      <UniqueIdentifier>{1010a363-886d-4694-94ab-e8d566eae4ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PRRE\Display">
+      <UniqueIdentifier>{a2a4bec2-7c96-4228-9df9-2f8ac50d2b62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PRRE\Hardware">
+      <UniqueIdentifier>{8dc8935f-07a7-4be5-be94-d4eb4ea7c5cf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PRRE\Render">
+      <UniqueIdentifier>{f19cf9ec-a3b5-4cef-9723-a00116b3cbff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\include\external\Display">
+      <UniqueIdentifier>{933dc6b5-fa82-4c0f-a502-7a89ea564ac6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\include\external\Hardware">
+      <UniqueIdentifier>{c5ee8544-db92-4d4b-9017-98d185e9369d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\include\external\Material">
+      <UniqueIdentifier>{fdcb0b24-26ab-4748-b291-690174f27b3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\include\external\Math">
+      <UniqueIdentifier>{108428d6-cd34-4dc8-88a3-d1cc5f0b9d3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\include\external\Object3D">
+      <UniqueIdentifier>{877f1fde-634a-4159-8806-c5742d789d62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\include\internal\Display">
+      <UniqueIdentifier>{d0f7af34-9523-4dc3-b072-0b33d1a2e5f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\include\internal\Hardware">
+      <UniqueIdentifier>{12e4444a-af63-4c4a-9433-c630e68c3cc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\include\internal\Material">
+      <UniqueIdentifier>{159bc166-824f-4be3-a2ec-b53d5fadd4a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\include\internal\Math">
+      <UniqueIdentifier>{bf61e2e8-6ca5-471e-8e88-5ce6c6ceeb1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\include\internal\Object3D">
+      <UniqueIdentifier>{087c0e75-19a1-424e-bbc7-2410e374ec25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\include\external\Render">
+      <UniqueIdentifier>{a36ba985-7688-41d3-837a-051f1b497bff}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -87,41 +114,8 @@
     <ClInclude Include="PGESysSFX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\PR00FsReducedRenderingEngine.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREBaseClass.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREbaseIncludes.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREconsts.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREFiledManager.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREGLextensionFuncs.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREGLsnippets.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREManager.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREpragmas.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREtypes.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="PGEInputHandler.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRRECamera.h">
-      <Filter>Header Files\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="PGEcfgVariable.h">
       <Filter>Header Files</Filter>
@@ -132,41 +126,11 @@
     <ClInclude Include="PGEWorldTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\PRREuiManager.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREuiText.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\PRREuiFontWin.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="PGEWorldWeather.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\PRREallHeaders.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
     <ClInclude Include="PGEallHeaders.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\g3t\g3t\g3t.h">
-      <Filter>Header Files\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\Render\PRREIRenderer.h">
-      <Filter>Header Files\PRRE\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\Render\PRRERendererHWfixedPipe.h">
-      <Filter>Header Files\PRRE\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\Render\PRRERendererSWincremental.h">
-      <Filter>Header Files\PRRE\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\Render\PRREIIncrementalRenderPipeline.h">
-      <Filter>Header Files\PRRE\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRE\Render\PRREIRenderable.h">
-      <Filter>Header Files\PRRE\Render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\PFL\PFL\PFL.h">
       <Filter>Header Files\PFL</Filter>
@@ -174,134 +138,215 @@
     <ClInclude Include="..\..\CConsole\CConsole\src\CConsole.h">
       <Filter>Header Files\CConsole</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwAudio.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\internal\gl\GL.h">
+      <Filter>Header Files\PRRE\include\internal\gl</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwBase.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\internal\gl\GLAux.h">
+      <Filter>Header Files\PRRE\include\internal\gl</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwCentralProcessor.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\internal\gl\glext.h">
+      <Filter>Header Files\PRRE\include\internal\gl</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwInfo.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\internal\gl\GLU.h">
+      <Filter>Header Files\PRRE\include\internal\gl</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwSystemMemory.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\internal\gl\glut.h">
+      <Filter>Header Files\PRRE\include\internal\gl</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideo.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\internal\gl\glxext.h">
+      <Filter>Header Files\PRRE\include\internal\gl</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Math\PRREMatrix.h">
-      <Filter>Header Files\PRRE\Math</Filter>
+    <ClInclude Include="PRRE\include\internal\gl\wglext.h">
+      <Filter>Header Files\PRRE\include\internal\gl</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Math\PRREPosUpTarget.h">
-      <Filter>Header Files\PRRE\Math</Filter>
+    <ClInclude Include="PRRE\include\external\Display\PRREScreen.h">
+      <Filter>Header Files\PRRE\include\external\Display</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Math\PRRETransformMatrix.h">
-      <Filter>Header Files\PRRE\Math</Filter>
+    <ClInclude Include="PRRE\include\external\Display\PRREWindow.h">
+      <Filter>Header Files\PRRE\include\external\Display</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Math\PRREVector.h">
-      <Filter>Header Files\PRRE\Math</Filter>
+    <ClInclude Include="PRRE\include\external\Hardware\PRREhwAudio.h">
+      <Filter>Header Files\PRRE\include\external\Hardware</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Math\PUREScissor.h">
-      <Filter>Header Files\PRRE\Math</Filter>
+    <ClInclude Include="PRRE\include\external\Hardware\PRREhwBase.h">
+      <Filter>Header Files\PRRE\include\external\Hardware</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Display\PRREScreen.h">
-      <Filter>Header Files\PRRE\Display</Filter>
+    <ClInclude Include="PRRE\include\external\Hardware\PRREhwCentralProcessor.h">
+      <Filter>Header Files\PRRE\include\external\Hardware</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Display\PRRESharedSettings.h">
-      <Filter>Header Files\PRRE\Display</Filter>
+    <ClInclude Include="PRRE\include\external\Hardware\PRREhwInfo.h">
+      <Filter>Header Files\PRRE\include\external\Hardware</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Display\PRREWindow.h">
-      <Filter>Header Files\PRRE\Display</Filter>
+    <ClInclude Include="PRRE\include\external\Hardware\PRREhwSystemMemory.h">
+      <Filter>Header Files\PRRE\include\external\Hardware</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Material\PRREColor.h">
-      <Filter>Header Files\PRRE\Material</Filter>
+    <ClInclude Include="PRRE\include\external\Hardware\PRREhwVideo.h">
+      <Filter>Header Files\PRRE\include\external\Hardware</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Material\PRREImageImpl.h">
-      <Filter>Header Files\PRRE\Material</Filter>
+    <ClInclude Include="PRRE\include\external\Material\PRREColor.h">
+      <Filter>Header Files\PRRE\include\external\Material</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Material\PRREImageManager.h">
-      <Filter>Header Files\PRRE\Material</Filter>
+    <ClInclude Include="PRRE\include\external\Material\PRREImageManager.h">
+      <Filter>Header Files\PRRE\include\external\Material</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Material\PRREMaterialImpl.h">
-      <Filter>Header Files\PRRE\Material</Filter>
+    <ClInclude Include="PRRE\include\external\Material\PRREMaterialManager.h">
+      <Filter>Header Files\PRRE\include\external\Material</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Material\PRREMaterialManager.h">
-      <Filter>Header Files\PRRE\Material</Filter>
+    <ClInclude Include="PRRE\include\external\Material\PRRETextureManager.h">
+      <Filter>Header Files\PRRE\include\external\Material</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Material\PRRETextureImpl.h">
-      <Filter>Header Files\PRRE\Material</Filter>
+    <ClInclude Include="PRRE\include\external\Math\PRREMatrix.h">
+      <Filter>Header Files\PRRE\include\external\Math</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Material\PRRETextureManager.h">
-      <Filter>Header Files\PRRE\Material</Filter>
+    <ClInclude Include="PRRE\include\external\Math\PRREPosUpTarget.h">
+      <Filter>Header Files\PRRE\include\external\Math</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Object3D\PRREObject3DImpl.h">
-      <Filter>Header Files\PRRE\Object3D</Filter>
+    <ClInclude Include="PRRE\include\external\Math\PRRETransformMatrix.h">
+      <Filter>Header Files\PRRE\include\external\Math</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Object3D\PRREObject3DManager.h">
-      <Filter>Header Files\PRRE\Object3D</Filter>
+    <ClInclude Include="PRRE\include\external\Math\PRREVector.h">
+      <Filter>Header Files\PRRE\include\external\Math</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGLbase.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\Object3D\PRREMesh3DManager.h">
+      <Filter>Header Files\PRRE\include\external\Object3D</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_1.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\Object3D\PRREObject3DManager.h">
+      <Filter>Header Files\PRRE\include\external\Object3D</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_2.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\Object3D\PRREVertexTransferMode.h">
+      <Filter>Header Files\PRRE\include\external\Object3D</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_3.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\PR00FsReducedRenderingEngine.h">
+      <Filter>Header Files\PRRE\include\external</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_4.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\PRREallHeaders.h">
+      <Filter>Header Files\PRRE\include\external</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_5.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\PRREBaseClass.h">
+      <Filter>Header Files\PRRE\include\external</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_2_0.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\PRRECamera.h">
+      <Filter>Header Files\PRRE\include\external</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_2_1.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\PRREFiledManager.h">
+      <Filter>Header Files\PRRE\include\external</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_3_0.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\PRREManager.h">
+      <Filter>Header Files\PRRE\include\external</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_3_1.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\PRREtypes.h">
+      <Filter>Header Files\PRRE\include\external</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_3_2.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\PRREuiManager.h">
+      <Filter>Header Files\PRRE\include\external</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_3_3.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\Render\PRREIIncrementalRenderPipeline.h">
+      <Filter>Header Files\PRRE\include\external\Render</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_4_0.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\Render\PRREIRenderable.h">
+      <Filter>Header Files\PRRE\include\external\Render</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_4_1.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\Render\PRREIRenderer.h">
+      <Filter>Header Files\PRRE\include\external\Render</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_4_2.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\Render\PRRERendererHWfixedPipe.h">
+      <Filter>Header Files\PRRE\include\external\Render</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_4_3.h">
-      <Filter>Header Files\PRRE\Hardware</Filter>
+    <ClInclude Include="PRRE\include\external\Render\PRRERendererSWincremental.h">
+      <Filter>Header Files\PRRE\include\external\Render</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Object3D\PRREMesh3DImpl.h">
-      <Filter>Header Files\PRRE\Object3D</Filter>
+    <ClInclude Include="PRRE\include\internal\Display\PRRESharedSettings.h">
+      <Filter>Header Files\PRRE\include\internal\Display</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Object3D\PRREMesh3DManager.h">
-      <Filter>Header Files\PRRE\Object3D</Filter>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_1.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Object3D\PRREVertexTransferMode.h">
-      <Filter>Header Files\PRRE\Object3D</Filter>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_2.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\Object3D\PRREVertexTransferModeImpl.h">
-      <Filter>Header Files\PRRE\Object3D</Filter>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_3.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_4.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_5.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_2_0.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_2_1.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_3_0.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_3_1.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_3_2.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_3_3.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_4_0.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_4_1.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_4_2.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_4_3.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGLbase.h">
+      <Filter>Header Files\PRRE\include\internal\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Material\PRREImageImpl.h">
+      <Filter>Header Files\PRRE\include\internal\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Material\PRREMaterialImpl.h">
+      <Filter>Header Files\PRRE\include\internal\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Material\PRRETextureImpl.h">
+      <Filter>Header Files\PRRE\include\internal\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Math\PUREScissor.h">
+      <Filter>Header Files\PRRE\include\internal\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Object3D\PRREMesh3DImpl.h">
+      <Filter>Header Files\PRRE\include\internal\Object3D</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Object3D\PRREObject3DImpl.h">
+      <Filter>Header Files\PRRE\include\internal\Object3D</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Object3D\PRREVertexTransferModeImpl.h">
+      <Filter>Header Files\PRRE\include\internal\Object3D</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\PRREbaseIncludes.h">
+      <Filter>Header Files\PRRE\include\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\PRREconsts.h">
+      <Filter>Header Files\PRRE\include\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\PRREGLextensionFuncs.h">
+      <Filter>Header Files\PRRE\include\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\PRREGLsnippets.h">
+      <Filter>Header Files\PRRE\include\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\PRREpragmas.h">
+      <Filter>Header Files\PRRE\include\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\PRREuiFontWin.h">
+      <Filter>Header Files\PRRE\include\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\PRREuiText.h">
+      <Filter>Header Files\PRRE\include\internal</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -320,24 +365,6 @@
     <ClCompile Include="PGESysSFX.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PRRE\PRREManager.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREGLsnippets.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREGLextensionFuncs.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREFiledManager.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREBaseClass.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PR00FsReducedRenderingEngine.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
     <ClCompile Include="PGEcfgVariable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -350,110 +377,128 @@
     <ClCompile Include="PGEInputHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PRRE\PRRECamera.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREuiManager.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
     <ClCompile Include="PGEWorld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PRRE\PRREuiFontWin.cpp">
+    <ClCompile Include="PRRE\source\PR00FsReducedRenderingEngine.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
-    <ClCompile Include="PRRE\PRREuiText.cpp">
+    <ClCompile Include="PRRE\source\PRREBaseClass.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
-    <ClCompile Include="PRRE\PRREbaseIncludes.cpp">
+    <ClCompile Include="PRRE\source\PRREbaseIncludes.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
-    <ClCompile Include="PRRE\Render\PRRERendererHWfixedPipe.cpp">
+    <ClCompile Include="PRRE\source\PRRECamera.cpp">
+      <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\PRREFiledManager.cpp">
+      <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\PRREGLextensionFuncs.cpp">
+      <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\PRREGLsnippets.cpp">
+      <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\PRREManager.cpp">
+      <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\PRREuiFontWin.cpp">
+      <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\PRREuiManager.cpp">
+      <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\PRREuiText.cpp">
+      <Filter>Source Files\PRRE</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Object3D\PRREMesh3D.cpp">
+      <Filter>Source Files\PRRE\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Object3D\PRREMesh3DManager.cpp">
+      <Filter>Source Files\PRRE\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Object3D\PRREObject3D.cpp">
+      <Filter>Source Files\PRRE\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Object3D\PRREObject3DManager.cpp">
+      <Filter>Source Files\PRRE\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Object3D\PRREVertexTransferMode.cpp">
+      <Filter>Source Files\PRRE\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Material\PRREColor.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Material\PRREImage.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Material\PRREImageManager.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Material\PRREMaterial.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Material\PRREMaterialManager.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Material\PRRETexture.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Material\PRRETextureManager.cpp">
+      <Filter>Source Files\PRRE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Math\PRREMatrix.cpp">
+      <Filter>Source Files\PRRE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Math\PRREPosUpTarget.cpp">
+      <Filter>Source Files\PRRE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Math\PRRETransformMatrix.cpp">
+      <Filter>Source Files\PRRE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Math\PRREVector.cpp">
+      <Filter>Source Files\PRRE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Math\PUREScissor.cpp">
+      <Filter>Source Files\PRRE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Display\PRREScreen.cpp">
+      <Filter>Source Files\PRRE\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Display\PRRESharedSettings.cpp">
+      <Filter>Source Files\PRRE\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Display\PRREWindow.cpp">
+      <Filter>Source Files\PRRE\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Hardware\PRREhwAudio.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Hardware\PRREhwBase.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Hardware\PRREhwCentralProcessor.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Hardware\PRREhwInfo.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Hardware\PRREhwSystemMemory.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Hardware\PRREhwVideo.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Hardware\PRREhwVideoDiscoverOpenGLbase.cpp">
+      <Filter>Source Files\PRRE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\Render\PRRERendererHWfixedPipe.cpp">
       <Filter>Source Files\PRRE\Render</Filter>
     </ClCompile>
-    <ClCompile Include="PRRE\Render\PRRERendererSWincremental.cpp">
+    <ClCompile Include="PRRE\source\Render\PRRERendererSWincremental.cpp">
       <Filter>Source Files\PRRE\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Hardware\PRREhwAudio.cpp">
-      <Filter>Source Files\PRRE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Hardware\PRREhwBase.cpp">
-      <Filter>Source Files\PRRE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Hardware\PRREhwCentralProcessor.cpp">
-      <Filter>Source Files\PRRE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Hardware\PRREhwInfo.cpp">
-      <Filter>Source Files\PRRE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Hardware\PRREhwSystemMemory.cpp">
-      <Filter>Source Files\PRRE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Hardware\PRREhwVideo.cpp">
-      <Filter>Source Files\PRRE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Math\PRREMatrix.cpp">
-      <Filter>Source Files\PRRE\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Math\PRREPosUpTarget.cpp">
-      <Filter>Source Files\PRRE\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Math\PRRETransformMatrix.cpp">
-      <Filter>Source Files\PRRE\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Math\PRREVector.cpp">
-      <Filter>Source Files\PRRE\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Math\PUREScissor.cpp">
-      <Filter>Source Files\PRRE\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Display\PRREScreen.cpp">
-      <Filter>Source Files\PRRE\Display</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Display\PRRESharedSettings.cpp">
-      <Filter>Source Files\PRRE\Display</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Display\PRREWindow.cpp">
-      <Filter>Source Files\PRRE\Display</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Material\PRREColor.cpp">
-      <Filter>Source Files\PRRE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Material\PRREImage.cpp">
-      <Filter>Source Files\PRRE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Material\PRREImageManager.cpp">
-      <Filter>Source Files\PRRE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Material\PRREMaterial.cpp">
-      <Filter>Source Files\PRRE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Material\PRREMaterialManager.cpp">
-      <Filter>Source Files\PRRE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Material\PRRETexture.cpp">
-      <Filter>Source Files\PRRE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Material\PRRETextureManager.cpp">
-      <Filter>Source Files\PRRE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Object3D\PRREObject3D.cpp">
-      <Filter>Source Files\PRRE\Object3D</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Object3D\PRREObject3DManager.cpp">
-      <Filter>Source Files\PRRE\Object3D</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGLbase.cpp">
-      <Filter>Source Files\PRRE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Object3D\PRREMesh3D.cpp">
-      <Filter>Source Files\PRRE\Object3D</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Object3D\PRREMesh3DManager.cpp">
-      <Filter>Source Files\PRRE\Object3D</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\Object3D\PRREVertexTransferMode.cpp">
-      <Filter>Source Files\PRRE\Object3D</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

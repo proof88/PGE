@@ -11,7 +11,7 @@
 
 #include "UnitTest.h"  // PCH
 #include "../../../PFL/PFL/PFL.h"
-#include "../PRRE/Math/PUREScissor.h"
+#include "../PRRE/include/internal/Math/PUREScissor.h"
 
 #ifndef E
 #define E 0.0001f

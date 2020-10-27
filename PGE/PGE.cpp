@@ -10,16 +10,17 @@
 
 //#include "PRRE/PRREbaseIncludes.h"  // PCH
 #include "PRREbaseIncludes.h"
-#include "PGEpragmas.h"
 #include "PGE.h"
-#include "PRRE/Display/PRREWindow.h"
-#include "PRRE/Display/PRREScreen.h"
 #include "PGEincludes.h"
+#include "PGEpragmas.h"
 // Subsystems
 #include "PGESysGFX.h"
 #include "PGESysSFX.h"
 #include "PGESysNET.h"
 #include "PGESysCFG.h"
+
+#include "PRRE/include/external/Display/PRREScreen.h"
+#include "PRRE/include/external/Display/PRREWindow.h"
 
 using namespace std;
 

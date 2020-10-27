@@ -12,9 +12,9 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
-#include "PGEpragmas.h"
 #include "PGEInputHandler.h"
 #include "PGEincludes.h"
+#include "PGEpragmas.h"
 #include "../../CConsole/CConsole/src/CConsole.h"
 
 

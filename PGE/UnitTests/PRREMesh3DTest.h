@@ -10,9 +10,9 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PRRE/PR00FsReducedRenderingEngine.h"
-#include "../PRRE/Object3D/PRREMesh3DManager.h"
-#include "../PRRE/gl/GL.h" // should not include but we do this for getVertexIndicesType()
+#include "../PRRE/include/external/PR00FsReducedRenderingEngine.h"
+#include "../PRRE/include/external/Object3D/PRREMesh3DManager.h"
+#include "../PRRE/include/internal/gl/GL.h" // should not include but we do this for getVertexIndicesType()
 
 #ifndef E
 #define E 0.0001f

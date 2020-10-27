@@ -9,9 +9,9 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
-#include "PGEpragmas.h"
 #include "PGEWorldTime.h"
 #include "PGEincludes.h"
+#include "PGEpragmas.h"
 #include "../../CConsole/CConsole/src/CConsole.h"
 
 using namespace std;

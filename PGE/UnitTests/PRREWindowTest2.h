@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PRRE/Display/PRREWindow.h"
+#include "../PRRE/include/external/Display/PRREWindow.h"
 
 #ifndef E
 #define E 0.0001f

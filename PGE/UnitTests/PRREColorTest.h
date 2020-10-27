@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PRRE/Material/PRREColor.h"
+#include "../PRRE/include/external/Material/PRREColor.h"
 #include <sstream>
 
 #ifndef E2

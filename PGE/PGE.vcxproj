@@ -181,7 +181,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\g3t\g3t\g3t.h" />
     <ClInclude Include="..\..\CConsole\CConsole\src\CConsole.h" />
     <ClInclude Include="..\..\PFL\PFL\PFL.h" />
     <ClInclude Include="PGE.h" />
@@ -198,69 +197,76 @@
     <ClInclude Include="PGEWorld.h" />
     <ClInclude Include="PGEWorldTime.h" />
     <ClInclude Include="PGEWorldWeather.h" />
-    <ClInclude Include="PRRE\Display\PRREScreen.h" />
-    <ClInclude Include="PRRE\Display\PRRESharedSettings.h" />
-    <ClInclude Include="PRRE\Display\PRREWindow.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwAudio.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwBase.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwCentralProcessor.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwInfo.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwSystemMemory.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideo.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGLbase.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_1.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_2.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_3.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_4.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_1_5.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_2_0.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_2_1.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_3_0.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_3_1.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_3_2.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_3_3.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_4_0.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_4_1.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_4_2.h" />
-    <ClInclude Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGL_4_3.h" />
-    <ClInclude Include="PRRE\Material\PRREColor.h" />
-    <ClInclude Include="PRRE\Material\PRREImageImpl.h" />
-    <ClInclude Include="PRRE\Material\PRREImageManager.h" />
-    <ClInclude Include="PRRE\Material\PRREMaterialImpl.h" />
-    <ClInclude Include="PRRE\Material\PRREMaterialManager.h" />
-    <ClInclude Include="PRRE\Material\PRRETextureImpl.h" />
-    <ClInclude Include="PRRE\Material\PRRETextureManager.h" />
-    <ClInclude Include="PRRE\Math\PRREMatrix.h" />
-    <ClInclude Include="PRRE\Math\PRREPosUpTarget.h" />
-    <ClInclude Include="PRRE\Math\PRRETransformMatrix.h" />
-    <ClInclude Include="PRRE\Math\PRREVector.h" />
-    <ClInclude Include="PRRE\Math\PUREScissor.h" />
-    <ClInclude Include="PRRE\Object3D\PRREMesh3DImpl.h" />
-    <ClInclude Include="PRRE\Object3D\PRREMesh3DManager.h" />
-    <ClInclude Include="PRRE\Object3D\PRREObject3DImpl.h" />
-    <ClInclude Include="PRRE\Object3D\PRREObject3DManager.h" />
-    <ClInclude Include="PRRE\Object3D\PRREVertexTransferMode.h" />
-    <ClInclude Include="PRRE\Object3D\PRREVertexTransferModeImpl.h" />
-    <ClInclude Include="PRRE\Render\PRREIIncrementalRenderPipeline.h" />
-    <ClInclude Include="PRRE\PR00FsReducedRenderingEngine.h" />
-    <ClInclude Include="PRRE\PRREallHeaders.h" />
-    <ClInclude Include="PRRE\PRREBaseClass.h" />
-    <ClInclude Include="PRRE\PRREbaseIncludes.h" />
-    <ClInclude Include="PRRE\PRRECamera.h" />
-    <ClInclude Include="PRRE\PRREconsts.h" />
-    <ClInclude Include="PRRE\PRREFiledManager.h" />
-    <ClInclude Include="PRRE\PRREGLextensionFuncs.h" />
-    <ClInclude Include="PRRE\PRREGLsnippets.h" />
-    <ClInclude Include="PRRE\Render\PRREIRenderable.h" />
-    <ClInclude Include="PRRE\Render\PRRERendererHWfixedPipe.h" />
-    <ClInclude Include="PRRE\PRREManager.h" />
-    <ClInclude Include="PRRE\PRREpragmas.h" />
-    <ClInclude Include="PRRE\Render\PRREIRenderer.h" />
-    <ClInclude Include="PRRE\Render\PRRERendererSWincremental.h" />
-    <ClInclude Include="PRRE\PRREtypes.h" />
-    <ClInclude Include="PRRE\PRREuiFontWin.h" />
-    <ClInclude Include="PRRE\PRREuiManager.h" />
-    <ClInclude Include="PRRE\PRREuiText.h" />
+    <ClInclude Include="PRRE\include\external\Display\PRREScreen.h" />
+    <ClInclude Include="PRRE\include\external\Display\PRREWindow.h" />
+    <ClInclude Include="PRRE\include\external\Hardware\PRREhwAudio.h" />
+    <ClInclude Include="PRRE\include\external\Hardware\PRREhwBase.h" />
+    <ClInclude Include="PRRE\include\external\Hardware\PRREhwCentralProcessor.h" />
+    <ClInclude Include="PRRE\include\external\Hardware\PRREhwInfo.h" />
+    <ClInclude Include="PRRE\include\external\Hardware\PRREhwSystemMemory.h" />
+    <ClInclude Include="PRRE\include\external\Hardware\PRREhwVideo.h" />
+    <ClInclude Include="PRRE\include\external\Material\PRREColor.h" />
+    <ClInclude Include="PRRE\include\external\Material\PRREImageManager.h" />
+    <ClInclude Include="PRRE\include\external\Material\PRREMaterialManager.h" />
+    <ClInclude Include="PRRE\include\external\Material\PRRETextureManager.h" />
+    <ClInclude Include="PRRE\include\external\Math\PRREMatrix.h" />
+    <ClInclude Include="PRRE\include\external\Math\PRREPosUpTarget.h" />
+    <ClInclude Include="PRRE\include\external\Math\PRRETransformMatrix.h" />
+    <ClInclude Include="PRRE\include\external\Math\PRREVector.h" />
+    <ClInclude Include="PRRE\include\external\Object3D\PRREMesh3DManager.h" />
+    <ClInclude Include="PRRE\include\external\Object3D\PRREObject3DManager.h" />
+    <ClInclude Include="PRRE\include\external\Object3D\PRREVertexTransferMode.h" />
+    <ClInclude Include="PRRE\include\external\PR00FsReducedRenderingEngine.h" />
+    <ClInclude Include="PRRE\include\external\PRREallHeaders.h" />
+    <ClInclude Include="PRRE\include\external\PRREBaseClass.h" />
+    <ClInclude Include="PRRE\include\external\PRRECamera.h" />
+    <ClInclude Include="PRRE\include\external\PRREFiledManager.h" />
+    <ClInclude Include="PRRE\include\external\PRREManager.h" />
+    <ClInclude Include="PRRE\include\external\PRREtypes.h" />
+    <ClInclude Include="PRRE\include\external\PRREuiManager.h" />
+    <ClInclude Include="PRRE\include\external\Render\PRREIIncrementalRenderPipeline.h" />
+    <ClInclude Include="PRRE\include\external\Render\PRREIRenderable.h" />
+    <ClInclude Include="PRRE\include\external\Render\PRREIRenderer.h" />
+    <ClInclude Include="PRRE\include\external\Render\PRRERendererHWfixedPipe.h" />
+    <ClInclude Include="PRRE\include\external\Render\PRRERendererSWincremental.h" />
+    <ClInclude Include="PRRE\include\internal\Display\PRRESharedSettings.h" />
+    <ClInclude Include="PRRE\include\internal\gl\GL.h" />
+    <ClInclude Include="PRRE\include\internal\gl\GLAux.h" />
+    <ClInclude Include="PRRE\include\internal\gl\glext.h" />
+    <ClInclude Include="PRRE\include\internal\gl\GLU.h" />
+    <ClInclude Include="PRRE\include\internal\gl\glut.h" />
+    <ClInclude Include="PRRE\include\internal\gl\glxext.h" />
+    <ClInclude Include="PRRE\include\internal\gl\wglext.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGLbase.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_1.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_2.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_3.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_4.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_5.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_2_0.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_2_1.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_3_0.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_3_1.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_3_2.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_3_3.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_4_0.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_4_1.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_4_2.h" />
+    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_4_3.h" />
+    <ClInclude Include="PRRE\include\internal\Material\PRREImageImpl.h" />
+    <ClInclude Include="PRRE\include\internal\Material\PRREMaterialImpl.h" />
+    <ClInclude Include="PRRE\include\internal\Material\PRRETextureImpl.h" />
+    <ClInclude Include="PRRE\include\internal\Math\PUREScissor.h" />
+    <ClInclude Include="PRRE\include\internal\Object3D\PRREMesh3DImpl.h" />
+    <ClInclude Include="PRRE\include\internal\Object3D\PRREObject3DImpl.h" />
+    <ClInclude Include="PRRE\include\internal\Object3D\PRREVertexTransferModeImpl.h" />
+    <ClInclude Include="PRRE\include\internal\PRREbaseIncludes.h" />
+    <ClInclude Include="PRRE\include\internal\PRREconsts.h" />
+    <ClInclude Include="PRRE\include\internal\PRREGLextensionFuncs.h" />
+    <ClInclude Include="PRRE\include\internal\PRREGLsnippets.h" />
+    <ClInclude Include="PRRE\include\internal\PRREpragmas.h" />
+    <ClInclude Include="PRRE\include\internal\PRREuiFontWin.h" />
+    <ClInclude Include="PRRE\include\internal\PRREuiText.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp" />
@@ -273,61 +279,55 @@
     <ClCompile Include="PGEWorld.cpp" />
     <ClCompile Include="PGEWorldTime.cpp" />
     <ClCompile Include="PGEWorldWeather.cpp" />
-    <ClCompile Include="PRRE\Display\PRREScreen.cpp" />
-    <ClCompile Include="PRRE\Display\PRRESharedSettings.cpp" />
-    <ClCompile Include="PRRE\Display\PRREWindow.cpp" />
-    <ClCompile Include="PRRE\Hardware\PRREhwAudio.cpp" />
-    <ClCompile Include="PRRE\Hardware\PRREhwBase.cpp" />
-    <ClCompile Include="PRRE\Hardware\PRREhwCentralProcessor.cpp" />
-    <ClCompile Include="PRRE\Hardware\PRREhwInfo.cpp" />
-    <ClCompile Include="PRRE\Hardware\PRREhwSystemMemory.cpp" />
-    <ClCompile Include="PRRE\Hardware\PRREhwVideo.cpp" />
-    <ClCompile Include="PRRE\Hardware\PRREhwVideoDiscoverOpenGLbase.cpp" />
-    <ClCompile Include="PRRE\Material\PRREColor.cpp" />
-    <ClCompile Include="PRRE\Material\PRREImage.cpp" />
-    <ClCompile Include="PRRE\Material\PRREImageManager.cpp" />
-    <ClCompile Include="PRRE\Material\PRREMaterial.cpp" />
-    <ClCompile Include="PRRE\Material\PRREMaterialManager.cpp" />
-    <ClCompile Include="PRRE\Material\PRRETexture.cpp" />
-    <ClCompile Include="PRRE\Material\PRRETextureManager.cpp" />
-    <ClCompile Include="PRRE\Math\PRREMatrix.cpp" />
-    <ClCompile Include="PRRE\Math\PRREPosUpTarget.cpp" />
-    <ClCompile Include="PRRE\Math\PRRETransformMatrix.cpp" />
-    <ClCompile Include="PRRE\Math\PRREVector.cpp" />
-    <ClCompile Include="PRRE\Math\PUREScissor.cpp" />
-    <ClCompile Include="PRRE\Object3D\PRREMesh3D.cpp" />
-    <ClCompile Include="PRRE\Object3D\PRREMesh3DManager.cpp" />
-    <ClCompile Include="PRRE\Object3D\PRREObject3D.cpp" />
-    <ClCompile Include="PRRE\Object3D\PRREObject3DManager.cpp" />
-    <ClCompile Include="PRRE\Object3D\PRREVertexTransferMode.cpp" />
-    <ClCompile Include="PRRE\PR00FsReducedRenderingEngine.cpp" />
-    <ClCompile Include="PRRE\PRREBaseClass.cpp" />
-    <ClCompile Include="PRRE\PRREbaseIncludes.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    <ClCompile Include="PRRE\source\Display\PRREScreen.cpp" />
+    <ClCompile Include="PRRE\source\Display\PRRESharedSettings.cpp" />
+    <ClCompile Include="PRRE\source\Display\PRREWindow.cpp" />
+    <ClCompile Include="PRRE\source\Hardware\PRREhwAudio.cpp" />
+    <ClCompile Include="PRRE\source\Hardware\PRREhwBase.cpp" />
+    <ClCompile Include="PRRE\source\Hardware\PRREhwCentralProcessor.cpp" />
+    <ClCompile Include="PRRE\source\Hardware\PRREhwInfo.cpp" />
+    <ClCompile Include="PRRE\source\Hardware\PRREhwSystemMemory.cpp" />
+    <ClCompile Include="PRRE\source\Hardware\PRREhwVideo.cpp" />
+    <ClCompile Include="PRRE\source\Hardware\PRREhwVideoDiscoverOpenGLbase.cpp" />
+    <ClCompile Include="PRRE\source\Material\PRREColor.cpp" />
+    <ClCompile Include="PRRE\source\Material\PRREImage.cpp" />
+    <ClCompile Include="PRRE\source\Material\PRREImageManager.cpp" />
+    <ClCompile Include="PRRE\source\Material\PRREMaterial.cpp" />
+    <ClCompile Include="PRRE\source\Material\PRREMaterialManager.cpp" />
+    <ClCompile Include="PRRE\source\Material\PRRETexture.cpp" />
+    <ClCompile Include="PRRE\source\Material\PRRETextureManager.cpp" />
+    <ClCompile Include="PRRE\source\Math\PRREMatrix.cpp" />
+    <ClCompile Include="PRRE\source\Math\PRREPosUpTarget.cpp" />
+    <ClCompile Include="PRRE\source\Math\PRRETransformMatrix.cpp" />
+    <ClCompile Include="PRRE\source\Math\PRREVector.cpp" />
+    <ClCompile Include="PRRE\source\Math\PUREScissor.cpp" />
+    <ClCompile Include="PRRE\source\Object3D\PRREMesh3D.cpp" />
+    <ClCompile Include="PRRE\source\Object3D\PRREMesh3DManager.cpp" />
+    <ClCompile Include="PRRE\source\Object3D\PRREObject3D.cpp" />
+    <ClCompile Include="PRRE\source\Object3D\PRREObject3DManager.cpp" />
+    <ClCompile Include="PRRE\source\Object3D\PRREVertexTransferMode.cpp" />
+    <ClCompile Include="PRRE\source\PR00FsReducedRenderingEngine.cpp" />
+    <ClCompile Include="PRRE\source\PRREBaseClass.cpp" />
+    <ClCompile Include="PRRE\source\PRREbaseIncludes.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">../include/internal/PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../include/internal/PRREbaseIncludes.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../include/internal/PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">../include/internal/PRREbaseIncludes.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="PRRE\PRRECamera.cpp" />
-    <ClCompile Include="PRRE\PRREFiledManager.cpp" />
-    <ClCompile Include="PRRE\PRREGLextensionFuncs.cpp" />
-    <ClCompile Include="PRRE\PRREGLsnippets.cpp" />
-    <ClCompile Include="PRRE\Render\PRRERendererHWfixedPipe.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREManager.cpp" />
-    <ClCompile Include="PRRE\Render\PRRERendererSWincremental.cpp">
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../PRREbaseIncludes.h</PrecompiledHeaderFile>
-    </ClCompile>
-    <ClCompile Include="PRRE\PRREuiFontWin.cpp" />
-    <ClCompile Include="PRRE\PRREuiManager.cpp" />
-    <ClCompile Include="PRRE\PRREuiText.cpp" />
+    <ClCompile Include="PRRE\source\PRRECamera.cpp" />
+    <ClCompile Include="PRRE\source\PRREFiledManager.cpp" />
+    <ClCompile Include="PRRE\source\PRREGLextensionFuncs.cpp" />
+    <ClCompile Include="PRRE\source\PRREGLsnippets.cpp" />
+    <ClCompile Include="PRRE\source\PRREManager.cpp" />
+    <ClCompile Include="PRRE\source\PRREuiFontWin.cpp" />
+    <ClCompile Include="PRRE\source\PRREuiManager.cpp" />
+    <ClCompile Include="PRRE\source\PRREuiText.cpp" />
+    <ClCompile Include="PRRE\source\Render\PRRERendererHWfixedPipe.cpp" />
+    <ClCompile Include="PRRE\source\Render\PRRERendererSWincremental.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

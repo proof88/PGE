@@ -9,9 +9,9 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
-#include "PGEpragmas.h"
 #include "PGESysNET.h"
 #include "PGEincludes.h"
+#include "PGEpragmas.h"
 
 
 /*

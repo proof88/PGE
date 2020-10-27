@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PRRE/PRREBaseClass.h"
+#include "../PRRE/include/external/PRREBaseClass.h"
 
 #ifndef E
 #define E 0.0001f

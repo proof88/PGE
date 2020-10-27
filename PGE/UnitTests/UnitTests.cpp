@@ -9,55 +9,52 @@
 
 #include "UnitTest.h"  // PCH
 
+#include <vector>
+
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
 
-#include <vector>
-
 #include "../../../CConsole/CConsole/src/CConsole.h"
-
 
 #include "PFLTest.h"
 #include "PGEcfgVariableTest.h"
 #include "PGESysCFGTest.h"
-#include "PRREScreenTest.h"
-#include "PRRESharedSettingsTest.h"
-#include "PRREVectorTest.h"
-#include "PRREPosUpTargetTest.h"
-#include "PRREMatrixTest.h"
-#include "PRRETransformMatrixTest.h"
-#include "PRREColorTest.h"
-#include "PRREBaseClassTest.h"
-#include "PRREManagerTest.h"
-#include "PRREManagedTest.h"
-#include "PRREFiledManagerTest.h"
-#include "PRREFiledManagedTest.h"
-#include "PRREhwInfoTest.h"
-#include "PRREhwCentralProcessorTest.h"
-#include "PRREhwSystemMemoryTest.h"
-#include "PRREhwVideoTest.h"
-#include "PRREhwAudioTest.h"
-#include "PRREImageManagerTest.h"
-#include "PRREImageTest.h"
-#include "PRRETextureManagerTest.h"
-#include "PRRETextureTest.h"
-#include "PRREMaterialManagerTest.h"
-#include "PRREMaterialTest.h"
-#include "PRRECameraTest.h"
-#include "PRREMesh3DManagerTest.h"
-#include "PRREMesh3DTest.h"
-#include "PRREVertexTransferTest.h"
-#include "PRREObject3DManagerTest.h"
-#include "PRREObject3DTest.h"
-#include "PRREWindowTest.h"
-#include "PRREWindowTest2.h"
-#include "PRREScissorTest.h"
 #include "PR00FsReducedRenderingEngineTest.h"
 #include "PR00FsReducedRenderingEngineTest2.h"
-
-
+#include "PRREBaseClassTest.h"
+#include "PRRECameraTest.h"
+#include "PRREColorTest.h"
+#include "PRREFiledManagedTest.h"
+#include "PRREFiledManagerTest.h"
+#include "PRREhwAudioTest.h"
+#include "PRREhwCentralProcessorTest.h"
+#include "PRREhwInfoTest.h"
+#include "PRREhwSystemMemoryTest.h"
+#include "PRREhwVideoTest.h"
+#include "PRREImageTest.h"
+#include "PRREImageManagerTest.h"
+#include "PRREManagedTest.h"
+#include "PRREManagerTest.h"
+#include "PRREMaterialTest.h"
+#include "PRREMaterialManagerTest.h"
+#include "PRREMatrixTest.h"
+#include "PRREMesh3DTest.h"
+#include "PRREMesh3DManagerTest.h"
+#include "PRREObject3DTest.h"
+#include "PRREObject3DManagerTest.h"
+#include "PRREPosUpTargetTest.h"
+#include "PRREScissorTest.h"
+#include "PRREScreenTest.h"
+#include "PRRESharedSettingsTest.h"
+#include "PRRETextureTest.h"
+#include "PRRETextureManagerTest.h"
+#include "PRRETransformMatrixTest.h"
+#include "PRREVectorTest.h"
+#include "PRREVertexTransferTest.h"
+#include "PRREWindowTest.h"
+#include "PRREWindowTest2.h"
 
 #define CON_TITLE "Unit tests for PGE"
 

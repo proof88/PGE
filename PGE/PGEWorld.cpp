@@ -11,10 +11,9 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
-#include "PGEpragmas.h"
 #include "PGEWorld.h"
 #include "PGEincludes.h"
-
+#include "PGEpragmas.h"
 
 
 /*

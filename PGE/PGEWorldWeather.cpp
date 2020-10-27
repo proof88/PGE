@@ -9,10 +9,10 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
-#include "PGEpragmas.h"
 #include "PGEWorldWeather.h"
 #include "PGEincludes.h"
-#include "PRRE/Math/PRREVector.h"
+#include "PGEpragmas.h"
+#include "PRRE/include/external/Math/PRREVector.h"
 
 using namespace std;
 
