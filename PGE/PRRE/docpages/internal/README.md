@@ -280,5 +280,8 @@ Related OpenGL API: TODO.
 
 Related PURE API: TODO.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEzMTY3OTUxNDhdfQ==
+eyJwcm9wZXJ0aWVzIjoiYXV0aG9yOiBQUjAwRjg4XG5kYXRlOi
+AnMjAyMC0xMS0yMidcbnRpdGxlOiBQVVJFIGRvY3VtZW50YXRp
+b25cbiIsImhpc3RvcnkiOls2ODIyNTc5LC0xMzE2Nzk1MTQ4XX
+0=
 -->
