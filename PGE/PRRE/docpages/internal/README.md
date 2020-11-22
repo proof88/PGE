@@ -17,7 +17,7 @@ This documentation contains intellectual properties of various sources, listed b
  - [http://developer.amd.com/wordpress/media/2012/10/Depth_in-depth.pdf](http://developer.amd.com/wordpress/media/2012/10/Depth_in-depth.pdf)
  - [https://en.wikipedia.org/wiki/HyperZ](https://en.wikipedia.org/wiki/HyperZ)
 
-
+TODO: add ToC
 
 # Engine Usage
 
@@ -279,9 +279,53 @@ Fails if the specified stencil function fails between the source and destination
 Related OpenGL API: TODO.
 
 Related PURE API: TODO.
+
+<![endif]-->
+
+#### Depth Test
+
+Fails if the specified depth function between the source and destination depth values fails. If depth test passes for a [fragment](#_Fragment) then the Occlusion Query gets updated if there is an active query. Related: [HyperZ](#_HyperZ_(ATi)). More on depth testing and precision:
+
+<![if !supportLists]>· <![endif]>[http://learnopengl.com/#!Advanced-OpenGL/Depth-testing](http://learnopengl.com/#!Advanced-OpenGL/Depth-testing)
+
+<![if !supportLists]>· <![endif]>[https://developer.nvidia.com/content/depth-precision-visualized](https://developer.nvidia.com/content/depth-precision-visualized)
+
+Related OpenGL API: TODO.
+
+Related PURE API: TODO.
+
+The **Depth Buffer** stores floating point depth values in the [0;1] range. Precision can be 16-, 24- or 32-bit. Description and tricks for depth buffer and testing can be found on the following pages:  
+[https://developer.nvidia.com/content/depth-precision-visualized](https://developer.nvidia.com/content/depth-precision-visualized)  
+[http://learnopengl.com/#!Advanced-OpenGL/Depth-testing](http://learnopengl.com/#!Advanced-OpenGL/Depth-testing)
+
+#### Blending
+
+Related OpenGL API: TODO.
+
+Related PURE API: TODO.
+
+#### Dithering
+
+When the incoming [fragment](#_Fragment) color can’t be stored exactly due to less precision of the output image, 2 representable colors can be used instead of the incoming color: the one from rounding up and the other from rounding down. It depends on the implementation which will be used. If dithering is enabled, the output color will be selected based on the position of the [fragment](#_Fragment), by varying between the 2 selectable colors. GL_DITHER
+
+Related OpenGL API: TODO.
+
+Related PURE API: TODO.
+
+#### Logic Operations
+
+Unsupported by PURE.
+
+Related OpenGL API: TODO.
+
+#### Write Mask
+
+Masking off writing to particular buffers. Unsupported by PURE.
+
+Related OpenGL API: TODO.
 <!--stackedit_data:
 eyJwcm9wZXJ0aWVzIjoiYXV0aG9yOiBQUjAwRjg4XG5kYXRlOi
 AnMjAyMC0xMS0yMidcbnRpdGxlOiBQVVJFIGRvY3VtZW50YXRp
-b25cbiIsImhpc3RvcnkiOls2ODIyNTc5LC0xMzE2Nzk1MTQ4XX
-0=
+b25cbiIsImhpc3RvcnkiOlstMzg2MDU3MDY5LDY4MjI1NzksLT
+EzMTY3OTUxNDhdfQ==
 -->
