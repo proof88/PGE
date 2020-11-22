@@ -1,5 +1,6 @@
 # Introduction
 This documentation describes how my engine works and explains relevant technologies. You are reading the internal documentation which contains more information that you might be possibly interested in. If you are only interested in the API usage and want to avoid reading about internals, generate an external documentation with DoxyGen using PURE_Doxyfile_external.
+I wrote this documen
 
 ## Motivation
 Since my mid-childhood (~13 years old), I have always wanted to create not only PC games but also a 3D graphics engine. Inspired by the success of id Software’s Quake III engine (id Tech 3), I am making my own now. The aim is to create & continuously develop a cross-platform codebase giving nice image quality with strong performance on newer hardware while maintaining compatibility with older hardware as well. The latter is important for me since I am interested in learning old-school techniques from the age of the first 3D-accelerators. :) Some parts of the engine was written from ground zero, some other parts are open-source libraries utilized by the engine.
@@ -323,6 +324,6 @@ Related OpenGL API: TODO.
 <!--stackedit_data:
 eyJwcm9wZXJ0aWVzIjoiYXV0aG9yOiBQUjAwRjg4XG5kYXRlOi
 AnMjAyMC0xMS0yMidcbnRpdGxlOiBQVVJFIGRvY3VtZW50YXRp
-b25cbiIsImhpc3RvcnkiOlstMzMxODYxOTAyLDY4MjI1NzksLT
+b25cbiIsImhpc3RvcnkiOlsxNDk2MjY3MjEzLDY4MjI1NzksLT
 EzMTY3OTUxNDhdfQ==
 -->
