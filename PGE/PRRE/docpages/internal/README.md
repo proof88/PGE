@@ -321,9 +321,13 @@ Related OpenGL API: TODO.
 Masking off writing to particular buffers. Unsupported by PURE.
 
 Related OpenGL API: TODO.
+
+# Do’s and don’t’s
+
+“Style guides and usage books don't agree. The Chicago Manual of Style and others recommend dos and don'ts. The Associated Press and others recommend do's and don'ts. Eats, Shoots & Leaves recommends do's and don't's”_ - [http://www.quickanddirtytips.com/education/grammar/dos-and-donts](http://www.quickanddirtytips.com/education/grammar/dos-and-donts)
 <!--stackedit_data:
 eyJwcm9wZXJ0aWVzIjoiYXV0aG9yOiBQUjAwRjg4XG5kYXRlOi
 AnMjAyMC0xMS0yMidcbnRpdGxlOiBQVVJFIGRvY3VtZW50YXRp
-b25cbiIsImhpc3RvcnkiOlstMjI3OTAwMTM0LDY4MjI1NzksLT
-EzMTY3OTUxNDhdfQ==
+b25cbiIsImhpc3RvcnkiOlstMTE3ODEwNTI2Nyw2ODIyNTc5LC
+0xMzE2Nzk1MTQ4XX0=
 -->
