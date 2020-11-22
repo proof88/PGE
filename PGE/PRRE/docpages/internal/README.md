@@ -280,23 +280,20 @@ Related OpenGL API: TODO.
 
 Related PURE API: TODO.
 
-<![endif]-->
-
 #### Depth Test
 
 Fails if the specified depth function between the source and destination depth values fails. If depth test passes for a [fragment](#_Fragment) then the Occlusion Query gets updated if there is an active query. Related: [HyperZ](#_HyperZ_(ATi)). More on depth testing and precision:
 
-<![if !supportLists]>· <![endif]>[http://learnopengl.com/#!Advanced-OpenGL/Depth-testing](http://learnopengl.com/#!Advanced-OpenGL/Depth-testing)
-
-<![if !supportLists]>· <![endif]>[https://developer.nvidia.com/content/depth-precision-visualized](https://developer.nvidia.com/content/depth-precision-visualized)
+ - [http://learnopengl.com/#!Advanced-OpenGL/Depth-testing](http://learnopengl.com/#!Advanced-OpenGL/Depth-testing)
+ - [https://developer.nvidia.com/content/depth-precision-visualized](https://developer.nvidia.com/content/depth-precision-visualized)
 
 Related OpenGL API: TODO.
 
 Related PURE API: TODO.
 
 The **Depth Buffer** stores floating point depth values in the [0;1] range. Precision can be 16-, 24- or 32-bit. Description and tricks for depth buffer and testing can be found on the following pages:  
-[https://developer.nvidia.com/content/depth-precision-visualized](https://developer.nvidia.com/content/depth-precision-visualized)  
-[http://learnopengl.com/#!Advanced-OpenGL/Depth-testing](http://learnopengl.com/#!Advanced-OpenGL/Depth-testing)
+ - [https://developer.nvidia.com/content/depth-precision-visualized](https://developer.nvidia.com/content/depth-precision-visualized)  
+ - [http://learnopengl.com/#!Advanced-OpenGL/Depth-testing](http://learnopengl.com/#!Advanced-OpenGL/Depth-testing)
 
 #### Blending
 
@@ -326,6 +323,6 @@ Related OpenGL API: TODO.
 <!--stackedit_data:
 eyJwcm9wZXJ0aWVzIjoiYXV0aG9yOiBQUjAwRjg4XG5kYXRlOi
 AnMjAyMC0xMS0yMidcbnRpdGxlOiBQVVJFIGRvY3VtZW50YXRp
-b25cbiIsImhpc3RvcnkiOlstMzg2MDU3MDY5LDY4MjI1NzksLT
+b25cbiIsImhpc3RvcnkiOlstMzMxODYxOTAyLDY4MjI1NzksLT
 EzMTY3OTUxNDhdfQ==
 -->
