@@ -140,15 +140,13 @@ Render the scene large size internally then scale the result down to the output 
 
 Next I describe the usual steps in a rendering pipeline that produces a rendered image of a 3D object, with the help of the picture below.
 
-
-
-source: [http://www.adobe.com/devnet/flashplayer/articles/how-stage3d-works.html](http://www.adobe.com/devnet/flashplayer/articles/how-stage3d-works.html)
+![](../img_common/stage3d.PNG)
+image source: [http://www.adobe.com/devnet/flashplayer/articles/how-stage3d-works.html](http://www.adobe.com/devnet/flashplayer/articles/how-stage3d-works.html)
 
 First we define the [vertex](#_Vertex) stream by specifying the [vertex](#_Vertex) attributes (eg. position), the storage location of this stream (eg. host memory), and how to interpret the stream ([primitive](#_Primitive) type eg. triangles). Modeling-, view-, and projection transformations on the vertices including optional normals are done, so the [vertices](#_Vertex) are transformed from **object-space to clip-space**. [Primitives](#_Primitive) (e.g. triangles) are assembled from the transformed [vertices](#_Vertex), clipping is applied and then they are further transformed from **clip-space to screen/window-space**. Then we find out which pixels are covered by the incoming triangles, and interpolate [vertex](#_Vertex) attributes across the triangle. These generated values are fragments. Color, depth and stencil values are generated from each [fragment](#_Fragment) with the use of optional textures. The final steps include depth testing, blending. etc.
 Following picture is an example of a rendering pipeline architecture implemented in HW. A bit more specific than the previous picture.
 
-TODO: add picture  
-  
+![](../img_common/pipeline_3d_w570.jpg)
 source: [http://www.ozone3d.net/tutorials/gpu_sm3_dx9_3d_pipeline_p02.php](http://www.ozone3d.net/tutorials/gpu_sm3_dx9_3d_pipeline_p02.php)
 
 Note: as seen in the picture, [Rasterizer](#_Rasterization_1) is not equal to [Raster Operation Unit](#_Raster_Operation_Unit).
@@ -249,6 +247,6 @@ TODO. Since Geforce 6xxx series.
 <!--stackedit_data:
 eyJwcm9wZXJ0aWVzIjoidGl0bGU6IFBVUkUgR2xvc3Nhcnlcbm
 F1dGhvcjogUFIwMEY4OFxuZGF0ZTogJzIwMjAtMTEtMjInXG4i
-LCJoaXN0b3J5IjpbNDM2MDE0OTg1LC01MzY0NTc0NywtOTkzMD
-Y2Njg1XX0=
+LCJoaXN0b3J5IjpbLTEyNTA3Nzg2NzQsLTUzNjQ1NzQ3LC05OT
+MwNjY2ODVdfQ==
 -->
