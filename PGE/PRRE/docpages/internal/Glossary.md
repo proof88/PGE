@@ -165,7 +165,7 @@ Since Geforce 256.
 
 PURE implicitly benefits of this thanks to the vendors’ OpenGL implementation.
 
-[http://www.anandtech.com/show/391/5](http://www.anandtech.com/show/391/5) (img_common%5Ctandl.png)
+[http://www.anandtech.com/show/391/5](http://www.anandtech.com/show/391/5) (../img_common%5Ctandl.png)
 
 source: [http://www.anandtech.com/show/391/5](http://www.anandtech.com/show/391/5)
 
@@ -251,5 +251,5 @@ TODO. Since Geforce 6xxx series.
 <!--stackedit_data:
 eyJwcm9wZXJ0aWVzIjoidGl0bGU6IFBVUkUgR2xvc3Nhcnlcbm
 F1dGhvcjogUFIwMEY4OFxuZGF0ZTogJzIwMjAtMTEtMjInXG4i
-LCJoaXN0b3J5IjpbMTE0OTg2MTEyMCwtOTkzMDY2Njg1XX0=
+LCJoaXN0b3J5IjpbLTE3MjExNzA0MzUsLTk5MzA2NjY4NV19
 -->
