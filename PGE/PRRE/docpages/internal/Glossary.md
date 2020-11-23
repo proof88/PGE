@@ -140,7 +140,7 @@ Render the scene large size internally then scale the result down to the output 
 
 Next I describe the usual steps in a rendering pipeline that produces a rendered image of a 3D object, with the help of the picture below.
 
-TODO: add picture
+
 
 source: [http://www.adobe.com/devnet/flashplayer/articles/how-stage3d-works.html](http://www.adobe.com/devnet/flashplayer/articles/how-stage3d-works.html)
 
@@ -164,9 +164,8 @@ Moving the [vertex](#_Vertex) transformation and lighting calculations from SW (
 Since Geforce 256.
 
 PURE implicitly benefits of this thanks to the vendors’ OpenGL implementation.
-!(../img_common/tandl.png)
-
-source: [http://www.anandtech.com/show/391/5](http://www.anandtech.com/show/391/5)
+![](../img_common/tandl.png)
+image source: [http://www.anandtech.com/show/391/5](http://www.anandtech.com/show/391/5)
 
 #### Pre-Transform (pre-T&L) Cache
 
@@ -250,5 +249,6 @@ TODO. Since Geforce 6xxx series.
 <!--stackedit_data:
 eyJwcm9wZXJ0aWVzIjoidGl0bGU6IFBVUkUgR2xvc3Nhcnlcbm
 F1dGhvcjogUFIwMEY4OFxuZGF0ZTogJzIwMjAtMTEtMjInXG4i
-LCJoaXN0b3J5IjpbLTUzNjQ1NzQ3LC05OTMwNjY2ODVdfQ==
+LCJoaXN0b3J5IjpbNDM2MDE0OTg1LC01MzY0NTc0NywtOTkzMD
+Y2Njg1XX0=
 -->
