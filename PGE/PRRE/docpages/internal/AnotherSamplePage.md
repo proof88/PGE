@@ -1,3 +1,0 @@
-# Another Sample subpage
-
-text
