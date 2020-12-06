@@ -16,15 +16,28 @@ Sequence of processing tasks arranged so that the output of each task is the inp
 
 ## Graphics / Rendering Pipeline
 
-Software and/or hardware implementation of a [pipeline](#_Pipeline) where the input is a bunch of scene data and the output is an image of the [scene](#_Scene) as a result of the consecutive [rendering](#_Rendering) tasks. More details in [Rendering Pipeline Architecture](#_Rendering_Pipeline_Architecture).
+Software and/or hardware implementation of a [pipeline](#_Pipeline) where the input is a bunch of scene data and the output is an image of the [scene](#_Scene) as a result of the consecutive [rendering](#_Rendering) tasks.  
+More details in [Rendering Pipeline Architecture](#_Rendering_Pipeline_Architecture).
 
 ## Pixel
 
-TODO.
+Smallest element of an image. Color and position, usually in screen-space. An image having size 800x600 pixels means it has 800x600 individual pixels, organized into 800 columns and 600 rows where each pixel has its unique color and position.
 
 ## Vertex
 
-TODO.
+Smallest element of a 2D or 3D object. A vertex has many attributes such as color, position, texture coordinates, etc.
+
+## Primitive / Face
+
+2D or 3D shape made of very limited number of vertices. The most common primitive is a triangle, made of 3 vertices.  
+It's worth noting that 3D modeler software use this same term for primitive meshes (e.g. cube, sphere) but in 3D graphics programming we don't.
+
+## Mesh
+
+Multiple primitives build up a mesh. A 3D mesh usually consists of hundreds or thousands of triangle primitives.
+
+![](img_common/Vertex-Primitive-and-Mesh-Representation.png)  
+image source: [Sammy Rogmans: A Generic Framework for Implementing Real-Time Stereo Matching Algorithms on the Graphics Processing Unit](https://www.researchgate.net/publication/265310715_A_Generic_Framework_for_Implementing_Real-Time_Stereo_Matching_Algorithms_on_the_Graphics_Processing_Unit)
 
 ## Vertex Shader
 
@@ -56,7 +69,7 @@ TODO. Since Geforce 8xxx / Radeon HD2xxx series.
 
 ## Fragment
 
-A screen-space position and some other data like output of a vertex shader (e.g. color, depth). Each fragment corresponds to a pixel in the frame buffer. There will be at least one fragment produced for every pixel area covered by the primitive being rasterized.
+A screen-space position and some other data like output of a vertex shader (e.g. color, depth). There will be at least one fragment produced for every frame buffer pixel area covered by the primitive being rasterized.
 
 ## Raster Pipeline / ROP / Z-pipe
 
@@ -69,10 +82,6 @@ Contains multiple [raster pipelines](#_Raster_Pipeline_/).
 ## Fragment Crossbar
 
 Routes the [fragments](#_Fragment) coming from the [fragment pipelines](#_Pixel_/_Fragment) to the [ROPs](#_Raster_Pipeline_/) (this is needed as the number of [fragment pipelines](#_Pixel_/_Fragment) is not equal to the number of [ROPs](#_Raster_Pipeline_/)).
-
-## Primitive
-
-TODO.
 
 ## Texel
 
@@ -100,11 +109,11 @@ TODO.
 
 ## MIP mapping
 
-![](../img_common/Cratemiplevels.jpg)
+![](img_common/Cratemiplevels.jpg)
 
 ## Multitexturing
 
-![](../img_common/scrnshot_multitexture.jpg)
+![](img_common/scrnshot_multitexture.jpg)
 
 ## Aliasing
 
@@ -146,7 +155,7 @@ Render the scene large size internally then scale the result down to the output 
 
 Shading is one of those terms that sometimes seems like a semantic football, as noted earlier, Dave Kirk, Chief Scientist at nVidia describes it this way: “Lighting is the luminance value, whereas shading is about reflectance or transmittance.” The three most common shading methods are: flat, Gouraud, and Phong, operate per triangle, per vertex, and per pixel, respectively.
 
-![](../img_common/common-shading-methods.jpg)  
+![](img_common/common-shading-methods.jpg)  
 image source: [https://www.quora.com/What-is-an-explanation-of-the-Gouraud-shading-and-phong-shading-models-in-simple-form](https://www.quora.com/What-is-an-explanation-of-the-Gouraud-shading-and-phong-shading-models-in-simple-form)
 
 ### Flat Shading ###
@@ -169,13 +178,13 @@ Debuted in the DirectX 6 version of Direct3D. A prelude to programmable shaders,
 
 Describing the usual steps in a rendering pipeline that produces a rendered image of a 3D object, with the help of the picture below:
 
-![](../img_common/stage3d.PNG)  
+![](img_common/stage3d.PNG)  
 image source: [http://www.adobe.com/devnet/flashplayer/articles/how-stage3d-works.html](http://www.adobe.com/devnet/flashplayer/articles/how-stage3d-works.html)
 
 First we define the [vertex](#_Vertex) stream by specifying the [vertex](#_Vertex) attributes (eg. position), the storage location of this stream (eg. host memory), and how to interpret the stream ([primitive](#_Primitive) type eg. triangles). Modeling-, view-, and projection transformations on the vertices including optional normals are done, so the [vertices](#_Vertex) are transformed from **object-space to clip-space**. [Primitives](#_Primitive) (e.g. triangles) are assembled from the transformed [vertices](#_Vertex), clipping is applied and then they are further transformed from **clip-space to screen/window-space**. Then we find out which pixels are covered by the incoming triangles, and interpolate [vertex](#_Vertex) attributes across the triangle. These generated values are fragments. Color, depth and stencil values are generated from each [fragment](#_Fragment) with the use of optional textures. The final steps include depth testing, blending. etc.
 Following picture is an example of a rendering pipeline architecture implemented in HW. A bit more specific than the previous picture.
 
-![](../img_common/pipeline_3d_w570.jpg)  
+![](img_common/pipeline_3d_w570.jpg)  
 image source: [http://www.ozone3d.net/tutorials/gpu_sm3_dx9_3d_pipeline_p02.php](http://www.ozone3d.net/tutorials/gpu_sm3_dx9_3d_pipeline_p02.php)
 
 Note: as seen in the picture, [Rasterizer](#_Rasterization_1) is not equal to [Raster Operation Unit](#_Raster_Operation_Unit).
@@ -186,13 +195,13 @@ Another advantage of pipelining is that because no data is passed from one verte
 
 ## HW T&L - Hardware Transformation and Lighting
 
-Moving the ***vertex*** transformation and lighting calculations from SW (CPU) to HW (GPU).
+Moving the *vertex* transformation and lighting calculations from SW (CPU) to HW (GPU).
 
 Since Geforce 256.
 
 PURE implicitly benefits of this thanks to the vendors’ OpenGL implementation.
 
-![](../img_common/tandl.png)  
+![](img_common/tandl.png)  
 image source: [http://www.anandtech.com/show/391/5](http://www.anandtech.com/show/391/5)
 
 ### Pre-Transform (pre-T&L) Cache

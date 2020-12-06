@@ -15,17 +15,17 @@ In this early stage, we define the vertex stream by specifying following:
  - **location of storage** of this stream (e.g. host memory);
  - **primitive type** i.e. how to interpret the stream (e.g. interpret as triangles).
 
-The order of the ***vertices*** in the stream is important:
+The order of the *vertices* in the stream is important:
  - they can be streamed in the same order as they are actually placed in memory (e.g. vertex array), or
  - in different order specified by indices in an element array.
  
-The latter has an advantage on memory consumption and performance, since same (repeating) vertex attributes can be stored only once while being referred multiple times by the same index, which also means that such vertex is transformed in Vertex Processing only once, provided there is a ***post-T&L Cache***.
+The latter has an advantage on memory consumption and performance, since same (repeating) vertex attributes can be stored only once while being referred multiple times by the same index, which also means that such vertex is transformed in Vertex Processing only once, provided there is a *post-T&L Cache*.
 
 TODO: add PPP info on this.
 
 ### Vertex Processing
 
-***Vertices*** are transformed from object-space to clip-space with multiple matrix multiplication operations.
+*Vertices* are transformed from object-space to clip-space with multiple matrix multiplication operations.
 Optional normals are transformed from object-space to eye-space/view-space.
 These are calculated on the GPU nowadays thanks to HW T&L.
 
@@ -40,7 +40,7 @@ The result of calculations done in this stage can be checked in [PR00FPSvsPURE-T
 
 #### Modeling Transformation
 
-Transforming the ***vertices*** **from object/model-space to world-space**. Simple matrix multiplication.
+Transforming the *vertices* **from object/model-space to world-space**. Simple matrix multiplication.
 
 Model / Object Space: where each model is in its own coordinate system, whose origin is some point on the model, such as the right foot of a soccer player model. Also, the model will typically have a control point or “handle”. To move the model, the 3D renderer only has to move the control point, because model space coordinates of the object remain constant relative to its control point. Additionally, by using that same “handle”, the object can be rotated.
 
@@ -48,7 +48,7 @@ World Space: where models are placed in the actual 3D world, in a unified world 
 
 #### View Transformation
 
-Transforming the ***vertices*** from **world-space to eye-space/view-space** (simulating a viewer/camera). Simple matrix multiplication.
+Transforming the *vertices* from **world-space to eye-space/view-space** (simulating a viewer/camera). Simple matrix multiplication.
 
 View Space (also called Camera Space): in this space, the view camera is positioned by the application (through the graphics API) at some point in the 3D world coordinate system, if it is being used. The world space coordinate system is then transformed, such that the camera (your eye point) is now at the origin of the coordinate system, looking straight down the z-axis into the scene. If world space is bypassed, then the scene is transformed directly into view space, with the camera similarly placed at the origin and looking straight down the z-axis. Whether z values are increasing or decreasing as you move forward away from the camera into the scene is up to the programmer, but for now assume that z values are increasing as you look into the scene down the z-axis. Note that culling, back-face culling, and lighting operations can be done in view space.
 
@@ -64,7 +64,7 @@ Generate (if necessary) and transform texture coordinates.
 
 #### Projection Transformation
 
-Transforming the ***vertices*** from **eye-space to clip-space**. Simple matrix multiplication. The projection matrix defines the **viewing frustum** and the **projection mode (perspective or orthogonal)**. See more at:
+Transforming the *vertices* from **eye-space to clip-space**. Simple matrix multiplication. The projection matrix defines the **viewing frustum** and the **projection mode (perspective or orthogonal)**. See more at:
 
  - [http://www.songho.ca/opengl/gl_transform.html#projection](http://www.songho.ca/opengl/gl_transform.html#projection)
  - [http://www.songho.ca/opengl/gl_projectionmatrix.html](http://www.songho.ca/opengl/gl_projectionmatrix.html)
@@ -94,13 +94,13 @@ Related PURE API: TODO.
 
 ### Primitive (Triangle) Assembly
 
-Primitives are assembled from the ***vertices*** coming from the previous stage. ***Vertices*** are transformed from clip-space to screen/window-space.
+Primitives are assembled from the *vertices* coming from the previous stage. *Vertices* are transformed from clip-space to screen/window-space.
 
 Some say the Clipping, Perspective Divide and Viewport Transformation are not in this stage but in a separate stage called “Vertex Post-processing”.
 
 #### Clipping
 
-***Primitives*** are clipped to the clipping volume (viewing volume/frustum with user-defined clip planes).
+*Primitives* are clipped to the clipping volume (viewing volume/frustum with user-defined clip planes).
 
 In this stage, actually 3 things can happen to a [primitive](#_Primitive):
 
@@ -110,7 +110,7 @@ In this stage, actually 3 things can happen to a [primitive](#_Primitive):
 
 Actually not all triangles that are partially outside of the viewing volume may be clipped, check about **guard-band clipping**: [https://fgiesen.wordpress.com/2011/07/05/a-trip-through-the-graphics-pipeline-2011-part-5/](https://fgiesen.wordpress.com/2011/07/05/a-trip-through-the-graphics-pipeline-2011-part-5/) .
 
-The clipping behavior against the Z-coordinate of the ***vertices*** can be modified by enabling **depth clamping**. If enabled, clip-space Z-coordinates are not clipped by the near and far planes.
+The clipping behavior against the Z-coordinate of the *vertices* can be modified by enabling **depth clamping**. If enabled, clip-space Z-coordinates are not clipped by the near and far planes.
 
 #### Perspective Divide
 
@@ -134,7 +134,7 @@ Related PURE API: TODO.
 
 “3D graphics is the art of cheating without getting caught.” Translated, this means that one of the art-forms in 3D graphics is to elegantly reduce visual detail in a scene so as to gain better performance, but do it in such a way that the viewer doesn’t notice the loss of quality. One quick example of this is culling.
 
-Applies to triangles only. A triangle can be discarded (culled) based on its facing. This is done by the winding order of the triangle. It can be CW (clockwise) or CCW (counter-clockwise) depending how the triangle’s 3 ***vertices*** rotate in order around the center of the triangle.
+Applies to triangles only. A triangle can be discarded (culled) based on its facing. This is done by the winding order of the triangle. It can be CW (clockwise) or CCW (counter-clockwise) depending how the triangle’s 3 *vertices* rotate in order around the center of the triangle.
 
 Note: face culling can be done in either view space (after view transform, checking the angle between the viewing vector and the triangle’s normal vector) or screen space (testing if triangle’s projected normal vector points away or towards the camera).
 
@@ -167,7 +167,7 @@ We now have x,y values for all scan line crossing points of each line segment in
 
 #### Shading Spans
 
-Up until this point, only ***vertices*** have had color and depth information, but now that the triangle edge pixels are being created, interpolated color and depth values must also be calculated for those pixels. In addition, the texture coordinates are also calculated by interpolation for use during texture mapping.
+Up until this point, only *vertices* have had color and depth information, but now that the triangle edge pixels are being created, interpolated color and depth values must also be calculated for those pixels. In addition, the texture coordinates are also calculated by interpolation for use during texture mapping.
 More details in the Glossary.
 
 Related OpenGL API: TODO.

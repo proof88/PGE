@@ -6,7 +6,7 @@ If that is too much for you, you can always generate an **external documentation
 I wrote this documentation with easy online Markdown editor [StackEdit](https://stackedit.io/).
 
 ## Motivation
-Since my mid-childhood (~13 years old), I have always wanted to create not only PC games but also a 3D graphics engine. Inspired by the success of id Software’s Quake III engine (id Tech 3), I am making my own now. The aim is to create & continuously develop a cross-platform codebase giving nice image quality with strong performance on newer hardware while maintaining compatibility with older hardware as well. The latter is important for me since I am interested in learning old-school techniques from the age of the first 3D-accelerators. :) Some parts of the engine was written from ground zero, some other parts are open-source libraries utilized by the engine.
+Since my mid-childhood (~13 years old), I have always wanted to create not only PC games but also a 3D graphics engine. Inspired by the success of id Software’s [Quake III engine (id Tech 3)](https://en.wikipedia.org/wiki/Id_Tech_3), I am making my own now. The aim is to create & continuously develop a cross-platform codebase giving nice image quality with strong performance on newer hardware while maintaining compatibility with older hardware as well. The latter is important for me since I am interested in learning old-school techniques from the age of the first 3D-accelerators. :) Some parts of the engine was written from ground zero, some other parts are open-source libraries utilized by the engine.
 
 ## Copy & Paste
 I quote extensively from ExtremeTech’s 3D Pipeline Tutorial article and other sources. I am not marking such copy-pasted sentences or paragraphs one-by-one with citation marks, but at the same time I am NOT declaring the content of this documentation to be 100% my own intellectual product.  
@@ -20,6 +20,7 @@ This documentation contains intellectual properties of various sources, listed b
  - [https://fgiesen.wordpress.com/2011/07/09/a-trip-through-the-graphics-pipeline-2011-index/](https://fgiesen.wordpress.com/2011/07/09/a-trip-through-the-graphics-pipeline-2011-index/)
  - [http://www.songho.ca/opengl/index.html](http://www.songho.ca/opengl/index.html)
  - [http://www.techpowerup.com/gpudb/](http://www.techpowerup.com/gpudb/)
+ - [Sammy Rogmans: A Generic Framework for Implementing Real-Time Stereo Matching Algorithms on the Graphics Processing Unit](https://www.researchgate.net/publication/265310715_A_Generic_Framework_for_Implementing_Real-Time_Stereo_Matching_Algorithms_on_the_Graphics_Processing_Unit)
  - [http://developer.amd.com/wordpress/media/2012/10/Depth_in-depth.pdf](http://developer.amd.com/wordpress/media/2012/10/Depth_in-depth.pdf)
  - [https://en.wikipedia.org/wiki/HyperZ](https://en.wikipedia.org/wiki/HyperZ)
 
