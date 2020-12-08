@@ -36,7 +36,7 @@ It's worth noting that 3D modeler software use this same term for primitive mesh
 
 Multiple primitives build up a mesh. A 3D mesh usually consists of hundreds or thousands of triangle primitives.
 
-![](img_common/Vertex-Primitive-and-Mesh-Representation.png)  
+![](img_common/Vertex-Primitive-and-Mesh-Representation.png)
 image source: [Sammy Rogmans: A Generic Framework for Implementing Real-Time Stereo Matching Algorithms on the Graphics Processing Unit](https://www.researchgate.net/publication/265310715_A_Generic_Framework_for_Implementing_Real-Time_Stereo_Matching_Algorithms_on_the_Graphics_Processing_Unit)
 
 ## Vertex Shader
@@ -155,7 +155,7 @@ Render the scene large size internally then scale the result down to the output 
 
 Shading is one of those terms that sometimes seems like a semantic football, as noted earlier, Dave Kirk, Chief Scientist at nVidia describes it this way: “Lighting is the luminance value, whereas shading is about reflectance or transmittance.” The three most common shading methods are: flat, Gouraud, and Phong, operate per triangle, per vertex, and per pixel, respectively.
 
-![](img_common/common-shading-methods.jpg)  
+![](img_common/common-shading-methods.jpg)
 image source: [https://www.quora.com/What-is-an-explanation-of-the-Gouraud-shading-and-phong-shading-models-in-simple-form](https://www.quora.com/What-is-an-explanation-of-the-Gouraud-shading-and-phong-shading-models-in-simple-form)
 
 ### Flat Shading ###
@@ -178,20 +178,18 @@ Debuted in the DirectX 6 version of Direct3D. A prelude to programmable shaders,
 
 Describing the usual steps in a rendering pipeline that produces a rendered image of a 3D object, with the help of the picture below:
 
-![](img_common/stage3d.PNG)  
+![](img_common/stage3d.PNG)
 image source: [http://www.adobe.com/devnet/flashplayer/articles/how-stage3d-works.html](http://www.adobe.com/devnet/flashplayer/articles/how-stage3d-works.html)
 
-First we define the [vertex](#_Vertex) stream by specifying the [vertex](#_Vertex) attributes (eg. position), the storage location of this stream (eg. host memory), and how to interpret the stream ([primitive](#_Primitive) type eg. triangles). Modeling-, view-, and projection transformations on the vertices including optional normals are done, so the [vertices](#_Vertex) are transformed from **object-space to clip-space**. [Primitives](#_Primitive) (e.g. triangles) are assembled from the transformed [vertices](#_Vertex), clipping is applied and then they are further transformed from **clip-space to screen/window-space**. Then we find out which pixels are covered by the incoming triangles, and interpolate [vertex](#_Vertex) attributes across the triangle. These generated values are fragments. Color, depth and stencil values are generated from each [fragment](#_Fragment) with the use of optional textures. The final steps include depth testing, blending. etc.
-Following picture is an example of a rendering pipeline architecture implemented in HW. A bit more specific than the previous picture.
+First we define the *vertex* stream. Modeling-, view-, and projection transformations on the *vertices* including optional normals are done. *Primitives* (e.g. triangles) are assembled from the transformed *vertices*, clipping is applied and then they are further transformed to screen/window-space. Then during rasterizing we find out which pixels are covered by the incoming triangles, and interpolate *vertex* attributes across the triangle. These generated values are *fragments*. Color, depth and stencil values are generated from each *fragment* with the use of optional textures. The final steps include depth testing, blending. etc.  
+Note that a more detailed description about rendering pipeline can be found on a dedicated page of the internal documentation called Rendering Architecture & Pipeline.
 
-![](img_common/pipeline_3d_w570.jpg)  
-image source: [http://www.ozone3d.net/tutorials/gpu_sm3_dx9_3d_pipeline_p02.php](http://www.ozone3d.net/tutorials/gpu_sm3_dx9_3d_pipeline_p02.php)
+In some sense, 3D chips have become physical incarnations of the pipeline, where data flows “downstream” from stage to stage. Computations in various stages of the pipeline can be overlapped, for improved performance. For example, because vertices and pixels are mutually independent of one another in both Direct3D and OpenGL, one triangle can be in the geometry stage while another is in the Rasterization stage. Furthermore, computations on two or more vertices in the Geometry stage and two or more pixels (from the same triangle) in the Rasterzation phase can be performed at the same time.  
+Following picture is an example of a rendering pipeline architecture implemented in HW. A bit more specific than the previous picture:
 
+![](img_common/pipeline_3d_w570.jpg)
+image source: [http://www.ozone3d.net/tutorials/gpu_sm3_dx9_3d_pipeline_p02.php](http://www.ozone3d.net/tutorials/gpu_sm3_dx9_3d_pipeline_p02.php)  
 Note: as seen in the picture, [Rasterizer](#_Rasterization_1) is not equal to [Raster Operation Unit](#_Raster_Operation_Unit).
-
-In some sense, 3D chips have become physical incarnations of the pipeline, where data flows “downstream” from stage to stage. Computations in various stages of the pipeline can be overlapped, for improved performance. For example, because vertices and pixels are mutually independent of one another in both Direct3D and OpenGL, one triangle can be in the geometry stage while another is in the Rasterization stage. Furthermore, computations on two or more vertices in the Geometry stage and two or more pixels (from the same triangle) in the Rasterzation phase can be performed at the same time.
-
-Another advantage of pipelining is that because no data is passed from one vertex to another in the geometry stage or from one pixel to another in the rendering stage, chipmakers have been able to implement multiple pixel pipes and gain considerable performance boosts using parallel processing of these independent entities. It’s also useful to note that the use of pipelining for real-time rendering, though it has many advantages, is not without downsides. For instance, once a triangle is sent down the pipeline, the programmer has pretty much waved goodbye to it. To get status or color/alpha information about that vertex once it’s in the pipe is very expensive in terms of performance, and can cause pipeline stalls, a definite no-no.
 
 ## HW T&L - Hardware Transformation and Lighting
 
@@ -201,7 +199,7 @@ Since Geforce 256.
 
 PURE implicitly benefits of this thanks to the vendors’ OpenGL implementation.
 
-![](img_common/tandl.png)  
+![](img_common/tandl.png)
 image source: [http://www.anandtech.com/show/391/5](http://www.anandtech.com/show/391/5)
 
 ### Pre-Transform (pre-T&L) Cache
