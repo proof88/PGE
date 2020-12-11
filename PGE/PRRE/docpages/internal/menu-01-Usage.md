@@ -20,16 +20,12 @@ PR00FsReducedRenderingEngine initializes one of the above renderers at initializ
 Example code snippet for initializing the engine, with PRRERendererHWfixedPipe renderer, with a 800x600 pixels window and 24 bpp Z-buffer:
 
 ```{.cpp}
-//
-
   PR00FsReducedRenderingEngine& engine = PR00FsReducedRenderingEngine::createAndGet();
   if ( 0 == engine.initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0) ) {
       // success
   } else {
       // error
   }
-
-//
 ```
 
 Related PURE API: PR00FsReducedRenderingEngine::initialize(), PRREIRenderer::initialize().  
@@ -54,32 +50,24 @@ Managers can be accessed by the relevant get...() member functions of main class
 
 Example code snippet for creating a texture from an image file:
 
-```{.cpp}
-//
-  
+```.cpp
   PRRETexture* myTexture = engine.getTextureManager().createFromFile("texture.bmp");
   if ( PGENULL != myTexture ) {
       // success
   } else {
       // error
   }
-  
-//
 ```
 
 Example code snippet for creating a renderable object from a 3D mesh file:
 
-```{.cpp}
-//
-  
+```.cpp
   PRREObject3D* myObject = engine.getObject3DManager().createFromFile("mesh.obj");
   if ( PGENULL != myObject ) {
       // success
   } else {
       // error
   }
-
-//  
 ```
 
 Related PURE API: TODO  
@@ -93,12 +81,8 @@ Rendering can be executed with the PRREIRenderer::RenderScene() implementation o
 
 Example code snippet for rendering (since default position of PRRECamera object equals to default position of any created PRREObject3D instance, changing there position is likely needed to become actually visible):
 
-```{.cpp}
-//
-  
-  engine.getRenderer().RenderScene();
-
-//  
+```.cpp
+  engine.getRenderer().RenderScene(); 
 ```
 
 Related PURE API: PR00FsReducedRenderingEngine::getRenderer(), PRREIRenderer::RenderScene().  
@@ -113,16 +97,12 @@ Note that an uninitialized engine cannot be shut down. First you need to initial
 
 Example code snippet for shutdown:
 
-```{.cpp}
-//
-  
+```.cpp
   if ( engine.shutdown() ) {
       // success
   } else {
       // error
-  }
-
-//  
+  } 
 ```
 
 Related PURE API: PR00FsReducedRenderingEngine::shutdown(), PRREIRenderer::shutdown().

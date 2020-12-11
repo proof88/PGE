@@ -1,5 +1,7 @@
 # Rendering Architecture & Pipeline
 
+[TOC]
+
 In this section, I go through the well-known 3D-rendering pipeline in general while providing PURE-specific information as well.
 
 PURE currently supports fixed function pipeline (i.e. neither vertex- nor fragment shaders) only.
