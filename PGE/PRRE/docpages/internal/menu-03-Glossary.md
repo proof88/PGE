@@ -1,5 +1,7 @@
 # Glossary
 
+[TOC]
+
 Intentionally not in alphabetical order.
 
 ## Scene

@@ -1,5 +1,7 @@
 # Engine Usage
 
+[TOC]
+
 Main class of the engine is PR00FsReducedRenderingEngine. Initialization, shutdown, and access to other engine classes is done through this main class.
 
 This page gives you a brief hint on the usage, but you can always check the UnitTests as well for different cases.  
@@ -19,7 +21,7 @@ PR00FsReducedRenderingEngine initializes one of the above renderers at initializ
 
 Example code snippet for initializing the engine, with PRRERendererHWfixedPipe renderer, with a 800x600 pixels window and 24 bpp Z-buffer:
 
-```{.cpp}
+```.cpp
   PR00FsReducedRenderingEngine& engine = PR00FsReducedRenderingEngine::createAndGet();
   if ( 0 == engine.initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0) ) {
       // success
