@@ -66,21 +66,26 @@ Generate (if necessary) and transform texture coordinates.
 
 #### Projection Transformation
 
-Transforming the *vertices* from **view-space to clip-space**. Simple matrix multiplication. See more at:
-
- - [http://www.songho.ca/opengl/gl_transform.html#projection](http://www.songho.ca/opengl/gl_transform.html#projection)
- - [http://www.songho.ca/opengl/gl_projectionmatrix.html](http://www.songho.ca/opengl/gl_projectionmatrix.html)
- - [https://www.opengl.org/wiki/GluPerspective_code](https://www.opengl.org/wiki/GluPerspective_code)
- - [https://www.opengl.org/sdk/docs/man2/xhtml/gluPerspective.xml](https://www.opengl.org/sdk/docs/man2/xhtml/gluPerspective.xml)
-
+Transforming the *vertices* from **view-space to clip-space**. Simple matrix multiplication: multiply by **projection matrix**.  
+**Clip Space**: Similar to view space, but the frustum is now “squished” into a unit cube, with the x and y coordinates normalized to a range between –1 and 1, and z is between 0 and 1, which simplifies clipping calculations. The **clipping planes** are now orthogonal (perpendicular) to the axes of the space.  
 The **projection matrix** defines the **viewing frustum** and the **projection mode (perspective or orthogonal)**.  
 The **view volume** is actually created by this projection, which as the name suggests, “projects the scene” in front of the camera. Think of the camera as a kind of holographic projector, but instead of projecting a 3D image into air, it instead projects the 3D scene “into” your monitor.  
 The shape of this view volume is either rectangular (called a **parallel projection**), or pyramidal (called a **perspective projection**), and this latter volume is called a **view frustum** (also commonly called frustrum, though frustum is the more current designation).  
 
-**Clip Space**: Similar to view space, but the frustum is now “squished” into a unit cube, with the x and y coordinates normalized to a range between –1 and 1, and z is between 0 and 1, which simplifies clipping calculations. The **clipping planes** are now orthogonal (perpendicular) to the axes of the space.
+More about projection:  
+ - [http://www.songho.ca/opengl/gl_transform.html#projection](http://www.songho.ca/opengl/gl_transform.html#projection)
+ - [https://www.opengl.org/wiki/GluPerspective_code](https://www.opengl.org/wiki/GluPerspective_code)
+ - [https://www.opengl.org/sdk/docs/man2/xhtml/gluPerspective.xml](https://www.opengl.org/sdk/docs/man2/xhtml/gluPerspective.xml)
 
-Note: using OpenGL either right- or left-handed viewing system can be used. PURE uses left-handed coordinate system by avoiding gluPerspective().
+In the past I managed to understood [Song Ho Ahn's explanation about how to define the projection matrix](http://www.songho.ca/opengl/gl_projectionmatrix.html). Based on that I also defined it on paper (in case I ever need this again), how to define it with (f,n,l,r,b,t) parameters:  
+[![alt text](img/projmatrix-how/thumb/projmatrix-how-thumb-01.jpg)](projmatrix-how-01.jpg)
+[![alt text](img/projmatrix-how/thumb/projmatrix-how-thumb-02.jpg)](projmatrix-how-02.jpg)
+[![alt text](img/projmatrix-how/thumb/projmatrix-how-thumb-03.jpg)](projmatrix-how-03.jpg)
+[![alt text](img/projmatrix-how/thumb/projmatrix-how-thumb-04.jpg)](projmatrix-how-04.jpg)
+[![alt text](img/projmatrix-how/thumb/projmatrix-how-thumb-05.jpg)](projmatrix-how-05.jpg)  
+In the last picture it is also explained how to define (l,r,b,t) parameters from input aspectRation and fovX or fovY parameters.
 
+Note: using OpenGL either right- or left-handed viewing system can be used. PURE uses left-handed coordinate system by avoiding gluPerspective().  
 See more at [https://anteru.net/2011/12/27/1830/](https://anteru.net/2011/12/27/1830/) .  
 Projection matrix tricks: [http://www.terathon.com/gdc07_lengyel.pdf](http://www.terathon.com/gdc07_lengyel.pdf) .
 

@@ -1262,7 +1262,13 @@ HTML_EXTRA_STYLESHEET  = pure_doxystyle.css
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       = ../PRRE/docpages/internal/PR00FPSvsPRRE-Transformations.xlsx
+HTML_EXTRA_FILES       = ../PRRE/docpages/internal/PR00FPSvsPRRE-Transformations.xlsx \
+                         ../PRRE/docpages/internal/img/projmatrix-how/projmatrix-how-01.jpg \
+                         ../PRRE/docpages/internal/img/projmatrix-how/projmatrix-how-02.jpg \
+                         ../PRRE/docpages/internal/img/projmatrix-how/projmatrix-how-03.jpg \
+                         ../PRRE/docpages/internal/img/projmatrix-how/projmatrix-how-04.jpg \
+                         ../PRRE/docpages/internal/img/projmatrix-how/projmatrix-how-05.jpg \
+                         ../PRRE/docpages/internal/img/projmatrix-how/projmatrix-how-06.jpg
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output. Doxygen
 # will adjust the colors in the style sheet and background images according to
