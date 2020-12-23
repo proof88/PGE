@@ -37,7 +37,7 @@ PGESysGFX::~PGESysGFX()
 
 
 bool PGESysGFX::initSysGFX(
-    int width, int height, TPRRE_DISPLAY_MODES dmode, int freq,
+    unsigned int width, unsigned int height, TPRRE_DISPLAY_MODES dmode, unsigned int freq,
     int cdepth, int zdepth, int stencil, int samples )
 {
     return ( engine.initialize( /*PRRE_RENDERER_SW*/ PRRE_RENDERER_HW_FP, width, height, dmode, freq, cdepth, zdepth, stencil, samples) == 0 );

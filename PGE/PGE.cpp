@@ -527,8 +527,13 @@ int PGE::initializeGame()
     p->con.OLn("pGameTitle: %s", p->sGameTitle.c_str());
     p->con.OLn("MyDocs: %s", p->SysCFG->getMyDocsFolder().c_str());
     p->nLangTable = p->SysCFG->readLanguageData( p->pLangTable );
-    p->con.OLn("Profiles stored in MyDocs: %b", p->SysCFG->areProfilesInMyDocs());
     p->con.OLn("Lang Table with %d rows from %s.", p->nLangTable, p->SysCFG->getLangFileName().c_str());
+    if ( p->nLangTable == 0 )
+    {
+        p->con.EOLnOO("ERROR: Failed to read language data, exiting!");
+        return 99;
+    }
+    p->con.OLn("Profiles stored in MyDocs: %b", p->SysCFG->areProfilesInMyDocs());
     p->con.OLn("Profiles: %s", p->SysCFG->getPathToProfiles().c_str());
     p->con.OIOLn("Count: %d", p->SysCFG->getProfilesCount());
     for (int i = 0; i < p->SysCFG->getProfilesCount(); i++)
@@ -571,7 +576,7 @@ int PGE::initializeGame()
     p->con.OLnOI("Initializing SysGFX ...");
     bool bGFXinit;
     if ( MessageBox(0, "Teljes képernyõ?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES )
-        bGFXinit = p->SysGFX.initSysGFX(-1, -1, PRRE_FULLSCREEN, 0, 32, 24, 0, 0);
+        bGFXinit = p->SysGFX.initSysGFX(0, 0, PRRE_FULLSCREEN, 0, 32, 24, 0, 0);
     else
         bGFXinit = p->SysGFX.initSysGFX(800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0);
 

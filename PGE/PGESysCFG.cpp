@@ -39,7 +39,7 @@ PGESysCFG::PGESysCFG(const char* gameTitle) :
     if ( f.fail() )
     {
         f.close();
-        sLangFileName = PGE_LANG_FOLDER + sLangFileName;
+        sLangFileName = std::string(PGE_LANG_FOLDER) + "english.txt";
         con.EOLnOO("ERROR: couldn't find "PGE_1ST_CFG_FILENAME" !");
         return;
     } // f.fail()

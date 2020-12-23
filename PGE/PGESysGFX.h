@@ -29,7 +29,7 @@ public:
     virtual ~PGESysGFX();
 
     bool initSysGFX(
-        int width, int height, TPRRE_DISPLAY_MODES dmode, int freq,
+        unsigned int width, unsigned int height, TPRRE_DISPLAY_MODES dmode, unsigned int freq,
         int cdepth, int zdepth, int stencil, int samples );
 
     bool destroySysGFX(void);

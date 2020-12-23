@@ -28,8 +28,8 @@
 #endif
 
 
-#define PGE_ERRORMSG_BASETITLE   "Hiba"
-#define PGE_WARNINGMSG_BASETITLE "Figyelmeztetés"
+#define PGE_ERRORMSG_BASETITLE   "Error"
+#define PGE_WARNINGMSG_BASETITLE "Warning"
 #define PGE_INFOMSG_BASETITLE    "Info"
 
 #define PGE_1ST_CFG_FILENAME "basic_cfg.cfg"
