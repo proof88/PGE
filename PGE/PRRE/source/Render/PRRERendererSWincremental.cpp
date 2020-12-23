@@ -274,7 +274,7 @@ TPRREuint PRRERendererSWincrementalImpl::initialize(
 
             // TODO: GdiFlush() maybe needed when renderer renders the picture later.
 
-	        pZBuffer = (float*) malloc(width * height * sizeof(float));
+            pZBuffer = new float[width * height]; // TODO add try-catch
             if ( pZBuffer == NULL )
             {
                 getConsole().EOLnOO("ERROR: failed to allocate Z-Buffer!");
@@ -317,7 +317,7 @@ TPRREbool PRRERendererSWincrementalImpl::shutdown()
     getConsole().OIOLn("Shutting down renderer ...");
     getConsole().OI();
 
-    free( pZBuffer );
+    delete[] pZBuffer;
     pZBuffer = NULL;
 
     DeleteObject(hColorBufferDDB);

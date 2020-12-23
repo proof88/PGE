@@ -159,7 +159,7 @@ private:
     PRREManager*      _pOwner;            /**< The owner public object who creates this pimpl object. */
     TPRREint          nManagedCount;      /**< Number of managed objects, only readable for descendants: getCount(). */
     TPRREint          nManagedAllocated;  /**< Number of allocated slots for managed objects, nManagedAllocated >= nManagedCount, only readable for descendants: getSize(). */
-    PRREManaged** pManageds;          /**< Pointer to array of pointers to managed objects, free slots contain NULLs, only readable: getAttachedAt(). */
+    PRREManaged**     pManageds;          /**< Pointer to array of pointers to managed objects, free slots contain NULLs, only readable: getAttachedAt(). */
 
     // ---------------------------------------------------------------------------
 
@@ -373,7 +373,10 @@ TPRREint PRREManager::PRREManagerImpl::preAlloc(TPRREint count)
     {
         TPRREint prev_h = nManagedAllocated;
         nManagedAllocated += count;
-        pManageds = (PRREManaged**) realloc(pManageds, sizeof(PRREManaged*)*nManagedAllocated);
+        PRREManaged** pNewStorage = new PRREManaged*[nManagedAllocated];
+        memcpy(pNewStorage, pManageds, prev_h*sizeof(PRREManaged*));
+        delete[] pManageds;
+        pManageds = pNewStorage;
         for (TPRREint i = prev_h; i < nManagedAllocated; i++)                  
             pManageds[i] = PGENULL;
         return prev_h;

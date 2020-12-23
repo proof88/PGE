@@ -58,16 +58,16 @@ PGESysCFG::PGESysCFG(const char* gameTitle) :
     else
     {    // ggg == "here"
         bMainCFGinMyDocs = false;
-        char* pOrigCurrDirr = (char*) malloc(1024*sizeof(char));
+        char* pOrigCurrDirr = new char[1024];
         GetCurrentDirectory(1024, pOrigCurrDirr);
         SetCurrentDirectory( PGE_PROFILE_FOLDER );
-        char* pNewCurrDirr = (char*) malloc(1024*sizeof(char));    
+        char* pNewCurrDirr = new char[1024];
         GetCurrentDirectory(1024, pNewCurrDirr);
         sPathToProfiles = pNewCurrDirr;
         sPathToProfiles += "\\";
         SetCurrentDirectory( pOrigCurrDirr );
-        free( pOrigCurrDirr );
-        free( pNewCurrDirr );
+        delete[] pOrigCurrDirr;
+        delete[] pNewCurrDirr;
     }
     con.OLn("user profile dir is: %s", sPathToProfiles.c_str());
 
@@ -143,7 +143,7 @@ int PGESysCFG::readLanguageData(string** &langTable) const
         return 0;
     }
 
-    langTable = (string**) malloc( n*sizeof(string*) );
+    langTable = new string*[n];
     int i = 0;
     while ( !g.eof() )
     {
@@ -656,7 +656,7 @@ bool PGESysCFG::getPlayerNameFromFile(const char* cFilename, std::string& sPlaye
         char* n2ndDoubleQuote = strstr(n1stDoubleQuote+1, "\"");
         if ( n2ndDoubleQuote != NULL )
         {   // we have 2 dblquotes now, in between them will be the player's name, ie.: cl_name="PR00F88"
-            char* cPlayerName = (char*) malloc((n2ndDoubleQuote-n1stDoubleQuote)*sizeof(char));
+            char* cPlayerName = new char[n2ndDoubleQuote-n1stDoubleQuote];
             strncpy(cPlayerName, n1stDoubleQuote+1, n2ndDoubleQuote-n1stDoubleQuote);
             cPlayerName[n2ndDoubleQuote-n1stDoubleQuote-1] = '\0';
             sPlayerName = cPlayerName;
@@ -682,8 +682,8 @@ void PGESysCFG::LoadProfilesList()
         sOriginalCurrentProfileUser = *( getProfilesList()[getProfile()] );
 
     nProfilesCount = 0;
-    char* pOrigCurrDirr = (char*) malloc(1024*sizeof(char));
-    char* pCurrDirr = (char*) malloc(1024*sizeof(char));
+    char* pOrigCurrDirr = new char[1024];
+    char* pCurrDirr = new char[1024];
     GetCurrentDirectory(1024, pOrigCurrDirr);
     GetCurrentDirectory(1024, pCurrDirr);
     if ( !SetCurrentDirectory(sPathToProfiles.c_str()) && (GetLastError() != ERROR_SUCCESS) )
@@ -726,9 +726,29 @@ void PGESysCFG::LoadProfilesList()
                         if ( getPlayerNameFromFile(sCfgFileName.c_str(), sPlayerName) )
                         {
                             nProfilesCount++; 
-                            sFoundProfiles = (string**) realloc(sFoundProfiles, sizeof(string*)*nProfilesCount);
+                            if ( sFoundProfiles )
+                            {   // mimicing realloc, this to be changed to vector or something!
+                                std::string** sNewFoundProfiles = new string*[nProfilesCount];
+                                memcpy(sNewFoundProfiles, sFoundProfiles, sizeof(string*)*nProfilesCount);
+                                delete[] sFoundProfiles;
+                                sFoundProfiles = sNewFoundProfiles;
+                            }
+                            else
+                            {
+                                sFoundProfiles = new string*[nProfilesCount];
+                            }
                             sFoundProfiles[nProfilesCount-1] = new string(dirdata.cFileName);
-                            sFoundProfilePlayerNames = (string**) realloc(sFoundProfilePlayerNames, sizeof(string*)*nProfilesCount);
+                            if ( sFoundProfilePlayerNames )
+                            {   // mimicing realloc, this to be changed to vector or something!
+                                std::string** sNewFoundProfilePlayerNames = new string*[nProfilesCount];
+                                memcpy(sNewFoundProfilePlayerNames, sFoundProfilePlayerNames, sizeof(string*)*nProfilesCount);
+                                delete[] sFoundProfilePlayerNames;
+                                sFoundProfilePlayerNames = sNewFoundProfilePlayerNames;
+                            }
+                            else
+                            {
+                                sFoundProfilePlayerNames = new string*[nProfilesCount];
+                            }
                             sFoundProfilePlayerNames[nProfilesCount-1] = new string(sPlayerName);
                             con.OLn("added user %s ~ %s", dirdata.cFileName, sPlayerName.c_str());
                             if ( getProfile() != -1 )
@@ -749,7 +769,8 @@ void PGESysCFG::LoadProfilesList()
     FindClose(hDirSearch);
     SetCurrentDirectory( pOrigCurrDirr );
 
-    free( pOrigCurrDirr );
+    delete[] pOrigCurrDirr;
+    delete[] pCurrDirr;
 
     con.SOLnOO("> done!");
 

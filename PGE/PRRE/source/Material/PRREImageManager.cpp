@@ -108,7 +108,7 @@ PRREImage* PRREImageManager::PRREImageManagerImpl::loadBMPfail( HANDLE f, PRREIm
     _pOwner->getConsole().EOLn(msg);
     CloseHandle(f);
     delete img;
-    free(palette);
+    delete[] palette;
     _pOwner->getConsole().OO();
     return PGENULL;
 } // loadBMPfail()
@@ -341,11 +341,18 @@ PRREImage* PRREImageManager::loadBMP(const char* filename)
     if ( info_header.biClrUsed > 0 )
     {
         palettesize = info_header.biClrUsed * sizeof(RGBQUAD);
-        palette = (RGBQUAD*) malloc(palettesize);
-        ReadFile(bitmapfile, palette, palettesize, &bytesread, NULL);
-        getConsole().OLn("Read %d bytes of total %d bytes of RGBQUAD array for palette", bytesread, palettesize);
-        if ( bytesread != palettesize )
-            return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bytesread != palettesize, returning PGENULL!");
+        try
+        {
+            palette = new RGBQUAD[palettesize];
+            ReadFile(bitmapfile, palette, palettesize, &bytesread, NULL);
+            getConsole().OLn("Read %d bytes of total %d bytes of RGBQUAD array for palette", bytesread, palettesize);
+            if ( bytesread != palettesize )
+                return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bytesread != palettesize, returning PGENULL!");
+        }
+        catch (const std::bad_alloc&)
+        {
+            return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: failed to allocated palette!");
+        }
     }
     
     pNewImage = new PRREImage();
@@ -361,7 +368,7 @@ PRREImage* PRREImageManager::loadBMP(const char* filename)
         return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: readBMPpixels() failed!");
 
     CloseHandle(bitmapfile);
-    free(palette);
+    delete[] palette;
 
     getConsole().SOLnOO("> bitmap successfully loaded into memory, using %d bytes (%d kbytes)",
         sizeof(pNewImage)+pNewImage->getPixelsSize(), (sizeof(*pNewImage)+pNewImage->getPixelsSize())/1024);

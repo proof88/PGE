@@ -273,27 +273,37 @@ public:
         {
             getConsole().SOLn("Texture compression supported!");
             glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS_ARB, tmpRet);
-            if ( glGetError() == GL_NO_ERROR )
+            if ( !PRREGLsnippets::isGLerrorPresent() )
             {
                 getConsole().OLn("  %d compressed texture formats available:", tmpRet[0]);
                 CheckAgainstStandardMinValue(tmpRet[0], GL_STANDARD_MIN_COMPRESSED_TEXTURE_FORMATS);
-                GLint* compressedFormats = (GLint*) malloc(tmpRet[0] * sizeof(GLint));
-                glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS_ARB, compressedFormats);
-                if ( glGetError() == GL_NO_ERROR )
+                try
                 {
-                    getConsole().OI();
-                    for (GLint i = 0; i < tmpRet[0]; i++)
-                        if ( vTexComprFmts.find( compressedFormats[i] ) == vTexComprFmts.end() )
-                            getConsole().OLn("  Unknown: %d", compressedFormats[i]);
-                        else
-                            getConsole().OLn("  %s", vTexComprFmts[ compressedFormats[i] ].c_str());   
-                    getConsole().OO();
+                    GLint* compressedFormats = new GLint[tmpRet[0]];
+                    glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS_ARB, compressedFormats);
+                    if ( !PRREGLsnippets::isGLerrorPresent() )
+                    {
+                        getConsole().OI();
+                        for (GLint i = 0; i < tmpRet[0]; i++)
+                            if ( vTexComprFmts.find( compressedFormats[i] ) == vTexComprFmts.end() )
+                                getConsole().OLn("  Unknown: %d", compressedFormats[i]);
+                            else
+                                getConsole().OLn("  %s", vTexComprFmts[ compressedFormats[i] ].c_str());   
+                        getConsole().OO();
+                    }
+                    else
+                    {
+                        getConsole().EOLn("  glGetIntegerv() failed: %s", PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+                    }
+                    delete[] compressedFormats;
                 }
-
-                free(compressedFormats);
+                catch (const std::bad_alloc&)
+                {
+                    getConsole().EOLn("  Compressed texture formats available: ? (error: failed to allocate array!)");
+                }
             }
             else
-                getConsole().EOLn("  Compressed texture formats available: ?");
+                getConsole().EOLn("  Compressed texture formats available: ? (error: %s)", PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
 
             if ( bSuppVTC = isExtensionSupported("GL_NV_texture_compression_vtc") )
                 getConsole().SOLn("  VTC also supported.");

@@ -11,6 +11,7 @@
     ###################################################################################
 */
 
+#include <vector>
 #include "../../external/PRREallHeaders.h"
 #include "../../external/Material/PRREMaterialManager.h"
 

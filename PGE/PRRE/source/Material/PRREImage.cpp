@@ -200,7 +200,7 @@ void PRREImage::PRREImageImpl::FlushResources()
     if ( pPixels == PGENULL )
         return;
 
-    free(pPixels);
+    delete[] pPixels;
     pPixels = PGENULL;
     nSizePixels = 0;
 } // FlushResources()
@@ -394,6 +394,25 @@ bool PRREImage::PRREImageImpl::initMembers(
     TPRREbool upsDown, TPRREbool chngd,
     TPRREubyte* pxls, TPRREuint npxls )
 {
+    if ( npxls > 0 )
+    {
+        try
+        {
+            pPixels = new TPRREubyte[npxls];
+            if ( pxls )
+            {
+                pPixels = (TPRREubyte*) memcpy(pPixels, pxls, npxls);
+            }
+        }
+        catch (const std::bad_alloc&)
+        {
+            return false;
+        }
+    }
+    else
+    {
+        pPixels = pxls;
+    }
     nBits = bits;
     nWidth = w;
     nHeight = h;
@@ -402,15 +421,6 @@ bool PRREImage::PRREImageImpl::initMembers(
     bUpsideDown = upsDown;
     bChanged = chngd;
     nSizePixels = npxls;
-    if ( nSizePixels > 0 )
-    {
-        if ( !(pPixels = (TPRREubyte*) malloc(npxls)) )
-            return false;
-        if ( pxls )
-            pPixels = (TPRREubyte*) memcpy(pPixels, pxls, npxls);    
-    }
-    else
-        pPixels = pxls;
     return true;
 } // initMembers()
 
@@ -453,16 +463,25 @@ TPRREbool PRREImage::PRREImageImpl::readBMP24pixels(HANDLE f)
 */
 unsigned char* PRREImage::PRREImageImpl::readPaletteIndices(const HANDLE f)
 {
-    const DWORD nPaletteIndexArraySize      = nWidth * nHeight * sizeof(unsigned char) / (8 / nBits);
-    unsigned char* const pPaletteIndexArray = (unsigned char*) malloc(nPaletteIndexArraySize);
-    DWORD bytesread;
-    ReadFile(f, pPaletteIndexArray, nPaletteIndexArraySize, &bytesread, NULL);
-    if ( bytesread != nPaletteIndexArraySize )
+    const DWORD nPaletteIndexArraySize = nWidth * nHeight * sizeof(unsigned char) / (8 / nBits);
+    unsigned char* pPaletteIndexArray = NULL;
+    try
     {
-        _pOwner->getConsole().EOLn("ERROR: bytesread != nPaletteIndexArraySize: %d != %d", bytesread, nPaletteIndexArraySize);
-        free(pPaletteIndexArray);
-        return NULL;
+        pPaletteIndexArray = new unsigned char[nPaletteIndexArraySize];
+        DWORD bytesread;
+        ReadFile(f, pPaletteIndexArray, nPaletteIndexArraySize, &bytesread, NULL);
+        if ( bytesread != nPaletteIndexArraySize )
+        {
+            _pOwner->getConsole().EOLn("ERROR: bytesread != nPaletteIndexArraySize: %d != %d", bytesread, nPaletteIndexArraySize);
+            delete[] pPaletteIndexArray;
+            return NULL;
+        }
     }
+    catch (const std::bad_alloc&)
+    {
+        _pOwner->getConsole().EOLn("  ERROR: failed to allocate pPaletteIndexArray!");
+    }
+
     return pPaletteIndexArray;
 }
 
@@ -494,7 +513,7 @@ TPRREbool PRREImage::PRREImageImpl::readBMP8pixels(const HANDLE f, const RGBQUAD
             k++;
         }
     
-    free(pPaletteIndexArray);
+    delete[] pPaletteIndexArray;
     clrCompOrder = PRRE_RGB;
     clrCompOrderOrig = clrCompOrder;
     nBits = 24;
@@ -522,6 +541,7 @@ TPRREbool PRREImage::PRREImageImpl::readBMP4pixels(HANDLE f, const RGBQUAD* pale
 
     TPRREuint k = 0;
     for (TPRREuint y = 0; y < nHeight; ++y)
+    {
         for (TPRREuint x = 0; x < nWidth; x += 2)
         {
             for (int c = 0; c < 3; ++c)
@@ -532,8 +552,9 @@ TPRREbool PRREImage::PRREImageImpl::readBMP4pixels(HANDLE f, const RGBQUAD* pale
 
             k++;
         }
+    }
     
-    free(pPaletteIndexArray);
+    delete[] pPaletteIndexArray;
     clrCompOrder = PRRE_RGB;
     clrCompOrderOrig = clrCompOrder;
     nBits = 24;
@@ -569,7 +590,7 @@ TPRREbool PRREImage::PRREImageImpl::readBMP1pixels(HANDLE f, const RGBQUAD* pale
             k++;
         }
     
-    free(pPaletteIndexArray);    
+    delete[] pPaletteIndexArray;   
     clrCompOrder = PRRE_RGB;
     clrCompOrderOrig = clrCompOrder;
     nBits = 24;

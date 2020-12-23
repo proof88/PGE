@@ -216,7 +216,7 @@ PRREObject3D* PRREObject3DManager::createPlane(
     PRREObject3D* const subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
     obj->Attach( *subobj );
     ConvertToPlane(*obj, a, b);
-    subobj->pImpl->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX) * subobj->getVerticesCount() );
+    subobj->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobj->getVerticesCount()];
 
     // although PPP has already selected the vtransmode, we set it again
     // to actually allocate the needed resources for the geometry
@@ -270,7 +270,7 @@ PRREObject3D* PRREObject3DManager::createBox(
     PRREObject3D* const subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
     obj->Attach( *subobj );
     ConvertToBox(*obj, a, b, c);
-    subobj->pImpl->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX) * subobj->getVerticesCount() );
+    subobj->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobj->getVerticesCount()];
 
     // although PPP has already selected the vtransmode, we set it again
     // to actually allocate the needed resources for the geometry
@@ -377,7 +377,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
             PRREObject3D* const subobject = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
             obj->Attach( *subobject );
             subobject->Cannibalize(*(PRREMesh3D*)(tmpMesh->getAttachedAt(i)));
-            subobject->pImpl->pVerticesTransf = (TPRRE_TRANSFORMED_VERTEX*) malloc( sizeof(TPRRE_TRANSFORMED_VERTEX) * subobject->getVerticesCount() );
+            subobject->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobject->getVerticesCount()];
             
             // Legacy tmcsgfxlib behavior: auto-load textures for subobjects where pipe character is present in name
             const std::string::size_type nPipePos = subobject->getName().find('|');

@@ -85,8 +85,8 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
 {
     getConsole().OLnOI("~PRREObject3D() ...");
 
-    free(pVerticesTransf);
-    free(pFbBuffer);
+    delete[] pVerticesTransf;
+    delete[] pFbBuffer;
     pVerticesTransf = PGENULL;
     pFbBuffer = PGENULL;
 
@@ -450,7 +450,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
        
         nFbBuffer_h = GLsizei(ceil((_pOwner->getVerticesCount(false) / 3.0f))) * (2+3*12);
         /* TODO: probably in future we should rather use pVerticesTransf here as well since we already have it for that purpose, right? ;) */
-        pFbBuffer = (GLfloat*) realloc(pFbBuffer, nFbBuffer_h * sizeof(GLfloat));
+        pFbBuffer = new GLfloat[nFbBuffer_h];
 
         /* unfortunately only the most detailed option GL_4D_COLOR_TEXTURE will give us the w-coord of vertices so we need to use that */
         glFeedbackBuffer(nFbBuffer_h, GL_4D_COLOR_TEXTURE, pFbBuffer);

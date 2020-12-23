@@ -96,7 +96,13 @@ private:
         std::string** saLangData;
         const int nReadLangLines = cfg.readLanguageData(saLangData);
 
-        const bool b1 = assertEquals(4, nReadLangLines, "read lang lines count");
+        const bool b1 = assertEquals(4, nReadLangLines, "read lang lines count") &
+            assertNotNull(saLangData, "saLangData null");
+
+        if ( !b1 )
+        {
+            return false;
+        }
 
         const char* const saLangLinesExpected[] = {
             "asdasdasdasdasd",
@@ -106,12 +112,16 @@ private:
         bool bErrorFound = false;
 
         for (int i = 0; i < nReadLangLines; i++)
+        {
             if ( bErrorFound = !assertEquals(std::string(saLangLinesExpected[i]), *saLangData[i]) )
                 break;
+        }
 
         for (int i = 0; i < nReadLangLines; i++)
+        {
             delete saLangData[i];
-        free( saLangData );
+        }
+        delete[] saLangData;
 
         return b1 & !bErrorFound;
     }

@@ -17,7 +17,7 @@
 #include "../gl/wglext.h"
 
 #include "../../external/PRREallHeaders.h"
-#include "../..//external/PRREBaseClass.h"
+#include "../../external/PRREBaseClass.h"
 #include <vector>
 
 /**

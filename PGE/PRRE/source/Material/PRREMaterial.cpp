@@ -49,11 +49,11 @@ PRREMaterial::PRREMaterialImpl::~PRREMaterialImpl()
 {
     getConsole().OLnOI("~PRREMaterial() ...");
 
-    for (TPRREuint i = 0; i < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount(); i++)
+    for (TPRREuint i = 0; i < layers.size(); i++)
     {
         layers[i].nColors_h = layers[i].nTexcoords_h = 0;
-        free( layers[i].pColors );
-        free( layers[i].pTexcoords );
+        delete[] layers[i].pColors;
+        delete[] layers[i].pTexcoords;
         layers[i].pColors = PGENULL;
         layers[i].pTexcoords = PGENULL;
     }
@@ -78,9 +78,9 @@ void PRREMaterial::PRREMaterialImpl::AllocateArrays(TPRREuint nColorCount, TPRRE
     for (TPRREuint i = 0; i < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount(); i++)
     {
         layers[i].nColors_h          = nColorCount;
-        layers[i].pColors            = (TRGBAFLOAT*) malloc( sizeof(TRGBAFLOAT) * nColorCount );
+        layers[i].pColors            = new TRGBAFLOAT[nColorCount];
         layers[i].nTexcoords_h       = nTexcoordCount;
-        layers[i].pTexcoords         = (TUVW*) malloc( sizeof(TUVW) * nTexcoordCount );
+        layers[i].pTexcoords         = new TUVW[nTexcoordCount];
     }
 }
 

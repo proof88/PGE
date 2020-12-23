@@ -30,9 +30,9 @@ PRREMesh3D::PRREMesh3DImpl::~PRREMesh3DImpl()
 {
     getConsole().OLnOI("~PRREMesh3DImpl() ...");
 
-    free(pVertices);
-    free(pNormals);
-    free(pVertexIndices);
+    delete[] pVertices;
+    delete[] pNormals;
+    delete[] pVertexIndices;
     pVertices = PGENULL;
     pNormals = PGENULL;
     pVertexIndices = PGENULL;

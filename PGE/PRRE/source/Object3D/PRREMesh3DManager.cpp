@@ -116,7 +116,7 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
     if ( objfile == INVALID_HANDLE_VALUE )
     {
         _pOwner->getConsole().EOLnOO("ERROR: objfile == INVALID_HANDLE_VALUE, returning NULL");
-        return NULL;
+        return PGENULL;
     }
 
     filebuffer_size = GetFileSize(objfile, NULL);
@@ -129,16 +129,27 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
         // further, as we don't want to try malloc 0xFFFFFFFF or larger memory area. No model files should reach this size, or
         // a different approach is needed to read the whole file.
         CloseHandle(objfile);
-        return NULL;
+        return PGENULL;
     }
 
-    char* const filebuffer = (char* const) malloc(filebuffer_size * sizeof(char));
-    ReadFile(objfile, filebuffer, filebuffer_size, &bytesread, NULL);
-    CloseHandle(objfile);
-    if ( bytesread != filebuffer_size )
+    char* filebuffer = NULL;
+    try
     {
-        _pOwner->getConsole().EOLnOO("ERROR: %d != %d (filebuffer_size != bytesread), returning NULL", filebuffer_size, bytesread);
-        return NULL;
+        filebuffer = new char[filebuffer_size];
+        ReadFile(objfile, filebuffer, filebuffer_size, &bytesread, NULL);
+        CloseHandle(objfile);
+        if ( bytesread != filebuffer_size )
+        {
+            _pOwner->getConsole().EOLnOO("ERROR: %d != %d (filebuffer_size != bytesread), returning NULL", filebuffer_size, bytesread);
+            delete[] filebuffer;
+            return PGENULL;
+        }
+    }
+    catch (const std::bad_alloc&)
+    {
+        CloseHandle(objfile);
+        _pOwner->getConsole().EOLn("  ERROR: failed to allocate filebuffer!");
+        return PGENULL;
     }
 
     _pOwner->getConsole().OLn("File read into buffer (%d bytes) and closed, preprocessing file ...", filebuffer_size);
@@ -146,46 +157,63 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
     _pOwner->getConsole().OLn("lines_h = %d", lines_h);
 
     // TODO: performance: instead of memcpy-ing from filebuffer to lines[], lines[i] should be set to point properly into filebuffer
-    char** const lines = (char** const) calloc(lines_h, sizeof(char*)); 
-    const char* tmpptr = filebuffer;
-    const char* prevtmpptr;
-    TPRREuint actline = 0;
-    do
-    {                                                                            
-        if ( tmpptr == filebuffer )
-        {
-            prevtmpptr = tmpptr;
-            tmpptr = tmpptr-1;
-        }
-        else
-        {
-            prevtmpptr = tmpptr;
-        }
-        // finding line end
-        tmpptr = (char*) memchr(tmpptr+1, 10, filebuffer_size-((DWORD)(tmpptr-filebuffer)));
-                    
-        if ( (tmpptr != NULL) && (prevtmpptr != NULL) )
-        {    // found a new line, allocating mem for it and put it in
-            lines[actline] = (char*) calloc(tmpptr-prevtmpptr, sizeof(char));
-            if ( tmpptr-prevtmpptr > 0 )
+    char** lines = NULL;
+    try
+    {
+        lines = new char*[lines_h]();  // instead of calloc(), this kind of usage of operator new is value-initialization, by using (), that will take care of zeroing in this case!
+        const char* tmpptr = filebuffer;
+        const char* prevtmpptr;
+        TPRREuint actline = 0;
+        do
+        {                                                                            
+            if ( tmpptr == filebuffer )
             {
-                if ( prevtmpptr == filebuffer )    // if this is the 1st line
-                    memcpy(lines[actline], prevtmpptr, tmpptr-prevtmpptr-1);
-                else
-                    memcpy(lines[actline], prevtmpptr+1, tmpptr-prevtmpptr-1);
+                prevtmpptr = tmpptr;
+                tmpptr = tmpptr-1;
             }
-            actline++;
-        }
-        else
-        {    // no more endline chars but chars after the last endline char are still needed
-            if ( (DWORD) (prevtmpptr - filebuffer) < filebuffer_size )
+            else
             {
-                lines[actline] = (char*) calloc(filebuffer_size-(prevtmpptr-filebuffer)+1, sizeof(char));
-                memcpy(lines[actline], prevtmpptr, filebuffer_size-(prevtmpptr-filebuffer));
+                prevtmpptr = tmpptr;
             }
+            // finding line end
+            tmpptr = (char*) memchr(tmpptr+1, 10, filebuffer_size-((DWORD)(tmpptr-filebuffer)));
+                        
+            if ( (tmpptr != NULL) && (prevtmpptr != NULL) )
+            {    // found a new line, allocating mem for it and put it in
+                
+                lines[actline] = new char[tmpptr-prevtmpptr]();
+                if ( tmpptr-prevtmpptr > 0 )
+                {
+                    if ( prevtmpptr == filebuffer )    // if this is the 1st line
+                        memcpy(lines[actline], prevtmpptr, tmpptr-prevtmpptr-1);
+                    else
+                        memcpy(lines[actline], prevtmpptr+1, tmpptr-prevtmpptr-1);
+                }
+                actline++;
+            }
+            else
+            {    // no more endline chars but chars after the last endline char are still needed
+                if ( (DWORD) (prevtmpptr - filebuffer) < filebuffer_size )
+                {
+                    lines[actline] = new char[filebuffer_size-(prevtmpptr-filebuffer)+1]();
+                    memcpy(lines[actline], prevtmpptr, filebuffer_size-(prevtmpptr-filebuffer));
+                }
+            }
+        } while (tmpptr != NULL);
+    } // try
+    catch (const std::bad_alloc&)
+    {
+        if ( lines != NULL )
+        {
+            for (TPRREuint i = 0; i < lines_h; i++)
+                delete[] lines[i];
         }
-    } while (tmpptr != NULL);
-    free(filebuffer);
+        delete[] lines;
+        delete[] filebuffer;
+        _pOwner->getConsole().EOLn("  ERROR: failed to allocate lines array!");
+        return NULL;
+    }
+    delete[] filebuffer;
 
     _pOwner->getConsole().OLn("preprocessing done, gathering data ...");
     
@@ -236,294 +264,351 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
     // Also, this can be taken to a next level, by analysing the vertex indices used by the faces, and then
     // the faces could be ordered by the referenced vertices, so that faces using shared vertices will be
     // rendered after each other, benefiting from vertex cache.
-    TXYZ** tmpSubMeshesVertices  = (TXYZ**) malloc(submeshes_h * sizeof(TXYZ*));
-    TUVW** tmpSubMeshesTexcoords = (TUVW**) malloc(submeshes_h * sizeof(TUVW*));
-    TXYZ** tmpSubMeshesNormals   = (TXYZ**) malloc(submeshes_h * sizeof(TXYZ*));
-    TPRREuint* tmpSubMeshesVertices_h  = (TPRREuint*) malloc(submeshes_h * sizeof(TPRREuint));
-    TPRREuint* tmpSubMeshesTexcoords_h = (TPRREuint*) malloc(submeshes_h * sizeof(TPRREuint));
-    TPRREuint* tmpSubMeshesNormals_h   = (TPRREuint*) malloc(submeshes_h * sizeof(TPRREuint));
+    TXYZ** tmpSubMeshesVertices  = NULL;
+    TUVW** tmpSubMeshesTexcoords = NULL;
+    TXYZ** tmpSubMeshesNormals   = NULL;
+    TPRREuint* tmpSubMeshesVertices_h  = NULL;
+    TPRREuint* tmpSubMeshesTexcoords_h = NULL;
+    TPRREuint* tmpSubMeshesNormals_h   = NULL;
 
-    TPRREuint* const lines_start = (TPRREuint*) malloc(submeshes_h * sizeof(TPRREuint));
-    TPRREuint* const lines_end = (TPRREuint*) malloc(submeshes_h * sizeof(TPRREuint));
-    
+    TPRREuint* lines_start = NULL;
+    TPRREuint* lines_end = NULL;
+
+    TPRREuint k;
     bool sector = false;
     TPRREuint actsubmesh = 0;
-    TPRREuint k;
-    
-    // finding starting and ending lines of vertices for every submesh
-    _pOwner->getConsole().OLnOI("parsing vertices ...");
-    for (TPRREuint i = 0; i < lines_h; i++)
-    {
-        if ( (strstr((char*) lines[i],"v") > 0) && (strstr((char*) lines[i],"#") == 0) && (strstr((char*) lines[i],"vt") == 0) && (strstr((char*) lines[i],"vn") == 0) && (strstr((char*) lines[i],"g") == 0))
-        {
-            if ( !sector )
-            {
-                sector = true;
-                lines_start[actsubmesh] = i;
-            }
-        }
-        else
-        {
-            if ( sector )
-            {
-                sector = false;
-                lines_end[actsubmesh] = i-1;
-                actsubmesh++;
-            }
-        }
-    }
-                
     int numparsed = 0;
-    // parsing vertices
-    for (TPRREuint i = 0; i < submeshes_h; i++)
-    {                    
-        tmpSubMeshesVertices_h[i] = lines_end[i] - lines_start[i] + 1;
-        tmpSubMeshesVertices[i] = (TXYZ*) malloc( sizeof(TXYZ) * tmpSubMeshesVertices_h[i] );
-        _pOwner->getConsole().OLn("tmpSubMeshesVertices_h[%d] == %d", i, tmpSubMeshesVertices_h[i]);
-        k = 0;
-        for (TPRREuint j = lines_start[i]; j <= lines_end[i]; j++)
-        {
-            numparsed = sscanf((char*)lines[j], "%*s %f %f %f", &(tmpSubMeshesVertices[i][k].x), &(tmpSubMeshesVertices[i][k].y), &(tmpSubMeshesVertices[i][k].z));
-            if ( numparsed != 3 )
-            {
-                _pOwner->getConsole().EOLn("ERROR: sscanf() failed @ vertices section: numparsed == %d", numparsed);
-                _pOwner->getConsole().OLn("  @ lines[%d]: '%s'", j, lines[j]);
-            }    
-            k++;
-        }
-    }
-    _pOwner->getConsole().OLnOO("vertices parsed!");
-
-    // finding starting and ending lines of texcoords for every submesh
-    _pOwner->getConsole().OLnOI("parsing texcoords ...");
-    sector = false;
-    actsubmesh = 0;
-    for (TPRREuint i = 0; i < lines_h; i++)
+    try
     {
-        if ( (strstr((char*) lines[i], "vt") > 0) && (strstr((char*) lines[i], "#") == 0) )
-        {
-            if ( !sector )
-            {
-                sector = true;
-                lines_start[actsubmesh] = i;
-            }
-        }
-        else
-        {
-            if ( sector )
-            {
-                sector = false;
-                lines_end[actsubmesh] = i-1;
-                actsubmesh++;
-            }
-        }
-    }
-                
-    k = 0;
-    // parsing texcoords
-    for (TPRREuint i = 0; i < submeshes_h; i++)
-    {              
-        tmpSubMeshesTexcoords_h[i] = lines_end[i] - lines_start[i] + 1;
-        tmpSubMeshesTexcoords[i] = (TUVW*) malloc( sizeof(TUVW) * tmpSubMeshesTexcoords_h[i] );
-        _pOwner->getConsole().OLn("tmpSubMeshesTexcoords_h[%d] == %d", i, tmpSubMeshesTexcoords_h[i]);
-        k = 0;
-        for (TPRREuint j = lines_start[i]; j <= lines_end[i]; j++)
-        {
-            numparsed = sscanf((char*)lines[j], "%*s %f %f %f", &(tmpSubMeshesTexcoords[i][k].u), &(tmpSubMeshesTexcoords[i][k].v), &(tmpSubMeshesTexcoords[i][k].w));
-            if ( numparsed != 3 )
-            {
-                _pOwner->getConsole().EOLn("ERROR: sscanf() failed @ texcoords section: numparsed == %d", numparsed);
-                _pOwner->getConsole().OLn("  @ lines[%d]: '%s'", j, lines[j]);
-            }    
-            k++;
-        }
-    }
-    _pOwner->getConsole().OLnOO("texcoords parsed!");
+        tmpSubMeshesVertices  = new TXYZ*[submeshes_h](); // intentionally zeroing out pointers for easier exception handling
+        tmpSubMeshesTexcoords = new TUVW*[submeshes_h]();
+        tmpSubMeshesNormals   = new TXYZ*[submeshes_h]();
+        tmpSubMeshesVertices_h  = new TPRREuint[submeshes_h];
+        tmpSubMeshesTexcoords_h = new TPRREuint[submeshes_h];
+        tmpSubMeshesNormals_h   = new TPRREuint[submeshes_h];
 
-    // finding starting and ending lines of normals for every submesh
-    _pOwner->getConsole().OLnOI("parsing normals ...");
-    sector = false;
-    actsubmesh = 0;
-    for (TPRREuint i = 0; i < lines_h; i++)
+        lines_start = new TPRREuint[submeshes_h];
+        lines_end = new TPRREuint[submeshes_h];
+    
+        // finding starting and ending lines of vertices for every submesh
+        _pOwner->getConsole().OLnOI("parsing vertices ...");
+        for (TPRREuint i = 0; i < lines_h; i++)
+        {
+            if ( (strstr((char*) lines[i],"v") > 0) && (strstr((char*) lines[i],"#") == 0) && (strstr((char*) lines[i],"vt") == 0) && (strstr((char*) lines[i],"vn") == 0) && (strstr((char*) lines[i],"g") == 0))
+            {
+                if ( !sector )
+                {
+                    sector = true;
+                    lines_start[actsubmesh] = i;
+                }
+            }
+            else
+            {
+                if ( sector )
+                {
+                    sector = false;
+                    lines_end[actsubmesh] = i-1;
+                    actsubmesh++;
+                }
+            }
+        }
+                    
+        // parsing vertices
+        for (TPRREuint i = 0; i < submeshes_h; i++)
+        {            
+            tmpSubMeshesVertices_h[i] = lines_end[i] - lines_start[i] + 1;
+            tmpSubMeshesVertices[i] = new TXYZ[tmpSubMeshesVertices_h[i]];
+            _pOwner->getConsole().OLn("tmpSubMeshesVertices_h[%d] == %d", i, tmpSubMeshesVertices_h[i]);
+            k = 0;
+            for (TPRREuint j = lines_start[i]; j <= lines_end[i]; j++)
+            {
+                numparsed = sscanf((char*)lines[j], "%*s %f %f %f", &(tmpSubMeshesVertices[i][k].x), &(tmpSubMeshesVertices[i][k].y), &(tmpSubMeshesVertices[i][k].z));
+                if ( numparsed != 3 )
+                {
+                    _pOwner->getConsole().EOLn("ERROR: sscanf() failed @ vertices section: numparsed == %d", numparsed);
+                    _pOwner->getConsole().OLn("  @ lines[%d]: '%s'", j, lines[j]);
+                }    
+                k++;
+            }
+        }
+        _pOwner->getConsole().OLnOO("vertices parsed!");
+
+        // finding starting and ending lines of texcoords for every submesh
+        _pOwner->getConsole().OLnOI("parsing texcoords ...");
+        sector = false;
+        actsubmesh = 0;
+        for (TPRREuint i = 0; i < lines_h; i++)
+        {
+            if ( (strstr((char*) lines[i], "vt") > 0) && (strstr((char*) lines[i], "#") == 0) )
+            {
+                if ( !sector )
+                {
+                    sector = true;
+                    lines_start[actsubmesh] = i;
+                }
+            }
+            else
+            {
+                if ( sector )
+                {
+                    sector = false;
+                    lines_end[actsubmesh] = i-1;
+                    actsubmesh++;
+                }
+            }
+        }
+                    
+        k = 0;
+        // parsing texcoords
+        for (TPRREuint i = 0; i < submeshes_h; i++)
+        {              
+            tmpSubMeshesTexcoords_h[i] = lines_end[i] - lines_start[i] + 1;
+            tmpSubMeshesTexcoords[i] = new TUVW[tmpSubMeshesTexcoords_h[i]];
+            _pOwner->getConsole().OLn("tmpSubMeshesTexcoords_h[%d] == %d", i, tmpSubMeshesTexcoords_h[i]);
+            k = 0;
+            for (TPRREuint j = lines_start[i]; j <= lines_end[i]; j++)
+            {
+                numparsed = sscanf((char*)lines[j], "%*s %f %f %f", &(tmpSubMeshesTexcoords[i][k].u), &(tmpSubMeshesTexcoords[i][k].v), &(tmpSubMeshesTexcoords[i][k].w));
+                if ( numparsed != 3 )
+                {
+                    _pOwner->getConsole().EOLn("ERROR: sscanf() failed @ texcoords section: numparsed == %d", numparsed);
+                    _pOwner->getConsole().OLn("  @ lines[%d]: '%s'", j, lines[j]);
+                }    
+                k++;
+            }
+        }
+        _pOwner->getConsole().OLnOO("texcoords parsed!");
+
+        // finding starting and ending lines of normals for every submesh
+        _pOwner->getConsole().OLnOI("parsing normals ...");
+        sector = false;
+        actsubmesh = 0;
+        for (TPRREuint i = 0; i < lines_h; i++)
+        {
+            if ( (strstr((char*) lines[i], "vn") > 0) && (strstr((char*) lines[i], "#") == 0) )
+            {
+                if ( !sector )
+                {
+                    sector = true;
+                    lines_start[actsubmesh] = i;
+                }
+            }
+            else
+            {
+                if ( sector )
+                {
+                    sector = false;
+                    lines_end[actsubmesh] = i-1;
+                    actsubmesh++;
+                }
+            }
+        }
+
+        // parsing normals
+        for (TPRREuint i = 0; i < submeshes_h; i++)
+        {           
+            tmpSubMeshesNormals_h[i] = lines_end[i] - lines_start[i] + 1;
+            tmpSubMeshesNormals[i] = new TXYZ[tmpSubMeshesNormals_h[i]];
+            _pOwner->getConsole().OLn("tmpSubMeshesNormals_h[%d] == %d", i, tmpSubMeshesNormals_h[i]);
+            k = 0;
+            for (TPRREuint j = lines_start[i]; j <= lines_end[i]; j++)
+            {
+                numparsed = sscanf((char*)lines[j], "%*s %f %f %f", &(tmpSubMeshesNormals[i][k].x), &(tmpSubMeshesNormals[i][k].y), &(tmpSubMeshesNormals[i][k].z));
+                if ( numparsed != 3 )
+                {
+                    _pOwner->getConsole().EOLn("ERROR: sscanf() failed @ normals section: numparsed == %d", numparsed);
+                    _pOwner->getConsole().OLn("  @ lines[%d]: '%s'", j, lines[j]);
+                }    
+                k++;
+            }
+        }
+        _pOwner->getConsole().OLnOO("normals parsed!");
+
+        // finding starting and ending lines of faces for every submesh
+        _pOwner->getConsole().OLnOI("parsing faces ...");
+        sector = false;
+        actsubmesh = 0;
+        for (TPRREuint i = 0; i < lines_h; i++)
+        {
+            if ( (strstr((char*) lines[i], "f") > 0) && (strstr((char*) lines[i], "#") == 0) && ((strstr((char*) lines[i], "g ") == 0)) )
+            {
+                if ( !sector )
+                {
+                    sector = true;
+                    lines_start[actsubmesh] = i;
+                }
+            }
+            else
+            {
+                if ( sector )
+                {
+                    sector = false;
+                    lines_end[actsubmesh] = i-1;
+                    actsubmesh++;
+                }
+            }
+        }
+
+        // we have to determine min and max vertex indices here, prior to allocating arrays
+        for (TPRREuint i = 0; i < submeshes_h; i++)
+        {                    
+            PRREMesh3D* const currSubObj = (PRREMesh3D*) (obj->getAttachedAt(i));
+            k = 0;
+            // todo: later this loop can be replaced by a simple assignment like: k = lines_end[i] - lines_start[i] +/-1 or sg like that
+            for (TPRREuint j = lines_start[i]; j <= lines_end[i]; j++)
+            {
+                // there will be submesh-local indices in the end, all starting from nMinVertexIndex = 0 to nMaxVertexIndex = k*3+2
+                // TODO: since we use submesh-local indices, there is no use for nMinVertexIndex, as it must be always 0 in all submeshes!
+                // also, I'm not sure about the use of nMaxVertexIndex, since I guess it always equals to nVertexIndices_h-1.
+                // So, I would rather decide nIndicesType based on the value nVertexIndices_h.
+                if ( currSubObj->pImpl->nMinVertexIndex > k*3 )
+                    currSubObj->pImpl->nMinVertexIndex = k*3;
+                if ( currSubObj->pImpl->nMaxVertexIndex < k*3+2 )
+                    currSubObj->pImpl->nMaxVertexIndex = k*3+2;
+                k++;
+            }
+            // determining what type of values to be stored in the index arrays ...
+            if ( currSubObj->pImpl->nMaxVertexIndex <= UCHAR_MAX )
+            {
+                currSubObj->pImpl->nIndicesType = GL_UNSIGNED_BYTE;
+                _pOwner->getConsole().OLn("submeshes_h[%d] nIndicesType = GL_UNSIGNED_BYTE", i);
+            }
+            else if ( currSubObj->pImpl->nMaxVertexIndex <= USHRT_MAX )
+            {
+                currSubObj->pImpl->nIndicesType = GL_UNSIGNED_SHORT;
+                _pOwner->getConsole().OLn("submeshes_h[%d] nIndicesType = GL_UNSIGNED_SHORT", i);
+            }
+            else
+            {
+                currSubObj->pImpl->nIndicesType = GL_UNSIGNED_INT;
+                _pOwner->getConsole().OLn("submeshes_h[%d] nIndicesType = GL_UNSIGNED_INT", i);
+            }
+            if ( currSubObj->pImpl->nMinVertexIndex != 0 )
+            {
+                _pOwner->getConsole().EOLn("ERROR: submeshes_h[%d] nMinVertexIndex == %d", i, currSubObj->pImpl->nMinVertexIndex);
+                _ASSERT( false );
+            }
+        }
+
+        // parsing faces
+        int prevvertcount = 1;
+        int prevnormcount = 1;
+        int prevtexcoordcount = 1;
+        for (TPRREuint i = 0; i < submeshes_h; i++)
+        {                    
+            PRREMesh3D* const currSubObj = (PRREMesh3D*) (obj->getAttachedAt(i));
+            currSubObj->pImpl->nFaces_h = lines_end[i] - lines_start[i] + 1;
+            // currSubObj->pImpl->pFaces = (TFACE4*) malloc( sizeof(TFACE4) * currSubObj->pImpl->nFaces_h );
+            currSubObj->pImpl->nVertexIndices_h = currSubObj->pImpl->nFaces_h * 3;
+            currSubObj->pImpl->pVertexIndices = new char[PRREGLsnippets::getSizeofIndexType(currSubObj->pImpl->nIndicesType) * currSubObj->pImpl->nVertexIndices_h];
+            currSubObj->pImpl->nVertices_h = currSubObj->pImpl->nVertexIndices_h;
+            currSubObj->pImpl->pVertices = new TXYZ[currSubObj->pImpl->nVertices_h];
+            currSubObj->pImpl->pNormals  = new TXYZ[currSubObj->pImpl->nVertices_h];
+
+            currSubObj->pImpl->pMaterial->AllocateArrays(
+                currSubObj->pImpl->nVertices_h,
+                currSubObj->pImpl->nVertexIndices_h,
+                currSubObj->pImpl->nVertexIndices_h,
+                PRREGLsnippets::getSizeofIndexType(currSubObj->pImpl->nIndicesType) );
+
+            _pOwner->getConsole().OLn("obj->subObjects[%d]->nFaces_h == %d", i, currSubObj->pImpl->nFaces_h);
+            k = 0;
+            // parsing faces of a submesh
+            for (TPRREuint j = lines_start[i]; j <= lines_end[i]; j++)
+            {
+                TPRREuint tmpParseVertexIndices[3];
+                TPRREuint tmpParseTexcoordIndices[3];
+                TPRREuint tmpParseNormalIndices[3];
+                numparsed = sscanf((char*)lines[j], "%*s %d/%d/%d %d/%d/%d %d/%d/%d",
+                                    &(tmpParseVertexIndices[0]),
+                                    &(tmpParseTexcoordIndices[0]),
+                                    &(tmpParseNormalIndices[0]),
+                                    &(tmpParseVertexIndices[1]),
+                                    &(tmpParseTexcoordIndices[1]),
+                                    &(tmpParseNormalIndices[1]),
+                                    &(tmpParseVertexIndices[2]),
+                                    &(tmpParseTexcoordIndices[2]),
+                                    &(tmpParseNormalIndices[2]));
+                if ( numparsed != 9 )
+                {
+                    _pOwner->getConsole().EOLn("ERROR: sscanf() failed @ faces section: numparsed == %d", numparsed);
+                    _pOwner->getConsole().OLn("  @ lines[%d]: '%s'", j, lines[j]);
+                }    
+
+                // Putting parsed indices into index arrays.
+                // We decrease the parsed index values by the previously accumulated index values because OBJ stores global indices but we need submesh-local indices.
+                // SetVertexIndex() stores indices with minimal storage size, eg. 1 as byte, 500 as short, so passing submesh-local indices here is CRITICAL to avoid chopping values.
+                /* Note: exchange k*3 and k*3+2 for CW-CCW change. This maybe a feature in the future. */
+                currSubObj->pImpl->SetVertexIndex(k*3+2, tmpParseVertexIndices[0] - prevvertcount);
+                currSubObj->pImpl->SetVertexIndex(k*3+1, tmpParseVertexIndices[1] - prevvertcount);
+                currSubObj->pImpl->SetVertexIndex(k*3,   tmpParseVertexIndices[2] - prevvertcount);
+
+                // Putting geometry data into arrays. We store geometry data redundantly.
+                currSubObj->pImpl->pVertices[k*3]    = tmpSubMeshesVertices[i][ currSubObj->pImpl->getVertexIndex(k*3) ];
+                currSubObj->pImpl->pVertices[k*3+1]  = tmpSubMeshesVertices[i][ currSubObj->pImpl->getVertexIndex(k*3+1) ];
+                currSubObj->pImpl->pVertices[k*3+2]  = tmpSubMeshesVertices[i][ currSubObj->pImpl->getVertexIndex(k*3+2) ];
+                // don't need to fill pVerticesTransf array here, that task is for during rendering!
+                currSubObj->pImpl->pMaterial->getTexcoords()[k*3]   = tmpSubMeshesTexcoords[i][ tmpParseTexcoordIndices[2] - prevtexcoordcount ];
+                currSubObj->pImpl->pMaterial->getTexcoords()[k*3+1] = tmpSubMeshesTexcoords[i][ tmpParseTexcoordIndices[1] - prevtexcoordcount ];
+                currSubObj->pImpl->pMaterial->getTexcoords()[k*3+2] = tmpSubMeshesTexcoords[i][ tmpParseTexcoordIndices[0] - prevtexcoordcount ];
+
+                // Update the index values because we now store geometry data redundantly.
+                currSubObj->pImpl->SetVertexIndex(k*3,   k*3);
+                currSubObj->pImpl->SetVertexIndex(k*3+1, k*3+1);
+                currSubObj->pImpl->SetVertexIndex(k*3+2, k*3+2);
+                k++;
+            } 
+            prevvertcount += tmpSubMeshesVertices_h[i];
+            prevnormcount += tmpSubMeshesNormals_h[i];
+            prevtexcoordcount += tmpSubMeshesTexcoords_h[i];
+        }
+        _pOwner->getConsole().OLnOO("faces parsed!");
+    } // try
+    catch (const std::bad_alloc&)
     {
-        if ( (strstr((char*) lines[i], "vn") > 0) && (strstr((char*) lines[i], "#") == 0) )
+        for (TPRREuint i = 0; i < submeshes_h; i++)
         {
-            if ( !sector )
-            {
-                sector = true;
-                lines_start[actsubmesh] = i;
-            }
-        }
-        else
-        {
-            if ( sector )
-            {
-                sector = false;
-                lines_end[actsubmesh] = i-1;
-                actsubmesh++;
-            }
-        }
-    }
+            if ( tmpSubMeshesVertices != NULL )
+                delete[] tmpSubMeshesVertices[i];
 
-    // parsing normals
-    for (TPRREuint i = 0; i < submeshes_h; i++)
-    {           
-        tmpSubMeshesNormals_h[i] = lines_end[i] - lines_start[i] + 1;
-        tmpSubMeshesNormals[i] = (TXYZ*) malloc( sizeof(TXYZ) * tmpSubMeshesNormals_h[i] );
-        _pOwner->getConsole().OLn("tmpSubMeshesNormals_h[%d] == %d", i, tmpSubMeshesNormals_h[i]);
-        k = 0;
-        for (TPRREuint j = lines_start[i]; j <= lines_end[i]; j++)
-        {
-            numparsed = sscanf((char*)lines[j], "%*s %f %f %f", &(tmpSubMeshesNormals[i][k].x), &(tmpSubMeshesNormals[i][k].y), &(tmpSubMeshesNormals[i][k].z));
-            if ( numparsed != 3 )
-            {
-                _pOwner->getConsole().EOLn("ERROR: sscanf() failed @ normals section: numparsed == %d", numparsed);
-                _pOwner->getConsole().OLn("  @ lines[%d]: '%s'", j, lines[j]);
-            }    
-            k++;
-        }
-    }
-    _pOwner->getConsole().OLnOO("normals parsed!");
+            if ( tmpSubMeshesTexcoords != NULL )
+                delete[] tmpSubMeshesTexcoords[i];
 
-    // finding starting and ending lines of faces for every submesh
-    _pOwner->getConsole().OLnOI("parsing faces ...");
-    sector = false;
-    actsubmesh = 0;
-    for (TPRREuint i = 0; i < lines_h; i++)
-    {
-        if ( (strstr((char*) lines[i], "f") > 0) && (strstr((char*) lines[i], "#") == 0) && ((strstr((char*) lines[i], "g ") == 0)) )
-        {
-            if ( !sector )
-            {
-                sector = true;
-                lines_start[actsubmesh] = i;
-            }
-        }
-        else
-        {
-            if ( sector )
-            {
-                sector = false;
-                lines_end[actsubmesh] = i-1;
-                actsubmesh++;
-            }
-        }
-    }
+            if ( tmpSubMeshesNormals != NULL )
+                delete[] tmpSubMeshesNormals[i];
 
-    // we have to determine min and max vertex indices here, prior to allocating arrays
-    for (TPRREuint i = 0; i < submeshes_h; i++)
-    {                    
-        PRREMesh3D* const currSubObj = (PRREMesh3D*) (obj->getAttachedAt(i));
-        k = 0;
-        // todo: later this loop can be replaced by a simple assignment like: k = lines_end[i] - lines_start[i] +/-1 or sg like that
-        for (TPRREuint j = lines_start[i]; j <= lines_end[i]; j++)
-        {
-            // there will be submesh-local indices in the end, all starting from nMinVertexIndex = 0 to nMaxVertexIndex = k*3+2
-            // TODO: since we use submesh-local indices, there is no use for nMinVertexIndex, as it must be always 0 in all submeshes!
-            // also, I'm not sure about the use of nMaxVertexIndex, since I guess it always equals to nVertexIndices_h-1.
-            // So, I would rather decide nIndicesType based on the value nVertexIndices_h.
-            if ( currSubObj->pImpl->nMinVertexIndex > k*3 )
-                currSubObj->pImpl->nMinVertexIndex = k*3;
-            if ( currSubObj->pImpl->nMaxVertexIndex < k*3+2 )
-                currSubObj->pImpl->nMaxVertexIndex = k*3+2;
-            k++;
+            PRREMesh3D* const currSubObj = (PRREMesh3D*) (obj->getAttachedAt(i));
+            delete[] currSubObj->pImpl->pVertexIndices;
+            delete[] currSubObj->pImpl->pVertices;
+            delete[] currSubObj->pImpl->pNormals;
+
+            // these should be null so subobj dtor won't try deallocate again
+            currSubObj->pImpl->pVertexIndices = NULL;
+            currSubObj->pImpl->pVertices = NULL;
+            currSubObj->pImpl->pNormals = NULL;
+
+            // TODO: currSubObj->pImpl->pMaterial->AllocateArrays() should be deallocated!
+            // when we deal with deleting obj and subobj here, that will take care of this!
         }
-        // determining what type of values to be stored in the index arrays ...
-        if ( currSubObj->pImpl->nMaxVertexIndex <= UCHAR_MAX )
+        delete[] tmpSubMeshesVertices;
+        delete[] tmpSubMeshesTexcoords;
+        delete[] tmpSubMeshesNormals;
+        delete[] tmpSubMeshesVertices_h;
+        delete[] tmpSubMeshesTexcoords_h;
+        delete[] tmpSubMeshesNormals_h;
+        delete[] lines_start;
+        delete[] lines_end;
+
+        if ( lines != NULL )
         {
-            currSubObj->pImpl->nIndicesType = GL_UNSIGNED_BYTE;
-            _pOwner->getConsole().OLn("submeshes_h[%d] nIndicesType = GL_UNSIGNED_BYTE", i);
+            for (TPRREuint i = 0; i < lines_h; i++)
+                delete[] lines[i];
         }
-        else if ( currSubObj->pImpl->nMaxVertexIndex <= USHRT_MAX )
-        {
-            currSubObj->pImpl->nIndicesType = GL_UNSIGNED_SHORT;
-            _pOwner->getConsole().OLn("submeshes_h[%d] nIndicesType = GL_UNSIGNED_SHORT", i);
-        }
-        else
-        {
-            currSubObj->pImpl->nIndicesType = GL_UNSIGNED_INT;
-            _pOwner->getConsole().OLn("submeshes_h[%d] nIndicesType = GL_UNSIGNED_INT", i);
-        }
-        if ( currSubObj->pImpl->nMinVertexIndex != 0 )
-        {
-            _pOwner->getConsole().EOLn("ERROR: submeshes_h[%d] nMinVertexIndex == %d", i, currSubObj->pImpl->nMinVertexIndex);
-            _ASSERT( false );
-        }
-    }
+        delete[] lines;
 
-    // parsing faces
-    int prevvertcount = 1;
-    int prevnormcount = 1;
-    int prevtexcoordcount = 1;
-    for (TPRREuint i = 0; i < submeshes_h; i++)
-    {                    
-        PRREMesh3D* const currSubObj = (PRREMesh3D*) (obj->getAttachedAt(i));
-        currSubObj->pImpl->nFaces_h = lines_end[i] - lines_start[i] + 1;
-        // currSubObj->pImpl->pFaces = (TFACE4*) malloc( sizeof(TFACE4) * currSubObj->pImpl->nFaces_h );
-        currSubObj->pImpl->nVertexIndices_h   = currSubObj->pImpl->nFaces_h * 3;
-        currSubObj->pImpl->pVertexIndices   = malloc( PRREGLsnippets::getSizeofIndexType(currSubObj->pImpl->nIndicesType) * currSubObj->pImpl->nVertexIndices_h );
-        currSubObj->pImpl->nVertices_h  = currSubObj->pImpl->nVertexIndices_h;
-        currSubObj->pImpl->pVertices        = (TXYZ*)  malloc( sizeof(TXYZ) * currSubObj->pImpl->nVertices_h );
-        currSubObj->pImpl->pNormals         = (TXYZ*)  malloc( sizeof(TXYZ) * currSubObj->pImpl->nVertices_h );
-
-        currSubObj->pImpl->pMaterial->AllocateArrays(
-            currSubObj->pImpl->nVertices_h,
-            currSubObj->pImpl->nVertexIndices_h,
-            currSubObj->pImpl->nVertexIndices_h,
-            PRREGLsnippets::getSizeofIndexType(currSubObj->pImpl->nIndicesType) );
-
-        _pOwner->getConsole().OLn("obj->subObjects[%d]->nFaces_h == %d", i, currSubObj->pImpl->nFaces_h);
-        k = 0;
-        // parsing faces of a submesh
-        for (TPRREuint j = lines_start[i]; j <= lines_end[i]; j++)
-        {
-            TPRREuint tmpParseVertexIndices[3];
-            TPRREuint tmpParseTexcoordIndices[3];
-            TPRREuint tmpParseNormalIndices[3];
-            numparsed = sscanf((char*)lines[j], "%*s %d/%d/%d %d/%d/%d %d/%d/%d",
-                                &(tmpParseVertexIndices[0]),
-                                &(tmpParseTexcoordIndices[0]),
-                                &(tmpParseNormalIndices[0]),
-                                &(tmpParseVertexIndices[1]),
-                                &(tmpParseTexcoordIndices[1]),
-                                &(tmpParseNormalIndices[1]),
-                                &(tmpParseVertexIndices[2]),
-                                &(tmpParseTexcoordIndices[2]),
-                                &(tmpParseNormalIndices[2]));
-            if ( numparsed != 9 )
-            {
-                _pOwner->getConsole().EOLn("ERROR: sscanf() failed @ faces section: numparsed == %d", numparsed);
-                _pOwner->getConsole().OLn("  @ lines[%d]: '%s'", j, lines[j]);
-            }    
-
-            // Putting parsed indices into index arrays.
-            // We decrease the parsed index values by the previously accumulated index values because OBJ stores global indices but we need submesh-local indices.
-            // SetVertexIndex() stores indices with minimal storage size, eg. 1 as byte, 500 as short, so passing submesh-local indices here is CRITICAL to avoid chopping values.
-            /* Note: exchange k*3 and k*3+2 for CW-CCW change. This maybe a feature in the future. */
-            currSubObj->pImpl->SetVertexIndex(k*3+2, tmpParseVertexIndices[0] - prevvertcount);
-            currSubObj->pImpl->SetVertexIndex(k*3+1, tmpParseVertexIndices[1] - prevvertcount);
-            currSubObj->pImpl->SetVertexIndex(k*3,   tmpParseVertexIndices[2] - prevvertcount);
-
-            // Putting geometry data into arrays. We store geometry data redundantly.
-            currSubObj->pImpl->pVertices[k*3]    = tmpSubMeshesVertices[i][ currSubObj->pImpl->getVertexIndex(k*3) ];
-            currSubObj->pImpl->pVertices[k*3+1]  = tmpSubMeshesVertices[i][ currSubObj->pImpl->getVertexIndex(k*3+1) ];
-            currSubObj->pImpl->pVertices[k*3+2]  = tmpSubMeshesVertices[i][ currSubObj->pImpl->getVertexIndex(k*3+2) ];
-            // don't need to fill pVerticesTransf array here, that task is for during rendering!
-            currSubObj->pImpl->pMaterial->getTexcoords()[k*3]   = tmpSubMeshesTexcoords[i][ tmpParseTexcoordIndices[2] - prevtexcoordcount ];
-            currSubObj->pImpl->pMaterial->getTexcoords()[k*3+1] = tmpSubMeshesTexcoords[i][ tmpParseTexcoordIndices[1] - prevtexcoordcount ];
-            currSubObj->pImpl->pMaterial->getTexcoords()[k*3+2] = tmpSubMeshesTexcoords[i][ tmpParseTexcoordIndices[0] - prevtexcoordcount ];
-
-            // Update the index values because we now store geometry data redundantly.
-            currSubObj->pImpl->SetVertexIndex(k*3,   k*3);
-            currSubObj->pImpl->SetVertexIndex(k*3+1, k*3+1);
-            currSubObj->pImpl->SetVertexIndex(k*3+2, k*3+2);
-            k++;
-        } 
-        prevvertcount += tmpSubMeshesVertices_h[i];
-        prevnormcount += tmpSubMeshesNormals_h[i];
-        prevtexcoordcount += tmpSubMeshesTexcoords_h[i];
-    }
-    _pOwner->getConsole().OLnOO("faces parsed!");
+        _pOwner->getConsole().EOLnOO("ERROR: submesh geometry arrays alloc failed!");
+        return NULL;
+    } // catch
 
     _pOwner->getConsole().OLnOI("checking submodel names and legacy-loading textures implicitly by submodel names ...");
     TPRREuint isubmsh = 0;
@@ -565,25 +650,30 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
     _pOwner->getConsole().OLnOI("freeing up temporary buffers ...");
     for (TPRREuint i = 0; i < submeshes_h; i++)
     {
-        free( tmpSubMeshesVertices[i] );
-        free( tmpSubMeshesTexcoords[i] );
-        free( tmpSubMeshesNormals[i] );
-        tmpSubMeshesVertices[i] = NULL;
-        tmpSubMeshesTexcoords[i] = NULL;
-        tmpSubMeshesNormals[i] = NULL;
-    }
-    free(tmpSubMeshesVertices);
-    free(tmpSubMeshesTexcoords);
-    free(tmpSubMeshesNormals);
-    tmpSubMeshesVertices = NULL;
-    tmpSubMeshesTexcoords = NULL;
-    tmpSubMeshesNormals = NULL;
+        if ( tmpSubMeshesVertices != NULL )
+            delete[] tmpSubMeshesVertices[i];
 
-    for (TPRREuint i = 0; i < lines_h; i++)
-        free(lines[i]);
-    free(lines_start);
-    free(lines_end);
-    free(lines);
+        if ( tmpSubMeshesTexcoords != NULL )
+            delete[] tmpSubMeshesTexcoords[i];
+
+        if ( tmpSubMeshesNormals != NULL )
+            delete[] tmpSubMeshesNormals[i];
+    }
+    delete[] tmpSubMeshesVertices;
+    delete[] tmpSubMeshesTexcoords;
+    delete[] tmpSubMeshesNormals;
+    delete[] tmpSubMeshesVertices_h;
+    delete[] tmpSubMeshesTexcoords_h;
+    delete[] tmpSubMeshesNormals_h;
+
+    if ( lines != NULL )
+    {
+        for (TPRREuint i = 0; i < lines_h; i++)
+            delete[] lines[i];
+    }
+    delete[] lines;
+    delete[] lines_start;
+    delete[] lines_end;
     _pOwner->getConsole().OLnOO("done freeing up temporary buffers!");
 
     obj->RecalculateSize();
@@ -916,29 +1006,37 @@ void PRREMesh3DManager::ConvertToPlane(
     submesh->pImpl->nFaces_h     = 1;
     submesh->pImpl->nVertexIndices_h   = submesh->pImpl->nVertices_h;
 
-    if ( submesh->pImpl->pVertices != PGENULL )
+    delete[] submesh->pImpl->pVertices;
+    delete[] submesh->pImpl->pNormals;
+    delete[] submesh->pImpl->pVertexIndices;
+
+    submesh->pImpl->pVertices = PGENULL;
+    submesh->pImpl->pNormals = PGENULL;
+    submesh->pImpl->pVertexIndices = PGENULL;
+
+    try
     {
-        free(submesh->pImpl->pVertices);
+        submesh->pImpl->pVertices = new TXYZ[submesh->pImpl->nVertices_h];
+        submesh->pImpl->pNormals = new TXYZ[submesh->pImpl->nVertices_h];
+        //submesh->pImpl->pFaces     = (TFACE4*)     malloc( sizeof(TFACE4) * submesh->pImpl->nFaces_h );
+        submesh->pImpl->nIndicesType = mesh.pImpl->nIndicesType;
+        submesh->pImpl->pVertexIndices = new char[PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) * submesh->pImpl->nVertexIndices_h];
     }
-    if ( submesh->pImpl->pNormals != PGENULL )
+    catch (const std::bad_alloc&)
     {
-        free(submesh->pImpl->pNormals);
+        delete[] submesh->pImpl->pVertices;
+        delete[] submesh->pImpl->pNormals;
+        delete[] submesh->pImpl->pVertexIndices;
+        getConsole().EOLn("ERROR: failed to allocate memory for geometry!");
+        // TODO: created material should be also deleted!
+        return;
     }
-    if ( submesh->pImpl->pVertexIndices != PGENULL )
-    {
-        free(submesh->pImpl->pVertexIndices);
-    }
-    submesh->pImpl->pVertices  = (TXYZ*)       malloc( sizeof(TXYZ)   * submesh->pImpl->nVertices_h );
-    submesh->pImpl->pNormals   = (TXYZ*)       malloc( sizeof(TXYZ)   * submesh->pImpl->nVertices_h );
-    //submesh->pImpl->pFaces     = (TFACE4*)     malloc( sizeof(TFACE4) * submesh->pImpl->nFaces_h );
-    submesh->pImpl->nIndicesType = mesh.pImpl->nIndicesType;
-    submesh->pImpl->pVertexIndices   = malloc( PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) * submesh->pImpl->nVertexIndices_h );
 
     if ( submesh->pImpl->pMaterial != PGENULL )
     {
         pImpl->materialMgr.DeleteAttachedInstance( *(submesh->pImpl->pMaterial) );
     }
-    CreateMaterialForMesh(*submesh);
+    CreateMaterialForMesh(*submesh); // TODO: result of this should be also checked!
     submesh->pImpl->pMaterial->AllocateArrays(
         submesh->pImpl->nVertices_h,
         submesh->pImpl->nVertices_h,
@@ -1053,7 +1151,7 @@ void PRREMesh3DManager::ConvertToBox(
     {
         pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
     }
-    CreateMaterialForMesh(mesh);
+    CreateMaterialForMesh(mesh); // TODO: result of this to be also checked!
 
     mesh.pImpl->nMinVertexIndex = 0;
     mesh.pImpl->nMaxVertexIndex = 0;
@@ -1067,23 +1165,31 @@ void PRREMesh3DManager::ConvertToBox(
 
     submesh->pImpl->nVertexIndices_h   = submesh->pImpl->nVertices_h;
 
-    if ( submesh->pImpl->pVertices != PGENULL )
+    delete[] submesh->pImpl->pVertices;
+    delete[] submesh->pImpl->pNormals;
+    delete[] submesh->pImpl->pVertexIndices;
+
+    submesh->pImpl->pVertices = PGENULL;
+    submesh->pImpl->pNormals = PGENULL;
+    submesh->pImpl->pVertexIndices = PGENULL;
+
+    try
     {
-        free(submesh->pImpl->pVertices);
+        submesh->pImpl->pVertices = new TXYZ[submesh->pImpl->nVertices_h];
+        submesh->pImpl->pNormals = new TXYZ[submesh->pImpl->nVertices_h];
+        //submesh->pImpl->pFaces     = (TFACE4*)     malloc( sizeof(TFACE4) * submesh->pImpl->nFaces_h );
+        submesh->pImpl->nIndicesType = mesh.pImpl->nIndicesType;
+        submesh->pImpl->pVertexIndices = new char[PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) * submesh->pImpl->nVertexIndices_h];
     }
-    if ( submesh->pImpl->pNormals != PGENULL )
+    catch (const std::bad_alloc&)
     {
-        free(submesh->pImpl->pNormals);
+        delete[] submesh->pImpl->pVertices;
+        delete[] submesh->pImpl->pNormals;
+        delete[] submesh->pImpl->pVertexIndices;
+        getConsole().EOLn("ERROR: failed to allocate memory for geometry!");
+        // TODO: created material should be also deleted!
+        return;
     }
-    if ( submesh->pImpl->pVertexIndices != PGENULL )
-    {
-        free(submesh->pImpl->pVertexIndices);
-    }
-    submesh->pImpl->pVertices  = (TXYZ*)  malloc( sizeof(TXYZ) * submesh->pImpl->nVertices_h );
-    submesh->pImpl->pNormals   = (TXYZ*)  malloc( sizeof(TXYZ) * submesh->pImpl->nVertices_h );
-    //submesh->pImpl->pFaces     = (TFACE4*)  malloc( sizeof(TFACE4)     * submesh->pImpl->nFaces_h );
-    submesh->pImpl->nIndicesType = mesh.pImpl->nIndicesType;
-    submesh->pImpl->pVertexIndices   = malloc( PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) * submesh->pImpl->nVertexIndices_h );
 
     if ( submesh->pImpl->pMaterial != PGENULL )
     {
