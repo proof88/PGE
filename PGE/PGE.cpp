@@ -78,7 +78,7 @@ private:
     PGE*      _pOwner;                 /**< The owner public object who creates this pimpl object. */
 
     CConsole&  con;
-    PGESysCFG* SysCFG;
+    PGESysCFG  SysCFG;
     PGESysGFX  SysGFX;
     PGESysNET  SysNET;
     PGESysSFX  SysSFX;
@@ -283,11 +283,11 @@ PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     con( CConsole::getConsoleInstance() ),
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
-    GFX( PR00FsReducedRenderingEngine::createAndGet() )
+    GFX( PR00FsReducedRenderingEngine::createAndGet() ),
+    SysCFG(gameTitle)
 {
     _pOwner = NULL;  // currently not used
     sGameTitle = gameTitle;
-    SysCFG = new PGESysCFG(sGameTitle.c_str());
     bIsGameRunning = false;
     nInactiveSleep = PGE_INACTIVE_SLEEP;
     bInactiveLikeActive = PGE_INACTIVE_AS_ACTIVE;

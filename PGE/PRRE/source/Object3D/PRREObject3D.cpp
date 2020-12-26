@@ -449,17 +449,24 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
 
        
         nFbBuffer_h = GLsizei(ceil((_pOwner->getVerticesCount(false) / 3.0f))) * (2+3*12);
-        /* TODO: probably in future we should rather use pVerticesTransf here as well since we already have it for that purpose, right? ;) */
-        pFbBuffer = new GLfloat[nFbBuffer_h];
+        try
+        {
+            /* TODO: probably in future we should rather use pVerticesTransf here as well since we already have it for that purpose, right? ;) */
+            pFbBuffer = new GLfloat[nFbBuffer_h];
 
-        /* unfortunately only the most detailed option GL_4D_COLOR_TEXTURE will give us the w-coord of vertices so we need to use that */
-        glFeedbackBuffer(nFbBuffer_h, GL_4D_COLOR_TEXTURE, pFbBuffer);
-        
-        // If you want all vertices to be transformed and catched in feedback mode then dont forget to disable culling and depth testing (maybe only 1 is needed to be disabled).
-        //glDisable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE); /* otherwise only the front facing side of cube would be written to feedback buffer */
+            /* unfortunately only the most detailed option GL_4D_COLOR_TEXTURE will give us the w-coord of vertices so we need to use that */
+            glFeedbackBuffer(nFbBuffer_h, GL_4D_COLOR_TEXTURE, pFbBuffer);
+            
+            // If you want all vertices to be transformed and catched in feedback mode then dont forget to disable culling and depth testing (maybe only 1 is needed to be disabled).
+            //glDisable(GL_DEPTH_TEST);
+            glDisable(GL_CULL_FACE); /* otherwise only the front facing side of cube would be written to feedback buffer */
 
-        glRenderMode(GL_FEEDBACK);
+            glRenderMode(GL_FEEDBACK);
+        }
+        catch (const std::bad_alloc&)
+        {
+            getConsole().EOLn("ERROR: PRREObject3D::PRREObject3DImpl::Draw() failed to allocate pFbBuffer!");
+        }
     } 
 
     _pOwner->TransferVertices();

@@ -106,7 +106,6 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
 {
     const HANDLE objfile = CreateFileA(filename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
 
-    PRREMesh3D* obj = NULL;
     DWORD     bytesread = 0;
     TPRREuint lines_h = 0;
     DWORD     filebuffer_size = 0;
@@ -217,70 +216,67 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
 
     _pOwner->getConsole().OLn("preprocessing done, gathering data ...");
     
-    _pOwner->getConsole().OLnOI("creating parent object ...");
-    obj = new PRREMesh3D(PRRE_PM_TRIANGLES);
-    _pOwner->CreateMaterialForMesh(*obj);
-    _pOwner->getConsole().OLnOO("parent object created!");
-
-    _pOwner->getConsole().OLnOI("creating subobjects ...");
-    TPRREuint submeshes_h = 0;
-    // counting submeshes
-    for (TPRREuint i = 0; i < lines_h; i++)
-    {
-        if ( memchr(lines[i], '#', strlen((char*)lines[i])) == 0 )
-        {
-            if ( strchr((char*) lines[i],'g') > 0  )
-                submeshes_h++;
-        }
-    }
-    submeshes_h = submeshes_h / 2; // number of 'g'-s are twice as the number of submeshes
-    obj->PreAlloc(submeshes_h);
-    for (TPRREuint i = 0; i < submeshes_h; i++)
-    {
-        _pOwner->getConsole().OI();
-        PRREMesh3D* subobj = new PRREMesh3D(PRRE_PM_TRIANGLES);
-        _pOwner->CreateMaterialForMesh(*subobj);
-        _pOwner->getConsole().OO();
-        obj->Attach(*subobj);
-    }
-    _pOwner->getConsole().OLn("submesh count = %d", submeshes_h);
-    _pOwner->getConsole().OLnOO("subobjects created!");
-
-    // We read distinct vertices, texcoords and normals data into tmp arrays.
-    // At the end, we fill the subObjects' vertices, texcoords and normals arrays with redundant
-    // data based on the temporary arrays, so both direct referencing and indexing modes will be available.
-    // Redundant storage is essential for indexed vertex arrays (element arrays). Indexing in non-redundant
-    // format is only ok when multiple index arrays could be used for the same mesh: 1 for vertices, 1 for texcoords, etc.
-    // But when only 1 element array can be used for all of these, like glDrawElements(), these must be stored
-    // redundantly without implementing extra logic.
-    // Update: actually we could still use only 1 element array with any glDrawElements()-style command without
-    // much redundancy in vertex data, but we need to fill that element array in a smart way, considering that
-    // OBJ format still uses different indices for vertex position, normals, and texture coordinates. We need to
-    // unify these into 1 index array, and to avoid redundancy, we need to check if the specified vertex data
-    // is new data or we already encountered such, if so, we can use same index, no need to put same vertex data
-    // into data array. But this requires some extra logic. If this gets solved, huge speedup is expected with
-    // indexed referencing compared to direct referencing because shared vertices will be actually shared.
-    // Note that, if we reach this and minimize redundancy, direct referencing wont be available.
-    // Also, this can be taken to a next level, by analysing the vertex indices used by the faces, and then
-    // the faces could be ordered by the referenced vertices, so that faces using shared vertices will be
-    // rendered after each other, benefiting from vertex cache.
-    TXYZ** tmpSubMeshesVertices  = NULL;
-    TUVW** tmpSubMeshesTexcoords = NULL;
-    TXYZ** tmpSubMeshesNormals   = NULL;
-    TPRREuint* tmpSubMeshesVertices_h  = NULL;
-    TPRREuint* tmpSubMeshesTexcoords_h = NULL;
-    TPRREuint* tmpSubMeshesNormals_h   = NULL;
-
-    TPRREuint* lines_start = NULL;
-    TPRREuint* lines_end = NULL;
-
-    TPRREuint k;
-    bool sector = false;
-    TPRREuint actsubmesh = 0;
-    int numparsed = 0;
+    PRREMesh3D* obj = NULL;
     try
     {
-        tmpSubMeshesVertices  = new TXYZ*[submeshes_h](); // intentionally zeroing out pointers for easier exception handling
+        TXYZ** tmpSubMeshesVertices  = NULL;
+        TUVW** tmpSubMeshesTexcoords = NULL;
+        TXYZ** tmpSubMeshesNormals   = NULL;
+        TPRREuint* tmpSubMeshesVertices_h  = NULL;
+        TPRREuint* tmpSubMeshesTexcoords_h = NULL;
+        TPRREuint* tmpSubMeshesNormals_h   = NULL;
+
+        TPRREuint* lines_start = NULL;
+        TPRREuint* lines_end = NULL;
+
+        _pOwner->getConsole().OLnOI("creating parent object ...");
+        obj = new PRREMesh3D(PRRE_PM_TRIANGLES);
+        _pOwner->CreateMaterialForMesh(*obj);
+        _pOwner->getConsole().OLnOO("parent object created!");
+
+        _pOwner->getConsole().OLnOI("creating subobjects ...");
+        TPRREuint submeshes_h = 0;
+        // counting submeshes
+        for (TPRREuint i = 0; i < lines_h; i++)
+        {
+            if ( memchr(lines[i], '#', strlen((char*)lines[i])) == 0 )
+            {
+                if ( strchr((char*) lines[i],'g') > 0  )
+                    submeshes_h++;
+            }
+        }
+        submeshes_h = submeshes_h / 2; // number of 'g'-s are twice as the number of submeshes
+        obj->PreAlloc(submeshes_h);
+        for (TPRREuint i = 0; i < submeshes_h; i++)
+        {
+            _pOwner->getConsole().OI();
+            PRREMesh3D* subobj = new PRREMesh3D(PRRE_PM_TRIANGLES);
+            _pOwner->CreateMaterialForMesh(*subobj);
+            _pOwner->getConsole().OO();
+            obj->Attach(*subobj);
+        }
+        _pOwner->getConsole().OLn("submesh count = %d", submeshes_h);
+        _pOwner->getConsole().OLnOO("subobjects created!");
+
+        // We read distinct vertices, texcoords and normals data into tmp arrays.
+        // At the end, we fill the subObjects' vertices, texcoords and normals arrays with redundant
+        // data based on the temporary arrays, so both direct referencing and indexing modes will be available.
+        // Redundant storage is essential for indexed vertex arrays (element arrays). Indexing in non-redundant
+        // format is only ok when multiple index arrays could be used for the same mesh: 1 for vertices, 1 for texcoords, etc.
+        // But when only 1 element array can be used for all of these, like glDrawElements(), these must be stored
+        // redundantly without implementing extra logic.
+        // Update: actually we could still use only 1 element array with any glDrawElements()-style command without
+        // much redundancy in vertex data, but we need to fill that element array in a smart way, considering that
+        // OBJ format still uses different indices for vertex position, normals, and texture coordinates. We need to
+        // unify these into 1 index array, and to avoid redundancy, we need to check if the specified vertex data
+        // is new data or we already encountered such, if so, we can use same index, no need to put same vertex data
+        // into data array. But this requires some extra logic. If this gets solved, huge speedup is expected with
+        // indexed referencing compared to direct referencing because shared vertices will be actually shared.
+        // Note that, if we reach this and minimize redundancy, direct referencing wont be available.
+        // Also, this can be taken to a next level, by analysing the vertex indices used by the faces, and then
+        // the faces could be ordered by the referenced vertices, so that faces using shared vertices will be
+        // rendered after each other, benefiting from vertex cache.
+        tmpSubMeshesVertices  = new TXYZ*[submeshes_h](); // using () to intentionally zeroing out pointers for easier exception handling
         tmpSubMeshesTexcoords = new TUVW*[submeshes_h]();
         tmpSubMeshesNormals   = new TXYZ*[submeshes_h]();
         tmpSubMeshesVertices_h  = new TPRREuint[submeshes_h];
@@ -289,6 +285,11 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
 
         lines_start = new TPRREuint[submeshes_h];
         lines_end = new TPRREuint[submeshes_h];
+
+        TPRREuint k;
+        bool sector = false;
+        TPRREuint actsubmesh = 0;
+        int numparsed = 0;
     
         // finding starting and ending lines of vertices for every submesh
         _pOwner->getConsole().OLnOI("parsing vertices ...");
@@ -576,26 +577,15 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
 
             if ( tmpSubMeshesNormals != NULL )
                 delete[] tmpSubMeshesNormals[i];
-
-            PRREMesh3D* const currSubObj = (PRREMesh3D*) (obj->getAttachedAt(i));
-            delete[] currSubObj->pImpl->pVertexIndices;
-            delete[] currSubObj->pImpl->pVertices;
-            delete[] currSubObj->pImpl->pNormals;
-
-            // these should be null so subobj dtor won't try deallocate again
-            currSubObj->pImpl->pVertexIndices = NULL;
-            currSubObj->pImpl->pVertices = NULL;
-            currSubObj->pImpl->pNormals = NULL;
-
-            // TODO: currSubObj->pImpl->pMaterial->AllocateArrays() should be deallocated!
-            // when we deal with deleting obj and subobj here, that will take care of this!
         }
+        delete obj; // this takes care of submesh geometry and material too!
         delete[] tmpSubMeshesVertices;
         delete[] tmpSubMeshesTexcoords;
         delete[] tmpSubMeshesNormals;
         delete[] tmpSubMeshesVertices_h;
         delete[] tmpSubMeshesTexcoords_h;
         delete[] tmpSubMeshesNormals_h;
+
         delete[] lines_start;
         delete[] lines_end;
 
@@ -610,7 +600,7 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
         return NULL;
     } // catch
 
-    _pOwner->getConsole().OLnOI("checking submodel names and legacy-loading textures implicitly by submodel names ...");
+    _pOwner->getConsole().OLnOI("submodel names ...");
     TPRREuint isubmsh = 0;
     bool isname = true;
     for (TPRREuint i = 0; i < lines_h; i++)
@@ -631,7 +621,7 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
             }
         }        
     }
-    _pOwner->getConsole().OLnOO("submodel names checked!");
+    _pOwner->getConsole().OLnOO("submodel names set!");
 
     _pOwner->getConsole().OLnOI("submodel material settings ...");
     for (TPRREuint i = 0; i < submeshes_h; i++)
@@ -804,8 +794,22 @@ PRREMesh3D* PRREMesh3DManager::createPlane(TPRREfloat a, TPRREfloat b)
 
     getConsole().OLnOI("PRREMesh3DManager::createPlane(%f, %f)", a, b);
 
-    PRREMesh3D* const mesh = new PRREMesh3D(PRRE_PM_QUADS);
-    PRREMesh3D* const submesh = new PRREMesh3D(PRRE_PM_QUADS);
+    PRREMesh3D* mesh = PGENULL;
+    PRREMesh3D* submesh = PGENULL;
+    try
+    {
+        mesh = new PRREMesh3D(PRRE_PM_QUADS);
+        submesh = new PRREMesh3D(PRRE_PM_QUADS);
+    }
+    catch (const std::bad_alloc&)
+    {
+        delete mesh;
+        delete submesh;
+        getConsole().EOLnOO("ERROR: Failed to instantiate new PRREMesh3D!");
+        getConsole().OLn("");
+        return PGENULL;
+    }
+    
     mesh->Attach(*submesh);
     ConvertToPlane(*mesh, a, b);
     Attach( *mesh );
@@ -842,8 +846,22 @@ PRREMesh3D* PRREMesh3DManager::createBox(TPRREfloat a, TPRREfloat b, TPRREfloat 
 
     getConsole().OLnOI("PRREMesh3DManager::createBox(%f, %f, %f)", a, b, c);
 
-    PRREMesh3D* const mesh = new PRREMesh3D(PRRE_PM_QUADS);
-    PRREMesh3D* const submesh = new PRREMesh3D(PRRE_PM_QUADS);
+    PRREMesh3D* mesh = PGENULL;
+    PRREMesh3D* submesh = PGENULL;
+    try
+    {
+        mesh = new PRREMesh3D(PRRE_PM_QUADS);
+        submesh = new PRREMesh3D(PRRE_PM_QUADS);
+    }
+    catch (const std::bad_alloc&)
+    {
+        delete mesh;
+        delete submesh;
+        getConsole().EOLnOO("ERROR: Failed to instantiate new PRREMesh3D!");
+        getConsole().OLn("");
+        return PGENULL;
+    }
+
     mesh->Attach(*submesh);
     ConvertToBox(*mesh, a, b, c);
     Attach( *mesh );

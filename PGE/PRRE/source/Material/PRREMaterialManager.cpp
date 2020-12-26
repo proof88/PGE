@@ -176,10 +176,18 @@ PRREMaterial* PRREMaterialManager::createMaterial()
 
     getConsole().OLnOI("PRREMaterialManager::createMaterial()");
 
-    PRREMaterial* const mat = new PRREMaterial(pImpl->nMaxLayers);
-    Attach( *mat );
+    PRREMaterial* mat;
+    try
+    {
+        mat = new PRREMaterial(pImpl->nMaxLayers);
+        Attach( *mat );
 
-    getConsole().SOLnOO("> Material created successfully!");
+        getConsole().SOLnOO("> Material created successfully!");
+    }
+    catch (const std::bad_alloc&)
+    {
+        getConsole().EOLnOO("ERROR: Failed to instantiate new PRREMaterial!");
+    }
     getConsole().OLn("");
 
     return mat;

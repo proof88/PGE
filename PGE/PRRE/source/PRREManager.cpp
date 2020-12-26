@@ -364,7 +364,7 @@ PRREManager::PRREManagerImpl& PRREManager::PRREManagerImpl::operator=(const PRRE
     Sometimes its good to preallocate many slots only once instead of allocation over and over a few new slots, to avoid memory fragmentation.
 
     @return The first free slot of the NEW slots. 
-            -1 if the given parameter is not positive.
+            -1 if the given parameter is not positive or allocation error occurred.
 */
 TPRREint PRREManager::PRREManagerImpl::preAlloc(TPRREint count)
 {
@@ -373,7 +373,16 @@ TPRREint PRREManager::PRREManagerImpl::preAlloc(TPRREint count)
     {
         TPRREint prev_h = nManagedAllocated;
         nManagedAllocated += count;
-        PRREManaged** pNewStorage = new PRREManaged*[nManagedAllocated];
+        PRREManaged** pNewStorage = PGENULL;
+        try
+        {
+            pNewStorage = new PRREManaged*[nManagedAllocated];
+        }
+        catch (const std::bad_alloc&)
+        {
+            getConsole().EOLnOO("ERROR: failed to alloc new storage!");
+            return -1;
+        }
         memcpy(pNewStorage, pManageds, prev_h*sizeof(PRREManaged*));
         delete[] pManageds;
         pManageds = pNewStorage;

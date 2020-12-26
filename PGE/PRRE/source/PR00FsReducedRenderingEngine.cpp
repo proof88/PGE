@@ -158,49 +158,59 @@ TPRREuint PR00FsReducedRenderingEngineImpl::initialize(
 
     // OpenGL is fully operational at this point so managers can be instantiated
     // Note in case of SW rendering there is no OpenGL, but managers are able to detect that condition so we are safe here.
-    pImageMgr = new PRREImageManager();
-
-    pTextureMgr  = new PRRETextureManager();
-    if ( !pTextureMgr->isInitialized() )
+    try
     {
-        getConsole().EOLn("ERROR: failed to initialize PRRETextureManager!");
+        pImageMgr = new PRREImageManager();
+
+        pTextureMgr  = new PRRETextureManager();
+        if ( !pTextureMgr->isInitialized() )
+        {
+            getConsole().EOLn("ERROR: failed to initialize PRRETextureManager!");
+            shutdown();
+            getConsole().OO();
+            return 1;
+        }
+
+        pMaterialMgr = new PRREMaterialManager();
+        if ( !pMaterialMgr->isInitialized() )
+        {
+            getConsole().EOLn("ERROR: failed to initialize PRREMaterialManager!");
+            shutdown();
+            getConsole().OO();
+            return 1;
+        }
+
+        pMesh3DMgr = new PRREMesh3DManager(*pMaterialMgr);
+        if ( !pMesh3DMgr->isInitialized() )
+        {
+            getConsole().EOLn("ERROR: failed to initialize PRREMesh3DManager!");
+            shutdown();
+            getConsole().OO();
+            return 1;
+        }
+
+        pObject3DMgr = new PRREObject3DManager(*pTextureMgr, *pMaterialMgr);
+        if ( !pObject3DMgr->isInitialized() )
+        {
+            getConsole().EOLn("ERROR: failed to initialize PRREObject3DManager!");
+            shutdown();
+            getConsole().OO();
+            return 1;
+        }
+
+        pCamera = new PRRECamera();
+        // initialize camera viewport to window client area
+        // we can trust window clientrect size even if this is an external window
+        pCamera->SetViewport(0, 0, wnd.getClientWidth(), wnd.getClientHeight());
+        pCamera->SetAspectRatio(wnd.getClientWidth() / (TPRREfloat) wnd.getClientHeight());
+    } // try
+    catch (const std::bad_alloc&)
+    {
+        getConsole().EOLn("ERROR: failed to instantiate a manager!");
         shutdown();
         getConsole().OO();
         return 1;
     }
-
-    pMaterialMgr = new PRREMaterialManager();
-    if ( !pMaterialMgr->isInitialized() )
-    {
-        getConsole().EOLn("ERROR: failed to initialize PRREMaterialManager!");
-        shutdown();
-        getConsole().OO();
-        return 1;
-    }
-
-    pMesh3DMgr = new PRREMesh3DManager(*pMaterialMgr);
-    if ( !pMesh3DMgr->isInitialized() )
-    {
-        getConsole().EOLn("ERROR: failed to initialize PRREMesh3DManager!");
-        shutdown();
-        getConsole().OO();
-        return 1;
-    }
-
-    pObject3DMgr = new PRREObject3DManager(*pTextureMgr, *pMaterialMgr);
-    if ( !pObject3DMgr->isInitialized() )
-    {
-        getConsole().EOLn("ERROR: failed to initialize PRREObject3DManager!");
-        shutdown();
-        getConsole().OO();
-        return 1;
-    }
-
-    pCamera = new PRRECamera();
-    // initialize camera viewport to window client area
-    // we can trust window clientrect size even if this is an external window
-    pCamera->SetViewport(0, 0, wnd.getClientWidth(), wnd.getClientHeight());
-    pCamera->SetAspectRatio(wnd.getClientWidth() / (TPRREfloat) wnd.getClientHeight());
 
     uiMgr.Initialize( wnd.getWndDC() );
 

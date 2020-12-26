@@ -260,21 +260,30 @@ PRREImage* PRREImageManager::createBlank(TPRREuint width, TPRREuint height, TPRR
     if ( (width == 0) || (height == 0) || (bpp != 24) )
         return PGENULL;
 
-    PRREImage* const pNewImage = new PRREImage();
-
-    // ppxls = PGENULL means it won't try to copy anything to the allocated buffer so the content of the buffer will be undefined.
-    if ( !pNewImage->pImpl->initMembers(bpp, width, height, PRRE_RGB, PRRE_RGB, true, false, PGENULL, width * height * bpp/8) )
+    PRREImage* pNewImage = PGENULL;
+    try
     {
-        delete pNewImage;
-        getConsole().EOLn("Failed initMembers(%d, %d, %d, ...)", bpp, width, height);
+        pNewImage = new PRREImage();
+
+        // ppxls = PGENULL means it won't try to copy anything to the allocated buffer so the content of the buffer will be undefined.
+        if ( !pNewImage->pImpl->initMembers(bpp, width, height, PRRE_RGB, PRRE_RGB, true, false, PGENULL, width * height * bpp/8) )
+        {
+            delete pNewImage;
+            getConsole().EOLn("ERROR: Failed initMembers(%d, %d, %d, ...)", bpp, width, height);
+            getConsole().OLn("");
+            return PGENULL;
+        }
+
+        Attach( *pNewImage );
+
+        getConsole().SOLnOO("> Blank Image created!");
         getConsole().OLn("");
-        return PGENULL;
     }
-
-    Attach( *pNewImage );
-
-    getConsole().SOLnOO("> Blank Image created!");
-    getConsole().OLn("");
+    catch (const std::bad_alloc&)
+    {
+        getConsole().EOLn("ERROR: failed to instantiate PRREImage!");
+        getConsole().OLn("");
+    }
 
     return pNewImage;
 }
@@ -338,40 +347,41 @@ PRREImage* PRREImageManager::loadBMP(const char* filename)
     if ( (bitmaplength = info_header.biWidth * info_header.biHeight * (info_header.biBitCount < 32 ? 3 : 4)) == 0 )
         return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bitmaplength == 0, returning returning PGENULL!");
 
-    if ( info_header.biClrUsed > 0 )
+    try
     {
-        palettesize = info_header.biClrUsed * sizeof(RGBQUAD);
-        try
+        if ( info_header.biClrUsed > 0 )
         {
+            palettesize = info_header.biClrUsed * sizeof(RGBQUAD);
             palette = new RGBQUAD[palettesize];
             ReadFile(bitmapfile, palette, palettesize, &bytesread, NULL);
             getConsole().OLn("Read %d bytes of total %d bytes of RGBQUAD array for palette", bytesread, palettesize);
             if ( bytesread != palettesize )
                 return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bytesread != palettesize, returning PGENULL!");
-        }
-        catch (const std::bad_alloc&)
-        {
-            return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: failed to allocated palette!");
-        }
+            }
+        } 
+
+        pNewImage = new PRREImage();
+        pNewImage->SetFilename( filename );
+        // PRRE_RGB is just a fake value at this point
+        if ( !pNewImage->pImpl->initMembers(info_header.biBitCount, info_header.biWidth, info_header.biHeight,
+                                    PRRE_RGB, PRRE_RGB, true, false, PGENULL, bitmaplength) )
+            return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: initMembers() failed, returning PGENULL!");
+
+        getConsole().OLn("offset: %d", file_header.bfOffBits);
+
+        if ( !pNewImage->pImpl->readBMPpixels(bitmapfile, palette, info_header.biBitCount) )
+            return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: readBMPpixels() failed!");
+
+        CloseHandle(bitmapfile);
+        delete[] palette;
+
+        getConsole().SOLnOO("> bitmap successfully loaded into memory, using %d bytes (%d kbytes)",
+            sizeof(pNewImage)+pNewImage->getPixelsSize(), (sizeof(*pNewImage)+pNewImage->getPixelsSize())/1024);
     }
-    
-    pNewImage = new PRREImage();
-    pNewImage->SetFilename( filename );
-    // PRRE_RGB is just a fake value at this point
-    if ( !pNewImage->pImpl->initMembers(info_header.biBitCount, info_header.biWidth, info_header.biHeight,
-                                PRRE_RGB, PRRE_RGB, true, false, PGENULL, bitmaplength) )
-        return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: initMembers() failed, returning PGENULL!");
-
-    getConsole().OLn("offset: %d", file_header.bfOffBits);
-
-    if ( !pNewImage->pImpl->readBMPpixels(bitmapfile, palette, info_header.biBitCount) )
-        return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: readBMPpixels() failed!");
-
-    CloseHandle(bitmapfile);
-    delete[] palette;
-
-    getConsole().SOLnOO("> bitmap successfully loaded into memory, using %d bytes (%d kbytes)",
-        sizeof(pNewImage)+pNewImage->getPixelsSize(), (sizeof(*pNewImage)+pNewImage->getPixelsSize())/1024);
+    catch (const std::bad_alloc&)
+    {
+        return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: failed to allocated palette!");
+    }
     
     return pNewImage;
 

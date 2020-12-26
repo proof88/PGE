@@ -211,12 +211,24 @@ PRREObject3D* PRREObject3DManager::createPlane(
 
     getConsole().OLnOI("PRREObject3DManager::createPlane(%f, %f)", a, b);
 
-    PRREObject3D* const obj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
-    Attach( *obj );
-    PRREObject3D* const subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
-    obj->Attach( *subobj );
-    ConvertToPlane(*obj, a, b);
-    subobj->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobj->getVerticesCount()];
+    PRREObject3D* obj = PGENULL;
+    PRREObject3D* subobj = PGENULL;
+    try
+    {
+        obj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
+        Attach( *obj );
+        subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
+        obj->Attach( *subobj );
+        ConvertToPlane(*obj, a, b);
+        subobj->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobj->getVerticesCount()];
+    }
+    catch (const std::bad_alloc&)
+    {
+        delete subobj; // will invoke obj->Detach()
+        delete obj; // would delete subobj, except if it is not yet attached, so we explicitly delete subobj above
+        getConsole().EOLn("ERROR: PRREObject3DManager::createPlane() failed to instantiate PRREObject3D!");
+        return PGENULL;
+    }
 
     // although PPP has already selected the vtransmode, we set it again
     // to actually allocate the needed resources for the geometry
@@ -265,12 +277,24 @@ PRREObject3D* PRREObject3DManager::createBox(
 
     getConsole().OLnOI("PRREObject3DManager::createBox(%f, %f, %f)", a, b, c);
 
-    PRREObject3D* const obj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
-    Attach( *obj );
-    PRREObject3D* const subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
-    obj->Attach( *subobj );
-    ConvertToBox(*obj, a, b, c);
-    subobj->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobj->getVerticesCount()];
+    PRREObject3D* obj = PGENULL;
+    PRREObject3D* subobj = PGENULL;
+    try
+    {
+        obj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
+        Attach( *obj );
+        subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
+        obj->Attach( *subobj );
+        ConvertToBox(*obj, a, b, c);
+        subobj->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobj->getVerticesCount()];
+    }
+    catch (const std::bad_alloc&)
+    {
+        delete subobj; // will invoke obj->Detach()
+        delete obj;    // would delete subobj, except if it is not yet attached, so we explicitly delete subobj above
+        getConsole().EOLn("ERROR: PRREObject3DManager::createPlane() failed to instantiate PRREObject3D!");
+        return PGENULL;
+    }
 
     // although PPP has already selected the vtransmode, we set it again
     // to actually allocate the needed resources for the geometry
@@ -308,7 +332,15 @@ PRREObject3D* PRREObject3DManager::createCube(
 {
     getConsole().OLnOI("PRREObject3DManager::createCube(%f), passing to createBox() ...", a);
     PRREObject3D* const cube = createBox(a, a, a, vmod, vref, bForceUseClientMemory);
-    getConsole().SOLnOO("> Cube created successfully!");
+    if ( PGENULL == cube )
+    {
+        getConsole().EOLnOO("ERROR: PRREObject3DManager::createBox() failed!");
+    }
+    else
+    {
+        getConsole().SOLnOO("> Cube created successfully!");
+    }
+
     getConsole().OLn("");
     return cube;
 } // createCube()
@@ -347,8 +379,6 @@ PRREObject3D* PRREObject3DManager::createFromFile(
         return PGENULL;
     }
 
-    PRREObject3D* obj = PGENULL;
-
     string sFileExt = PFL::getExtension(filename);
     if ( sFileExt == "" )
     {                                              
@@ -363,48 +393,77 @@ PRREObject3D* PRREObject3DManager::createFromFile(
         return PGENULL;
     }
 
+    PRREObject3D* obj = PGENULL;
+    PRREObject3D* subobject = PGENULL;
+    PRREMesh3D* tmpMesh = PGENULL;
     transform(sFileExt.begin(), sFileExt.end(), sFileExt.begin(), ::toupper);
     getConsole().OLn("ext: .%s", sFileExt.c_str());
     if ( sFileExt == "OBJ" )
     {
-        getConsole().OI();
-        PRREMesh3D* const tmpMesh = PRREMesh3DManager::createFromFile(filename);
-        obj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
-        obj->Cannibalize(*tmpMesh);
-
-        for (TPRREint i = 0; i < tmpMesh->getCount(); i++) 
+        try
         {
-            PRREObject3D* const subobject = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
-            obj->Attach( *subobject );
-            subobject->Cannibalize(*(PRREMesh3D*)(tmpMesh->getAttachedAt(i)));
-            subobject->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobject->getVerticesCount()];
-            
-            // Legacy tmcsgfxlib behavior: auto-load textures for subobjects where pipe character is present in name
-            const std::string::size_type nPipePos = subobject->getName().find('|');
-            if ( nPipePos != std::string::npos )
+            getConsole().OI();
+            tmpMesh = PRREMesh3DManager::createFromFile(filename);
+            if ( !tmpMesh )
             {
-                const std::string sTexName = subobject->getName().substr(nPipePos+1);
-                getConsole().OLn("Legacy: loading texture implicitly by submodel name: %s", sTexName.c_str());
-                PRRETexture* const tex = pImpl->textureMgr.createFromFile( PFL::getDirectory(filename).append(sTexName).c_str() );
-                if ( tex )
-                {
-                    subobject->getMaterial().SetTexture(tex);
-                }
-                // since we have loaded texture from submodelname, we can get rid of the texture filename part of it
-                subobject->SetName( subobject->getName().substr(0, nPipePos) ); 
+                getConsole().OO();
+                getConsole().EOLnOO("ERROR: failed to create tmpMesh!");
+                getConsole().OLn("");
+                return PGENULL;
             }
-        }
-        this->DeleteAttachedInstance(*tmpMesh);
+            obj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
+            obj->Cannibalize(*tmpMesh);
 
-        obj->SetFilename(filename);
-        getConsole().OO();
-        Attach( *obj );
+            for (TPRREint i = 0; i < tmpMesh->getCount(); i++) 
+            {
+                subobject = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
+                obj->Attach( *subobject );
+                subobject->Cannibalize(*(PRREMesh3D*)(tmpMesh->getAttachedAt(i)));
+                subobject->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobject->getVerticesCount()];
+                
+                // Legacy tmcsgfxlib behavior: auto-load textures for subobjects where pipe character is present in name
+                const std::string::size_type nPipePos = subobject->getName().find('|');
+                if ( nPipePos != std::string::npos )
+                {
+                    const std::string sTexName = subobject->getName().substr(nPipePos+1);
+                    getConsole().OLn("Legacy: loading texture implicitly by submodel name: %s", sTexName.c_str());
+                    PRRETexture* const tex = pImpl->textureMgr.createFromFile( PFL::getDirectory(filename).append(sTexName).c_str() );
+                    if ( tex )
+                    {
+                        subobject->getMaterial().SetTexture(tex);
+                    }
+                    else
+                    {
+                        getConsole().OLn("ERROR: PRREObject3DManager::createFromFile() failed to load texture: %s!", sTexName.c_str());
+                    }
+                    // since we have loaded texture from submodelname, we can get rid of the texture filename part of it
+                    subobject->SetName( subobject->getName().substr(0, nPipePos) ); 
+                }
+            }
+            this->DeleteAttachedInstance(*tmpMesh);
+            tmpMesh = PGENULL;
 
-        // although PPP has already selected the vtransmode, we set it again
-        // to actually allocate the needed resources for the geometry
-        getConsole().OI();
-        obj->SetVertexTransferMode( obj->getVertexTransferMode() );
-        getConsole().OO();
+            obj->SetFilename(filename);
+            getConsole().OO();
+            Attach( *obj );
+
+            // although PPP has already selected the vtransmode, we set it again
+            // to actually allocate the needed resources for the geometry
+            getConsole().OI();
+            obj->SetVertexTransferMode( obj->getVertexTransferMode() );
+            getConsole().OO();
+        } // try
+        catch (const std::bad_alloc&)
+        {
+            // note: textures won't be deallocated cause we don't track what textures were loaded for this object!
+            delete tmpMesh;
+            delete subobj;  // will invoke obj->Detach()
+            delete obj;     // would delete subobj, except if it is not yet attached, so we explicitly delete subobj above
+            getConsole().OO();
+            getConsole().EOLnOO("ERROR: failed to instantiate an object!");
+            getConsole().OLn("");
+            return PGENULL;
+        } // catch
     }    
     else
     {
@@ -453,43 +512,50 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         "PRREObject3DManager::createCloned(\"%s\")",
         (referredobj.getFilename().length() > 0) ? referredobj.getFilename().c_str() : referredobj.getName().c_str() );
 
-    PRREObject3D* obj = new PRREObject3D(pImpl->materialMgr);
+    PRREObject3D* obj = PGENULL;
+    try
+    {
+        obj = new PRREObject3D(pImpl->materialMgr);
 
-    obj->SetName( referredobj.getName() );
-    obj->SetFilename( referredobj.getFilename() );
-    
-    // attach right now, otherwise SetVertexTransferMode() would fail
-    Attach( *obj );
-    obj->SetVertexTransferMode(referredobj.getVertexTransferMode());
-    // SetVertexTransferMode() would fail if referred object would be set earlier
-    obj->pImpl->pRefersto = &referredobj;
+        obj->SetName( referredobj.getName() );
+        obj->SetFilename( referredobj.getFilename() );
+        
+        // attach right now, otherwise SetVertexTransferMode() would fail
+        Attach( *obj );
+        obj->SetVertexTransferMode(referredobj.getVertexTransferMode());
+        // SetVertexTransferMode() would fail if referred object was set earlier
+        obj->pImpl->pRefersto = &referredobj;
 
-    obj->getPosVec() = referredobj.getPosVec();
-    obj->pImpl->vAngle = referredobj.getAngleVec();
-    obj->pImpl->bAffectedByLights = referredobj.isLit();
-    obj->pImpl->bDoubleSided = referredobj.isDoubleSided();
-    obj->pImpl->bWireframe = referredobj.isWireframed();
-    obj->pImpl->bWireframedCull = referredobj.isWireframedCulled();
-    obj->pImpl->bAffectZBuffer = referredobj.isAffectingZBuffer();
-    obj->pImpl->vScaling = referredobj.getScaling();
-    obj->pImpl->bVisible = referredobj.isVisible();
-    obj->pImpl->rotation = referredobj.getRotationOrder();
-    obj->pImpl->bStickedToScreen = referredobj.isStickedToScreen();
+        obj->getPosVec() = referredobj.getPosVec();
+        obj->pImpl->vAngle = referredobj.getAngleVec();
+        obj->pImpl->bAffectedByLights = referredobj.isLit();
+        obj->pImpl->bDoubleSided = referredobj.isDoubleSided();
+        obj->pImpl->bWireframe = referredobj.isWireframed();
+        obj->pImpl->bWireframedCull = referredobj.isWireframedCulled();
+        obj->pImpl->bAffectZBuffer = referredobj.isAffectingZBuffer();
+        obj->pImpl->vScaling = referredobj.getScaling();
+        obj->pImpl->bVisible = referredobj.isVisible();
+        obj->pImpl->rotation = referredobj.getRotationOrder();
+        obj->pImpl->bStickedToScreen = referredobj.isStickedToScreen();
 
-    CreateMaterialForMesh(*obj);
-    // for the material, no need to copy texcoords, etc ...
-    // however we need to set blendfunc and envcolor, because renderer would not get referredobj blendfunc ...
-    // probably this should be treated as bug of renderer, however I fix it from objectmanager side here.
-    obj->getMaterial().SetBlendFuncs( referredobj.getMaterial().getSourceBlendFunc(), referredobj.getMaterial().getDestinationBlendFunc() );
-    obj->getMaterial().getTextureEnvColor().Set(
-        referredobj.getMaterial().getTextureEnvColor().getRed(),
-        referredobj.getMaterial().getTextureEnvColor().getGreen(),
-        referredobj.getMaterial().getTextureEnvColor().getBlue(),
-        referredobj.getMaterial().getTextureEnvColor().getAlpha() );
+        CreateMaterialForMesh(*obj);
+        // for the material, no need to copy texcoords, etc ...
+        // however we need to set blendfunc and envcolor, because renderer would not get referredobj blendfunc ...
+        // probably this should be treated as bug of renderer, however I fix it from objectmanager side here.
+        obj->getMaterial().SetBlendFuncs( referredobj.getMaterial().getSourceBlendFunc(), referredobj.getMaterial().getDestinationBlendFunc() );
+        obj->getMaterial().getTextureEnvColor().Set(
+            referredobj.getMaterial().getTextureEnvColor().getRed(),
+            referredobj.getMaterial().getTextureEnvColor().getGreen(),
+            referredobj.getMaterial().getTextureEnvColor().getBlue(),
+            referredobj.getMaterial().getTextureEnvColor().getAlpha() );
 
-    
+        getConsole().SOLnOO("> Object cloned successfully!");
+    } // try
+    catch (const std::bad_alloc&)
+    {
+        getConsole().EOLnOO("ERROR: failed to instantiate PRREObject3D!");
+    }
 
-    getConsole().SOLnOO("> Object cloned successfully!");
     getConsole().OLn("");
     return obj;
 }

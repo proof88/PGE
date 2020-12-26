@@ -715,7 +715,17 @@ PRRETexture* PRRETextureManager::createTextureFromImage(const PRREImage& img)
     }
 
     getConsole().OLn("texture == PGENULL");
-    texture = new PRRETexture(img);
+    try
+    {
+        texture = new PRRETexture(img);
+    }
+    catch (const std::bad_alloc&)
+    {
+        getConsole().EOLn("ERROR: Failed to instantiate new PRRETexture!");
+        getConsole().OLnOO("");
+        return PGENULL;
+    }
+
     Attach(*texture);
 
     if ( (getDefaultMinFilteringMode() == PRRE_ISO_NEAREST) || (getDefaultMinFilteringMode() == PRRE_ISO_LINEAR) )
@@ -797,7 +807,17 @@ PRRETexture* PRRETextureManager::createFromFile(const char* filename)
         return PGENULL;
     }
 
-    texture = new PRRETexture();
+    try
+    {
+        texture = new PRRETexture(img);
+    }
+    catch (const std::bad_alloc&)
+    {
+        getConsole().EOLn("ERROR: Failed to instantiate new PRRETexture!");
+        getConsole().OLnOO("");
+        return PGENULL;
+    }
+
     texture->Cannibalize(*tmpImg);
     DeleteAttachedInstance(*tmpImg);
     Attach(*texture);

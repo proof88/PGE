@@ -68,19 +68,35 @@ void PRREMaterial::PRREMaterialImpl::AllocateArrays(TPRREuint nColorCount, TPRRE
 {
     if ( nIndexSize == 0 )
     {
-        getConsole().EOLn("PRREMaterial()::AllocateArrays(%d, %d, %d, %d) fail!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
+        getConsole().EOLn("PRREMaterial()::AllocateArrays(%d, %d, %d, %d) fail due to nIndexSize!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
         return;
     }
 
     nIndices   = nIndexCount;
     nIndexSize = nIndexSize;
 
-    for (TPRREuint i = 0; i < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount(); i++)
+    try
     {
-        layers[i].nColors_h          = nColorCount;
-        layers[i].pColors            = new TRGBAFLOAT[nColorCount];
-        layers[i].nTexcoords_h       = nTexcoordCount;
-        layers[i].pTexcoords         = new TUVW[nTexcoordCount];
+        for (TPRREuint i = 0; i < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount(); i++)
+        {
+            layers[i].nColors_h          = nColorCount;
+            layers[i].pColors            = new TRGBAFLOAT[nColorCount];
+            layers[i].nTexcoords_h       = nTexcoordCount;
+            layers[i].pTexcoords         = new TUVW[nTexcoordCount];
+        }
+    }
+    catch (const std::bad_alloc&)
+    {
+        getConsole().EOLn("PRREMaterial()::AllocateArrays(%d, %d, %d, %d) fail due to out of memory!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
+        for (TPRREuint i = 0; i < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount(); i++)
+        {
+            layers[i].nColors_h = 0;
+            delete[] layers[i].pColors;
+            layers[i].pColors = PGENULL;
+            layers[i].nTexcoords_h = 0;
+            delete[] layers[i].pTexcoords;
+            layers[i].pTexcoords = PGENULL;
+        }
     }
 }
 

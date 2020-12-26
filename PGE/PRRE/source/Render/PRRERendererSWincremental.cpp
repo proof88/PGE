@@ -274,8 +274,11 @@ TPRREuint PRRERendererSWincrementalImpl::initialize(
 
             // TODO: GdiFlush() maybe needed when renderer renders the picture later.
 
-            pZBuffer = new float[width * height]; // TODO add try-catch
-            if ( pZBuffer == NULL )
+            try
+            {
+                pZBuffer = new float[width * height];
+            }
+            catch (const std::bad_alloc&)
             {
                 getConsole().EOLnOO("ERROR: failed to allocate Z-Buffer!");
                 shutdown();
