@@ -115,7 +115,6 @@ private:
 PGE::PGEimpl::~PGEimpl()
 {
     _pOwner = NULL;
-    delete SysCFG;
 } // ~PGE()
 
 
@@ -253,7 +252,8 @@ PGE::PGEimpl::PGEimpl() :
     con( CConsole::getConsoleInstance() ),
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
-    GFX( PR00FsReducedRenderingEngine::createAndGet() )
+    GFX( PR00FsReducedRenderingEngine::createAndGet() ),
+    SysCFG("")
 {
     _pOwner = NULL;  // currently not used
 }
@@ -263,7 +263,8 @@ PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     con( CConsole::getConsoleInstance() ),
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
-    GFX( PR00FsReducedRenderingEngine::createAndGet() )
+    GFX( PR00FsReducedRenderingEngine::createAndGet() ),
+    SysCFG("")
 {
     _pOwner = NULL;  // currently not used
 }  
@@ -525,20 +526,20 @@ int PGE::initializeGame()
     p->con.OI();
     onGameInitializing();
     p->con.OLn("pGameTitle: %s", p->sGameTitle.c_str());
-    p->con.OLn("MyDocs: %s", p->SysCFG->getMyDocsFolder().c_str());
-    p->nLangTable = p->SysCFG->readLanguageData( p->pLangTable );
-    p->con.OLn("Lang Table with %d rows from %s.", p->nLangTable, p->SysCFG->getLangFileName().c_str());
+    p->con.OLn("MyDocs: %s", p->SysCFG.getMyDocsFolder().c_str());
+    p->nLangTable = p->SysCFG.readLanguageData( p->pLangTable );
+    p->con.OLn("Lang Table with %d rows from %s.", p->nLangTable, p->SysCFG.getLangFileName().c_str());
     if ( p->nLangTable == 0 )
     {
         p->con.EOLnOO("ERROR: Failed to read language data, exiting!");
         return 99;
     }
-    p->con.OLn("Profiles stored in MyDocs: %b", p->SysCFG->areProfilesInMyDocs());
-    p->con.OLn("Profiles: %s", p->SysCFG->getPathToProfiles().c_str());
-    p->con.OIOLn("Count: %d", p->SysCFG->getProfilesCount());
-    for (int i = 0; i < p->SysCFG->getProfilesCount(); i++)
+    p->con.OLn("Profiles stored in MyDocs: %b", p->SysCFG.areProfilesInMyDocs());
+    p->con.OLn("Profiles: %s", p->SysCFG.getPathToProfiles().c_str());
+    p->con.OIOLn("Count: %d", p->SysCFG.getProfilesCount());
+    for (int i = 0; i < p->SysCFG.getProfilesCount(); i++)
     {
-        p->con.OLn("%s.cfg ~ %s", p->SysCFG->getProfilesList()[i]->c_str(), p->SysCFG->getProfilePlayersList()[i]->c_str());
+        p->con.OLn("%s.cfg ~ %s", p->SysCFG.getProfilesList()[i]->c_str(), p->SysCFG.getProfilePlayersList()[i]->c_str());
     }
     p->con.OO();
 

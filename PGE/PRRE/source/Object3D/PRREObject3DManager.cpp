@@ -457,7 +457,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
         {
             // note: textures won't be deallocated cause we don't track what textures were loaded for this object!
             delete tmpMesh;
-            delete subobj;  // will invoke obj->Detach()
+            delete subobject;  // will invoke obj->Detach()
             delete obj;     // would delete subobj, except if it is not yet attached, so we explicitly delete subobj above
             getConsole().OO();
             getConsole().EOLnOO("ERROR: failed to instantiate an object!");

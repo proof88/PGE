@@ -160,45 +160,57 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
     try
     {
         lines = new char*[lines_h]();  // instead of calloc(), this kind of usage of operator new is value-initialization, by using (), that will take care of zeroing in this case!
-        const char* tmpptr = filebuffer;
-        const char* prevtmpptr;
+        const char* pLineEnd = filebuffer;
+        const char* pPrevLineEnd;
         TPRREuint actline = 0;
         do
         {                                                                            
-            if ( tmpptr == filebuffer )
+            if ( pLineEnd == filebuffer )
             {
-                prevtmpptr = tmpptr;
-                tmpptr = tmpptr-1;
+                pPrevLineEnd = pLineEnd;
+                pLineEnd = pLineEnd-1;
             }
             else
             {
-                prevtmpptr = tmpptr;
+                pPrevLineEnd = pLineEnd;
             }
-            // finding line end
-            tmpptr = (char*) memchr(tmpptr+1, 10, filebuffer_size-((DWORD)(tmpptr-filebuffer)));
+            // finding line end (LF char)
+            pLineEnd = (char*) memchr(pLineEnd+1, 10, filebuffer_size-((DWORD)(pLineEnd-filebuffer)));
                         
-            if ( (tmpptr != NULL) && (prevtmpptr != NULL) )
+            if ( (pLineEnd != NULL) && (pPrevLineEnd != NULL) )
             {    // found a new line, allocating mem for it and put it in
-                
-                lines[actline] = new char[tmpptr-prevtmpptr]();
-                if ( tmpptr-prevtmpptr > 0 )
+                size_t lineLength = pLineEnd - pPrevLineEnd;
+                if ( lineLength > 0 )
                 {
-                    if ( prevtmpptr == filebuffer )    // if this is the 1st line
-                        memcpy(lines[actline], prevtmpptr, tmpptr-prevtmpptr-1);
+                    if ( lineLength > 1 )
+                    {
+                        // for some reason, after pushing some .obj files to github, all lines have a \r char added!
+                        // realized that probably this was done at checkout by git.
+                        // we need to get rid of them.
+                        // this is controlled by global git setting core.autocrlf, which is probably true by default.
+                        if ( *(pLineEnd-1) == '\r' )
+                        {
+                            // optionally there can be CR character too, that should be the new endline
+                            --lineLength;
+                        }
+                    }
+                    lines[actline] = new char[lineLength]();
+                    if ( pPrevLineEnd == filebuffer )    // if this is the 1st line
+                        memcpy(lines[actline], pPrevLineEnd, lineLength-1);
                     else
-                        memcpy(lines[actline], prevtmpptr+1, tmpptr-prevtmpptr-1);
+                        memcpy(lines[actline], pPrevLineEnd+1, lineLength-1);
                 }
                 actline++;
             }
             else
             {    // no more endline chars but chars after the last endline char are still needed
-                if ( (DWORD) (prevtmpptr - filebuffer) < filebuffer_size )
+                if ( (DWORD) (pPrevLineEnd - filebuffer) < filebuffer_size )
                 {
-                    lines[actline] = new char[filebuffer_size-(prevtmpptr-filebuffer)+1]();
-                    memcpy(lines[actline], prevtmpptr, filebuffer_size-(prevtmpptr-filebuffer));
+                    lines[actline] = new char[filebuffer_size-(pPrevLineEnd-filebuffer)+1]();
+                    memcpy(lines[actline], pPrevLineEnd, filebuffer_size-(pPrevLineEnd-filebuffer));
                 }
             }
-        } while (tmpptr != NULL);
+        } while (pLineEnd != NULL);
     } // try
     catch (const std::bad_alloc&)
     {
@@ -217,25 +229,24 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
     _pOwner->getConsole().OLn("preprocessing done, gathering data ...");
     
     PRREMesh3D* obj = NULL;
+    TPRREuint submeshes_h = 0;
+    TXYZ** tmpSubMeshesVertices  = NULL;
+    TUVW** tmpSubMeshesTexcoords = NULL;
+    TXYZ** tmpSubMeshesNormals   = NULL;
+    TPRREuint* tmpSubMeshesVertices_h  = NULL;
+    TPRREuint* tmpSubMeshesTexcoords_h = NULL;
+    TPRREuint* tmpSubMeshesNormals_h   = NULL;
+
+    TPRREuint* lines_start = NULL;
+    TPRREuint* lines_end = NULL;
     try
     {
-        TXYZ** tmpSubMeshesVertices  = NULL;
-        TUVW** tmpSubMeshesTexcoords = NULL;
-        TXYZ** tmpSubMeshesNormals   = NULL;
-        TPRREuint* tmpSubMeshesVertices_h  = NULL;
-        TPRREuint* tmpSubMeshesTexcoords_h = NULL;
-        TPRREuint* tmpSubMeshesNormals_h   = NULL;
-
-        TPRREuint* lines_start = NULL;
-        TPRREuint* lines_end = NULL;
-
         _pOwner->getConsole().OLnOI("creating parent object ...");
         obj = new PRREMesh3D(PRRE_PM_TRIANGLES);
         _pOwner->CreateMaterialForMesh(*obj);
         _pOwner->getConsole().OLnOO("parent object created!");
 
         _pOwner->getConsole().OLnOI("creating subobjects ...");
-        TPRREuint submeshes_h = 0;
         // counting submeshes
         for (TPRREuint i = 0; i < lines_h; i++)
         {

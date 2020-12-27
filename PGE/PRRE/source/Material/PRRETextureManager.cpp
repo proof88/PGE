@@ -809,7 +809,7 @@ PRRETexture* PRRETextureManager::createFromFile(const char* filename)
 
     try
     {
-        texture = new PRRETexture(img);
+        texture = new PRRETexture(*tmpImg);
     }
     catch (const std::bad_alloc&)
     {

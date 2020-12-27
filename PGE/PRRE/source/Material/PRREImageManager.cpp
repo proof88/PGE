@@ -356,6 +356,7 @@ PRREImage* PRREImageManager::loadBMP(const char* filename)
             ReadFile(bitmapfile, palette, palettesize, &bytesread, NULL);
             getConsole().OLn("Read %d bytes of total %d bytes of RGBQUAD array for palette", bytesread, palettesize);
             if ( bytesread != palettesize )
+            {
                 return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bytesread != palettesize, returning PGENULL!");
             }
         } 
@@ -377,7 +378,7 @@ PRREImage* PRREImageManager::loadBMP(const char* filename)
 
         getConsole().SOLnOO("> bitmap successfully loaded into memory, using %d bytes (%d kbytes)",
             sizeof(pNewImage)+pNewImage->getPixelsSize(), (sizeof(*pNewImage)+pNewImage->getPixelsSize())/1024);
-    }
+    } // try
     catch (const std::bad_alloc&)
     {
         return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: failed to allocated palette!");

@@ -380,7 +380,7 @@ TPRREint PRREManager::PRREManagerImpl::preAlloc(TPRREint count)
         }
         catch (const std::bad_alloc&)
         {
-            getConsole().EOLnOO("ERROR: failed to alloc new storage!");
+            _pOwner->getConsole().EOLnOO("ERROR: failed to alloc new storage!");
             return -1;
         }
         memcpy(pNewStorage, pManageds, prev_h*sizeof(PRREManaged*));
