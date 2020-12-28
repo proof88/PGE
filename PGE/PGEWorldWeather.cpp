@@ -245,16 +245,25 @@ bool PGEWorldWeatherImpl::initialize(int numCellsX, int numCellsY, int numCellsZ
         return true;
     }
 
-    WorldWeatherCell::SetCellSize((float)cellSize);
-    nCellsX = numCellsX;
-    nCellsY = numCellsY;
-    nCellsZ = numCellsZ;
-    cells = new WorldWeatherCell[nCellsX * nCellsY * nCellsZ];
-    bInitialized = true;
-    con.OLn("allocated %d Bytes for weather data", sizeof(WorldWeatherCell) * nCellsX * nCellsY * nCellsZ);
-    con.SOLnOO("> initialized!");
-    con.OLn("");
-    return true;
+    try
+    {
+        WorldWeatherCell::SetCellSize((float)cellSize);
+        nCellsX = numCellsX;
+        nCellsY = numCellsY;
+        nCellsZ = numCellsZ;
+        cells = new WorldWeatherCell[nCellsX * nCellsY * nCellsZ];
+        bInitialized = true;
+        con.OLn("allocated %d Bytes for weather data", sizeof(WorldWeatherCell) * nCellsX * nCellsY * nCellsZ);
+        con.SOLnOO("> initialized!");
+        con.OLn("");
+        return true;
+    }
+    catch (const std::bad_alloc&)
+    {
+        con.EOLnOO("ERROR: memory allocation failure!");
+        con.OLn("");
+        return false;
+    }
 }
 
 

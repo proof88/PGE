@@ -24,6 +24,7 @@ PGESysCFG::PGESysCFG(const char* gameTitle) :
 {
     con.OLnOI("PGESysCFG::PGESysCFG(%s)", gameTitle);
     
+    MAX_PATH;
     nActiveProfile = -1;
     nProfilesCount = 0;
     sFoundProfiles = PGENULL;
@@ -58,16 +59,14 @@ PGESysCFG::PGESysCFG(const char* gameTitle) :
     else
     {    // ggg == "here"
         bMainCFGinMyDocs = false;
-        char* pOrigCurrDirr = new char[1024];
+        char pOrigCurrDirr[1024];
         GetCurrentDirectory(1024, pOrigCurrDirr);
         SetCurrentDirectory( PGE_PROFILE_FOLDER );
-        char* pNewCurrDirr = new char[1024];
+        char pNewCurrDirr[1024];
         GetCurrentDirectory(1024, pNewCurrDirr);
         sPathToProfiles = pNewCurrDirr;
         sPathToProfiles += "\\";
         SetCurrentDirectory( pOrigCurrDirr );
-        delete[] pOrigCurrDirr;
-        delete[] pNewCurrDirr;
     }
     con.OLn("user profile dir is: %s", sPathToProfiles.c_str());
 
@@ -143,18 +142,35 @@ int PGESysCFG::readLanguageData(string** &langTable) const
         return 0;
     }
 
-    langTable = new string*[n];
-    int i = 0;
-    while ( !g.eof() )
+    langTable = NULL;
+    try
     {
-        g.getline(pTmp, nBuffSize);
-        if ( (strstr(pTmp, "#") == NULL) && (strlen(pTmp) > 0))
-        {        
-            langTable[i] = new string(pTmp);
-            i++;
+        langTable = new string*[n](); // () makes all ptrs NULL
+        int i = 0;
+        while ( !g.eof() )
+        {
+            g.getline(pTmp, nBuffSize);
+            if ( (strstr(pTmp, "#") == NULL) && (strlen(pTmp) > 0))
+            {        
+                langTable[i] = new string(pTmp);
+                i++;
+            }
         }
     }
-    g.close();
+    catch (const std::bad_alloc&)
+    {
+        con.EOLnOO("ERROR: memory allocation failure during lang file read!");
+        if ( langTable != NULL )
+        {
+            for (int i = 0; i < n; i++)
+            {
+                delete langTable[i];
+            }
+        }
+        delete[] langTable;
+        return 0;
+    }
+                                    
 
     con.SOLnOO("> done!");
 
@@ -650,16 +666,14 @@ bool PGESysCFG::getPlayerNameFromFile(const char* cFilename, std::string& sPlaye
         return false;
 
     // found line containing PGE_SYS_CFG_PLAYER_NAME_CVAR
-    char* n1stDoubleQuote = strstr(cLine, "\"");
+    char* const n1stDoubleQuote = strstr(cLine, "\"");
     if ( n1stDoubleQuote != NULL )
     {
-        char* n2ndDoubleQuote = strstr(n1stDoubleQuote+1, "\"");
+        char* const n2ndDoubleQuote = strstr(n1stDoubleQuote+1, "\"");
         if ( n2ndDoubleQuote != NULL )
         {   // we have 2 dblquotes now, in between them will be the player's name, ie.: cl_name="PR00F88"
-            char* cPlayerName = new char[n2ndDoubleQuote-n1stDoubleQuote];
-            strncpy(cPlayerName, n1stDoubleQuote+1, n2ndDoubleQuote-n1stDoubleQuote);
-            cPlayerName[n2ndDoubleQuote-n1stDoubleQuote-1] = '\0';
-            sPlayerName = cPlayerName;
+            *n2ndDoubleQuote = '\0';
+            sPlayerName = n1stDoubleQuote+1;
             return true;
         } // n2ndDoubleQuote != PGENULL
     } // n1stDoubleQuote != PGENULL
@@ -682,8 +696,8 @@ void PGESysCFG::LoadProfilesList()
         sOriginalCurrentProfileUser = *( getProfilesList()[getProfile()] );
 
     nProfilesCount = 0;
-    char* pOrigCurrDirr = new char[1024];
-    char* pCurrDirr = new char[1024];
+    char pOrigCurrDirr[1024];
+    char pCurrDirr[1024];
     GetCurrentDirectory(1024, pOrigCurrDirr);
     GetCurrentDirectory(1024, pCurrDirr);
     if ( !SetCurrentDirectory(sPathToProfiles.c_str()) && (GetLastError() != ERROR_SUCCESS) )
@@ -726,35 +740,63 @@ void PGESysCFG::LoadProfilesList()
                         if ( getPlayerNameFromFile(sCfgFileName.c_str(), sPlayerName) )
                         {
                             nProfilesCount++; 
-                            if ( sFoundProfiles )
-                            {   // mimicing realloc, this to be changed to vector or something!
-                                std::string** sNewFoundProfiles = new string*[nProfilesCount];
-                                memcpy(sNewFoundProfiles, sFoundProfiles, sizeof(string*)*nProfilesCount);
+                            std::string** sNewFoundProfiles = PGENULL;
+                            try
+                            {
+                                if ( sFoundProfiles )
+                                {   // mimicing realloc, this to be changed to vector or something!
+                                    sNewFoundProfiles = new string*[nProfilesCount]();
+                                    memcpy(sNewFoundProfiles, sFoundProfiles, sizeof(string*)*nProfilesCount);
+                                    delete[] sFoundProfiles;
+                                    sFoundProfiles = sNewFoundProfiles;
+                                }
+                                else
+                                {
+                                    sFoundProfiles = new string*[nProfilesCount]();
+                                }
+                                sFoundProfiles[nProfilesCount-1] = new string(dirdata.cFileName);
+                                if ( sFoundProfilePlayerNames )
+                                {   // mimicing realloc, this to be changed to vector or something!
+                                    std::string** sNewFoundProfilePlayerNames = new string*[nProfilesCount]();
+                                    memcpy(sNewFoundProfilePlayerNames, sFoundProfilePlayerNames, sizeof(string*)*nProfilesCount);
+                                    delete[] sFoundProfilePlayerNames;
+                                    sFoundProfilePlayerNames = sNewFoundProfilePlayerNames;
+                                }
+                                else
+                                {
+                                    sFoundProfilePlayerNames = new string*[nProfilesCount]();
+                                }
+                                sFoundProfilePlayerNames[nProfilesCount-1] = new string(sPlayerName);
+                                con.OLn("added user %s ~ %s", dirdata.cFileName, sPlayerName.c_str());
+                                if ( getProfile() != -1 )
+                                {   // update current profile index that may change during this function
+                                    if ( *(sFoundProfiles[nProfilesCount-1]) == sOriginalCurrentProfileUser )
+                                        nActiveProfile = nProfilesCount-1;
+                                }
+                            } // try
+                            catch (const std::bad_alloc&)
+                            {
+                                FindClose(hFileSearch);
+                                FindClose(hDirSearch);
+                                SetCurrentDirectory( pOrigCurrDirr );
+                                if ( sFoundProfiles != NULL )
+                                {
+                                    for (int i = 0; i < nProfilesCount-1; i++)
+                                    {
+                                        delete sFoundProfiles[i];
+                                    }
+                                }
+                                if ( sFoundProfilePlayerNames != NULL )
+                                {
+                                    for (int i = 0; i < nProfilesCount-1; i++)
+                                    {
+                                        delete sFoundProfilePlayerNames[i];
+                                    }
+                                }
                                 delete[] sFoundProfiles;
-                                sFoundProfiles = sNewFoundProfiles;
-                            }
-                            else
-                            {
-                                sFoundProfiles = new string*[nProfilesCount];
-                            }
-                            sFoundProfiles[nProfilesCount-1] = new string(dirdata.cFileName);
-                            if ( sFoundProfilePlayerNames )
-                            {   // mimicing realloc, this to be changed to vector or something!
-                                std::string** sNewFoundProfilePlayerNames = new string*[nProfilesCount];
-                                memcpy(sNewFoundProfilePlayerNames, sFoundProfilePlayerNames, sizeof(string*)*nProfilesCount);
                                 delete[] sFoundProfilePlayerNames;
-                                sFoundProfilePlayerNames = sNewFoundProfilePlayerNames;
-                            }
-                            else
-                            {
-                                sFoundProfilePlayerNames = new string*[nProfilesCount];
-                            }
-                            sFoundProfilePlayerNames[nProfilesCount-1] = new string(sPlayerName);
-                            con.OLn("added user %s ~ %s", dirdata.cFileName, sPlayerName.c_str());
-                            if ( getProfile() != -1 )
-                            {   // update current profile index that may change during this function
-                                if ( *(sFoundProfiles[nProfilesCount-1]) == sOriginalCurrentProfileUser )
-                                    nActiveProfile = nProfilesCount-1;
+                                con.EOLnOO("ERROR: memory allocation failure!");
+                                return;
                             }
                         }
                     } // file size check
@@ -768,9 +810,6 @@ void PGESysCFG::LoadProfilesList()
     }
     FindClose(hDirSearch);
     SetCurrentDirectory( pOrigCurrDirr );
-
-    delete[] pOrigCurrDirr;
-    delete[] pCurrDirr;
 
     con.SOLnOO("> done!");
 
