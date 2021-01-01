@@ -64,12 +64,18 @@ PRREMaterial::PRREMaterialImpl::~PRREMaterialImpl()
 } // ~PRRETexture()
 
 
-void PRREMaterial::PRREMaterialImpl::AllocateArrays(TPRREuint nColorCount, TPRREuint nTexcoordCount, TPRREuint nIndexCount, TPRREuint nIndexSize)
+TPRREbool PRREMaterial::PRREMaterialImpl::allocateArrays(TPRREuint nColorCount, TPRREuint nTexcoordCount, TPRREuint nIndexCount, TPRREuint nIndexSize)
 {
     if ( nIndexSize == 0 )
     {
-        getConsole().EOLn("PRREMaterial()::AllocateArrays(%d, %d, %d, %d) fail due to nIndexSize!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
-        return;
+        getConsole().EOLn("PRREMaterial()::allocateArrays(%d, %d, %d, %d) fail due to nIndexSize!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
+        return false;
+    }
+
+    if ( getTexcoordsCount(0) > 0 )
+    {
+        getConsole().SOLn("PRREMaterial()::allocateArrays(%d, %d, %d, %d) skip, already allocated!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
+        return true;
     }
 
     nIndices   = nIndexCount;
@@ -84,10 +90,11 @@ void PRREMaterial::PRREMaterialImpl::AllocateArrays(TPRREuint nColorCount, TPRRE
             layers[i].nTexcoords_h       = nTexcoordCount;
             layers[i].pTexcoords         = new TUVW[nTexcoordCount];
         }
+        return true;
     }
     catch (const std::bad_alloc&)
     {
-        getConsole().EOLn("PRREMaterial()::AllocateArrays(%d, %d, %d, %d) fail due to out of memory!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
+        getConsole().EOLn("PRREMaterial()::allocateArrays(%d, %d, %d, %d) fail due to out of memory!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
         for (TPRREuint i = 0; i < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount(); i++)
         {
             layers[i].nColors_h = 0;
@@ -97,6 +104,7 @@ void PRREMaterial::PRREMaterialImpl::AllocateArrays(TPRREuint nColorCount, TPRRE
             delete[] layers[i].pTexcoords;
             layers[i].pTexcoords = PGENULL;
         }
+        return false;
     }
 }
 
@@ -480,14 +488,16 @@ PRREMaterial::~PRREMaterial()
     @param nTexcoordCount Size of required texture coordinate array on each level.
     @param nIndexCount    Size of required index array on each level.
     @param nIndexSize     Size of an index in Bytes. Should be greater than 0.
+
+    @return True if allocation succeeded or already allocated, false otherwise.
 */
-void PRREMaterial::AllocateArrays(
+TPRREbool PRREMaterial::allocateArrays(
                             TPRREuint nColorCount,
                             TPRREuint nTexcoordCount,
                             TPRREuint nIndexCount,
                             TPRREuint nIndexSize)
 {
-    pImpl->AllocateArrays(nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
+    return pImpl->allocateArrays(nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
 }
 
 

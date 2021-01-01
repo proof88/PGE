@@ -158,7 +158,7 @@ class PRREMaterial :
 public:
     virtual              ~PRREMaterial();
 
-            void         AllocateArrays(                                      
+            TPRREbool    allocateArrays(                                      
                             TPRREuint nColorCount,
                             TPRREuint nTexcoordCount,
                             TPRREuint nIndexCount,

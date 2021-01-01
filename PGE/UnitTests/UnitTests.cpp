@@ -127,9 +127,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPGESysCFG);
 
 
-    /* */   
+    /*    
     tests.push_back(&testScreen);
     tests.push_back(&testSharedSettings);
+    */
 
     /* */       
     tests.push_back(&testPosUpTarget);
@@ -166,13 +167,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREObject3DManager);
     tests.push_back(&testPRREObject3D);
 
-    /* */
+    /* 
     tests.push_back(&testPRREWindow);
     tests.push_back(&testPRREWindow2);
 
     tests.push_back(&testPRRE);
     tests.push_back(&testPRRE2);
-    
+    */
 
     vector<UnitTest*>::size_type nSucceededTests = 0;
     vector<UnitTest*>::size_type nTotalSubTests = 0;

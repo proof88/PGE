@@ -517,11 +517,16 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
             currSubObj->pImpl->pVertices = new TXYZ[currSubObj->pImpl->nVertices_h];
             currSubObj->pImpl->pNormals  = new TXYZ[currSubObj->pImpl->nVertices_h];
 
-            currSubObj->pImpl->pMaterial->AllocateArrays(
-                currSubObj->pImpl->nVertices_h,
-                currSubObj->pImpl->nVertexIndices_h,
-                currSubObj->pImpl->nVertexIndices_h,
-                PRREGLsnippets::getSizeofIndexType(currSubObj->pImpl->nIndicesType) );
+            if ( !currSubObj->pImpl->pMaterial->allocateArrays(
+                   currSubObj->pImpl->nVertices_h,
+                   currSubObj->pImpl->nVertexIndices_h,
+                   currSubObj->pImpl->nVertexIndices_h,
+                   PRREGLsnippets::getSizeofIndexType(currSubObj->pImpl->nIndicesType) ) )
+            {
+                // not nice but now this is the quickest way of error handling, on the long run allocateArrays() should throw
+                _pOwner->getConsole().EOLn("ERROR: currSubObj->pImpl->pMaterial->allocateArrays() failed!");
+                throw std::bad_alloc();
+            }
 
             _pOwner->getConsole().OLn("obj->subObjects[%d]->nFaces_h == %d", i, currSubObj->pImpl->nFaces_h);
             k = 0;
@@ -1066,7 +1071,7 @@ void PRREMesh3DManager::ConvertToPlane(
         pImpl->materialMgr.DeleteAttachedInstance( *(submesh->pImpl->pMaterial) );
     }
     CreateMaterialForMesh(*submesh); // TODO: result of this should be also checked!
-    submesh->pImpl->pMaterial->AllocateArrays(
+    submesh->pImpl->pMaterial->allocateArrays(
         submesh->pImpl->nVertices_h,
         submesh->pImpl->nVertices_h,
         submesh->pImpl->nVertexIndices_h,
@@ -1225,7 +1230,7 @@ void PRREMesh3DManager::ConvertToBox(
         pImpl->materialMgr.DeleteAttachedInstance( *(submesh->pImpl->pMaterial) );
     }
     submesh->pImpl->pMaterial = pImpl->materialMgr.createMaterial();
-    submesh->pImpl->pMaterial->AllocateArrays(
+    submesh->pImpl->pMaterial->allocateArrays(
         submesh->pImpl->nVertices_h,
         submesh->pImpl->nVertices_h,
         submesh->pImpl->nVertexIndices_h,

@@ -154,7 +154,7 @@ private:
         const TPRREuint nIndices   = 7;
         const TPRREuint nIndexSize = 4;
 
-        mat->AllocateArrays(nColors, nTexCoords, nIndices, nIndexSize);
+        const bool bAlloc = assertTrue(mat->allocateArrays(nColors, nTexCoords, nIndices, nIndexSize), "allocate");
 
         bool b = true;
         TPRREuint  i = 0;
@@ -171,7 +171,7 @@ private:
         std::stringstream ss;
         ss << "Failed in " << i << ". iteration" << std::endl;
 
-        return assertTrue(b, ss.str().c_str());
+        return bAlloc & assertTrue(b, ss.str().c_str());
     }
 
     bool testSetTexture()
@@ -365,7 +365,7 @@ private:
         if ( !mat2 )
             return assertNotNull(mat2, "notNull 2");
         
-        mat2->AllocateArrays(2, 2, 2, 2);
+        const bool bAllocMat2 = assertTrue(mat2->allocateArrays(2, 2, 2, 2), "allocate mat2");
         mat2->getColors()[0].green = 1.0f;
         mat2->getTexcoords()[1].u = 1.0f;
  
@@ -386,7 +386,7 @@ private:
         ss << "Failed in " << i << ". iteration" << std::endl;
         assertTrue(b, ss.str().c_str());
 
-        mat->AllocateArrays(2, 2, 2, 2);
+        const bool bAllocMat = assertTrue(mat->allocateArrays(2, 2, 2, 2), "allocate mat");
 
         b = b & assertTrue(mat->copyFromMaterial(*mat2, 0, 0), "2nd");  // should succeed now
 
@@ -409,7 +409,7 @@ private:
         b = b & assertEquals(1.0f, mat->getColors()[0].green, "clr lvl0 green") &
             assertEquals(1.0f, mat->getTexcoords()[1].u, "texcoord lvl1 U");
 
-        return b;
+        return b & bAllocMat & bAllocMat2;
     }
 
     bool testGetUsedSystemMemory()

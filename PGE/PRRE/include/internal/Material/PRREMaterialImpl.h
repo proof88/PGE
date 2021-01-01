@@ -44,7 +44,7 @@ public:
 
     virtual              ~PRREMaterialImpl();
 
-            void         AllocateArrays(
+            TPRREbool    allocateArrays(
                             TPRREuint nColorCount,
                             TPRREuint nTexcoordCount,
                             TPRREuint nIndexCount,
