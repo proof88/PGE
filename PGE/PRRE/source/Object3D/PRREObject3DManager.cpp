@@ -538,7 +538,12 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         obj->pImpl->rotation = referredobj.getRotationOrder();
         obj->pImpl->bStickedToScreen = referredobj.isStickedToScreen();
 
-        CreateMaterialForMesh(*obj);
+        if ( createMaterialForMesh(*obj) == PGENULL )
+        {
+            // this should not be like this, createMaterialForMesh() should throw.
+            throw std::bad_alloc();
+        }
+
         // for the material, no need to copy texcoords, etc ...
         // however we need to set blendfunc and envcolor, because renderer would not get referredobj blendfunc ...
         // probably this should be treated as bug of renderer, however I fix it from objectmanager side here.
@@ -553,6 +558,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
     } // try
     catch (const std::bad_alloc&)
     {
+        delete obj; // if new PRREObject3D() fails, obj is null so this has no effect, but if createMaterialForMesh() fails, this will properly get rid of obj
         getConsole().EOLnOO("ERROR: failed to instantiate PRREObject3D!");
     }
 

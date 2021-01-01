@@ -243,7 +243,12 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
     {
         _pOwner->getConsole().OLnOI("creating parent object ...");
         obj = new PRREMesh3D(PRRE_PM_TRIANGLES);
-        _pOwner->CreateMaterialForMesh(*obj);
+        _pOwner->createMaterialForMesh(*obj);
+        if ( obj->pImpl->pMaterial == PGENULL )
+        {
+            // this should not be like this, createMaterialForMesh() should throw.
+            throw std::bad_alloc();
+        }
         _pOwner->getConsole().OLnOO("parent object created!");
 
         _pOwner->getConsole().OLnOI("creating subobjects ...");
@@ -262,7 +267,12 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
         {
             _pOwner->getConsole().OI();
             PRREMesh3D* subobj = new PRREMesh3D(PRRE_PM_TRIANGLES);
-            _pOwner->CreateMaterialForMesh(*subobj);
+            _pOwner->createMaterialForMesh(*subobj);
+            if ( subobj->pImpl->pMaterial == PGENULL )
+            {
+                // this should not be like this, createMaterialForMesh() should throw.
+                throw std::bad_alloc();
+            }
             _pOwner->getConsole().OO();
             obj->Attach(*subobj);
         }
@@ -594,7 +604,7 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
             if ( tmpSubMeshesNormals != NULL )
                 delete[] tmpSubMeshesNormals[i];
         }
-        delete obj; // this takes care of submesh geometry and material too!
+        delete obj; // this takes care of submesh geometry and materials too!
         delete[] tmpSubMeshesVertices;
         delete[] tmpSubMeshesTexcoords;
         delete[] tmpSubMeshesNormals;
@@ -795,8 +805,8 @@ void PRREMesh3DManager::SetMinimalIndexStorageEnabled(TPRREbool state)
 /**
     Creates a new plane mesh with the given sizes.
 
-    @param a                     Length of plane (size on X-axis).
-    @param b                     Height of plane (size on Y-axis).
+    @param a Length of plane (size on X-axis).
+    @param b Height of plane (size on Y-axis).
     
     @return New 3D mesh with 1 face and 4 vertices.
             PGENULL if Mesh3DManager is not yet initialized.
@@ -846,9 +856,9 @@ PRREMesh3D* PRREMesh3DManager::createPlane(TPRREfloat a, TPRREfloat b)
     the order of texture uvw-coordinates are the same for each face.
     Order of faces is: front face towards the viewer, back, left, right, top, bottom.
 
-    @param a                     Length of box (size on X-axis).
-    @param b                     Height of box (size on Y-axis).
-    @param c                     Depth of box (size on Z-axis).
+    @param a Length of box (size on X-axis).
+    @param b Height of box (size on Y-axis).
+    @param c Depth of box (size on Z-axis).
 
     @return New 3D box mesh with 6 faces and 24 vertices.
             PGENULL if Mesh3DManager is not yet initialized.
@@ -894,7 +904,7 @@ PRREMesh3D* PRREMesh3DManager::createBox(TPRREfloat a, TPRREfloat b, TPRREfloat 
     Creates a new cube mesh with the given sizes.
     Equivalent to createBox(a, a, a).
 
-    @param a                     Length of edges.
+    @param a Length of edges.
 
     @return New 3D cube mesh with 6 faces and 24 vertices.
             PGENULL if PRREMesh3DManager is not yet initialized.
@@ -903,7 +913,15 @@ PRREMesh3D* PRREMesh3DManager::createCube(TPRREfloat a)
 {
     getConsole().OLnOI("PRREMesh3DManager::createCube(%f), passing to createBox() ...", a);
     PRREMesh3D* const cube = createBox(a, a, a);
-    getConsole().SOLnOO("> Cube mesh created successfully!");
+    if ( cube != PGENULL )
+    {
+        getConsole().SOLnOO("> Cube mesh created successfully!");
+    }
+    else
+    {
+        getConsole().EOLnOO("ERROR: createBox() returned NULL!");
+    }
+
     getConsole().OLn("");
     return cube;
 } // createCube()
@@ -912,7 +930,7 @@ PRREMesh3D* PRREMesh3DManager::createCube(TPRREfloat a)
 /**
     Creates 3D mesh from the given file.
 
-    @param filename              The model file to be loaded to be an Object3D instance.
+    @param filename The model file to be loaded to be an Object3D instance.
 
     @return The created mesh.
             PGENULL if PRREMesh3DManager is not yet initialized or the specified file does not exist or the specified file format is not known.
@@ -1001,6 +1019,10 @@ PRREMesh3DManager& PRREMesh3DManager::operator=(const PRREMesh3DManager&)
     to set up the underlying geometry.
     Example use case: Object3D, when being constructed, can be given as parameter to this function,
     so it will be a renderable Plane object, without any array copy operation during construction.
+
+    @param mesh The Mesh instance to be converted to a Plane Mesh.
+    @param a    Length of plane (size on X-axis).
+    @param b    Height of plane (size on Y-axis).
 */
 void PRREMesh3DManager::ConvertToPlane(
         PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b)
@@ -1021,11 +1043,17 @@ void PRREMesh3DManager::ConvertToPlane(
     mesh.pImpl->primitiveFormat = PRRE_PM_QUADS;
     mesh.pImpl->vPos.Set(0.0f, 0.0f, 0.0f);
     mesh.pImpl->vSize.Set(a, b, 0.0f);
+
     if ( mesh.pImpl->pMaterial != PGENULL )
     {
         pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
     }
-    CreateMaterialForMesh(mesh);
+    createMaterialForMesh(mesh);
+    if ( mesh.pImpl->pMaterial == PGENULL )
+    {
+        getConsole().EOLn("ERROR: failed to create material for mesh!");
+        return;
+    }
 
     mesh.pImpl->nMinVertexIndex = 0;
     mesh.pImpl->nMaxVertexIndex = 0;
@@ -1039,6 +1067,18 @@ void PRREMesh3DManager::ConvertToPlane(
     submesh->pImpl->nVertices_h  = 4;
     submesh->pImpl->nFaces_h     = 1;
     submesh->pImpl->nVertexIndices_h   = submesh->pImpl->nVertices_h;
+
+    if ( submesh->pImpl->pMaterial != PGENULL )
+    {
+        pImpl->materialMgr.DeleteAttachedInstance( *(submesh->pImpl->pMaterial) );
+    }
+    createMaterialForMesh(*submesh);
+    if ( submesh->pImpl->pMaterial == PGENULL )
+    {
+        pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
+        getConsole().EOLn("ERROR: failed to create material for submesh!");
+        return;
+    }
 
     delete[] submesh->pImpl->pVertices;
     delete[] submesh->pImpl->pNormals;
@@ -1061,16 +1101,15 @@ void PRREMesh3DManager::ConvertToPlane(
         delete[] submesh->pImpl->pVertices;
         delete[] submesh->pImpl->pNormals;
         delete[] submesh->pImpl->pVertexIndices;
+        submesh->pImpl->pVertices = PGENULL;
+        submesh->pImpl->pNormals = PGENULL;
+        submesh->pImpl->pVertexIndices = PGENULL;
+        pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
+        mesh.pImpl->pMaterial = PGENULL;
         getConsole().EOLn("ERROR: failed to allocate memory for geometry!");
-        // TODO: created material should be also deleted!
         return;
     }
 
-    if ( submesh->pImpl->pMaterial != PGENULL )
-    {
-        pImpl->materialMgr.DeleteAttachedInstance( *(submesh->pImpl->pMaterial) );
-    }
-    CreateMaterialForMesh(*submesh); // TODO: result of this should be also checked!
     submesh->pImpl->pMaterial->allocateArrays(
         submesh->pImpl->nVertices_h,
         submesh->pImpl->nVertices_h,
@@ -1160,6 +1199,11 @@ void PRREMesh3DManager::ConvertToPlane(
     to set up the underlying geometry.
     Example use case: Object3D, when being constructed, can be given as parameter to this function,
     so it will be a renderable Box object, without any array copy operation during construction.
+
+    @param mesh The Mesh instance to be converted to a Box Mesh.
+    @param a Length of box (size on X-axis).
+    @param b Height of box (size on Y-axis).
+    @param c Depth of box (size on Z-axis).
 */
 void PRREMesh3DManager::ConvertToBox(
         PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b, TPRREfloat c)
@@ -1181,11 +1225,17 @@ void PRREMesh3DManager::ConvertToBox(
     mesh.pImpl->vPos.Set(0.0f, 0.0f, 0.0f);
     mesh.pImpl->vSize.Set(a, b, c);
     mesh.pImpl->nIndicesType = GL_UNSIGNED_BYTE;
+
     if ( mesh.pImpl->pMaterial != PGENULL )
     {
         pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
     }
-    CreateMaterialForMesh(mesh); // TODO: result of this to be also checked!
+    createMaterialForMesh(mesh);
+    if ( mesh.pImpl->pMaterial == PGENULL )
+    {
+        getConsole().EOLn("ERROR: failed to create material for mesh!");
+        return;
+    }
 
     mesh.pImpl->nMinVertexIndex = 0;
     mesh.pImpl->nMaxVertexIndex = 0;
@@ -1196,8 +1246,19 @@ void PRREMesh3DManager::ConvertToBox(
     submesh->pImpl->vSize.Set(a, b, c);
     submesh->pImpl->nVertices_h  = 24;
     submesh->pImpl->nFaces_h     = 6;
-
     submesh->pImpl->nVertexIndices_h   = submesh->pImpl->nVertices_h;
+
+    if ( submesh->pImpl->pMaterial != PGENULL )
+    {
+        pImpl->materialMgr.DeleteAttachedInstance( *(submesh->pImpl->pMaterial) );
+    }
+    createMaterialForMesh(*submesh);
+    if ( submesh->pImpl->pMaterial == PGENULL )
+    {
+        pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
+        getConsole().EOLn("ERROR: failed to create material for submesh!");
+        return;
+    }
 
     delete[] submesh->pImpl->pVertices;
     delete[] submesh->pImpl->pNormals;
@@ -1220,16 +1281,15 @@ void PRREMesh3DManager::ConvertToBox(
         delete[] submesh->pImpl->pVertices;
         delete[] submesh->pImpl->pNormals;
         delete[] submesh->pImpl->pVertexIndices;
+        submesh->pImpl->pVertices = PGENULL;
+        submesh->pImpl->pNormals = PGENULL;
+        submesh->pImpl->pVertexIndices = PGENULL;
+        pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
+        mesh.pImpl->pMaterial = PGENULL;
         getConsole().EOLn("ERROR: failed to allocate memory for geometry!");
-        // TODO: created material should be also deleted!
         return;
     }
 
-    if ( submesh->pImpl->pMaterial != PGENULL )
-    {
-        pImpl->materialMgr.DeleteAttachedInstance( *(submesh->pImpl->pMaterial) );
-    }
-    submesh->pImpl->pMaterial = pImpl->materialMgr.createMaterial();
     submesh->pImpl->pMaterial->allocateArrays(
         submesh->pImpl->nVertices_h,
         submesh->pImpl->nVertices_h,
@@ -1631,9 +1691,27 @@ void PRREMesh3DManager::ConvertToBox(
 }
 
 
-void PRREMesh3DManager::CreateMaterialForMesh(PRREMesh3D& mesh) const 
+/**
+    Creates a material for the given Mesh if it doesn't yet have one.
+    Won't create new material if the given Mesh already has a material.
+
+    @param mesh The mesh for we want to create a material.
+    
+    @return The created or already existing material. PGENULL in case of error.
+*/
+PRREMaterial* PRREMesh3DManager::createMaterialForMesh(PRREMesh3D& mesh) const 
 {
-    mesh.pImpl->pMaterial = pImpl->materialMgr.createMaterial();
+    if ( mesh.pImpl->pMaterial == PGENULL )
+    {
+        mesh.pImpl->pMaterial = pImpl->materialMgr.createMaterial();
+        getConsole().EOLn("ERROR: PRREMesh3DManager::createMaterialForMesh(), returned material is NULL!");
+    }
+    else
+    {
+        getConsole().OLn("PRREMesh3DManager::createMaterialForMesh(), mesh already has material!");
+    }
+
+    return mesh.pImpl->pMaterial;
 }
 
 

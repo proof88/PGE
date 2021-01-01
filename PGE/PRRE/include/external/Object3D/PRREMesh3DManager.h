@@ -154,7 +154,7 @@ protected:
     void ConvertToBox(
         PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b, TPRREfloat c);              /**< Converts the given Mesh to a box with the given sizes. */
 
-    void CreateMaterialForMesh(PRREMesh3D& mesh) const;
+    PRREMaterial* createMaterialForMesh(PRREMesh3D& mesh) const;                  /**< Creates a material for the given Mesh if it doesn't yet have one. */
 
 private:
     class PRREMesh3DManagerImpl;
