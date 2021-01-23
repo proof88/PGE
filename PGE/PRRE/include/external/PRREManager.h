@@ -82,7 +82,7 @@ class PRREManager :
 #endif
 
 public:
-    PRREManager();  
+    PRREManager(); /* TODO: mark this as noexcept(false) when using newer compiler! */ 
     virtual ~PRREManager(); 
 
     TPRREint     getCount() const;                        /**< Gets the number of managed objects. */

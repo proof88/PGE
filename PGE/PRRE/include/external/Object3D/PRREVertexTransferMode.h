@@ -217,7 +217,7 @@ protected:
         PRREMaterialManager& matMgr,
         const TPRRE_VERTEX_MODIFYING_HABIT& vmod = PRRE_VMOD_STATIC,
         const TPRRE_VERTEX_REFERENCING_MODE& vref = PRRE_VREF_DIRECT,
-        TPRREbool bForceUseClientMemory = false);
+        TPRREbool bForceUseClientMemory = false); /* TODO: mark this as noexcept(false) when using newer compiler! */
     
     PRREVertexTransfer();
     

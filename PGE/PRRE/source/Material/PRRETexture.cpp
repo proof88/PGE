@@ -906,6 +906,8 @@ TPRREuint PRRETexture::getUsedTextureMemory() const
 
 /**
     Only PRRETextureManager creates it.
+
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
 */
 PRRETexture::PRRETexture()
 {
@@ -917,6 +919,8 @@ PRRETexture::PRRETexture()
 
 /**
     Only PRRETextureManager creates it this way.
+
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
 */
 PRRETexture::PRRETexture(const PRREImage& img) : 
    PRREImage(img)
@@ -929,12 +933,13 @@ PRRETexture::PRRETexture(const PRREImage& img) :
 
 PRRETexture::PRRETexture(const PRRETexture&)
 {
-
+    // UNUSED
 }
 
 
 PRRETexture& PRRETexture::operator=(const PRRETexture&)
 {
+    // UNUSED
     return *this;
 }
 

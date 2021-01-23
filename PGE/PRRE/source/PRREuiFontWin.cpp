@@ -55,6 +55,7 @@ PRREuiFontWin::PRREuiFontWin(
         getConsole().EOLn(
             "PRREuiFontWin(%s, %d, %b, %b, %b, %b) FAILED to create font!",
             fontFaceName.c_str(), height, bold, italic, underline, strikeout );
+        // exception should be thrown but ui system will be replaced anyway ...
         return;
     }
        
@@ -70,6 +71,7 @@ PRREuiFontWin::PRREuiFontWin(
                 "PRREuiFontWin(%s, %d, %b, %b, %b, %b) FAILED to allocate display lists!",
                 fontFaceName.c_str(), height, bold, italic, underline, strikeout );
             // DeleteObject(hFont); should i release the font object this way?
+            // exception should be thrown but ui system will be replaced anyway ...
             return;
         }
 

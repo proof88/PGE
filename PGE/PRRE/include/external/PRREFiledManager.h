@@ -33,7 +33,7 @@ class PRREFiledManaged :
 #endif
 
 public:
-    PRREFiledManaged();
+    PRREFiledManaged(); /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREFiledManaged();
 
     virtual TPRREuint getUsedSystemMemory() const;   /**< Gets the amount of allocated system memory for this managed. */
@@ -73,7 +73,7 @@ class PRREFiledManager :
 #endif
 
 public:
-    PRREFiledManager();
+    PRREFiledManager(); /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREFiledManager();
 
     PRREFiledManaged*

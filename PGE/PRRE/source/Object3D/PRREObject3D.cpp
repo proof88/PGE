@@ -1327,6 +1327,8 @@ void PRREObject3D::Draw(bool bLighting)
     @param bForceUseClientMemory Force-select a vertex transfer mode storing geometry in client memory instead of server memory.
                                  Please note that this is considered only if dynamic modifying habit is specified.
                                  Specifying static modifying habit will always select a mode which places geometry data into server memory.
+
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.                             
 */
 PRREObject3D::PRREObject3D(
     PRREMaterialManager& matMgr,
@@ -1340,6 +1342,9 @@ PRREObject3D::PRREObject3D(
 } // PRREObject3D()
 
 
+/**
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+*/
 PRREObject3D::PRREObject3D(const PRREObject3D& other)
     : PRREVertexTransfer(other)
 {

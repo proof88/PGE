@@ -1024,6 +1024,8 @@ TPRREuint PRREVertexTransfer::getUsedSystemMemory() const
     @param bForceUseClientMemory Force-select a vertex transfer mode storing geometry in client memory instead of server memory.
                                  Please note that this is considered only if dynamic modifying habit is specified.
                                  Specifying static modifying habit will always select a mode which places geometry data into server memory.
+
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.                             
 */
 PRREVertexTransfer::PRREVertexTransfer(
     PRREMaterialManager& matMgr,
@@ -1037,6 +1039,9 @@ PRREVertexTransfer::PRREVertexTransfer(
 } // PRREObject3D()
 
 
+/**
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+*/
 PRREVertexTransfer::PRREVertexTransfer()
 {
     PRREFiledManaged::getConsole().OLnOI("PRREVertexTransfer() default ctor ...");

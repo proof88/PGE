@@ -135,7 +135,7 @@ protected:
         PRREMaterialManager& matMgr,
         const TPRRE_VERTEX_MODIFYING_HABIT& vmod = PRRE_VMOD_STATIC,
         const TPRRE_VERTEX_REFERENCING_MODE& vref = PRRE_VREF_DIRECT,
-        TPRREbool bForceUseClientMemory = false);                        /**< Only PRREObject3DManager creates it. */
+        TPRREbool bForceUseClientMemory = false);                        /**< Only PRREObject3DManager creates it. */ /* TODO: mark this as noexcept(false) when using newer compiler! */
     
     PRREObject3D(const PRREObject3D&);                                   
     PRREObject3D& operator=(const PRREObject3D&);
@@ -172,7 +172,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    PRREObject3DManager(PRRETextureManager& texMgr, PRREMaterialManager& matMgr);
+    PRREObject3DManager(PRRETextureManager& texMgr, PRREMaterialManager& matMgr); /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREObject3DManager();
 
     TPRREbool isInitialized() const;  /**< Tells whether the object is correctly initialized or not. */
@@ -207,7 +207,7 @@ public:
 
 protected:
 
-    PRREObject3DManager();
+    PRREObject3DManager();  /* TODO: mark this as noexcept(false) when using newer compiler! */
 
     PRREObject3DManager(const PRREObject3DManager&);
     PRREObject3DManager& operator=(const PRREObject3DManager&);

@@ -117,6 +117,9 @@ PRREFiledManaged::PRREFiledManagedImpl& PRREFiledManaged::PRREFiledManagedImpl::
 // ############################### PUBLIC ################################
 
 
+/**
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+*/
 PRREFiledManaged::PRREFiledManaged()
 {
     pImpl = new PRREFiledManagedImpl();
@@ -156,6 +159,9 @@ const string& PRREFiledManaged::getFilename() const
 // ############################## PROTECTED ##############################
 
 
+/**
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+*/
 PRREFiledManaged::PRREFiledManaged(const PRREFiledManaged& other)
 {
     pImpl = new PRREFiledManagedImpl();

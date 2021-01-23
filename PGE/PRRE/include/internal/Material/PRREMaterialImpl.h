@@ -105,8 +105,8 @@ protected:
 
     // ---------------------------------------------------------------------------
     
-    PRREMaterialImpl(
-        PRREMaterial* owner, TPRREuint nLayers = 1);
+    explicit PRREMaterialImpl(
+        PRREMaterial* owner, TPRREuint nLayers = 1) /* TODO: mark this as noexcept(false) when using newer compiler! */;
     
     PRREMaterialImpl(const PRREMaterialImpl&);
     PRREMaterialImpl& operator=(const PRREMaterialImpl&);

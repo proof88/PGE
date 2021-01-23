@@ -54,7 +54,7 @@ class PRRECamera :
 
 public:
 
-    PRRECamera();                               /**< Creates camera with default settings. */
+    PRRECamera();                               /**< Creates camera with default settings. */ /* TODO: mark this as noexcept(false) when using newer compiler! */
 
     PRRECamera(const PRRECamera&);
     PRRECamera& operator=(const PRRECamera&);   /**< Assignment operator. */

@@ -91,7 +91,7 @@ protected:
 
     // ---------------------------------------------------------------------------
 
-    PRREImage();                                /**< Only ImageManager can create it. */
+    PRREImage();                                /**< Only ImageManager can create it. */ /* TODO: mark this as noexcept(false) when using newer compiler! */
     PRREImage(const PRREImage&);
     PRREImage& operator=(const PRREImage&);
 
@@ -127,7 +127,7 @@ public:
 
     // ---------------------------------------------------------------------------
     
-    PRREImageManager();
+    PRREImageManager(); /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREImageManager();
 
     virtual PRREImage* createFromFile(const char* filename);                    /**< Creates an Image object from the given file. */

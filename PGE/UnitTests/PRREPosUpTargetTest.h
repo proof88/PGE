@@ -72,12 +72,12 @@ private:
 
     bool testCopyCtor()
     {
-        PRRECamera put;
+        PRREPosUpTarget put;
         put.getPosVec().Set(1, 2, 3);
         put.getTargetVec().Set(1, 2, 3);
         put.getUpVec().Set(1, 2, 3);
 
-        const PRRECamera put2(put);
+        const PRREPosUpTarget put2(put);
 
         return assertTrue(put.getUpVec() == put2.getUpVec(), "up") &
             assertTrue(put.getTargetVec() == put2.getTargetVec(), "target") &

@@ -704,6 +704,8 @@ TPRREuint PRREMesh3D::getUsedSystemMemory() const
 
 /**
     Only PRREObject3DManager creates it.
+
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
 */
 PRREMesh3D::PRREMesh3D(TPRRE_PRIMITIVE_FORMAT prfmt)
 {

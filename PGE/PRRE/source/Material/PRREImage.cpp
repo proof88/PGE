@@ -812,6 +812,8 @@ TPRREuint PRREImage::getUsedSystemMemory() const
 /**
     Only ImageManager can create it.
     Sets default values to members.
+
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
 */
 PRREImage::PRREImage()
 {
@@ -821,6 +823,9 @@ PRREImage::PRREImage()
 } // PRREImage()
 
 
+/**
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+*/
 PRREImage::PRREImage(const PRREImage& img)
     : PRREFiledManaged( img )
 {
@@ -833,6 +838,7 @@ PRREImage::PRREImage(const PRREImage& img)
 
 PRREImage& PRREImage::operator=(const PRREImage&)
 {
+    // UNUSED
     return *this;
 }
 

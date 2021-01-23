@@ -101,6 +101,9 @@ PRREBaseClass::PRREBaseClassImpl& PRREBaseClass::PRREBaseClassImpl::operator=(co
 // ############################### PUBLIC ################################
 
 
+/**
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+*/
 PRREBaseClass::PRREBaseClass()
 {
     pImpl = new PRREBaseClassImpl();
@@ -129,6 +132,9 @@ CConsole& PRREBaseClass::getConsole() const
 // ############################## PROTECTED ##############################
 
 
+/**
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+*/
 PRREBaseClass::PRREBaseClass(const PRREBaseClass&)
 {
     pImpl = new PRREBaseClassImpl();

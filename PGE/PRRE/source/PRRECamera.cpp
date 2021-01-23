@@ -73,9 +73,6 @@ private:
 
     PRRECameraImpl();
 
-    PRRECameraImpl(const PRRECameraImpl&);
-    PRRECameraImpl& operator=(const PRRECameraImpl&);
-
     friend class PRRECamera;
 
 };
@@ -218,15 +215,22 @@ const PRREColor& PRRECamera::PRRECameraImpl::getBackgroundColor() const
      - aspect mode: PRRE_AM_FIX;
      - aspect ratio: 800 / 600.0;
      - position, up and target vectors as initialized by PRREPosUpTarget ctor.
+
+     @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
 */
 PRRECamera::PRRECamera()
 {
     pImpl = new PRRECameraImpl();
 }
 
-PRRECamera::PRRECamera(const PRRECamera& other)
+/**
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+*/
+PRRECamera::PRRECamera(const PRRECamera& other) :
+    PRREPosUpTarget(other)
 {
-    *this = other;
+    pImpl = new PRRECameraImpl();
+    *pImpl = *(other.pImpl);
 }
 
 
@@ -235,7 +239,6 @@ PRRECamera::PRRECamera(const PRRECamera& other)
 */
 PRRECamera& PRRECamera::operator=(const PRRECamera& other)
 {
-    pImpl = new PRRECameraImpl();
     getPosVec()    = other.getPosVec();
     getUpVec()     = other.getUpVec();
     getTargetVec() = other.getTargetVec();
@@ -444,15 +447,6 @@ PRRECamera::PRRECameraImpl::PRRECameraImpl() :
     SetAspectRatio(rectViewport.size.width / rectViewport.size.height);
 }
 
-PRRECamera::PRRECameraImpl::PRRECameraImpl(const PRRECamera::PRRECameraImpl&)
-{
-
-}
-
-PRRECamera::PRRECameraImpl& PRRECamera::PRRECameraImpl::operator=(const PRRECamera::PRRECameraImpl&)
-{
-    return *this;
-}
 
 PRRECamera::PRRECameraImpl::~PRRECameraImpl()
 {

@@ -159,6 +159,8 @@ TPRREbool PRREObject3DManager::isBFB(TPRRE_BLENDFACTORS sfactor, TPRRE_BLENDFACT
 /**
     @param texMgr A TextureManager instance to be used for loading textures used by Object3D instances.
     @param matMgr A MaterialManager instance to be used for creating materials used by Object3D instances.
+
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
 */
 PRREObject3DManager::PRREObject3DManager(PRRETextureManager& texMgr, PRREMaterialManager& matMgr)
     : PRREMesh3DManager(matMgr)
@@ -570,6 +572,9 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
 // ############################## PROTECTED ##############################
 
 
+/**
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+*/
 PRREObject3DManager::PRREObject3DManager()
 {
 

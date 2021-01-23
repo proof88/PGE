@@ -185,6 +185,9 @@ TPIXCOMPORD PRREImageManager::getMirroredPixelComponentOrder(TPIXCOMPORD corder)
 } // getMirroredPixelComponentOrder()
 
 
+/**
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+*/
 PRREImageManager::PRREImageManager() :
     PRREFiledManager()
 {
@@ -294,12 +297,13 @@ PRREImage* PRREImageManager::createBlank(TPRREuint width, TPRREuint height, TPRR
 
 PRREImageManager::PRREImageManager(const PRREImageManager&)
 {
-
+    // UNUSED
 }
 
 
 PRREImageManager& PRREImageManager::operator=(const PRREImageManager&)
 {
+    // UNUSED
     return *this;
 }
 

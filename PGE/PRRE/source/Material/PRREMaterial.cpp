@@ -404,6 +404,9 @@ TPRREuint PRREMaterial::PRREMaterialImpl::getUsedSystemMemory() const
 // ############################## PROTECTED ##############################
 
 
+/**
+    @exception Any exception that might be thrown by std::vector::push_back(), in case of failure the exception is not handled but propagated to caller.
+*/
 PRREMaterial::PRREMaterialImpl::PRREMaterialImpl(
     PRREMaterial* owner, TPRREuint nLayers)
 {
@@ -853,6 +856,9 @@ TPRREuint PRREMaterial::getUsedSystemMemory() const
 
 /**
     Only PRREMaterialManager creates it.
+
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+    @exception Any exception that might be thrown by std::vector::push_back(), in case of failure the exception is not handled but propagated to caller.
 */
 PRREMaterial::PRREMaterial(TPRREuint nLayers)
 {
@@ -862,12 +868,13 @@ PRREMaterial::PRREMaterial(TPRREuint nLayers)
 
 PRREMaterial::PRREMaterial(const PRREMaterial&)
 {
-
+    // UNUSED
 }
 
 
 PRREMaterial& PRREMaterial::operator=(const PRREMaterial&)
 {
+    // UNUSED
     return *this;
 }
 

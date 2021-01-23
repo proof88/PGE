@@ -164,8 +164,8 @@ protected:
 
     // ---------------------------------------------------------------------------
 
-    PRRETexture();                                 /**< Only PRRETextureManager creates it. */
-    explicit PRRETexture(const PRREImage& img);    /**< Only PRRETextureManager creates it this way. */
+    PRRETexture();                                 /**< Only PRRETextureManager creates it. */ /* TODO: mark this as noexcept(false) when using newer compiler! */
+    explicit PRRETexture(const PRREImage& img);    /**< Only PRRETextureManager creates it this way. */ /* TODO: mark this as noexcept(false) when using newer compiler! */
     
     PRRETexture(const PRRETexture&);
     PRRETexture& operator=(const PRRETexture&);
@@ -216,7 +216,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    PRRETextureManager();             /**< Sets default values. */
+    PRRETextureManager();             /**< Sets default values. */ /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRRETextureManager();
 
     TPRREbool isInitialized() const;  /**< Tells whether the object is correctly initialized or not. */

@@ -559,6 +559,8 @@ TPRREuint PRRETextureManager::getUIntFromPRREanisoTexFilteringName(TPRRE_ANISO_T
 /**
     Sets default values.
     Requires a valid initialized PRREhwInfo instance to be functional.
+
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
 */
 PRRETextureManager::PRRETextureManager() :
     PRREImageManager()

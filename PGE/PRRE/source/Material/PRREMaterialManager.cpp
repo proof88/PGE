@@ -128,6 +128,9 @@ PRREMaterialManager::PRREMaterialManagerImpl& PRREMaterialManager::PRREMaterialM
 // ############################### PUBLIC ################################
 
 
+/**
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+*/
 PRREMaterialManager::PRREMaterialManager()
 {
     pImpl = new PRREMaterialManagerImpl(this);

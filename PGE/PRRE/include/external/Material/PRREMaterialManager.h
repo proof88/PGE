@@ -219,7 +219,7 @@ protected:
 
     // ---------------------------------------------------------------------------
     
-    explicit PRREMaterial(TPRREuint nLayers = 1);    /**< Only PRREMaterialManager creates it. */
+    explicit PRREMaterial(TPRREuint nLayers = 1);    /**< Only PRREMaterialManager creates it. */ /* TODO: mark this as noexcept(false) when using newer compiler! */
     
     PRREMaterial(const PRREMaterial&);
     PRREMaterial& operator=(const PRREMaterial&);
@@ -249,7 +249,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    PRREMaterialManager();
+    PRREMaterialManager();  /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREMaterialManager();
 
     TPRREbool isInitialized() const;  /**< Tells whether the object is correctly initialized or not. */

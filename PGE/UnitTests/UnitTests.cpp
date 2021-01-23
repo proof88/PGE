@@ -127,7 +127,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPGESysCFG);
 
 
-    /*    
+    /*     
     tests.push_back(&testScreen);
     tests.push_back(&testSharedSettings);
     */

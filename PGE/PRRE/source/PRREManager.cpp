@@ -9,6 +9,7 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
+#include <stdexcept>
 #include "../include/external/PRREManager.h"
 #include "../include/internal/PRREpragmas.h"
 
@@ -444,6 +445,9 @@ void PRREManager::PRREManagerImpl::Detach(TPRREint ind)
 // ############################### PUBLIC ################################
 
 
+/**
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+*/
 PRREManager::PRREManager()
 {
     pImpl = new PRREManagerImpl(this);
@@ -599,6 +603,9 @@ void PRREManager::WriteList() const
 // ############################## PROTECTED ##############################
 
 
+/**
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
+*/
 PRREManager::PRREManager(const PRREManager& other)
 {
     pImpl = new PRREManagerImpl(this);

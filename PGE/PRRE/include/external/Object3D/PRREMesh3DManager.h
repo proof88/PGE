@@ -94,7 +94,7 @@ protected:
 
     // ---------------------------------------------------------------------------
     
-    PRREMesh3D(TPRRE_PRIMITIVE_FORMAT prfmt = PRRE_PM_TRIANGLES);         /**< Only PRREMesh3DManager creates it. */
+    PRREMesh3D(TPRRE_PRIMITIVE_FORMAT prfmt = PRRE_PM_TRIANGLES);         /**< Only PRREMesh3DManager creates it. */ /* TODO: mark this as noexcept(false) when using newer compiler! */
     
     PRREMesh3D(const PRREMesh3D&);
     PRREMesh3D& operator=(const PRREMesh3D&);
@@ -124,7 +124,7 @@ class PRREMesh3DManager :
 #endif
 
 public:
-    PRREMesh3DManager(PRREMaterialManager& matMgr);
+    PRREMesh3DManager(PRREMaterialManager& matMgr); /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREMesh3DManager();
 
     TPRREbool isInitialized() const;  /**< Tells whether the object is correctly initialized or not. */

@@ -750,6 +750,8 @@ PRREMesh3DManager::PRREMesh3DManagerImpl& PRREMesh3DManager::PRREMesh3DManagerIm
 
 /**
     @param matMgr A MaterialManager instance to be used for creating materials used by Object3D instances.
+
+    @exception std::bad_alloc - This class or its ancestor dynamically allocates memory with operator new, in case of failure the exception is not handled but propagated to caller.
 */
 PRREMesh3DManager::PRREMesh3DManager(PRREMaterialManager& matMgr)
 {

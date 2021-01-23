@@ -32,7 +32,7 @@ class PRREBaseClass
 #endif
 
 public:
-             PRREBaseClass();
+             PRREBaseClass(); /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREBaseClass();
 
 protected:
