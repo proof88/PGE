@@ -126,7 +126,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPGEcfgVariable);
     tests.push_back(&testPGESysCFG);
 
-
     /*     
     tests.push_back(&testScreen);
     tests.push_back(&testSharedSettings);
@@ -162,6 +161,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
        
     tests.push_back(&testPRREMesh3DManager);
     tests.push_back(&testPRREMesh3D);
+
     tests.push_back(&testPRREVertexTransfer);
 
     tests.push_back(&testPRREObject3DManager);

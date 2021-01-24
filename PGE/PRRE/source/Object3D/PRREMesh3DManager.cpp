@@ -155,13 +155,13 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
     lines_h = PFL::numCharAppears(10, filebuffer, filebuffer_size) + 1; // total lines in file
     _pOwner->getConsole().OLn("lines_h = %d", lines_h);
 
-    // TODO: performance: instead of memcpy-ing from filebuffer to lines[], lines[i] should be set to point properly into filebuffer
-    char** lines = NULL;
+    const char** lines = NULL;
     try
     {
-        lines = new char*[lines_h]();  // instead of calloc(), this kind of usage of operator new is value-initialization, by using (), that will take care of zeroing in this case!
-        const char* pLineEnd = filebuffer;
-        const char* pPrevLineEnd;
+        // each ptr in lines[] will be set to point to the beginning of lines in filebuffer, thus filebuffer is also needed to be kept in memory!
+        lines = new const char*[lines_h]();  // replacing calloc(), this kind of usage of operator new is value-initialization, by using (), will take care of zeroing in this case!
+        char* pLineEnd = filebuffer;
+        char* pPrevLineEnd;
         TPRREuint actline = 0;
         do
         {                                                                            
@@ -194,11 +194,17 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
                             --lineLength;
                         }
                     }
-                    lines[actline] = new char[lineLength]();
-                    if ( pPrevLineEnd == filebuffer )    // if this is the 1st line
-                        memcpy(lines[actline], pPrevLineEnd, lineLength-1);
+                    
+                    if ( pPrevLineEnd == filebuffer )
+                    {   // if this is the 1st line
+                        lines[actline] = pPrevLineEnd;
+                        *(pPrevLineEnd+lineLength) = '\0';
+                    }
                     else
-                        memcpy(lines[actline], pPrevLineEnd+1, lineLength-1);
+                    {
+                        lines[actline] = pPrevLineEnd+1;
+                        *(pPrevLineEnd+lineLength) = '\0';
+                    }
                 }
                 actline++;
             }
@@ -206,25 +212,19 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
             {    // no more endline chars but chars after the last endline char are still needed
                 if ( (DWORD) (pPrevLineEnd - filebuffer) < filebuffer_size )
                 {
-                    lines[actline] = new char[filebuffer_size-(pPrevLineEnd-filebuffer)+1]();
-                    memcpy(lines[actline], pPrevLineEnd, filebuffer_size-(pPrevLineEnd-filebuffer));
+                    lines[actline] = pPrevLineEnd;
+                    *(filebuffer+filebuffer_size-1) = '\0';
                 }
             }
         } while (pLineEnd != NULL);
     } // try
     catch (const std::bad_alloc&)
     {
-        if ( lines != NULL )
-        {
-            for (TPRREuint i = 0; i < lines_h; i++)
-                delete[] lines[i];
-        }
         delete[] lines;
         delete[] filebuffer;
         _pOwner->getConsole().EOLn("  ERROR: failed to allocate lines array!");
         return NULL;
     }
-    delete[] filebuffer;
 
     _pOwner->getConsole().OLn("preprocessing done, gathering data ...");
     
@@ -615,12 +615,8 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
         delete[] lines_start;
         delete[] lines_end;
 
-        if ( lines != NULL )
-        {
-            for (TPRREuint i = 0; i < lines_h; i++)
-                delete[] lines[i];
-        }
         delete[] lines;
+        delete[] filebuffer;
 
         _pOwner->getConsole().EOLnOO("ERROR: submesh geometry arrays alloc failed!");
         return NULL;
@@ -637,7 +633,7 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
             {
                 if ( isname )
                 {
-                    char* const pSubModelName = lines[i] + 2;
+                    const char* const pSubModelName = lines[i] + 2;
                     PRREMesh3D* const pSubObj = (PRREMesh3D*)(obj->getAttachedAt(isubmsh));
                     pSubObj->SetName(pSubModelName);
                     _pOwner->getConsole().OLn("subObjects[%d]->getName() = %s", isubmsh, pSubObj->getName().c_str());
@@ -682,12 +678,8 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
     delete[] tmpSubMeshesTexcoords_h;
     delete[] tmpSubMeshesNormals_h;
 
-    if ( lines != NULL )
-    {
-        for (TPRREuint i = 0; i < lines_h; i++)
-            delete[] lines[i];
-    }
     delete[] lines;
+    delete[] filebuffer;
     delete[] lines_start;
     delete[] lines_end;
     _pOwner->getConsole().OLnOO("done freeing up temporary buffers!");

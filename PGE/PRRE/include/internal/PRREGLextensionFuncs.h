@@ -15,6 +15,10 @@
 #include "gl/glext.h"
 #include "gl/wglext.h"
 
+// Note that although I could define GL_GLEXT_PROTOTYPES before including glext.h to have the function prototypes defined,
+// that would mean static linking would be expected to gl libs exporting all those extension and/or newer GL core functions,
+// but general existence of such gl lib is likely impossible. So, I still continue declaring the function pointers here.
+
 // non-1.1 WGL function pointers
 // ---------------------------------------------------------------------------
 

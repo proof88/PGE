@@ -4,7 +4,7 @@
     ###################################################################################
     PRREbaseIncludes.h
     This file is part of PRRE.
-    Internal header.
+    Internal PRECOMPILED HEADER.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
@@ -14,21 +14,25 @@
     This file MUSTN'T be included in header files!
     This file should be included ONLY in cpp files.
     This file contains includes and macros for convenience.
+    Used as PCH (Precompiled header).
 */
 
-// standard headers, never changed
-#include <stdlib.h>
-#include <stdio.h>
+// standard C headers, never changed
 #include <conio.h>
+#include <limits.h>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
+// standard C++ headers, never changed
 #include <algorithm>
-#include <map>
 #include <iostream>
-#include <string>
+#include <map>
 #include <sstream>
-#include <vector>
+#include <string>
 #include <typeinfo>
+#include <vector>
 
 // Windows headers, never changed
 #ifndef WINVER
@@ -58,7 +62,7 @@
 #include "gl/glext.h"
 #include "gl/wglext.h"
 
-// Own headers, rarely changed
+// Own headers, but rarely changed, so we can keep them here in PCH
 #include "../external/PRREallHeaders.h"
 #include "PRREconsts.h"
 #include "../external/PRREtypes.h"

@@ -308,7 +308,7 @@ PRREMesh3D::PRREMesh3DImpl::PRREMesh3DImpl(PRREMesh3D* owner, TPRRE_PRIMITIVE_FO
     pNormals = PGENULL;
     pVertexIndices = PGENULL;
 
-    nMinVertexIndex = UINT_MAX;  // todo: should make macros like PRRE_UINT_MAX into prretypes.h
+    nMinVertexIndex = UINT_MAX;
     nMaxVertexIndex = 0;
     nIndicesType = GL_UNSIGNED_BYTE;
 
