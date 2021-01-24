@@ -166,7 +166,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     tests.push_back(&testPRREObject3DManager);
     tests.push_back(&testPRREObject3D);
-
+    
     /* 
     tests.push_back(&testPRREWindow);
     tests.push_back(&testPRREWindow2);

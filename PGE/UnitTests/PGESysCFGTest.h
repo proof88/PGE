@@ -148,12 +148,14 @@ private:
     {
         const PGESysCFG cfg("game title");
         const std::string** const sProfileList = cfg.getProfilesList();
-        const char* const saProfilesExpected[] = { "alma", "béla", "loller", "proof88" };
+        const char* const saProfilesExpected[4] = { "alma", "béla", "loller", "proof88" };
         bool bErrorFound = false;
 
-        for (int i = 0; i < cfg.getProfilesCount(); i++)
+        for (int i = 0; i < cfg.getProfilesCount() && (i < 4); i++)
+        {
             if ( bErrorFound = !assertEquals(std::string(saProfilesExpected[i]), *sProfileList[i]) )
                 break;
+        }
 
         return !bErrorFound;
     }
@@ -162,12 +164,14 @@ private:
     {
         const PGESysCFG cfg("game title");
         const std::string** const sProfilePlayersList = cfg.getProfilePlayersList();
-        const char* const saProfilePlayersExpected[] = { "Alma 76", "Béla", "loller", "PR00F88" };
+        const char* const saProfilePlayersExpected[4] = { "Alma 76", "Béla", "loller", "PR00F88" };
         bool bErrorFound = false;
 
-        for (int i = 0; i < cfg.getProfilesCount(); i++)
+        for (int i = 0; i < cfg.getProfilesCount() && (i < 4); i++)
+        {
             if ( bErrorFound = !assertEquals(std::string(saProfilePlayersExpected[i]), *sProfilePlayersList[i]) )
                 break;
+        }
 
         return !bErrorFound;
     }
@@ -238,8 +242,10 @@ private:
         const int nOriginalUsersCount = cfg.getProfilesCount();
         int nOriginalVarsCount = cfg.getVarsCount();
 
+        bool b = assertEquals(-1, cfg.deleteProfile(nOriginalUsersCount+1), "delete non-existing profile");
+
         int iNewProfile = cfg.addProfile("testusername", "testnickname");
-        bool b = assertEquals(cfg.getProfilesCount()-1, iNewProfile, "addprofile 1");
+        b &= assertEquals(cfg.getProfilesCount()-1, iNewProfile, "addprofile 1");
         b &= assertEquals(nOriginalUsersCount+1, cfg.getProfilesCount(), "addprofile 2");
 
         if ( b )

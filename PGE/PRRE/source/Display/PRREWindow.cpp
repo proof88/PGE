@@ -1485,8 +1485,15 @@ TPRREbool PRREWindowImpl::actualCreateWindow(TPRREuint width, TPRREuint height, 
     sCaption = caption;
     bBtnMin = !bFullscreen;   
     bBorder = bSysMenu = bVisibleCursor = enabled = true;
-    // TODO: always add clipchildren and clipsiblings
-    dwStyle = bFullscreen ? WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS : WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX;
+    /*
+        "WS_CLIPCHILDREN affects the drawing of the parent window.
+        More specifically, it prevents it from drawing in the areas occupied by its children.
+        So if you're re-drawing the parent on a regular basis and WS_CLIPCHILDREN isn't set, you'll end up stomping on the child window's display..."
+        https://stackoverflow.com/questions/2399216/why-might-ws-clipchildren-be-necessary-for-the-display-of-directshow-window-on-x
+
+        AFAIK WS_CLIPSIBLINGS is only for child windows, but specifying here doesn't cause any issues anyway so I'm using it.
+    */
+    dwStyle = bFullscreen ? WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS : WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
     dwStyleEx = bFullscreen ? WS_EX_APPWINDOW : WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
     nClientWidthOrig = width;
     nClientHeightOrig = height;

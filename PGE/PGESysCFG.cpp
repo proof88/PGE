@@ -304,9 +304,10 @@ int PGESysCFG::addProfile(const char* sUser, const char* sNick)
 
     @param nIndex The index of the profile to be deleted. Only non-negative values are accepted.
 
-    @return 1 on success.
+    @return  0 on success.
             -1 if invalid index was given.
-            -2 if the profile exists but can't be created for some reason.
+            -2 if the profile exists but can't be deleted for some reason.
+            -3 profile file deleted but its directory could not be deleted.
 */
 int PGESysCFG::deleteProfile(int nIndex)
 {
@@ -331,21 +332,22 @@ int PGESysCFG::deleteProfile(int nIndex)
         return -2;
     }
 
+    int retVal = 0;
+
     if ( _rmdir( sDirToDelete.c_str() ) != 0 )
     {
-        // TODO: at some time, we may return 0 here ... because at this point the cfg is deleted, so not
-        // a big problem if the directory can't be deleted ... but we may report it somehow.
+        // at this point the cfg is deleted, so not a big problem if the directory can't be deleted.
         // if the user stores other files in that dir, those won't be deleted thus the dir can't be deleted.
         // _rmdir() only deletes empty folders, so the functionality is okay.
-        con.EOLnOO("ERROR: couldn't delete dir: %s", sDirToDelete.c_str());
-        return -2;
+        con.EOLnOO("WARNING: couldn't delete dir: %s", sDirToDelete.c_str());
+        retVal = -3;
     }
 
     LoadProfilesList();
 
     con.SOLnOO("> done!");
 
-    return 0;
+    return retVal;
 } // deleteProfile()
 
 
