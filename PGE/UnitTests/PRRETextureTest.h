@@ -178,21 +178,26 @@ private:
 
     bool testCtor()
     {
-        return assertNotNull(tex128x128x24, "24") &
-            assertNotNull(tex128x128x32opaque, "32op") &
-            assertNotNull(tex128x128x32transp, "32tr") &
-            assertNotNull(tex128x128x8, "8") &
-            assertNotNull(tex128x128x4, "4") &
-            assertNotNull(tex128x128x1, "1") &
-            assertNotNull(tex128x128x24_border, "border") &
-            assertNotNull(tex128x128x24_mip, "24mip") &
-            assertNotNull(tex128x128x24_cmp, "24cmp") &
-            assertNotNull(tex128x128x24_mip_cmp, "24mipcmp") &
-            assertNotNull(tex128x128x24_cmpRGBA, "24cmpRGBA") &
-            assertNotNull(tex128x128x24_cmpAUTO, "24cmpAUTO") &
-            assertNotNull(tex128x128x32_cmpRGBA, "32cmpRGBA") &
-            assertNotNull(tex128x128x32_cmpAUTO, "32cmpAUTO") &
-            assertEquals(tm->getDefaultAnisoFilteringMode(), tex128x128x24->getAnisoFilteringMode(), "aniso") &
+
+        if (!assertNotNull(tex128x128x24, "24") ||
+            !assertNotNull(tex128x128x32opaque, "32op") ||
+            !assertNotNull(tex128x128x32transp, "32tr") ||
+            !assertNotNull(tex128x128x8, "8") ||
+            !assertNotNull(tex128x128x4, "4") ||
+            !assertNotNull(tex128x128x1, "1") ||
+            !assertNotNull(tex128x128x24_border, "border") ||
+            !assertNotNull(tex128x128x24_mip, "24mip") ||
+            !assertNotNull(tex128x128x24_cmp, "24cmp") ||
+            !assertNotNull(tex128x128x24_mip_cmp, "24mipcmp") ||
+            !assertNotNull(tex128x128x24_cmpRGBA, "24cmpRGBA") ||
+            !assertNotNull(tex128x128x24_cmpAUTO, "24cmpAUTO") ||
+            !assertNotNull(tex128x128x32_cmpRGBA, "32cmpRGBA") ||
+            !assertNotNull(tex128x128x32_cmpAUTO, "32cmpAUTO") )
+        {
+            return false;
+        }
+
+        return assertEquals(tm->getDefaultAnisoFilteringMode(), tex128x128x24->getAnisoFilteringMode(), "aniso") &
             assertEquals(tm->getDefaultMinFilteringMode(), tex128x128x24->getMinFilteringMode(), "24 minfiltering") &
             assertEquals(tm->getDefaultMagFilteringMode(), tex128x128x24->getMagFilteringMode(), "24 magfiltering") &
             assertEquals(tm->getDefaultMinFilteringMode(), tex128x128x32opaque->getMinFilteringMode(), "32op minfiltering") &

@@ -107,7 +107,7 @@ private:
     GLenum getTransformedSourceFormat(
         TPRRE_PIXEL_COMPONENT_ORDER oldco );    /**< Transforms to a proper pixel component order and returns the source format. */
     GLint  getTargetInternalFormat();           /**< Figures out the target internal format. */
-    void   ActualUploadProc(
+    TPRREbool actualUploadProc(
         GLint internalfmt, GLenum glTexFormat); /**< This contains the actual pixel upload code. */
     void   DescribeTexFormatAndSize(
         GLint internalfmt);                     /**< Updates texFormat and nSize members based on given internalfmt. */

@@ -11,6 +11,7 @@
 #include "PRREbaseIncludes.h"  // PCH
 #include "../../include/external/Material/PRRETextureManager.h"
 #include "../../include/internal/Material/PRRETextureImpl.h"
+#include "../../include/internal/PRREGLsafeFuncs.h"
 #include "../../include/internal/PRREGLsnippets.h"
 #include "../../include/internal/PRREpragmas.h"
 #include "../../include/external/Hardware/PRREhwInfo.h"
@@ -163,7 +164,9 @@ PRRETexture::PRRETextureImpl::~PRRETextureImpl()
 {
     _pOwner->getConsole().OLnOI("~PRRETexture() ...");
     if ( nInternalNum > 0 )
+    {
         glDeleteTextures(1, &nInternalNum);
+    }
     _pOwner->getConsole().SOLnOO("Done!");
     _pOwner = NULL;
 } // ~PRRETexture()
@@ -198,12 +201,16 @@ void PRRETexture::PRRETextureImpl::SetMinFilteringMode(TPRRE_ISO_TEX_FILTERING f
     if ( (filtering != PRRE_ISO_NEAREST) && (filtering != PRRE_ISO_LINEAR) && (nMIPmapCount == 1) )
         return;
 
-    filtIsoMin = filtering;
     if ( PRREhwInfo::get().getVideo().isAcceleratorDetected() )
     {
-        glBindTexture(GL_TEXTURE_2D, nInternalNum);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, getGLnameFromPRREisoTexFilteringName(filtIsoMin));
+        if ( ( nInternalNum == 0 ) ||
+             ( !pglBindTexture(GL_TEXTURE_2D, nInternalNum) ) ||
+             ( !pglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, getGLnameFromPRREisoTexFilteringName(filtering)) ) )
+        {
+            return;
+        }
     }
+    filtIsoMin = filtering;
 } // SetMinFilteringMode()
 
 
@@ -211,12 +218,17 @@ void PRRETexture::PRRETextureImpl::SetMagFilteringMode(TPRRE_ISO_TEX_FILTERING f
 {
     if ( (filtering == PRRE_ISO_NEAREST) || (filtering == PRRE_ISO_LINEAR) )
     {
-        filtIsoMag = filtering;
+        
         if ( PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         {
-            glBindTexture(GL_TEXTURE_2D, nInternalNum);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, getGLnameFromPRREisoTexFilteringName(filtIsoMag));
+            if ( ( nInternalNum == 0 ) ||
+                 ( !pglBindTexture(GL_TEXTURE_2D, nInternalNum) ) ||
+                 ( !pglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, getGLnameFromPRREisoTexFilteringName(filtering)) ) )
+            {
+                return;
+            }
         }
+        filtIsoMag = filtering;
     }
 } // SetMagFilteringMode()
 
@@ -263,17 +275,24 @@ void PRRETexture::PRRETextureImpl::SetAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERI
     // _pOwner->getConsole().OLn( "availMaxFilteringF: %f",  availMaxFilteringF);
     if ( availMaxFilteringF > 1.0f )
     {
-        glBindTexture(GL_TEXTURE_2D, nInternalNum);
+        if ( (nInternalNum == 0) || (!pglBindTexture(GL_TEXTURE_2D, nInternalNum)) )
+        {
+            return;
+        }
         if ( availMaxFilteringF >= newFilteringF )
         {
-            filtAniso = filtering;
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLfloat) newFilteringF);
+            if ( pglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLfloat) newFilteringF) )
+            {
+                filtAniso = filtering;
+            }
         }
         else
         {
             _pOwner->getConsole().EOLn("WARNING: selected mode not supported, setting max supported: %fX!", availMaxFilteringF);
-            filtAniso = PRRETextureManager::getPRREanisoTexFilteringNameFromFloat(availMaxFilteringF);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLfloat) availMaxFilteringF);
+            if ( pglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLfloat) availMaxFilteringF) )
+            {
+                filtAniso = PRRETextureManager::getPRREanisoTexFilteringNameFromFloat(availMaxFilteringF);
+            }
         }
     }
     else
@@ -298,16 +317,19 @@ TPRRE_TEX_WRAPPING PRRETexture::PRRETextureImpl::getTextureWrappingModeT() const
 
 void PRRETexture::PRRETextureImpl::SetTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, TPRRE_TEX_WRAPPING tw_t )
 {
-    // TODO: probably we should check for availability of given mode on current HW, especially with PRRE_TW_MIRRORED_REPEAT and PRRE_TW_CLAMP_TO_BORDER
-    twS = tw_s;
-    twT = tw_t;
+    // TODO: probably we should check for availability of given mode on current HW, especially with PRRE_TW_MIRRORED_REPEAT and PRRE_TW_CLAMP_TO_BORDER  
     if ( PRREhwInfo::get().getVideo().isAcceleratorDetected() )
     {
-        glBindTexture(GL_TEXTURE_2D, nInternalNum);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getGLnameFromPRREtexWrappingName(twS));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getGLnameFromPRREtexWrappingName(twT));
+        if ( (nInternalNum == 0) ||
+             (!pglBindTexture(GL_TEXTURE_2D, nInternalNum)) ||
+             (!pglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getGLnameFromPRREtexWrappingName(tw_s)) ) ||
+             (!pglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getGLnameFromPRREtexWrappingName(tw_t)) ) )
+        {
+            return;
+        }
     }
-    
+    twS = tw_s;
+    twT = tw_t;
 }
 
 
@@ -331,22 +353,25 @@ const PRREColor& PRRETexture::PRRETextureImpl::getBorderColor() const
 
 void PRRETexture::PRRETextureImpl::SetBorderColor(const PRREColor& clr)
 {
-    clrBorder = clr;
-
     if ( PRREhwInfo::get().getVideo().isAcceleratorDetected() )
     {
-        if ( nInternalNum > 0 )
+        if ( nInternalNum == 0 )
         {
-            GLfloat color[4];
-            color[0] = clrBorder.getRedAsFloat();
-            color[1] = clrBorder.getGreenAsFloat();
-            color[2] = clrBorder.getBlueAsFloat();
-            color[3] = clrBorder.getAlphaAsFloat();
+            return;
+        }
+        GLfloat color[4];
+        color[0] = clr.getRedAsFloat();
+        color[1] = clr.getGreenAsFloat();
+        color[2] = clr.getBlueAsFloat();
+        color[3] = clr.getAlphaAsFloat();
         
-            glBindTexture(GL_TEXTURE_2D, nInternalNum);
-            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
+        if ( (!pglBindTexture(GL_TEXTURE_2D, nInternalNum)) ||
+             (!pglTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color)) )
+        {
+            return;
         }
     }
+    clrBorder = clr;
 }
 
 
@@ -374,14 +399,22 @@ TPRREbool PRRETexture::PRRETextureImpl::uploadPixels()
 
     if ( PRREhwInfo::get().getVideo().isAcceleratorDetected() )
     {
-        glBindTexture(GL_TEXTURE_2D, nInternalNum);
+        if (!pglBindTexture(GL_TEXTURE_2D, nInternalNum))
+        {
+            return false;
+        }
     }
 
     const TPRRE_PIXEL_COMPONENT_ORDER oldco = _pOwner->getPixelComponentOrder();
     const GLenum glTexFormat = getTransformedSourceFormat(oldco);
     const GLint  internalfmt = getTargetInternalFormat();
 
-    ActualUploadProc(internalfmt, glTexFormat);    
+    if ( !actualUploadProc(internalfmt, glTexFormat) )
+    {
+        _pOwner->getConsole().EOLnOO("ERROR: actualUploadProc() failed!");
+        return false;
+    }
+
     DescribeTexFormatAndSize(internalfmt);
 
     if ( _pOwner->getPixelComponentOrder() != oldco )
@@ -551,8 +584,10 @@ GLint PRRETexture::PRRETextureImpl::getTargetInternalFormat()
 
     @param internalfmt OpenGL target internal format for storing texture in VRAM. Suitable can be selected by getTargetInternalFormat().
     @param glTexFormat OpenGL source format, how to interpret input. Suitable can be selected by getTransformedSourceFormat().
+
+    @return True on success, false on error.
 */
-void PRRETexture::PRRETextureImpl::ActualUploadProc(GLint internalfmt, GLenum glTexFormat)
+TPRREbool PRRETexture::PRRETextureImpl::actualUploadProc(GLint internalfmt, GLenum glTexFormat)
 {
     const PRRETextureManager& parent = *((PRRETextureManager*) _pOwner->getManager());
     const PRREhwInfo& hwInfo = PRREhwInfo::get();
@@ -560,7 +595,7 @@ void PRRETexture::PRRETextureImpl::ActualUploadProc(GLint internalfmt, GLenum gl
     if ( !hwInfo.getVideo().isAcceleratorDetected() )
     {
         getConsole().OLn("no need to upload texture, non-accelerated rendering is active");
-        return;
+        return true;
     }
 
     if ( nMIPmapCount > 1 )
@@ -570,20 +605,28 @@ void PRRETexture::PRRETextureImpl::ActualUploadProc(GLint internalfmt, GLenum gl
         if ( hwInfo.getVideo().isHardwareMipMapGenerationSupported() && parent.isHardwareMipMapGenerationEnabled() )
         {        
             getConsole().OLn("HW-support.");
-            glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+            if (!pglTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE) )
+            {
+                return false;
+            }
             
             // WARNING: up to OpenGL 2.x, border is allowed to be 0 or 1. However from GL 3.0 it must be 0.
             // WARNING: if GL version does not support NPOT sizes, width must be 2n+2(border) for some integer n.
             // WARNING: if GL version does not support NPOT sizes, height must be 2m+2(border) for some integer m.
             // TODO: So in the future when I add support for NPOT textures, I need to consider border value when specifying width and height.
-            glTexImage2D(GL_TEXTURE_2D, 0, internalfmt, _pOwner->getWidth(), _pOwner->getHeight(), bBorder ? (GLint) 1 : (GLint) 0, glTexFormat, GL_UNSIGNED_BYTE, _pOwner->getPixels());
+            return pglTexImage2D(GL_TEXTURE_2D, 0, internalfmt, _pOwner->getWidth(), _pOwner->getHeight(), bBorder ? (GLint) 1 : (GLint) 0, glTexFormat, GL_UNSIGNED_BYTE, _pOwner->getPixels());
         }
         else
         {
             getConsole().OLn("SW-only.");
-            gluBuild2DMipmaps(GL_TEXTURE_2D, internalfmt, _pOwner->getWidth(), _pOwner->getHeight(), glTexFormat, GL_UNSIGNED_BYTE, _pOwner->getPixels());
+            const GLint errCode = gluBuild2DMipmaps(GL_TEXTURE_2D, internalfmt, _pOwner->getWidth(), _pOwner->getHeight(), glTexFormat, GL_UNSIGNED_BYTE, _pOwner->getPixels());
+            if ( errCode != GL_NO_ERROR )
+            {
+                getConsole().EOLn("PRRETextureImpl::actualUploadProc() ERROR: %d, %s", errCode, gluErrorString(errCode));
+                return false;
+            }
+            return true;
         }
-        getConsole().OLn("done!");
     }
     else
     {
@@ -593,9 +636,10 @@ void PRRETexture::PRRETextureImpl::ActualUploadProc(GLint internalfmt, GLenum gl
         // WARNING: if GL version does not support NPOT sizes, width must be 2n+2(border) for some integer n.
         // WARNING: if GL version does not support NPOT sizes, height must be 2m+2(border) for some integer m.
         // TODO: So in the future when I add support for NPOT textures, I need to consider border value when specifying width and height.
-        glTexImage2D(GL_TEXTURE_2D, 0, internalfmt, _pOwner->getWidth(), _pOwner->getHeight(), bBorder ? (GLint) 1 : (GLint) 0, glTexFormat, GL_UNSIGNED_BYTE, _pOwner->getPixels());
+        return pglTexImage2D(GL_TEXTURE_2D, 0, internalfmt, _pOwner->getWidth(), _pOwner->getHeight(), bBorder ? (GLint) 1 : (GLint) 0, glTexFormat, GL_UNSIGNED_BYTE, _pOwner->getPixels());
     }
-} // ActualUploadProc()
+    return true;
+} // actualUploadProc()
 
 
 /**

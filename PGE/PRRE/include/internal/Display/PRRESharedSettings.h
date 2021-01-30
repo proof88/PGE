@@ -19,10 +19,10 @@
 */
 enum TPRRE_SHARED_SETTINGS
 {
-    PRRE_SSET_MONITORPOWERSAVE,  /**< Monitor powersave. */
-    PRRE_SSET_SCREENSAVER,       /**< Screensaver. */
-    PRRE_SSET_STANDBY,           /**< Computer standby mode. */
-    PRRE_SSET_VSYNC              /**< VSync. */
+    PRRE_SSET_MONITORPOWERSAVE_ALLOWED,
+    PRRE_SSET_SCREENSAVER_ALLOWED,
+    PRRE_SSET_STANDBY_ALLOWED,
+    PRRE_SSET_VSYNC_SUPPORTED
 }; // TPRRE_SHARED_SETTINGS
 
 

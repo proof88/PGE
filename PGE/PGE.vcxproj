@@ -263,6 +263,7 @@
     <ClInclude Include="PRRE\include\internal\PRREbaseIncludes.h" />
     <ClInclude Include="PRRE\include\internal\PRREconsts.h" />
     <ClInclude Include="PRRE\include\internal\PRREGLextensionFuncs.h" />
+    <ClInclude Include="PRRE\include\internal\PRREGLsafeFuncs.h" />
     <ClInclude Include="PRRE\include\internal\PRREGLsnippets.h" />
     <ClInclude Include="PRRE\include\internal\PRREpragmas.h" />
     <ClInclude Include="PRRE\include\internal\PRREuiFontWin.h" />
@@ -321,6 +322,7 @@
     <ClCompile Include="PRRE\source\PRRECamera.cpp" />
     <ClCompile Include="PRRE\source\PRREFiledManager.cpp" />
     <ClCompile Include="PRRE\source\PRREGLextensionFuncs.cpp" />
+    <ClCompile Include="PRRE\source\PRREGLsafeFuncs.cpp" />
     <ClCompile Include="PRRE\source\PRREGLsnippets.cpp" />
     <ClCompile Include="PRRE\source\PRREManager.cpp" />
     <ClCompile Include="PRRE\source\PRREuiFontWin.cpp" />

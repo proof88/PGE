@@ -356,7 +356,7 @@ TPRREuint PRREhwVideoImpl::getUsedFrameBufferMemory() const
 */
 TPRREbool PRREhwVideoImpl::isVSyncSupported() const
 {
-    return sharedSettings.get(PRRE_SSET_VSYNC);
+    return sharedSettings.get(PRRE_SSET_VSYNC_SUPPORTED);
 } // isVSyncSupported()
 
 
@@ -725,7 +725,7 @@ void PRREhwVideoImpl::PreInitialize(HGLRC rc, HDC dc, TPRREuint resx, TPRREuint 
 void PRREhwVideoImpl::PreInitialize()
 {
     PreInitialize(hGLRC, hWndDC, nResX, nResY, nColorBits, nDepthBits, nStencilBits, nFSAAlevel);
-    sharedSettings.Set(PRRE_SSET_VSYNC, false);
+    sharedSettings.Set(PRRE_SSET_VSYNC_SUPPORTED, false);
 } // deinitializeBase()
 
 
@@ -741,7 +741,7 @@ TPRREbool PRREhwVideoImpl::initializeBase()
     {
         // app may be using software renderer
         getConsole().OLn("GFX card: %s", sVidNameWin.c_str());
-        sharedSettings.Set(PRRE_SSET_VSYNC, false);
+        sharedSettings.Set(PRRE_SSET_VSYNC_SUPPORTED, false);
         getConsole().OO();
         getConsole().OO();
 
@@ -830,7 +830,7 @@ TPRREbool PRREhwVideoImpl::initializeBase()
     } // !bAlreadyInitializedOnceOGL
 
     sharedSettings.Set(
-        PRRE_SSET_VSYNC,
+        PRRE_SSET_VSYNC_SUPPORTED,
         PRREhwVideoDiscoverOpenGLbase::isExtensionSupported("WGL_EXT_swap_control", sVidFeaturesOGL, sVidFeaturesWGL) && (wglSwapIntervalEXT != PGENULL) );
 
     if ( !bAlreadyInitializedOnceOGL )

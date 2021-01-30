@@ -348,6 +348,9 @@
     <ClInclude Include="PRRE\include\internal\PRREuiText.h">
       <Filter>Header Files\PRRE\include\internal</Filter>
     </ClInclude>
+    <ClInclude Include="PRRE\include\internal\PRREGLsafeFuncs.h">
+      <Filter>Header Files\PRRE\include\internal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -499,6 +502,9 @@
     </ClCompile>
     <ClCompile Include="PRRE\source\Render\PRRERendererSWincremental.cpp">
       <Filter>Source Files\PRRE\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\PRREGLsafeFuncs.cpp">
+      <Filter>Source Files\PRRE</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

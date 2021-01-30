@@ -35,20 +35,20 @@ protected:
 
     virtual void Initialize()
     {
-        screensvrOrig = ss.get(PRRE_SSET_SCREENSAVER);
-        monitorpwrOrig = ss.get(PRRE_SSET_MONITORPOWERSAVE);
-        standbyOrig = ss.get(PRRE_SSET_STANDBY);
-        vsyncOrig = ss.get(PRRE_SSET_VSYNC);
+        screensvrOrig = ss.get(PRRE_SSET_SCREENSAVER_ALLOWED);
+        monitorpwrOrig = ss.get(PRRE_SSET_MONITORPOWERSAVE_ALLOWED);
+        standbyOrig = ss.get(PRRE_SSET_STANDBY_ALLOWED);
+        vsyncOrig = ss.get(PRRE_SSET_VSYNC_SUPPORTED);
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRRESharedSettingsTest::testCtor);
         AddSubTest("testSet", (PFNUNITSUBTEST) &PRRESharedSettingsTest::testSet);
     }
 
     virtual void Finalize()
     {
-        ss.Set(PRRE_SSET_MONITORPOWERSAVE, monitorpwrOrig);
-        ss.Set(PRRE_SSET_SCREENSAVER, screensvrOrig);
-        ss.Set(PRRE_SSET_STANDBY, standbyOrig);
-        ss.Set(PRRE_SSET_VSYNC, vsyncOrig);
+        ss.Set(PRRE_SSET_MONITORPOWERSAVE_ALLOWED, monitorpwrOrig);
+        ss.Set(PRRE_SSET_SCREENSAVER_ALLOWED, screensvrOrig);
+        ss.Set(PRRE_SSET_STANDBY_ALLOWED, standbyOrig);
+        ss.Set(PRRE_SSET_VSYNC_SUPPORTED, vsyncOrig);
     }
 
 private:
@@ -71,23 +71,23 @@ private:
 
     bool testCtor()
     {
-        return assertTrue(ss.get(PRRE_SSET_MONITORPOWERSAVE), "monitorpwrsave") &  /* should be True as defined in Screen */
-            assertFalse(ss.get(PRRE_SSET_SCREENSAVER), "screensvr") &           /* should be False as defined in Screen */
-            assertFalse(ss.get(PRRE_SSET_STANDBY), "standby") &                 /* should be False as defined in Screen */
-            assertFalse(ss.get(PRRE_SSET_VSYNC), "vsync");                      /* should be False as defined in Screen */
+        return assertTrue(ss.get(PRRE_SSET_MONITORPOWERSAVE_ALLOWED), "monitorpwrsave") &  /* should be True as defined in Screen */
+            assertFalse(ss.get(PRRE_SSET_SCREENSAVER_ALLOWED), "screensvr") &           /* should be False as defined in Screen */
+            assertFalse(ss.get(PRRE_SSET_STANDBY_ALLOWED), "standby") &                 /* should be False as defined in Screen */
+            assertFalse(ss.get(PRRE_SSET_VSYNC_SUPPORTED), "vsync");                      /* should be False as defined in Screen */
     }
 
     bool testSet()
     {
-        ss.Set(PRRE_SSET_MONITORPOWERSAVE, false);
-        ss.Set(PRRE_SSET_SCREENSAVER, true);
-        ss.Set(PRRE_SSET_STANDBY, true);
-        ss.Set(PRRE_SSET_VSYNC, true);
+        ss.Set(PRRE_SSET_MONITORPOWERSAVE_ALLOWED, false);
+        ss.Set(PRRE_SSET_SCREENSAVER_ALLOWED, true);
+        ss.Set(PRRE_SSET_STANDBY_ALLOWED, true);
+        ss.Set(PRRE_SSET_VSYNC_SUPPORTED, true);
 
-        return assertFalse(ss.get(PRRE_SSET_MONITORPOWERSAVE)) &
-            assertTrue(ss.get(PRRE_SSET_SCREENSAVER)) &
-            assertTrue(ss.get(PRRE_SSET_STANDBY)) &
-            assertTrue(ss.get(PRRE_SSET_VSYNC));
+        return assertFalse(ss.get(PRRE_SSET_MONITORPOWERSAVE_ALLOWED)) &
+            assertTrue(ss.get(PRRE_SSET_SCREENSAVER_ALLOWED)) &
+            assertTrue(ss.get(PRRE_SSET_STANDBY_ALLOWED)) &
+            assertTrue(ss.get(PRRE_SSET_VSYNC_SUPPORTED));
     }
     
 }; // class PRRESharedSettingsTest

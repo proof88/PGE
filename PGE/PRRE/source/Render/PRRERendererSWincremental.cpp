@@ -67,7 +67,6 @@ private:
     PRREuiManager*       pUImgr;       /**< UI manager, singleton. */
 
     TPRREbool            bLighting;
-    GLfloat mat4x4Identity[4][4];
 
     HDC        hColorBufferDC;         /**< Memory Device Context for Color Buffer, compatible with wnd's DC. */
 	BITMAPINFO biColorBufferDDB;	   /**< Attributes of Color Buffer DIB. */
@@ -420,7 +419,6 @@ PRRERendererSWincrementalImpl::PRRERendererSWincrementalImpl() :
     pZBuffer( NULL )
 {
     bInited = false;
-    bLighting = false;
 } // PRRERendererSWincrementalImpl(...)
 
 
@@ -440,7 +438,6 @@ PRRERendererSWincrementalImpl::PRRERendererSWincrementalImpl(
     pZBuffer( NULL )
 {
     bInited = false;
-    bLighting = false;
 } // PRRERendererSWincrementalImpl(...)
 
 

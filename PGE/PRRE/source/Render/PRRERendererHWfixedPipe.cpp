@@ -431,6 +431,7 @@ TPRREbool PRRERendererHWfixedPipeImpl::initializeOpenGL(HDC dc)
     if ( !wglMakeCurrent(dc, rc) )
     {
         getConsole().EOLn("ERROR: wglMakeCurrent() failed!");
+        shutdownOpenGL();
         return false;
     }
     getConsole().SOLn("wglMakeCurrent() passed");

@@ -487,7 +487,7 @@ void PRREScreenImpl::SetStencilBits(TPRREint s)
 */
 TPRREbool PRREScreenImpl::isScreensaverEnabled() const
 { 
-    return sharedSettings.get(PRRE_SSET_SCREENSAVER);
+    return sharedSettings.get(PRRE_SSET_SCREENSAVER_ALLOWED);
 } // isScreensaverEnabled()
 
 
@@ -497,7 +497,7 @@ TPRREbool PRREScreenImpl::isScreensaverEnabled() const
 */
 void PRREScreenImpl::SetScreensaverEnabled(TPRREbool state) 
 { 
-    sharedSettings.Set(PRRE_SSET_SCREENSAVER, state); 
+    sharedSettings.Set(PRRE_SSET_SCREENSAVER_ALLOWED, state); 
 } // SetScreensaverEnabled()
 
 
@@ -509,7 +509,7 @@ void PRREScreenImpl::SetScreensaverEnabled(TPRREbool state)
 */
 TPRREbool PRREScreenImpl::isMonitorPowersaveEnabled() const
 { 
-    return sharedSettings.get(PRRE_SSET_MONITORPOWERSAVE);
+    return sharedSettings.get(PRRE_SSET_MONITORPOWERSAVE_ALLOWED);
 } // isMonitorPowersaveEnabled()
 
 
@@ -519,7 +519,7 @@ TPRREbool PRREScreenImpl::isMonitorPowersaveEnabled() const
 */
 void PRREScreenImpl::SetMonitorPowersaveEnabled(TPRREbool state) 
 { 
-    sharedSettings.Set(PRRE_SSET_MONITORPOWERSAVE, state);
+    sharedSettings.Set(PRRE_SSET_MONITORPOWERSAVE_ALLOWED, state);
 } // SetMonitorPowersaveEnabled()
 
 
@@ -531,7 +531,7 @@ void PRREScreenImpl::SetMonitorPowersaveEnabled(TPRREbool state)
 */
 TPRREbool PRREScreenImpl::isStandbyEnabled() const
 { 
-    return sharedSettings.get(PRRE_SSET_STANDBY); 
+    return sharedSettings.get(PRRE_SSET_STANDBY_ALLOWED); 
 } // isStandbyEnabled()
 
 
@@ -541,7 +541,7 @@ TPRREbool PRREScreenImpl::isStandbyEnabled() const
 */
 void PRREScreenImpl::SetStandbyEnabled(TPRREbool state) 
 { 
-    sharedSettings.Set(PRRE_SSET_STANDBY, state);
+    sharedSettings.Set(PRRE_SSET_STANDBY_ALLOWED, state);
 } // SetStandbyEnabled()
 
 
@@ -598,10 +598,21 @@ TPRREbool PRREScreenImpl::isVSyncEnabled() const
 */
 void PRREScreenImpl::SetVSyncEnabled(TPRREbool state)
 {
-    if ( sharedSettings.get(PRRE_SSET_VSYNC) )
+    if ( sharedSettings.get(PRRE_SSET_VSYNC_SUPPORTED) )
     {
-        bVSyncState = state;
-        wglSwapIntervalEXT( state ? 1 : 0 ); 
+        if ( TRUE == wglSwapIntervalEXT( state ? 1 : 0 ) )
+        {
+            bVSyncState = state;
+            getConsole().SOLn("SetVSyncEnabled(%b) OK!", state);
+        }
+        else
+        {
+            getConsole().EOLn("SetVSyncEnabled(%b) ERROR: wglSwapIntervalEXT() failed!", state);
+        }
+    }
+    else
+    {
+        getConsole().EOLn("SetVSyncEnabled(%b) ERROR: VSync is not supported!", state);
     }
 } // SetVSyncEnabled()
 

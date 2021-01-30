@@ -44,10 +44,10 @@ TPRREbool PRRESharedSettings::get(TPRRE_SHARED_SETTINGS s) const
 {
     switch (s)
     {
-    case PRRE_SSET_MONITORPOWERSAVE: return bMonitorPowerSave;
-    case PRRE_SSET_SCREENSAVER     : return bScreenSaver;
-    case PRRE_SSET_STANDBY         : return bStandby;
-    case PRRE_SSET_VSYNC           : return bVSyncSupported;
+    case PRRE_SSET_MONITORPOWERSAVE_ALLOWED: return bMonitorPowerSave;
+    case PRRE_SSET_SCREENSAVER_ALLOWED     : return bScreenSaver;
+    case PRRE_SSET_STANDBY_ALLOWED         : return bStandby;
+    case PRRE_SSET_VSYNC_SUPPORTED           : return bVSyncSupported;
     default                        : getConsole().EOLn("PRRESharedSettings::get(%d) ERROR: default switch case!", s);
                                         return false;
     }
@@ -64,10 +64,10 @@ void PRRESharedSettings::Set(TPRRE_SHARED_SETTINGS s, TPRREbool value)
 {
     switch (s)
     {
-    case PRRE_SSET_MONITORPOWERSAVE: bMonitorPowerSave = value; break;
-    case PRRE_SSET_SCREENSAVER     : bScreenSaver = value; break;
-    case PRRE_SSET_STANDBY         : bStandby = value; break;
-    case PRRE_SSET_VSYNC           : bVSyncSupported = value; break;
+    case PRRE_SSET_MONITORPOWERSAVE_ALLOWED: bMonitorPowerSave = value; break;
+    case PRRE_SSET_SCREENSAVER_ALLOWED     : bScreenSaver = value; break;
+    case PRRE_SSET_STANDBY_ALLOWED         : bStandby = value; break;
+    case PRRE_SSET_VSYNC_SUPPORTED           : bVSyncSupported = value; break;
     default                        : getConsole().EOLn("PRRESharedSettings::Set(%d, %b) ERROR: default switch case!", s, value);
                                         return;
     }

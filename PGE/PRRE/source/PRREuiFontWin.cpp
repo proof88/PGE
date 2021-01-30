@@ -75,7 +75,16 @@ PRREuiFontWin::PRREuiFontWin(
             return;
         }
 
-        SelectObject(hDC, hFont);
+        if ( NULL == SelectObject(hDC, hFont) )
+        {
+            getConsole().EOLn(
+                "PRREuiFontWin(%s, %d, %b, %b, %b, %b) ERROR: SelectObject() FAILED!",
+                fontFaceName.c_str(), height, bold, italic, underline, strikeout );
+            // DeleteObject(hFont); should i release the font object this way?
+            // exception should be thrown but ui system will be replaced anyway ...
+            return;
+        }
+
         // rumor is that wglUseFontBitmaps() fails if there is a gl error before ... so calling glGetError() before this solves that problem.
         // display lists created here will contain 1 call only: glBitmap().
         // also pls check what are the return values of this function!

@@ -1530,8 +1530,8 @@ LRESULT PRREWindowImpl::onActivate(TPRREbool isActive)
 
 LRESULT PRREWindowImpl::onSysCommand(WPARAM wParam, LPARAM lParam)
 {
-    if ( ( (wParam == SC_SCREENSAVE) && (!sharedSettings.get(PRRE_SSET_SCREENSAVER)) ) ||
-         ( (wParam == SC_MONITORPOWER) && (!sharedSettings.get(PRRE_SSET_MONITORPOWERSAVE)) ) )
+    if ( ( (wParam == SC_SCREENSAVE) && (!sharedSettings.get(PRRE_SSET_SCREENSAVER_ALLOWED)) ) ||
+         ( (wParam == SC_MONITORPOWER) && (!sharedSettings.get(PRRE_SSET_MONITORPOWERSAVE_ALLOWED)) ) )
     {   
         // If screensaver is about to start or monitor is going to be turned off, and
         // engine setting disallows this, we dont let it happen.

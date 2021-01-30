@@ -12,6 +12,7 @@
 #include "../../include/external/Material/PRRETextureManager.h"
 #include "../../include/internal/Material/PRRETextureImpl.h"
 #include "../../include/external/Hardware/PRREhwInfo.h"
+#include "../../include/internal/PRREGLsafeFuncs.h"
 #include "../../include/internal/PRREGLsnippets.h"
 #include "../../include/internal/PRREpragmas.h"
 
@@ -113,6 +114,8 @@ private:
     PRRETextureManagerImpl(PRRETextureManager* owner);
     PRRETextureManagerImpl(const PRRETextureManagerImpl&);
     PRRETextureManagerImpl& operator=(const PRRETextureManagerImpl&);
+
+    TPRREbool generateAndUploadTexture(PRRETexture& texture);
 
     friend class PRRETextureManager;
 
@@ -352,8 +355,7 @@ PRRETextureManager::PRRETextureManagerImpl::PRRETextureManagerImpl(PRRETextureMa
     {
         if ( pHWInfo.getVideo().isTextureCompressionSupported() )
         {
-            glHint(GL_TEXTURE_COMPRESSION_HINT_ARB, GL_NICEST);
-            PRREGLsnippets::ClearGLerror();
+            pglHint(GL_TEXTURE_COMPRESSION_HINT_ARB, GL_NICEST);
         }
     }
     texComprDef = PRRE_TC_NONE;
@@ -380,6 +382,47 @@ PRRETextureManager::PRRETextureManagerImpl::PRRETextureManagerImpl(const PRRETex
 PRRETextureManager::PRRETextureManagerImpl& PRRETextureManager::PRRETextureManagerImpl::operator=(const PRRETextureManager::PRRETextureManagerImpl&)
 {
     return *this;
+}
+
+
+TPRREbool PRRETextureManager::PRRETextureManagerImpl::generateAndUploadTexture(PRRETexture& texture)
+{
+    if ( (getDefaultMinFilteringMode() == PRRE_ISO_NEAREST) || (getDefaultMinFilteringMode() == PRRE_ISO_LINEAR) )
+        texture.pImpl->nMIPmapCount = 1;
+    else
+        texture.pImpl->nMIPmapCount = PRRETextureManager::getMIPmapCount( texture.getWidth(), texture.getHeight() );
+
+    if ( pHWInfo.getVideo().isAcceleratorDetected() )
+    {
+        if ( !pglGenTextures(1, &(texture.pImpl->nInternalNum)) ) 
+        {
+            return false;
+        }
+
+        if ( !pglBindTexture(GL_TEXTURE_2D, texture.pImpl->nInternalNum) )
+        {
+            return false;
+        }
+
+        if ( !pglTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE) )
+        {
+            return false;
+        }
+    }
+
+    texture.SetMagFilteringMode( getDefaultMagFilteringMode() );
+    texture.SetMinFilteringMode( getDefaultMinFilteringMode() );
+    texture.SetAnisoFilteringMode( getDefaultAnisoFilteringMode() );
+    texture.SetTextureWrappingMode( getDefaultTextureWrappingModeS(), getDefaultTextureWrappingModeT() );
+    texture.SetBorder( getDefaultBorder() );
+    texture.SetBorderColor( getDefaultBorderColor() );
+    if ( !texture.uploadPixels() )
+    {
+        _pOwner->getConsole().EOLn("ERROR: uploadPixels() failed!");
+        return false;
+    }
+
+    return true;
 }
 
 
@@ -730,27 +773,12 @@ PRRETexture* PRRETextureManager::createTextureFromImage(const PRREImage& img)
 
     Attach(*texture);
 
-    if ( (getDefaultMinFilteringMode() == PRRE_ISO_NEAREST) || (getDefaultMinFilteringMode() == PRRE_ISO_LINEAR) )
-        texture->pImpl->nMIPmapCount = 1;
-    else
-        texture->pImpl->nMIPmapCount = PRRETextureManager::getMIPmapCount( texture->getWidth(), texture->getHeight() );
-
-    if ( pImpl->pHWInfo.getVideo().isAcceleratorDetected() )
+    if ( !pImpl->generateAndUploadTexture(*texture) )
     {
-        glGenTextures(1, &(texture->pImpl->nInternalNum));
-        glBindTexture(GL_TEXTURE_2D, texture->pImpl->nInternalNum);
-        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    }
-    texture->SetMagFilteringMode( getDefaultMagFilteringMode() );
-    texture->SetMinFilteringMode( getDefaultMinFilteringMode() );
-    texture->SetAnisoFilteringMode( getDefaultAnisoFilteringMode() );
-    texture->SetTextureWrappingMode( getDefaultTextureWrappingModeS(), getDefaultTextureWrappingModeT() );
-    texture->SetBorder( getDefaultBorder() );
-    texture->SetBorderColor( getDefaultBorderColor() );
-    if ( !texture->uploadPixels() )
-    {
-        getConsole().EOLn("ERROR: uploadPixels() failed, will return defective texture object!");
-        // TODO: probably here we should delete the texture object and return NULL.
+        getConsole().EOLn("ERROR: generateAndUploadTexture() failed!");
+        getConsole().OLnOO("");
+        DeleteAttachedInstance(*texture);
+        return PGENULL;
     }
 
     if ( !isPixelPreservingEnabled() )
@@ -822,29 +850,15 @@ PRRETexture* PRRETextureManager::createFromFile(const char* filename)
 
     texture->Cannibalize(*tmpImg);
     DeleteAttachedInstance(*tmpImg);
+
     Attach(*texture);
 
-    if ( (getDefaultMinFilteringMode() == PRRE_ISO_NEAREST) || (getDefaultMinFilteringMode() == PRRE_ISO_LINEAR) )
-        texture->pImpl->nMIPmapCount = 1;
-    else
-        texture->pImpl->nMIPmapCount = PRRETextureManager::getMIPmapCount( texture->getWidth(), texture->getHeight() );
-
-    if ( pImpl->pHWInfo.getVideo().isAcceleratorDetected() )
+    if ( !pImpl->generateAndUploadTexture(*texture) )
     {
-        glGenTextures(1, &(texture->pImpl->nInternalNum));
-        glBindTexture(GL_TEXTURE_2D, texture->pImpl->nInternalNum);
-        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    }
-    texture->SetMagFilteringMode( getDefaultMagFilteringMode() );
-    texture->SetMinFilteringMode( getDefaultMinFilteringMode() );
-    texture->SetAnisoFilteringMode( getDefaultAnisoFilteringMode() );
-    texture->SetTextureWrappingMode( getDefaultTextureWrappingModeS(), getDefaultTextureWrappingModeT() );
-    texture->SetBorder( getDefaultBorder() );
-    texture->SetBorderColor( getDefaultBorderColor() );
-    if ( !texture->uploadPixels() )
-    {
-        getConsole().EOLn("ERROR: uploadPixels() failed, will return defective texture object!");
-        // TODO: probably here we should delete the texture object and return NULL.
+        getConsole().EOLn("ERROR: generateAndUploadTexture() failed!");
+        getConsole().OLnOO("");
+        DeleteAttachedInstance(*texture);
+        return PGENULL;
     }
 
     if ( !isPixelPreservingEnabled() )
