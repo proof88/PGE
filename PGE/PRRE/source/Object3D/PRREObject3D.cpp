@@ -14,6 +14,7 @@
 #include <cassert>
 #include "../../include/external/Hardware/PRREhwInfo.h"
 #include "../../include/internal/PRREGLextensionFuncs.h"
+#include "../../include/internal/PRREGLsafeFuncs.h"
 #include "../../include/internal/PRREGLsnippets.h"
 #include "../../include/internal/PRREpragmas.h"
 #include "../../../../../PFL/PFL/PFL.h"
@@ -455,13 +456,14 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
             pFbBuffer = new GLfloat[nFbBuffer_h];
 
             /* unfortunately only the most detailed option GL_4D_COLOR_TEXTURE will give us the w-coord of vertices so we need to use that */
-            glFeedbackBuffer(nFbBuffer_h, GL_4D_COLOR_TEXTURE, pFbBuffer);
-            
-            // If you want all vertices to be transformed and catched in feedback mode then dont forget to disable culling and depth testing (maybe only 1 is needed to be disabled).
-            //glDisable(GL_DEPTH_TEST);
-            glDisable(GL_CULL_FACE); /* otherwise only the front facing side of cube would be written to feedback buffer */
+            if ( pglFeedbackBuffer(nFbBuffer_h, GL_4D_COLOR_TEXTURE, pFbBuffer) )
+            {
+                // If you want all vertices to be transformed and catched in feedback mode then dont forget to disable culling and depth testing (maybe only 1 is needed to be disabled).
+                //glDisable(GL_DEPTH_TEST);
+                glDisable(GL_CULL_FACE); /* otherwise only the front facing side of cube would be written to feedback buffer */
 
-            glRenderMode(GL_FEEDBACK);
+                glRenderMode(GL_FEEDBACK);
+            }
         }
         catch (const std::bad_alloc&)
         {
@@ -471,9 +473,8 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
 
     _pOwner->TransferVertices();
 
-
     /* The number of values (not vertices) transferred to the feedback buffer. */
-    GLint nFbBufferWritten_h = glRenderMode(GL_RENDER);
+    const GLint nFbBufferWritten_h = glRenderMode(GL_RENDER);
 
     GLfloat debugbuffer[500];
 

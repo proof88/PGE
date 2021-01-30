@@ -25,6 +25,19 @@ TPRREbool pglHint (GLenum target, GLenum mode)
     return true;
 }
 
+TPRREbool pglFeedbackBuffer (GLsizei size, GLenum type, GLfloat *buffer)
+{
+    PRREGLsnippets::ClearGLerror();
+    glFeedbackBuffer(size, type, buffer);
+    if ( PRREGLsnippets::isGLerrorPresent() )
+    {
+        CConsole::getConsoleInstance().EOLnOO("ERROR: %s(%d, %d, buffer %s) failed: %s", __FUNCTION__, size, type, (buffer ? "non-nullptr" : "nullptr"),
+            PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+        return false;
+    }
+    return true;
+}
+
 TPRREbool pglGenTextures (GLsizei n, GLuint *textures)
 {
     PRREGLsnippets::ClearGLerror();
@@ -264,8 +277,8 @@ TPRREbool pglTexImage2D (GLenum target, GLint level, GLint internalformat, GLsiz
     glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
     if ( PRREGLsnippets::isGLerrorPresent() )
     {
-        CConsole::getConsoleInstance().EOLn("ERROR: %s(%d, %d, %d, %d, %d, %d, %d, %d, %s) failed: %s", __FUNCTION__, target, level, internalformat, width, height, border, format, type, pixels,
-            (pixels ? "non-nullptr" : "nullptr"),
+        CConsole::getConsoleInstance().EOLn("ERROR: %s(%d, %d, %d, %d, %d, %d, %d, %d, pixels %s) failed: %s",
+            __FUNCTION__, target, level, internalformat, width, height, border, format, type, (pixels ? "non-nullptr" : "nullptr"),
             PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
         return false;
     }

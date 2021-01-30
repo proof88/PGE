@@ -14,6 +14,8 @@
 #include "../external/PRREallHeaders.h"
 
 TPRREbool pglHint (GLenum target, GLenum mode);
+TPRREbool pglFeedbackBuffer (GLsizei size, GLenum type, GLfloat *buffer);
+
 TPRREbool pglGenTextures (GLsizei n, GLuint *textures);
 TPRREbool pglBindTexture (GLenum target, GLuint texture);
 TPRREbool pglTexEnvf (GLenum target, GLenum pname, GLfloat param);
