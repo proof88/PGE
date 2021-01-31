@@ -13,6 +13,18 @@
 #include "../include/internal/PRREGLsnippets.h"
 #include "../include/internal/PRREpragmas.h"
 
+// Note that since GL 4.3 there is callback mechanism that can be set up with glDebugMessageCallback().
+// We don't use it that though, mostly because our implementation is not at GL 4.3 level, and it would
+// need debug context, and I'm not sure how much performance penalty it makes.
+
+// The following functions below could be replaced by a single functions with varying parameter count.
+// We would pass a GL function pointer and its parameters, and the function would call the GL function
+// with the given varying number of parameters. However, logging is custom in each function, so at least
+// that couldn't be generalized. User could still provide error string format specifier string to the
+// function from outside but then it would be also difficult to pass with parameters should the logger
+// take is input during parsing the format string.
+// So I stick to redundant copy-paste code here. Only a few GL functions get wrappers like this anyway.
+
 TPRREbool pglHint (GLenum target, GLenum mode)
 {
     PRREGLsnippets::ClearGLerror();

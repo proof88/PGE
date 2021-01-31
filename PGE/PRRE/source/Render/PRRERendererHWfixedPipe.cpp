@@ -13,6 +13,7 @@
 #include "../../include/external/Math/PRREVector.h"
 #include "../../include/external/Math/PRRETransformMatrix.h"
 #include "../../include/external/Object3D/PRREObject3DManager.h"
+#include "../../include/internal/PRREGLsafeFuncs.h"
 #include "../../include/internal/PRREGLsnippets.h"
 #include "../../include/internal/PRREGLextensionFuncs.h"
 #include "../../include/internal/PRREpragmas.h"
@@ -305,6 +306,8 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
     Draw2DObjects(*this);
 
     FinishRendering();
+
+    // we don't really check for GL errors in above functions, so check them here
     printOGLerrorBrief();
 
 } // RenderScene()
@@ -388,7 +391,7 @@ PRRERendererHWfixedPipeImpl& PRRERendererHWfixedPipeImpl::operator=(const PRRERe
 */
 void PRRERendererHWfixedPipeImpl::printOGLerrorBrief()
 {
-    if ( PRREGLsnippets::isGLerrorPresent() )
+    while ( PRREGLsnippets::isGLerrorPresent() )
         getConsole().EOLn("Last error: %s",
                            PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));   
 } // printOGLerrorBrief()
@@ -484,7 +487,7 @@ void PRRERendererHWfixedPipeImpl::SetBasicThingsInOpenGL()
     glCullFace(GL_BACK);      // 2-sided objects may temporarily modify this
     glFrontFace(GL_CCW);      // usually this is true, however some negative-scaled objects may temporarily modify this
     glEnable(GL_SCISSOR_TEST);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // permanent setting
+    pglHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // permanent setting
     glShadeModel(GL_SMOOTH);
     //glShadeModel(GL_FLAT);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // instead of the default 4-byte boundary, we use 1 to support textures like 2x2

@@ -361,6 +361,7 @@ TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
 
 void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
 {
+    // caller renderer is expected to check for GL errors, so we don't check them here
     if ( !bVisible )
         return;
 

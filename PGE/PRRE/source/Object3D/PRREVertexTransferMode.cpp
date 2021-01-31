@@ -15,6 +15,7 @@
 #include "../../include/external/Hardware/PRREhwInfo.h"
 #include "../../include/external/Material/PRREMaterialManager.h"
 #include "../../include/internal/PRREGLextensionFuncs.h"
+#include "../../include/internal/PRREGLsafeFuncs.h"
 #include "../../include/internal/PRREGLsnippets.h"
 #include "../../include/internal/PRREpragmas.h"
 #include "../../../../../PFL/PFL/PFL.h"
@@ -335,6 +336,9 @@ PRREVertexTransfer::PRREVertexTransferImpl& PRREVertexTransfer::PRREVertexTransf
 
 void PRREVertexTransfer::PRREVertexTransferImpl::TransferVertices()
 {
+    // this function doesn't check for GL errors since this is also part of rendering,
+    // renderer should check for errors after each frame
+
     if ( BIT_READ(getVertexTransferMode(), PRRE_VT_VA_BIT) == 0u )
     {
         /* there is no array for geometry, so we either invoke a display list or pass vertices 1-by-1 */
