@@ -248,34 +248,50 @@ void PRREVertexTransfer::PRREVertexTransferImpl::SetVertexTransferMode(TPRRE_VER
         return;
     }
 
-    FreeGLresources();   // now it's safe to delete GL resources
-
-    if ( BIT_READ(vtrans, PRRE_VT_SVA_BIT) )
+    if ( _pOwner->isLevel2() )
     {
-        /* check if we want VBO? */
-        CompileIntoVertexBufferObjects(
-            PRREVertexTransfer::isVertexReferencingIndexed(vtrans),
-            PRREVertexTransfer::isVertexModifyingDynamic(vtrans) );
+        FreeGLresources();   // now it's safe to delete GL resources
+        vertexTransferMode = 0;
+
+        if ( BIT_READ(vtrans, PRRE_VT_SVA_BIT) )
+        {
+            /* we want VBO */
+            if ( !compileIntoVertexBufferObjects(
+                PRREVertexTransfer::isVertexReferencingIndexed(vtrans),
+                PRREVertexTransfer::isVertexModifyingDynamic(vtrans) ) )
+            {
+                FreeGLresources();   // we cannot know exactly what was allocated and what no, make sure we don't keep anything!
+                getConsole().EOLnOO("ERROR: compileIntoVertexBufferObjects() failed!");
+                return;
+            }
+        }
+        else
+        {
+            /* check if we want display list? */
+            if ( (vtrans == (PRRE_VMOD_STATIC | PRRE_VREF_DIRECT)) ||
+                (vtrans == (PRRE_VMOD_STATIC | PRRE_VREF_INDEXED)) )
+            {
+                if ( !compileIntoDisplayList(PRREVertexTransfer::isVertexReferencingIndexed(vtrans)) )
+                {
+                    FreeGLresources();   // we cannot know exactly what was allocated and what no, make sure we don't keep anything!
+                    getConsole().EOLnOO("ERROR: compileIntoDisplayList() failed!");
+                    return;
+                }
+            }
+        }
+
+        /* no other transfer mode needs further preparation */
+        vertexTransferMode = vtrans;
     }
     else
-    {
-        /* check if we want display list? */
-        if ( (vtrans == (PRRE_VMOD_STATIC | PRRE_VREF_DIRECT)) ||
-            (vtrans == (PRRE_VMOD_STATIC | PRRE_VREF_INDEXED)) )
-            CompileIntoDisplayList(PRREVertexTransfer::isVertexReferencingIndexed(vtrans));
-    }
-
-    /* no other transfer mode needs further preparation */
-    vertexTransferMode = vtrans;
-
-    if ( _pOwner->isLevel1() )
     {
         bParentInitiatedOperation = true;
         getConsole().OLn("Ok, applying for subobjects ...");
         for (TPRREint i = 0; i < _pOwner->getCount(); i++)
-            ((PRREVertexTransfer*)(_pOwner->getAttachedAt)(i))->SetVertexTransferMode( vertexTransferMode );
+            ((PRREVertexTransfer*)(_pOwner->getAttachedAt)(i))->SetVertexTransferMode( vtrans );
         getConsole().OLn("Done!");
         bParentInitiatedOperation = false;
+        vertexTransferMode = vtrans;
     }
 
     getConsole().OO();
@@ -516,24 +532,42 @@ void PRREVertexTransfer::PRREVertexTransferImpl::ProcessGeometry(TPRREbool index
     Compiles OpenGL drawing commands into display list.
 
     @param indexed If true, will issue ProcessGeometry() to go thru geometry data by using indices for order.
+    @return True on success, false otherwise.
 */
-void PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoDisplayList(TPRREbool indexed)
+TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList(TPRREbool indexed)
 {
     /* Make sure we don't call GL functions when no accelerator is present */
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
-        return;
+        return false;
 
     if ( _pOwner->getVertices(false) == NULL )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoDisplayList() getVertices() is NULL!");
-        return;
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList() getVertices() is NULL!");
+        return false;
     }
 
-    nDispList = glGenLists(1);
-    glNewList(nDispList, GL_COMPILE);
-        ProcessGeometry( indexed );
-    glEndList();
-} // CompileIntoDisplayList()
+    nDispList = pglGenLists(1);
+    if ( nDispList == 0 )
+    {
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList() glGenLists() failed!");
+        return false;
+    }
+
+    if ( !pglNewList(nDispList, GL_COMPILE) )
+    {
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList() glNewList() failed!");
+        return false;
+    }
+
+    ProcessGeometry( indexed );
+    if ( !pglEndList() )
+    {
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList() glEndList() failed!");
+        return false;
+    }
+
+    return true;
+} // compileIntoDisplayList()
 
 
  /**
@@ -542,81 +576,108 @@ void PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoDisplayList(TPRREboo
     @param indexed If true, will go thru geometry data by using indices for order. This will generate an element array buffer.
                    Ignored if vertex indices array is NULL.
     @param dynamic If true, the usage hint when building vertex buffer objects will be dynamic, otherwise static.
+
+    @return True on success, false otherwise.
  */
-void PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoVertexBufferObjects(TPRREbool indexed, TPRREbool dynamic)
+TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects(TPRREbool indexed, TPRREbool dynamic)
 {
     /* Make sure we don't call GL functions when no accelerator is present */
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
-        return;
+        return false;
 
     if ( nVerticesVBO != 0 )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoVertexBufferObjects() nVerticesVBO != 0!");
-        return;
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() already has vertex VBO!");
+        return false;
     }
     if ( _pOwner->getVertices(false) == NULL )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoVertexBufferObjects() getVertices() is NULL!");
-        return;
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() getVertices() is NULL!");
+        return false;
     }
     if ( _pOwner->getNormals(false) == NULL )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoVertexBufferObjects() getNormals() is NULL!");
-        return;
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() getNormals() is NULL!");
+        return false;
     }
 
     if ( indexed )
     {
         if ( nIndicesVBO != 0 )
         {
-            getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoVertexBufferObjects() nIndicesVBO != 0!");
-            return;
+            getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() nIndicesVBO != 0!");
+            return false;
         }
         if ( _pOwner->getVertexIndices(false) == NULL )
         {
-            getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::CompileIntoVertexBufferObjects() getVertexIndices() is NULL!");
-            return;
+            getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() getVertexIndices() is NULL!");
+            return false;
         }
-        glGenBuffersARB(1, &nIndicesVBO);
-        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, nIndicesVBO);
-        glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, _pOwner->getVertexIndicesCount(false) * PRREGLsnippets::getSizeofIndexType(_pOwner->getVertexIndicesType()), _pOwner->getVertexIndices(false), GL_STATIC_DRAW_ARB);
-        // Note: we always store indices in static buffer but could be in client memory, too.
-        glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+        if ( ( !pglGenBuffersARB(1, &nIndicesVBO) ) ||
+             ( !pglBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, nIndicesVBO) ) ||
+             /* Note: we always store indices in static buffer but could be in client memory, too. */
+             ( !pglBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, _pOwner->getVertexIndicesCount(false) * PRREGLsnippets::getSizeofIndexType(_pOwner->getVertexIndicesType()), _pOwner->getVertexIndices(false), GL_STATIC_DRAW_ARB) ) ||
+             ( !pglBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0) ) )
+        {
+            getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create element array buffer!");
+            return false;
+        }
     }
 
-    GLenum usage = dynamic ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB;
-    glGenBuffersARB(1, &nVerticesVBO);
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, nVerticesVBO);
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB,  _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getVertices(false), usage);
- 
-    glGenBuffersARB(1, &nColorsVBO);
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, nColorsVBO);
-    assert(_pOwner->getMaterial(false).getColors() != NULL);
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getColorsCount() * sizeof(TRGBAFLOAT), _pOwner->getMaterial(false).getColors(), usage);
+    const GLenum usage = dynamic ? GL_DYNAMIC_DRAW_ARB : GL_STATIC_DRAW_ARB;
 
-    glGenBuffersARB(1, &nTexcoordsVBO[0]);
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[0]);
+    if ( ( !pglGenBuffersARB(1, &nVerticesVBO) ) ||
+         ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, nVerticesVBO) ) ||
+         ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB,  _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getVertices(false), usage) ) )
+    {
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create vertex VBO!");
+        return false;
+    }
+ 
+    assert(_pOwner->getMaterial(false).getColors() != NULL);
+    if ( ( !pglGenBuffersARB(1, &nColorsVBO) ) ||
+         ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, nColorsVBO) ) ||
+         ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getColorsCount() * sizeof(TRGBAFLOAT), _pOwner->getMaterial(false).getColors(), usage) ) )
+    {
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create color VBO!");
+        return false;
+    }
+
     assert(_pOwner->getMaterial(false).getTexcoords() != NULL);
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount() * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(), usage);
+    if ( ( !pglGenBuffersARB(1, &nTexcoordsVBO[0]) ) ||
+         ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[0]) ) ||
+         ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount() * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(), usage) ) )
+    {
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create texcoords VBO!");
+        return false;
+    }
 
     if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
     {
         if ( _pOwner->getMaterial(false).isMultiTextured() )
         {
-            glGenBuffersARB(1, &nTexcoordsVBO[1]);
-            glBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[1]);
             assert(_pOwner->getMaterial(false).getTexcoords(1) != NULL);
-            glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount(1) * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(1), usage);
+            if ( ( !pglGenBuffersARB(1, &nTexcoordsVBO[1]) ) ||
+                 ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[1]) ) ||
+                 ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount(1) * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(1), usage) ) )
+            {
+                getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create 2nd texcoords VBO!");
+                return false;
+            }
         }
     }
 
-    glGenBuffersARB(1, &nNormalsVBO);
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, nNormalsVBO);
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getNormals(false), usage);
+    if ( ( !pglGenBuffersARB(1, &nNormalsVBO) ) ||
+         ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, nNormalsVBO) ) ||
+         ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getNormals(false), usage) ) ||
+         ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, 0) ) )
+    {
+        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create normals VBO!");
+        return false;
+    }
 
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-
-} // CompileIntoVertexBufferObjects()
+    return true;
+} // compileIntoVertexBufferObjects()
 
 
 /**
@@ -634,27 +695,27 @@ void PRREVertexTransfer::PRREVertexTransferImpl::FreeGLresources()
 
     if ( nDispList != 0 )
     {
-        glDeleteLists(nDispList, 1);
+        pglDeleteLists(nDispList, 1);
         nDispList = 0;
     }
     if ( nVerticesVBO != 0 )
     {
-        glDeleteBuffersARB(1, &nVerticesVBO);
+        pglDeleteBuffersARB(1, &nVerticesVBO);
         nVerticesVBO = 0;
     }
     if ( nColorsVBO != 0 )
     {
-        glDeleteBuffersARB(1, &nColorsVBO);
+        pglDeleteBuffersARB(1, &nColorsVBO);
         nColorsVBO = 0;
     }
     if ( nNormalsVBO != 0 )
     {
-        glDeleteBuffersARB(1, &nNormalsVBO);
+        pglDeleteBuffersARB(1, &nNormalsVBO);
         nNormalsVBO = 0;
     }
     if ( nIndicesVBO != 0 )
     {
-        glDeleteBuffersARB(1, &nIndicesVBO);
+        pglDeleteBuffersARB(1, &nIndicesVBO);
         nIndicesVBO = 0;
     }
 
@@ -662,7 +723,7 @@ void PRREVertexTransfer::PRREVertexTransferImpl::FreeGLresources()
     {
         if ( nTexcoordsVBO[i] != 0 )
         {
-            glDeleteBuffersARB(1, &nTexcoordsVBO[i]);
+            pglDeleteBuffersARB(1, &nTexcoordsVBO[i]);
             nTexcoordsVBO[i] = 0;
         }
     }
@@ -994,8 +1055,11 @@ TPRRE_VERTEX_TRANSFER_MODE PRREVertexTransfer::getVertexTransferMode() const
     Sets vertex transfer mode.
     Vertex transfer mode gets selected automatically by PPP.
     However, it can be also set manually for custom reasons.
-    The setting may not happen if the selected transfer mode is not available for some reason, for
-    example, if the selected mode is not supported on the current hardware.
+    The setting does not happen if the selected transfer mode is not available for some reason, for
+    example, if the selected mode is not supported on the current hardware. In such case, the
+    existing vertex transfer mode and HW resources are kept unchanged.
+    If the function encounters issue during allocating needed resources, vertex transfer mode is reset
+    to 0 and HW resources are freed up.
     It applies to the entire geometry of the mesh, including all of its submeshes.
     The setting is ignored for level-2 meshes as it is applied by their level-1 parent mesh.
 */
@@ -1008,7 +1072,7 @@ void PRREVertexTransfer::SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans
 /**
     Gets the amount of allocated system memory.
 
-    @return Amount if allocated system memory in Bytes.
+    @return Amount of allocated system memory in Bytes.
 */
 TPRREuint PRREVertexTransfer::getUsedSystemMemory() const
 {

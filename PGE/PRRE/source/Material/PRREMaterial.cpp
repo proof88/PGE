@@ -843,7 +843,7 @@ TPRREbool PRREMaterial::copyFromMaterial(PRREMaterial& srcMat, TPRREuint dstLeve
 /**
     Gets the amount of allocated system memory.
 
-    @return Amount if allocated system memory in Bytes.
+    @return Amount of allocated system memory in Bytes.
 */
 TPRREuint PRREMaterial::getUsedSystemMemory() const
 {

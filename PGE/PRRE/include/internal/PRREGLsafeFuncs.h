@@ -16,6 +16,16 @@
 TPRREbool pglHint (GLenum target, GLenum mode);
 TPRREbool pglFeedbackBuffer (GLsizei size, GLenum type, GLfloat *buffer);
 
+GLuint    pglGenLists (GLsizei range);
+TPRREbool pglNewList (GLuint list, GLenum mode);
+TPRREbool pglEndList (void );
+TPRREbool pglDeleteLists (GLuint list, GLsizei range);
+
+TPRREbool pglGenBuffersARB (GLsizei n, GLuint *buffers);
+TPRREbool pglBindBufferARB (GLenum target, GLuint buffer);
+TPRREbool pglBufferDataARB (GLenum target, GLsizeiptrARB size, const GLvoid *data, GLenum usage);
+TPRREbool pglDeleteBuffersARB (GLsizei n, const GLuint *buffers);
+
 TPRREbool pglGenTextures (GLsizei n, GLuint *textures);
 TPRREbool pglBindTexture (GLenum target, GLuint texture);
 TPRREbool pglTexEnvf (GLenum target, GLenum pname, GLfloat param);

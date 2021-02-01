@@ -1287,7 +1287,7 @@ void PRREObject3D::SetStickedToScreen(TPRREbool value)
     It includes the allocated Material size as well (getMaterial(false)).
     Level-1 (parent) objects summarize the memory usage of their level-2 subobjects and include it in the returned value.
 
-    @return Amount if allocated system memory in Bytes.
+    @return Amount of allocated system memory in Bytes.
 */
 TPRREuint PRREObject3D::getUsedSystemMemory() const
 {

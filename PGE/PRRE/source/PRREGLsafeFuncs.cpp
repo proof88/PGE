@@ -10,6 +10,7 @@
 
 #include "PRREbaseIncludes.h"  // PCH
 #include "../include/internal/PRREGLsafeFuncs.h"
+#include "../include/internal/PRREGLextensionFuncs.h"
 #include "../include/internal/PRREGLsnippets.h"
 #include "../include/internal/PRREpragmas.h"
 
@@ -44,6 +45,108 @@ TPRREbool pglFeedbackBuffer (GLsizei size, GLenum type, GLfloat *buffer)
     if ( PRREGLsnippets::isGLerrorPresent() )
     {
         CConsole::getConsoleInstance().EOLnOO("ERROR: %s(%d, %d, buffer %s) failed: %s", __FUNCTION__, size, type, (buffer ? "non-nullptr" : "nullptr"),
+            PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+        return false;
+    }
+    return true;
+}
+
+GLuint pglGenLists (GLsizei range)
+{
+    PRREGLsnippets::ClearGLerror();
+    const GLuint result = glGenLists(range);
+    if ( PRREGLsnippets::isGLerrorPresent() )
+    {
+        CConsole::getConsoleInstance().EOLnOO("ERROR: %s(%d) failed: %s", __FUNCTION__, range, PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+    }
+    return result;
+}
+
+TPRREbool pglNewList (GLuint list, GLenum mode)
+{
+    PRREGLsnippets::ClearGLerror();
+    glNewList(list, mode);
+    if ( PRREGLsnippets::isGLerrorPresent() )
+    {
+        CConsole::getConsoleInstance().EOLnOO("ERROR: %s(%d, %d) failed: %s", __FUNCTION__, list, mode,
+            PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+        return false;
+    }
+    return true;
+}
+
+TPRREbool pglEndList (void)
+{
+    PRREGLsnippets::ClearGLerror();
+    glEndList();
+    if ( PRREGLsnippets::isGLerrorPresent() )
+    {
+        CConsole::getConsoleInstance().EOLnOO("ERROR: %s() failed: %s", __FUNCTION__, PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+        return false;
+    }
+    return true;
+}
+
+TPRREbool pglDeleteLists (GLuint list, GLsizei range)
+{
+    PRREGLsnippets::ClearGLerror();
+    glDeleteLists(list, range);
+    if ( PRREGLsnippets::isGLerrorPresent() )
+    {
+        CConsole::getConsoleInstance().EOLnOO("ERROR: %s(%d, %d) failed: %s", __FUNCTION__, list, range,
+            PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+        return false;
+    }
+    return true;
+}
+
+
+TPRREbool pglGenBuffersARB (GLsizei n, GLuint *buffers)
+{
+    PRREGLsnippets::ClearGLerror();
+    glGenBuffersARB(n, buffers);
+    if ( PRREGLsnippets::isGLerrorPresent() )
+    {
+        CConsole::getConsoleInstance().EOLnOO("ERROR: %s(%d, buffers %s) failed: %s", __FUNCTION__, n, (buffers ? "non-nullptr" : "nullptr"),
+            PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+        return false;
+    }
+    return true;
+}
+
+TPRREbool pglBindBufferARB (GLenum target, GLuint buffer)
+{
+    PRREGLsnippets::ClearGLerror();
+    glBindBufferARB(target, buffer);
+    if ( PRREGLsnippets::isGLerrorPresent() )
+    {
+        CConsole::getConsoleInstance().EOLnOO("ERROR: %s(%d, %d) failed: %s", __FUNCTION__, target, buffer,
+            PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+        return false;
+    }
+    return true;
+}
+
+TPRREbool pglBufferDataARB (GLenum target, GLsizeiptrARB size, const GLvoid *data, GLenum usage)
+{
+    PRREGLsnippets::ClearGLerror();
+    glBufferDataARB(target, size, data, usage);
+    if ( PRREGLsnippets::isGLerrorPresent() )
+    {
+        CConsole::getConsoleInstance().EOLnOO("ERROR: %s(%d, %d, data %s, usage) failed: %s", __FUNCTION__, target, size, (data ? "non-nullptr" : "nullptr"), usage,
+            PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+        return false;
+    }
+    return true;
+}
+
+TPRREbool pglDeleteBuffersARB (GLsizei n, const GLuint *buffers)
+{
+    PRREGLsnippets::ClearGLerror();
+    glDeleteBuffersARB(n, buffers);
+    if ( PRREGLsnippets::isGLerrorPresent() )
+    {
+        CConsole::getConsoleInstance().EOLnOO("ERROR: %s(%d, buffers %s) failed: %s", __FUNCTION__, n, (buffers ? "non-nullptr" : "nullptr"),
             PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
         return false;
     }

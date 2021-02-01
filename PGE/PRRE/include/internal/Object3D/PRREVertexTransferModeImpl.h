@@ -76,8 +76,8 @@ private:
     CConsole& getConsole() const;               /**< Hack to be able to use CConsole singleton instance instead of owner's protected console instance. */
     TPRREbool isSwitchFromIndexedAllowed() const;                            /**< Tells whether it is allowed to switch from indexed to non-indexed vertex transfer mode. */
     void      ProcessGeometry(TPRREbool indexed) const;                      /**< Goes thru vertices and feeds them to OpenGL. */
-    void      CompileIntoDisplayList(TPRREbool indexed);                     /**< Compiles OpenGL drawing commands into display list. */
-    void      CompileIntoVertexBufferObjects(
+    TPRREbool compileIntoDisplayList(TPRREbool indexed);                     /**< Compiles OpenGL drawing commands into display list. */
+    TPRREbool compileIntoVertexBufferObjects(
         TPRREbool indexed, TPRREbool dynamic);                               /**< Compiles geometry into VBOs. */
     void      FreeGLresources();                                             /**< Frees up allocated resources from OpenGL. */
     void      SetArrayPointers(TPRREbool redirectToServer = false) const;    /**< Sets vertex data pointers prior to drawing. */
