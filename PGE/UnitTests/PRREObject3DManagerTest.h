@@ -198,12 +198,17 @@ private:
         objPlane->SetLit(false);
         objPlane->SetRotationOrder(TPRRE_ROTATION_ORDER::PRRE_ZYX);
         objPlane->SetStickedToScreen(true);
-        objPlane->SetVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_DIRECT, false) );
+        objPlane->setVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_DIRECT, false) );
         objPlane->SetVisible(false);
         objPlane->SetWireframed(true);
         objPlane->SetWireframedCulled(true);
 
         PRREObject3D* const objCloned = om->createCloned( *objPlane );
+
+        if ( !assertNotNull(objCloned, "objCloned not null"))
+        {
+            return false;
+        }
 
         return assertTrue(objPlane->getPosVec() == objCloned->getPosVec(), "pos") &
             assertTrue(objPlane->getAngleVec() == objCloned->getAngleVec(), "angle") &

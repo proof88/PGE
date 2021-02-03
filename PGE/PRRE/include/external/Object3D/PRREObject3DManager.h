@@ -68,12 +68,12 @@ class PRREObject3D :
 public:
     virtual ~PRREObject3D();
 
-    virtual TPRRE_VERTEX_MODIFYING_HABIT getVertexModifyingHabit() const;       /**< Gets vertex modifying habit. */
-    virtual void SetVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod);    /**< Sets vertex modifying habit. */
-    virtual TPRRE_VERTEX_REFERENCING_MODE getVertexReferencingMode() const;     /**< Gets vertex referencing mode. */
-    virtual void SetVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref);  /**< Sets vertex referencing mode. */
-    virtual TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;           /**< Gets vertex transfer mode. */
-    virtual void SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);      /**< Sets vertex transfer mode. */
+    virtual TPRRE_VERTEX_MODIFYING_HABIT getVertexModifyingHabit() const;            /**< Gets vertex modifying habit. */
+    virtual TPRREbool setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod);    /**< Sets vertex modifying habit. */
+    virtual TPRRE_VERTEX_REFERENCING_MODE getVertexReferencingMode() const;          /**< Gets vertex referencing mode. */
+    virtual TPRREbool setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref);  /**< Sets vertex referencing mode. */
+    virtual TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;                /**< Gets vertex transfer mode. */
+    virtual TPRREbool setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);      /**< Sets vertex transfer mode. */
 
     PRREObject3D* getReferredObject() const;   /**< Gets the original object which was cloned to create this object. */
 

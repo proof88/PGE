@@ -62,7 +62,7 @@ public:
     {
         getConsole().OLnOI("PRREObject3DManager::createBox(%f, %f, %f)", a, b, c);
 
-        SampleDescendantFromVertexTransfer* const obj = new SampleDescendantFromVertexTransfer(materialMgr, vmod, vref, bForceUseClientMemory);
+        SampleDescendantFromVertexTransfer* obj = new SampleDescendantFromVertexTransfer(materialMgr, vmod, vref, bForceUseClientMemory);
         Attach( *obj );
         SampleDescendantFromVertexTransfer* const subobj = new SampleDescendantFromVertexTransfer(materialMgr, vmod, vref, bForceUseClientMemory);
         obj->Attach( *subobj );
@@ -71,7 +71,14 @@ public:
         // although SampleDescendantFromVertexTransfer ctor has already selected the vtransmode, we set it again
         // to actually allocate the needed resources for the geometry
         getConsole().OI();
-        obj->SetVertexTransferMode( obj->getVertexTransferMode() );
+        if ( !obj->setVertexTransferMode( obj->getVertexTransferMode() ) )
+        {
+            getConsole().OO();
+            DeleteAttachedInstance( *obj );
+            obj = PGENULL;
+            getConsole().EOLnOO("SampleManagerForDescendantFromVertexTransfer::createFromFile() returning NULL now!");
+            return PGENULL;
+        }
         getConsole().OO();
 
         getConsole().SOLnOO("> Box created successfully!");
@@ -115,7 +122,14 @@ public:
         // although SampleDescendantFromVertexTransfer ctor has already selected the vtransmode, we set it again
         // to actually allocate the needed resources for the geometry
         getConsole().OI();
-        obj->SetVertexTransferMode( obj->getVertexTransferMode() );
+        if ( !obj->setVertexTransferMode( obj->getVertexTransferMode() ) )
+        {
+            getConsole().OO();
+            DeleteAttachedInstance( *obj );
+            obj = PGENULL;
+            getConsole().EOLnOO("SampleManagerForDescendantFromVertexTransfer::createFromFile() returning NULL now!");
+            return PGENULL;
+        }
         getConsole().OO();
 
         getConsole().SOLnOO("> Object loaded successfully!");
@@ -350,17 +364,18 @@ private:
 
     bool testSetVertexModifyingHabit()
     {
-        meshFromFile->SetVertexModifyingHabit(PRRE_VMOD_DYNAMIC);
-        mesh->SetVertexModifyingHabit(PRRE_VMOD_DYNAMIC);
+        bool b = assertTrue(meshFromFile->setVertexModifyingHabit(PRRE_VMOD_DYNAMIC), "set meshFromFile");
+        b &= assertTrue(mesh->setVertexModifyingHabit(PRRE_VMOD_DYNAMIC), "set mesh");
 
         // subobjects must reject this when called by user
         PRREVertexTransfer* const submesh1Mesh = (PRREVertexTransfer*)(mesh->getAttachedAt(0));
-        submesh1Mesh->SetVertexModifyingHabit( PRRE_VMOD_STATIC );
+        b &= assertFalse(submesh1Mesh->setVertexModifyingHabit( PRRE_VMOD_STATIC ), "set submesh1Mesh");
 
         PRREVertexTransfer* const submesh1MeshFromFile = (PRREVertexTransfer*)(meshFromFile->getAttachedAt(0));
-        submesh1MeshFromFile->SetVertexModifyingHabit( PRRE_VMOD_STATIC );
+        b &= assertFalse(submesh1MeshFromFile->setVertexModifyingHabit( PRRE_VMOD_STATIC ), "set submesh1MeshFromFile");
 
-        return assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(mesh->getVertexTransferMode()), "mesh" ) &
+        return b &
+            assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(mesh->getVertexTransferMode()), "mesh" ) &
             assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(meshFromFile->getVertexTransferMode()), "meshFromFile" ) &
             assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(submesh1Mesh->getVertexTransferMode()), "submesh1Mesh" ) &
             assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(submesh1MeshFromFile->getVertexTransferMode()), "submesh1MeshFromFile" );
@@ -374,17 +389,18 @@ private:
 
     bool testSetVertexReferencingMode()
     {
-        mesh->SetVertexReferencingMode(PRRE_VREF_INDEXED);
-        meshFromFile->SetVertexReferencingMode(PRRE_VREF_DIRECT);
+        bool b = assertTrue(mesh->setVertexReferencingMode(PRRE_VREF_INDEXED), "mesh");
+        b &= assertTrue(meshFromFile->setVertexReferencingMode(PRRE_VREF_DIRECT), "meshFromFile");
 
         // subobjects must reject this when called by user
         PRREVertexTransfer* const submesh1Mesh = (PRREVertexTransfer*)(mesh->getAttachedAt(0));
-        submesh1Mesh->SetVertexReferencingMode( PRRE_VREF_DIRECT );
+        b &= assertFalse(submesh1Mesh->setVertexReferencingMode( PRRE_VREF_DIRECT ), "submesh1Mesh");
 
         PRREVertexTransfer* const submesh1MeshFromFile = (PRREVertexTransfer*)(meshFromFile->getAttachedAt(0));
-        submesh1MeshFromFile->SetVertexReferencingMode( PRRE_VREF_INDEXED );
+        b &= assertFalse(submesh1MeshFromFile->setVertexReferencingMode( PRRE_VREF_INDEXED ), "submesh1MeshFromFile");
 
-        return assertTrue( PRREVertexTransfer::isVertexReferencingIndexed(mesh->getVertexTransferMode()), "mesh" ) &
+        return b &
+            assertTrue( PRREVertexTransfer::isVertexReferencingIndexed(mesh->getVertexTransferMode()), "mesh" ) &
             assertFalse( PRREVertexTransfer::isVertexReferencingIndexed(meshFromFile->getVertexTransferMode()), "meshFromFile" ) &
             assertTrue( PRREVertexTransfer::isVertexReferencingIndexed(submesh1Mesh->getVertexTransferMode()), "submesh1Mesh" ) &
             assertFalse( PRREVertexTransfer::isVertexReferencingIndexed(submesh1MeshFromFile->getVertexTransferMode()), "submesh1MeshFromFile" );
@@ -404,11 +420,11 @@ private:
     bool testSetVertexTransferMode()
     {
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedObj = mesh->getVertexTransferMode();
-        mesh->SetVertexTransferMode( mesh->getVertexTransferMode() ); // intentionally testing setting to the same
-        bool l = assertEquals(vtExpectedObj, mesh->getVertexTransferMode(), "sva mesh 1");
+        bool l = assertTrue(mesh->setVertexTransferMode( mesh->getVertexTransferMode() ), "set sva mesh 1"); // intentionally testing setting to the same
+        l &= assertEquals(vtExpectedObj, mesh->getVertexTransferMode(), "sva mesh 1");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedObjFromFile = meshFromFile->getVertexTransferMode();
-        meshFromFile->SetVertexTransferMode( meshFromFile->getVertexTransferMode() ); // intentionally testing setting to the same
+        l &= assertTrue(meshFromFile->setVertexTransferMode( meshFromFile->getVertexTransferMode() ), "set sva meshFromFile 1"); // intentionally testing setting to the same
         l &= assertEquals(vtExpectedObjFromFile, meshFromFile->getVertexTransferMode(), "sva meshFromFile 1");
 
         // make sure the mode of the 2 meshes is not just simple (PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT) (1by1 immediate mode)
@@ -418,87 +434,87 @@ private:
         // subobjects must reject this when called by user
         // by default the selected transfer mode is NOT PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT hence we try set that but expect no change!
         PRREVertexTransfer* const submesh1Mesh = (PRREVertexTransfer*)(mesh->getAttachedAt(0));
-        submesh1Mesh->SetVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT );
-        l = assertEquals(vtExpectedObj, submesh1Mesh->getVertexTransferMode(), "dir mesh subobject");
+        l &= assertFalse(submesh1Mesh->setVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT ), "set dir mesh subobject");
+        l &= assertEquals(vtExpectedObj, submesh1Mesh->getVertexTransferMode(), "dir mesh subobject");
 
         PRREVertexTransfer* const submesh1MeshFromFile = (PRREVertexTransfer*)(meshFromFile->getAttachedAt(0));
-        submesh1MeshFromFile->SetVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT );
-        l = assertEquals(vtExpectedObjFromFile, submesh1MeshFromFile->getVertexTransferMode(), "dir meshFromFile subobject");
+        l &= assertFalse(submesh1MeshFromFile->setVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT ), "set dir meshFromFile subobject");
+        l &= assertEquals(vtExpectedObjFromFile, submesh1MeshFromFile->getVertexTransferMode(), "dir meshFromFile subobject");
 
         // Generic server-side vertex arrays are supported by main test machine
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedStaIndSVAobj = PRRE_VMOD_STATIC  | PRRE_VREF_INDEXED | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
-        mesh->SetVertexTransferMode( vtExpectedStaIndSVAobj );
+        l &= assertTrue(mesh->setVertexTransferMode( vtExpectedStaIndSVAobj ), "set sva mesh 2");
         l &= assertEquals(vtExpectedStaIndSVAobj, mesh->getVertexTransferMode(), "sva mesh 2");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedStaIndSVAobjFromFile = PRRE_VMOD_STATIC  | PRRE_VREF_INDEXED | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
-        meshFromFile->SetVertexTransferMode( vtExpectedStaIndSVAobjFromFile );
+        l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedStaIndSVAobjFromFile ), "set sva meshFromFile 2");
         l &= assertEquals(vtExpectedStaIndSVAobjFromFile, meshFromFile->getVertexTransferMode(), "sva meshFromFile 2");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynIndSVAobj = PRRE_VMOD_DYNAMIC  | PRRE_VREF_INDEXED | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
-        mesh->SetVertexTransferMode( vtExpectedDynIndSVAobj );
+        l &= assertTrue(mesh->setVertexTransferMode( vtExpectedDynIndSVAobj ), "set sva mesh 3");
         l &= assertEquals(vtExpectedDynIndSVAobj, mesh->getVertexTransferMode(), "sva mesh 3");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynIndSVAobjFromFile = PRRE_VMOD_DYNAMIC  | PRRE_VREF_INDEXED | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
-        meshFromFile->SetVertexTransferMode( vtExpectedDynIndSVAobjFromFile );
+        l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedDynIndSVAobjFromFile ), "set sva meshFromFile 3");
         l &= assertEquals(vtExpectedDynIndSVAobjFromFile, meshFromFile->getVertexTransferMode(), "sva meshFromFile 3");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynDirSVAobj = PRRE_VMOD_DYNAMIC  | PRRE_VREF_DIRECT | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
-        mesh->SetVertexTransferMode( vtExpectedDynDirSVAobj );
+        l &= assertTrue(mesh->setVertexTransferMode( vtExpectedDynDirSVAobj ), "set sva mesh 4");
         l &= assertEquals(vtExpectedDynDirSVAobj, mesh->getVertexTransferMode(), "sva mesh 4");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynDirSVAobjFromFile = PRRE_VMOD_DYNAMIC  | PRRE_VREF_DIRECT | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
-        meshFromFile->SetVertexTransferMode( vtExpectedDynDirSVAobjFromFile );
+        l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedDynDirSVAobjFromFile ), "set sva meshFromFile 4");
         l &= assertEquals(vtExpectedDynDirSVAobjFromFile, meshFromFile->getVertexTransferMode(), "sva meshFromFile 4");
 
         // following modes must be supported on every machine
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynDir1by1obj = PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT;
-        mesh->SetVertexTransferMode( vtExpectedDynDir1by1obj );
+        l &= assertTrue(mesh->setVertexTransferMode( vtExpectedDynDir1by1obj ), "set dir mesh 1b1");
         l &= assertEquals(vtExpectedDynDir1by1obj, mesh->getVertexTransferMode(), "dir mesh 1b1");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynDir1by1objFromFile = PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT;
-        meshFromFile->SetVertexTransferMode( vtExpectedDynDir1by1objFromFile );
+        l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedDynDir1by1objFromFile ), "set dir meshFromFile 1b1");
         l &= assertEquals(vtExpectedDynDir1by1objFromFile, meshFromFile->getVertexTransferMode(), "dir meshFromFile 1b1");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynDirVAobj = PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT | BIT(PRRE_VT_VA_BIT);
-        mesh->SetVertexTransferMode( vtExpectedDynDirVAobj );
+        l &= assertTrue(mesh->setVertexTransferMode( vtExpectedDynDirVAobj ), "set dir mesh rva");
         l &= assertEquals(vtExpectedDynDirVAobj, mesh->getVertexTransferMode(), "dir mesh rva");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynDirVAobjFromFile = PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT | BIT(PRRE_VT_VA_BIT);
-        meshFromFile->SetVertexTransferMode( vtExpectedDynDirVAobjFromFile );
+        l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedDynDirVAobjFromFile ), "set dir meshFromFile rva");
         l &= assertEquals(vtExpectedDynDirVAobjFromFile, meshFromFile->getVertexTransferMode(), "dir meshFromFile rva");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynInd1by1obj = PRRE_VMOD_DYNAMIC | PRRE_VREF_INDEXED;
-        mesh->SetVertexTransferMode( vtExpectedDynInd1by1obj );
+        l &= assertTrue(mesh->setVertexTransferMode( vtExpectedDynInd1by1obj ), "set ind mesh 1b1");
         l &= assertEquals(vtExpectedDynInd1by1obj, mesh->getVertexTransferMode(), "ind mesh 1b1");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynInd1by1objFromFile = PRRE_VMOD_DYNAMIC | PRRE_VREF_INDEXED;
-        meshFromFile->SetVertexTransferMode( vtExpectedDynInd1by1objFromFile );
+        l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedDynInd1by1objFromFile ), "set ind meshFromFile 1b1");
         l &= assertEquals(vtExpectedDynInd1by1objFromFile, meshFromFile->getVertexTransferMode(), "ind meshFromFile 1b1");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynIndVAobj = PRRE_VMOD_DYNAMIC | PRRE_VREF_INDEXED | BIT(PRRE_VT_VA_BIT);
-        mesh->SetVertexTransferMode( vtExpectedDynIndVAobj );
+        l &= assertTrue(mesh->setVertexTransferMode( vtExpectedDynIndVAobj ), "set ind mesh rva");
         l &= assertEquals(vtExpectedDynIndVAobj, mesh->getVertexTransferMode(), "ind mesh rva");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynIndVAobjFromFile = PRRE_VMOD_DYNAMIC | PRRE_VREF_INDEXED | BIT(PRRE_VT_VA_BIT);
-        meshFromFile->SetVertexTransferMode( vtExpectedDynIndVAobjFromFile );
+        l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedDynIndVAobjFromFile ), "set ind meshFromFile rva");
         l &= assertEquals(vtExpectedDynIndVAobjFromFile, meshFromFile->getVertexTransferMode(), "ind meshFromFile rva");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedStaDirDLobj = PRRE_VMOD_STATIC | PRRE_VREF_DIRECT;
-        mesh->SetVertexTransferMode( vtExpectedStaDirDLobj );
+        l &= assertTrue(mesh->setVertexTransferMode( vtExpectedStaDirDLobj ), "set dir mesh DL");
         l &= assertEquals(vtExpectedStaDirDLobj, mesh->getVertexTransferMode(), "dir mesh DL");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedStaDirDLobjFromFile = PRRE_VMOD_STATIC | PRRE_VREF_DIRECT;
-        meshFromFile->SetVertexTransferMode( vtExpectedStaDirDLobjFromFile );
+        l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedStaDirDLobjFromFile ), "set dir meshFromFile DL");
         l &= assertEquals(vtExpectedStaDirDLobjFromFile, meshFromFile->getVertexTransferMode(), "dir meshFromFile DL");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedStaIndDLobj = PRRE_VMOD_STATIC | PRRE_VREF_INDEXED;
-        mesh->SetVertexTransferMode( vtExpectedStaIndDLobj );
+        l &= assertTrue(mesh->setVertexTransferMode( vtExpectedStaIndDLobj ), "set ind mesh DL");
         l &= assertEquals(vtExpectedStaIndDLobj, mesh->getVertexTransferMode(), "ind mesh DL");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedStaIndDLobjFromFile = PRRE_VMOD_STATIC | PRRE_VREF_INDEXED;
-        meshFromFile->SetVertexTransferMode( vtExpectedStaIndDLobjFromFile );
+        l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedStaIndDLobjFromFile ), "set ind meshFromFile DL");
         l &= assertEquals(vtExpectedStaIndDLobjFromFile, meshFromFile->getVertexTransferMode(), "ind meshFromFile DL");
 
         return l;

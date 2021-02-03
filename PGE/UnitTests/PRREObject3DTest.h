@@ -209,9 +209,10 @@ private:
         const TPRRE_VERTEX_MODIFYING_HABIT originalVertexModifyingHabit = obj->getVertexModifyingHabit();
         // if we change the modifying habit of the referred object, cloned object returns the updated vertex modifying habit of the referred object
         const PRREObject3D* const objCloned = om->createCloned( *obj );
-        obj->SetVertexModifyingHabit(PRRE_VMOD_DYNAMIC);
+        const bool b = assertTrue(obj->setVertexModifyingHabit(PRRE_VMOD_DYNAMIC), "set");
 
-        return assertEquals(PRRE_VMOD_STATIC, originalVertexModifyingHabit, "obj original") &
+        return b &
+            assertEquals(PRRE_VMOD_STATIC, originalVertexModifyingHabit, "obj original") &
             assertEquals(PRRE_VMOD_DYNAMIC, obj->getVertexModifyingHabit(), "obj") &
             assertEquals(PRRE_VMOD_DYNAMIC, objCloned->getVertexModifyingHabit(), "objCloned") &
             assertEquals(PRRE_VMOD_STATIC, objFromFile->getVertexModifyingHabit(), "objFromFile") &
@@ -222,24 +223,25 @@ private:
 
     bool testSetVertexModifyingHabit()
     {
-        objFromFile->SetVertexModifyingHabit(PRRE_VMOD_DYNAMIC);
-        obj->SetVertexModifyingHabit(PRRE_VMOD_DYNAMIC);
+        bool b = assertTrue(objFromFile->setVertexModifyingHabit(PRRE_VMOD_DYNAMIC), "set objFromFile");
+        b &= assertTrue(obj->setVertexModifyingHabit(PRRE_VMOD_DYNAMIC), "set obj");
 
         // subobjects must reject this when called by user
         PRREObject3D* const subobj1Obj = (PRREObject3D*)(obj->getAttachedAt(0));
-        subobj1Obj->SetVertexModifyingHabit( PRRE_VMOD_STATIC );
+        b &= assertFalse(subobj1Obj->setVertexModifyingHabit( PRRE_VMOD_STATIC ), "set subobj1Obj");
 
         PRREObject3D* const subobj1ObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
-        subobj1ObjFromFile->SetVertexModifyingHabit( PRRE_VMOD_STATIC );
+        b &= assertFalse(subobj1ObjFromFile->setVertexModifyingHabit( PRRE_VMOD_STATIC ), "set subobj1FromFile");
 
         // cloned object must reject this in any case
         PRREObject3D* const objCloned = om->createCloned( *obj );
-        objCloned->SetVertexModifyingHabit( PRRE_VMOD_STATIC );
+        b &= assertFalse(objCloned->setVertexModifyingHabit( PRRE_VMOD_STATIC ), "set objCloned");
 
         PRREObject3D* const objFromFileCloned = om->createCloned( *objFromFile );
-        objFromFileCloned->SetVertexModifyingHabit( PRRE_VMOD_STATIC );
+        b &= assertFalse(objFromFileCloned->setVertexModifyingHabit( PRRE_VMOD_STATIC ), "set objFromFileCloned");
 
-        return assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(obj->getVertexTransferMode()), "obj" ) &
+        return b &
+            assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(obj->getVertexTransferMode()), "obj" ) &
             assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(objFromFile->getVertexTransferMode()), "objFromFile" ) &
             assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(subobj1Obj->getVertexTransferMode()), "subobj1Obj" ) &
             assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(subobj1ObjFromFile->getVertexTransferMode()), "subobj1ObjFromFile" ) &
@@ -252,9 +254,10 @@ private:
         const TPRRE_VERTEX_REFERENCING_MODE originalVertexRefMode = obj->getVertexReferencingMode();
         // if we change the referencing mode of the referred object, cloned object returns the updated vertex referencing mode of the referred object
         const PRREObject3D* const objCloned = om->createCloned( *obj );
-        obj->SetVertexReferencingMode(PRRE_VREF_INDEXED);
+        const bool b = assertTrue(obj->setVertexReferencingMode(PRRE_VREF_INDEXED), "set obj");
 
-        return assertEquals(PRRE_VREF_DIRECT, originalVertexRefMode, "obj original") &
+        return b &
+            assertEquals(PRRE_VREF_DIRECT, originalVertexRefMode, "obj original") &
             assertEquals(PRRE_VREF_INDEXED, obj->getVertexReferencingMode(), "obj") &
             assertEquals(PRRE_VREF_INDEXED, objCloned->getVertexReferencingMode(), "objCloned") &
             assertEquals(PRRE_VREF_INDEXED, objFromFile->getVertexReferencingMode(), "objFromFile") &
@@ -265,24 +268,25 @@ private:
 
     bool testSetVertexReferencingMode()
     {
-        obj->SetVertexReferencingMode(PRRE_VREF_INDEXED);
-        objFromFile->SetVertexReferencingMode(PRRE_VREF_DIRECT);
+        bool b = assertTrue(obj->setVertexReferencingMode(PRRE_VREF_INDEXED), "set obj");
+        b &= assertTrue(objFromFile->setVertexReferencingMode(PRRE_VREF_DIRECT), "set objFromFile");
 
         // subobjects must reject this when called by user
         PRREObject3D* const subobj1Obj = (PRREObject3D*)(obj->getAttachedAt(0));
-        subobj1Obj->SetVertexReferencingMode( PRRE_VREF_DIRECT );
+        b &= assertFalse(subobj1Obj->setVertexReferencingMode( PRRE_VREF_DIRECT ), "set subobj1Obj");
 
         PRREObject3D* const subobj1ObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
-        subobj1ObjFromFile->SetVertexReferencingMode( PRRE_VREF_INDEXED );
+        b &= assertFalse(subobj1ObjFromFile->setVertexReferencingMode( PRRE_VREF_INDEXED ), "set subobj1ObjFromFile");
 
         // cloned object must reject this in any case
         PRREObject3D* const objCloned = om->createCloned( *obj );
-        objCloned->SetVertexReferencingMode( PRRE_VREF_DIRECT );
+        b &= assertFalse(objCloned->setVertexReferencingMode( PRRE_VREF_DIRECT ), "set objCloned");
 
         PRREObject3D* const objFromFileCloned = om->createCloned( *objFromFile );
-        objFromFileCloned->SetVertexReferencingMode( PRRE_VREF_DIRECT );
+        b &= assertFalse(objFromFileCloned->setVertexReferencingMode( PRRE_VREF_DIRECT ), "set objFromFileCloned");
 
-        return assertTrue( PRREVertexTransfer::isVertexReferencingIndexed(obj->getVertexTransferMode()), "obj" ) &
+        return b &
+            assertTrue( PRREVertexTransfer::isVertexReferencingIndexed(obj->getVertexTransferMode()), "obj" ) &
             assertFalse( PRREVertexTransfer::isVertexReferencingIndexed(objFromFile->getVertexTransferMode()), "objFromFile" ) &
             assertTrue( PRREVertexTransfer::isVertexReferencingIndexed(subobj1Obj->getVertexTransferMode()), "subobj1Obj" ) &
             assertFalse( PRREVertexTransfer::isVertexReferencingIndexed(subobj1ObjFromFile->getVertexTransferMode()), "subobj1ObjFromFile" ) &
@@ -298,9 +302,10 @@ private:
         // if we change the transfer mode of the referred object, cloned object returns the updated vertex transfer mode of the referred object
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedForCloned = PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT;
         const PRREObject3D* const objCloned = om->createCloned( *obj );
-        obj->SetVertexTransferMode(vtExpectedForCloned);
+        const bool b = assertTrue(obj->setVertexTransferMode(vtExpectedForCloned), "set obj");
 
-        return assertEquals(vtExpectedForCloned, obj->getVertexTransferMode() & vtExpectedForCloned, "obj 1") &
+        return b &
+            assertEquals(vtExpectedForCloned, obj->getVertexTransferMode() & vtExpectedForCloned, "obj 1") &
             assertEquals(0u, BITF_READ(obj->getVertexTransferMode(), PRRE_VT_VENDOR_BITS, 3), "obj 2") &
             assertEquals(vtExpectedForCloned, objCloned->getVertexTransferMode() & vtExpectedForCloned, "objCloned 1") &
             assertEquals(0u, BITF_READ(objCloned->getVertexTransferMode(), PRRE_VT_VENDOR_BITS, 3), "objCloned 2") &
@@ -317,114 +322,114 @@ private:
     bool testSetVertexTransferMode()
     {
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedObj = obj->getVertexTransferMode();
-        obj->SetVertexTransferMode( obj->getVertexTransferMode() ); // intentionally testing setting to the same
-        bool l = assertEquals(vtExpectedObj, obj->getVertexTransferMode(), "sva obj 1");
+        bool b = assertTrue(obj->setVertexTransferMode( obj->getVertexTransferMode() ), "set obj"); // intentionally testing setting to the same
+        b &= assertEquals(vtExpectedObj, obj->getVertexTransferMode(), "sva obj 1");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedObjFromFile = objFromFile->getVertexTransferMode();
-        objFromFile->SetVertexTransferMode( objFromFile->getVertexTransferMode() ); // intentionally testing setting to the same
-        l &= assertEquals(vtExpectedObjFromFile, objFromFile->getVertexTransferMode(), "sva objFromFile 1");
+        b &= assertTrue(objFromFile->setVertexTransferMode( objFromFile->getVertexTransferMode() ), "set objFromFile"); // intentionally testing setting to the same
+        b &= assertEquals(vtExpectedObjFromFile, objFromFile->getVertexTransferMode(), "sva objFromFile 1");
 
         // make sure the mode of the 2 objects is not just simple (PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT) (1by1 immediate mode)
-        l &= assertNotEquals(PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT, obj->getVertexTransferMode(), "obj not dir 1by1");
-        l &= assertNotEquals(PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT, objFromFile->getVertexTransferMode(), "objFromFile not dir 1by1");
+        b &= assertNotEquals(PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT, obj->getVertexTransferMode(), "obj not dir 1by1");
+        b &= assertNotEquals(PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT, objFromFile->getVertexTransferMode(), "objFromFile not dir 1by1");
 
         // subobjects must reject this when called by user
         // by default the selected transfer mode is NOT PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT hence we try set that but expect no change!
         PRREObject3D* const subobj1Obj = (PRREObject3D*)(obj->getAttachedAt(0));
-        subobj1Obj->SetVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT );
-        l = assertEquals(vtExpectedObj, subobj1Obj->getVertexTransferMode(), "dir obj subobject");
+        b &= assertFalse(subobj1Obj->setVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT ), "set subobj1Obj");
+        b &= assertEquals(vtExpectedObj, subobj1Obj->getVertexTransferMode(), "dir obj subobject");
 
         PRREObject3D* const subobj1ObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
-        subobj1ObjFromFile->SetVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT );
-        l = assertEquals(vtExpectedObjFromFile, subobj1ObjFromFile->getVertexTransferMode(), "dir objFromFile subobject");
+        b &= assertFalse(subobj1ObjFromFile->setVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT ), "set subobj1ObjFromFile");
+        b &= assertEquals(vtExpectedObjFromFile, subobj1ObjFromFile->getVertexTransferMode(), "dir objFromFile subobject");
 
         // cloned object must reject this in any case
         // by default the selected transfer mode is NOT PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT hence we try set that but expect no change!
         PRREObject3D* const objCloned = om->createCloned( *obj );
-        objCloned->SetVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT );
-        l = assertEquals(vtExpectedObj, objCloned->getVertexTransferMode(), "dir obj cloned");
+        b &= assertFalse(objCloned->setVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT ), "set objCloned");
+        b &= assertEquals(vtExpectedObj, objCloned->getVertexTransferMode(), "dir obj cloned");
 
         PRREObject3D* const objFromFileCloned = om->createCloned( *objFromFile );
-        objFromFileCloned->SetVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT );
-        l = assertEquals(vtExpectedObjFromFile, objFromFileCloned->getVertexTransferMode(), "dir objFromFile cloned");
+        b &= assertFalse(objFromFileCloned->setVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT ), "set objFromFileCloned");
+        b &= assertEquals(vtExpectedObjFromFile, objFromFileCloned->getVertexTransferMode(), "dir objFromFile cloned");
 
         // Generic server-side vertex arrays are supported by main test machine
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedStaIndSVAobj = PRRE_VMOD_STATIC  | PRRE_VREF_INDEXED | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
-        obj->SetVertexTransferMode( vtExpectedStaIndSVAobj );
-        l &= assertEquals(vtExpectedStaIndSVAobj, obj->getVertexTransferMode(), "sva obj 2");
+        b &= assertTrue(obj->setVertexTransferMode( vtExpectedStaIndSVAobj ), "set obj sva");
+        b &= assertEquals(vtExpectedStaIndSVAobj, obj->getVertexTransferMode(), "sva obj 2");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedStaIndSVAobjFromFile = PRRE_VMOD_STATIC  | PRRE_VREF_INDEXED | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
-        objFromFile->SetVertexTransferMode( vtExpectedStaIndSVAobjFromFile );
-        l &= assertEquals(vtExpectedStaIndSVAobjFromFile, objFromFile->getVertexTransferMode(), "sva objFromFile 2");
+        b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedStaIndSVAobjFromFile ), "set objFromFile sva");
+        b &= assertEquals(vtExpectedStaIndSVAobjFromFile, objFromFile->getVertexTransferMode(), "sva objFromFile 2");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynIndSVAobj = PRRE_VMOD_DYNAMIC  | PRRE_VREF_INDEXED | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
-        obj->SetVertexTransferMode( vtExpectedDynIndSVAobj );
-        l &= assertEquals(vtExpectedDynIndSVAobj, obj->getVertexTransferMode(), "sva obj 3");
+        b &= assertTrue(obj->setVertexTransferMode( vtExpectedDynIndSVAobj ), "set obj sva 3");
+        b &= assertEquals(vtExpectedDynIndSVAobj, obj->getVertexTransferMode(), "sva obj 3");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynIndSVAobjFromFile = PRRE_VMOD_DYNAMIC  | PRRE_VREF_INDEXED | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
-        objFromFile->SetVertexTransferMode( vtExpectedDynIndSVAobjFromFile );
-        l &= assertEquals(vtExpectedDynIndSVAobjFromFile, objFromFile->getVertexTransferMode(), "sva objFromFile 3");
+        b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedDynIndSVAobjFromFile ), "set objFromFile sva 3");
+        b &= assertEquals(vtExpectedDynIndSVAobjFromFile, objFromFile->getVertexTransferMode(), "sva objFromFile 3");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynDirSVAobj = PRRE_VMOD_DYNAMIC  | PRRE_VREF_DIRECT | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
-        obj->SetVertexTransferMode( vtExpectedDynDirSVAobj );
-        l &= assertEquals(vtExpectedDynDirSVAobj, obj->getVertexTransferMode(), "sva obj 4");
+        b &= assertTrue(obj->setVertexTransferMode( vtExpectedDynDirSVAobj ), "set obj sva 4");
+        b &= assertEquals(vtExpectedDynDirSVAobj, obj->getVertexTransferMode(), "sva obj 4");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynDirSVAobjFromFile = PRRE_VMOD_DYNAMIC  | PRRE_VREF_DIRECT | BIT(PRRE_VT_VA_BIT) | BIT(PRRE_VT_SVA_BIT);
-        objFromFile->SetVertexTransferMode( vtExpectedDynDirSVAobjFromFile );
-        l &= assertEquals(vtExpectedDynDirSVAobjFromFile, objFromFile->getVertexTransferMode(), "sva objFromFile 4");
+        b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedDynDirSVAobjFromFile ), "set objFromFile sva 4");
+        b &= assertEquals(vtExpectedDynDirSVAobjFromFile, objFromFile->getVertexTransferMode(), "sva objFromFile 4");
 
         // following modes must be supported on every machine
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynDir1by1obj = PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT;
-        obj->SetVertexTransferMode( vtExpectedDynDir1by1obj );
-        l &= assertEquals(vtExpectedDynDir1by1obj, obj->getVertexTransferMode(), "dir obj 1b1");
+        b &= assertTrue(obj->setVertexTransferMode( vtExpectedDynDir1by1obj ), "set obj 1b1");
+        b &= assertEquals(vtExpectedDynDir1by1obj, obj->getVertexTransferMode(), "dir obj 1b1");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynDir1by1objFromFile = PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT;
-        objFromFile->SetVertexTransferMode( vtExpectedDynDir1by1objFromFile );
-        l &= assertEquals(vtExpectedDynDir1by1objFromFile, objFromFile->getVertexTransferMode(), "dir objFromFile 1b1");
+        b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedDynDir1by1objFromFile ), "set objFromFile 1b1");
+        b &= assertEquals(vtExpectedDynDir1by1objFromFile, objFromFile->getVertexTransferMode(), "dir objFromFile 1b1");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynDirVAobj = PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT | BIT(PRRE_VT_VA_BIT);
-        obj->SetVertexTransferMode( vtExpectedDynDirVAobj );
-        l &= assertEquals(vtExpectedDynDirVAobj, obj->getVertexTransferMode(), "dir obj rva");
+        b &= assertTrue(obj->setVertexTransferMode( vtExpectedDynDirVAobj ), "set obj rva");
+        b &= assertEquals(vtExpectedDynDirVAobj, obj->getVertexTransferMode(), "dir obj rva");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynDirVAobjFromFile = PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT | BIT(PRRE_VT_VA_BIT);
-        objFromFile->SetVertexTransferMode( vtExpectedDynDirVAobjFromFile );
-        l &= assertEquals(vtExpectedDynDirVAobjFromFile, objFromFile->getVertexTransferMode(), "dir objFromFile rva");
+        b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedDynDirVAobjFromFile ), "set objFromFile rva");
+        b &= assertEquals(vtExpectedDynDirVAobjFromFile, objFromFile->getVertexTransferMode(), "dir objFromFile rva");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynInd1by1obj = PRRE_VMOD_DYNAMIC | PRRE_VREF_INDEXED;
-        obj->SetVertexTransferMode( vtExpectedDynInd1by1obj );
-        l &= assertEquals(vtExpectedDynInd1by1obj, obj->getVertexTransferMode(), "ind obj 1b1");
+        b &= assertTrue(obj->setVertexTransferMode( vtExpectedDynInd1by1obj ), "set obj 1b1");
+        b &= assertEquals(vtExpectedDynInd1by1obj, obj->getVertexTransferMode(), "ind obj 1b1");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynInd1by1objFromFile = PRRE_VMOD_DYNAMIC | PRRE_VREF_INDEXED;
-        objFromFile->SetVertexTransferMode( vtExpectedDynInd1by1objFromFile );
-        l &= assertEquals(vtExpectedDynInd1by1objFromFile, objFromFile->getVertexTransferMode(), "ind objFromFile 1b1");
+        b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedDynInd1by1objFromFile ), "set objFromFile 1b1");
+        b &= assertEquals(vtExpectedDynInd1by1objFromFile, objFromFile->getVertexTransferMode(), "ind objFromFile 1b1");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynIndVAobj = PRRE_VMOD_DYNAMIC | PRRE_VREF_INDEXED | BIT(PRRE_VT_VA_BIT);
-        obj->SetVertexTransferMode( vtExpectedDynIndVAobj );
-        l &= assertEquals(vtExpectedDynIndVAobj, obj->getVertexTransferMode(), "ind obj rva");
+        b &= assertTrue(obj->setVertexTransferMode( vtExpectedDynIndVAobj ), "set obj rva");
+        b &= assertEquals(vtExpectedDynIndVAobj, obj->getVertexTransferMode(), "ind obj rva");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedDynIndVAobjFromFile = PRRE_VMOD_DYNAMIC | PRRE_VREF_INDEXED | BIT(PRRE_VT_VA_BIT);
-        objFromFile->SetVertexTransferMode( vtExpectedDynIndVAobjFromFile );
-        l &= assertEquals(vtExpectedDynIndVAobjFromFile, objFromFile->getVertexTransferMode(), "ind objFromFile rva");
+        b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedDynIndVAobjFromFile ), "set objFromFile rv");
+        b &= assertEquals(vtExpectedDynIndVAobjFromFile, objFromFile->getVertexTransferMode(), "ind objFromFile rva");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedStaDirDLobj = PRRE_VMOD_STATIC | PRRE_VREF_DIRECT;
-        obj->SetVertexTransferMode( vtExpectedStaDirDLobj );
-        l &= assertEquals(vtExpectedStaDirDLobj, obj->getVertexTransferMode(), "dir obj DL");
+        b &= assertTrue(obj->setVertexTransferMode( vtExpectedStaDirDLobj ), "set obj DL");
+        b &= assertEquals(vtExpectedStaDirDLobj, obj->getVertexTransferMode(), "dir obj DL");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedStaDirDLobjFromFile = PRRE_VMOD_STATIC | PRRE_VREF_DIRECT;
-        objFromFile->SetVertexTransferMode( vtExpectedStaDirDLobjFromFile );
-        l &= assertEquals(vtExpectedStaDirDLobjFromFile, objFromFile->getVertexTransferMode(), "dir objFromFile DL");
+        b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedStaDirDLobjFromFile ), "set objFromFile DL");
+        b &= assertEquals(vtExpectedStaDirDLobjFromFile, objFromFile->getVertexTransferMode(), "dir objFromFile DL");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedStaIndDLobj = PRRE_VMOD_STATIC | PRRE_VREF_INDEXED;
-        obj->SetVertexTransferMode( vtExpectedStaIndDLobj );
-        l &= assertEquals(vtExpectedStaIndDLobj, obj->getVertexTransferMode(), "ind obj DL");
+        b &= assertTrue(obj->setVertexTransferMode( vtExpectedStaIndDLobj ), "set obj DL");
+        b &= assertEquals(vtExpectedStaIndDLobj, obj->getVertexTransferMode(), "ind obj DL");
 
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedStaIndDLobjFromFile = PRRE_VMOD_STATIC | PRRE_VREF_INDEXED;
-        objFromFile->SetVertexTransferMode( vtExpectedStaIndDLobjFromFile );
-        l &= assertEquals(vtExpectedStaIndDLobjFromFile, objFromFile->getVertexTransferMode(), "ind objFromFile DL");
+        b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedStaIndDLobjFromFile ), "set objFromFile DL");
+        b &= assertEquals(vtExpectedStaIndDLobjFromFile, objFromFile->getVertexTransferMode(), "ind objFromFile DL");
 
-        return l;
+        return b;
     }
 
     bool testGetTransformedVertices()

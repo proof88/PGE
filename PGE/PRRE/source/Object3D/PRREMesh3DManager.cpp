@@ -1698,7 +1698,14 @@ PRREMaterial* PRREMesh3DManager::createMaterialForMesh(PRREMesh3D& mesh) const
     if ( mesh.pImpl->pMaterial == PGENULL )
     {
         mesh.pImpl->pMaterial = pImpl->materialMgr.createMaterial();
-        getConsole().EOLn("ERROR: PRREMesh3DManager::createMaterialForMesh(), returned material is NULL!");
+        if ( mesh.pImpl->pMaterial == PGENULL )
+        {
+            getConsole().EOLn("ERROR: PRREMesh3DManager::createMaterialForMesh(), returned material is NULL!");
+        }
+        else
+        {
+            getConsole().SOLn("PRREMesh3DManager::createMaterialForMesh() created material!");
+        }
     }
     else
     {

@@ -32,11 +32,11 @@ public:
     virtual ~PRREVertexTransferImpl();
 
     TPRRE_VERTEX_MODIFYING_HABIT getVertexModifyingHabit() const;      
-    void SetVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod);   
+    TPRREbool setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod);   
     TPRRE_VERTEX_REFERENCING_MODE getVertexReferencingMode() const;    
-    void SetVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref); 
+    TPRREbool setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref); 
     TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;          
-    void SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);    
+    TPRREbool setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);    
 
     TPRREuint getUsedSystemMemory() const; 
 
@@ -62,7 +62,7 @@ private:
     PRREVertexTransfer* _pOwner;
     TPRRE_VERTEX_TRANSFER_MODE vertexTransferMode;       /**< Vertices storage. */
 
-    TPRREbool bParentInitiatedOperation;   /**< Parent VertexTransfer sets this to true at the beginning of SetVertexTransferMode(), submeshes ignore if this is not true in parent. */
+    TPRREbool bParentInitiatedOperation;   /**< Parent VertexTransfer sets this to true at the beginning of setVertexTransferMode(), submeshes ignore if this is not true in parent. */
 
     GLuint nDispList;               /**< OpenGL display list index. */
     GLuint nVerticesVBO;            /**< OpenGL VBO index of vertices. */

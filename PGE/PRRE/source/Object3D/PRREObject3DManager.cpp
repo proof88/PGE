@@ -227,15 +227,23 @@ PRREObject3D* PRREObject3DManager::createPlane(
     catch (const std::bad_alloc&)
     {
         delete subobj; // will invoke obj->Detach()
-        delete obj; // would delete subobj, except if it is not yet attached, so we explicitly delete subobj above
-        getConsole().EOLn("ERROR: PRREObject3DManager::createPlane() failed to instantiate PRREObject3D!");
+        delete obj;    // would delete subobj, except if it is not yet attached, so we explicitly delete subobj above
+        getConsole().EOLnOO("ERROR: PRREObject3DManager::createPlane() failed to instantiate PRREObject3D!");
+        getConsole().OLn("");
         return PGENULL;
     }
 
     // although PPP has already selected the vtransmode, we set it again
     // to actually allocate the needed resources for the geometry
     getConsole().OI();
-    obj->SetVertexTransferMode( obj->getVertexTransferMode() );
+    if ( !obj->setVertexTransferMode( obj->getVertexTransferMode() ) )
+    {
+        getConsole().OO();
+        DeleteAttachedInstance( *obj );
+        getConsole().EOLnOO("ERROR: setVertexTransferMode() failed, returning NULL now!");
+        getConsole().OLn("");
+        return PGENULL;
+    }
     getConsole().OO();
 
     getConsole().SOLnOO("> Plane created successfully!");
@@ -295,13 +303,21 @@ PRREObject3D* PRREObject3DManager::createBox(
         delete subobj; // will invoke obj->Detach()
         delete obj;    // would delete subobj, except if it is not yet attached, so we explicitly delete subobj above
         getConsole().EOLn("ERROR: PRREObject3DManager::createPlane() failed to instantiate PRREObject3D!");
+        getConsole().OLn("");
         return PGENULL;
     }
 
     // although PPP has already selected the vtransmode, we set it again
     // to actually allocate the needed resources for the geometry
     getConsole().OI();
-    obj->SetVertexTransferMode( obj->getVertexTransferMode() );
+    if ( !obj->setVertexTransferMode( obj->getVertexTransferMode() ) )
+    {
+        getConsole().OO();
+        DeleteAttachedInstance( *obj );
+        getConsole().EOLnOO("ERROR: setVertexTransferMode() failed, returning NULL now!");
+        getConsole().OLn("");
+        return PGENULL;
+    }
     getConsole().OO();
 
     getConsole().SOLnOO("> Box created successfully!");
@@ -452,7 +468,14 @@ PRREObject3D* PRREObject3DManager::createFromFile(
             // although PPP has already selected the vtransmode, we set it again
             // to actually allocate the needed resources for the geometry
             getConsole().OI();
-            obj->SetVertexTransferMode( obj->getVertexTransferMode() );
+            if ( !obj->setVertexTransferMode( obj->getVertexTransferMode() ) )
+            {
+                getConsole().OO();
+                DeleteAttachedInstance( *obj );
+                getConsole().EOLnOO("ERROR: setVertexTransferMode() failed, returning NULL now!");
+                getConsole().OLn("");
+                return PGENULL;
+            }
             getConsole().OO();
         } // try
         catch (const std::bad_alloc&)
@@ -501,7 +524,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(const char* filename)
     Useful for saving memory on geometry data on both client and server side.
 
     @return A clone instance.
-            PGENULL if Object3DManager is not yet initialized.
+            PGENULL if Object3DManager is not yet initialized, or if memory allocation issue happens, or when vertex transfer mode cannot be set.
 */
 PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
 {
@@ -522,10 +545,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         obj->SetName( referredobj.getName() );
         obj->SetFilename( referredobj.getFilename() );
         
-        // attach right now, otherwise SetVertexTransferMode() would fail
         Attach( *obj );
-        obj->SetVertexTransferMode(referredobj.getVertexTransferMode());
-        // SetVertexTransferMode() would fail if referred object was set earlier
         obj->pImpl->pRefersto = &referredobj;
 
         obj->getPosVec() = referredobj.getPosVec();
@@ -561,6 +581,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
     catch (const std::bad_alloc&)
     {
         delete obj; // if new PRREObject3D() fails, obj is null so this has no effect, but if createMaterialForMesh() fails, this will properly get rid of obj
+        obj = PGENULL;
         getConsole().EOLnOO("ERROR: failed to instantiate PRREObject3D!");
     }
 

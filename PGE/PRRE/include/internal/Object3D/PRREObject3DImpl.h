@@ -32,11 +32,11 @@ public:
     virtual ~PRREObject3DImpl();
 
     TPRRE_VERTEX_MODIFYING_HABIT getVertexModifyingHabit() const;
-    void SetVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod);
+    TPRREbool setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod);
     TPRRE_VERTEX_REFERENCING_MODE getVertexReferencingMode() const;
-    void SetVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref);
+    TPRREbool setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref);
     TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;
-    void SetVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);
+    TPRREbool setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);
 
     PRREObject3D* getReferredObject() const;   
 
