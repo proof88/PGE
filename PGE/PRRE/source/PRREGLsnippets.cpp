@@ -112,26 +112,35 @@ TPRREuint PRREGLsnippets::getVertexIndex(const void* arr, TPRREuint index, GLenu
 
 /**
     Sets arr[index] element of the given array of iType type elements to value.
-    If the given value doesn't fit into given iType element type, an error message will be logged to console, but the value will be casted to the given type anyway and stored in the array.
+    If the given value doesn't fit into given iType element type, an error message will be logged to console and no change to array will be done.
+
+    @return True on success, false otherwise.
 */
-void PRREGLsnippets::SetVertexIndex(void* arr, TPRREuint index, TPRREuint value, GLenum iType)
+TPRREbool PRREGLsnippets::setVertexIndex(void* arr, TPRREuint index, TPRREuint value, GLenum iType)
 {
     switch (iType)
     {
     case GL_UNSIGNED_BYTE :
         if ( value > UCHAR_MAX )
-            CConsole::getConsoleInstance().EOLn("SetVertexIndex() ERROR: storing %d as BYTE (MAX=%d)!", value, UCHAR_MAX);
+        {
+            CConsole::getConsoleInstance().EOLn("setVertexIndex() ERROR: storing %d as BYTE (MAX=%d)!", value, UCHAR_MAX);
+            return false;
+        }
         ((TPRREubyte*)arr)[index]  = (TPRREubyte) value;
         break;
     case GL_UNSIGNED_SHORT:
         if ( value > USHRT_MAX )
-            CConsole::getConsoleInstance().EOLn("SetVertexIndex() ERROR: storing %d as SHORT (MAX=%d)!", value, USHRT_MAX);
+        {
+            CConsole::getConsoleInstance().EOLn("setVertexIndex() ERROR: storing %d as SHORT (MAX=%d)!", value, USHRT_MAX);
+            return false;
+        }
         ((TPRREushort*)arr)[index] = (TPRREushort) value;
         break;
     default: // GL_UNSIGNED_INT
         ((TPRREuint*)arr)[index]   = value; 
         break;
     }
+    return true;
 }
 
 

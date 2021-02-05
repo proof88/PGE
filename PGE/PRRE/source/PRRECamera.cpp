@@ -84,10 +84,7 @@ const TRECT& PRRECamera::PRRECameraImpl::getViewport() const
     
 void PRRECamera::PRRECameraImpl::SetViewport(TPRREuint vx, TPRREuint vy, TPRREuint vsx, TPRREuint vsy)
 {
-    if ( (vx < 0) || (vy < 0) )
-        return;
-
-    if ( (vsx <= 0) || (vsy <= 0) )
+    if ( (vsx == 0) || (vsy == 0) )
         return;
 
     rectViewport.pos.x = (TPRREfloat) vx;

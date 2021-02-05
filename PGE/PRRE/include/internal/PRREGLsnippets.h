@@ -33,8 +33,8 @@ public:
     static void        ClearGLerror();                      /**< Clears GL error state. */
 
     static TPRREuint getSizeofIndexType(GLenum iType);                                            /**< Returns the size in Bytes of the given OpenGL index type. */
-    static TPRREuint getVertexIndex(const void* arr, TPRREuint index, GLenum iType);           /**< Returns arr[index] element from the given array of iType type elements. */
-    static void      SetVertexIndex(void* arr, TPRREuint index, TPRREuint value, GLenum iType);  /**< Sets arr[index] element of the given array of iType type elements to value. */
+    static TPRREuint getVertexIndex(const void* arr, TPRREuint index, GLenum iType);              /**< Returns arr[index] element from the given array of iType type elements. */
+    static TPRREbool setVertexIndex(void* arr, TPRREuint index, TPRREuint value, GLenum iType);   /**< Sets arr[index] element of the given array of iType type elements to value. */
 
 private:
     static const char* const GL_ERR_STR_NO_ERROR;

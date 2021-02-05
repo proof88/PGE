@@ -376,17 +376,19 @@ PRREMesh3D::PRREMesh3DImpl& PRREMesh3D::PRREMesh3DImpl::operator=(const PRREMesh
     Sets an index value in the vertex index array.
     Since this also checks for violating range defined by nMinVertexIndex and nMaxVertexIndex, even during building up a geometry,
     those limits should be properly updated before using this function.
+
+    @return True on success, false otherwise.
 */
-void PRREMesh3D::PRREMesh3DImpl::SetVertexIndex(TPRREuint index, TPRREuint value)
+TPRREbool PRREMesh3D::PRREMesh3DImpl::setVertexIndex(TPRREuint index, TPRREuint value)
 {
     if ( (index >= nVertexIndices_h) || (index > nMaxVertexIndex) || (index < nMinVertexIndex) )
     {
-        getConsole().EOLn("SetVertexIndex(%d) out of range: nVertexIndices_h: %d, nMinVertexIndex: %d, nMaxVertexIndex: %d!",
+        getConsole().EOLn("setVertexIndex(%d) out of range: nVertexIndices_h: %d, nMinVertexIndex: %d, nMaxVertexIndex: %d!",
             index, nVertexIndices_h, nMinVertexIndex, nMaxVertexIndex);
-        return;
+        return false;
     }
 
-    PRREGLsnippets::SetVertexIndex(pVertexIndices, index, value, this->nIndicesType);
+    return PRREGLsnippets::setVertexIndex(pVertexIndices, index, value, this->nIndicesType);
 }
 
 

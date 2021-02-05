@@ -11,6 +11,9 @@
 #include "PRREbaseIncludes.h"  // PCH
 #include "../../include/external/Object3D/PRREMesh3DManager.h"
 #include "../../include/internal/Object3D/PRREMesh3DImpl.h"
+
+#include <cassert>
+
 #include "../../include/external/Hardware/PRREhwInfo.h"
 #include "../../include/internal/PRREGLextensionFuncs.h"
 #include "../../include/internal/PRREGLsnippets.h"
@@ -564,11 +567,12 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
 
                 // Putting parsed indices into index arrays.
                 // We decrease the parsed index values by the previously accumulated index values because OBJ stores global indices but we need submesh-local indices.
-                // SetVertexIndex() stores indices with minimal storage size, eg. 1 as byte, 500 as short, so passing submesh-local indices here is CRITICAL to avoid chopping values.
+                // setVertexIndex() stores indices with minimal storage size, eg. 1 as byte, 500 as short, so passing submesh-local indices here is CRITICAL to avoid chopping values.
                 /* Note: exchange k*3 and k*3+2 for CW-CCW change. This maybe a feature in the future. */
-                currSubObj->pImpl->SetVertexIndex(k*3+2, tmpParseVertexIndices[0] - prevvertcount);
-                currSubObj->pImpl->SetVertexIndex(k*3+1, tmpParseVertexIndices[1] - prevvertcount);
-                currSubObj->pImpl->SetVertexIndex(k*3,   tmpParseVertexIndices[2] - prevvertcount);
+                TPRREbool setVertexIndicesOk = true;
+                setVertexIndicesOk &= currSubObj->pImpl->setVertexIndex(k*3+2, tmpParseVertexIndices[0] - prevvertcount);
+                setVertexIndicesOk &= currSubObj->pImpl->setVertexIndex(k*3+1, tmpParseVertexIndices[1] - prevvertcount);
+                setVertexIndicesOk &= currSubObj->pImpl->setVertexIndex(k*3,   tmpParseVertexIndices[2] - prevvertcount);
 
                 // Putting geometry data into arrays. We store geometry data redundantly.
                 currSubObj->pImpl->pVertices[k*3]    = tmpSubMeshesVertices[i][ currSubObj->pImpl->getVertexIndex(k*3) ];
@@ -580,9 +584,16 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
                 currSubObj->pImpl->pMaterial->getTexcoords()[k*3+2] = tmpSubMeshesTexcoords[i][ tmpParseTexcoordIndices[0] - prevtexcoordcount ];
 
                 // Update the index values because we now store geometry data redundantly.
-                currSubObj->pImpl->SetVertexIndex(k*3,   k*3);
-                currSubObj->pImpl->SetVertexIndex(k*3+1, k*3+1);
-                currSubObj->pImpl->SetVertexIndex(k*3+2, k*3+2);
+                setVertexIndicesOk &= currSubObj->pImpl->setVertexIndex(k*3,   k*3);
+                setVertexIndicesOk &= currSubObj->pImpl->setVertexIndex(k*3+1, k*3+1);
+                setVertexIndicesOk &= currSubObj->pImpl->setVertexIndex(k*3+2, k*3+2);
+
+                if ( !setVertexIndicesOk )
+                {
+                    const std::string sErrMsg = "setVertexIndicesOk false at submesh " + std::to_string(i) + ", line " + std::to_string(j) + ", k " + std::to_string(k);
+                    throw std::overflow_error(sErrMsg);
+                }
+
                 k++;
             } 
             prevvertcount += tmpSubMeshesVertices_h[i];
@@ -591,7 +602,7 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
         }
         _pOwner->getConsole().OLnOO("faces parsed!");
     } // try
-    catch (const std::bad_alloc&)
+    catch (const std::exception& e)
     {
         for (TPRREuint i = 0; i < submeshes_h; i++)
         {
@@ -618,7 +629,7 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
         delete[] lines;
         delete[] filebuffer;
 
-        _pOwner->getConsole().EOLnOO("ERROR: submesh geometry arrays alloc failed!");
+        _pOwner->getConsole().EOLnOO("ERROR: submesh geometry arrays buildup issue: %s!", e.what());
         return NULL;
     } // catch
 
@@ -1180,7 +1191,7 @@ void PRREMesh3DManager::ConvertToPlane(
             submesh->pImpl->nMinVertexIndex = i;
         if ( submesh->pImpl->nMaxVertexIndex < i )
             submesh->pImpl->nMaxVertexIndex = i;
-        submesh->pImpl->SetVertexIndex(i, i);
+        assert( submesh->pImpl->setVertexIndex(i, i) );
     }
 }
 
@@ -1680,7 +1691,7 @@ void PRREMesh3DManager::ConvertToBox(
             submesh->pImpl->nMinVertexIndex = i;
         if ( submesh->pImpl->nMaxVertexIndex < i )
             submesh->pImpl->nMaxVertexIndex = i;
-        submesh->pImpl->SetVertexIndex(i, i);
+        assert( submesh->pImpl->setVertexIndex(i, i) );
     }
 }
 

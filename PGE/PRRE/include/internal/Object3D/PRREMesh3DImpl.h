@@ -78,7 +78,7 @@ protected:
     PRREMesh3DImpl(const PRREMesh3DImpl&);
     PRREMesh3DImpl& operator=(const PRREMesh3DImpl&);
 
-    void      SetVertexIndex(TPRREuint index, TPRREuint value);  /**< Sets an index value in the vertex index array. */
+    TPRREbool setVertexIndex(TPRREuint index, TPRREuint value);  /**< Sets an index value in the vertex index array. */
 
 private:
     PRREMesh3D* _pOwner;            /**< The owner public object who creates this pimpl object. */
