@@ -586,7 +586,10 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         // for the material, no need to copy texcoords, etc ...
         // however we need to set blendfunc and envcolor, because renderer would not get referredobj blendfunc ...
         // probably this should be treated as bug of renderer, however I fix it from objectmanager side here.
-        obj->getMaterial().SetBlendFuncs( referredobj.getMaterial().getSourceBlendFunc(), referredobj.getMaterial().getDestinationBlendFunc() );
+        if ( !obj->getMaterial().setBlendFuncs( referredobj.getMaterial().getSourceBlendFunc(), referredobj.getMaterial().getDestinationBlendFunc() ) )
+        {
+            throw std::logic_error("setBlendFuncs() failed with referredobj's values!");
+        }
         obj->getMaterial().getTextureEnvColor().Set(
             referredobj.getMaterial().getTextureEnvColor().getRed(),
             referredobj.getMaterial().getTextureEnvColor().getGreen(),
@@ -595,11 +598,11 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
 
         getConsole().SOLnOO("> Object cloned successfully!");
     } // try
-    catch (const std::bad_alloc&)
+    catch (const std::exception& e)
     {
         delete obj; // if new PRREObject3D() fails, obj is null so this has no effect, but if createMaterialForMesh() fails, this will properly get rid of obj
         obj = PGENULL;
-        getConsole().EOLnOO("ERROR: failed to instantiate PRREObject3D!");
+        getConsole().EOLnOO("ERROR: failed to instantiate PRREObject3D: %s!", e.what());
     }
 
     getConsole().OLn("");

@@ -187,22 +187,22 @@ public:
     const   PRREColor&   getTextureEnvColor(TPRREuint level = 0) const;       /**< Gets the texture environment color of the material on the specified level. */
 
             TPRRE_BLENDFACTORS getSourceBlendFunc(TPRREuint level = 0) const;       /**< Gets the source blend factor on the specified level. */
-            void               SetSourceBlendFunc(
+            TPRREbool          setSourceBlendFunc(
                                 TPRRE_BLENDFACTORS value,
                                 TPRREuint level = 0);                               /**< Sets the source blend factor on the specified level. */
 
             TPRRE_BLENDFACTORS getDestinationBlendFunc(TPRREuint level = 0) const;  /**< Gets the destination blend factor on the specified level. */
-            void               SetDestinationBlendFunc(
+            TPRREbool          setDestinationBlendFunc(
                                 TPRRE_BLENDFACTORS value,
                                 TPRREuint level = 0);                               /**< Sets the destination blend factor on the specified level. */
 
-            void               SetBlendFuncs(
+            TPRREbool          setBlendFuncs(
                                 TPRRE_BLENDFACTORS src,
                                 TPRRE_BLENDFACTORS dst,
                                 TPRREuint level = 0);                               /**< Sets the blend factors on the specified level. */
 
             TPRRE_BLENDMODES   getBlendMode(TPRREuint level = 0) const;             /**< Gets the blend mode on the specified level. */
-            void               SetBlendMode(
+            TPRREbool          setBlendMode(
                                 TPRRE_BLENDMODES mode,
                                 TPRREuint level = 0);                               /**< Sets the blend mode on the specified level. */
 

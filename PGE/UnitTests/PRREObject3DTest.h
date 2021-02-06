@@ -191,15 +191,22 @@ private:
     {
         
         PRREObject3D* const objCloned = om->createCloned(*obj);
+        if ( !objCloned )
+        {
+            return assertNotNull(objCloned, "objCloned is NULL");
+        }
+
         PRREObject3D* const objFromFileCloned = om->createCloned(*objFromFile);
+        if ( !objFromFileCloned )
+        {
+            return assertNotNull(objFromFileCloned, "objCloned is NULL");
+        }
 
         return assertNull(obj->getReferredObject(), "obj") &
             assertNull(objFromFile->getReferredObject(), "obj") &
             assertNull(objPlane->getReferredObject(), "plane") &
             assertNull(objBox->getReferredObject(), "box") &
             assertNull(objCube->getReferredObject(), "cube") &
-            assertNotNull(objCloned->getReferredObject(), "refobj") &
-            assertNotNull(objFromFileCloned->getReferredObject(), "refobjFromFile") &
             assertEquals(obj, objCloned->getReferredObject(), "refobjEquals") &
             assertEquals(objFromFile, objFromFileCloned->getReferredObject(), "refobjFromFileEquals");
     }
@@ -209,6 +216,10 @@ private:
         const TPRRE_VERTEX_MODIFYING_HABIT originalVertexModifyingHabit = obj->getVertexModifyingHabit();
         // if we change the modifying habit of the referred object, cloned object returns the updated vertex modifying habit of the referred object
         const PRREObject3D* const objCloned = om->createCloned( *obj );
+        if ( !objCloned )
+        {
+            return assertNotNull(objCloned, "objCloned is NULL");
+        }
         const bool b = assertTrue(obj->setVertexModifyingHabit(PRRE_VMOD_DYNAMIC), "set");
 
         return b &
@@ -235,9 +246,17 @@ private:
 
         // cloned object must reject this in any case
         PRREObject3D* const objCloned = om->createCloned( *obj );
+        if ( !objCloned )
+        {
+            return assertNotNull(objCloned, "objCloned is NULL");
+        }
         b &= assertFalse(objCloned->setVertexModifyingHabit( PRRE_VMOD_STATIC ), "set objCloned");
 
         PRREObject3D* const objFromFileCloned = om->createCloned( *objFromFile );
+        if ( !objFromFileCloned )
+        {
+            return assertNotNull(objFromFileCloned, "objFromFileCloned is NULL");
+        }
         b &= assertFalse(objFromFileCloned->setVertexModifyingHabit( PRRE_VMOD_STATIC ), "set objFromFileCloned");
 
         return b &
@@ -254,6 +273,10 @@ private:
         const TPRRE_VERTEX_REFERENCING_MODE originalVertexRefMode = obj->getVertexReferencingMode();
         // if we change the referencing mode of the referred object, cloned object returns the updated vertex referencing mode of the referred object
         const PRREObject3D* const objCloned = om->createCloned( *obj );
+        if ( !objCloned )
+        {
+            return assertNotNull(objCloned, "objCloned is NULL");
+        }
         const bool b = assertTrue(obj->setVertexReferencingMode(PRRE_VREF_INDEXED), "set obj");
 
         return b &
@@ -280,9 +303,17 @@ private:
 
         // cloned object must reject this in any case
         PRREObject3D* const objCloned = om->createCloned( *obj );
+        if ( !objCloned )
+        {
+            return assertNotNull(objCloned, "objCloned is NULL");
+        }
         b &= assertFalse(objCloned->setVertexReferencingMode( PRRE_VREF_DIRECT ), "set objCloned");
 
         PRREObject3D* const objFromFileCloned = om->createCloned( *objFromFile );
+        if ( !objFromFileCloned )
+        {
+            return assertNotNull(objFromFileCloned, "objFromFileCloned is NULL");
+        }
         b &= assertFalse(objFromFileCloned->setVertexReferencingMode( PRRE_VREF_DIRECT ), "set objFromFileCloned");
 
         return b &
@@ -302,6 +333,10 @@ private:
         // if we change the transfer mode of the referred object, cloned object returns the updated vertex transfer mode of the referred object
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedForCloned = PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT;
         const PRREObject3D* const objCloned = om->createCloned( *obj );
+        if ( !objCloned )
+        {
+            return assertNotNull(objCloned, "objCloned is NULL");
+        }
         const bool b = assertTrue(obj->setVertexTransferMode(vtExpectedForCloned), "set obj");
 
         return b &
@@ -346,10 +381,18 @@ private:
         // cloned object must reject this in any case
         // by default the selected transfer mode is NOT PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT hence we try set that but expect no change!
         PRREObject3D* const objCloned = om->createCloned( *obj );
+        if ( !objCloned )
+        {
+            return assertNotNull(objCloned, "objCloned is NULL");
+        }
         b &= assertFalse(objCloned->setVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT ), "set objCloned");
         b &= assertEquals(vtExpectedObj, objCloned->getVertexTransferMode(), "dir obj cloned");
 
         PRREObject3D* const objFromFileCloned = om->createCloned( *objFromFile );
+        if ( !objFromFileCloned )
+        {
+            return assertNotNull(objFromFileCloned, "objFromFileCloned is NULL");
+        }
         b &= assertFalse(objFromFileCloned->setVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT ), "set objFromFileCloned");
         b &= assertEquals(vtExpectedObjFromFile, objFromFileCloned->getVertexTransferMode(), "dir objFromFile cloned");
 

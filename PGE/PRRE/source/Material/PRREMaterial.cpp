@@ -287,16 +287,18 @@ TPRRE_BLENDFACTORS PRREMaterial::PRREMaterialImpl::getSourceBlendFunc(TPRREuint 
 } // getSourceBlendFunc()
 
 
-void PRREMaterial::PRREMaterialImpl::SetSourceBlendFunc(TPRRE_BLENDFACTORS value, TPRREuint level)
+TPRREbool PRREMaterial::PRREMaterialImpl::setSourceBlendFunc(TPRRE_BLENDFACTORS value, TPRREuint level)
 {
     if ( (value != PRRE_SRC_COLOR) && (value != PRRE_ONE_MINUS_SRC_COLOR) )
     {
         if ( level < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount() )
+        {
             layers[level].blendFactorSource = value;
-        else
-            ; // TODO: set lasterr
+            return true;
+        }
     }
-} // SetSourceBlendFunc()
+    return false;
+} // setSourceBlendFunc()
 
 
 TPRRE_BLENDFACTORS PRREMaterial::PRREMaterialImpl::getDestinationBlendFunc(TPRREuint level) const
@@ -311,23 +313,25 @@ TPRRE_BLENDFACTORS PRREMaterial::PRREMaterialImpl::getDestinationBlendFunc(TPRRE
 } // getDestinationBlendFunc()
 
 
-void PRREMaterial::PRREMaterialImpl::SetDestinationBlendFunc(TPRRE_BLENDFACTORS value, TPRREuint level)
+TPRREbool PRREMaterial::PRREMaterialImpl::setDestinationBlendFunc(TPRRE_BLENDFACTORS value, TPRREuint level)
 {
     if ( (value != PRRE_DST_COLOR) && (value != PRRE_ONE_MINUS_DST_COLOR) && (value != PRRE_SRC_ALPHA_SATURATE) )
     {
         if ( level < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount() )
+        {
             layers[level].blendFactorDestination = value;
-        else
-            ; // TODO: set lasterr
+            return true;
+        }
     }
-} // SetDestinationBlendFunc()
+    return false;
+} // setDestinationBlendFunc()
 
 
-void PRREMaterial::PRREMaterialImpl::SetBlendFuncs(TPRRE_BLENDFACTORS src, TPRRE_BLENDFACTORS dst, TPRREuint level)
+TPRREbool PRREMaterial::PRREMaterialImpl::setBlendFuncs(TPRRE_BLENDFACTORS src, TPRRE_BLENDFACTORS dst, TPRREuint level)
 {
-    SetSourceBlendFunc( src, level );
-    SetDestinationBlendFunc( dst, level );
-} // SetBlendFuncs()
+    return setSourceBlendFunc( src, level ) &&
+        setDestinationBlendFunc( dst, level );
+} // setBlendFuncs()
 
 
 TPRRE_BLENDMODES PRREMaterial::PRREMaterialImpl::getBlendMode(TPRREuint level) const
@@ -350,20 +354,18 @@ TPRRE_BLENDMODES PRREMaterial::PRREMaterialImpl::getBlendMode(TPRREuint level) c
 } // getBlendMode()
 
 
-void PRREMaterial::PRREMaterialImpl::SetBlendMode(TPRRE_BLENDMODES mode, TPRREuint level)
+TPRREbool PRREMaterial::PRREMaterialImpl::setBlendMode(TPRRE_BLENDMODES mode, TPRREuint level)
 {
     switch (mode)
     {
     case PRRE_BM_NONE:
-        SetBlendFuncs(PRRE_ONE, PRRE_ZERO, level);
-        break;
+        return setBlendFuncs(PRRE_ONE, PRRE_ZERO, level);
     case PRRE_BM_STANDARD_TRANSPARENCY:
-        SetBlendFuncs(PRRE_SRC_ALPHA, PRRE_ONE_MINUS_SRC_ALPHA, level);
-        break;
+        return setBlendFuncs(PRRE_SRC_ALPHA, PRRE_ONE_MINUS_SRC_ALPHA, level);
     default:
-        break;
+        return false;
     }
-} // SetBlendMode()
+} // setBlendMode()
 
 
 TPRREbool PRREMaterial::PRREMaterialImpl::copyFromMaterial(PRREMaterial& srcMat, TPRREuint dstLevel, TPRREuint srcLevel)
@@ -753,11 +755,12 @@ TPRRE_BLENDFACTORS PRREMaterial::getSourceBlendFunc(TPRREuint level) const
 
     @param value Source blend factor to be set on the specified level.
     @param level The material level/layer we are interested in. Should be less than MaterialManager::getMaximumLayerCount().
+    @return True on success, false otherwise.
 */
-void PRREMaterial::SetSourceBlendFunc(TPRRE_BLENDFACTORS value, TPRREuint level)
+TPRREbool PRREMaterial::setSourceBlendFunc(TPRRE_BLENDFACTORS value, TPRREuint level)
 {
-    pImpl->SetSourceBlendFunc(value, level);
-} // SetSourceBlendFunc()
+    return pImpl->setSourceBlendFunc(value, level);
+} // setSourceBlendFunc()
 
 
 /**
@@ -782,26 +785,28 @@ TPRRE_BLENDFACTORS PRREMaterial::getDestinationBlendFunc(TPRREuint level) const
 
     @param value Destination blend factor to be set on the specified level.
     @param level The material level/layer we are interested in. Should be less than MaterialManager::getMaximumLayerCount().
+    @return True on success, false otherwise.
 */
-void PRREMaterial::SetDestinationBlendFunc(TPRRE_BLENDFACTORS value, TPRREuint level)
+TPRREbool PRREMaterial::setDestinationBlendFunc(TPRRE_BLENDFACTORS value, TPRREuint level)
 {
-    pImpl->SetDestinationBlendFunc(value, level);
-} // SetDestinationBlendFunc()
+    return pImpl->setDestinationBlendFunc(value, level);
+} // setDestinationBlendFunc()
 
 
 /**
     Sets the blend factors on the specified level.
     0 is the default level.
-    Equivalent to calling SetSourceBlendFunc(src, level) and SetDestinationBlendFunc(dst, level), so check their documentation as well for accepted values.
+    Equivalent to calling setSourceBlendFunc(src, level) and setDestinationBlendFunc(dst, level), so check their documentation as well for accepted values.
 
     @param src Source blend factor to be set on the specified level.
     @param dst Destination blend factor to be set on the specified level.
     @param level The material level/layer we are interested in. Should be less than MaterialManager::getMaximumLayerCount().
+    @return True on success, false otherwise.
 */
-void PRREMaterial::SetBlendFuncs(TPRRE_BLENDFACTORS src, TPRRE_BLENDFACTORS dst, TPRREuint level)
+TPRREbool PRREMaterial::setBlendFuncs(TPRRE_BLENDFACTORS src, TPRRE_BLENDFACTORS dst, TPRREuint level)
 {
-    pImpl->SetBlendFuncs(src, dst, level);
-} // SetBlendFuncs()
+    return pImpl->setBlendFuncs(src, dst, level);
+} // setBlendFuncs()
 
 
 /**
@@ -826,11 +831,12 @@ TPRRE_BLENDMODES PRREMaterial::getBlendMode(TPRREuint level) const
 
     @param mode  The requested blend mode.
     @param level The material level/layer we are interested in. Should be less than MaterialManager::getMaximumLayerCount().
+    @return True on success, false otherwise.
 */
-void PRREMaterial::SetBlendMode(TPRRE_BLENDMODES mode, TPRREuint level)
+TPRREbool PRREMaterial::setBlendMode(TPRRE_BLENDMODES mode, TPRREuint level)
 {
-    pImpl->SetBlendMode(mode, level);
-} // SetBlendMode()
+    return pImpl->setBlendMode(mode, level);
+} // setBlendMode()
 
 
 /**

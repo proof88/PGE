@@ -72,22 +72,22 @@ public:
     const   PRREColor&   getTextureEnvColor(TPRREuint level = 0) const;
 
             TPRRE_BLENDFACTORS getSourceBlendFunc(TPRREuint level = 0) const;
-            void               SetSourceBlendFunc(
+            TPRREbool          setSourceBlendFunc(
                                 TPRRE_BLENDFACTORS value,
                                 TPRREuint level = 0);
 
             TPRRE_BLENDFACTORS getDestinationBlendFunc(TPRREuint level = 0) const;
-            void               SetDestinationBlendFunc(
+            TPRREbool          setDestinationBlendFunc(
                                 TPRRE_BLENDFACTORS value,
                                 TPRREuint level = 0);
 
-            void               SetBlendFuncs(
+            TPRREbool          setBlendFuncs(
                                 TPRRE_BLENDFACTORS src,
                                 TPRRE_BLENDFACTORS dst,
                                 TPRREuint level = 0);
 
             TPRRE_BLENDMODES   getBlendMode(TPRREuint level = 0) const;
-            void               SetBlendMode(
+            TPRREbool          setBlendMode(
                                 TPRRE_BLENDMODES mode,
                                 TPRREuint level = 0);
 
