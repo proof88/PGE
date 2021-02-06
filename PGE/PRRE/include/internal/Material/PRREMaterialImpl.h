@@ -62,7 +62,7 @@ public:
             TPRREuint    getTextureCount() const;
             PRRETexture* getTexture(TPRREuint level = 0);
     const   PRRETexture* getTexture(TPRREuint level = 0) const;
-            void         SetTexture(PRRETexture* tex, TPRREuint level = 0);
+            TPRREbool    setTexture(PRRETexture* tex, TPRREuint level = 0);
 
             TPRREbool    isTextured() const;
             TPRREbool    isSingleTextured() const;

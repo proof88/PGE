@@ -462,11 +462,14 @@ PRREObject3D* PRREObject3DManager::createFromFile(
                     PRRETexture* const tex = pImpl->textureMgr.createFromFile( PFL::getDirectory(filename).append(sTexName).c_str() );
                     if ( tex )
                     {
-                        subobject->getMaterial().SetTexture(tex);
+                        if ( !subobject->getMaterial().setTexture(tex) )
+                        {
+                            getConsole().EOLn("ERROR: failed to set texture for subobject! Continuing ...");
+                        }
                     }
                     else
                     {
-                        getConsole().OLn("ERROR: PRREObject3DManager::createFromFile() failed to load texture: %s!", sTexName.c_str());
+                        getConsole().EOLn("ERROR: PRREObject3DManager::createFromFile() failed to load texture: %s! Continuing ...", sTexName.c_str());
                     }
                     // since we have loaded texture from submodelname, we can get rid of the texture filename part of it
                     subobject->SetName( subobject->getName().substr(0, nPipePos) ); 

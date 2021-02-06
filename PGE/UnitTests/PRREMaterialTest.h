@@ -117,7 +117,7 @@ private:
         while ( i < nMaxLayers )
         {
             // by default no array is allocated
-            b = b & assertEquals((TPRREuint) 0, mat->getColorsCount(i), "getColorsCount") &
+            b &= assertEquals((TPRREuint) 0, mat->getColorsCount(i), "getColorsCount") &
                 assertNull(mat->getColors(i), "getColors") &
                 assertEquals((TPRREuint)0, mat->getIndicesCount(), "getIndicesCount") &
                 assertEquals((TPRREuint)0, mat->getTexcoordsCount(i), "getTexcoordsCount") &
@@ -160,7 +160,7 @@ private:
         TPRREuint  i = 0;
         while ( i < mm->getMaximumLayerCount() )
         {
-            b = b & assertEquals(nColors, mat->getColorsCount(i), "getColorsCount") &
+            b &= assertEquals(nColors, mat->getColorsCount(i), "getColorsCount") &
                 assertNotNull(mat->getColors(i), "getColors") &
                 assertEquals(nIndices, mat->getIndicesCount(), "getIndicesCount") &
                 assertEquals(nTexCoords, mat->getTexcoordsCount(i), "getTexcoordsCount") &
@@ -180,14 +180,13 @@ private:
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
 
-        mat->SetTexture(tex128x128x24);
-        bool b = assertNotNull(mat->getTexture(), "1st tex 0") &
+        bool b = assertTrue(mat->setTexture(tex128x128x24), "setTexture text128x128x24");
+        b &= assertNotNull(mat->getTexture(), "1st tex 0") &
             assertNull(mat->getTexture(1), "1st tex 1");
 
-        mat->SetTexture(NULL);
-        mat->SetTexture(tex128x128x24, 1);
-        b = b & 
-            assertNotNull(mat->getTexture(1), "2nd tex 1") &
+        b &= assertTrue(mat->setTexture(NULL), "setTexture NULL");
+        b &= assertTrue(mat->setTexture(tex128x128x24, 1), "setTexture text128x128x24, 1");
+        b &= assertNotNull(mat->getTexture(1), "2nd tex 1") &
             assertNull(mat->getTexture(), "2nd tex 0");
 
         return b;
@@ -201,15 +200,15 @@ private:
 
         bool b = assertEquals((TPRREuint)0, mat->getTextureCount(), "1st");
 
-        mat->SetTexture(tex128x128x24);
-        b = b & assertEquals((TPRREuint)1, mat->getTextureCount(), "2nd");
+        b &= assertTrue(mat->setTexture(tex128x128x24), "setTexture text128x128x24");
+        b &= assertEquals((TPRREuint)1, mat->getTextureCount(), "2nd");
 
-        mat->SetTexture(NULL);
-        mat->SetTexture(tex128x128x24, 1);
-        b = b & assertEquals((TPRREuint)1, mat->getTextureCount(), "3rd");
+        b &= assertTrue(mat->setTexture(NULL), "setTexture NULL");
+        b &= assertTrue(mat->setTexture(tex128x128x24, 1), "setTexture text128x128x24, 1");
+        b &= assertEquals((TPRREuint)1, mat->getTextureCount(), "3rd");
 
-        mat->SetTexture(tex128x128x24);
-        b = b & assertEquals((TPRREuint)2, mat->getTextureCount(), "4th");
+        b &= assertTrue(mat->setTexture(tex128x128x24), "setTexture text128x128x24");
+        b &= assertEquals((TPRREuint)2, mat->getTextureCount(), "4th");
 
         return b;
     }
@@ -222,12 +221,12 @@ private:
 
         bool b = assertFalse(mat->isTextured(), "1st istex");
 
-        mat->SetTexture(tex128x128x24);
-        b = b & assertTrue(mat->isTextured(), "2nd istex");
+        b &= assertTrue(mat->setTexture(tex128x128x24), "setTexture text128x128x24");
+        b &= assertTrue(mat->isTextured(), "2nd istex");
 
-        mat->SetTexture(NULL);
-        mat->SetTexture(tex128x128x24, 1);
-        b = b & assertTrue(mat->isTextured(), "3rd istex");
+        b &= assertTrue(mat->setTexture(NULL), "setTexture NULL");
+        b &= assertTrue(mat->setTexture(tex128x128x24, 1), "setTexture text128x128x24, 1");
+        b &= assertTrue(mat->isTextured(), "3rd istex");
 
         return b;
     }
@@ -240,15 +239,15 @@ private:
 
         bool b = assertFalse(mat->isSingleTextured(), "1st");
 
-        mat->SetTexture(tex128x128x24);
-        b = b & assertTrue(mat->isSingleTextured(), "2nd");
+        b &= assertTrue(mat->setTexture(tex128x128x24), "setTexture text128x128x24");
+        b &= assertTrue(mat->isSingleTextured(), "2nd");
 
-        mat->SetTexture(NULL);
-        mat->SetTexture(tex128x128x24, 1);
-        b = b & assertTrue(mat->isSingleTextured(), "3rd");
+        b &= assertTrue(mat->setTexture(NULL), "setTexture NULL");
+        b &= assertTrue(mat->setTexture(tex128x128x24, 1), "setTexture text128x128x24, 1");
+        b &= assertTrue(mat->isSingleTextured(), "3rd");
 
-        mat->SetTexture(tex128x128x24);
-        b = b & assertFalse(mat->isSingleTextured(), "4th");
+        b &= assertTrue(mat->setTexture(tex128x128x24), "setTexture text128x128x24");
+        b &= assertFalse(mat->isSingleTextured(), "4th");
 
         return b;
     }
@@ -261,15 +260,15 @@ private:
 
         bool b = assertFalse(mat->isMultiTextured(), "1st");
 
-        mat->SetTexture(tex128x128x24);
-        b = b & assertFalse(mat->isMultiTextured(), "2nd");
+        b &= assertTrue(mat->setTexture(tex128x128x24), "setTexture text128x128x24");
+        b &= assertFalse(mat->isMultiTextured(), "2nd");
 
-        mat->SetTexture(NULL);
-        mat->SetTexture(tex128x128x24, 1);
-        b = b & assertFalse(mat->isMultiTextured(), "3rd");
+        b &= assertTrue(mat->setTexture(NULL), "setTexture NULL");
+        b &= assertTrue(mat->setTexture(tex128x128x24, 1), "setTexture text128x128x24, 1");
+        b &= assertFalse(mat->isMultiTextured(), "3rd");
 
-        mat->SetTexture(tex128x128x24);
-        b = b & assertTrue(mat->isMultiTextured(), "4th");
+        b &= assertTrue(mat->setTexture(tex128x128x24), "setTexture text128x128x24");
+        b &= assertTrue(mat->isMultiTextured(), "4th");
 
         return b;
     }
@@ -280,13 +279,13 @@ private:
         bool b = assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(), "1st");
 
         mat->SetSourceBlendFunc(TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, 1);
-        b = b & assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "2nd");
+        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "2nd");
 
         mat->SetSourceBlendFunc(TPRRE_BLENDFACTORS::PRRE_SRC_COLOR); // invalid param
-        b = b & assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "3rd");
+        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "3rd");
 
-         mat->SetSourceBlendFunc(TPRRE_BLENDFACTORS::PRRE_ONE_MINUS_SRC_COLOR); // invalid param
-        b = b & assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "4th");
+        mat->SetSourceBlendFunc(TPRRE_BLENDFACTORS::PRRE_ONE_MINUS_SRC_COLOR); // invalid param
+        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "4th");
 
         return b;
     }
@@ -297,16 +296,16 @@ private:
         bool b = assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_ALPHA, mat->getDestinationBlendFunc(), "1st");
 
         mat->SetDestinationBlendFunc(TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, 1);
-        b = b & assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "2nd");
+        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "2nd");
 
         mat->SetDestinationBlendFunc(TPRRE_BLENDFACTORS::PRRE_DST_COLOR, 1); // invalid param
-        b = b & assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "3rd");
+        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "3rd");
 
         mat->SetDestinationBlendFunc(TPRRE_BLENDFACTORS::PRRE_ONE_MINUS_DST_COLOR, 1); // invalid param
-        b = b & assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "4th");
+        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "4th");
 
         mat->SetDestinationBlendFunc(TPRRE_BLENDFACTORS::PRRE_SRC_ALPHA_SATURATE, 1); // invalid param
-        b = b & assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "5th");
+        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "5th");
 
         return b;
     }
@@ -318,27 +317,27 @@ private:
             assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(), "1st dst");
 
         mat->SetBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_CONSTANT_COLOR, 1);
-        b = b & assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "2nd src") &
+        b &= assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "2nd src") &
             assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "2nd dst");
 
         mat->SetBlendFuncs(PRRE_SRC_COLOR, PRRE_CONSTANT_COLOR, 1);
-        b = b & assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "3rd src") &
+        b &= assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "3rd src") &
             assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "3rd dst");
 
         mat->SetBlendFuncs(PRRE_ONE_MINUS_SRC_COLOR, PRRE_CONSTANT_COLOR, 1);
-        b = b & assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "4th src") &
+        b &= assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "4th src") &
             assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "4th dst");
 
         mat->SetBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_DST_COLOR, 1);
-        b = b & assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "5th src") &
+        b &= assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "5th src") &
             assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "5th dst");
 
         mat->SetBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_ONE_MINUS_DST_COLOR, 1);
-        b = b & assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "6th src") &
+        b &= assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "6th src") &
             assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "6th dst");
 
         mat->SetBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_SRC_ALPHA_SATURATE, 1);
-        b = b & assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "7th src") &
+        b &= assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "7th src") &
             assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "7th dst");
 
         return b;
@@ -352,7 +351,7 @@ private:
             assertEquals( PRRE_ONE_MINUS_SRC_ALPHA, mat->getDestinationBlendFunc(), "1st dst");
 
         mat->SetBlendMode(TPRRE_BLENDMODES::PRRE_BM_NONE, 1);
-        b = b & assertEquals( PRRE_BM_NONE, mat->getBlendMode(1), "2nd mode") & 
+        b &= assertEquals( PRRE_BM_NONE, mat->getBlendMode(1), "2nd mode") & 
             assertEquals( PRRE_ONE, mat->getSourceBlendFunc(1), "2nd src") &
             assertEquals( PRRE_ZERO, mat->getDestinationBlendFunc(1), "2nd dst");
 
@@ -375,7 +374,7 @@ private:
         TPRREuint i = 0;
         while ( i < mm->getMaximumLayerCount() )
         {
-            b = b & assertEquals((TPRREuint) 0, mat->getColorsCount(i), "getColorsCount") &
+            b &= assertEquals((TPRREuint) 0, mat->getColorsCount(i), "getColorsCount") &
                 assertNull(mat->getColors(i), "getColors") &
                 assertEquals((TPRREuint)0, mat->getIndicesCount(), "getIndicesCount") &
                 assertEquals((TPRREuint)0, mat->getTexcoordsCount(i), "getTexcoordsCount") &
@@ -388,13 +387,13 @@ private:
 
         const bool bAllocMat = assertTrue(mat->allocateArrays(2, 2, 2, 2), "allocate mat");
 
-        b = b & assertTrue(mat->copyFromMaterial(*mat2, 0, 0), "2nd");  // should succeed now
+        b &= assertTrue(mat->copyFromMaterial(*mat2, 0, 0), "2nd");  // should succeed now
 
         // sanity check for the layout before checking actual values in arrays
         i = 0;
         while ( i < mm->getMaximumLayerCount() )
         {
-            b = b & assertEquals((TPRREuint) 2, mat->getColorsCount(i), "getColorsCount") &
+            b &= assertEquals((TPRREuint) 2, mat->getColorsCount(i), "getColorsCount") &
                 assertNotNull(mat->getColors(i), "getColors") &
                 assertEquals((TPRREuint)2, mat->getIndicesCount(), "getIndicesCount") &
                 assertEquals((TPRREuint)2, mat->getTexcoordsCount(i), "getTexcoordsCount") &
@@ -406,7 +405,7 @@ private:
         assertTrue(b, ss.str().c_str());
 
         // we should have the same values in the 1st material too 
-        b = b & assertEquals(1.0f, mat->getColors()[0].green, "clr lvl0 green") &
+        b &= assertEquals(1.0f, mat->getColors()[0].green, "clr lvl0 green") &
             assertEquals(1.0f, mat->getTexcoords()[1].u, "texcoord lvl1 U");
 
         return b & bAllocMat & bAllocMat2;

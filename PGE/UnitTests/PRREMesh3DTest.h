@@ -501,9 +501,10 @@ private:
 
         // although textures are not auto-loaded for a Mesh, manually setting
         // textures for material of the mesh is not denied
-        mesh->getMaterial().SetTexture(tex24);
+        const bool b = assertTrue(mesh->getMaterial().setTexture(tex24), "setTexture tex24");
 
-        return assertNotNull(mesh->getMaterial().getTexture(), "tex") &
+        return b &
+            assertNotNull(mesh->getMaterial().getTexture(), "tex") &
             assertTrue(mesh->getMaterial().isTextured(), "isTex") &
             assertTrue(mesh->getMaterial().isSingleTextured(), "isTexSingle") &
             assertFalse(mesh->getMaterial().isMultiTextured(), "isTexMulti");
@@ -519,10 +520,11 @@ private:
 
         // although textures are not auto-loaded for a Mesh, manually setting
         // textures for material of the mesh is not denied
-        mesh->getMaterial().SetTexture(tex24);
-        mesh->getMaterial().SetTexture(tex24, 1);
+        bool b = assertTrue(mesh->getMaterial().setTexture(tex24), "setTexture tex24");
+        b &= assertTrue(mesh->getMaterial().setTexture(tex24, 1), "setTexture tex24, 1");
 
-        return assertNotNull(mesh->getMaterial().getTexture(), "tex") &
+        return b &
+            assertNotNull(mesh->getMaterial().getTexture(), "tex") &
             assertTrue(mesh->getMaterial().isTextured(), "isTex") &
             assertFalse(mesh->getMaterial().isSingleTextured(), "isTexSingle") &
             assertTrue(mesh->getMaterial().isMultiTextured(), "isTexMulti");

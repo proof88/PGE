@@ -211,12 +211,14 @@ const PRRETexture* PRREMaterial::PRREMaterialImpl::getTexture(TPRREuint level) c
 }
 
 
-void PRREMaterial::PRREMaterialImpl::SetTexture(PRRETexture* tex, TPRREuint level)
+TPRREbool PRREMaterial::PRREMaterialImpl::setTexture(PRRETexture* tex, TPRREuint level)
 {
     if ( level < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount() )
+    {
         layers[level].tex = tex;
-    else
-        ; // TODO: set lasterr
+        return true;
+    }
+    return false;
 }
 
 
@@ -377,7 +379,13 @@ TPRREbool PRREMaterial::PRREMaterialImpl::copyFromMaterial(PRREMaterial& srcMat,
              (nIndexSize == srcMat.pImpl->nIndexSize) )
         {
             if ( srcMat.getTexture(srcLevel) != NULL )
-                SetTexture( srcMat.getTexture(srcLevel), dstLevel );
+            {
+                if ( !setTexture( srcMat.getTexture(srcLevel), dstLevel ) )
+                {
+                    getConsole().EOLn("ERROR: %s setTexture() failed for dstLevel %d!", __FUNCTION__, dstLevel);
+                    return false;
+                }
+            }
 
             memcpy( layers[dstLevel].pTexcoords, srcMat.pImpl->layers[srcLevel].pTexcoords, sizeof(TUVW) * layers[dstLevel].nTexcoords_h );
             memcpy( layers[dstLevel].pColors, srcMat.pImpl->layers[srcLevel].pColors, sizeof(TRGBAFLOAT) * layers[dstLevel].nColors_h );
@@ -633,10 +641,11 @@ const PRRETexture* PRREMaterial::getTexture(TPRREuint level) const
     
     @param  tex   Texture we are defining for the specified level. Texture can be unassigned from the specified level by specifying NULL here.
     @param  level The material level/layer we are interested in. Should be less than MaterialManager::getMaximumLayerCount().
+    @return True on success, false otherwise.
 */
-void PRREMaterial::SetTexture(PRRETexture* tex, TPRREuint level)
+TPRREbool PRREMaterial::setTexture(PRRETexture* tex, TPRREuint level)
 {
-    pImpl->SetTexture(tex, level);
+    return pImpl->setTexture(tex, level);
 }
 
 
