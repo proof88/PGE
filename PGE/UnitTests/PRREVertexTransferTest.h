@@ -69,7 +69,8 @@ public:
         SampleDescendantFromVertexTransfer* const subobj = new SampleDescendantFromVertexTransfer(materialMgr, vmod, vref, bForceUseClientMemory);
         assert(subobj);
         obj->Attach( *subobj );
-        ConvertToBox(*obj, a, b, c);
+        bool res = convertToBox(*obj, a, b, c);
+        assert(res);
 
         // although SampleDescendantFromVertexTransfer ctor has already selected the vtransmode, we set it again
         // to actually allocate the needed resources for the geometry

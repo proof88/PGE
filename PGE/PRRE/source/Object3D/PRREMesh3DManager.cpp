@@ -831,19 +831,22 @@ PRREMesh3D* PRREMesh3DManager::createPlane(TPRREfloat a, TPRREfloat b)
     {
         mesh = new PRREMesh3D(PRRE_PM_QUADS);
         submesh = new PRREMesh3D(PRRE_PM_QUADS);
+
+        mesh->Attach(*submesh);
+        if ( !convertToPlane(*mesh, a, b) )
+        {
+            throw std::runtime_error("convertToPlane() failed!");
+        }
+        Attach( *mesh );
     }
-    catch (const std::bad_alloc&)
+    catch (const std::exception& e)
     {
         delete mesh;
         delete submesh;
-        getConsole().EOLnOO("ERROR: Failed to instantiate new PRREMesh3D!");
+        getConsole().EOLnOO("ERROR: Failed to instantiate or fill new PRREMesh3D: %s!", e.what());
         getConsole().OLn("");
         return PGENULL;
     }
-    
-    mesh->Attach(*submesh);
-    ConvertToPlane(*mesh, a, b);
-    Attach( *mesh );
 
     getConsole().SOLnOO("> Plane mesh created successfully!");
     getConsole().OLn("");
@@ -883,19 +886,23 @@ PRREMesh3D* PRREMesh3DManager::createBox(TPRREfloat a, TPRREfloat b, TPRREfloat 
     {
         mesh = new PRREMesh3D(PRRE_PM_QUADS);
         submesh = new PRREMesh3D(PRRE_PM_QUADS);
+        mesh->Attach(*submesh);
+        if ( !convertToBox(*mesh, a, b, c) )
+        {
+            throw std::runtime_error("convertToBox() failed!");
+        }
+        Attach( *mesh );
     }
-    catch (const std::bad_alloc&)
+    catch (const std::exception& e)
     {
         delete mesh;
         delete submesh;
-        getConsole().EOLnOO("ERROR: Failed to instantiate new PRREMesh3D!");
+        getConsole().EOLnOO("ERROR: Failed to instantiate or fill new PRREMesh3D: %s!", e.what());
         getConsole().OLn("");
         return PGENULL;
     }
 
-    mesh->Attach(*submesh);
-    ConvertToBox(*mesh, a, b, c);
-    Attach( *mesh );
+    
 
     getConsole().SOLnOO("> Box mesh created successfully!");
     getConsole().OLn("");
@@ -1029,20 +1036,21 @@ PRREMesh3DManager& PRREMesh3DManager::operator=(const PRREMesh3DManager&)
     @param a    Length of plane (size on X-axis).
     @param b    Height of plane (size on Y-axis).
 */
-void PRREMesh3DManager::ConvertToPlane(
+TPRREbool PRREMesh3DManager::convertToPlane(
         PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b)
 {
-    getConsole().OLn("PRREMesh3DManager::ConvertToPlane(%f, %f)", a, b);
-    if ( (mesh.pImpl->nVertices_h > 0) || (mesh.pImpl->pVertices != PGENULL) )
+    getConsole().OLn("PRREMesh3DManager::convertToPlane(%f, %f)", a, b);
+
+    if ( !mesh.isLevel1() )
     {
-        getConsole().EOLn("ERROR: given Mesh has vertices (%d), expecting real level-1 Mesh object!", mesh.pImpl->nVertices_h);
-        return;
+        getConsole().EOLn("ERROR: given Mesh is NOT level-1!", mesh.getCount());
+        return false;
     }
 
     if ( mesh.getCount() != 1 )
     {
-        getConsole().EOLn("ERROR: given Mesh has %d manageds, expectedg is 1!", mesh.getCount());
-        return;
+        getConsole().EOLn("ERROR: given Mesh has %d manageds, expected is 1!", mesh.getCount());
+        return false;
     }
 
     mesh.pImpl->primitiveFormat = PRRE_PM_QUADS;
@@ -1057,7 +1065,7 @@ void PRREMesh3DManager::ConvertToPlane(
     if ( mesh.pImpl->pMaterial == PGENULL )
     {
         getConsole().EOLn("ERROR: failed to create material for mesh!");
-        return;
+        return false;
     }
 
     mesh.pImpl->nMinVertexIndex = 0;
@@ -1082,7 +1090,7 @@ void PRREMesh3DManager::ConvertToPlane(
     {
         pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
         getConsole().EOLn("ERROR: failed to create material for submesh!");
-        return;
+        return false;
     }
 
     delete[] submesh->pImpl->pVertices;
@@ -1112,7 +1120,7 @@ void PRREMesh3DManager::ConvertToPlane(
         pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
         mesh.pImpl->pMaterial = PGENULL;
         getConsole().EOLn("ERROR: failed to allocate memory for geometry!");
-        return;
+        return false;
     }
 
     submesh->pImpl->pMaterial->allocateArrays(
@@ -1194,6 +1202,7 @@ void PRREMesh3DManager::ConvertToPlane(
         bool b = submesh->pImpl->setVertexIndex(i, i);
         assert( b );
     }
+    return true;
 }
 
 
@@ -1211,20 +1220,21 @@ void PRREMesh3DManager::ConvertToPlane(
     @param b Height of box (size on Y-axis).
     @param c Depth of box (size on Z-axis).
 */
-void PRREMesh3DManager::ConvertToBox(
+TPRREbool PRREMesh3DManager::convertToBox(
         PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b, TPRREfloat c)
 {
-    getConsole().OLn("PRREMesh3DManager::ConvertToBox(%f, %f, %f)", a, b, c);
-    if ( (mesh.pImpl->nVertices_h > 0) || (mesh.pImpl->pVertices != PGENULL) )
+    getConsole().OLn("PRREMesh3DManager::convertToBox(%f, %f, %f)", a, b, c);
+
+    if ( !mesh.isLevel1() )
     {
-        getConsole().EOLn("ERROR: given Mesh has vertices (%d), expecting real level-1 Mesh object!", mesh.pImpl->nVertices_h);
-        return;
+        getConsole().EOLn("ERROR: given Mesh is NOT level-1!", mesh.getCount());
+        return false;
     }
 
     if ( mesh.getCount() != 1 )
     {
         getConsole().EOLn("ERROR: given Mesh has %d manageds, expectedg is 1!", mesh.getCount());
-        return;
+        return false;
     }
 
     mesh.pImpl->primitiveFormat = PRRE_PM_QUADS;
@@ -1240,7 +1250,7 @@ void PRREMesh3DManager::ConvertToBox(
     if ( mesh.pImpl->pMaterial == PGENULL )
     {
         getConsole().EOLn("ERROR: failed to create material for mesh!");
-        return;
+        return false;
     }
 
     mesh.pImpl->nMinVertexIndex = 0;
@@ -1263,7 +1273,7 @@ void PRREMesh3DManager::ConvertToBox(
     {
         pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
         getConsole().EOLn("ERROR: failed to create material for submesh!");
-        return;
+        return false;
     }
 
     delete[] submesh->pImpl->pVertices;
@@ -1293,7 +1303,7 @@ void PRREMesh3DManager::ConvertToBox(
         pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
         mesh.pImpl->pMaterial = PGENULL;
         getConsole().EOLn("ERROR: failed to allocate memory for geometry!");
-        return;
+        return false;
     }
 
     submesh->pImpl->pMaterial->allocateArrays(
@@ -1695,6 +1705,7 @@ void PRREMesh3DManager::ConvertToBox(
         bool b = submesh->pImpl->setVertexIndex(i, i);
         assert( b );
     }
+    return true;
 }
 
 

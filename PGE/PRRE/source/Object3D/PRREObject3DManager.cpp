@@ -221,14 +221,17 @@ PRREObject3D* PRREObject3DManager::createPlane(
         Attach( *obj );
         subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
         obj->Attach( *subobj );
-        ConvertToPlane(*obj, a, b);
+        if ( !convertToPlane(*obj, a, b) )
+        {
+            throw std::runtime_error("convertToPlane() failed!");
+        }
         subobj->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobj->getVerticesCount()];
     }
-    catch (const std::bad_alloc&)
+    catch (const std::exception& e)
     {
         delete subobj; // will invoke obj->Detach()
         delete obj;    // would delete subobj, except if it is not yet attached, so we explicitly delete subobj above
-        getConsole().EOLnOO("ERROR: PRREObject3DManager::createPlane() failed to instantiate PRREObject3D!");
+        getConsole().EOLnOO("ERROR: PRREObject3DManager::createPlane() failed to instantiate or fill PRREObject3D: %s!", e.what());
         getConsole().OLn("");
         return PGENULL;
     }
@@ -295,14 +298,17 @@ PRREObject3D* PRREObject3DManager::createBox(
         Attach( *obj );
         subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
         obj->Attach( *subobj );
-        ConvertToBox(*obj, a, b, c);
+        if ( !convertToBox(*obj, a, b, c) )
+        {
+            throw std::runtime_error("convertToBox() failed!");
+        }
         subobj->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobj->getVerticesCount()];
     }
-    catch (const std::bad_alloc&)
+    catch (const std::exception& e)
     {
         delete subobj; // will invoke obj->Detach()
         delete obj;    // would delete subobj, except if it is not yet attached, so we explicitly delete subobj above
-        getConsole().EOLn("ERROR: PRREObject3DManager::createPlane() failed to instantiate PRREObject3D!");
+        getConsole().EOLn("ERROR: PRREObject3DManager::createPlane() failed to instantiate or fill PRREObject3D: %s!", e.what());
         getConsole().OLn("");
         return PGENULL;
     }

@@ -148,10 +148,10 @@ protected:
     PRREMesh3DManager(const PRREMesh3DManager&);
     PRREMesh3DManager& operator=(const PRREMesh3DManager&);
 
-    void ConvertToPlane(
+    TPRREbool convertToPlane(
         PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b);                            /**< Converts the given Mesh to a plane with the given sizes. */
 
-    void ConvertToBox(
+    TPRREbool convertToBox(
         PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b, TPRREfloat c);              /**< Converts the given Mesh to a box with the given sizes. */
 
     PRREMaterial* createMaterialForMesh(PRREMesh3D& mesh) const;                  /**< Creates a material for the given Mesh if it doesn't yet have one. */
