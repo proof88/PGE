@@ -430,13 +430,21 @@ PRREObject3D* PRREObject3DManager::createFromFile(
                 return PGENULL;
             }
             obj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
-            obj->Cannibalize(*tmpMesh);
+            if ( !obj->cannibalize(*tmpMesh) )
+            {
+                const std::string sErrMsg = "cannibalize() failed for level-1 obj!";
+                throw std::runtime_error(sErrMsg);
+            }
 
             for (TPRREint i = 0; i < tmpMesh->getCount(); i++) 
             {
                 subobject = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
                 obj->Attach( *subobject );
-                subobject->Cannibalize(*(PRREMesh3D*)(tmpMesh->getAttachedAt(i)));
+                if ( !subobject->cannibalize(*(PRREMesh3D*)(tmpMesh->getAttachedAt(i))) )
+                {
+                    const std::string sErrMsg = "cannibalize() failed for level-2 subobj " + std::to_string(i) + "!";
+                    throw std::runtime_error(sErrMsg);
+                }
                 subobject->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobject->getVerticesCount()];
                 
                 // Legacy tmcsgfxlib behavior: auto-load textures for subobjects where pipe character is present in name
@@ -478,14 +486,14 @@ PRREObject3D* PRREObject3DManager::createFromFile(
             }
             getConsole().OO();
         } // try
-        catch (const std::bad_alloc&)
+        catch (const std::exception& e)
         {
             // note: textures won't be deallocated cause we don't track what textures were loaded for this object!
             delete tmpMesh;
             delete subobject;  // will invoke obj->Detach()
             delete obj;     // would delete subobj, except if it is not yet attached, so we explicitly delete subobj above
             getConsole().OO();
-            getConsole().EOLnOO("ERROR: failed to instantiate an object!");
+            getConsole().EOLnOO("ERROR: failed to instantiate: %s!", e.what());
             getConsole().OLn("");
             return PGENULL;
         } // catch

@@ -840,15 +840,19 @@ PRRETexture* PRRETextureManager::createFromFile(const char* filename)
     try
     {
         texture = new PRRETexture(*tmpImg);
+        if ( !texture->cannibalize(*tmpImg) )
+        {
+            const std::string sErrMsg = "cannibalize() failed!";
+            throw std::runtime_error(sErrMsg);
+        }
     }
-    catch (const std::bad_alloc&)
+    catch (const std::exception& e)
     {
-        getConsole().EOLn("ERROR: Failed to instantiate new PRRETexture!");
+        getConsole().EOLn("ERROR: Failed to create or fill new PRRETexture: %s!", e.what());
+        DeleteAttachedInstance(*tmpImg);
         getConsole().OLnOO("");
         return PGENULL;
     }
-
-    texture->Cannibalize(*tmpImg);
     DeleteAttachedInstance(*tmpImg);
 
     Attach(*texture);

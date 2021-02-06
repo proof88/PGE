@@ -591,7 +591,7 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
                 if ( !setVertexIndicesOk )
                 {
                     const std::string sErrMsg = "setVertexIndicesOk false at submesh " + std::to_string(i) + ", line " + std::to_string(j) + ", k " + std::to_string(k);
-                    throw std::overflow_error(sErrMsg);
+                    throw std::range_error(sErrMsg);
                 }
 
                 k++;
@@ -1191,7 +1191,8 @@ void PRREMesh3DManager::ConvertToPlane(
             submesh->pImpl->nMinVertexIndex = i;
         if ( submesh->pImpl->nMaxVertexIndex < i )
             submesh->pImpl->nMaxVertexIndex = i;
-        assert( submesh->pImpl->setVertexIndex(i, i) );
+        bool b = submesh->pImpl->setVertexIndex(i, i);
+        assert( b );
     }
 }
 
@@ -1691,7 +1692,8 @@ void PRREMesh3DManager::ConvertToBox(
             submesh->pImpl->nMinVertexIndex = i;
         if ( submesh->pImpl->nMaxVertexIndex < i )
             submesh->pImpl->nMaxVertexIndex = i;
-        assert( submesh->pImpl->setVertexIndex(i, i) );
+        bool b = submesh->pImpl->setVertexIndex(i, i);
+        assert( b );
     }
 }
 

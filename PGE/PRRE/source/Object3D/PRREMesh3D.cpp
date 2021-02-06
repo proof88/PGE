@@ -735,8 +735,10 @@ PRREMesh3D& PRREMesh3D::operator=(const PRREMesh3D&)
     This means that in order to fully cannibalize a level-1 mesh, this function should be called for
     the level-1 mesh by the level-1 mesh and then for all of its submeshes one by one by the submeshes
     of the cannibalizer mesh.
+
+    @return True on success, false on error: if the cannibalizer mesh already has any submesh or existing geometry.
 */
-void PRREMesh3D::Cannibalize(PRREMesh3D& victim)
+TPRREbool PRREMesh3D::cannibalize(PRREMesh3D& victim)
 {
     // Note that we cannot easily copy victim's Impl since copy ctor and assignment operators are empty!
     // Thus the following assignment cannot be used: *(this->pImpl) = *(victim.pImpl)
@@ -752,8 +754,8 @@ void PRREMesh3D::Cannibalize(PRREMesh3D& victim)
     if ( (getCount() != 0) || (pImpl->pVertices != PGENULL) || (pImpl->nVertices_h > 0) )
     {
         PRREFiledManaged::getConsole().EOLn(
-            "PRREMesh3D::Cannibalize() ERROR: cannibalizer has non-zero managed count (%d) or has geometry (%d)!", getCount(), pImpl->nVertices_h);
-        return;
+            "PRREMesh3D::cannibalize() ERROR: cannibalizer has non-zero managed count (%d) or has geometry (%d)!", getCount(), pImpl->nVertices_h);
+        return false;
     }
 
     // at this point we do not need to deal with the Manager or FiledManager parts
@@ -789,6 +791,8 @@ void PRREMesh3D::Cannibalize(PRREMesh3D& victim)
     victim.pImpl->nVertices_h = 0;
     victim.pImpl->nVertexIndices_h = 0;
     victim.pImpl->nFaces_h = 0;
+
+    return true;
 }
 
 

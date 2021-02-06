@@ -95,7 +95,7 @@ protected:
     PRREImage(const PRREImage&);
     PRREImage& operator=(const PRREImage&);
 
-    void Cannibalize(PRREImage& victim);
+    TPRREbool cannibalize(PRREImage& victim);
 
 private:
 

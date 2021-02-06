@@ -179,7 +179,7 @@ PRREMaterial* PRREMaterialManager::createMaterial()
 
     getConsole().OLnOI("PRREMaterialManager::createMaterial()");
 
-    PRREMaterial* mat;
+    PRREMaterial* mat = PGENULL;
     try
     {
         mat = new PRREMaterial(pImpl->nMaxLayers);

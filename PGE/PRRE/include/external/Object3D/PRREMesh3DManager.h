@@ -99,7 +99,7 @@ protected:
     PRREMesh3D(const PRREMesh3D&);
     PRREMesh3D& operator=(const PRREMesh3D&);
 
-    void Cannibalize(PRREMesh3D& victim);
+    TPRREbool cannibalize(PRREMesh3D& victim);
 
 private:
 

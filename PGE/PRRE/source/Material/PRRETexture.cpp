@@ -638,7 +638,6 @@ TPRREbool PRRETexture::PRRETextureImpl::actualUploadProc(GLint internalfmt, GLen
         // TODO: So in the future when I add support for NPOT textures, I need to consider border value when specifying width and height.
         return pglTexImage2D(GL_TEXTURE_2D, 0, internalfmt, _pOwner->getWidth(), _pOwner->getHeight(), bBorder ? (GLint) 1 : (GLint) 0, glTexFormat, GL_UNSIGNED_BYTE, _pOwner->getPixels());
     }
-    return true;
 } // actualUploadProc()
 
 

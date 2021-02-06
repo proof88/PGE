@@ -10,6 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
+#include <cassert>
 #include "../PRRE/include/external/Object3D/PRREVertexTransferMode.h"
 #include "../PRRE/include/external/PR00FsReducedRenderingEngine.h"
 
@@ -63,8 +64,10 @@ public:
         getConsole().OLnOI("PRREObject3DManager::createBox(%f, %f, %f)", a, b, c);
 
         SampleDescendantFromVertexTransfer* obj = new SampleDescendantFromVertexTransfer(materialMgr, vmod, vref, bForceUseClientMemory);
+        assert(obj);
         Attach( *obj );
         SampleDescendantFromVertexTransfer* const subobj = new SampleDescendantFromVertexTransfer(materialMgr, vmod, vref, bForceUseClientMemory);
+        assert(subobj);
         obj->Attach( *subobj );
         ConvertToBox(*obj, a, b, c);
 
@@ -75,7 +78,6 @@ public:
         {
             getConsole().OO();
             DeleteAttachedInstance( *obj );
-            obj = PGENULL;
             getConsole().EOLnOO("SampleManagerForDescendantFromVertexTransfer::createFromFile() returning NULL now!");
             return PGENULL;
         }
@@ -104,14 +106,19 @@ public:
 
         getConsole().OI();
         PRREMesh3D* const tmpMesh = PRREMesh3DManager::createFromFile(filename);
+        assert(tmpMesh);
         SampleDescendantFromVertexTransfer* obj = new SampleDescendantFromVertexTransfer(materialMgr, vmod, vref, bForceUseClientMemory);
-        obj->Cannibalize(*tmpMesh);
+        assert(obj);
+        bool b = obj->cannibalize(*tmpMesh);
+        assert(b);
 
         for (TPRREint i = 0; i < tmpMesh->getCount(); i++) 
         {
             SampleDescendantFromVertexTransfer* const subobject = new SampleDescendantFromVertexTransfer(materialMgr, vmod, vref, bForceUseClientMemory);
+            assert(subobject);
             obj->Attach( *subobject );
-            subobject->Cannibalize(*(PRREMesh3D*)(tmpMesh->getAttachedAt(i)));
+            b &= subobject->cannibalize(*(PRREMesh3D*)(tmpMesh->getAttachedAt(i)));
+            assert(b);
         }
         this->DeleteAttachedInstance(*tmpMesh);
 
@@ -126,7 +133,6 @@ public:
         {
             getConsole().OO();
             DeleteAttachedInstance( *obj );
-            obj = PGENULL;
             getConsole().EOLnOO("SampleManagerForDescendantFromVertexTransfer::createFromFile() returning NULL now!");
             return PGENULL;
         }

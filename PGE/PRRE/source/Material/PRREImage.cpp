@@ -847,8 +847,10 @@ PRREImage& PRREImage::operator=(const PRREImage&)
     Acquires the resources and properties of the given PRREImage object, meaning that
     the given image will lose the pixels and other resources.
     This is a way of moving assets of an image to another image, MOVING, so no array copy is involved.
+
+    @return True on success, false on failure.
 */
-void PRREImage::Cannibalize(PRREImage& victim)
+TPRREbool PRREImage::cannibalize(PRREImage& victim)
 {
     // Note that we cannot easily copy victim's Impl since copy ctor and assignment operators are empty!
     // Thus the following assignment cannot be used: *(this->pImpl) = *(victim.pImpl)
@@ -875,6 +877,8 @@ void PRREImage::Cannibalize(PRREImage& victim)
     victim.pImpl->bChanged = true;
     victim.pImpl->nSizePixels = 0;
     victim.pImpl->pPixels = PGENULL;
+
+    return true;
 
 }
 
