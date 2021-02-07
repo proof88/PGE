@@ -48,16 +48,16 @@ public:
     
     TPRRE_ISO_TEX_FILTERING getDefaultMinFilteringMode() const;          
     TPRRE_ISO_TEX_FILTERING getDefaultMagFilteringMode() const;          
-    void SetDefaultMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);  
-    void SetDefaultMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);  
-    void SetDefaultIsoFilteringMode(
+    TPRREbool setDefaultMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);  
+    TPRREbool setDefaultMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);  
+    TPRREbool setDefaultIsoFilteringMode(
         TPRRE_ISO_TEX_FILTERING minfilter,
         TPRRE_ISO_TEX_FILTERING magfilter);                              
     
     TPRRE_ANISO_TEX_FILTERING
         getDefaultAnisoFilteringMode() const;      
-    void
-        SetDefaultAnisoFilteringMode(
+    TPRREbool
+        setDefaultAnisoFilteringMode(
             TPRRE_ANISO_TEX_FILTERING filtering);  
     TPRRE_ANISO_TEX_FILTERING getMaximumAnisoFiltering() const;
 
@@ -65,19 +65,19 @@ public:
         getDefaultTextureWrappingModeS() const;
     TPRRE_TEX_WRAPPING
         getDefaultTextureWrappingModeT() const;
-    void
-        SetDefaultTextureWrappingMode(
+    TPRREbool
+        setDefaultTextureWrappingMode(
             TPRRE_TEX_WRAPPING tw_s,
             TPRRE_TEX_WRAPPING tw_t );
     
     TPRRE_TEX_COMPRESSION_MODE
         getDefaultCompressionMode() const;     
-    void
-        SetDefaultCompressionMode(
+    TPRREbool
+        setDefaultCompressionMode(
             TPRRE_TEX_COMPRESSION_MODE mode); 
 
     TPRREbool getDefaultBorder() const;
-    void      SetDefaultBorder(TPRREbool state);
+    TPRREbool      setDefaultBorder(TPRREbool state);
 
           PRREColor& getDefaultBorderColor();
     const PRREColor& getDefaultBorderColor() const; 
@@ -223,24 +223,28 @@ TPRRE_ISO_TEX_FILTERING PRRETextureManager::PRRETextureManagerImpl::getDefaultMa
 } // getDefaultMagFilteringMode()
 
 
-void PRRETextureManager::PRRETextureManagerImpl::SetDefaultMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
+TPRREbool PRRETextureManager::PRRETextureManagerImpl::setDefaultMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 {
     filtDefIsoMin = filtering;
-} // SetDefaultMinFilteringMode()
+    return true;
+} // setDefaultMinFilteringMode()
 
 
-void PRRETextureManager::PRRETextureManagerImpl::SetDefaultMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
+TPRREbool PRRETextureManager::PRRETextureManagerImpl::setDefaultMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 {
     if ( (filtering == PRRE_ISO_NEAREST) || (filtering == PRRE_ISO_LINEAR) )
+    {
         filtDefIsoMag = filtering;
-} // SetDefaultMagFilteringMode()
+        return true;
+    }
+    return false;
+} // setDefaultMagFilteringMode()
 
 
-void PRRETextureManager::PRRETextureManagerImpl::SetDefaultIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter, TPRRE_ISO_TEX_FILTERING magfilter)
+TPRREbool PRRETextureManager::PRRETextureManagerImpl::setDefaultIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter, TPRRE_ISO_TEX_FILTERING magfilter)
 {
-    SetDefaultMinFilteringMode( minfilter );
-    SetDefaultMagFilteringMode( magfilter );
-} // SetDefaultIsoFilteringMode()
+    return setDefaultMinFilteringMode( minfilter ) && setDefaultMagFilteringMode( magfilter );
+} // setDefaultIsoFilteringMode()
 
 
 TPRRE_ANISO_TEX_FILTERING PRRETextureManager::PRRETextureManagerImpl::getDefaultAnisoFilteringMode() const
@@ -249,10 +253,12 @@ TPRRE_ANISO_TEX_FILTERING PRRETextureManager::PRRETextureManagerImpl::getDefault
 } // getDefaultAnisoFilteringMode()
 
 
-void PRRETextureManager::PRRETextureManagerImpl::SetDefaultAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING filtering)
+TPRREbool PRRETextureManager::PRRETextureManagerImpl::setDefaultAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING filtering)
 {
+    // TODO: should check for max aniso filter level same way as texture does!
     filtDefAniso = filtering;
-} // SetDefaultAnisoFilteringMode()
+    return true;
+} // setDefaultAnisoFilteringMode()
 
 
 TPRRE_ANISO_TEX_FILTERING PRRETextureManager::PRRETextureManagerImpl::getMaximumAnisoFiltering() const
@@ -273,10 +279,11 @@ TPRRE_TEX_WRAPPING PRRETextureManager::PRRETextureManagerImpl::getDefaultTexture
 }
 
 
-void PRRETextureManager::PRRETextureManagerImpl::SetDefaultTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, TPRRE_TEX_WRAPPING tw_t )
+TPRREbool PRRETextureManager::PRRETextureManagerImpl::setDefaultTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, TPRRE_TEX_WRAPPING tw_t )
 {
     twDefS = tw_s;
     twDefT = tw_t;
+    return true;
 }
 
 
@@ -286,10 +293,11 @@ TPRRE_TEX_COMPRESSION_MODE PRRETextureManager::PRRETextureManagerImpl::getDefaul
 } // getDefaultCompressionMode()
 
 
-void PRRETextureManager::PRRETextureManagerImpl::SetDefaultCompressionMode(TPRRE_TEX_COMPRESSION_MODE mode)
+TPRREbool PRRETextureManager::PRRETextureManagerImpl::setDefaultCompressionMode(TPRRE_TEX_COMPRESSION_MODE mode)
 {
     texComprDef = mode;
-} // SetDefaultCompressionMode()
+    return true;
+} // setDefaultCompressionMode()
 
 
 /**
@@ -304,9 +312,10 @@ TPRREbool PRRETextureManager::PRRETextureManagerImpl::getDefaultBorder() const
 /**
     Sets the default border state.
 */
-void PRRETextureManager::PRRETextureManagerImpl::SetDefaultBorder(TPRREbool state)
+TPRREbool PRRETextureManager::PRRETextureManagerImpl::setDefaultBorder(TPRREbool state)
 {
     bDefBorder = state;
+    return true;
 }
 
 
@@ -410,12 +419,12 @@ TPRREbool PRRETextureManager::PRRETextureManagerImpl::generateAndUploadTexture(P
         }
     }
 
-    texture.SetMagFilteringMode( getDefaultMagFilteringMode() );
-    texture.SetMinFilteringMode( getDefaultMinFilteringMode() );
-    texture.SetAnisoFilteringMode( getDefaultAnisoFilteringMode() );
-    texture.SetTextureWrappingMode( getDefaultTextureWrappingModeS(), getDefaultTextureWrappingModeT() );
-    texture.SetBorder( getDefaultBorder() );
-    texture.SetBorderColor( getDefaultBorderColor() );
+    texture.setMagFilteringMode( getDefaultMagFilteringMode() );
+    texture.setMinFilteringMode( getDefaultMinFilteringMode() );
+    texture.setAnisoFilteringMode( getDefaultAnisoFilteringMode() );
+    texture.setTextureWrappingMode( getDefaultTextureWrappingModeS(), getDefaultTextureWrappingModeT() );
+    texture.setBorder( getDefaultBorder() );
+    texture.setBorderColor( getDefaultBorderColor() );
     if ( !texture.uploadPixels() )
     {
         _pOwner->getConsole().EOLn("ERROR: uploadPixels() failed!");
@@ -908,11 +917,12 @@ TPRRE_ISO_TEX_FILTERING PRRETextureManager::getDefaultMagFilteringMode() const
     Sets the default isotropic filtering mode when zooming out (when 1 texel < 1 pixel).
     The default mode is the mode that will be set at every texture creation.
     The default isotropic filtering mode when zooming out is PRRE_ISO_LINEAR.
+    @return True on success, false otherwise.
 */
-void PRRETextureManager::SetDefaultMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
+TPRREbool PRRETextureManager::setDefaultMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 {
-    pImpl->SetDefaultMinFilteringMode(filtering);
-} // SetDefaultMinFilteringMode()
+    return pImpl->setDefaultMinFilteringMode(filtering);
+} // setDefaultMinFilteringMode()
 
 
 /**
@@ -920,21 +930,23 @@ void PRRETextureManager::SetDefaultMinFilteringMode(TPRRE_ISO_TEX_FILTERING filt
     The default mode is the mode that will be set at every texture creation.
     The default isotropic filtering mode when zooming in is PRRE_ISO_LINEAR.
     Only the following 2 values are accepted: PRRE_ISO_NEAREST and PRRE_ISO_LINEAR.
+    @return True on success, false otherwise.
 */
-void PRRETextureManager::SetDefaultMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
+TPRREbool PRRETextureManager::setDefaultMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 {
-    pImpl->SetDefaultMagFilteringMode(filtering);
-} // SetDefaultMagFilteringMode()
+    return pImpl->setDefaultMagFilteringMode(filtering);
+} // setDefaultMagFilteringMode()
 
 
 /**
     Sets the default isotropic filtering modes.
-    Equivalent to calling SetDefaultMinFilteringMode() and SetDefaultMagFilteringMode().
+    Equivalent to calling setDefaultMinFilteringMode(minfilter) && setDefaultMagFilteringMode(magfilter).
+    @return True on success, false otherwise.
 */ 
-void PRRETextureManager::SetDefaultIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter, TPRRE_ISO_TEX_FILTERING magfilter)
+TPRREbool PRRETextureManager::setDefaultIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter, TPRRE_ISO_TEX_FILTERING magfilter)
 {
-    pImpl->SetDefaultIsoFilteringMode(minfilter, magfilter);
-} // SetDefaultIsoFilteringMode()
+    return pImpl->setDefaultIsoFilteringMode(minfilter, magfilter);
+} // setDefaultIsoFilteringMode()
 
 
 /**
@@ -955,11 +967,12 @@ TPRRE_ANISO_TEX_FILTERING PRRETextureManager::getDefaultAnisoFilteringMode() con
     The default mode is the mode that will be set at every texture creation.
     The default anisotropic filtering mode is PRRE_ANISO_1X, meaning it is off.
     Not every system supports anisotropic filtering.
+    @return True on success, false otherwise.
 */
-void PRRETextureManager::SetDefaultAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING filtering)
+TPRREbool PRRETextureManager::setDefaultAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING filtering)
 {
-    pImpl->SetDefaultAnisoFilteringMode(filtering);
-} // SetDefaultAnisoFilteringMode()
+    return pImpl->setDefaultAnisoFilteringMode(filtering);
+} // setDefaultAnisoFilteringMode()
 
 
 /**
@@ -1000,10 +1013,11 @@ TPRRE_TEX_WRAPPING PRRETextureManager::getDefaultTextureWrappingModeT() const
     Sets the default texture wrapping mode.
     The default mode is the mode that will be set at every texture creation.
     The default texture wrapping mode is PRRE_TW_REPEAT for S- and T- texture coordinates.
+    @return True on success, false otherwise.
 */
-void PRRETextureManager::SetDefaultTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, TPRRE_TEX_WRAPPING tw_t )
+TPRREbool PRRETextureManager::setDefaultTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, TPRRE_TEX_WRAPPING tw_t )
 {
-    pImpl->SetDefaultTextureWrappingMode(tw_s, tw_t);
+    return pImpl->setDefaultTextureWrappingMode(tw_s, tw_t);
 }
 
 
@@ -1032,11 +1046,12 @@ TPRRE_TEX_COMPRESSION_MODE PRRETextureManager::getDefaultCompressionMode() const
     You can also select RGB compression mode even if source image is in RGBA. In that case, alpha values
     will be ignored.
     Please note that texture borders are not supported with compressed textures.
+    @return True on success, false otherwise.
 */
-void PRRETextureManager::SetDefaultCompressionMode(TPRRE_TEX_COMPRESSION_MODE mode)
+TPRREbool PRRETextureManager::setDefaultCompressionMode(TPRRE_TEX_COMPRESSION_MODE mode)
 {
-    pImpl->SetDefaultCompressionMode(mode);
-} // SetDefaultCompressionMode()
+    return pImpl->setDefaultCompressionMode(mode);
+} // setDefaultCompressionMode()
 
 
 /**
@@ -1054,10 +1069,11 @@ TPRREbool PRRETextureManager::getDefaultBorder() const
     Sets the default border state.
     The default mode is the mode that will be set at every texture creation.
     Please note that texture borders are not supported with compressed textures.
+    @return True on success, false otherwise.
 */
-void PRRETextureManager::SetDefaultBorder(TPRREbool state)
+TPRREbool PRRETextureManager::setDefaultBorder(TPRREbool state)
 {
-    pImpl->SetDefaultBorder(state);
+    return pImpl->setDefaultBorder(state);
 }
 
 

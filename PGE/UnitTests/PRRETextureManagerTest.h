@@ -413,7 +413,7 @@ private:
 
     bool testCreateTextureFromFileMIP()
     {
-        tm->SetDefaultIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR);
+        bool b = assertTrue(tm->setDefaultIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR), "set 1");
         const PRRETexture* const tex = tm->createFromFile(BMP128x128x24);
 
         TPRREint nTextures = tm->getCount();
@@ -466,12 +466,12 @@ private:
 
         const bool bKeep2 = assertNotEquals((const void*) PGENULL, (const void*) texK1->getPixels(), "bKeep2");
 
-        return  b1 & b2 & b3 & b4 & bKeep1 & bKeep2;
+        return b & b1 & b2 & b3 & b4 & bKeep1 & bKeep2;
     }
 
     bool testCreateTextureFromFileComp()
     {
-        tm->SetDefaultCompressionMode(PRRE_TC_S3TC_RGB_DXT1);
+        bool b = assertTrue(tm->setDefaultCompressionMode(PRRE_TC_S3TC_RGB_DXT1), "set 1");
         const PRRETexture* const tex = tm->createFromFile(BMP128x128x24);
 
         TPRREint nTextures = tm->getCount();
@@ -515,27 +515,27 @@ private:
 
         const bool bKeep2 = assertNotEquals((const void*) PGENULL, (const void*) texK1->getPixels(), "bKeep2");
 
-        tm->SetDefaultCompressionMode(PRRE_TC_S3TC_RGBA_DXT1); // check RGBA too
+        b &= assertTrue(tm->setDefaultCompressionMode(PRRE_TC_S3TC_RGBA_DXT1), "set 2"); // check RGBA too
         const PRRETexture* const texComp2 = tm->createFromFile(BMP128x128x24);
         if ( !assertNotNull(texComp2, "texComp2") )
         {
             return false;
         }
 
-        tm->SetDefaultCompressionMode(PRRE_TC_AUTO); // check auto too
+        b &= assertTrue(tm->setDefaultCompressionMode(PRRE_TC_AUTO), "set 3"); // check auto too
         const PRRETexture* const texComp3 = tm->createFromFile(BMP128x128x24);
         if ( !assertNotNull(texComp3, "texComp3") )
         {
             return false;
         }
 
-        return b1 & b2 & b3 & b4 & bKeep1 & bKeep2;
+        return b & b1 & b2 & b3 & b4 & bKeep1 & bKeep2;
     }
 
     bool testCreateTextureFromFileCompMIP()
     {
-        tm->SetDefaultIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR);
-        tm->SetDefaultCompressionMode(PRRE_TC_S3TC_RGB_DXT1);
+        bool b = assertTrue(tm->setDefaultIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR), "set 1");
+        b &= assertTrue(tm->setDefaultCompressionMode(PRRE_TC_S3TC_RGB_DXT1), "set 2");
         const PRRETexture* const tex = tm->createFromFile(BMP128x128x24);
 
         TPRREint nTextures = tm->getCount();
@@ -588,26 +588,26 @@ private:
 
         const bool bKeep2 = assertNotEquals((const void*) PGENULL, (const void*) texK1->getPixels(), "bKeep2");
 
-        tm->SetDefaultCompressionMode(PRRE_TC_S3TC_RGBA_DXT1); // check RGBA too
+        b &= assertTrue(tm->setDefaultCompressionMode(PRRE_TC_S3TC_RGBA_DXT1), "set 3"); // check RGBA too
         const PRRETexture* const texComp2 = tm->createFromFile(BMP128x128x24);
         if ( !assertNotNull(texComp2, "texComp2") )
         {
             return false;
         }
 
-        tm->SetDefaultCompressionMode(PRRE_TC_AUTO); // check auto too
+        b &= assertTrue(tm->setDefaultCompressionMode(PRRE_TC_AUTO), "set 4"); // check auto too
         const PRRETexture* const texComp3 = tm->createFromFile(BMP128x128x24);
         if ( !assertNotNull(texComp3, "texComp3") )
         {
             return false;
         }
 
-        return b1 & b2 & b3 & b4 & bKeep1 & bKeep2;
+        return b & b1 & b2 & b3 & b4 & bKeep1 & bKeep2;
     }
 
     bool testCreateTextureFromFileBorder()
     {
-        tm->SetDefaultBorder(true);
+        bool b = assertTrue(tm->setDefaultBorder(true), "set 1");
         PRREColor expColor(255,255,255,255);
         tm->getDefaultBorderColor() = expColor;
 
@@ -656,21 +656,21 @@ private:
 
         // Border + compression made glTexImage2D to fail with INVALID_VALUE, because of the border parameter, thus
         // this test is disabled because it is very GL-implementation-dependent!
-        // tm->SetDefaultCompressionMode(PRRE_TC_S3TC_RGBA_DXT1); // check RGBA too
+        // b &= assertTrue(tm->setDefaultCompressionMode(PRRE_TC_S3TC_RGBA_DXT1); // check RGBA too
         // const PRRETexture* const texComp2 = tm->createFromFile(BMP128x128x24);
         // if ( !assertNotNull(texComp2, "texComp2") )
         // {
         //     return false;
         // }
 
-        tm->SetDefaultCompressionMode(PRRE_TC_AUTO); // check auto too
+        b &= assertTrue(tm->setDefaultCompressionMode(PRRE_TC_AUTO), "set 2"); // check auto too
         const PRRETexture* const texComp3 = tm->createFromFile(BMP128x128x24);
         if ( !assertNotNull(texComp3, "texComp3") )
         {
             return false;
         }
 
-        return  b1 & b2 & b3 & b4 & bKeep1 & bKeep2 &
+        return b & b1 & b2 & b3 & b4 & bKeep1 & bKeep2 &
             assertTrue(tex->getBorderColor() == expColor, "tex clr") &
             assertTrue(tex2->getBorderColor() == expColor, "tex2 clr") &
             assertTrue(tex3->getBorderColor() == expColor, "tex3 clr") &
@@ -682,69 +682,72 @@ private:
 
     bool testSetDefaultMinFilteringMode()
     {
-        tm->SetDefaultMinFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR);
-        return assertEquals(PRRE_ISO_LINEAR_MIPMAP_LINEAR, tm->getDefaultMinFilteringMode());
+        bool b = assertTrue(tm->setDefaultMinFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR), "set");
+        return b & assertEquals(PRRE_ISO_LINEAR_MIPMAP_LINEAR, tm->getDefaultMinFilteringMode());
     }
 
     bool testSetDefaultMagFilteringMode()
     {
-        tm->SetDefaultMagFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR);
+        bool b = assertFalse(tm->setDefaultMagFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR), "set 1");
         const bool b1 = (tm->getDefaultMagFilteringMode() == PRRE_ISO_LINEAR);
-        tm->SetDefaultMagFilteringMode(PRRE_ISO_LINEAR_MIPMAP_NEAREST);
+        b &= assertFalse(tm->setDefaultMagFilteringMode(PRRE_ISO_LINEAR_MIPMAP_NEAREST), "set 2");
         const bool b2 = (tm->getDefaultMagFilteringMode() == PRRE_ISO_LINEAR);
-        tm->SetDefaultMagFilteringMode(PRRE_ISO_NEAREST);
+        b &= assertTrue(tm->setDefaultMagFilteringMode(PRRE_ISO_NEAREST), "set 3");
         const bool b3 = (tm->getDefaultMagFilteringMode() == PRRE_ISO_NEAREST);
-        return assertTrue(b1, "b1") & assertTrue(b2, "b2") & assertTrue(b3, "b3");
+
+        return b & assertTrue(b1, "b1") & assertTrue(b2, "b2") & assertTrue(b3, "b3");
     }
 
     bool testSetDefaultIsoFilteringMode()
     {
-        tm->SetDefaultIsoFilteringMode(PRRE_ISO_LINEAR, PRRE_ISO_LINEAR_MIPMAP_LINEAR);
+        bool b = assertFalse(tm->setDefaultIsoFilteringMode(PRRE_ISO_LINEAR, PRRE_ISO_LINEAR_MIPMAP_LINEAR), "set 1");
         const bool b1 = tm->getDefaultMagFilteringMode() == PRRE_ISO_LINEAR;
         const bool b11 = tm->getDefaultMinFilteringMode() == PRRE_ISO_LINEAR;
-        tm->SetDefaultIsoFilteringMode(PRRE_ISO_LINEAR, PRRE_ISO_LINEAR_MIPMAP_NEAREST);
+        b &= assertFalse(tm->setDefaultIsoFilteringMode(PRRE_ISO_LINEAR, PRRE_ISO_LINEAR_MIPMAP_NEAREST), "set 2");
         const bool b2 = tm->getDefaultMagFilteringMode() == PRRE_ISO_LINEAR;
         const bool b22 = tm->getDefaultMinFilteringMode() == PRRE_ISO_LINEAR;
-        tm->SetDefaultIsoFilteringMode(PRRE_ISO_LINEAR, PRRE_ISO_NEAREST);
+        b &= assertTrue(tm->setDefaultIsoFilteringMode(PRRE_ISO_LINEAR, PRRE_ISO_NEAREST), "set 3");
         const bool b3 = tm->getDefaultMagFilteringMode() == PRRE_ISO_NEAREST;
         const bool b33 = tm->getDefaultMinFilteringMode() == PRRE_ISO_LINEAR;
-        return assertTrue(b1, "b1") & assertTrue(b2, "b2") & assertTrue(b3, "b3") &
+
+        return b &
+            assertTrue(b1, "b1") & assertTrue(b2, "b2") & assertTrue(b3, "b3") &
             assertTrue(b11, "b11") & assertTrue(b22, "b22") & assertTrue(b33, "b33");
     }
 
     bool testSetDefaultAnisoFilteringMode()
     {
-        tm->SetDefaultAnisoFilteringMode(PRRE_ANISO_16X);
-        return assertEquals(PRRE_ANISO_16X, tm->getDefaultAnisoFilteringMode());
+        bool b = assertTrue(tm->setDefaultAnisoFilteringMode(PRRE_ANISO_16X), "set");
+        return b & assertEquals(PRRE_ANISO_16X, tm->getDefaultAnisoFilteringMode());
     }
 
     bool testSetDefaultWrappingMode()
     {
-        tm->SetDefaultTextureWrappingMode(PRRE_TW_CLAMP, PRRE_TW_CLAMP_TO_EDGE);
+        bool b = assertTrue(tm->setDefaultTextureWrappingMode(PRRE_TW_CLAMP, PRRE_TW_CLAMP_TO_EDGE), "set 1");
         const bool b1 = assertEquals(PRRE_TW_CLAMP, tm->getDefaultTextureWrappingModeS(), "PRRE_TW_CLAMP");
         const bool b2 = assertEquals(PRRE_TW_CLAMP_TO_EDGE, tm->getDefaultTextureWrappingModeT(), "PRRE_TW_CLAMP_TO_EDGE");
 
-        tm->SetDefaultTextureWrappingMode(PRRE_TW_CLAMP_TO_BORDER, PRRE_TW_MIRRORED_REPEAT);
+        b &= assertTrue(tm->setDefaultTextureWrappingMode(PRRE_TW_CLAMP_TO_BORDER, PRRE_TW_MIRRORED_REPEAT), "set 2");
         const bool b3 = assertEquals(PRRE_TW_CLAMP_TO_BORDER, tm->getDefaultTextureWrappingModeS(), "PRRE_TW_CLAMP_TO_BORDER");
         const bool b4 = assertEquals(PRRE_TW_MIRRORED_REPEAT, tm->getDefaultTextureWrappingModeT(), "PRRE_TW_MIRRORED_REPEAT");
 
-        tm->SetDefaultTextureWrappingMode(PRRE_TW_REPEAT, PRRE_TW_REPEAT);
+        b &= assertTrue(tm->setDefaultTextureWrappingMode(PRRE_TW_REPEAT, PRRE_TW_REPEAT), "set 3");
         const bool b5 = assertEquals(PRRE_TW_REPEAT, tm->getDefaultTextureWrappingModeS(), "PRRE_TW_REPEAT S");
         const bool b6 = assertEquals(PRRE_TW_REPEAT, tm->getDefaultTextureWrappingModeT(), "PRRE_TW_REPEAT T");
 
-        return b1 & b2 & b3 & b4 & b5 & b6;
+        return b & b1 & b2 & b3 & b4 & b5 & b6;
     }
 
     bool testSetDefaultCompressionMode()
     {
-        tm->SetDefaultCompressionMode(PRRE_TC_S3TC_RGB_DXT1);
-        return assertEquals(PRRE_TC_S3TC_RGB_DXT1, tm->getDefaultCompressionMode());
+        bool b = assertTrue(tm->setDefaultCompressionMode(PRRE_TC_S3TC_RGB_DXT1), "set");
+        return b & assertEquals(PRRE_TC_S3TC_RGB_DXT1, tm->getDefaultCompressionMode());
     }
 
     bool testSetDefaultBorder()
     {
-        tm->SetDefaultBorder(true);
-        return assertTrue( tm->getDefaultBorder() );
+        bool b = assertTrue(tm->setDefaultBorder(true), "set");
+        return b & assertTrue( tm->getDefaultBorder() );
     }
 
     bool testSetDefaultBorderColor()

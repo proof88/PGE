@@ -154,7 +154,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREImageManager);
     tests.push_back(&testPRREImage);
     tests.push_back(&testPRRETextureManager);
-    tests.push_back(&testPRRETexture); 
+    tests.push_back(&testPRRETexture);
     tests.push_back(&testPRREMaterialManager);
     tests.push_back(&testPRREMaterial);
 

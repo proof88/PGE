@@ -196,10 +196,10 @@ TPRRE_ISO_TEX_FILTERING PRRETexture::PRRETextureImpl::getMagFilteringMode() cons
 } // getMagFilteringMode()
 
 
-void PRRETexture::PRRETextureImpl::SetMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
+TPRREbool PRRETexture::PRRETextureImpl::setMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 {
     if ( (filtering != PRRE_ISO_NEAREST) && (filtering != PRRE_ISO_LINEAR) && (nMIPmapCount == 1) )
-        return;
+        return false;
 
     if ( PRREhwInfo::get().getVideo().isAcceleratorDetected() )
     {
@@ -207,14 +207,15 @@ void PRRETexture::PRRETextureImpl::SetMinFilteringMode(TPRRE_ISO_TEX_FILTERING f
              ( !pglBindTexture(GL_TEXTURE_2D, nInternalNum) ) ||
              ( !pglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, getGLnameFromPRREisoTexFilteringName(filtering)) ) )
         {
-            return;
+            return false;
         }
     }
     filtIsoMin = filtering;
-} // SetMinFilteringMode()
+    return true;
+} // setMinFilteringMode()
 
 
-void PRRETexture::PRRETextureImpl::SetMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
+TPRREbool PRRETexture::PRRETextureImpl::setMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 {
     if ( (filtering == PRRE_ISO_NEAREST) || (filtering == PRRE_ISO_LINEAR) )
     {
@@ -225,19 +226,20 @@ void PRRETexture::PRRETextureImpl::SetMagFilteringMode(TPRRE_ISO_TEX_FILTERING f
                  ( !pglBindTexture(GL_TEXTURE_2D, nInternalNum) ) ||
                  ( !pglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, getGLnameFromPRREisoTexFilteringName(filtering)) ) )
             {
-                return;
+                return false;
             }
         }
         filtIsoMag = filtering;
+        return true;
     }
-} // SetMagFilteringMode()
+    return false;
+} // setMagFilteringMode()
 
 
-void PRRETexture::PRRETextureImpl::SetIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter, TPRRE_ISO_TEX_FILTERING magfilter)
+TPRREbool PRRETexture::PRRETextureImpl::setIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter, TPRRE_ISO_TEX_FILTERING magfilter)
 {
-    SetMinFilteringMode( minfilter );
-    SetMagFilteringMode( magfilter );
-} // SetIsoFilteringMode()
+    return setMinFilteringMode( minfilter ) && setMagFilteringMode( magfilter );
+} // setIsoFilteringMode()
 
 
 TPRREuint PRRETexture::PRRETextureImpl::getMIPmapCount() const 
@@ -252,19 +254,20 @@ TPRRE_ANISO_TEX_FILTERING PRRETexture::PRRETextureImpl::getAnisoFilteringMode() 
 } // getAnisoFilteringMode()
 
 
-void PRRETexture::PRRETextureImpl::SetAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING filtering)
+TPRREbool PRRETexture::PRRETextureImpl::setAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING filtering)
 {
-    _pOwner->getConsole().OIOLn("PRRETexture::SetAnisoFilteringMode(%fX)", PRRETextureManager::getFloatFromPRREanisoTexFilteringName(filtering));
+    _pOwner->getConsole().OIOLn("PRRETexture::setAnisoFilteringMode(%fX)", PRRETextureManager::getFloatFromPRREanisoTexFilteringName(filtering));
     
     if ( _pOwner->getManager() == PGENULL )
-        return;
+        return false;
     
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
     {
         _pOwner->getConsole().EOLnOO("WARNING: anisotropic filtering is not supported without acceleration!");
-        return;
+        return false;
     }
 
+    bool result = false;
     const TPRREfloat newFilteringF = ((PRRETextureManager*)_pOwner->getManager())->getFloatFromPRREanisoTexFilteringName(filtering);
     const TPRREfloat availMaxFilteringF = ((PRRETextureManager*)_pOwner->getManager())->getFloatFromPRREanisoTexFilteringName(
         ((PRRETextureManager*)_pOwner->getManager())->getMaximumAnisoFiltering() );
@@ -277,13 +280,15 @@ void PRRETexture::PRRETextureImpl::SetAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERI
     {
         if ( (nInternalNum == 0) || (!pglBindTexture(GL_TEXTURE_2D, nInternalNum)) )
         {
-            return;
+            _pOwner->getConsole().EOLnOO("ERROR: nInternalNum is 0 or pglBindTexture() failed!");
+            return false;
         }
         if ( availMaxFilteringF >= newFilteringF )
         {
             if ( pglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLfloat) newFilteringF) )
             {
                 filtAniso = filtering;
+                result = true;
             }
         }
         else
@@ -292,6 +297,7 @@ void PRRETexture::PRRETextureImpl::SetAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERI
             if ( pglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLfloat) availMaxFilteringF) )
             {
                 filtAniso = PRRETextureManager::getPRREanisoTexFilteringNameFromFloat(availMaxFilteringF);
+                result = true;
             }
         }
     }
@@ -300,7 +306,8 @@ void PRRETexture::PRRETextureImpl::SetAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERI
         _pOwner->getConsole().EOLn("ERROR: anisotropic filtering is not supported");
     }
     _pOwner->getConsole().OO();
-} // SetAnisoFilteringMode()
+    return result;
+} // setAnisoFilteringMode()
 
 
 TPRRE_TEX_WRAPPING PRRETexture::PRRETextureImpl::getTextureWrappingModeS() const
@@ -315,7 +322,7 @@ TPRRE_TEX_WRAPPING PRRETexture::PRRETextureImpl::getTextureWrappingModeT() const
 }
 
 
-void PRRETexture::PRRETextureImpl::SetTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, TPRRE_TEX_WRAPPING tw_t )
+TPRREbool PRRETexture::PRRETextureImpl::setTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, TPRRE_TEX_WRAPPING tw_t )
 {
     // TODO: probably we should check for availability of given mode on current HW, especially with PRRE_TW_MIRRORED_REPEAT and PRRE_TW_CLAMP_TO_BORDER  
     if ( PRREhwInfo::get().getVideo().isAcceleratorDetected() )
@@ -325,11 +332,12 @@ void PRRETexture::PRRETextureImpl::SetTextureWrappingMode(TPRRE_TEX_WRAPPING tw_
              (!pglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getGLnameFromPRREtexWrappingName(tw_s)) ) ||
              (!pglTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getGLnameFromPRREtexWrappingName(tw_t)) ) )
         {
-            return;
+            return false;
         }
     }
     twS = tw_s;
     twT = tw_t;
+    return true;
 }
 
 
@@ -339,9 +347,10 @@ TPRREbool PRRETexture::PRRETextureImpl::getBorder() const
 }
 
 
-void PRRETexture::PRRETextureImpl::SetBorder(TPRREbool state)
+TPRREbool PRRETexture::PRRETextureImpl::setBorder(TPRREbool state)
 {
     bBorder = state;
+    return true;
 }
 
 
@@ -351,13 +360,13 @@ const PRREColor& PRRETexture::PRRETextureImpl::getBorderColor() const
 }
 
 
-void PRRETexture::PRRETextureImpl::SetBorderColor(const PRREColor& clr)
+TPRREbool PRRETexture::PRRETextureImpl::setBorderColor(const PRREColor& clr)
 {
     if ( PRREhwInfo::get().getVideo().isAcceleratorDetected() )
     {
         if ( nInternalNum == 0 )
         {
-            return;
+            return false;
         }
         GLfloat color[4];
         color[0] = clr.getRedAsFloat();
@@ -368,10 +377,11 @@ void PRRETexture::PRRETextureImpl::SetBorderColor(const PRREColor& clr)
         if ( (!pglBindTexture(GL_TEXTURE_2D, nInternalNum)) ||
              (!pglTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color)) )
         {
-            return;
+            return false;
         }
     }
     clrBorder = clr;
+    return true;
 }
 
 
@@ -777,31 +787,34 @@ TPRRE_ISO_TEX_FILTERING PRRETexture::getMagFilteringMode() const
 /**
     Sets the isotropic filtering mode when zooming out (1 texel < 1 pixel).
     If the texture has been created without MIP maps, only PRRE_ISO_NEAREST and PRRE_ISO_LINEAR are acceptable.
+    @return True on success, false otherwise.
 */
-void PRRETexture::SetMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
+TPRREbool PRRETexture::setMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 {
-    pImpl->SetMinFilteringMode(filtering);
-} // SetMinFilteringMode()
+    return pImpl->setMinFilteringMode(filtering);
+} // setMinFilteringMode()
 
 
 /**
     Sets the isotropic filtering mode when zooming in (1 texel > 1 pixel).
     Only the following 2 values are accepted: PRRE_ISO_NEAREST and PRRE_ISO_LINEAR.
+    @return True on success, false otherwise.
 */
-void PRRETexture::SetMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
+TPRREbool PRRETexture::setMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering)
 {
-    pImpl->SetMagFilteringMode(filtering);
-} // SetMagFilteringMode()
+    return pImpl->setMagFilteringMode(filtering);
+} // setMagFilteringMode()
 
 
 /**
     Sets the isotropic filtering modes.
-    Equivalent to calling SetMinFilteringMode() and SetMagFilteringMode().
+    Equivalent to calling setMinFilteringMode(minfilter) && setMagFilteringMode(magfilter).
+    @return True on success, false otherwise.
 */
-void PRRETexture::SetIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter, TPRRE_ISO_TEX_FILTERING magfilter)
+TPRREbool PRRETexture::setIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter, TPRRE_ISO_TEX_FILTERING magfilter)
 {
-    pImpl->SetIsoFilteringMode(minfilter, magfilter);
-} // SetIsoFilteringMode()
+    return pImpl->setIsoFilteringMode(minfilter, magfilter);
+} // setIsoFilteringMode()
 
 
 /**
@@ -826,11 +839,14 @@ TPRRE_ANISO_TEX_FILTERING PRRETexture::getAnisoFilteringMode() const
 
 /**
     Sets the anisotropic filtering mode.
+    Note that if anisotropic filtering is supported but on a lower filtering mode, that will be set and considered as success.
+    Obviously if anisotropic filtering is not supported, this function will fail.
+    @return True on success, false otherwise.
 */
-void PRRETexture::SetAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING filtering)
+TPRREbool PRRETexture::setAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING filtering)
 {
-    pImpl->SetAnisoFilteringMode(filtering);
-} // SetAnisoFilteringMode()
+    return pImpl->setAnisoFilteringMode(filtering);
+} // setAnisoFilteringMode()
 
 
 /**
@@ -855,10 +871,11 @@ TPRRE_TEX_WRAPPING PRRETexture::getTextureWrappingModeT() const
     Sets the texture wrapping mode.
     @param tw_s Specifies wrapping mode for S texture coordinates.
     @param tw_t Specifies wrapping mode for T texture coordinates.
+    @return True on success, false otherwise.
 */
-void PRRETexture::SetTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, TPRRE_TEX_WRAPPING tw_t )
+TPRREbool PRRETexture::setTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, TPRRE_TEX_WRAPPING tw_t )
 {
-    pImpl->SetTextureWrappingMode(tw_s, tw_t);
+    return pImpl->setTextureWrappingMode(tw_s, tw_t);
 }
 
 
@@ -875,10 +892,11 @@ TPRREbool PRRETexture::getBorder() const
     Sets the border state.
     No effect until uploadPixels() is called.
     Please note that texture borders are not supported with compressed textures.
+    @return True on success, false otherwise.
 */
-void PRRETexture::SetBorder(TPRREbool state)
+TPRREbool PRRETexture::setBorder(TPRREbool state)
 {
-    pImpl->SetBorder(state);
+    return pImpl->setBorder(state);
 }
 
 
@@ -897,10 +915,11 @@ const PRREColor& PRRETexture::getBorderColor() const
     Texture border color is by default black.
     No effect until uploadPixels() is called.
     Please note that texture borders are not supported with compressed textures.
+    @return True on success, false otherwise.
 */
-void PRRETexture::SetBorderColor(const PRREColor& clr)
+TPRREbool PRRETexture::setBorderColor(const PRREColor& clr)
 {
-    return pImpl->SetBorderColor(clr);
+    return pImpl->setBorderColor(clr);
 }
 
 

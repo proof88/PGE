@@ -38,32 +38,32 @@ public:
     
     TPRRE_ISO_TEX_FILTERING getMinFilteringMode() const;  
     TPRRE_ISO_TEX_FILTERING getMagFilteringMode() const;  
-    void SetMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);  
-    void SetMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);  
-    void SetIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter,
+    TPRREbool setMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);  
+    TPRREbool setMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);  
+    TPRREbool setIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter,
         TPRRE_ISO_TEX_FILTERING magfilter);                       
 
     TPRREuint getMIPmapCount() const;               
 
     TPRRE_ANISO_TEX_FILTERING
         getAnisoFilteringMode() const;              
-    void
-        SetAnisoFilteringMode(
+    TPRREbool
+        setAnisoFilteringMode(
             TPRRE_ANISO_TEX_FILTERING filtering); 
 
     TPRRE_TEX_WRAPPING
         getTextureWrappingModeS() const;
     TPRRE_TEX_WRAPPING
         getTextureWrappingModeT() const;
-    void
-        SetTextureWrappingMode(
+    TPRREbool
+        setTextureWrappingMode(
             TPRRE_TEX_WRAPPING tw_s,
             TPRRE_TEX_WRAPPING tw_t );
 
           TPRREbool  getBorder() const;
-    void             SetBorder(TPRREbool state);
+    TPRREbool        setBorder(TPRREbool state);
     const PRREColor& getBorderColor() const;
-    void             SetBorderColor(const PRREColor& clr);
+    TPRREbool        setBorderColor(const PRREColor& clr);
 
     TPRREbool uploadPixels();                             
     

@@ -128,32 +128,33 @@ public:
     
     TPRRE_ISO_TEX_FILTERING getMinFilteringMode() const;  /**< Gets the isotropic filtering mode when zooming out (1 texel < 1 pixel). */
     TPRRE_ISO_TEX_FILTERING getMagFilteringMode() const;  /**< Gets the isotropic filtering mode when zooming in (1 texel > 1 pixel). */
-    void SetMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);  /**< Sets the isotropic filtering mode when zooming out (1 texel < 1 pixel). */
-    void SetMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);  /**< Sets the isotropic filtering mode when zooming in (1 texel > 1 pixel). */
-    void SetIsoFilteringMode(TPRRE_ISO_TEX_FILTERING minfilter,
-        TPRRE_ISO_TEX_FILTERING magfilter);                       /**< Sets the isotropic filtering modes. */
+    TPRREbool setMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);  /**< Sets the isotropic filtering mode when zooming out (1 texel < 1 pixel). */
+    TPRREbool setMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);  /**< Sets the isotropic filtering mode when zooming in (1 texel > 1 pixel). */
+    TPRREbool setIsoFilteringMode(
+        TPRRE_ISO_TEX_FILTERING minfilter,
+        TPRRE_ISO_TEX_FILTERING magfilter);                            /**< Sets the isotropic filtering modes. */
 
     TPRREuint getMIPmapCount() const;               /**< Gets the number of MIP maps. */
 
     TPRRE_ANISO_TEX_FILTERING
         getAnisoFilteringMode() const;              /**< Gets the anisotropic filtering mode. */
-    void
-        SetAnisoFilteringMode(
+    TPRREbool
+        setAnisoFilteringMode(
             TPRRE_ANISO_TEX_FILTERING filtering);   /**< Sets the anisotropic filtering mode. */
 
     TPRRE_TEX_WRAPPING
         getTextureWrappingModeS() const;            /**< Gets the texture wrapping mode for S coordinates. */
     TPRRE_TEX_WRAPPING
         getTextureWrappingModeT() const;            /**< Gets the texture wrapping mode for T coordinates. */
-    void
-        SetTextureWrappingMode(
+    TPRREbool
+        setTextureWrappingMode(
             TPRRE_TEX_WRAPPING tw_s,
             TPRRE_TEX_WRAPPING tw_t );              /**< Sets the texture wrapping mode. */
 
     TPRREbool        getBorder() const;             /**< Gets the border state. */
-    void             SetBorder(TPRREbool state);    /**< Gets the border state. */
+    TPRREbool        setBorder(TPRREbool state);    /**< Sets the border state. */
     const PRREColor& getBorderColor() const;                  /**< Gets color of the border. */
-    void             SetBorderColor(const PRREColor& clr);    /**< Sets color of the border. */
+    TPRREbool        setBorderColor(const PRREColor& clr);    /**< Sets color of the border. */
 
     TPRREbool uploadPixels();                             /**< Uploads pixels in system memory to video memory. */
     
@@ -236,16 +237,16 @@ public:
     
     TPRRE_ISO_TEX_FILTERING getDefaultMinFilteringMode() const;           /**< Gets the default isotropic filtering mode when zooming out. */
     TPRRE_ISO_TEX_FILTERING getDefaultMagFilteringMode() const;           /**< Gets the default isotropic filtering mode when zooming in. */
-    void SetDefaultMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);   /**< Sets the default isotropic filtering mode when zooming out (when 1 texel < 1 pixel). */
-    void SetDefaultMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);   /**< Sets the default isotropic filtering mode when zooming in (when 1 texel > 1 pixel). */
-    void SetDefaultIsoFilteringMode(
+    TPRREbool setDefaultMinFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);   /**< Sets the default isotropic filtering mode when zooming out (when 1 texel < 1 pixel). */
+    TPRREbool setDefaultMagFilteringMode(TPRRE_ISO_TEX_FILTERING filtering);   /**< Sets the default isotropic filtering mode when zooming in (when 1 texel > 1 pixel). */
+    TPRREbool setDefaultIsoFilteringMode(
         TPRRE_ISO_TEX_FILTERING minfilter,
-        TPRRE_ISO_TEX_FILTERING magfilter);                               /**< Sets the default isotropic filtering modes. */ 
+        TPRRE_ISO_TEX_FILTERING magfilter);                                    /**< Sets the default isotropic filtering modes. */ 
     
     TPRRE_ANISO_TEX_FILTERING
         getDefaultAnisoFilteringMode() const;      /**< Gets the default anisotropic filtering level. */
-    void
-        SetDefaultAnisoFilteringMode(
+    TPRREbool
+        setDefaultAnisoFilteringMode(
             TPRRE_ANISO_TEX_FILTERING filtering);  /**< Sets the default anisotropic filtering level. */
     TPRRE_ANISO_TEX_FILTERING getMaximumAnisoFiltering() const;       /**< Gets the maximum level of anisotropic filtering. */
 
@@ -253,24 +254,22 @@ public:
         getDefaultTextureWrappingModeS() const;     /**< Gets the default texture wrapping mode for S coordinates. */
     TPRRE_TEX_WRAPPING
         getDefaultTextureWrappingModeT() const;     /**< Gets the default texture wrapping mode for T coordinates. */
-    void
-        SetDefaultTextureWrappingMode(
+    TPRREbool
+        setDefaultTextureWrappingMode(
             TPRRE_TEX_WRAPPING tw_s,
             TPRRE_TEX_WRAPPING tw_t );              /**< Sets the default texture wrapping mode. */
     
     TPRRE_TEX_COMPRESSION_MODE
         getDefaultCompressionMode() const;     /**< Gets the default texture compression mode. */
-    void
-        SetDefaultCompressionMode(
+    TPRREbool
+        setDefaultCompressionMode(
             TPRRE_TEX_COMPRESSION_MODE mode);  /**< Sets the default texture compression mode. */
 
     TPRREbool getDefaultBorder() const;             /**< Gets the default border state. */
-    void      SetDefaultBorder(TPRREbool state);    /**< Sets the default border state. */
+    TPRREbool setDefaultBorder(TPRREbool state);    /**< Sets the default border state. */
 
           PRREColor& getDefaultBorderColor();         /**< Gets default color of the border. */
     const PRREColor& getDefaultBorderColor() const;   /**< Gets default color of the border. */
-
-
 
     virtual void WriteList() const;            /**< From PRREImageManager, adding total texture memory usage counting. */
 

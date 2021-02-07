@@ -68,23 +68,23 @@ protected:
         tex128x128x8 = tm->createFromFile(BMP128x128x8);
         tex128x128x4 = tm->createFromFile(BMP128x128x4);
         tex128x128x1 = tm->createFromFile(BMP128x128x1);
-        tm->SetDefaultBorder(true);
+        tm->setDefaultBorder(true);
         tex128x128x24_border = tm->createFromFile(BMP128x128x24);
-        tm->SetDefaultBorder(false);
-        tm->SetDefaultMinFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR);
+        tm->setDefaultBorder(false);
+        tm->setDefaultMinFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR);
         tex128x128x24_mip = tm->createFromFile(BMP128x128x24);
-        tm->SetDefaultCompressionMode(PRRE_TC_S3TC_RGB_DXT1);
+        tm->setDefaultCompressionMode(PRRE_TC_S3TC_RGB_DXT1);
         tex128x128x24_mip_cmp = tm->createFromFile(BMP128x128x24);
 
-        tm->SetDefaultMinFilteringMode(PRRE_ISO_LINEAR);
+        tm->setDefaultMinFilteringMode(PRRE_ISO_LINEAR);
         tex128x128x24_cmp = tm->createFromFile(BMP128x128x24);
-        tm->SetDefaultCompressionMode(PRRE_TC_S3TC_RGBA_DXT1);
+        tm->setDefaultCompressionMode(PRRE_TC_S3TC_RGBA_DXT1);
         tex128x128x24_cmpRGBA = tm->createFromFile(BMP128x128x24);
         tex128x128x32_cmpRGBA = tm->createFromFile(BMP128x128x32tr);
-        tm->SetDefaultCompressionMode(PRRE_TC_AUTO);
+        tm->setDefaultCompressionMode(PRRE_TC_AUTO);
         tex128x128x24_cmpAUTO = tm->createFromFile(BMP128x128x24);
         tex128x128x32_cmpAUTO = tm->createFromFile(BMP128x128x32tr);
-        tm->SetDefaultCompressionMode(PRRE_TC_NONE);
+        tm->setDefaultCompressionMode(PRRE_TC_NONE);
         tm->SetPixelPreservingEnabled(true);
 
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRRETextureTest::testCtor);
@@ -316,30 +316,30 @@ private:
 
     bool testSetMinFilteringMode()
     {
-        tex128x128x24->SetMinFilteringMode(PRRE_ISO_NEAREST);
+        assertTrue(tex128x128x24->setMinFilteringMode(PRRE_ISO_NEAREST), "set 1");
         bool b = assertEquals(PRRE_ISO_NEAREST, tex128x128x24->getMinFilteringMode(), "b1");
-        tex128x128x24->SetMinFilteringMode(PRRE_ISO_LINEAR);
+        assertTrue(tex128x128x24->setMinFilteringMode(PRRE_ISO_LINEAR), "set 2");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24->getMinFilteringMode(), "b2");
-        tex128x128x24->SetMinFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR);
+        assertFalse(tex128x128x24->setMinFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR), "set 3");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24->getMinFilteringMode(), "b3");
-        tex128x128x24->SetMinFilteringMode(PRRE_ISO_LINEAR_MIPMAP_NEAREST);
+        assertFalse(tex128x128x24->setMinFilteringMode(PRRE_ISO_LINEAR_MIPMAP_NEAREST), "set 4");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24->getMinFilteringMode(), "b4");
-        tex128x128x24->SetMinFilteringMode(PRRE_ISO_NEAREST_MIPMAP_LINEAR);
+        assertFalse(tex128x128x24->setMinFilteringMode(PRRE_ISO_NEAREST_MIPMAP_LINEAR), "set 5");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24->getMinFilteringMode(), "b5");
-        tex128x128x24->SetMinFilteringMode(PRRE_ISO_NEAREST_MIPMAP_NEAREST);
+        assertFalse(tex128x128x24->setMinFilteringMode(PRRE_ISO_NEAREST_MIPMAP_NEAREST), "set 6");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24->getMinFilteringMode(), "b6");
 
-        tex128x128x24_mip->SetMinFilteringMode(PRRE_ISO_NEAREST);
+        assertTrue(tex128x128x24_mip->setMinFilteringMode(PRRE_ISO_NEAREST), "set 7");
         b &= assertEquals(PRRE_ISO_NEAREST, tex128x128x24_mip->getMinFilteringMode(), "bA");
-        tex128x128x24_mip->SetMinFilteringMode(PRRE_ISO_LINEAR);
+        assertTrue(tex128x128x24_mip->setMinFilteringMode(PRRE_ISO_LINEAR), "set 8");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24_mip->getMinFilteringMode(), "bB");
-        tex128x128x24_mip->SetMinFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR);
+        assertTrue(tex128x128x24_mip->setMinFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR), "set 9");
         b &= assertEquals(PRRE_ISO_LINEAR_MIPMAP_LINEAR, tex128x128x24_mip->getMinFilteringMode(), "bC");
-        tex128x128x24_mip->SetMinFilteringMode(PRRE_ISO_LINEAR_MIPMAP_NEAREST);
+        assertTrue(tex128x128x24_mip->setMinFilteringMode(PRRE_ISO_LINEAR_MIPMAP_NEAREST), "set 10");
         b &= assertEquals(PRRE_ISO_LINEAR_MIPMAP_NEAREST, tex128x128x24_mip->getMinFilteringMode(), "bD");
-        tex128x128x24_mip->SetMinFilteringMode(PRRE_ISO_NEAREST_MIPMAP_LINEAR);
+        assertTrue(tex128x128x24_mip->setMinFilteringMode(PRRE_ISO_NEAREST_MIPMAP_LINEAR), "set 11");
         b &= assertEquals(PRRE_ISO_NEAREST_MIPMAP_LINEAR, tex128x128x24_mip->getMinFilteringMode(), "bE");
-        tex128x128x24_mip->SetMinFilteringMode(PRRE_ISO_NEAREST_MIPMAP_NEAREST);
+        assertTrue(tex128x128x24_mip->setMinFilteringMode(PRRE_ISO_NEAREST_MIPMAP_NEAREST), "set 12");
         b &= assertEquals(PRRE_ISO_NEAREST_MIPMAP_NEAREST, tex128x128x24_mip->getMinFilteringMode(), "bF");
 
         return b;
@@ -347,17 +347,17 @@ private:
 
     bool testSetMagFilteringMode()
     {
-        tex128x128x24->SetMagFilteringMode(PRRE_ISO_NEAREST);
-        bool b = assertEquals(PRRE_ISO_NEAREST, tex128x128x24->getMagFilteringMode(), "b1");
-        tex128x128x24->SetMagFilteringMode(PRRE_ISO_LINEAR);
+        bool b = assertTrue(tex128x128x24->setMagFilteringMode(PRRE_ISO_NEAREST), "set 1");
+        b &= assertEquals(PRRE_ISO_NEAREST, tex128x128x24->getMagFilteringMode(), "b1");
+        b &= assertTrue(tex128x128x24->setMagFilteringMode(PRRE_ISO_LINEAR), "set 2");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24->getMagFilteringMode(), "b2");
-        tex128x128x24->SetMagFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR);
+        b &= assertFalse(tex128x128x24->setMagFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR), "set 3");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24->getMagFilteringMode(), "b3");
-        tex128x128x24->SetMagFilteringMode(PRRE_ISO_LINEAR_MIPMAP_NEAREST);
+        b &= assertFalse(tex128x128x24->setMagFilteringMode(PRRE_ISO_LINEAR_MIPMAP_NEAREST), "set 4");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24->getMagFilteringMode(), "b4");
-        tex128x128x24->SetMagFilteringMode(PRRE_ISO_NEAREST_MIPMAP_LINEAR);
+        b &= assertFalse(tex128x128x24->setMagFilteringMode(PRRE_ISO_NEAREST_MIPMAP_LINEAR), "set 5");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24->getMagFilteringMode(), "b5");
-        tex128x128x24->SetMagFilteringMode(PRRE_ISO_NEAREST_MIPMAP_NEAREST);
+        b &= assertFalse(tex128x128x24->setMagFilteringMode(PRRE_ISO_NEAREST_MIPMAP_NEAREST), "set 6");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24->getMagFilteringMode(), "b6");
 
         return b;
@@ -367,29 +367,29 @@ private:
     {
         // this should pass if SetMin...() and SetMag...() tests passed
         // testing not fully, only a little bit to make sure it is really okay ...
-        tex128x128x24->SetIsoFilteringMode(PRRE_ISO_NEAREST, PRRE_ISO_NEAREST);
-        bool b = assertEquals(PRRE_ISO_NEAREST, tex128x128x24->getMinFilteringMode(), "b1");
+        bool b = assertTrue(tex128x128x24->setIsoFilteringMode(PRRE_ISO_NEAREST, PRRE_ISO_NEAREST), "set 1");
+        b &= assertEquals(PRRE_ISO_NEAREST, tex128x128x24->getMinFilteringMode(), "b1");
         b &= assertEquals(PRRE_ISO_NEAREST, tex128x128x24->getMagFilteringMode(), "b2");
-        tex128x128x24->SetIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR);
+        b &= assertFalse(tex128x128x24->setIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR), "set 2");
         b &= assertEquals(PRRE_ISO_NEAREST, tex128x128x24->getMinFilteringMode(), "b3");
-        b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24->getMagFilteringMode(), "b4");
-        tex128x128x24->SetIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR_MIPMAP_LINEAR);
+        b &= assertEquals(PRRE_ISO_NEAREST, tex128x128x24->getMagFilteringMode(), "b4");
+        b &= assertFalse(tex128x128x24->setIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR_MIPMAP_LINEAR), "set 3");
         b &= assertEquals(PRRE_ISO_NEAREST, tex128x128x24->getMinFilteringMode(), "b5");
-        b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24->getMagFilteringMode(), "b6");
-        tex128x128x24->SetIsoFilteringMode(PRRE_ISO_NEAREST, PRRE_ISO_LINEAR);
+        b &= assertEquals(PRRE_ISO_NEAREST, tex128x128x24->getMagFilteringMode(), "b6");
+        b &= assertTrue(tex128x128x24->setIsoFilteringMode(PRRE_ISO_NEAREST, PRRE_ISO_LINEAR), "set 4");
         b &= assertEquals(PRRE_ISO_NEAREST, tex128x128x24->getMinFilteringMode(), "b7");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24->getMagFilteringMode(), "b8");
 
-        tex128x128x24_mip->SetIsoFilteringMode(PRRE_ISO_NEAREST, PRRE_ISO_NEAREST);
+        b &= assertTrue(tex128x128x24_mip->setIsoFilteringMode(PRRE_ISO_NEAREST, PRRE_ISO_NEAREST), "set 5");
         b &= assertEquals(PRRE_ISO_NEAREST, tex128x128x24_mip->getMinFilteringMode(), "b9");
         b &= assertEquals(PRRE_ISO_NEAREST, tex128x128x24_mip->getMagFilteringMode(), "b10");
-        tex128x128x24_mip->SetIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR);
+        b &= assertTrue(tex128x128x24_mip->setIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR), "set 6");
         b &= assertEquals(PRRE_ISO_LINEAR_MIPMAP_LINEAR, tex128x128x24_mip->getMinFilteringMode(), "b11");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24_mip->getMagFilteringMode(), "b12");
-        tex128x128x24_mip->SetIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR_MIPMAP_LINEAR);
+        b &= assertFalse(tex128x128x24_mip->setIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR_MIPMAP_LINEAR), "set 7");
         b &= assertEquals(PRRE_ISO_LINEAR_MIPMAP_LINEAR, tex128x128x24_mip->getMinFilteringMode(), "b13");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24_mip->getMagFilteringMode(), "b14");
-        tex128x128x24_mip->SetIsoFilteringMode(PRRE_ISO_NEAREST, PRRE_ISO_LINEAR);
+        b &= assertTrue(tex128x128x24_mip->setIsoFilteringMode(PRRE_ISO_NEAREST, PRRE_ISO_LINEAR), "set 8");
         b &= assertEquals(PRRE_ISO_NEAREST, tex128x128x24_mip->getMinFilteringMode(), "b15");
         b &= assertEquals(PRRE_ISO_LINEAR, tex128x128x24_mip->getMagFilteringMode(), "b16");
         
@@ -413,17 +413,17 @@ private:
     bool testSetAnisoFilteringMode()
     {
         // these should be okay on main test machine
-        tex128x128x24->SetAnisoFilteringMode(PRRE_ANISO_2X);
-        bool b = assertEquals(PRRE_ANISO_2X, tex128x128x24->getAnisoFilteringMode(), "b1");
-        tex128x128x24->SetAnisoFilteringMode(PRRE_ANISO_4X);
+        bool b = assertTrue(tex128x128x24->setAnisoFilteringMode(PRRE_ANISO_2X), "set 1");
+        b &= assertEquals(PRRE_ANISO_2X, tex128x128x24->getAnisoFilteringMode(), "b1");
+        b &= assertTrue(tex128x128x24->setAnisoFilteringMode(PRRE_ANISO_4X), "set 2");
         b &= assertEquals(PRRE_ANISO_4X, tex128x128x24->getAnisoFilteringMode(), "b2");
-        tex128x128x24->SetAnisoFilteringMode(PRRE_ANISO_8X);
+        b &= assertTrue(tex128x128x24->setAnisoFilteringMode(PRRE_ANISO_8X), "set 3");
         b &= assertEquals(PRRE_ANISO_8X, tex128x128x24->getAnisoFilteringMode(), "b3");
-        tex128x128x24->SetAnisoFilteringMode(PRRE_ANISO_16X);
+        b &= assertTrue(tex128x128x24->setAnisoFilteringMode(PRRE_ANISO_16X), "set 4");
         b &= assertEquals(PRRE_ANISO_16X, tex128x128x24->getAnisoFilteringMode(), "b4");
-        tex128x128x24->SetAnisoFilteringMode(PRRE_ANISO_1X);
+        b &= assertTrue(tex128x128x24->setAnisoFilteringMode(PRRE_ANISO_1X), "set 5");
         b &= assertEquals(PRRE_ANISO_1X, tex128x128x24->getAnisoFilteringMode(), "b5");
-        tex128x128x24->SetAnisoFilteringMode(PRRE_ANISO_MAX);
+        b &= assertTrue(tex128x128x24->setAnisoFilteringMode(PRRE_ANISO_MAX), "set 6");
         b &= assertEquals(PRRE_ANISO_MAX, tex128x128x24->getAnisoFilteringMode(), "b6");
         
         return b;
@@ -453,19 +453,19 @@ private:
 
     bool testSetTextureWrappingMode()
     {
-        tex128x128x24->SetTextureWrappingMode(PRRE_TW_CLAMP, PRRE_TW_CLAMP_TO_EDGE);
+        bool b = assertTrue(tex128x128x24->setTextureWrappingMode(PRRE_TW_CLAMP, PRRE_TW_CLAMP_TO_EDGE), "1");
         const bool b1 = assertEquals(PRRE_TW_CLAMP, tex128x128x24->getTextureWrappingModeS(), "PRRE_TW_CLAMP");
         const bool b2 = assertEquals(PRRE_TW_CLAMP_TO_EDGE, tex128x128x24->getTextureWrappingModeT(), "PRRE_TW_CLAMP_TO_EDGE");
 
-        tex128x128x24->SetTextureWrappingMode(PRRE_TW_CLAMP_TO_BORDER, PRRE_TW_MIRRORED_REPEAT);
+        b &= assertTrue(tex128x128x24->setTextureWrappingMode(PRRE_TW_CLAMP_TO_BORDER, PRRE_TW_MIRRORED_REPEAT), "2");
         const bool b3 = assertEquals(PRRE_TW_CLAMP_TO_BORDER, tex128x128x24->getTextureWrappingModeS(), "PRRE_TW_CLAMP_TO_BORDER");
         const bool b4 = assertEquals(PRRE_TW_MIRRORED_REPEAT, tex128x128x24->getTextureWrappingModeT(), "PRRE_TW_MIRRORED_REPEAT");
 
-        tex128x128x24->SetTextureWrappingMode(PRRE_TW_REPEAT, PRRE_TW_REPEAT);
+        b &= assertTrue(tex128x128x24->setTextureWrappingMode(PRRE_TW_REPEAT, PRRE_TW_REPEAT), "3");
         const bool b5 = assertEquals(PRRE_TW_REPEAT, tex128x128x24->getTextureWrappingModeS(), "PRRE_TW_REPEAT S");
         const bool b6 = assertEquals(PRRE_TW_REPEAT, tex128x128x24->getTextureWrappingModeT(), "PRRE_TW_REPEAT T");
 
-        return b1 & b2 & b3 & b4 & b5 & b6;
+        return b & b1 & b2 & b3 & b4 & b5 & b6;
     }
 
     bool testGetBorder()
@@ -488,10 +488,10 @@ private:
 
     bool testSetBorder()
     {
-        tex128x128x24->SetBorder(true);
+        bool b = assertTrue(tex128x128x24->setBorder(true), "setBorder");
         tex128x128x24->uploadPixels();
 
-        return assertTrue(tex128x128x24->getBorder());
+        return b & assertTrue(tex128x128x24->getBorder());
     }
 
     bool testGetBorderColor()
@@ -502,10 +502,11 @@ private:
 
     bool testSetBorderColor()
     {
-        tex128x128x24_border->SetBorderColor(PRREColor(255,255,255,255));
-        tex128x128x24->SetBorderColor(PRREColor(255,255,255,255));
+        bool b1 = assertTrue(tex128x128x24_border->setBorderColor(PRREColor(255,255,255,255)), "b1");
+        bool b2 = assertTrue(tex128x128x24->setBorderColor(PRREColor(255,255,255,255)), "b2");
 
-        return assertTrue(tex128x128x24_border->getBorderColor() == PRREColor(255,255,255,255), "border") &
+        return b1 & b2 &
+            assertTrue(tex128x128x24_border->getBorderColor() == PRREColor(255,255,255,255), "border") &
             assertTrue(tex128x128x24->getBorderColor() == PRREColor(255,255,255,255), "24");
     }
 
