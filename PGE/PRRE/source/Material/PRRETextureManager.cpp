@@ -419,12 +419,19 @@ TPRREbool PRRETextureManager::PRRETextureManagerImpl::generateAndUploadTexture(P
         }
     }
 
-    texture.setMagFilteringMode( getDefaultMagFilteringMode() );
-    texture.setMinFilteringMode( getDefaultMinFilteringMode() );
-    texture.setAnisoFilteringMode( getDefaultAnisoFilteringMode() );
-    texture.setTextureWrappingMode( getDefaultTextureWrappingModeS(), getDefaultTextureWrappingModeT() );
-    texture.setBorder( getDefaultBorder() );
-    texture.setBorderColor( getDefaultBorderColor() );
+    bool b = true;
+    b &= texture.setMagFilteringMode( getDefaultMagFilteringMode() );
+    b &= texture.setMinFilteringMode( getDefaultMinFilteringMode() );
+    b &= texture.setAnisoFilteringMode( getDefaultAnisoFilteringMode() );
+    b &= texture.setTextureWrappingMode( getDefaultTextureWrappingModeS(), getDefaultTextureWrappingModeT() );
+    b &= texture.setBorder( getDefaultBorder() );
+    b &= texture.setBorderColor( getDefaultBorderColor() );
+    if ( !b )
+    {
+        _pOwner->getConsole().EOLn("ERROR: failed to set an attribute to the texture!");
+        return false;
+    }
+
     if ( !texture.uploadPixels() )
     {
         _pOwner->getConsole().EOLn("ERROR: uploadPixels() failed!");
