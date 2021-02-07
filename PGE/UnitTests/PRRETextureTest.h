@@ -512,8 +512,8 @@ private:
 
     bool testUploadPixels()
     {
-        tex128x128x24->SetPixel(5, 10, 255, 255, 255, 255);
-        bool b = assertTrue(tex128x128x24->uploadPixels(), "24 start");
+        bool b = assertTrue(tex128x128x24->setPixel(5, 10, 255, 255, 255, 255), "setPixel");
+        b &= assertTrue(tex128x128x24->uploadPixels(), "24 start");
 
         tex128x128x24->DetachFrom();
         b &= assertFalse(tex128x128x24->uploadPixels(), "no manager");

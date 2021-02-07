@@ -150,7 +150,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREhwSystemMemory);
     tests.push_back(&testPRREhwAudio);
     tests.push_back(&testPRREhwVideo); 
-       
+
     tests.push_back(&testPRREImageManager);
     tests.push_back(&testPRREImage);
     tests.push_back(&testPRRETextureManager);

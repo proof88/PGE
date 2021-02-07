@@ -66,20 +66,21 @@ TPRRE_PIXEL_COMPONENT_ORDER PRREImage::PRREImageImpl::getOriginalPixelComponentO
 } // getOriginalPixelComponentOrder()
 
 
-void PRREImage::PRREImageImpl::SetPixelComponentOrder(TPRRE_PIXEL_COMPONENT_ORDER cord)
+TPRREbool PRREImage::PRREImageImpl::setPixelComponentOrder(TPRRE_PIXEL_COMPONENT_ORDER cord)
 {
-    _pOwner->getConsole().OLn("PRREImage::SetPixelComponentOrder(%PXCO)", cord);
+    _pOwner->getConsole().OLn("PRREImage::setPixelComponentOrder(%PXCO)", cord);
 
     if ( pPixels == PGENULL )
-        return;
+        return false;
 
     if ( cord == clrCompOrder )
     {
-        _pOwner->getConsole().OLn("  WARNING: nothing to do, equal or incompatible component orders!");
+        _pOwner->getConsole().OLn("  WARNING: nothing to do, equal component orders!");
         _pOwner->getConsole().OLn("  clrCompOrder == %PXCO", clrCompOrder);
-        return;
+        return true;
     }
 
+    bool retVal = true;
     if ( (abs(cord-clrCompOrder) > 1) ||
          ( ((cord-clrCompOrder == 1) && (cord % 2 == 0)) ||
            ((cord-clrCompOrder == -1) && (cord % 2 == 1)) ) )
@@ -90,14 +91,15 @@ void PRREImage::PRREImageImpl::SetPixelComponentOrder(TPRRE_PIXEL_COMPONENT_ORDE
         while ( swapcount > 0 )
         {
             _pOwner->getConsole().OI();
-            SwapColors(clrCompOrder, cord, (TPRREbyte) swapcount);
+            retVal &= swapColors(clrCompOrder, cord, (TPRREbyte) swapcount);
             swapcount--;
             _pOwner->getConsole().OO();
         }
-    } // if
+    }
 
     _pOwner->getConsole().OLn("");
-} // SetPixelComponentOrder()
+    return retVal;
+} // setPixelComponentOrder()
 
 
 PRREColor PRREImage::PRREImageImpl::getPixel(TPRREuint x, TPRREuint y)
@@ -108,13 +110,12 @@ PRREColor PRREImage::PRREImageImpl::getPixel(TPRREuint x, TPRREuint y)
         return ret;
 
     if ( (x >= nWidth) || (y >= nHeight) )
-    {
         return ret;
-    }
 
     TPRREuint index = getIndexToPixel(x,y);
     TPRREbyte rIndex, gIndex, bIndex, aIndex;
-    SetColorComponentsIndices(rIndex, gIndex, bIndex, aIndex, clrCompOrder);
+    if ( !setColorComponentsIndices(rIndex, gIndex, bIndex, aIndex, clrCompOrder) )
+        return ret;
     
     ret.Set(pPixels[index+rIndex], pPixels[index+gIndex], pPixels[index+bIndex], aIndex == -1 ? 255 : pPixels[index+aIndex]);
 
@@ -134,7 +135,8 @@ PRREColor PRREImage::PRREImageImpl::getPixel(TPRREuint x, TPRREuint y) const
 
     TPRREuint index = getIndexToPixel(x,y);
     TPRREbyte rIndex, gIndex, bIndex, aIndex;
-    SetColorComponentsIndices(rIndex, gIndex, bIndex, aIndex, clrCompOrder);
+    if ( !setColorComponentsIndices(rIndex, gIndex, bIndex, aIndex, clrCompOrder) )
+        return ret;
     
     ret.Set(pPixels[index+rIndex], pPixels[index+gIndex], pPixels[index+bIndex], aIndex == -1 ? 255 : pPixels[index+aIndex]);
 
@@ -142,33 +144,33 @@ PRREColor PRREImage::PRREImageImpl::getPixel(TPRREuint x, TPRREuint y) const
 } // getPixel()
 
 
-void PRREImage::PRREImageImpl::SetPixel(TPRREuint x, TPRREuint y, TPRREubyte r, TPRREubyte g, TPRREubyte b, TPRREubyte a)                                   
+TPRREbool PRREImage::PRREImageImpl::setPixel(TPRREuint x, TPRREuint y, TPRREubyte r, TPRREubyte g, TPRREubyte b, TPRREubyte a)                                   
 {
     if ( pPixels == PGENULL )
-        return;
+        return false;
 
     if ( (x >= nWidth) || (y >= nHeight) )
-    {
-        return;
-    }
+        return false;
 
-    bChanged = true;
     TPRREuint index = getIndexToPixel(x,y);
     TPRREbyte rIndex, gIndex, bIndex, aIndex;
-    SetColorComponentsIndices(rIndex, gIndex, bIndex, aIndex, clrCompOrder);
+    if ( !setColorComponentsIndices(rIndex, gIndex, bIndex, aIndex, clrCompOrder) )
+        return false;
 
+    bChanged = true;
     pPixels[index+rIndex] = r;
     pPixels[index+gIndex] = g;
     pPixels[index+bIndex] = b;
     if ( aIndex > -1 )
         pPixels[index+aIndex] = a;
-} // SetPixel()
+    return true;
+} // setPixel()
 
 
-void PRREImage::PRREImageImpl::SetPixel(TPRREuint x, TPRREuint y, PRREColor clr)
+TPRREbool PRREImage::PRREImageImpl::setPixel(TPRREuint x, TPRREuint y, PRREColor clr)
 {
-    SetPixel(x,y, clr.getRed(), clr.getGreen(), clr.getBlue(), clr.getAlpha());
-} // SetPixel()
+    return setPixel(x,y, clr.getRed(), clr.getGreen(), clr.getBlue(), clr.getAlpha());
+} // setPixel()
 
 
 TPRREbool PRREImage::PRREImageImpl::isChanged() const
@@ -223,9 +225,10 @@ TPRREuint PRREImage::PRREImageImpl::nImagesTotal = 0;
 
 /**
     Saves indices of the color components to the given params [-1 - 3].
-    Only the a(lpha) can become -1 if the image has no alpha.
+    Only the a(lpha) can become -1 if the image has no alpha. That is not an error scenario.
+    @return True on success, false otherwise.
 */
-void PRREImage::PRREImageImpl::SetColorComponentsIndices(TPRREbyte& r, TPRREbyte& g, TPRREbyte& b, TPRREbyte& a, const TPIXCOMPORD pxcord)
+TPRREbool PRREImage::PRREImageImpl::setColorComponentsIndices(TPRREbyte& r, TPRREbyte& g, TPRREbyte& b, TPRREbyte& a, const TPIXCOMPORD pxcord)
 {
     a = (pxcord % 2) == 1 ? 3 : -1;
 
@@ -237,9 +240,10 @@ void PRREImage::PRREImageImpl::SetColorComponentsIndices(TPRREbyte& r, TPRREbyte
     case PRRE_BRGA: case PRRE_BRG: r = 1; g = 2; b = 0; break;
     case PRRE_GBRA: case PRRE_GBR: r = 2; g = 0; b = 1; break;
     case PRRE_GRBA: case PRRE_GRB: r = 1; g = 0; b = 2; break;
-    default: {}
+    default: return false;
     }
-} // SetColorComponentsIndices()
+    return true;
+} // setColorComponentsIndices()
 
 
 /**
@@ -326,14 +330,15 @@ TPRREuint PRREImage::PRREImageImpl::getIndexToPixel(TPRREuint x, TPRREuint y) co
 
 /**
     Transforms the color component order of the image to another.
+    @return True on success, false otherwise.
 */
-void PRREImage::PRREImageImpl::SwapColors(TPRRE_PIXEL_COMPONENT_ORDER from, TPRRE_PIXEL_COMPONENT_ORDER to, TPRREbyte swapcount)
+TPRREbool PRREImage::PRREImageImpl::swapColors(TPRRE_PIXEL_COMPONENT_ORDER from, TPRRE_PIXEL_COMPONENT_ORDER to, TPRREbyte swapcount)
 {
-    _pOwner->getConsole().OLn("PRREImage::SwapColors(%PXCO, %PXCO, %d)", from, to, swapcount);
+    _pOwner->getConsole().OLn("PRREImage::swapColors(%PXCO, %PXCO, %d)", from, to, swapcount);
     if ( swapcount < 1 )
     {
         _pOwner->getConsole().OLn("");
-        return;
+        return true;
     }
     else if ( swapcount == 2 )
     {
@@ -341,16 +346,19 @@ void PRREImage::PRREImageImpl::SwapColors(TPRRE_PIXEL_COMPONENT_ORDER from, TPRR
         _pOwner->getConsole().OLn("  New target order is %PXCO.", to);
     }
     
-    clrCompOrder = to;
     TPRREbyte dstR, dstG, dstB, dstA;
-    SetColorComponentsIndices(dstR, dstG, dstB, dstA, to);
+    if ( !setColorComponentsIndices(dstR, dstG, dstB, dstA, to) )
+        return false;
 
     TPRREbyte srcR, srcG, srcB, srcA;
-    SetColorComponentsIndices(srcR, srcG, srcB, srcA, from);
+    if ( !setColorComponentsIndices(srcR, srcG, srcB, srcA, from) )
+        return false;
 
     _pOwner->getConsole().OLn("  dstR, srcR == %d, %d", dstR, srcR);
     _pOwner->getConsole().OLn("  dstG, srcG == %d, %d", dstG, srcG);
     _pOwner->getConsole().OLn("  dstB, srcB == %d, %d", dstB, srcB);
+
+    clrCompOrder = to;
 
     TPRREbool done = false;
     TPRREubyte tmp = 0;
@@ -385,7 +393,8 @@ void PRREImage::PRREImageImpl::SwapColors(TPRRE_PIXEL_COMPONENT_ORDER from, TPRR
     } // for i
 
     _pOwner->getConsole().OLn("");
-} // SwapColors()
+    return true;
+} // swapColors()
 
 
 bool PRREImage::PRREImageImpl::initMembers(
@@ -667,7 +676,7 @@ TPRREuint PRREImage::getBitsPerPixels() const
 
 /**
     Gets the actual color component order.
-    Same result as getOriginalPixelComponentOrder(), if the order hasn't been changed by SwapColors() or SetPixelComponentOrder() yet.
+    Same result as getOriginalPixelComponentOrder(), if the order hasn't been changed by swapColors() or setPixelComponentOrder() yet.
 
     @return Pixel component order.
 */
@@ -695,11 +704,13 @@ TPRRE_PIXEL_COMPONENT_ORDER PRREImage::getOriginalPixelComponentOrder() const
 /**
     Transforms the color component order of the image to the given color component order.
     Has no effect if the pixels are no longer in system memory (see FlushResources()).
+
+    @return True on success, false otherwise.
 */
-void PRREImage::SetPixelComponentOrder(TPRRE_PIXEL_COMPONENT_ORDER cord)
+TPRREbool PRREImage::setPixelComponentOrder(TPRRE_PIXEL_COMPONENT_ORDER cord)
 {
-    pImpl->SetPixelComponentOrder(cord);
-} // SetPixelComponentOrder()
+    return pImpl->setPixelComponentOrder(cord);
+} // setPixelComponentOrder()
 
 
 /**
@@ -728,22 +739,24 @@ PRREColor PRREImage::getPixel(TPRREuint x, TPRREuint y) const
 
 /**
     Sets the color of the pixel at the given (x,y) coordinate.
-    Has no effect if the pixels are no longer in system memory (see FlushResources()).
+    Has no effect if the pixels are no longer in system memory (see FlushResources()). This is considered as an error.
+    @return True on success, false otherwise.
 */
-void PRREImage::SetPixel(TPRREuint x, TPRREuint y, TPRREubyte r, TPRREubyte g, TPRREubyte b, TPRREubyte a)                                   
+TPRREbool PRREImage::setPixel(TPRREuint x, TPRREuint y, TPRREubyte r, TPRREubyte g, TPRREubyte b, TPRREubyte a)                                   
 {
-    pImpl->SetPixel(x, y, r, g, b, a);
-} // SetPixel()
+    return pImpl->setPixel(x, y, r, g, b, a);
+} // setPixel()
 
 
 /**
     Sets the color of the pixel at the given (x,y) coordinate.
-    Has no effect if the pixels are no longer in system memory (see FlushResources()).
+    Has no effect if the pixels are no longer in system memory (see FlushResources()). This is considered as an error.
+    @return True on success, false otherwise.
 */
-void PRREImage::SetPixel(TPRREuint x, TPRREuint y, PRREColor clr)
+TPRREbool PRREImage::setPixel(TPRREuint x, TPRREuint y, PRREColor clr)
 {
-    pImpl->SetPixel(x, y, clr);
-} // SetPixel()
+    return pImpl->setPixel(x, y, clr);
+} // setPixel()
 
 
 /**

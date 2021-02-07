@@ -64,18 +64,18 @@ public:
         getPixelComponentOrder() const;          /**< Gets the actual color component order. */
     TPRRE_PIXEL_COMPONENT_ORDER
         getOriginalPixelComponentOrder() const;  /**< Gets the original color component order. */
-	void
-        SetPixelComponentOrder(
+	TPRREbool
+        setPixelComponentOrder(
             TPRRE_PIXEL_COMPONENT_ORDER corder); /**< Transforms the color component order of the image to the given color component order. */
 
     PRREColor getPixel(TPRREuint x, TPRREuint y);        /**< Gets the color of the pixel at the given (x,y) coordinate. */
     PRREColor getPixel(TPRREuint x, TPRREuint y) const;  /**< Gets the color of the pixel at the given (x,y) coordinate. */
 
-    void      SetPixel(TPRREuint x, TPRREuint y,
+    TPRREbool setPixel(TPRREuint x, TPRREuint y,
                   TPRREubyte r, TPRREubyte g, TPRREubyte b,
                   TPRREubyte a = 0);                             /**< Sets the color of the pixel at the given (x,y) coordinate. */
                              
-    void      SetPixel(TPRREuint x, TPRREuint y, PRREColor clr); /**< Sets the color of the pixel at the given (x,y) coordinate. */
+    TPRREbool setPixel(TPRREuint x, TPRREuint y, PRREColor clr); /**< Sets the color of the pixel at the given (x,y) coordinate. */
 
     TPRREbool isChanged() const;              /**< True if the pixel data has been changed since loading it from file. */
 

@@ -416,8 +416,19 @@ TPRREbool PRRETexture::PRRETextureImpl::uploadPixels()
     }
 
     const TPRRE_PIXEL_COMPONENT_ORDER oldco = _pOwner->getPixelComponentOrder();
-    const GLenum glTexFormat = getTransformedSourceFormat(oldco);
-    const GLint  internalfmt = getTargetInternalFormat();
+    const GLenum glTexFormat = getTransformedSourceFormat(oldco); // might invoke setPixelComponentOrder()!
+    if ( glTexFormat == GL_INVALID_ENUM )
+    {
+        _pOwner->getConsole().EOLnOO("ERROR: getTransformedSourceFormat() failed!");
+        // try reset original pixel component order
+        if ( !_pOwner->setPixelComponentOrder( oldco ) )
+        {
+            _pOwner->getConsole().EOLnOO("ERROR: recovery setPixelComponentOrder(oldco) failed!");
+        }
+        return false;
+    }
+
+    const GLint internalfmt = getTargetInternalFormat();
 
     if ( !actualUploadProc(internalfmt, glTexFormat) )
     {
@@ -428,7 +439,13 @@ TPRREbool PRRETexture::PRRETextureImpl::uploadPixels()
     DescribeTexFormatAndSize(internalfmt);
 
     if ( _pOwner->getPixelComponentOrder() != oldco )
-        _pOwner->SetPixelComponentOrder( oldco );
+    {
+        if ( !_pOwner->setPixelComponentOrder( oldco ) )
+        {
+            _pOwner->getConsole().EOLnOO("ERROR: finished creating new texture, but setPixelComponentOrder(oldco) failed!");
+            // intentionally let function still return true
+        }
+    }
 
     _pOwner->getConsole().OO();
 
@@ -512,7 +529,7 @@ CConsole& PRRETexture::PRRETextureImpl::getConsole() const
     For example, if the image's color component order is PRRE_BGR and OpenGL driver supports that format natively, no transform is needed, respective OpenGL source format will be returned quickly.
     However if driver doesn't have support for that, then color component order first gets transformed to PRRE_RGB, and then respective OpenGL source format will be returned.
 
-    @return OpenGL source format enum.
+    @return OpenGL source format enum. GL_INVALID_ENUM in case of error.
 */
 GLenum PRRETexture::PRRETextureImpl::getTransformedSourceFormat(TPRRE_PIXEL_COMPONENT_ORDER oldco)
 {
@@ -525,7 +542,8 @@ GLenum PRRETexture::PRRETextureImpl::getTransformedSourceFormat(TPRRE_PIXEL_COMP
             return GL_BGR_EXT;
         else
         {
-            _pOwner->SetPixelComponentOrder(PRRE_RGB);
+            if ( !_pOwner->setPixelComponentOrder(PRRE_RGB) )
+                return GL_INVALID_ENUM;
             return GL_RGB;
         }
     }
@@ -535,20 +553,27 @@ GLenum PRRETexture::PRRETextureImpl::getTransformedSourceFormat(TPRRE_PIXEL_COMP
             return GL_BGRA_EXT;
         else
         {
-            _pOwner->SetPixelComponentOrder(PRRE_RGBA);
+            if ( !_pOwner->setPixelComponentOrder(PRRE_RGBA) )
+                return GL_INVALID_ENUM;
             return GL_RGBA;
         }
     }
     else if ( _pOwner->getPixelComponentOrder() % 2 == 0 )
     {
         if ( oldco != PRRE_RGB )
-            _pOwner->SetPixelComponentOrder(PRRE_RGB);
+        {
+            if ( !_pOwner->setPixelComponentOrder(PRRE_RGB) )
+                return GL_INVALID_ENUM;
+        }
         return GL_RGB;
     }
     else
     {
         if ( oldco != PRRE_RGBA )
-            _pOwner->SetPixelComponentOrder(PRRE_RGBA);
+        {
+            if ( !_pOwner->setPixelComponentOrder(PRRE_RGBA) )
+                return GL_INVALID_ENUM;
+        }
         return GL_RGBA;
     }
 } // getTransformedSourceFormat()

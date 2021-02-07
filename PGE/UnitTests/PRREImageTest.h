@@ -207,12 +207,13 @@ private:
         const PRREColor clr24_20_bef  = img128x128x24->getPixel(20,  110);
         const PRREColor clr24_60_bef  = img128x128x24->getPixel(60,  110);
         const PRREColor clr24_100_bef = img128x128x24->getPixel(100, 110);
-        img128x128x24->SetPixelComponentOrder(PRRE_RGB);
+        const bool b = assertTrue(img128x128x24->setPixelComponentOrder(PRRE_RGB), "set");
         const PRREColor clr24_20_aft  = img128x128x24->getPixel(20,  110);
         const PRREColor clr24_60_aft  = img128x128x24->getPixel(60,  110);
         const PRREColor clr24_100_aft = img128x128x24->getPixel(100, 110);
         
-        return assertEquals(PRRE_RGB, img128x128x24->getPixelComponentOrder(), "order") &
+        return b &
+            assertEquals(PRRE_RGB, img128x128x24->getPixelComponentOrder(), "order") &
             assertTrue(clr24_20_bef == clr24_20_aft, "20") &
             assertTrue(clr24_60_bef == clr24_60_aft, "60") &
             assertTrue(clr24_100_bef == clr24_100_aft, "100");
@@ -223,12 +224,13 @@ private:
         const PRREColor clr24_20_bef  = img128x128x24->getPixel(20,  110);
         const PRREColor clr24_60_bef  = img128x128x24->getPixel(60,  110);
         const PRREColor clr24_100_bef = img128x128x24->getPixel(100, 110);
-        img128x128x24->SetPixelComponentOrder(PRRE_RBG);
+        const bool b = assertTrue(img128x128x24->setPixelComponentOrder(PRRE_RBG), "set");
         const PRREColor clr24_20_aft  = img128x128x24->getPixel(20,  110);
         const PRREColor clr24_60_aft  = img128x128x24->getPixel(60,  110);
         const PRREColor clr24_100_aft = img128x128x24->getPixel(100, 110);
         
-        return assertEquals(PRRE_RBG, img128x128x24->getPixelComponentOrder(), "order") &
+        return b &
+            assertEquals(PRRE_RBG, img128x128x24->getPixelComponentOrder(), "order") &
             assertTrue(clr24_20_bef == clr24_20_aft, "20") &
             assertTrue(clr24_60_bef == clr24_60_aft, "60") &
             assertTrue(clr24_100_bef == clr24_100_aft, "100");
@@ -239,12 +241,13 @@ private:
         const PRREColor clr24_20_bef  = img128x128x24->getPixel(20,  110);
         const PRREColor clr24_60_bef  = img128x128x24->getPixel(60,  110);
         const PRREColor clr24_100_bef = img128x128x24->getPixel(100, 110);
-        img128x128x24->SetPixelComponentOrder(PRRE_GRB);
+        const bool b = assertTrue(img128x128x24->setPixelComponentOrder(PRRE_GRB), "set");
         const PRREColor clr24_20_aft  = img128x128x24->getPixel(20,  110);
         const PRREColor clr24_60_aft  = img128x128x24->getPixel(60,  110);
         const PRREColor clr24_100_aft = img128x128x24->getPixel(100, 110);
         
-        return assertEquals(PRRE_GRB, img128x128x24->getPixelComponentOrder(), "order") &
+        return b &
+            assertEquals(PRRE_GRB, img128x128x24->getPixelComponentOrder(), "order") &
             assertTrue(clr24_20_bef == clr24_20_aft, "20") &
             assertTrue(clr24_60_bef == clr24_60_aft, "60") &
             assertTrue(clr24_100_bef == clr24_100_aft, "100");
@@ -255,12 +258,13 @@ private:
         const PRREColor clr24_20_bef  = img128x128x24->getPixel(20,  110);
         const PRREColor clr24_60_bef  = img128x128x24->getPixel(60,  110);
         const PRREColor clr24_100_bef = img128x128x24->getPixel(100, 110);
-        img128x128x24->SetPixelComponentOrder(PRRE_GBR);
+        const bool b = assertTrue(img128x128x24->setPixelComponentOrder(PRRE_GBR), "set");
         const PRREColor clr24_20_aft  = img128x128x24->getPixel(20,  110);
         const PRREColor clr24_60_aft  = img128x128x24->getPixel(60,  110);
         const PRREColor clr24_100_aft = img128x128x24->getPixel(100, 110);
         
-        return assertEquals(PRRE_GBR, img128x128x24->getPixelComponentOrder(), "order") &
+        return b &
+            assertEquals(PRRE_GBR, img128x128x24->getPixelComponentOrder(), "order") &
             assertTrue(clr24_20_bef == clr24_20_aft, "20") &
             assertTrue(clr24_60_bef == clr24_60_aft, "60") &
             assertTrue(clr24_100_bef == clr24_100_aft, "100");
@@ -271,12 +275,13 @@ private:
         const PRREColor clr24_20_bef  = img128x128x24->getPixel(20,  110);
         const PRREColor clr24_60_bef  = img128x128x24->getPixel(60,  110);
         const PRREColor clr24_100_bef = img128x128x24->getPixel(100, 110);
-        img128x128x24->SetPixelComponentOrder(PRRE_BGR);
+        const bool b = assertTrue(img128x128x24->setPixelComponentOrder(PRRE_BGR), "set");
         const PRREColor clr24_20_aft  = img128x128x24->getPixel(20,  110);
         const PRREColor clr24_60_aft  = img128x128x24->getPixel(60,  110);
         const PRREColor clr24_100_aft = img128x128x24->getPixel(100, 110);
         
-        return assertEquals(PRRE_BGR, img128x128x24->getPixelComponentOrder(), "order") &
+        return b &
+            assertEquals(PRRE_BGR, img128x128x24->getPixelComponentOrder(), "order") &
             assertTrue(clr24_20_bef == clr24_20_aft, "20") &
             assertTrue(clr24_60_bef == clr24_60_aft, "60") &
             assertTrue(clr24_100_bef == clr24_100_aft, "100");
@@ -287,12 +292,13 @@ private:
         const PRREColor clr24_20_bef  = img128x128x24->getPixel(20,  110);
         const PRREColor clr24_60_bef  = img128x128x24->getPixel(60,  110);
         const PRREColor clr24_100_bef = img128x128x24->getPixel(100, 110);
-        img128x128x24->SetPixelComponentOrder(PRRE_BRG);
+        const bool b = assertTrue(img128x128x24->setPixelComponentOrder(PRRE_BRG), "set");
         const PRREColor clr24_20_aft  = img128x128x24->getPixel(20,  110);
         const PRREColor clr24_60_aft  = img128x128x24->getPixel(60,  110);
         const PRREColor clr24_100_aft = img128x128x24->getPixel(100, 110);
         
-        return assertEquals(PRRE_BRG, img128x128x24->getPixelComponentOrder(), "order") &
+        return b &
+            assertEquals(PRRE_BRG, img128x128x24->getPixelComponentOrder(), "order") &
             assertTrue(clr24_20_bef == clr24_20_aft, "20") &
             assertTrue(clr24_60_bef == clr24_60_aft, "60") &
             assertTrue(clr24_100_bef == clr24_100_aft, "100");
@@ -420,10 +426,10 @@ private:
             (TPRREubyte)(255-clrOriginal.getGreen()),
             (TPRREubyte)(255-clrOriginal.getBlue()),
             (TPRREubyte)(255-clrOriginal.getAlpha()) );
-        img128x128x32opaque->SetPixel(10, 10, clrNew.getRed(), clrNew.getGreen(), clrNew.getBlue(), clrNew.getAlpha());
+        const bool b = assertTrue(img128x128x32opaque->setPixel(10, 10, clrNew.getRed(), clrNew.getGreen(), clrNew.getBlue(), clrNew.getAlpha()), "setpixel");
         clrOriginal = img128x128x32opaque->getPixel(10, 10);
 
-        return assertTrue(clrOriginal == clrNew);
+        return b & assertTrue(clrOriginal == clrNew, "clrOriginal == clrNew");
     }
 
     bool testSetPixel2()
@@ -433,27 +439,27 @@ private:
             (TPRREubyte)(255-clrOriginal.getGreen()),
             (TPRREubyte)(255-clrOriginal.getBlue()),
             (TPRREubyte)(255-clrOriginal.getAlpha()) );
-        img128x128x32opaque->SetPixel(10, 10, clrNew);
+        const bool b = assertTrue(img128x128x32opaque->setPixel(10, 10, clrNew), "setpixel");
         clrOriginal = img128x128x32opaque->getPixel(10, 10);
 
-        return assertTrue(clrOriginal == clrNew);
+        return b & assertTrue(clrOriginal == clrNew, "clrOriginal == clrNew");
     }
 
     bool testIsChanged()
     {
         bool b = assertFalse(img128x128x24->isChanged(), "b1");
-        img128x128x24->SetPixelComponentOrder(PRRE_GBR);
+        b &= assertTrue(img128x128x24->setPixelComponentOrder(PRRE_GBR), "setPixelComponentOrder");
         b &= assertTrue(img128x128x24->isChanged(), "b2");
         delete img128x128x24;
         
         img128x128x24 = im->createFromFile(BMP128x128x24);
-        img128x128x24->SetPixel(5,5, 1,1,1);
+        b &= assertTrue(img128x128x24->setPixel(5,5, 1,1,1), "setpixel 1");
         b &= assertTrue(img128x128x24->isChanged(), "b3");
         delete img128x128x24;
 
         img128x128x24 = im->createFromFile(BMP128x128x24);
         const PRREColor clr(1,1,1);
-        img128x128x24->SetPixel(5,5, clr);
+        b &= assertTrue(img128x128x24->setPixel(5,5, clr), "setpixel 2");
         b &= assertTrue(img128x128x24->isChanged(), "b4");
         delete img128x128x24;
         img128x128x24 = NULL;

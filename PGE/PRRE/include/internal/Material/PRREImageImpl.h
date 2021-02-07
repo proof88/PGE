@@ -37,18 +37,18 @@ public:
         getPixelComponentOrder() const;          
     TPRRE_PIXEL_COMPONENT_ORDER
         getOriginalPixelComponentOrder() const;  
-	void
-        SetPixelComponentOrder(
+	TPRREbool
+        setPixelComponentOrder(
             TPRRE_PIXEL_COMPONENT_ORDER corder); 
 
     PRREColor getPixel(TPRREuint x, TPRREuint y);       
     PRREColor getPixel(TPRREuint x, TPRREuint y) const;
 
-    void      SetPixel(TPRREuint x, TPRREuint y,
+    TPRREbool setPixel(TPRREuint x, TPRREuint y,
                   TPRREubyte r, TPRREubyte g, TPRREubyte b,
                   TPRREubyte a = 0);                            
                              
-    void      SetPixel(TPRREuint x, TPRREuint y, PRREColor clr);
+    TPRREbool setPixel(TPRREuint x, TPRREuint y, PRREColor clr);
 
     TPRREbool isChanged() const;         
 
@@ -70,7 +70,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    static void SetColorComponentsIndices(
+    static TPRREbool setColorComponentsIndices(
         TPRREbyte& r,
         TPRREbyte& g,
         TPRREbyte& b,
@@ -88,7 +88,7 @@ private:
     TPRREuint   nWidth;              /**< Width (pixel). */
     TPRREuint   nHeight;             /**< Height (pixel). */
     TPIXCOMPORD clrCompOrderOrig;    /**< Original color component order: right after loading. */
-    TPIXCOMPORD clrCompOrder;        /**< Actual color component order (SwapColors(), SetPixelComponentOrder() are changing it). */
+    TPIXCOMPORD clrCompOrder;        /**< Actual color component order (swapColors(), setPixelComponentOrder() are changing it). */
     TPRREbool   bUpsideDown;         /**< True if the 1st row is the last row and the last row is the 1st row. */
     TPRREbool   bChanged;            /**< True if the pixel data has been changed since loading it from file. */
     TPRREubyte* pPixels;             /**< Array of pixels. */
@@ -103,7 +103,7 @@ private:
     TPRREuint getIndexToPixel(
         TPRREuint x, TPRREuint y ) const;      /**< Gets the index in pPixels to the pixel at the given (x,y) coordinate. */
     
-    void SwapColors(
+    TPRREbool swapColors(
         TPRRE_PIXEL_COMPONENT_ORDER from,
         TPRRE_PIXEL_COMPONENT_ORDER to,
         TPRREbyte swapcount );                 /**< Transforms the color component order of the image to another. */
