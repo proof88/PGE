@@ -252,8 +252,11 @@ int PGESysCFG::addProfile(const char* sUser, const char* sNick)
     const std::string** const sProfileList = getProfilesList();
     bool bSameUserFound = false;
     for (int i = 0; i < getProfilesCount(); i++)
-        if ( bSameUserFound = ( *(sProfileList[i]) == sUser ) )
+    {
+        bSameUserFound = ( *(sProfileList[i]) == sUser );
+        if ( bSameUserFound )
             break;
+    }
 
     if ( bSameUserFound )
     {

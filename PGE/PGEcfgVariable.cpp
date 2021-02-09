@@ -89,8 +89,8 @@ int PGEcfgVariable::getAsInt() const
 float PGEcfgVariable::getAsFloat() const
 {
     if ( getType() == PGE_CVAR_BOOL )
-        return getAsBool() ? 1 : 0;
-    return atof( sValue.c_str() );
+        return getAsBool() ? 1.0f : 0.0f;
+    return (float)atof( sValue.c_str() );
 }
 
 /**

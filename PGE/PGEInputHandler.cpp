@@ -107,7 +107,8 @@ bool PGEInputMouseImpl::initialize(HWND hWindow)
     if ( hWindow != PGENULL )
     {
         Rid[0].hwndTarget = hWindow;
-        if ( bPreciseMovementAvailable = (RegisterRawInputDevices(Rid, 1, sizeof(Rid[0])) == TRUE) )
+        bPreciseMovementAvailable = (RegisterRawInputDevices(Rid, 1, sizeof(Rid[0])) == TRUE);
+        if ( bPreciseMovementAvailable )
             con.SOLn("  Raw input device registration okay!");
         else
             con.EOLn("  Raw input device registration failed!");
