@@ -49,6 +49,7 @@ protected:
         AddSubTest("testGetUImanager", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest::testGetUImanager);
         AddSubTest("testGetRenderer", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest::testGetRenderer);
         AddSubTest("testCopyScreenToTexture", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest::testCopyScreenToTexture);
+        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest::testWriteList);
     }
 
     virtual bool setUp()
@@ -200,6 +201,13 @@ private:
         // we just simply call this and expect nothing bad to happen
         PRRETexture* tex = NULL;
         engine->CopyScreenToTexture(*tex);
+
+        return true;
+    }
+
+    bool testWriteList()
+    {
+        engine->WriteList();
 
         return true;
     }

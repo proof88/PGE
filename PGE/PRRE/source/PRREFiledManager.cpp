@@ -243,6 +243,16 @@ PRREFiledManaged* PRREFiledManager::createFromFile(const char* filename)
 } // createFromFile()
 
 
+void PRREFiledManager::WriteList() const
+{
+    getConsole().OLn("PRREFiledManager::WriteList()");
+    getConsole().OLn("===============================");
+    getConsole().OLnOI("");
+    PRREManager::WriteList();
+    getConsole().OO();
+} // WriteList()
+
+
 // ############################## PROTECTED ##############################
 
 

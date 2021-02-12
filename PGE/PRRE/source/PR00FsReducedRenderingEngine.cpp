@@ -57,6 +57,8 @@ public:
     PRREuiManager&        getUImanager() const;
     PRREIRenderer*        getRenderer() const;
 
+    void                  WriteList() const;
+
     void                  CopyScreenToTexture(PRRETexture& tex);
     
     void WriteStats() const;       
@@ -407,6 +409,36 @@ PRREuiManager& PR00FsReducedRenderingEngineImpl::getUImanager() const
 PRREIRenderer* PR00FsReducedRenderingEngineImpl::getRenderer() const
 {
     return pRenderer;
+}
+
+
+/**
+    Invoke WriteList() of all children instances.
+*/
+void PR00FsReducedRenderingEngineImpl::WriteList() const
+{
+    getConsole().OLnOI("PR00FsReducedRenderingEngine::WriteList() start");
+    getConsole().OLnOI("");
+    if ( isInitialized() )
+    {
+        // getScreen() doesnt have such ...
+        getWindow().WriteSettings();
+        getHardwareInfo().WriteStats();
+        getImageManager().WriteList();
+        getTextureManager().WriteList();
+        getMaterialManager().WriteList();
+        getMesh3DManager().WriteList();
+        getObject3DManager().WriteList();
+        // getCamera() doesnt have such ...
+        // getUImanager() doesnt have such ...
+        getRenderer()->WriteStats();
+    }
+    else
+    {
+        getConsole().OLn("PR00FsReducedRenderingEngine is NOT initialized!");
+    }
+    getConsole().OLnOO("PR00FsReducedRenderingEngine::WriteList() end");
+    getConsole().OLn("");
 }
 
 

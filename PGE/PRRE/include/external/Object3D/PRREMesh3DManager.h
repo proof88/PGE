@@ -142,6 +142,8 @@ public:
 
     PRREMesh3D* createFromFile(const char* filename);            /**< Creates object from the given file. */
 
+    virtual void WriteList() const;
+
 protected:
 
     PRREMesh3DManager();
@@ -155,6 +157,8 @@ protected:
         PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b, TPRREfloat c);              /**< Converts the given Mesh to a box with the given sizes. */
 
     PRREMaterial* createMaterialForMesh(PRREMesh3D& mesh) const;                  /**< Creates a material for the given Mesh if it doesn't yet have one. */
+
+    virtual void WriteListCallback(const PRREManaged& mngd) const;
 
 private:
     class PRREMesh3DManagerImpl;

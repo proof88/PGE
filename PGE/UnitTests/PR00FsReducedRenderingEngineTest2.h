@@ -39,6 +39,7 @@ protected:
         AddSubTest("testGetUImanager", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetUImanager);
         AddSubTest("testGetRenderer", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetRenderer);
         AddSubTest("testCopyScreenToTexture", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testCopyScreenToTexture);
+        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testWriteList);
     }
 
     virtual bool setUp()
@@ -142,5 +143,11 @@ private:
         return true;
     }
 
+    bool testWriteList()
+    {
+        engine->WriteList();
+
+        return true;
+    }
    
 }; // class PR00FsReducedRenderingEngineTest2

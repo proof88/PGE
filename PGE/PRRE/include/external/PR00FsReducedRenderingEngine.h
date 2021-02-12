@@ -79,6 +79,8 @@ public:
     virtual PRREuiManager&       getUImanager() const = 0;        /**< Get access to user interface functions. */
     virtual PRREIRenderer*       getRenderer() const = 0;         /**< Get access to the selected renderer. */
 
+    virtual void                 WriteList() const = 0;           /**< Invoke WriteList() of all children instances. */
+
     virtual void                 CopyScreenToTexture(PRRETexture& tex) = 0;  /**< Copies screen content to texture. */
   
 }; // class PR00FsReducedRenderingEngine

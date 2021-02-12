@@ -260,10 +260,14 @@ public:
     
     /*PRREObject3D* createFromFile(const char* filename);*/   
 
+    virtual void WriteList() const;
+
 protected:
 
     PRREMaterialManager(const PRREMaterialManager&);
     PRREMaterialManager& operator=(const PRREMaterialManager&);
+
+    virtual void WriteListCallback(const PRREManaged& mngd) const;
 
 private:
     class PRREMaterialManagerImpl;

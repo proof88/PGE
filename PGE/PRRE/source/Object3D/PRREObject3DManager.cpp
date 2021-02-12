@@ -610,6 +610,16 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
 }
 
 
+void PRREObject3DManager::WriteList() const
+{
+    getConsole().OLn("PRREObject3DManager::WriteList()");
+    getConsole().OLn("===============================");
+    getConsole().OLnOI("");
+    PRREMesh3DManager::WriteList();
+    getConsole().OO();
+} // WriteList()
+
+
 // ############################## PROTECTED ##############################
 
 
@@ -632,6 +642,14 @@ PRREObject3DManager& PRREObject3DManager::operator=(const PRREObject3DManager&)
 {
     return *this;    
 }
+
+
+void PRREObject3DManager::WriteListCallback(const PRREManaged& mngd) const
+{
+    PRREMesh3DManager::WriteListCallback(mngd);
+    const PRREObject3D& obj = (PRREObject3D&) mngd;
+    getConsole().OIOLnOO("xfer mode: %d, visible: %b", obj.getVertexTransferMode(), obj.isVisible());
+} // WriteListCallback()
 
 
 // ############################### PRIVATE ###############################

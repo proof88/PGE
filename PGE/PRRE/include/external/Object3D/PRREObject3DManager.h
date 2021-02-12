@@ -205,12 +205,16 @@ public:
 
     PRREObject3D* createCloned(PRREObject3D& referredobj);       /**< Creates a new object by cloning an already existing object. */
 
+    virtual void WriteList() const;
+
 protected:
 
     PRREObject3DManager();  /* TODO: mark this as noexcept(false) when using newer compiler! */
 
     PRREObject3DManager(const PRREObject3DManager&);
     PRREObject3DManager& operator=(const PRREObject3DManager&);
+
+    virtual void WriteListCallback(const PRREManaged& mngd) const;
 
 private:
     class PRREObject3DManagerImpl;

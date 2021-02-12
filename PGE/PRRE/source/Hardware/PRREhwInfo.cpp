@@ -234,8 +234,10 @@ void PRREhwInfoImpl::WriteStats()
     else getConsole().EOn();
     getConsole().OLn("Audio inited: %b", hwAudio.isInitialized());
 
+    getConsole().NOn();
+
     getConsole().OO();
-    getConsole().OO();
+    getConsole().OLnOO("");
 } // WriteStats()
 
 

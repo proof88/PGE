@@ -198,6 +198,16 @@ PRREMaterial* PRREMaterialManager::createMaterial()
 } // createMaterial()
 
 
+void PRREMaterialManager::WriteList() const
+{
+    getConsole().OLn("PRREMaterialManager::WriteList()");
+    getConsole().OLn("===============================");
+    getConsole().OLnOI("");
+    PRREFiledManager::WriteList();
+    getConsole().OO();
+}
+
+
 
 // ############################## PROTECTED ##############################
 
@@ -212,6 +222,14 @@ PRREMaterialManager& PRREMaterialManager::operator=(const PRREMaterialManager&)
 {
     return *this;    
 }
+
+
+void PRREMaterialManager::WriteListCallback(const PRREManaged& mngd) const
+{
+    const PRREMaterial& mat = (PRREMaterial&) mngd;
+    PRREFiledManager::WriteListCallback(mat);
+    getConsole().OIOLnOO("textures: %d, indices: %d, colors: %d, texcoords: %d", mat.getTextureCount(), mat.getIndicesCount(), mat.getColorsCount(), mat.getTexcoordsCount());
+} // WriteListCallback()
 
 
 // ############################### PRIVATE ###############################

@@ -579,24 +579,25 @@ void PRREManager::DeleteAll()
 void PRREManager::WriteList() const
 {
     getConsole().OLn("PRREManager::WriteList()");
+    getConsole().OLn("========================");
     TPRREuint nSysMemTotal = 0;
 
-    getConsole().OIOLn("  total slots == %d, # of manageds == %d", getSize(), getCount());
+    getConsole().OIOLn("total slots == %d, # of manageds == %d", getSize(), getCount());
     for (TPRREint i = 0; i < getSize(); i++)
     {
         const PRREManaged* const pMngd = getAttachedAt(i);
         if ( pMngd != PGENULL )
         {    
             nSysMemTotal += pMngd->getUsedSystemMemory();
-            getConsole().OLn("  pManageds[%d], sys mem: %d Bytes", i, pMngd->getUsedSystemMemory());
+            getConsole().OLn("pManageds[%d], sys mem: %d Bytes", i, pMngd->getUsedSystemMemory());
             WriteListCallback( *pMngd );
         }
         else
-            getConsole().OLn("  pManageds[%d] == PGENULL (free slot)", i);
+            getConsole().OLn("pManageds[%d] == PGENULL (free slot)", i);
     }
-    getConsole().OLn("> total size of manageds = %d Bytes = %d kBytes = %d MBytes",
+    getConsole().OLnOO("> total size of manageds = %d Bytes = %d kBytes = %d MBytes",
                       nSysMemTotal, nSysMemTotal/1024, nSysMemTotal/1024/1024);
-    getConsole().OOOLn("");
+    getConsole().OLn("");
 } // WriteList()
 
 
@@ -627,15 +628,17 @@ PRREManager& PRREManager::operator=(const PRREManager& other)
 */
 void PRREManager::WriteListCallback(const PRREManaged& mngd) const
 {
+    getConsole().OI();
     if ( mngd.getManager() == (PRREManager*)this )
-        getConsole().OISOLnOO("parent is OK!");
+        getConsole().SOLn("parent is OK!");
     else
     {
         if ( mngd.getManager() == PGENULL )
-            getConsole().OIEOLnOO("parent is PGENULL!");
+            getConsole().EOLn("parent is PGENULL!");
         else
-            getConsole().OIEOLnOO("parent is VERY BAD!");
+            getConsole().EOLn("parent is VERY BAD!");
     }
+    getConsole().OO();
 } // WriteListCallback()
 
 

@@ -82,6 +82,8 @@ public:
     virtual PRREFiledManaged*
         createFromFile( const char* filename);      /**< Should create a new managed from the given file. */
 
+    void WriteList() const;
+
 protected:
     PRREFiledManager(const PRREFiledManager&);
     PRREFiledManager& operator=(const PRREFiledManager&);

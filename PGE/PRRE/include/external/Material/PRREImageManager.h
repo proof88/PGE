@@ -133,6 +133,8 @@ public:
     virtual PRREImage* createFromFile(const char* filename);                    /**< Creates an Image object from the given file. */
     PRREImage* createBlank(TPRREuint width, TPRREuint height, TPRREuint bpp);   /**< Creates a blank Image object as specified. */
 
+    virtual void WriteList() const;
+
 protected:
 
     // ---------------------------------------------------------------------------

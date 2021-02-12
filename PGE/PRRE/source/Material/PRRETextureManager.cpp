@@ -1113,7 +1113,11 @@ const PRREColor& PRRETextureManager::getDefaultBorderColor() const
 */
 void PRRETextureManager::WriteList() const
 {
+    getConsole().OLn("PRRETextureManager::WriteList()");
+    getConsole().OLn("===============================");
+    getConsole().OLnOI("");
     PRREImageManager::WriteList();
+    getConsole().OO();
 
     TPRREuint nVRAMtotal = 0;
     for (TPRREint i = 0; i < getSize(); i++)
@@ -1124,7 +1128,6 @@ void PRRETextureManager::WriteList() const
     }
 
     getConsole().OIOLnOO("> total used texture memory = %d Bytes = %d kBytes = %f MBytes", nVRAMtotal, nVRAMtotal/1024, nVRAMtotal/1024.0f/1024.0f);
-    getConsole().OLn("");
 } // WriteList()
 
 

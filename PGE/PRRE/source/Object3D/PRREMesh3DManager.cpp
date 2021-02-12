@@ -1002,6 +1002,16 @@ PRREMesh3D* PRREMesh3DManager::createFromFile(const char* filename)
 } // createFromFile()
 
 
+void PRREMesh3DManager::WriteList() const
+{
+    getConsole().OLn("PRREMesh3DManager::WriteList()");
+    getConsole().OLn("===============================");
+    getConsole().OLnOI("");
+    PRREFiledManager::WriteList();
+    getConsole().OO();
+} // WriteList()
+
+
 // ############################## PROTECTED ##############################
 
 
@@ -1738,6 +1748,22 @@ PRREMaterial* PRREMesh3DManager::createMaterialForMesh(PRREMesh3D& mesh) const
 
     return mesh.pImpl->pMaterial;
 }
+
+
+void PRREMesh3DManager::WriteListCallback(const PRREManaged& mngd) const
+{
+    PRREFiledManager::WriteListCallback(mngd);
+    TPRREuint sumVertices = 0;
+    const PRREMesh3D& mesh = (PRREMesh3D&) mngd;
+    for (TPRREint i = 0; i < mesh.getCount(); i++)
+    {
+        PRREMesh3D* const currSubObj = (PRREMesh3D*) (mesh.getAttachedAt(i));
+        if ( !currSubObj )
+            continue;
+        sumVertices += currSubObj->getVerticesCount();
+    }
+    getConsole().OIOLnOO("%d subobjects, %d vertices", mesh.getCount(), sumVertices);
+} // WriteListCallback()
 
 
 // ############################### PRIVATE ###############################

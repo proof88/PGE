@@ -404,5 +404,15 @@ void PRREImageManager::WriteListCallback(const PRREManaged& mngd) const
 } // WriteListCallback()
 
 
+void PRREImageManager::WriteList() const
+{
+    getConsole().OLn("PRREImageManager::WriteList()");
+    getConsole().OLn("===============================");
+    getConsole().OLnOI("");
+    PRREFiledManager::WriteList();
+    getConsole().OO();
+}
+
+
 // ############################### PRIVATE ###############################
 
