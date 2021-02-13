@@ -59,7 +59,6 @@ private:
 }; // class PRREFiledManaged
 
 
-
 /**
     Manager loading from / saving to a file.
 
@@ -91,6 +90,9 @@ protected:
     virtual void WriteListCallback(const PRREManaged& mngd) const;  /**< From PRREManager, printing filename. */
 
 private:
+
+    class PRREFiledManagerImpl;
+    PRREFiledManagerImpl* pImpl;
 
 }; // class PRREFiledManager
 

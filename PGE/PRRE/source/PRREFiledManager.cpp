@@ -189,26 +189,45 @@ void PRREFiledManaged::SetFilename(const string& filename)
 
 
 
-
 /*
-   PRREFiledManager
+   PRREFiledManager::PRREFiledManagerImpl
    ###########################################################################
 */
+
+
+class PRREFiledManager::PRREFiledManagerImpl
+{
+public:
+    virtual ~PRREFiledManagerImpl();
+
+    PRREFiledManaged*
+        getByFilename(const char* filename) const;  /**< Gets the FiledManaged by the specified filename. */
+    
+    virtual PRREFiledManaged*
+        createFromFile( const char* filename);      /**< Should create a new managed from the given file. */
+
+protected:
+    explicit PRREFiledManagerImpl(PRREFiledManager* parent);
+
+    PRREFiledManagerImpl(const PRREFiledManagerImpl&);
+    PRREFiledManagerImpl& operator=(const PRREFiledManagerImpl&);
+
+private:
+
+    PRREFiledManager* _pOwner;       /**< The owner public object who creates this pimpl object. */
+
+    friend class PRREFiledManager;
+
+}; // class PRREFiledManager::PRREFiledManagerImpl
 
 
 // ############################### PUBLIC ################################
 
 
-PRREFiledManager::PRREFiledManager() : PRREManager()
+PRREFiledManager::PRREFiledManagerImpl::~PRREFiledManagerImpl()
 {
 
-} // PRREFiledManager()
-
-
-PRREFiledManager::~PRREFiledManager()
-{
-
-} // ~PRREFiledManager
+} // ~PRREFiledManagerImpl
 
 
 /** 
@@ -216,11 +235,11 @@ PRREFiledManager::~PRREFiledManager()
 
     @return FiledManaged instance found by filename, or PGENULL if not found.
 */
-PRREFiledManaged* PRREFiledManager::getByFilename(const char* filename) const
+PRREFiledManaged* PRREFiledManager::PRREFiledManagerImpl::getByFilename(const char* filename) const
 {
-    for (int i = 0; i < getCount(); i++)
+    for (int i = 0; i < _pOwner->getCount(); i++)
     {
-        PRREFiledManaged* managed = (PRREFiledManaged*) getAttachedAt(i);
+        PRREFiledManaged* managed = (PRREFiledManaged*) _pOwner->getAttachedAt(i);
         if ( managed != PGENULL )
         {
             if ( strcmp(managed->getFilename().c_str(), filename) == 0 )
@@ -237,9 +256,79 @@ PRREFiledManaged* PRREFiledManager::getByFilename(const char* filename) const
 
     @return Always PGENULL. Descendant is responsible for proper implementation.
 */
-PRREFiledManaged* PRREFiledManager::createFromFile(const char* filename)
+PRREFiledManaged* PRREFiledManager::PRREFiledManagerImpl::createFromFile(const char* filename)
 {
     return PGENULL;
+} // createFromFile()
+
+
+// ############################## PROTECTED ##############################
+
+
+PRREFiledManager::PRREFiledManagerImpl::PRREFiledManagerImpl(PRREFiledManager* parent)
+{
+    _pOwner = parent;
+} // PRREFiledManagerImpl()
+
+
+PRREFiledManager::PRREFiledManagerImpl::PRREFiledManagerImpl(const PRREFiledManagerImpl&)
+{
+
+}
+
+
+PRREFiledManager::PRREFiledManagerImpl& PRREFiledManager::PRREFiledManagerImpl::operator=(const PRREFiledManagerImpl&)
+{
+    return *this;
+}
+
+
+// ############################### PRIVATE ###############################
+
+
+
+/*
+   PRREFiledManager
+   ###########################################################################
+*/
+
+
+// ############################### PUBLIC ################################
+
+
+PRREFiledManager::PRREFiledManager() : PRREManager()
+{
+    pImpl = new PRREFiledManagerImpl(this);
+} // PRREFiledManager()
+
+
+PRREFiledManager::~PRREFiledManager()
+{
+    delete pImpl;
+    pImpl = NULL;
+} // ~PRREFiledManager
+
+
+/** 
+    Gets the FiledManaged by the specified filename.
+
+    @return FiledManaged instance found by filename, or PGENULL if not found.
+*/
+PRREFiledManaged* PRREFiledManager::getByFilename(const char* filename) const
+{
+    return pImpl->getByFilename(filename);
+} // getByFilename()
+
+
+/**
+    Should create a new managed from the given file.
+    This should be overrid in the descendant.
+
+    @return Always PGENULL. Descendant is responsible for proper implementation.
+*/
+PRREFiledManaged* PRREFiledManager::createFromFile(const char* filename)
+{
+    return pImpl->createFromFile(filename);
 } // createFromFile()
 
 

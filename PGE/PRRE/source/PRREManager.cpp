@@ -30,7 +30,7 @@ PRREManaged::PRREManagedImpl::~PRREManagedImpl()
     DetachFrom();
     nManagedsTotal--;
     _pOwner->getConsole().OO();
-} // ~PRREManaged()
+} // ~PRREManagedImpl()
 
 
 /**
@@ -105,7 +105,7 @@ PRREManaged::PRREManagedImpl::PRREManagedImpl(PRREManaged* owner)
     pParentMgr = PGENULL;
     nManagedsTotal++;
     _pOwner->getConsole().OLn("PRREManaged(con)");
-} // PRREManaged(...)
+} // PRREManagedImpl(...)
 
 
 PRREManaged::PRREManagedImpl::PRREManagedImpl(const PRREManagedImpl& other)
