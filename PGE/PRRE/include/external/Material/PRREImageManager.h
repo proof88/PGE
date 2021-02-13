@@ -141,8 +141,6 @@ protected:
 
     PRREImageManager(const PRREImageManager&);
     PRREImageManager& operator=(const PRREImageManager&);
-
-    PRREImage* loadBMP(const char* filename);  /**< This loads BMP files, handles the actual file operations, and creates the Image object. */
     
     virtual void WriteListCallback(const PRREManaged& mngd) const;  /**< From PRREFiledManager, adding W x H x BPP. */
 

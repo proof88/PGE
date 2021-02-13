@@ -1667,16 +1667,24 @@ PRREMesh3D* PRREMesh3DManager::createFromFile(const char* filename)
     {
         getConsole().OI();
         obj = pImpl->loadOBJ(filename);
-        obj->SetFilename(filename);
         getConsole().OO();
-        Attach( *obj );
-    }    
+     }    
     else
     {
         getConsole().EOLnOO("ERROR: unsupported extension!");
         getConsole().OLn("");
         return PGENULL;
     }
+
+    if ( obj == PGENULL )
+    {
+        getConsole().EOLnOO("ERROR: loadXXX() returned PGENULL!");
+        getConsole().OLn("");
+        return PGENULL;
+    }
+
+    obj->SetFilename(filename);
+    Attach( *obj );
 
     getConsole().SOLnOO("> Mesh loaded successfully!");
     getConsole().OLn("");

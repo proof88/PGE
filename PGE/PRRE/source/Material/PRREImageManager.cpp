@@ -31,6 +31,8 @@ public:
 
     virtual ~PRREImageManagerImpl();
 
+    PRREImage* loadBMP(const char* filename);  /**< This loads BMP files, handles the actual file operations, and creates the Image object. */
+
 
 protected:
     static PRREhwInfo& pHWInfo;             /**< We need some info on HW. */
@@ -65,6 +67,90 @@ PRREImageManager::PRREImageManagerImpl::~PRREImageManagerImpl()
     _pOwner->getConsole().OO();
     _pOwner = NULL;
 } // ~PRREImageManager()
+
+
+/**
+    This loads BMP files, handles the actual file operations, and creates the Image object.
+    Can load any bit depth BMP in theory, but below 16 bits, the rules are the following:
+     - at 8 bits (256 colors) the width of the image must be divisible by 4;
+     - at 4 bits (16 colors) the width of the image must be divisible by 8;
+     - at 1 bits (2 colors) the width of the image must be divisible by 32.
+
+    @return The created Image object on success, PGENULL otherwise.
+*/
+PRREImage* PRREImageManager::PRREImageManagerImpl::loadBMP(const char* filename)
+{
+    BITMAPFILEHEADER file_header;
+    BITMAPINFOHEADER info_header;
+    DWORD bitmaplength;
+    RGBQUAD* palette = NULL;
+    DWORD palettesize = 0;
+    DWORD bytesread;
+    PRREImage* pNewImage = NULL;
+
+    HANDLE bitmapfile = CreateFileA(filename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
+
+    _pOwner->getConsole().OLnOI("PRREImageManager::loadBMP(\"%s\")", filename);
+    if ( bitmapfile == INVALID_HANDLE_VALUE )
+        return loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bitmapfile == INVALID_HANDLE_VALUE, returning PGENULL!");
+                                                   
+    ReadFile(bitmapfile, &file_header, sizeof(BITMAPFILEHEADER), &bytesread, NULL);
+    _pOwner->getConsole().OLn("Read %d bytes of total %d bytes BITMAPFILEHEADER", bytesread, sizeof(BITMAPFILEHEADER));
+    ReadFile(bitmapfile, &info_header, sizeof(BITMAPINFOHEADER), &bytesread, NULL);
+    _pOwner->getConsole().OLn("Read %d bytes of total %d bytes BITMAPINFOHEADER", bytesread, sizeof(BITMAPINFOHEADER));
+    
+    if ( info_header.biCompression != BI_RGB )
+        return loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: info_header.biCompression != BI_RGB, returning PGENULL!");
+    
+    _pOwner->getConsole().OLn("W x H x Bpp: %d x %d x %d", info_header.biWidth, info_header.biHeight, info_header.biBitCount);
+
+    // Once I managed to save a bmp in Photoshop where biHeight was negative, so we need to make sure everything we have is positive
+    info_header.biWidth    = abs(info_header.biWidth);
+    info_header.biHeight   = abs(info_header.biHeight);
+    info_header.biBitCount = (WORD) abs((int) info_header.biBitCount);
+
+    if ( (bitmaplength = info_header.biWidth * info_header.biHeight * (info_header.biBitCount < 32 ? 3 : 4)) == 0 )
+        return loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bitmaplength == 0, returning returning PGENULL!");
+
+    try
+    {
+        if ( info_header.biClrUsed > 0 )
+        {
+            palettesize = info_header.biClrUsed * sizeof(RGBQUAD);
+            palette = new RGBQUAD[palettesize];
+            ReadFile(bitmapfile, palette, palettesize, &bytesread, NULL);
+            _pOwner->getConsole().OLn("Read %d bytes of total %d bytes of RGBQUAD array for palette", bytesread, palettesize);
+            if ( bytesread != palettesize )
+            {
+                return loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bytesread != palettesize, returning PGENULL!");
+            }
+        } 
+
+        pNewImage = new PRREImage();
+        // PRRE_RGB is just a fake value at this point
+        if ( !pNewImage->pImpl->initMembers(info_header.biBitCount, info_header.biWidth, info_header.biHeight,
+                                    PRRE_RGB, PRRE_RGB, true, false, PGENULL, bitmaplength) )
+            return loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: initMembers() failed, returning PGENULL!");
+
+        _pOwner->getConsole().OLn("offset: %d", file_header.bfOffBits);
+
+        if ( !pNewImage->pImpl->readBMPpixels(bitmapfile, palette, info_header.biBitCount) )
+            return loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: readBMPpixels() failed!");
+
+        CloseHandle(bitmapfile);
+        delete[] palette;
+
+        _pOwner->getConsole().SOLnOO("> bitmap successfully loaded into memory, using %d bytes (%d kbytes)",
+            sizeof(pNewImage)+pNewImage->getPixelsSize(), (sizeof(*pNewImage)+pNewImage->getPixelsSize())/1024);
+    } // try
+    catch (const std::bad_alloc&)
+    {
+        return loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: failed to allocated palette!");
+    }
+    
+    return pNewImage;
+
+} // loadBMP()
 
 
 // ############################## PROTECTED ##############################
@@ -233,13 +319,14 @@ PRREImage* PRREImageManager::createFromFile(const char* filename)
     if ( sFileExt == "BMP" )
     {
         getConsole().OLn("calling loadBMP()... ");
-        pNewImage = loadBMP(filename);
+        pNewImage = pImpl->loadBMP(filename);
     }
     else return pImpl->createFromFileFail("ERROR: unsupported extension!");
 
     if ( pNewImage == PGENULL )
         return pImpl->createFromFileFail("ERROR: loadXXX() returned PGENULL!");
     
+    pNewImage->SetFilename( filename );
     Attach( *pNewImage );
 
     getConsole().SOLnOO("> Image loaded!");
@@ -306,91 +393,6 @@ PRREImageManager& PRREImageManager::operator=(const PRREImageManager&)
     // UNUSED
     return *this;
 }
-
-
-/**
-    This loads BMP files, handles the actual file operations, and creates the Image object.
-    Can load any bit depth BMP in theory, but below 16 bits, the rules are the following:
-     - at 8 bits (256 colors) the width of the image must be divisible by 4;
-     - at 4 bits (16 colors) the width of the image must be divisible by 8;
-     - at 1 bits (2 colors) the width of the image must be divisible by 32.
-
-    @return The created Image object on success, PGENULL otherwise.
-*/
-PRREImage* PRREImageManager::loadBMP(const char* filename)
-{
-    BITMAPFILEHEADER file_header;
-    BITMAPINFOHEADER info_header;
-    DWORD bitmaplength;
-    RGBQUAD* palette = NULL;
-    DWORD palettesize = 0;
-    DWORD bytesread;
-    PRREImage* pNewImage = NULL;
-
-    HANDLE bitmapfile = CreateFileA(filename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, 0);
-
-    getConsole().OLnOI("PRREImageManager::loadBMP(\"%s\")", filename);
-    if ( bitmapfile == INVALID_HANDLE_VALUE )
-        return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bitmapfile == INVALID_HANDLE_VALUE, returning PGENULL!");
-                                                   
-    ReadFile(bitmapfile, &file_header, sizeof(BITMAPFILEHEADER), &bytesread, NULL);
-    getConsole().OLn("Read %d bytes of total %d bytes BITMAPFILEHEADER", bytesread, sizeof(BITMAPFILEHEADER));
-    ReadFile(bitmapfile, &info_header, sizeof(BITMAPINFOHEADER), &bytesread, NULL);
-    getConsole().OLn("Read %d bytes of total %d bytes BITMAPINFOHEADER", bytesread, sizeof(BITMAPINFOHEADER));
-    
-    if ( info_header.biCompression != BI_RGB )
-        return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: info_header.biCompression != BI_RGB, returning PGENULL!");
-    
-    getConsole().OLn("W x H x Bpp: %d x %d x %d", info_header.biWidth, info_header.biHeight, info_header.biBitCount);
-
-    // Once I managed to save a bmp in Photoshop where biHeight was negative, so we need to make sure everything we have is positive
-    info_header.biWidth    = abs(info_header.biWidth);
-    info_header.biHeight   = abs(info_header.biHeight);
-    info_header.biBitCount = (WORD) abs((int) info_header.biBitCount);
-
-    if ( (bitmaplength = info_header.biWidth * info_header.biHeight * (info_header.biBitCount < 32 ? 3 : 4)) == 0 )
-        return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bitmaplength == 0, returning returning PGENULL!");
-
-    try
-    {
-        if ( info_header.biClrUsed > 0 )
-        {
-            palettesize = info_header.biClrUsed * sizeof(RGBQUAD);
-            palette = new RGBQUAD[palettesize];
-            ReadFile(bitmapfile, palette, palettesize, &bytesread, NULL);
-            getConsole().OLn("Read %d bytes of total %d bytes of RGBQUAD array for palette", bytesread, palettesize);
-            if ( bytesread != palettesize )
-            {
-                return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: bytesread != palettesize, returning PGENULL!");
-            }
-        } 
-
-        pNewImage = new PRREImage();
-        pNewImage->SetFilename( filename );
-        // PRRE_RGB is just a fake value at this point
-        if ( !pNewImage->pImpl->initMembers(info_header.biBitCount, info_header.biWidth, info_header.biHeight,
-                                    PRRE_RGB, PRRE_RGB, true, false, PGENULL, bitmaplength) )
-            return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: initMembers() failed, returning PGENULL!");
-
-        getConsole().OLn("offset: %d", file_header.bfOffBits);
-
-        if ( !pNewImage->pImpl->readBMPpixels(bitmapfile, palette, info_header.biBitCount) )
-            return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: readBMPpixels() failed!");
-
-        CloseHandle(bitmapfile);
-        delete[] palette;
-
-        getConsole().SOLnOO("> bitmap successfully loaded into memory, using %d bytes (%d kbytes)",
-            sizeof(pNewImage)+pNewImage->getPixelsSize(), (sizeof(*pNewImage)+pNewImage->getPixelsSize())/1024);
-    } // try
-    catch (const std::bad_alloc&)
-    {
-        return pImpl->loadBMPfail(bitmapfile, pNewImage, palette, "ERROR: failed to allocated palette!");
-    }
-    
-    return pNewImage;
-
-} // loadBMP()
 
 
 /**
