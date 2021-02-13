@@ -17,6 +17,8 @@
 #include "../gl/gl.h"
 #include "../gl/glext.h"
 
+class PRREObject3D;
+
 class PRREVertexTransfer::PRREVertexTransferImpl
 {
 
@@ -84,4 +86,5 @@ private:
     void      ResetArrayPointers(TPRREbool redirectToServer = false) const;  /**< Resets pointers after drawing. */
 
     friend class PRREVertexTransfer;
+    friend class PRREObject3D;
 }; // PRREVertexTransfer::PRREVertexTransferImpl 

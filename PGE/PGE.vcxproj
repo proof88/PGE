@@ -270,6 +270,7 @@
     <ClInclude Include="PRRE\include\internal\PRREGLextensionFuncs.h" />
     <ClInclude Include="PRRE\include\internal\PRREGLsafeFuncs.h" />
     <ClInclude Include="PRRE\include\internal\PRREGLsnippets.h" />
+    <ClInclude Include="PRRE\include\internal\PRREManagedImpl.h" />
     <ClInclude Include="PRRE\include\internal\PRREpragmas.h" />
     <ClInclude Include="PRRE\include\internal\PRREuiFontWin.h" />
     <ClInclude Include="PRRE\include\internal\PRREuiText.h" />

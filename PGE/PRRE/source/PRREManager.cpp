@@ -11,7 +11,118 @@
 #include "PRREbaseIncludes.h"  // PCH
 #include <stdexcept>
 #include "../include/external/PRREManager.h"
+#include "../include/internal/PRREManagedImpl.h"
 #include "../include/internal/PRREpragmas.h"
+
+
+/*
+   PRREManaged::PRREManagedImpl
+   ###########################################################################
+*/
+
+           
+// ############################### PUBLIC ################################
+
+
+PRREManaged::PRREManagedImpl::~PRREManagedImpl()
+{
+    _pOwner->getConsole().OLnOI("~PRREManaged()");
+    DetachFrom();
+    nManagedsTotal--;
+    _pOwner->getConsole().OO();
+} // ~PRREManaged()
+
+
+/**
+    Removes the managed from its manager.
+    Actually it calls the public Detach() method of the manager with the this pointer.
+*/
+void PRREManaged::PRREManagedImpl::DetachFrom()
+{
+    if ( pParentMgr != PGENULL )
+    {
+        pParentMgr->Detach(*_pOwner); // !!! pParentMgr becomes NULL here!
+    }
+} // DetachFrom()
+
+
+/**
+    Gets the manager of the managed.
+    @return Pointer to manager.
+*/
+PRREManager* PRREManaged::PRREManagedImpl::getManager() const
+{
+    return pParentMgr;
+} // getManager()
+
+
+/**
+    Gets the name.
+*/
+const std::string& PRREManaged::PRREManagedImpl::getName() const
+{
+    return sName;
+}
+
+
+/**
+    Sets the name.
+*/
+void PRREManaged::PRREManagedImpl::SetName(const std::string& name)
+{
+    sName = name;
+}
+
+
+/**
+    This can be used if the specialized managed object has some resources
+    that may be released from memory when not needed anymore.
+*/
+void PRREManaged::PRREManagedImpl::FlushResources()
+{
+
+} // FlushResources()
+
+
+/**
+    Gets the amount of allocated system memory for this managed.
+    Memory usage of owned managed objects are NOT calculated here.
+
+    @return Amount of used system memory in Bytes.
+*/
+TPRREuint PRREManaged::PRREManagedImpl::getUsedSystemMemory() const
+{
+    return sizeof(*this) + sName.capacity() * sizeof(char);
+} // getUsedSystemMemory()
+
+
+// ############################## PROTECTED ##############################
+
+
+PRREManaged::PRREManagedImpl::PRREManagedImpl(PRREManaged* owner)
+{
+    _pOwner = owner;
+    pParentMgr = PGENULL;
+    nManagedsTotal++;
+    _pOwner->getConsole().OLn("PRREManaged(con)");
+} // PRREManaged(...)
+
+
+PRREManaged::PRREManagedImpl::PRREManagedImpl(const PRREManagedImpl& other)
+{
+}
+
+
+PRREManaged::PRREManagedImpl& PRREManaged::PRREManagedImpl::operator=(const PRREManagedImpl& other)
+{
+    return *this;
+}
+
+
+// ############################### PRIVATE ###############################
+
+
+TPRREint PRREManaged::PRREManagedImpl::nManagedsTotal = 0;
 
 
 /*
@@ -26,18 +137,14 @@
 PRREManaged::PRREManaged() :
     PRREBaseClass()
 {
-    pParentMgr = PGENULL;
-    nManagedsTotal++;
-    getConsole().OLn("PRREManaged(con)");
+    pImpl = new PRREManagedImpl(this);
 } // PRREManaged(...)
 
 
 PRREManaged::~PRREManaged()
 {
-    getConsole().OLnOI("~PRREManaged()");
-    DetachFrom();
-    nManagedsTotal--;
-    getConsole().OO();
+    delete pImpl;
+    pImpl = NULL;
 } // ~PRREManaged()
 
 
@@ -47,10 +154,7 @@ PRREManaged::~PRREManaged()
 */
 void PRREManaged::DetachFrom()
 {
-    if ( pParentMgr != PGENULL )
-    {
-        pParentMgr->Detach(*this); // !!! pParentMgr becomes NULL here!
-    }
+    pImpl->DetachFrom();
 } // DetachFrom()
 
 
@@ -60,7 +164,7 @@ void PRREManaged::DetachFrom()
 */
 PRREManager* PRREManaged::getManager() const
 {
-    return pParentMgr;
+    return pImpl->getManager();
 } // getManager()
 
 
@@ -69,7 +173,7 @@ PRREManager* PRREManaged::getManager() const
 */
 const std::string& PRREManaged::getName() const
 {
-    return sName;
+    return pImpl->getName();
 }
 
 
@@ -78,7 +182,7 @@ const std::string& PRREManaged::getName() const
 */
 void PRREManaged::SetName(const std::string& name)
 {
-    sName = name;
+    pImpl->SetName(name);
 }
 
 
@@ -88,7 +192,7 @@ void PRREManaged::SetName(const std::string& name)
 */
 void PRREManaged::FlushResources()
 {
-
+    pImpl->FlushResources();
 } // FlushResources()
 
 
@@ -100,7 +204,7 @@ void PRREManaged::FlushResources()
 */
 TPRREuint PRREManaged::getUsedSystemMemory() const
 {
-    return sizeof(*this) + sName.capacity() * sizeof(char);
+    return sizeof(*this) + pImpl->getUsedSystemMemory();
 } // getUsedSystemMemory()
 
 
@@ -109,22 +213,17 @@ TPRREuint PRREManaged::getUsedSystemMemory() const
 
 PRREManaged::PRREManaged(const PRREManaged& other)
 {
-    pParentMgr = other.pParentMgr;
+
 }
 
 
 PRREManaged& PRREManaged::operator=(const PRREManaged& other)
 {
-    pParentMgr = other.pParentMgr;
     return *this;
 }
 
 
 // ############################### PRIVATE ###############################
-
-
-TPRREint PRREManaged::nManagedsTotal = 0;
-
 
 
 /*
@@ -246,7 +345,7 @@ void PRREManager::PRREManagerImpl::Attach(PRREManaged& m)
     {
         TPRREint newIndex = createManaged();
         pManageds[newIndex] = &m;
-        m.pParentMgr = _pOwner;
+        m.pImpl->pParentMgr = _pOwner;
         nManagedCount++;
         _pOwner->getConsole().SOLn("> Attach Done!");
     }
@@ -429,7 +528,7 @@ void PRREManager::PRREManagerImpl::Detach(TPRREint ind)
     _pOwner->getConsole().OLn("protected PRREManager::Detach(%d)", ind);
     if ( ind > -1 )
     {
-        pManageds[ ind ]->pParentMgr = PGENULL;
+        pManageds[ ind ]->pImpl->pParentMgr = PGENULL;
         pManageds[ ind ] = PGENULL;
         nManagedCount--;
     }

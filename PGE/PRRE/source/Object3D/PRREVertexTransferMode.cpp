@@ -1146,16 +1146,6 @@ PRREVertexTransfer& PRREVertexTransfer::operator=(const PRREVertexTransfer&)
 }
 
 
-/**
-    Transfers vertices over the vertex pipeline.
-    This invokes the draw commands based on the current vertex transfer mode.
-*/
-void PRREVertexTransfer::TransferVertices()
-{
-    pImpl->TransferVertices();
-}
-
-
 // ############################### PRIVATE ###############################
 
 

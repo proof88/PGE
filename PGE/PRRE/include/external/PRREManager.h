@@ -29,7 +29,7 @@ class PRREManaged :
 {
 
 public:
-    PRREManaged();       
+    PRREManaged(); /* TODO: mark this as noexcept(false) when using newer compiler! */      
     virtual ~PRREManaged();            
 
     void               DetachFrom();                      /**< Removes the managed from its manager. */
@@ -53,19 +53,13 @@ protected:
     PRREManaged& operator=(const PRREManaged& other);
 
 private:
-    static TPRREint nManagedsTotal;
-
-    // ---------------------------------------------------------------------------
-
-    PRREManager* pParentMgr;        /**< Who manages this; descendants can read it through getManager(). */
-    std::string  sName;             /**< Name. */
+    class PRREManagedImpl;
+    PRREManagedImpl* pImpl;
 
     friend class PRREManager;
     friend class PRREManagerImpl;   /* Manager can fully access it. */
 
 }; // class PRREManaged
-
-
 
 
 /**

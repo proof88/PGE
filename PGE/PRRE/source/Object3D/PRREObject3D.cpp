@@ -11,6 +11,7 @@
 #include "PRREbaseIncludes.h"  // PCH
 #include "../../include/external/Object3D/PRREObject3DManager.h"
 #include "../../include/internal/Object3D/PRREObject3DImpl.h"
+#include "../../include/internal/Object3D/PRREVertexTransferModeImpl.h"
 #include <cassert>
 #include "../../include/external/Hardware/PRREhwInfo.h"
 #include "../../include/internal/PRREGLextensionFuncs.h"
@@ -363,6 +364,7 @@ TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
 void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
 {
     // caller renderer is expected to check for GL errors, so we don't check them here
+
     if ( !bVisible )
         return;
 
@@ -473,7 +475,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         }
     } 
 
-    _pOwner->TransferVertices();
+    ((PRREVertexTransfer*)_pOwner)->pImpl->TransferVertices();
 
     /* The number of values (not vertices) transferred to the feedback buffer. */
     const GLint nFbBufferWritten_h = glRenderMode(GL_RENDER);

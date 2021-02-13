@@ -162,6 +162,7 @@ const TPRRE_VERTEX_TRANSFER_MODE PRRE_VT_STA_IND_SVA_NV_EA_RNG      = PRRE_VT_ST
 const TPRRE_VERTEX_TRANSFER_MODE PRRE_VT_STA_IND_SVA_NV_EA_CVA      = PRRE_VT_STA_IND_SVA_NV_EA | BIT(PRRE_VT_CVA_BIT); /**< NV VAR,  static, drawElementsNV, compiled. */
 const TPRRE_VERTEX_TRANSFER_MODE PRRE_VT_STA_IND_SVA_NV_EA_CVA_RNG  = PRRE_VT_STA_IND_SVA_NV_EA | BIT(PRRE_VT_CVA_BIT) | BIT(PRRE_VT_RNG_BIT); /**< NV VAR,  static, drawRangeElementsNV, compiled. */
 
+class PRREObject3D;
 
 /**
     VertexTransfer class extends Mesh3D by providing ways to transfer vertices of the mesh over the vertex pipeline.
@@ -224,12 +225,11 @@ protected:
     PRREVertexTransfer(const PRREVertexTransfer&);                                   
     PRREVertexTransfer& operator=(const PRREVertexTransfer&);
 
-    void TransferVertices();  /**< Transfers vertices over the vertex pipeline. */
-
 private:
     class PRREVertexTransferImpl;
     PRREVertexTransferImpl* pImpl;
 
+    friend class PRREObject3D;
     friend class SampleManagerForDescendantFromVertexTransfer;
 
 }; // class PRREVertexTransfer
