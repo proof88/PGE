@@ -351,6 +351,9 @@
     <ClInclude Include="PRRE\include\internal\PRREGLsafeFuncs.h">
       <Filter>Header Files\PRRE\include\internal</Filter>
     </ClInclude>
+    <ClInclude Include="PRRE\include\internal\Object3D\PRREMesh3DManagerImpl.h">
+      <Filter>Header Files\PRRE\include\internal\Object3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">

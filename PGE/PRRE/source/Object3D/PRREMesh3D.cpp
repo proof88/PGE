@@ -291,6 +291,75 @@ TPRREuint PRREMesh3D::PRREMesh3DImpl::getUsedSystemMemory() const
 } // getUsedSystemMemory() 
 
 
+/**
+    Acquires the resources and properties of the given Mesh3D object, meaning that
+    the given mesh will lose the geometry and other resources.
+    This is a way of moving assets of a mesh to another mesh, MOVING, so no array copy is involved.
+    Can be done only for level-2 meshes by level-2 meshes, or for level-1 meshes by level-1 meshes.
+    This means that in order to fully cannibalize a level-1 mesh, this function should be called for
+    the level-1 mesh by the level-1 mesh and then for all of its submeshes one by one by the submeshes
+    of the cannibalizer mesh.
+
+    @return True on success, false on error: if the cannibalizer mesh already has any submesh or existing geometry.
+*/
+TPRREbool PRREMesh3D::PRREMesh3DImpl::cannibalize(PRREMesh3D& victim)
+{
+    // Note that we cannot easily copy victim's Impl since copy ctor and assignment operators are empty!
+    // Thus the following assignment cannot be used: *(this->pImpl) = *(victim.pImpl)
+    // We wouldn't even want to use copy ctor or assignment here since we do not want any array copy.
+    // That is why this function is written, to "steal" the arrays of the victim so victim will be "empty".
+    // In C++11 this could be done with a move ctor.
+
+    // Note: this function could be recursive and be called for level-1 mesh only, it would get the job
+    // done for all the submeshes too. But now it was easier to implement this silly way so it needs to be
+    // invoked manually for all submeshes too.
+    
+    // we should not have any submesh at this point, and no geometry yet
+    if ( (_pOwner->getCount() != 0) || (pVertices != PGENULL) || (nVertices_h > 0) )
+    {
+        getConsole().EOLn(
+            "PRREMesh3D::cannibalize() ERROR: cannibalizer has non-zero managed count (%d) or has geometry (%d)!", _pOwner->getCount(), nVertices_h);
+        return false;
+    }
+
+    // at this point we do not need to deal with the Manager or FiledManager parts
+
+    _pOwner->SetName(victim.getName());          // copy the Managed part
+    _pOwner->SetFilename(victim.getFilename());  // copy the FiledManaged part
+
+    primitiveFormat = victim.pImpl->primitiveFormat;
+
+    pVertices = victim.pImpl->pVertices;
+    pNormals = victim.pImpl->pNormals;
+    pVertexIndices = victim.pImpl->pVertexIndices;
+    nMinVertexIndex = victim.pImpl->nMinVertexIndex;
+    nMaxVertexIndex = victim.pImpl->nMaxVertexIndex;
+    nIndicesType = victim.pImpl->nIndicesType;
+
+    nVertices_h = victim.pImpl->nVertices_h;
+    nVertexIndices_h = victim.pImpl->nVertexIndices_h;
+    nFaces_h = victim.pImpl->nFaces_h;
+
+    vPos = victim.pImpl->vPos;
+    vSize = victim.pImpl->vSize;
+
+    pMaterial = victim.pImpl->pMaterial;
+
+    victim.pImpl->pVertices = PGENULL;
+    victim.pImpl->pNormals = PGENULL;
+    victim.pImpl->pVertexIndices = PGENULL;
+    victim.pImpl->pMaterial = PGENULL;
+    victim.pImpl->nMinVertexIndex = UINT_MAX;
+    victim.pImpl->nMaxVertexIndex = 0;
+    victim.pImpl->nIndicesType = GL_UNSIGNED_BYTE;
+    victim.pImpl->nVertices_h = 0;
+    victim.pImpl->nVertexIndices_h = 0;
+    victim.pImpl->nFaces_h = 0;
+
+    return true;
+}  // cannibalize()
+
+
 // ############################## PROTECTED ##############################
 
 
@@ -724,75 +793,6 @@ PRREMesh3D::PRREMesh3D(const PRREMesh3D& mesh)
 PRREMesh3D& PRREMesh3D::operator=(const PRREMesh3D&)
 {
     return *this;
-}
-
-
-/**
-    Acquires the resources and properties of the given Mesh3D object, meaning that
-    the given mesh will lose the geometry and other resources.
-    This is a way of moving assets of a mesh to another mesh, MOVING, so no array copy is involved.
-    Can be done only for level-2 meshes by level-2 meshes, or for level-1 meshes by level-1 meshes.
-    This means that in order to fully cannibalize a level-1 mesh, this function should be called for
-    the level-1 mesh by the level-1 mesh and then for all of its submeshes one by one by the submeshes
-    of the cannibalizer mesh.
-
-    @return True on success, false on error: if the cannibalizer mesh already has any submesh or existing geometry.
-*/
-TPRREbool PRREMesh3D::cannibalize(PRREMesh3D& victim)
-{
-    // Note that we cannot easily copy victim's Impl since copy ctor and assignment operators are empty!
-    // Thus the following assignment cannot be used: *(this->pImpl) = *(victim.pImpl)
-    // We wouldn't even want to use copy ctor or assignment here since we do not want any array copy.
-    // That is why this function is written, to "steal" the arrays of the victim so victim will be "empty".
-    // In C++11 this could be done with a move ctor.
-
-    // Note: this function could be recursive and be called for level-1 mesh only, it would get the job
-    // done for all the submeshes too. But now it was easier to implement this silly way so it needs to be
-    // invoked manually for all submeshes too.
-    
-    // we should not have any submesh at this point, and no geometry yet
-    if ( (getCount() != 0) || (pImpl->pVertices != PGENULL) || (pImpl->nVertices_h > 0) )
-    {
-        PRREFiledManaged::getConsole().EOLn(
-            "PRREMesh3D::cannibalize() ERROR: cannibalizer has non-zero managed count (%d) or has geometry (%d)!", getCount(), pImpl->nVertices_h);
-        return false;
-    }
-
-    // at this point we do not need to deal with the Manager or FiledManager parts
-
-    SetName(victim.getName());          // copy the Managed part
-    SetFilename(victim.getFilename());  // copy the FiledManaged part
-
-    pImpl->primitiveFormat = victim.pImpl->primitiveFormat;
-
-    pImpl->pVertices = victim.pImpl->pVertices;
-    pImpl->pNormals = victim.pImpl->pNormals;
-    pImpl->pVertexIndices = victim.pImpl->pVertexIndices;
-    pImpl->nMinVertexIndex = victim.pImpl->nMinVertexIndex;
-    pImpl->nMaxVertexIndex = victim.pImpl->nMaxVertexIndex;
-    pImpl->nIndicesType = victim.pImpl->nIndicesType;
-
-    pImpl->nVertices_h = victim.pImpl->nVertices_h;
-    pImpl->nVertexIndices_h = victim.pImpl->nVertexIndices_h;
-    pImpl->nFaces_h = victim.pImpl->nFaces_h;
-
-    pImpl->vPos = victim.pImpl->vPos;
-    pImpl->vSize = victim.pImpl->vSize;
-
-    pImpl->pMaterial = victim.pImpl->pMaterial;
-
-    victim.pImpl->pVertices = PGENULL;
-    victim.pImpl->pNormals = PGENULL;
-    victim.pImpl->pVertexIndices = PGENULL;
-    victim.pImpl->pMaterial = PGENULL;
-    victim.pImpl->nMinVertexIndex = UINT_MAX;
-    victim.pImpl->nMaxVertexIndex = 0;
-    victim.pImpl->nIndicesType = GL_UNSIGNED_BYTE;
-    victim.pImpl->nVertices_h = 0;
-    victim.pImpl->nVertexIndices_h = 0;
-    victim.pImpl->nFaces_h = 0;
-
-    return true;
 }
 
 

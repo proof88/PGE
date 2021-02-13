@@ -11,6 +11,8 @@
 #include "PRREbaseIncludes.h"  // PCH
 #include "../../include/external/Object3D/PRREObject3DManager.h"
 #include "../../include/internal/Object3D/PRREObject3DImpl.h"
+#include "../../include/internal/Object3D/PRREMesh3DImpl.h"
+#include "../../include/internal/Object3D/PRREMesh3DManagerImpl.h"
 #include "../../include/external/Hardware/PRREhwInfo.h"
 #include "../../include/internal/PRREGLextensionFuncs.h"
 #include "../../include/internal/PRREGLsnippets.h"
@@ -221,7 +223,8 @@ PRREObject3D* PRREObject3DManager::createPlane(
         Attach( *obj );
         subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
         obj->Attach( *subobj );
-        if ( !convertToPlane(*obj, a, b) )
+        PRREMesh3DManager* const me = this;
+        if ( !(me->pImpl->convertToPlane(*obj, a, b)) )
         {
             throw std::runtime_error("convertToPlane() failed!");
         }
@@ -298,7 +301,8 @@ PRREObject3D* PRREObject3DManager::createBox(
         Attach( *obj );
         subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
         obj->Attach( *subobj );
-        if ( !convertToBox(*obj, a, b, c) )
+        PRREMesh3DManager* const me = this;
+        if ( !me->pImpl->convertToBox(*obj, a, b, c) )
         {
             throw std::runtime_error("convertToBox() failed!");
         }
@@ -436,7 +440,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
                 return PGENULL;
             }
             obj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
-            if ( !obj->cannibalize(*tmpMesh) )
+            if ( !((PRREMesh3D*)obj)->pImpl->cannibalize(*tmpMesh) )
             {
                 const std::string sErrMsg = "cannibalize() failed for level-1 obj!";
                 throw std::runtime_error(sErrMsg);
@@ -446,7 +450,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
             {
                 subobject = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
                 obj->Attach( *subobject );
-                if ( !subobject->cannibalize(*(PRREMesh3D*)(tmpMesh->getAttachedAt(i))) )
+                if ( !((PRREMesh3D*)subobject)->pImpl->cannibalize(*(PRREMesh3D*)(tmpMesh->getAttachedAt(i))) )
                 {
                     const std::string sErrMsg = "cannibalize() failed for level-2 subobj " + std::to_string(i) + "!";
                     throw std::runtime_error(sErrMsg);
@@ -577,7 +581,8 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         obj->pImpl->rotation = referredobj.getRotationOrder();
         obj->pImpl->bStickedToScreen = referredobj.isStickedToScreen();
 
-        if ( createMaterialForMesh(*obj) == PGENULL )
+        PRREMesh3DManager* const me = this;
+        if ( me->pImpl->createMaterialForMesh(*obj) == PGENULL )
         {
             // this should not be like this, createMaterialForMesh() should throw.
             throw std::bad_alloc();

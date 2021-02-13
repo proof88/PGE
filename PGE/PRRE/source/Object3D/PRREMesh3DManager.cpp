@@ -11,6 +11,7 @@
 #include "PRREbaseIncludes.h"  // PCH
 #include "../../include/external/Object3D/PRREMesh3DManager.h"
 #include "../../include/internal/Object3D/PRREMesh3DImpl.h"
+#include "../../include/internal/Object3D/PRREMesh3DManagerImpl.h"
 
 #include <cassert>
 
@@ -25,42 +26,6 @@ using namespace std;
    PRREMesh3DManager::PRREMesh3DManagerImpl
    ###########################################################################
 */
-
-
-class PRREMesh3DManager::PRREMesh3DManagerImpl
-{
-
-public:
-    virtual ~PRREMesh3DManagerImpl();
-
-    TPRREbool isInitialized() const;
-
-    TPRREbool isMinimalIndexStorageEnabled() const;
-    void      SetMinimalIndexStorageEnabled(TPRREbool state);
-
-protected:
-    PRREMesh3D* loadOBJ(const char* filename);   /**< Loads OBJ files, handles the actual file operations, and creates the Object3D object. */
-
-private:
-
-    PRREMesh3DManager* _pOwner;      /**< The owner public object who creates this pimpl object. */
-
-    PRREMaterialManager& materialMgr;           /**< Used to auto-load/create materials for objects. */
-
-    TPRREbool            bInited;               /**< True if successfully inited, false if not functional. */
-    TPRREbool            bMinimalIndexStorage;  /**< True if storage of indices is minimalized. */
-
-    // ---------------------------------------------------------------------------
-
-    PRREMesh3DManagerImpl();
-    PRREMesh3DManagerImpl(PRREMesh3DManager* owner, PRREMaterialManager& matMgr);
-
-    PRREMesh3DManagerImpl(const PRREMesh3DManagerImpl&);
-    PRREMesh3DManagerImpl& operator=(const PRREMesh3DManagerImpl&);
-
-    friend class PRREMesh3DManager;
-
-};
 
 
 // ############################### PUBLIC ################################
@@ -93,6 +58,723 @@ void PRREMesh3DManager::PRREMesh3DManagerImpl::SetMinimalIndexStorageEnabled(TPR
     /* currently not used, but it is in the todo list history txt */
     bMinimalIndexStorage = state;
 }
+
+
+/**
+    Converts the given Mesh to a Plane Mesh with the given sizes.
+    Expects level-1 Mesh (so it must have subobject) and it must have exactly 1 subobject only.
+    This function is very useful for descendant classes that want to construct custom objects
+    based on Mesh3D, since during the constructing of custom object, this function can be invoked
+    to set up the underlying geometry.
+    Example use case: Object3D, when being constructed, can be given as parameter to this function,
+    so it will be a renderable Plane object, without any array copy operation during construction.
+
+    @param mesh The Mesh instance to be converted to a Plane Mesh.
+    @param a    Length of plane (size on X-axis).
+    @param b    Height of plane (size on Y-axis).
+*/
+TPRREbool PRREMesh3DManager::PRREMesh3DManagerImpl::convertToPlane(
+        PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b)
+{
+    _pOwner->getConsole().OLn("PRREMesh3DManager::convertToPlane(%f, %f)", a, b);
+
+    if ( !mesh.isLevel1() )
+    {
+        _pOwner->getConsole().EOLn("ERROR: given Mesh is NOT level-1!", mesh.getCount());
+        return false;
+    }
+
+    if ( mesh.getCount() != 1 )
+    {
+        _pOwner->getConsole().EOLn("ERROR: given Mesh has %d manageds, expected is 1!", mesh.getCount());
+        return false;
+    }
+
+    mesh.pImpl->primitiveFormat = PRRE_PM_QUADS;
+    mesh.pImpl->vPos.Set(0.0f, 0.0f, 0.0f);
+    mesh.pImpl->vSize.Set(a, b, 0.0f);
+
+    if ( mesh.pImpl->pMaterial != PGENULL )
+    {
+        materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
+    }
+    createMaterialForMesh(mesh);
+    if ( mesh.pImpl->pMaterial == PGENULL )
+    {
+        _pOwner->getConsole().EOLn("ERROR: failed to create material for mesh!");
+        return false;
+    }
+
+    mesh.pImpl->nMinVertexIndex = 0;
+    mesh.pImpl->nMaxVertexIndex = 0;
+
+    PRREMesh3D* const submesh = (PRREMesh3D*) mesh.getAttachedAt(0);
+
+    submesh->pImpl->primitiveFormat = mesh.pImpl->primitiveFormat;
+    submesh->pImpl->vPos.Set(0.0f, 0.0f, 0.0f);
+    submesh->pImpl->vSize.Set(a, b, 0.0f);
+    mesh.pImpl->nIndicesType = GL_UNSIGNED_BYTE;
+    submesh->pImpl->nVertices_h  = 4;
+    submesh->pImpl->nFaces_h     = 1;
+    submesh->pImpl->nVertexIndices_h   = submesh->pImpl->nVertices_h;
+
+    if ( submesh->pImpl->pMaterial != PGENULL )
+    {
+        materialMgr.DeleteAttachedInstance( *(submesh->pImpl->pMaterial) );
+    }
+    createMaterialForMesh(*submesh);
+    if ( submesh->pImpl->pMaterial == PGENULL )
+    {
+        materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
+        _pOwner->getConsole().EOLn("ERROR: failed to create material for submesh!");
+        return false;
+    }
+
+    delete[] submesh->pImpl->pVertices;
+    delete[] submesh->pImpl->pNormals;
+    delete[] submesh->pImpl->pVertexIndices;
+
+    submesh->pImpl->pVertices = PGENULL;
+    submesh->pImpl->pNormals = PGENULL;
+    submesh->pImpl->pVertexIndices = PGENULL;
+
+    try
+    {
+        submesh->pImpl->pVertices = new TXYZ[submesh->pImpl->nVertices_h];
+        submesh->pImpl->pNormals = new TXYZ[submesh->pImpl->nVertices_h];
+        //submesh->pImpl->pFaces     = (TFACE4*)     malloc( sizeof(TFACE4) * submesh->pImpl->nFaces_h );
+        submesh->pImpl->nIndicesType = mesh.pImpl->nIndicesType;
+        submesh->pImpl->pVertexIndices = new char[PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) * submesh->pImpl->nVertexIndices_h];
+    }
+    catch (const std::bad_alloc&)
+    {
+        delete[] submesh->pImpl->pVertices;
+        delete[] submesh->pImpl->pNormals;
+        delete[] submesh->pImpl->pVertexIndices;
+        submesh->pImpl->pVertices = PGENULL;
+        submesh->pImpl->pNormals = PGENULL;
+        submesh->pImpl->pVertexIndices = PGENULL;
+        materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
+        mesh.pImpl->pMaterial = PGENULL;
+        _pOwner->getConsole().EOLn("ERROR: failed to allocate memory for geometry!");
+        return false;
+    }
+
+    submesh->pImpl->pMaterial->allocateArrays(
+        submesh->pImpl->nVertices_h,
+        submesh->pImpl->nVertices_h,
+        submesh->pImpl->nVertexIndices_h,
+        PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) );
+
+    submesh->pImpl->pVertices[0].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[0].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[0].z  = 0.0f;
+    // no need to fill pVerticesTransf array, that task is for during rendering
+    submesh->pImpl->pNormals[0].x   = 0.0f;
+    submesh->pImpl->pNormals[0].y   = 0.0f;
+    submesh->pImpl->pNormals[0].z   = -1.0f;
+    submesh->pImpl->pMaterial->getColors()[0].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[0].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[0].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[0].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[0].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[0].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[0].w = 0.0f;
+
+    submesh->pImpl->pVertices[1].x  = a / 2.0f;
+    submesh->pImpl->pVertices[1].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[1].z  = 0.0f;
+    submesh->pImpl->pNormals[1].x   = 0.0f;
+    submesh->pImpl->pNormals[1].y   = 0.0f;
+    submesh->pImpl->pNormals[1].z   = -1.0f;
+    submesh->pImpl->pMaterial->getColors()[1].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[1].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[1].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[1].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[1].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[1].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[1].w = 0.0f;
+
+    submesh->pImpl->pVertices[2].x  = a / 2.0f;
+    submesh->pImpl->pVertices[2].y  = b / 2.0f;
+    submesh->pImpl->pVertices[2].z  = 0.0f;
+    submesh->pImpl->pNormals[2].x   = 0.0f;
+    submesh->pImpl->pNormals[2].y   = 0.0f;
+    submesh->pImpl->pNormals[2].z   = -1.0f;
+    submesh->pImpl->pMaterial->getColors()[2].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[2].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[2].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[2].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[2].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[2].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[2].w = 0.0f;
+
+    submesh->pImpl->pVertices[3].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[3].y  = b / 2.0f;
+    submesh->pImpl->pVertices[3].z  = 0.0f;
+    submesh->pImpl->pNormals[3].x   = 0.0f;
+    submesh->pImpl->pNormals[3].y   = 0.0f;
+    submesh->pImpl->pNormals[3].z   = -1.0f;
+    submesh->pImpl->pMaterial->getColors()[3].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[3].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[3].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[3].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[3].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[3].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[3].w = 0.0f;
+
+    /*for (int i = 0; i < 4; i++)
+    {
+        submesh->pImpl->pFaces[0].vertex_ids[i] = i;
+        submesh->pImpl->pFaces[0].texcoord_ids[i] = i;
+        submesh->pImpl->pFaces[0].normal_ids[i] = i;
+    }*/
+
+    for (TPRREuint i = 0; i < submesh->pImpl->nVertexIndices_h; i++)
+    {
+        if ( submesh->pImpl->nMinVertexIndex > i )
+            submesh->pImpl->nMinVertexIndex = i;
+        if ( submesh->pImpl->nMaxVertexIndex < i )
+            submesh->pImpl->nMaxVertexIndex = i;
+        bool b = submesh->pImpl->setVertexIndex(i, i);
+        assert( b );
+    }
+    return true;
+} // convertToPlane
+
+
+/**
+    Converts the given Mesh to a Box Mesh with the given sizes.
+    Expects level-1 Mesh (so it must have subobject) and it must have exactly 1 subobject only.
+    This function is very useful for descendant classes that want to construct custom objects
+    based on Mesh3D, since during the constructing of custom object, this function can be invoked
+    to set up the underlying geometry.
+    Example use case: Object3D, when being constructed, can be given as parameter to this function,
+    so it will be a renderable Box object, without any array copy operation during construction.
+
+    @param mesh The Mesh instance to be converted to a Box Mesh.
+    @param a Length of box (size on X-axis).
+    @param b Height of box (size on Y-axis).
+    @param c Depth of box (size on Z-axis).
+*/
+TPRREbool PRREMesh3DManager::PRREMesh3DManagerImpl::convertToBox(
+        PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b, TPRREfloat c)
+{
+    _pOwner->getConsole().OLn("PRREMesh3DManager::convertToBox(%f, %f, %f)", a, b, c);
+
+    if ( !mesh.isLevel1() )
+    {
+        _pOwner->getConsole().EOLn("ERROR: given Mesh is NOT level-1!", mesh.getCount());
+        return false;
+    }
+
+    if ( mesh.getCount() != 1 )
+    {
+        _pOwner->getConsole().EOLn("ERROR: given Mesh has %d manageds, expectedg is 1!", mesh.getCount());
+        return false;
+    }
+
+    mesh.pImpl->primitiveFormat = PRRE_PM_QUADS;
+    mesh.pImpl->vPos.Set(0.0f, 0.0f, 0.0f);
+    mesh.pImpl->vSize.Set(a, b, c);
+    mesh.pImpl->nIndicesType = GL_UNSIGNED_BYTE;
+
+    if ( mesh.pImpl->pMaterial != PGENULL )
+    {
+        materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
+    }
+    createMaterialForMesh(mesh);
+    if ( mesh.pImpl->pMaterial == PGENULL )
+    {
+        _pOwner->getConsole().EOLn("ERROR: failed to create material for mesh!");
+        return false;
+    }
+
+    mesh.pImpl->nMinVertexIndex = 0;
+    mesh.pImpl->nMaxVertexIndex = 0;
+
+    PRREMesh3D* const submesh = (PRREMesh3D*) mesh.getAttachedAt(0);
+    submesh->pImpl->primitiveFormat = mesh.pImpl->primitiveFormat;
+    submesh->pImpl->vPos.Set(0.0f, 0.0f, 0.0f);
+    submesh->pImpl->vSize.Set(a, b, c);
+    submesh->pImpl->nVertices_h  = 24;
+    submesh->pImpl->nFaces_h     = 6;
+    submesh->pImpl->nVertexIndices_h   = submesh->pImpl->nVertices_h;
+
+    if ( submesh->pImpl->pMaterial != PGENULL )
+    {
+        materialMgr.DeleteAttachedInstance( *(submesh->pImpl->pMaterial) );
+    }
+    createMaterialForMesh(*submesh);
+    if ( submesh->pImpl->pMaterial == PGENULL )
+    {
+        materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
+        _pOwner->getConsole().EOLn("ERROR: failed to create material for submesh!");
+        return false;
+    }
+
+    delete[] submesh->pImpl->pVertices;
+    delete[] submesh->pImpl->pNormals;
+    delete[] submesh->pImpl->pVertexIndices;
+
+    submesh->pImpl->pVertices = PGENULL;
+    submesh->pImpl->pNormals = PGENULL;
+    submesh->pImpl->pVertexIndices = PGENULL;
+
+    try
+    {
+        submesh->pImpl->pVertices = new TXYZ[submesh->pImpl->nVertices_h];
+        submesh->pImpl->pNormals = new TXYZ[submesh->pImpl->nVertices_h];
+        //submesh->pImpl->pFaces     = (TFACE4*)     malloc( sizeof(TFACE4) * submesh->pImpl->nFaces_h );
+        submesh->pImpl->nIndicesType = mesh.pImpl->nIndicesType;
+        submesh->pImpl->pVertexIndices = new char[PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) * submesh->pImpl->nVertexIndices_h];
+    }
+    catch (const std::bad_alloc&)
+    {
+        delete[] submesh->pImpl->pVertices;
+        delete[] submesh->pImpl->pNormals;
+        delete[] submesh->pImpl->pVertexIndices;
+        submesh->pImpl->pVertices = PGENULL;
+        submesh->pImpl->pNormals = PGENULL;
+        submesh->pImpl->pVertexIndices = PGENULL;
+        materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
+        mesh.pImpl->pMaterial = PGENULL;
+        _pOwner->getConsole().EOLn("ERROR: failed to allocate memory for geometry!");
+        return false;
+    }
+
+    submesh->pImpl->pMaterial->allocateArrays(
+        submesh->pImpl->nVertices_h,
+        submesh->pImpl->nVertices_h,
+        submesh->pImpl->nVertexIndices_h,
+        PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) );
+
+    // front face
+    submesh->pImpl->pVertices[0].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[0].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[0].z  = -c / 2.0f;
+    submesh->pImpl->pNormals[0].x   = 0.0f;
+    submesh->pImpl->pNormals[0].y   = 0.0f;
+    submesh->pImpl->pNormals[0].z   = -1.0f;
+    submesh->pImpl->pMaterial->getColors()[0].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[0].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[0].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[0].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[0].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[0].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[0].w = 0.0f;
+
+    submesh->pImpl->pVertices[1].x  = a / 2.0f;
+    submesh->pImpl->pVertices[1].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[1].z  = -c / 2.0f;
+    submesh->pImpl->pNormals[1].x   = 0.0f;
+    submesh->pImpl->pNormals[1].y   = 0.0f;
+    submesh->pImpl->pNormals[1].z   = -1.0f;
+    submesh->pImpl->pMaterial->getColors()[1].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[1].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[1].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[1].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[1].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[1].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[1].w = 0.0f;
+
+    submesh->pImpl->pVertices[2].x  = a / 2.0f;
+    submesh->pImpl->pVertices[2].y  = b / 2.0f;
+    submesh->pImpl->pVertices[2].z  = -c / 2.0f;
+    submesh->pImpl->pNormals[2].x   = 0.0f;
+    submesh->pImpl->pNormals[2].y   = 0.0f;
+    submesh->pImpl->pNormals[2].z   = -1.0f;
+    submesh->pImpl->pMaterial->getColors()[2].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[2].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[2].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[2].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[2].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[2].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[2].w = 0.0f;
+
+    submesh->pImpl->pVertices[3].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[3].y  = b / 2.0f;
+    submesh->pImpl->pVertices[3].z  = -c / 2.0f;
+    submesh->pImpl->pNormals[3].x   = 0.0f;
+    submesh->pImpl->pNormals[3].y   = 0.0f;
+    submesh->pImpl->pNormals[3].z   = -1.0f;
+    submesh->pImpl->pMaterial->getColors()[3].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[3].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[3].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[3].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[3].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[3].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[3].w = 0.0f;
+
+    /*for (int i = 0; i < 4; i++)
+    {
+        submesh->pImpl->pFaces[0].vertex_ids[i] = i;
+        submesh->pImpl->pFaces[0].texcoord_ids[i] = i;
+        submesh->pImpl->pFaces[0].normal_ids[i] = i;
+    }*/
+
+    // back face
+    submesh->pImpl->pVertices[4].x  = a / 2.0f;
+    submesh->pImpl->pVertices[4].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[4].z  = c / 2.0f;
+    submesh->pImpl->pNormals[4].x   = 0.0f;
+    submesh->pImpl->pNormals[4].y   = 0.0f;
+    submesh->pImpl->pNormals[4].z   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[4].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[4].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[4].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[4].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[4].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[4].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[4].w = 0.0f;
+
+    submesh->pImpl->pVertices[5].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[5].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[5].z  = c / 2.0f;
+    submesh->pImpl->pNormals[5].x   = 0.0f;
+    submesh->pImpl->pNormals[5].y   = 0.0f;
+    submesh->pImpl->pNormals[5].z   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[5].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[5].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[5].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[5].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[5].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[5].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[5].w = 0.0f;
+
+    submesh->pImpl->pVertices[6].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[6].y  = b / 2.0f;
+    submesh->pImpl->pVertices[6].z  = c / 2.0f;
+    submesh->pImpl->pNormals[6].x   = 0.0f;
+    submesh->pImpl->pNormals[6].y   = 0.0f;
+    submesh->pImpl->pNormals[6].z   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[6].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[6].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[6].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[6].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[6].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[6].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[6].w = 0.0f;
+
+    submesh->pImpl->pVertices[7].x  = a / 2.0f;
+    submesh->pImpl->pVertices[7].y  = b / 2.0f;
+    submesh->pImpl->pVertices[7].z  = c / 2.0f;
+    submesh->pImpl->pNormals[7].x   = 0.0f;
+    submesh->pImpl->pNormals[7].y   = 0.0f;
+    submesh->pImpl->pNormals[7].z   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[7].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[7].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[7].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[7].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[7].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[7].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[7].w = 0.0f;
+
+    /*for (int i = 0; i < 4; i++)
+    {
+        submesh->pImpl->pFaces[1].vertex_ids[i] = 4+i;
+        submesh->pImpl->pFaces[1].texcoord_ids[i] = 4+i;
+        submesh->pImpl->pFaces[1].normal_ids[i] = 4+i;
+    }*/
+
+    // left face
+    submesh->pImpl->pVertices[8].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[8].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[8].z  = c / 2.0f;
+    submesh->pImpl->pNormals[8].x   = -1.0f;
+    submesh->pImpl->pNormals[8].y   = 0.0f;
+    submesh->pImpl->pNormals[8].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[8].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[8].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[8].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[8].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[8].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[8].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[8].w = 0.0f;
+
+    submesh->pImpl->pVertices[9].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[9].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[9].z  = -c / 2.0f;
+    submesh->pImpl->pNormals[9].x   = -1.0f;
+    submesh->pImpl->pNormals[9].y   = 0.0f;
+    submesh->pImpl->pNormals[9].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[9].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[9].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[9].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[9].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[9].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[9].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[9].w = 0.0f;
+
+    submesh->pImpl->pVertices[10].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[10].y  = b / 2.0f;
+    submesh->pImpl->pVertices[10].z  = -c / 2.0f;
+    submesh->pImpl->pNormals[10].x   = -1.0f;
+    submesh->pImpl->pNormals[10].y   = 0.0f;
+    submesh->pImpl->pNormals[10].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[10].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[10].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[10].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[10].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[10].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[10].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[10].w = 0.0f;
+
+    submesh->pImpl->pVertices[11].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[11].y  = b / 2.0f;
+    submesh->pImpl->pVertices[11].z  = c / 2.0f;
+    submesh->pImpl->pNormals[11].x   = -1.0f;
+    submesh->pImpl->pNormals[11].y   = 0.0f;
+    submesh->pImpl->pNormals[11].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[11].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[11].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[11].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[11].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[11].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[11].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[11].w = 0.0f;
+
+    /*for (int i = 0; i < 4; i++)
+    {
+        submesh->pImpl->pFaces[2].vertex_ids[i] = 8+i;
+        submesh->pImpl->pFaces[2].texcoord_ids[i] = 8+i;
+        submesh->pImpl->pFaces[2].normal_ids[i] = 8+i;
+    }*/
+
+    // right face
+    submesh->pImpl->pVertices[12].x  = a / 2.0f;
+    submesh->pImpl->pVertices[12].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[12].z  = -c / 2.0f;
+    submesh->pImpl->pNormals[12].x   = 1.0f;
+    submesh->pImpl->pNormals[12].y   = 0.0f;
+    submesh->pImpl->pNormals[12].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[12].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[12].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[12].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[12].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[12].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[12].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[12].w = 0.0f;
+
+    submesh->pImpl->pVertices[13].x  = a / 2.0f;
+    submesh->pImpl->pVertices[13].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[13].z  = c / 2.0f;
+    submesh->pImpl->pNormals[13].x   = 1.0f;
+    submesh->pImpl->pNormals[13].y   = 0.0f;
+    submesh->pImpl->pNormals[13].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[13].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[13].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[13].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[13].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[13].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[13].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[13].w = 0.0f;
+
+    submesh->pImpl->pVertices[14].x  = a / 2.0f;
+    submesh->pImpl->pVertices[14].y  = b / 2.0f;
+    submesh->pImpl->pVertices[14].z  = c / 2.0f;
+    submesh->pImpl->pNormals[14].x   = 1.0f;
+    submesh->pImpl->pNormals[14].y   = 0.0f;
+    submesh->pImpl->pNormals[14].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[14].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[14].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[14].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[14].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[14].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[14].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[14].w = 0.0f;
+
+    submesh->pImpl->pVertices[15].x  = a / 2.0f;
+    submesh->pImpl->pVertices[15].y  = b / 2.0f;
+    submesh->pImpl->pVertices[15].z  = -c / 2.0f;
+    submesh->pImpl->pNormals[15].x   = 1.0f;
+    submesh->pImpl->pNormals[15].y   = 0.0f;
+    submesh->pImpl->pNormals[15].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[15].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[15].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[15].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[15].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[15].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[15].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[15].w = 0.0f;
+
+    /*for (int i = 0; i < 4; i++)
+    {
+        submesh->pImpl->pFaces[3].vertex_ids[i] = 12+i;
+        submesh->pImpl->pFaces[3].texcoord_ids[i] = 12+i;
+        submesh->pImpl->pFaces[3].normal_ids[i] = 12+i;
+    }*/
+
+    // top face
+    submesh->pImpl->pVertices[16].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[16].y  = b / 2.0f;
+    submesh->pImpl->pVertices[16].z  = -c / 2.0f;
+    submesh->pImpl->pNormals[16].x   = 0.0f;
+    submesh->pImpl->pNormals[16].y   = 1.0f;
+    submesh->pImpl->pNormals[16].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[16].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[16].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[16].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[16].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[16].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[16].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[16].w = 0.0f;
+
+    submesh->pImpl->pVertices[17].x  = a / 2.0f;
+    submesh->pImpl->pVertices[17].y  = b / 2.0f;
+    submesh->pImpl->pVertices[17].z  = -c / 2.0f;
+    submesh->pImpl->pNormals[17].x   = 0.0f;
+    submesh->pImpl->pNormals[17].y   = 1.0f;
+    submesh->pImpl->pNormals[17].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[17].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[17].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[17].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[17].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[17].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[17].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[17].w = 0.0f;
+
+    submesh->pImpl->pVertices[18].x  = a / 2.0f;
+    submesh->pImpl->pVertices[18].y  = b / 2.0f;
+    submesh->pImpl->pVertices[18].z  = c / 2.0f;
+    submesh->pImpl->pNormals[18].x   = 0.0f;
+    submesh->pImpl->pNormals[18].y   = 1.0f;
+    submesh->pImpl->pNormals[18].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[18].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[18].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[18].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[18].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[18].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[18].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[18].w = 0.0f;
+
+    submesh->pImpl->pVertices[19].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[19].y  = b / 2.0f;
+    submesh->pImpl->pVertices[19].z  = c / 2.0f;
+    submesh->pImpl->pNormals[19].x   = 0.0f;
+    submesh->pImpl->pNormals[19].y   = 1.0f;
+    submesh->pImpl->pNormals[19].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[19].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[19].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[19].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[19].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[19].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[19].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[19].w = 0.0f;
+
+    /*for (int i = 0; i < 4; i++)
+    {
+        submesh->pImpl->pFaces[4].vertex_ids[i] = 16+i;
+        submesh->pImpl->pFaces[4].texcoord_ids[i] = 16+i;
+        submesh->pImpl->pFaces[4].normal_ids[i] = 16+i;
+    }*/
+
+    // bottom face
+    submesh->pImpl->pVertices[20].x  = a / 2.0f;
+    submesh->pImpl->pVertices[20].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[20].z  = -c / 2.0f;
+    submesh->pImpl->pNormals[20].x   = 0.0f;
+    submesh->pImpl->pNormals[20].y   = -1.0f;
+    submesh->pImpl->pNormals[20].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[20].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[20].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[20].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[20].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[20].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[20].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[20].w = 0.0f;
+
+    submesh->pImpl->pVertices[21].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[21].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[21].z  = -c / 2.0f;
+    submesh->pImpl->pNormals[21].x   = 0.0f;
+    submesh->pImpl->pNormals[21].y   = -1.0f;
+    submesh->pImpl->pNormals[21].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[21].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[21].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[21].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[21].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[21].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[21].v = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[21].w = 0.0f;
+
+    submesh->pImpl->pVertices[22].x  = -a / 2.0f;
+    submesh->pImpl->pVertices[22].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[22].z  = c / 2.0f;
+    submesh->pImpl->pNormals[22].x   = 0.0f;
+    submesh->pImpl->pNormals[22].y   = -1.0f;
+    submesh->pImpl->pNormals[22].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[22].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[22].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[22].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[22].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[22].u = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[22].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[22].w = 0.0f;
+
+    submesh->pImpl->pVertices[23].x  = a / 2.0f;
+    submesh->pImpl->pVertices[23].y  = -b / 2.0f;
+    submesh->pImpl->pVertices[23].z  = c / 2.0f;
+    submesh->pImpl->pNormals[23].x   = 0.0f;
+    submesh->pImpl->pNormals[23].y   = -1.0f;
+    submesh->pImpl->pNormals[23].z   = 0.0f;
+    submesh->pImpl->pMaterial->getColors()[23].red    = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[23].green  = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[23].blue   = 1.0f;
+    submesh->pImpl->pMaterial->getColors()[23].alpha  = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[23].u = 0.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[23].v = 1.0f;
+    submesh->pImpl->pMaterial->getTexcoords()[23].w = 0.0f;
+
+    /*for (int i = 0; i < 4; i++)
+    {
+        submesh->pImpl->pFaces[5].vertex_ids[i] = 20+i;
+        submesh->pImpl->pFaces[5].texcoord_ids[i] = 20+i;
+        submesh->pImpl->pFaces[5].normal_ids[i] = 20+i;
+    }*/
+
+    for (TPRREuint i = 0; i < submesh->pImpl->nVertexIndices_h; i++)
+    {
+        if ( submesh->pImpl->nMinVertexIndex > i )
+            submesh->pImpl->nMinVertexIndex = i;
+        if ( submesh->pImpl->nMaxVertexIndex < i )
+            submesh->pImpl->nMaxVertexIndex = i;
+        bool b = submesh->pImpl->setVertexIndex(i, i);
+        assert( b );
+    }
+    return true;
+} // convertToBox()
+
+
+/**
+    Creates a material for the given Mesh if it doesn't yet have one.
+    Won't create new material if the given Mesh already has a material.
+
+    @param mesh The mesh for we want to create a material.
+    
+    @return The created or already existing material. PGENULL in case of error.
+*/
+PRREMaterial* PRREMesh3DManager::PRREMesh3DManagerImpl::createMaterialForMesh(PRREMesh3D& mesh) const 
+{
+    if ( mesh.pImpl->pMaterial == PGENULL )
+    {
+        mesh.pImpl->pMaterial = materialMgr.createMaterial();
+        if ( mesh.pImpl->pMaterial == PGENULL )
+        {
+            _pOwner->getConsole().EOLn("ERROR: PRREMesh3DManager::createMaterialForMesh(), returned material is NULL!");
+        }
+        else
+        {
+            _pOwner->getConsole().SOLn("PRREMesh3DManager::createMaterialForMesh() created material!");
+        }
+    }
+    else
+    {
+        _pOwner->getConsole().OLn("PRREMesh3DManager::createMaterialForMesh(), mesh already has material!");
+    }
+
+    return mesh.pImpl->pMaterial;
+} // createMaterialForMesh()
 
 
 // ############################## PROTECTED ##############################
@@ -246,7 +928,7 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
     {
         _pOwner->getConsole().OLnOI("creating parent object ...");
         obj = new PRREMesh3D(PRRE_PM_TRIANGLES);
-        _pOwner->createMaterialForMesh(*obj);
+        createMaterialForMesh(*obj);
         if ( obj->pImpl->pMaterial == PGENULL )
         {
             // this should not be like this, createMaterialForMesh() should throw.
@@ -270,7 +952,7 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
         {
             _pOwner->getConsole().OI();
             PRREMesh3D* subobj = new PRREMesh3D(PRRE_PM_TRIANGLES);
-            _pOwner->createMaterialForMesh(*subobj);
+            createMaterialForMesh(*subobj);
             if ( subobj->pImpl->pMaterial == PGENULL )
             {
                 // this should not be like this, createMaterialForMesh() should throw.
@@ -833,7 +1515,7 @@ PRREMesh3D* PRREMesh3DManager::createPlane(TPRREfloat a, TPRREfloat b)
         submesh = new PRREMesh3D(PRRE_PM_QUADS);
 
         mesh->Attach(*submesh);
-        if ( !convertToPlane(*mesh, a, b) )
+        if ( !pImpl->convertToPlane(*mesh, a, b) )
         {
             throw std::runtime_error("convertToPlane() failed!");
         }
@@ -887,7 +1569,7 @@ PRREMesh3D* PRREMesh3DManager::createBox(TPRREfloat a, TPRREfloat b, TPRREfloat 
         mesh = new PRREMesh3D(PRRE_PM_QUADS);
         submesh = new PRREMesh3D(PRRE_PM_QUADS);
         mesh->Attach(*submesh);
-        if ( !convertToBox(*mesh, a, b, c) )
+        if ( !pImpl->convertToBox(*mesh, a, b, c) )
         {
             throw std::runtime_error("convertToBox() failed!");
         }
@@ -1030,723 +1712,6 @@ PRREMesh3DManager::PRREMesh3DManager(const PRREMesh3DManager&)
 PRREMesh3DManager& PRREMesh3DManager::operator=(const PRREMesh3DManager&)
 {
     return *this;    
-}
-
-
-/**
-    Converts the given Mesh to a Plane Mesh with the given sizes.
-    Expects level-1 Mesh (so it must have subobject) and it must have exactly 1 subobject only.
-    This function is very useful for descendant classes that want to construct custom objects
-    based on Mesh3D, since during the constructing of custom object, this function can be invoked
-    to set up the underlying geometry.
-    Example use case: Object3D, when being constructed, can be given as parameter to this function,
-    so it will be a renderable Plane object, without any array copy operation during construction.
-
-    @param mesh The Mesh instance to be converted to a Plane Mesh.
-    @param a    Length of plane (size on X-axis).
-    @param b    Height of plane (size on Y-axis).
-*/
-TPRREbool PRREMesh3DManager::convertToPlane(
-        PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b)
-{
-    getConsole().OLn("PRREMesh3DManager::convertToPlane(%f, %f)", a, b);
-
-    if ( !mesh.isLevel1() )
-    {
-        getConsole().EOLn("ERROR: given Mesh is NOT level-1!", mesh.getCount());
-        return false;
-    }
-
-    if ( mesh.getCount() != 1 )
-    {
-        getConsole().EOLn("ERROR: given Mesh has %d manageds, expected is 1!", mesh.getCount());
-        return false;
-    }
-
-    mesh.pImpl->primitiveFormat = PRRE_PM_QUADS;
-    mesh.pImpl->vPos.Set(0.0f, 0.0f, 0.0f);
-    mesh.pImpl->vSize.Set(a, b, 0.0f);
-
-    if ( mesh.pImpl->pMaterial != PGENULL )
-    {
-        pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
-    }
-    createMaterialForMesh(mesh);
-    if ( mesh.pImpl->pMaterial == PGENULL )
-    {
-        getConsole().EOLn("ERROR: failed to create material for mesh!");
-        return false;
-    }
-
-    mesh.pImpl->nMinVertexIndex = 0;
-    mesh.pImpl->nMaxVertexIndex = 0;
-
-    PRREMesh3D* const submesh = (PRREMesh3D*) mesh.getAttachedAt(0);
-
-    submesh->pImpl->primitiveFormat = mesh.pImpl->primitiveFormat;
-    submesh->pImpl->vPos.Set(0.0f, 0.0f, 0.0f);
-    submesh->pImpl->vSize.Set(a, b, 0.0f);
-    mesh.pImpl->nIndicesType = GL_UNSIGNED_BYTE;
-    submesh->pImpl->nVertices_h  = 4;
-    submesh->pImpl->nFaces_h     = 1;
-    submesh->pImpl->nVertexIndices_h   = submesh->pImpl->nVertices_h;
-
-    if ( submesh->pImpl->pMaterial != PGENULL )
-    {
-        pImpl->materialMgr.DeleteAttachedInstance( *(submesh->pImpl->pMaterial) );
-    }
-    createMaterialForMesh(*submesh);
-    if ( submesh->pImpl->pMaterial == PGENULL )
-    {
-        pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
-        getConsole().EOLn("ERROR: failed to create material for submesh!");
-        return false;
-    }
-
-    delete[] submesh->pImpl->pVertices;
-    delete[] submesh->pImpl->pNormals;
-    delete[] submesh->pImpl->pVertexIndices;
-
-    submesh->pImpl->pVertices = PGENULL;
-    submesh->pImpl->pNormals = PGENULL;
-    submesh->pImpl->pVertexIndices = PGENULL;
-
-    try
-    {
-        submesh->pImpl->pVertices = new TXYZ[submesh->pImpl->nVertices_h];
-        submesh->pImpl->pNormals = new TXYZ[submesh->pImpl->nVertices_h];
-        //submesh->pImpl->pFaces     = (TFACE4*)     malloc( sizeof(TFACE4) * submesh->pImpl->nFaces_h );
-        submesh->pImpl->nIndicesType = mesh.pImpl->nIndicesType;
-        submesh->pImpl->pVertexIndices = new char[PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) * submesh->pImpl->nVertexIndices_h];
-    }
-    catch (const std::bad_alloc&)
-    {
-        delete[] submesh->pImpl->pVertices;
-        delete[] submesh->pImpl->pNormals;
-        delete[] submesh->pImpl->pVertexIndices;
-        submesh->pImpl->pVertices = PGENULL;
-        submesh->pImpl->pNormals = PGENULL;
-        submesh->pImpl->pVertexIndices = PGENULL;
-        pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
-        mesh.pImpl->pMaterial = PGENULL;
-        getConsole().EOLn("ERROR: failed to allocate memory for geometry!");
-        return false;
-    }
-
-    submesh->pImpl->pMaterial->allocateArrays(
-        submesh->pImpl->nVertices_h,
-        submesh->pImpl->nVertices_h,
-        submesh->pImpl->nVertexIndices_h,
-        PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) );
-
-    submesh->pImpl->pVertices[0].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[0].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[0].z  = 0.0f;
-    // no need to fill pVerticesTransf array, that task is for during rendering
-    submesh->pImpl->pNormals[0].x   = 0.0f;
-    submesh->pImpl->pNormals[0].y   = 0.0f;
-    submesh->pImpl->pNormals[0].z   = -1.0f;
-    submesh->pImpl->pMaterial->getColors()[0].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[0].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[0].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[0].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[0].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[0].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[0].w = 0.0f;
-
-    submesh->pImpl->pVertices[1].x  = a / 2.0f;
-    submesh->pImpl->pVertices[1].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[1].z  = 0.0f;
-    submesh->pImpl->pNormals[1].x   = 0.0f;
-    submesh->pImpl->pNormals[1].y   = 0.0f;
-    submesh->pImpl->pNormals[1].z   = -1.0f;
-    submesh->pImpl->pMaterial->getColors()[1].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[1].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[1].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[1].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[1].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[1].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[1].w = 0.0f;
-
-    submesh->pImpl->pVertices[2].x  = a / 2.0f;
-    submesh->pImpl->pVertices[2].y  = b / 2.0f;
-    submesh->pImpl->pVertices[2].z  = 0.0f;
-    submesh->pImpl->pNormals[2].x   = 0.0f;
-    submesh->pImpl->pNormals[2].y   = 0.0f;
-    submesh->pImpl->pNormals[2].z   = -1.0f;
-    submesh->pImpl->pMaterial->getColors()[2].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[2].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[2].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[2].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[2].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[2].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[2].w = 0.0f;
-
-    submesh->pImpl->pVertices[3].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[3].y  = b / 2.0f;
-    submesh->pImpl->pVertices[3].z  = 0.0f;
-    submesh->pImpl->pNormals[3].x   = 0.0f;
-    submesh->pImpl->pNormals[3].y   = 0.0f;
-    submesh->pImpl->pNormals[3].z   = -1.0f;
-    submesh->pImpl->pMaterial->getColors()[3].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[3].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[3].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[3].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[3].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[3].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[3].w = 0.0f;
-
-    /*for (int i = 0; i < 4; i++)
-    {
-        submesh->pImpl->pFaces[0].vertex_ids[i] = i;
-        submesh->pImpl->pFaces[0].texcoord_ids[i] = i;
-        submesh->pImpl->pFaces[0].normal_ids[i] = i;
-    }*/
-
-    for (TPRREuint i = 0; i < submesh->pImpl->nVertexIndices_h; i++)
-    {
-        if ( submesh->pImpl->nMinVertexIndex > i )
-            submesh->pImpl->nMinVertexIndex = i;
-        if ( submesh->pImpl->nMaxVertexIndex < i )
-            submesh->pImpl->nMaxVertexIndex = i;
-        bool b = submesh->pImpl->setVertexIndex(i, i);
-        assert( b );
-    }
-    return true;
-}
-
-
-/**
-    Converts the given Mesh to a Box Mesh with the given sizes.
-    Expects level-1 Mesh (so it must have subobject) and it must have exactly 1 subobject only.
-    This function is very useful for descendant classes that want to construct custom objects
-    based on Mesh3D, since during the constructing of custom object, this function can be invoked
-    to set up the underlying geometry.
-    Example use case: Object3D, when being constructed, can be given as parameter to this function,
-    so it will be a renderable Box object, without any array copy operation during construction.
-
-    @param mesh The Mesh instance to be converted to a Box Mesh.
-    @param a Length of box (size on X-axis).
-    @param b Height of box (size on Y-axis).
-    @param c Depth of box (size on Z-axis).
-*/
-TPRREbool PRREMesh3DManager::convertToBox(
-        PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b, TPRREfloat c)
-{
-    getConsole().OLn("PRREMesh3DManager::convertToBox(%f, %f, %f)", a, b, c);
-
-    if ( !mesh.isLevel1() )
-    {
-        getConsole().EOLn("ERROR: given Mesh is NOT level-1!", mesh.getCount());
-        return false;
-    }
-
-    if ( mesh.getCount() != 1 )
-    {
-        getConsole().EOLn("ERROR: given Mesh has %d manageds, expectedg is 1!", mesh.getCount());
-        return false;
-    }
-
-    mesh.pImpl->primitiveFormat = PRRE_PM_QUADS;
-    mesh.pImpl->vPos.Set(0.0f, 0.0f, 0.0f);
-    mesh.pImpl->vSize.Set(a, b, c);
-    mesh.pImpl->nIndicesType = GL_UNSIGNED_BYTE;
-
-    if ( mesh.pImpl->pMaterial != PGENULL )
-    {
-        pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
-    }
-    createMaterialForMesh(mesh);
-    if ( mesh.pImpl->pMaterial == PGENULL )
-    {
-        getConsole().EOLn("ERROR: failed to create material for mesh!");
-        return false;
-    }
-
-    mesh.pImpl->nMinVertexIndex = 0;
-    mesh.pImpl->nMaxVertexIndex = 0;
-
-    PRREMesh3D* const submesh = (PRREMesh3D*) mesh.getAttachedAt(0);
-    submesh->pImpl->primitiveFormat = mesh.pImpl->primitiveFormat;
-    submesh->pImpl->vPos.Set(0.0f, 0.0f, 0.0f);
-    submesh->pImpl->vSize.Set(a, b, c);
-    submesh->pImpl->nVertices_h  = 24;
-    submesh->pImpl->nFaces_h     = 6;
-    submesh->pImpl->nVertexIndices_h   = submesh->pImpl->nVertices_h;
-
-    if ( submesh->pImpl->pMaterial != PGENULL )
-    {
-        pImpl->materialMgr.DeleteAttachedInstance( *(submesh->pImpl->pMaterial) );
-    }
-    createMaterialForMesh(*submesh);
-    if ( submesh->pImpl->pMaterial == PGENULL )
-    {
-        pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
-        getConsole().EOLn("ERROR: failed to create material for submesh!");
-        return false;
-    }
-
-    delete[] submesh->pImpl->pVertices;
-    delete[] submesh->pImpl->pNormals;
-    delete[] submesh->pImpl->pVertexIndices;
-
-    submesh->pImpl->pVertices = PGENULL;
-    submesh->pImpl->pNormals = PGENULL;
-    submesh->pImpl->pVertexIndices = PGENULL;
-
-    try
-    {
-        submesh->pImpl->pVertices = new TXYZ[submesh->pImpl->nVertices_h];
-        submesh->pImpl->pNormals = new TXYZ[submesh->pImpl->nVertices_h];
-        //submesh->pImpl->pFaces     = (TFACE4*)     malloc( sizeof(TFACE4) * submesh->pImpl->nFaces_h );
-        submesh->pImpl->nIndicesType = mesh.pImpl->nIndicesType;
-        submesh->pImpl->pVertexIndices = new char[PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) * submesh->pImpl->nVertexIndices_h];
-    }
-    catch (const std::bad_alloc&)
-    {
-        delete[] submesh->pImpl->pVertices;
-        delete[] submesh->pImpl->pNormals;
-        delete[] submesh->pImpl->pVertexIndices;
-        submesh->pImpl->pVertices = PGENULL;
-        submesh->pImpl->pNormals = PGENULL;
-        submesh->pImpl->pVertexIndices = PGENULL;
-        pImpl->materialMgr.DeleteAttachedInstance( *(mesh.pImpl->pMaterial) );
-        mesh.pImpl->pMaterial = PGENULL;
-        getConsole().EOLn("ERROR: failed to allocate memory for geometry!");
-        return false;
-    }
-
-    submesh->pImpl->pMaterial->allocateArrays(
-        submesh->pImpl->nVertices_h,
-        submesh->pImpl->nVertices_h,
-        submesh->pImpl->nVertexIndices_h,
-        PRREGLsnippets::getSizeofIndexType(submesh->pImpl->nIndicesType) );
-
-    // front face
-    submesh->pImpl->pVertices[0].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[0].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[0].z  = -c / 2.0f;
-    submesh->pImpl->pNormals[0].x   = 0.0f;
-    submesh->pImpl->pNormals[0].y   = 0.0f;
-    submesh->pImpl->pNormals[0].z   = -1.0f;
-    submesh->pImpl->pMaterial->getColors()[0].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[0].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[0].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[0].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[0].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[0].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[0].w = 0.0f;
-
-    submesh->pImpl->pVertices[1].x  = a / 2.0f;
-    submesh->pImpl->pVertices[1].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[1].z  = -c / 2.0f;
-    submesh->pImpl->pNormals[1].x   = 0.0f;
-    submesh->pImpl->pNormals[1].y   = 0.0f;
-    submesh->pImpl->pNormals[1].z   = -1.0f;
-    submesh->pImpl->pMaterial->getColors()[1].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[1].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[1].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[1].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[1].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[1].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[1].w = 0.0f;
-
-    submesh->pImpl->pVertices[2].x  = a / 2.0f;
-    submesh->pImpl->pVertices[2].y  = b / 2.0f;
-    submesh->pImpl->pVertices[2].z  = -c / 2.0f;
-    submesh->pImpl->pNormals[2].x   = 0.0f;
-    submesh->pImpl->pNormals[2].y   = 0.0f;
-    submesh->pImpl->pNormals[2].z   = -1.0f;
-    submesh->pImpl->pMaterial->getColors()[2].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[2].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[2].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[2].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[2].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[2].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[2].w = 0.0f;
-
-    submesh->pImpl->pVertices[3].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[3].y  = b / 2.0f;
-    submesh->pImpl->pVertices[3].z  = -c / 2.0f;
-    submesh->pImpl->pNormals[3].x   = 0.0f;
-    submesh->pImpl->pNormals[3].y   = 0.0f;
-    submesh->pImpl->pNormals[3].z   = -1.0f;
-    submesh->pImpl->pMaterial->getColors()[3].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[3].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[3].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[3].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[3].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[3].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[3].w = 0.0f;
-
-    /*for (int i = 0; i < 4; i++)
-    {
-        submesh->pImpl->pFaces[0].vertex_ids[i] = i;
-        submesh->pImpl->pFaces[0].texcoord_ids[i] = i;
-        submesh->pImpl->pFaces[0].normal_ids[i] = i;
-    }*/
-
-    // back face
-    submesh->pImpl->pVertices[4].x  = a / 2.0f;
-    submesh->pImpl->pVertices[4].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[4].z  = c / 2.0f;
-    submesh->pImpl->pNormals[4].x   = 0.0f;
-    submesh->pImpl->pNormals[4].y   = 0.0f;
-    submesh->pImpl->pNormals[4].z   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[4].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[4].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[4].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[4].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[4].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[4].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[4].w = 0.0f;
-
-    submesh->pImpl->pVertices[5].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[5].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[5].z  = c / 2.0f;
-    submesh->pImpl->pNormals[5].x   = 0.0f;
-    submesh->pImpl->pNormals[5].y   = 0.0f;
-    submesh->pImpl->pNormals[5].z   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[5].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[5].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[5].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[5].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[5].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[5].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[5].w = 0.0f;
-
-    submesh->pImpl->pVertices[6].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[6].y  = b / 2.0f;
-    submesh->pImpl->pVertices[6].z  = c / 2.0f;
-    submesh->pImpl->pNormals[6].x   = 0.0f;
-    submesh->pImpl->pNormals[6].y   = 0.0f;
-    submesh->pImpl->pNormals[6].z   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[6].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[6].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[6].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[6].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[6].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[6].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[6].w = 0.0f;
-
-    submesh->pImpl->pVertices[7].x  = a / 2.0f;
-    submesh->pImpl->pVertices[7].y  = b / 2.0f;
-    submesh->pImpl->pVertices[7].z  = c / 2.0f;
-    submesh->pImpl->pNormals[7].x   = 0.0f;
-    submesh->pImpl->pNormals[7].y   = 0.0f;
-    submesh->pImpl->pNormals[7].z   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[7].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[7].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[7].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[7].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[7].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[7].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[7].w = 0.0f;
-
-    /*for (int i = 0; i < 4; i++)
-    {
-        submesh->pImpl->pFaces[1].vertex_ids[i] = 4+i;
-        submesh->pImpl->pFaces[1].texcoord_ids[i] = 4+i;
-        submesh->pImpl->pFaces[1].normal_ids[i] = 4+i;
-    }*/
-
-    // left face
-    submesh->pImpl->pVertices[8].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[8].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[8].z  = c / 2.0f;
-    submesh->pImpl->pNormals[8].x   = -1.0f;
-    submesh->pImpl->pNormals[8].y   = 0.0f;
-    submesh->pImpl->pNormals[8].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[8].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[8].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[8].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[8].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[8].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[8].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[8].w = 0.0f;
-
-    submesh->pImpl->pVertices[9].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[9].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[9].z  = -c / 2.0f;
-    submesh->pImpl->pNormals[9].x   = -1.0f;
-    submesh->pImpl->pNormals[9].y   = 0.0f;
-    submesh->pImpl->pNormals[9].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[9].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[9].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[9].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[9].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[9].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[9].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[9].w = 0.0f;
-
-    submesh->pImpl->pVertices[10].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[10].y  = b / 2.0f;
-    submesh->pImpl->pVertices[10].z  = -c / 2.0f;
-    submesh->pImpl->pNormals[10].x   = -1.0f;
-    submesh->pImpl->pNormals[10].y   = 0.0f;
-    submesh->pImpl->pNormals[10].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[10].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[10].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[10].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[10].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[10].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[10].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[10].w = 0.0f;
-
-    submesh->pImpl->pVertices[11].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[11].y  = b / 2.0f;
-    submesh->pImpl->pVertices[11].z  = c / 2.0f;
-    submesh->pImpl->pNormals[11].x   = -1.0f;
-    submesh->pImpl->pNormals[11].y   = 0.0f;
-    submesh->pImpl->pNormals[11].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[11].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[11].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[11].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[11].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[11].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[11].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[11].w = 0.0f;
-
-    /*for (int i = 0; i < 4; i++)
-    {
-        submesh->pImpl->pFaces[2].vertex_ids[i] = 8+i;
-        submesh->pImpl->pFaces[2].texcoord_ids[i] = 8+i;
-        submesh->pImpl->pFaces[2].normal_ids[i] = 8+i;
-    }*/
-
-    // right face
-    submesh->pImpl->pVertices[12].x  = a / 2.0f;
-    submesh->pImpl->pVertices[12].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[12].z  = -c / 2.0f;
-    submesh->pImpl->pNormals[12].x   = 1.0f;
-    submesh->pImpl->pNormals[12].y   = 0.0f;
-    submesh->pImpl->pNormals[12].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[12].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[12].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[12].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[12].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[12].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[12].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[12].w = 0.0f;
-
-    submesh->pImpl->pVertices[13].x  = a / 2.0f;
-    submesh->pImpl->pVertices[13].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[13].z  = c / 2.0f;
-    submesh->pImpl->pNormals[13].x   = 1.0f;
-    submesh->pImpl->pNormals[13].y   = 0.0f;
-    submesh->pImpl->pNormals[13].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[13].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[13].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[13].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[13].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[13].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[13].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[13].w = 0.0f;
-
-    submesh->pImpl->pVertices[14].x  = a / 2.0f;
-    submesh->pImpl->pVertices[14].y  = b / 2.0f;
-    submesh->pImpl->pVertices[14].z  = c / 2.0f;
-    submesh->pImpl->pNormals[14].x   = 1.0f;
-    submesh->pImpl->pNormals[14].y   = 0.0f;
-    submesh->pImpl->pNormals[14].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[14].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[14].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[14].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[14].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[14].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[14].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[14].w = 0.0f;
-
-    submesh->pImpl->pVertices[15].x  = a / 2.0f;
-    submesh->pImpl->pVertices[15].y  = b / 2.0f;
-    submesh->pImpl->pVertices[15].z  = -c / 2.0f;
-    submesh->pImpl->pNormals[15].x   = 1.0f;
-    submesh->pImpl->pNormals[15].y   = 0.0f;
-    submesh->pImpl->pNormals[15].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[15].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[15].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[15].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[15].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[15].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[15].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[15].w = 0.0f;
-
-    /*for (int i = 0; i < 4; i++)
-    {
-        submesh->pImpl->pFaces[3].vertex_ids[i] = 12+i;
-        submesh->pImpl->pFaces[3].texcoord_ids[i] = 12+i;
-        submesh->pImpl->pFaces[3].normal_ids[i] = 12+i;
-    }*/
-
-    // top face
-    submesh->pImpl->pVertices[16].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[16].y  = b / 2.0f;
-    submesh->pImpl->pVertices[16].z  = -c / 2.0f;
-    submesh->pImpl->pNormals[16].x   = 0.0f;
-    submesh->pImpl->pNormals[16].y   = 1.0f;
-    submesh->pImpl->pNormals[16].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[16].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[16].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[16].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[16].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[16].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[16].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[16].w = 0.0f;
-
-    submesh->pImpl->pVertices[17].x  = a / 2.0f;
-    submesh->pImpl->pVertices[17].y  = b / 2.0f;
-    submesh->pImpl->pVertices[17].z  = -c / 2.0f;
-    submesh->pImpl->pNormals[17].x   = 0.0f;
-    submesh->pImpl->pNormals[17].y   = 1.0f;
-    submesh->pImpl->pNormals[17].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[17].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[17].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[17].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[17].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[17].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[17].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[17].w = 0.0f;
-
-    submesh->pImpl->pVertices[18].x  = a / 2.0f;
-    submesh->pImpl->pVertices[18].y  = b / 2.0f;
-    submesh->pImpl->pVertices[18].z  = c / 2.0f;
-    submesh->pImpl->pNormals[18].x   = 0.0f;
-    submesh->pImpl->pNormals[18].y   = 1.0f;
-    submesh->pImpl->pNormals[18].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[18].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[18].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[18].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[18].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[18].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[18].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[18].w = 0.0f;
-
-    submesh->pImpl->pVertices[19].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[19].y  = b / 2.0f;
-    submesh->pImpl->pVertices[19].z  = c / 2.0f;
-    submesh->pImpl->pNormals[19].x   = 0.0f;
-    submesh->pImpl->pNormals[19].y   = 1.0f;
-    submesh->pImpl->pNormals[19].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[19].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[19].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[19].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[19].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[19].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[19].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[19].w = 0.0f;
-
-    /*for (int i = 0; i < 4; i++)
-    {
-        submesh->pImpl->pFaces[4].vertex_ids[i] = 16+i;
-        submesh->pImpl->pFaces[4].texcoord_ids[i] = 16+i;
-        submesh->pImpl->pFaces[4].normal_ids[i] = 16+i;
-    }*/
-
-    // bottom face
-    submesh->pImpl->pVertices[20].x  = a / 2.0f;
-    submesh->pImpl->pVertices[20].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[20].z  = -c / 2.0f;
-    submesh->pImpl->pNormals[20].x   = 0.0f;
-    submesh->pImpl->pNormals[20].y   = -1.0f;
-    submesh->pImpl->pNormals[20].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[20].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[20].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[20].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[20].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[20].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[20].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[20].w = 0.0f;
-
-    submesh->pImpl->pVertices[21].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[21].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[21].z  = -c / 2.0f;
-    submesh->pImpl->pNormals[21].x   = 0.0f;
-    submesh->pImpl->pNormals[21].y   = -1.0f;
-    submesh->pImpl->pNormals[21].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[21].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[21].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[21].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[21].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[21].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[21].v = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[21].w = 0.0f;
-
-    submesh->pImpl->pVertices[22].x  = -a / 2.0f;
-    submesh->pImpl->pVertices[22].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[22].z  = c / 2.0f;
-    submesh->pImpl->pNormals[22].x   = 0.0f;
-    submesh->pImpl->pNormals[22].y   = -1.0f;
-    submesh->pImpl->pNormals[22].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[22].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[22].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[22].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[22].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[22].u = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[22].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[22].w = 0.0f;
-
-    submesh->pImpl->pVertices[23].x  = a / 2.0f;
-    submesh->pImpl->pVertices[23].y  = -b / 2.0f;
-    submesh->pImpl->pVertices[23].z  = c / 2.0f;
-    submesh->pImpl->pNormals[23].x   = 0.0f;
-    submesh->pImpl->pNormals[23].y   = -1.0f;
-    submesh->pImpl->pNormals[23].z   = 0.0f;
-    submesh->pImpl->pMaterial->getColors()[23].red    = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[23].green  = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[23].blue   = 1.0f;
-    submesh->pImpl->pMaterial->getColors()[23].alpha  = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[23].u = 0.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[23].v = 1.0f;
-    submesh->pImpl->pMaterial->getTexcoords()[23].w = 0.0f;
-
-    /*for (int i = 0; i < 4; i++)
-    {
-        submesh->pImpl->pFaces[5].vertex_ids[i] = 20+i;
-        submesh->pImpl->pFaces[5].texcoord_ids[i] = 20+i;
-        submesh->pImpl->pFaces[5].normal_ids[i] = 20+i;
-    }*/
-
-    for (TPRREuint i = 0; i < submesh->pImpl->nVertexIndices_h; i++)
-    {
-        if ( submesh->pImpl->nMinVertexIndex > i )
-            submesh->pImpl->nMinVertexIndex = i;
-        if ( submesh->pImpl->nMaxVertexIndex < i )
-            submesh->pImpl->nMaxVertexIndex = i;
-        bool b = submesh->pImpl->setVertexIndex(i, i);
-        assert( b );
-    }
-    return true;
-}
-
-
-/**
-    Creates a material for the given Mesh if it doesn't yet have one.
-    Won't create new material if the given Mesh already has a material.
-
-    @param mesh The mesh for we want to create a material.
-    
-    @return The created or already existing material. PGENULL in case of error.
-*/
-PRREMaterial* PRREMesh3DManager::createMaterialForMesh(PRREMesh3D& mesh) const 
-{
-    if ( mesh.pImpl->pMaterial == PGENULL )
-    {
-        mesh.pImpl->pMaterial = pImpl->materialMgr.createMaterial();
-        if ( mesh.pImpl->pMaterial == PGENULL )
-        {
-            getConsole().EOLn("ERROR: PRREMesh3DManager::createMaterialForMesh(), returned material is NULL!");
-        }
-        else
-        {
-            getConsole().SOLn("PRREMesh3DManager::createMaterialForMesh() created material!");
-        }
-    }
-    else
-    {
-        getConsole().OLn("PRREMesh3DManager::createMaterialForMesh(), mesh already has material!");
-    }
-
-    return mesh.pImpl->pMaterial;
 }
 
 

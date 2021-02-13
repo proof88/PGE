@@ -262,6 +262,7 @@
     <ClInclude Include="PRRE\include\internal\Material\PRRETextureImpl.h" />
     <ClInclude Include="PRRE\include\internal\Math\PUREScissor.h" />
     <ClInclude Include="PRRE\include\internal\Object3D\PRREMesh3DImpl.h" />
+    <ClInclude Include="PRRE\include\internal\Object3D\PRREMesh3DManagerImpl.h" />
     <ClInclude Include="PRRE\include\internal\Object3D\PRREObject3DImpl.h" />
     <ClInclude Include="PRRE\include\internal\Object3D\PRREVertexTransferModeImpl.h" />
     <ClInclude Include="PRRE\include\internal\PRREbaseIncludes.h" />

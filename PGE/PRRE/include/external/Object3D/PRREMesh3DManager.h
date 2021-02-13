@@ -36,6 +36,8 @@ enum TPRRE_PRIMITIVE_FORMAT
 
 
 class PRREMesh3DManager;
+class PRREObject3DManager;
+class SampleManagerForDescendantFromVertexTransfer;
 
 /**
     3D Mesh class.
@@ -99,14 +101,14 @@ protected:
     PRREMesh3D(const PRREMesh3D&);
     PRREMesh3D& operator=(const PRREMesh3D&);
 
-    TPRREbool cannibalize(PRREMesh3D& victim);
-
 private:
 
     class PRREMesh3DImpl;
     PRREMesh3DImpl* pImpl;
 
-    friend class PRREMesh3DManager;  
+    friend class PRREMesh3DManager; 
+    friend class PRREObject3DManager;
+    friend class SampleManagerForDescendantFromVertexTransfer;
 
 }; // class PRREMesh3D
 
@@ -150,18 +152,13 @@ protected:
     PRREMesh3DManager(const PRREMesh3DManager&);
     PRREMesh3DManager& operator=(const PRREMesh3DManager&);
 
-    TPRREbool convertToPlane(
-        PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b);                            /**< Converts the given Mesh to a plane with the given sizes. */
-
-    TPRREbool convertToBox(
-        PRREMesh3D& mesh, TPRREfloat a, TPRREfloat b, TPRREfloat c);              /**< Converts the given Mesh to a box with the given sizes. */
-
-    PRREMaterial* createMaterialForMesh(PRREMesh3D& mesh) const;                  /**< Creates a material for the given Mesh if it doesn't yet have one. */
-
     virtual void WriteListCallback(const PRREManaged& mngd) const;
 
 private:
     class PRREMesh3DManagerImpl;
     PRREMesh3DManagerImpl* pImpl;  
+
+    friend class PRREObject3DManager;
+    friend class SampleManagerForDescendantFromVertexTransfer;
 
 }; // class PRREMesh3DManager

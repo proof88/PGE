@@ -12,6 +12,9 @@
 #include "UnitTest.h"  // PCH
 #include <cassert>
 #include "../PRRE/include/external/Object3D/PRREVertexTransferMode.h"
+#include "../PRRE/include/external/Object3D/PRREMesh3DManager.h"
+#include "../PRRE/include/internal/Object3D/PRREMesh3DImpl.h"
+#include "../PRRE/include/internal/Object3D/PRREMesh3DManagerImpl.h"
 #include "../PRRE/include/external/PR00FsReducedRenderingEngine.h"
 
 #ifndef E
@@ -69,7 +72,8 @@ public:
         SampleDescendantFromVertexTransfer* const subobj = new SampleDescendantFromVertexTransfer(materialMgr, vmod, vref, bForceUseClientMemory);
         assert(subobj);
         obj->Attach( *subobj );
-        bool res = convertToBox(*obj, a, b, c);
+        PRREMesh3DManager* const me = this;
+        bool res = me->pImpl->convertToBox(*obj, a, b, c);
         assert(res);
 
         // although SampleDescendantFromVertexTransfer ctor has already selected the vtransmode, we set it again
@@ -110,7 +114,7 @@ public:
         assert(tmpMesh);
         SampleDescendantFromVertexTransfer* obj = new SampleDescendantFromVertexTransfer(materialMgr, vmod, vref, bForceUseClientMemory);
         assert(obj);
-        bool b = obj->cannibalize(*tmpMesh);
+        bool b = ((PRREMesh3D*)obj)->pImpl->cannibalize(*tmpMesh);
         assert(b);
 
         for (TPRREint i = 0; i < tmpMesh->getCount(); i++) 
@@ -118,7 +122,7 @@ public:
             SampleDescendantFromVertexTransfer* const subobject = new SampleDescendantFromVertexTransfer(materialMgr, vmod, vref, bForceUseClientMemory);
             assert(subobject);
             obj->Attach( *subobject );
-            b &= subobject->cannibalize(*(PRREMesh3D*)(tmpMesh->getAttachedAt(i)));
+            b &= ((PRREMesh3D*)subobject)->pImpl->cannibalize(*(PRREMesh3D*)(tmpMesh->getAttachedAt(i)));
             assert(b);
         }
         this->DeleteAttachedInstance(*tmpMesh);

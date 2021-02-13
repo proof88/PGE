@@ -51,7 +51,9 @@ public:
     const PRREMaterial& getMaterial(TPRREbool implicitAccessSubobject = true) const;
           PRREMaterial& getMaterial(TPRREbool implicitAccessSubobject = true);
 
-    TPRREuint getUsedSystemMemory() const;                 
+    TPRREuint getUsedSystemMemory() const; 
+
+    TPRREbool cannibalize(PRREMesh3D& victim);
 
     // ---------------------------------------------------------------------------
 
@@ -91,4 +93,4 @@ private:
     friend class PRREMesh3D;
     friend class PRREMesh3DManager;
 
-}; 
+}; // class PRREMesh3D::PRREMesh3DImpl
