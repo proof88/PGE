@@ -89,6 +89,7 @@ protected:
 
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRRETextureTest::testCtor);
         AddSubTest("testDtor", (PFNUNITSUBTEST) &PRRETextureTest::testDtor);
+        AddSubTest("testGetName", (PFNUNITSUBTEST) &PRRETextureTest::testGetName);
         AddSubTest("testMethodsFromImage", (PFNUNITSUBTEST) &PRRETextureTest::testMethodsFromImage);
         AddSubTest("testGetInternalFormat", (PFNUNITSUBTEST) &PRRETextureTest::testGetInternalFormat);
         AddSubTest("testGetInternalNum", (PFNUNITSUBTEST) &PRRETextureTest::testGetInternalNum);
@@ -112,7 +113,20 @@ protected:
     virtual bool setUp()
     {
         tex128x128x24 = tm->createFromFile(BMP128x128x24);
-        return assertNotNull(tex128x128x24, "BMP128x128x24 null");
+        return assertNotNull(tex128x128x24, "BMP128x128x24 null") &
+            assertNotNull(tex128x128x32opaque, "tex128x128x32opaque null") &
+            assertNotNull(tex128x128x32transp, "tex128x128x32transp null") &
+            assertNotNull(tex128x128x8, "tex128x128x8 null") &
+            assertNotNull(tex128x128x4, "tex128x128x4 null") &
+            assertNotNull(tex128x128x1, "tex128x128x1 null") &
+            assertNotNull(tex128x128x24_border, "tex128x128x24_border null") &
+            assertNotNull(tex128x128x24_mip, "tex128x128x24_mip null") &
+            assertNotNull(tex128x128x24_cmp, "tex128x128x24_cmp null") &
+            assertNotNull(tex128x128x24_mip_cmp, "tex128x128x24_mip_cmp null") &
+            assertNotNull(tex128x128x24_cmpRGBA, "tex128x128x24_cmpRGBA null") &
+            assertNotNull(tex128x128x24_cmpAUTO, "tex128x128x24_cmpAUTO null") &
+            assertNotNull(tex128x128x32_cmpRGBA, "tex128x128x32_cmpRGBA null") &
+            assertNotNull(tex128x128x32_cmpAUTO, "tex128x128x32_cmpAUTO null");
     }
 
     virtual void TearDown()
@@ -225,6 +239,24 @@ private:
         delete tex128x128x24;
         tex128x128x24 = NULL;
         return assertEquals(13, tm->getCount());
+    }
+
+     bool testGetName()
+    {
+        return assertNotEquals(std::string::npos, tex128x128x24->getName().find("Texture "), "tex128x128x24 name") &
+            assertNotEquals(std::string::npos, tex128x128x32opaque->getName().find("Texture "), "tex128x128x32opaque name") &
+            assertNotEquals(std::string::npos, tex128x128x32transp->getName().find("Texture "), "tex128x128x32transp name") &
+            assertNotEquals(std::string::npos, tex128x128x8->getName().find("Texture "), "tex128x128x8 name") &
+            assertNotEquals(std::string::npos, tex128x128x4->getName().find("Texture "), "tex128x128x4 name") &
+            assertNotEquals(std::string::npos, tex128x128x1->getName().find("Texture "), "tex128x128x1 name") &
+            assertNotEquals(std::string::npos, tex128x128x24_border->getName().find("Texture "), "tex128x128x24_border name") &
+            assertNotEquals(std::string::npos, tex128x128x24_mip->getName().find("Texture "), "tex128x128x24_mip name") &
+            assertNotEquals(std::string::npos, tex128x128x24_cmp->getName().find("Texture "), "tex128x128x24_cmp name") &
+            assertNotEquals(std::string::npos, tex128x128x24_mip_cmp->getName().find("Texture "), "tex128x128x24_mip_cmp name") &
+            assertNotEquals(std::string::npos, tex128x128x24_cmpRGBA->getName().find("Texture "), "tex128x128x24_cmpRGBA name") &
+            assertNotEquals(std::string::npos, tex128x128x24_cmpAUTO->getName().find("Texture "), "tex128x128x24_cmpAUTO name") &
+            assertNotEquals(std::string::npos, tex128x128x32_cmpRGBA->getName().find("Texture "), "tex128x128x32_cmpRGBA name") &
+            assertNotEquals(std::string::npos, tex128x128x32_cmpAUTO->getName().find("Texture "), "tex128x128x32_cmpAUTO name");
     }
 
     bool testMethodsFromImage()

@@ -146,7 +146,13 @@ private:
     {
         // we could check for other default properties such as vertex transfer mode, etc but for some reason we check them in Object3DTest instead
         const PRREObject3D* const obj = om->createPlane(1.0f, 2.0f);
-        return assertNotNull( obj, "null" ) &
+
+        if ( !assertNotNull(obj, "obj not null"))
+        {
+            return false;
+        }
+
+        return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
             assertEquals((TPRREuint)4, obj->getVerticesCount(), "vertices count") ;
     }
 
@@ -154,7 +160,13 @@ private:
     {
         // we could check for other default properties such as vertex transfer mode, etc but for some reason we check them in Object3DTest instead
         const PRREObject3D* const obj = om->createBox(1.0f, 2.0f, 3.0f);
-        return assertNotNull( obj, "null" ) &
+
+        if ( !assertNotNull(obj, "obj not null"))
+        {
+            return false;
+        }
+
+        return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
             assertEquals((TPRREuint)24, obj->getVerticesCount(), "vertices count") ;
     }
 
@@ -162,7 +174,13 @@ private:
     {
         // we could check for other default properties such as vertex transfer mode, etc but for some reason we check them in Object3DTest instead
         const PRREObject3D* const obj = om->createCube(1.0f);
-        return assertNotNull( obj, "null" ) &
+
+        if ( !assertNotNull(obj, "obj not null"))
+        {
+            return false;
+        }
+
+        return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
             assertEquals((TPRREuint)24, obj->getVerticesCount(), "vertices count") ;
     }
 
@@ -175,13 +193,18 @@ private:
 
         const PRREObject3D* const obj = om->createFromFile("_res/models/snail_proofps/snail.obj");
 
+        if ( !assertNotNull(obj, "obj not null"))
+        {
+            return false;
+        }
+
         // As texture filenames shouldn't be part of final subobject names, we can check for that also.
         bool b1 = true;
         for (TPRREint i = 0; i < obj->getCount(); i++)
             b1 = b1 & assertNull( strstr(((PRREObject3D*)obj->getAttachedAt(i))->getName().c_str(), ".bmp"), "bmp ext in subname" );
 
-        return assertNotNull( obj, "not null" ) &
-            assertLess( nTexturesBeforeLoad, engine->getTextureManager().getCount(), "textures count") &
+        return assertLess( nTexturesBeforeLoad, engine->getTextureManager().getCount(), "textures count") &
+            assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
             assertEquals((TPRREint)9, obj->getCount(), "subobject count") &
             b1;
     }
@@ -191,7 +214,7 @@ private:
         PRREObject3D* const objPlane = om->createPlane(1.0f, 2.0f);
         objPlane->getPosVec().Set(1, 2, 3);
         objPlane->getAngleVec().Set(10, 20, 30);
-        objPlane->SetName("lol");
+        objPlane->SetName("stgsertseesg");
         objPlane->SetScaling( PRREVector(4,5,6) );
         objPlane->SetDoubleSided(true);
         objPlane->SetAffectingZBuffer(false);
@@ -210,10 +233,13 @@ private:
             return false;
         }
 
+        const bool b = assertNotEquals(objPlane->getName(), objCloned->getName(), "name") &
+            assertNotEquals(std::string::npos, objCloned->getName().find("clone of " + objPlane->getName()), "name substr");
+
         return assertTrue(objPlane->getPosVec() == objCloned->getPosVec(), "pos") &
             assertTrue(objPlane->getAngleVec() == objCloned->getAngleVec(), "angle") &
             assertTrue(objPlane->getScaling() == objCloned->getScaling(), "scale") &
-            assertEquals(objPlane->getName(), objCloned->getName(), "name") &
+            b &
             assertTrue(objPlane->getSizeVec() == objCloned->getSizeVec(), "size") &
             assertEquals(objPlane->getRotationOrder(), objCloned->getRotationOrder(), "rot") &
             assertEquals(objPlane->getVertexTransferMode(), objCloned->getVertexTransferMode(), "vtrans") &

@@ -38,6 +38,8 @@ protected:
 
 private:
 
+    static TPRREuint nRunningCounter;    /**< Always increased when creating a new level-1 Object3D instance. */
+
     PRREObject3DManager* _pOwner;      /**< The owner public object who creates this pimpl object. */
 
     TPRREbool            bInited;               /**< True if successfully inited, false if not functional. */
@@ -83,6 +85,9 @@ TPRREbool PRREObject3DManager::PRREObject3DManagerImpl::isInitialized() const
 
 
 // ############################### PRIVATE ###############################
+
+
+TPRREuint PRREObject3DManager::PRREObject3DManagerImpl::nRunningCounter = 0;
 
 
 PRREObject3DManager::PRREObject3DManagerImpl::PRREObject3DManagerImpl() :
@@ -252,7 +257,9 @@ PRREObject3D* PRREObject3DManager::createPlane(
     }
     getConsole().OO();
 
-    getConsole().SOLnOO("> Plane created successfully!");
+    obj->SetName("Object3D " + std::to_string(pImpl->nRunningCounter++));
+
+    getConsole().SOLnOO("> Plane created successfully, name: %s!", obj->getName().c_str());
     getConsole().OLn("");
 
     return obj;
@@ -330,7 +337,9 @@ PRREObject3D* PRREObject3DManager::createBox(
     }
     getConsole().OO();
 
-    getConsole().SOLnOO("> Box created successfully!");
+    obj->SetName("Object3D " + std::to_string(pImpl->nRunningCounter++));
+
+    getConsole().SOLnOO("> Box created successfully, name: %s!", obj->getName().c_str());
     getConsole().OLn("");
 
     return obj;
@@ -366,7 +375,7 @@ PRREObject3D* PRREObject3DManager::createCube(
     }
     else
     {
-        getConsole().SOLnOO("> Cube created successfully!");
+        getConsole().SOLnOO("> Cube created successfully, name: %s!", cube->getName().c_str());
     }
 
     getConsole().OLn("");
@@ -518,7 +527,9 @@ PRREObject3D* PRREObject3DManager::createFromFile(
         return PGENULL;
     }
 
-    getConsole().SOLnOO("> Object loaded successfully!");
+    obj->SetName("Object3D " + std::to_string(pImpl->nRunningCounter++));
+
+    getConsole().SOLnOO("> Object loaded successfully, name: %s!", obj->getName().c_str());
     getConsole().OLn("");
     return obj; 
 } // createFromFile()
@@ -563,7 +574,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
     {
         obj = new PRREObject3D(pImpl->materialMgr);
 
-        obj->SetName( referredobj.getName() );
+        // SetName() invoked later below ...
         obj->SetFilename( referredobj.getFilename() );
         
         Attach( *obj );
@@ -601,7 +612,9 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
             referredobj.getMaterial().getTextureEnvColor().getBlue(),
             referredobj.getMaterial().getTextureEnvColor().getAlpha() );
 
-        getConsole().SOLnOO("> Object cloned successfully!");
+        obj->SetName("Object3D " + std::to_string(pImpl->nRunningCounter++) + " (clone of " + referredobj.getName() + ")");
+        
+        getConsole().SOLnOO("> Object cloned successfully, name: %s!", obj->getName().c_str());
     } // try
     catch (const std::exception& e)
     {

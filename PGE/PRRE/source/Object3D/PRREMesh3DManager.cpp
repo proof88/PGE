@@ -781,11 +781,11 @@ PRREMaterial* PRREMesh3DManager::PRREMesh3DManagerImpl::createMaterialForMesh(PR
 
 
 /**
-    Loads OBJ files, handles the actual file operations, and creates the Object3D object.
+    Loads OBJ files, handles the actual file operations, and creates the Mesh3D object.
 
-    @param filename              The model file to be loaded to be an Object3D instance.
+    @param filename The model file to be loaded to be an Mesh3D instance.
 
-    @return The created Object3D object on success, PGENULL otherwise.
+    @return The created Mesh3D object on success, PGENULL otherwise.
 */
 PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filename)
 {
@@ -1388,6 +1388,9 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
 // ############################### PRIVATE ###############################
 
 
+TPRREuint PRREMesh3DManager::PRREMesh3DManagerImpl::nRunningCounter = 0;
+
+
 PRREMesh3DManager::PRREMesh3DManagerImpl::PRREMesh3DManagerImpl() :
     materialMgr(materialMgr)
 {
@@ -1530,7 +1533,9 @@ PRREMesh3D* PRREMesh3DManager::createPlane(TPRREfloat a, TPRREfloat b)
         return PGENULL;
     }
 
-    getConsole().SOLnOO("> Plane mesh created successfully!");
+    mesh->SetName("Mesh3D " + std::to_string(pImpl->nRunningCounter++));
+
+    getConsole().SOLnOO("> Plane mesh created successfully, name: %s!", mesh->getName().c_str());
     getConsole().OLn("");
 
     return mesh;
@@ -1584,7 +1589,9 @@ PRREMesh3D* PRREMesh3DManager::createBox(TPRREfloat a, TPRREfloat b, TPRREfloat 
         return PGENULL;
     }
 
-    getConsole().SOLnOO("> Box mesh created successfully!");
+    mesh->SetName("Mesh3D " + std::to_string(pImpl->nRunningCounter++));
+
+    getConsole().SOLnOO("> Box mesh created successfully, name: %s!", mesh->getName().c_str());
     getConsole().OLn("");
 
     return mesh;
@@ -1607,7 +1614,7 @@ PRREMesh3D* PRREMesh3DManager::createCube(TPRREfloat a)
     PRREMesh3D* const cube = createBox(a, a, a);
     if ( cube != PGENULL )
     {
-        getConsole().SOLnOO("> Cube mesh created successfully!");
+        getConsole().SOLnOO("> Cube mesh created successfully, name: %s!", cube->getName().c_str());
     }
     else
     {
@@ -1683,8 +1690,9 @@ PRREMesh3D* PRREMesh3DManager::createFromFile(const char* filename)
 
     obj->SetFilename(filename);
     Attach( *obj );
+    obj->SetName("Mesh3D " + std::to_string(pImpl->nRunningCounter++));
 
-    getConsole().SOLnOO("> Mesh loaded successfully!");
+    getConsole().SOLnOO("> Mesh loaded successfully, name: %s!", obj->getName().c_str());
     getConsole().OLn("");
     return obj; 
 } // createFromFile()

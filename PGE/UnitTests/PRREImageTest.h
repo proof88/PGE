@@ -67,6 +67,7 @@ protected:
 
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREImageTest::testCtor);
         AddSubTest("testDtor", (PFNUNITSUBTEST) &PRREImageTest::testDtor);
+        AddSubTest("testGetName", (PFNUNITSUBTEST) &PRREImageTest::testGetName);
         AddSubTest("testGetWidth", (PFNUNITSUBTEST) &PRREImageTest::testGetWidth);
         AddSubTest("testGetHeight", (PFNUNITSUBTEST) &PRREImageTest::testGetHeight);
         AddSubTest("testGetFilename", (PFNUNITSUBTEST) &PRREImageTest::testGetFilename);
@@ -134,6 +135,12 @@ private:
         delete img128x128x24;
         img128x128x24 = NULL;
         return assertEquals(6, im->getCount());
+    }
+
+    bool testGetName()
+    {
+        return assertNotEquals(std::string::npos, img128x128x24->getName().find("Image "), "img128x128x24 name") &
+            assertNotEquals(std::string::npos, img1024x768x24blank->getName().find("Image "), "img1024x768x24blank name");
     }
 
     bool testGetWidth()

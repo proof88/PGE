@@ -89,14 +89,14 @@ protected:
 
 private:
 
-    static PRREhwInfo& pHWInfo;                               /**< We need some info on HW. */
+    static TPRREuint nRunningCounter;    /**< Always increased when creating a new level-1 Object3D instance. */
+    static PRREhwInfo& pHWInfo;          /**< We need some info on HW. */
 
     // ---------------------------------------------------------------------------
 
     PRRETextureManager* _pOwner;     /**< The owner public object who creates this pimpl object. */
 
     TPRREbool bInited;             /**< True if successfully inited, false if not functional. */
-    TPRREuint nVRAMtotal;          /**< Used by WriteList() and WriteListCallback(). */
     TPRRE_ISO_TEX_FILTERING   filtDefIsoMin,
                               filtDefIsoMag;  /**< Default isotropic filtering modes. */
     TPRRE_ANISO_TEX_FILTERING filtDefAniso;   /**< Default anisotropic filtering modes. */
@@ -341,6 +341,9 @@ PRREhwInfo& PRRETextureManager::PRRETextureManagerImpl::pHWInfo = PRREhwInfo::ge
 // ############################### PRIVATE ###############################
 
 
+TPRREuint PRRETextureManager::PRRETextureManagerImpl::nRunningCounter = 0;
+
+
 /**
     Sets default values.
     Requires a valid initialized PRREhwInfo instance to be functional.
@@ -352,7 +355,6 @@ PRRETextureManager::PRRETextureManagerImpl::PRRETextureManagerImpl(PRRETextureMa
     _pOwner = owner;
     _pOwner->getConsole().OLnOI("PRRETextureManager() ...");
     bInited = false;
-    nVRAMtotal = 0;
     filtDefIsoMin = PRRE_ISO_LINEAR;
     filtDefIsoMag = PRRE_ISO_LINEAR;
     filtDefAniso  = PRRE_ANISO_1X;
@@ -801,11 +803,13 @@ PRRETexture* PRRETextureManager::createTextureFromImage(const PRREImage& img)
     if ( !isPixelPreservingEnabled() )
         texture->FlushResources();
 
+    texture->SetName("Texture " + std::to_string(pImpl->nRunningCounter++));
+
     getConsole().OLn("Texture nWidth and nHeight: %d %d", texture->getWidth(), texture->getHeight());
     getConsole().OLn("final nSize is %d Byte(s).", texture->pImpl->nSize);
     getConsole().OLn("internalnum = %d", texture->pImpl->nInternalNum);
     getConsole().OLn("");
-    getConsole().SOLn("> Texture created!");
+    getConsole().SOLn("> Texture created, name: %s!", texture->getName().c_str());
     getConsole().OOOLn("");
     return texture;
 } // createTextureFromImage()
@@ -839,7 +843,7 @@ PRRETexture* PRRETextureManager::createFromFile(const char* filename)
 
     if ( texture != PGENULL )
     {   // we already have a texture with this filename
-        getConsole().SOLnOO("> Found loaded texture, returning.");
+        getConsole().SOLnOO("> Found loaded texture, returning: %s", texture->getName().c_str());
         getConsole().OLn("");
         return texture;
     }
@@ -886,11 +890,13 @@ PRRETexture* PRRETextureManager::createFromFile(const char* filename)
     if ( !isPixelPreservingEnabled() )
         texture->FlushResources();
 
+    texture->SetName("Texture " + std::to_string(pImpl->nRunningCounter++));
+
     getConsole().OLn("Texture nWidth and nHeight: %d %d", texture->getWidth(), texture->getHeight());
     getConsole().OLn("final nSize is %d Byte(s).", texture->pImpl->nSize);
     getConsole().OLn("internalnum = %d", texture->pImpl->nInternalNum);
     getConsole().OLn("");
-    getConsole().SOLn("> Texture created!");
+    getConsole().SOLn("> Texture created, name: %s!", texture->getName().c_str());
     getConsole().OOOLn("");
     return texture;
 } // createFromFile()

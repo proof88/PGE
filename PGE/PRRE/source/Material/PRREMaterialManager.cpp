@@ -36,6 +36,8 @@ protected:
 
 private:
 
+    static TPRREuint nRunningCounter;  /**< Always increased when creating a new Material instance. */
+
     PRREMaterialManager* _pOwner;      /**< The owner public object who creates this pimpl object. */
 
     TPRREbool           bInited;       /**< True if successfully inited, false if not functional. */
@@ -83,6 +85,9 @@ TPRREuint PRREMaterialManager::PRREMaterialManagerImpl::getMaximumLayerCount() c
 
 
 // ############################### PRIVATE ###############################
+
+
+TPRREuint PRREMaterialManager::PRREMaterialManagerImpl::nRunningCounter = 0;
 
 
 PRREMaterialManager::PRREMaterialManagerImpl::PRREMaterialManagerImpl()
@@ -185,11 +190,13 @@ PRREMaterial* PRREMaterialManager::createMaterial()
         mat = new PRREMaterial(pImpl->nMaxLayers);
         Attach( *mat );
 
+        mat->SetName("Material " + std::to_string(pImpl->nRunningCounter++));
+
         getConsole().SOLnOO("> Material created successfully!");
     }
     catch (const std::bad_alloc&)
     {
-        getConsole().EOLnOO("ERROR: Failed to instantiate new PRREMaterial!");
+        getConsole().EOLnOO("ERROR: Failed to instantiate new PRREMaterial, name: %s!", mat->getName().c_str());
     }
     getConsole().OLn("");
 

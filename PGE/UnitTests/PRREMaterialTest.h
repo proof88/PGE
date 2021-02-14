@@ -134,6 +134,7 @@ private:
         assertTrue(b, ss.str().c_str());
 
         return b &
+            assertNotEquals(std::string::npos, mat->getName().find("Material "), "img128x128x24 name") &
             assertFalse(mat->isTextured(), "isTextured") &
             assertFalse(mat->isSingleTextured(), "isSingleTextured") &
             assertFalse(mat->isMultiTextured(), "isMultiTextured");

@@ -64,6 +64,7 @@ protected:
 
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREMesh3DTest::testCtor);
         AddSubTest("testDtor", (PFNUNITSUBTEST) &PRREMesh3DTest::testDtor);
+        AddSubTest("testGetName", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetName);
         AddSubTest("testIsLevel1", (PFNUNITSUBTEST) &PRREMesh3DTest::testIsLevel1);
         AddSubTest("testIsLevel2", (PFNUNITSUBTEST) &PRREMesh3DTest::testIsLevel2);
         AddSubTest("testGetPrimitiveFormat", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetPrimitiveFormat);
@@ -101,7 +102,10 @@ protected:
         mesh = mm->createBox(1.0f, 2.0f, 3.0f);
         meshFromFile = mm->createFromFile("_res/models/snail_proofps/snail.obj");
         return assertNotNull(mesh, "mesh = NULL" ) &
-            assertNotNull(meshFromFile, "meshFromFile = NULL" );
+            assertNotNull(meshFromFile, "meshFromFile = NULL" ) &
+            assertNotNull(meshPlane, "meshPlane = NULL" ) &
+            assertNotNull(meshBox, "meshBox = NULL" ) &
+            assertNotNull(meshCube, "meshCube = NULL" );
     }
 
     virtual void TearDown()
@@ -153,6 +157,16 @@ private:
     bool testCtor()
     {
         return true;
+    }
+
+    bool testGetName()
+    {
+        return assertNotEquals(std::string::npos, meshFromFile->getName().find("Mesh3D "), "meshFromFile name") &
+            assertNotEquals(std::string::npos, mesh->getName().find("Mesh3D "), "mesh name") &
+            assertNotEquals(std::string::npos, meshPlane->getName().find("Mesh3D "), "meshPlane name") &
+            assertNotEquals(std::string::npos, meshBox->getName().find("Mesh3D "), "meshBox name") &
+            assertNotEquals(std::string::npos, meshCube->getName().find("Mesh3D "), "meshCube name") &
+            assertNotEquals(std::string::npos, meshPlane->getName().find("Mesh3D "), "meshPlane name");
     }
 
     bool testDtor()

@@ -35,9 +35,11 @@ public:
     PRREMaterial* createMaterialForMesh(PRREMesh3D& mesh) const;                  /**< Creates a material for the given Mesh if it doesn't yet have one. */
 
 protected:
-    PRREMesh3D* loadOBJ(const char* filename);   /**< Loads OBJ files, handles the actual file operations, and creates the Object3D object. */
+    PRREMesh3D* loadOBJ(const char* filename);   /**< Loads OBJ files, handles the actual file operations, and creates the Mesh3D object. */
 
 private:
+
+    static TPRREuint nRunningCounter;    /**< Always increased when creating a new level-1 Mesh3D instance. */
 
     PRREMesh3DManager* _pOwner;      /**< The owner public object who creates this pimpl object. */
 

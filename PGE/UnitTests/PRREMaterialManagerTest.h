@@ -110,9 +110,12 @@ private:
             engine = NULL;
         }
         mm = new PRREMaterialManager();
+        if ( !assertNotNull(mm, "mm not null"))
+        {
+            return false;
+        }
 
-        return assertNotNull(mm, "notNull") &
-            assertNull(mm->createMaterial(), "createMaterial") &
+        return assertNull(mm->createMaterial(), "createMaterial") &
             assertFalse(mm->isInitialized(), "isInit") &
             assertEquals((TPRREuint) 1, mm->getMaximumLayerCount(), "maxLayerCount");
     }
@@ -120,8 +123,7 @@ private:
     bool testCtor2()
     {
         // HW specific but should pass on main test machine with at least 2 layers
-        return assertNotNull(mm, "notNull") &
-            assertNotNull(mm->createMaterial(), "createMaterial") &
+        return assertNotNull(mm->createMaterial(), "createMaterial") &
             assertTrue(mm->isInitialized(), "isInit") &
             assertGreater(mm->getMaximumLayerCount(), (unsigned int) 1, "maxLayerCount");
     }
@@ -143,7 +145,7 @@ private:
 
     bool testWriteList()
     {
-        tm->WriteList();
+        mm->WriteList();
         return true;
     }
     

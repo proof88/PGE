@@ -423,8 +423,8 @@ void PR00FsReducedRenderingEngineImpl::PrintTexturesUnusedByMaterials() const
     const PRRETextureManager& texMgr = getTextureManager();
     const PRREMaterialManager& matMgr = getMaterialManager();
     
-    getConsole().OLn("List of Unused Textures (by checking Materials)");
-    getConsole().OLn("===============================================");
+    getConsole().OLn("List of Textures Unused by Materials");
+    getConsole().OLn("====================================");
 
     TPRREuint nUnusedTextures = 0;
 
@@ -501,7 +501,7 @@ void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByMeshes() const
         if ( !matUsedByMesh )
         {
             ++nUnusedMaterials;
-            getConsole().OLn("Name: %s, file name: %s", mat->getName().c_str(), mat->getFilename().c_str());
+            getConsole().OLn("Name: %s", mat->getName().c_str());
         }
     } // for mati
 
@@ -552,7 +552,7 @@ void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByObjects() const
         if ( !matUsedByObject3D )
         {
             ++nUnusedMaterials;
-            getConsole().OLn("Name: %s, file name: %s", mat->getName().c_str(), mat->getFilename().c_str());
+            getConsole().OLn("Name: %s", mat->getName().c_str());
         }
     } // for mati
 

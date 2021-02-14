@@ -687,13 +687,13 @@ void PRREManager::WriteList() const
         if ( pMngd != PGENULL )
         {    
             nSysMemTotal += pMngd->getUsedSystemMemory();
-            getConsole().OLn("pManageds[%d], sys mem: %d Bytes", i, pMngd->getUsedSystemMemory());
+            getConsole().OLn("pManageds[%d], sys mem: %d Bytes:", i, pMngd->getUsedSystemMemory());
             WriteListCallback( *pMngd );
         }
         else
             getConsole().OLn("pManageds[%d] == PGENULL (free slot)", i);
     }
-    getConsole().OLnOO("> total size of manageds = %d Bytes = %d kBytes = %d MBytes",
+    getConsole().OLnOO("> total sys mem = %d Bytes = %d kBytes = %d MBytes",
                       nSysMemTotal, (int)ceil(nSysMemTotal/1024.0f), (int)ceil(nSysMemTotal/1024.0f/1024.0f));
     getConsole().OLn("");
 } // WriteList()
@@ -727,6 +727,8 @@ PRREManager& PRREManager::operator=(const PRREManager& other)
 void PRREManager::WriteListCallback(const PRREManaged& mngd) const
 {
     getConsole().OI();
+    getConsole().O("%s, ", mngd.getName().c_str());
+
     if ( mngd.getManager() == (PRREManager*)this )
         getConsole().SOLn("parent is OK!");
     else
@@ -734,8 +736,9 @@ void PRREManager::WriteListCallback(const PRREManaged& mngd) const
         if ( mngd.getManager() == PGENULL )
             getConsole().EOLn("parent is PGENULL!");
         else
-            getConsole().EOLn("parent is VERY BAD!");
+            getConsole().EOLn("parent is VERY BAD (cannot happen)!");
     }
+    
     getConsole().OO();
 } // WriteListCallback()
 

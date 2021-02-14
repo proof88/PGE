@@ -41,6 +41,8 @@ protected:
     
 private:
 
+    static TPRREuint nRunningCounter;
+
     PRREImageManager* _pOwner;       /**< The owner public object who creates this pimpl object. */
 
 
@@ -160,6 +162,9 @@ PRREhwInfo& PRREImageManager::PRREImageManagerImpl::pHWInfo = PRREhwInfo::get();
 
 
 // ############################### PRIVATE ###############################
+
+
+TPRREuint PRREImageManager::PRREImageManagerImpl::nRunningCounter = 0;
 
 
 /**
@@ -326,10 +331,11 @@ PRREImage* PRREImageManager::createFromFile(const char* filename)
     if ( pNewImage == PGENULL )
         return pImpl->createFromFileFail("ERROR: loadXXX() returned PGENULL!");
     
+    pNewImage->SetName("Image " + std::to_string(pImpl->nRunningCounter++));
     pNewImage->SetFilename( filename );
     Attach( *pNewImage );
 
-    getConsole().SOLnOO("> Image loaded!");
+    getConsole().SOLnOO("> Image loaded, name: %s!", pNewImage->getName().c_str());
     getConsole().OLn("");
 
     return pNewImage;
@@ -366,7 +372,9 @@ PRREImage* PRREImageManager::createBlank(TPRREuint width, TPRREuint height, TPRR
 
         Attach( *pNewImage );
 
-        getConsole().SOLnOO("> Blank Image created!");
+        pNewImage->SetName("Image " + std::to_string(pImpl->nRunningCounter++));
+
+        getConsole().SOLnOO("> Blank Image created, name: %s!", pNewImage->getName().c_str());
         getConsole().OLn("");
     }
     catch (const std::bad_alloc&)
