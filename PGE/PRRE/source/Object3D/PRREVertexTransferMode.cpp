@@ -934,6 +934,22 @@ TPRREbool PRREVertexTransfer::isVertexModifyingDynamic(TPRRE_VERTEX_TRANSFER_MOD
 
 
 /**
+    Tells whether the given Vertex Transfer Mode uses VRAM.
+    Note that the result does not always tell the truth. For example, we can expect that geometry draw calls stored
+    in an OpenGL display list are cached somehow in video memory or implicitly stored as a static VBO in video memory,
+    but this might not be the case with nowadays old/rare driver-GPU/VPU combo which might not even have enough video
+    memory to store OpenGL display list, or the driver is not prepared for that.
+    @return True if the given mode means video memory is utilized instead of system memory to store mesh geometry.
+*/
+TPRREbool PRREVertexTransfer::isVideoMemoryUsed(TPRRE_VERTEX_TRANSFER_MODE vtrans)
+{
+    return (BIT_READ(vtrans, PRRE_VT_SVA_BIT) == 1u) ||
+        (vtrans == PRRE_VT_STA_DIR_DL) ||
+        (vtrans == PRRE_VT_STA_IND_DL);
+}
+
+
+/**
     Selects a suitable vertex transfer mode.
     The selected mode is compatible with the current hardware and complies with the given arguments.
     Please note that bForceUseClientMemory = true is considered only if dynamic modifying habit is specified.

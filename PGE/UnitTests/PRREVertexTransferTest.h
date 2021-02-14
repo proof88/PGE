@@ -198,6 +198,7 @@ protected:
         AddSubTest("testIsVertexReferencingIndexed", (PFNUNITSUBTEST) &PRREVertexTransferTest::testIsVertexReferencingIndexed);
         AddSubTest("testIsVertexModifyingDynamic", (PFNUNITSUBTEST) &PRREVertexTransferTest::testIsVertexModifyingDynamic);
         AddSubTest("testSelectVertexTransferMode", (PFNUNITSUBTEST) &PRREVertexTransferTest::testSelectVertexTransferMode);
+        AddSubTest("testIsVideoMemoryUsed", (PFNUNITSUBTEST) &PRREVertexTransferTest::testIsVideoMemoryUsed);
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREVertexTransferTest::testCtor);
         AddSubTest("testGetVertexModifyingHabit", (PFNUNITSUBTEST) &PRREVertexTransferTest::testGetVertexModifyingHabit);
         AddSubTest("testSetVertexModifyingHabit", (PFNUNITSUBTEST) &PRREVertexTransferTest::testSetVertexModifyingHabit);
@@ -340,6 +341,64 @@ private:
             bVTransDynIndClientIsClientside &
             bVTransStaDirClientIsServerside &
             bVTransStaIndClientIsServerside;
+    }
+
+    bool testIsVideoMemoryUsed()
+    {
+        return assertFalse(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_DIR_1_BY_1    ), "PRRE_VT_DYN_DIR_1_BY_1") &
+        assertFalse(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_DIR_RVA              ), "PRRE_VT_DYN_DIR_RVA") &
+        assertFalse(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_DIR_RVA_CVA          ), "PRRE_VT_DYN_DIR_RVA_CVA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_DIR_SVA_GEN           ), "PRRE_VT_DYN_DIR_SVA_GEN") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_DIR_SVA_ATI           ), "PRRE_VT_DYN_DIR_SVA_ATI") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_DIR_SVA_ATI_CVA       ), "PRRE_VT_DYN_DIR_SVA_ATI_CVA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_DIR_SVA_NV            ), "PRRE_VT_DYN_DIR_SVA_NV") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_DIR_SVA_NV_CVA        ), "PRRE_VT_DYN_DIR_SVA_NV_CVA") &
+        assertFalse(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_1_BY_1           ), "PRRE_VT_DYN_IND_1_BY_1") &
+        assertFalse(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_RVA              ), "PRRE_VT_DYN_IND_RVA") &
+        assertFalse(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_RVA_RNG          ), "PRRE_VT_DYN_IND_RVA_RNG") &
+        assertFalse(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_RVA_CVA          ), "PRRE_VT_DYN_IND_RVA_CVA") &
+        assertFalse(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_RVA_CVA_RNG      ), "PRRE_VT_DYN_IND_RVA_CVA_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_GEN           ), "PRRE_VT_DYN_IND_SVA_GEN") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_ATI           ), "PRRE_VT_DYN_IND_SVA_ATI") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_ATI_RNG       ), "PRRE_VT_DYN_IND_SVA_ATI_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_ATI_CVA       ), "PRRE_VT_DYN_IND_SVA_ATI_CVA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_ATI_CVA_RNG   ), "PRRE_VT_DYN_IND_SVA_ATI_CVA_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_ATI_EA        ), "PRRE_VT_DYN_IND_SVA_ATI_EA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_ATI_EA_RNG    ), "PRRE_VT_DYN_IND_SVA_ATI_EA_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_ATI_EA_CVA    ), "PRRE_VT_DYN_IND_SVA_ATI_EA_CVA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_ATI_EA_CVA_RNG), "PRRE_VT_DYN_IND_SVA_ATI_EA_CVA_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_NV            ), "PRRE_VT_DYN_IND_SVA_NV") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_NV_RNG        ), "PRRE_VT_DYN_IND_SVA_NV_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_NV_CVA        ), "PRRE_VT_DYN_IND_SVA_NV_CVA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_NV_CVA_RNG    ), "PRRE_VT_DYN_IND_SVA_NV_CVA_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_NV_EA         ), "PRRE_VT_DYN_IND_SVA_NV_EA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_NV_EA_RNG     ), "PRRE_VT_DYN_IND_SVA_NV_EA_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_NV_EA_CVA     ), "PRRE_VT_DYN_IND_SVA_NV_EA_CVA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_DYN_IND_SVA_NV_EA_CVA_RNG ), "PRRE_VT_DYN_IND_SVA_NV_EA_CVA_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_DIR_DL                ), "PRRE_VT_STA_DIR_DL") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_DIR_SVA_GEN           ), "PRRE_VT_STA_DIR_SVA_GEN") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_DIR_SVA_ATI           ), "PRRE_VT_STA_DIR_SVA_ATI") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_DIR_SVA_ATI_CVA       ), "PRRE_VT_STA_DIR_SVA_ATI_CVA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_DIR_SVA_NV            ), "PRRE_VT_STA_DIR_SVA_NV") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_DIR_SVA_NV_CVA        ), "PRRE_VT_STA_DIR_SVA_NV_CVA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_DL                ), "PRRE_VT_STA_IND_DL") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_GEN           ), "PRRE_VT_STA_IND_SVA_GEN") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_ATI           ), "PRRE_VT_STA_IND_SVA_ATI") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_ATI_RNG       ), "PRRE_VT_STA_IND_SVA_ATI_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_ATI_CVA       ), "PRRE_VT_STA_IND_SVA_ATI_CVA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_ATI_CVA_RNG   ), "PRRE_VT_STA_IND_SVA_ATI_CVA_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_ATI_EA        ), "PRRE_VT_STA_IND_SVA_ATI_EA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_ATI_EA_RNG    ), "PRRE_VT_STA_IND_SVA_ATI_EA_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_ATI_EA_CVA    ), "PRRE_VT_STA_IND_SVA_ATI_EA_CVA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_ATI_EA_CVA_RNG), "PRRE_VT_STA_IND_SVA_ATI_EA_CVA_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_NV            ), "PRRE_VT_STA_IND_SVA_NV") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_NV_RNG        ), "PRRE_VT_STA_IND_SVA_NV_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_NV_CVA        ), "PRRE_VT_STA_IND_SVA_NV_CVA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_NV_CVA_RNG    ), "PRRE_VT_STA_IND_SVA_NV_CVA_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_NV_EA         ), "PRRE_VT_STA_IND_SVA_NV_EA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_NV_EA_RNG     ), "PRRE_VT_STA_IND_SVA_NV_EA_RNG") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_NV_EA_CVA     ), "PRRE_VT_STA_IND_SVA_NV_EA_CVA") &
+        assertTrue(PRREVertexTransfer::isVideoMemoryUsed(PRRE_VT_STA_IND_SVA_NV_EA_CVA_RNG ), "PRRE_VT_STA_IND_SVA_NV_EA_CVA_RNG");
     }
 
     bool testCtor()

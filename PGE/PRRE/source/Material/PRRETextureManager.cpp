@@ -1162,7 +1162,8 @@ void PRRETextureManager::WriteListCallback(const PRREManaged& mngd) const
 {
     PRREImageManager::WriteListCallback(mngd);
     PRRETexture& tex = (PRRETexture&) mngd;
-    getConsole().OIOLnOO("texture memory: %d kB; internal num.: %d", (int)ceil(tex.getUsedTextureMemory()/1024.0f), tex.pImpl->nInternalNum);
+    getConsole().OIOLnOO("int. num.: %d, MIPmaps: %d, texture memory: %d kB;",
+        tex.pImpl->nInternalNum, tex.getMIPmapCount(), (int)ceil(tex.getUsedTextureMemory()/1024.0f));
 } // WriteListCallback()
 
 

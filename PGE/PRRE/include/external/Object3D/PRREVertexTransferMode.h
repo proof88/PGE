@@ -190,6 +190,9 @@ public:
     /** Tells whether the given Vertex Transfer Mode means dynamic modifying habit. */
     static TPRREbool isVertexModifyingDynamic(TPRRE_VERTEX_TRANSFER_MODE vtrans);
 
+    /** Tells whether the given Vertex Transfer Mode uses VRAM. */
+    static TPRREbool isVideoMemoryUsed(TPRRE_VERTEX_TRANSFER_MODE vtrans);
+
     static TPRRE_VERTEX_TRANSFER_MODE selectVertexTransferMode(
         TPRRE_VERTEX_MODIFYING_HABIT vmod,
         TPRRE_VERTEX_REFERENCING_MODE vref,
