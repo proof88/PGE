@@ -214,6 +214,46 @@ TPRREuint PRREImage::PRREImageImpl::getUsedSystemMemory() const
 } // getUsedSystemMemory()
 
 
+/**
+    Acquires the resources and properties of the given PRREImage object, meaning that
+    the given image will lose the pixels and other resources.
+    This is a way of moving assets of an image to another image, MOVING, so no array copy is involved.
+
+    @return True on success, false on failure.
+*/
+TPRREbool PRREImage::PRREImageImpl::cannibalize(PRREImage& victim)
+{
+    // Note that we cannot easily copy victim's Impl since copy ctor and assignment operators are empty!
+    // Thus the following assignment cannot be used: *pImpl = *(victim.pImpl)
+    // We wouldn't even want to use copy ctor or assignment here since we do not want any array copy.
+    // That is why this function is written, to "steal" the arrays of the victim so victim will be "empty".
+    // In C++11 this could be done with a move ctor.
+
+    _pOwner->SetName(victim.getName());          // copy the Managed part
+    _pOwner->SetFilename(victim.getFilename());  // copy the FiledManaged part
+
+    nBits = victim.pImpl->nBits;
+    nWidth = victim.pImpl->nWidth;
+    nHeight = victim.pImpl->nHeight;
+    clrCompOrderOrig = victim.pImpl->clrCompOrderOrig;
+    clrCompOrder = victim.pImpl->clrCompOrder;
+    bUpsideDown = victim.pImpl->bUpsideDown;
+    bChanged = victim.pImpl->bChanged;
+    nSizePixels = victim.pImpl->nSizePixels;
+    pPixels = victim.pImpl->pPixels;
+
+    victim.pImpl->nBits = 0;
+    victim.pImpl->nWidth = 0;
+    victim.pImpl->nHeight = 0;
+    victim.pImpl->bChanged = true;
+    victim.pImpl->nSizePixels = 0;
+    victim.pImpl->pPixels = PGENULL;
+
+    return true;
+
+}
+
+
 // ############################## PROTECTED ##############################
 
 
@@ -853,46 +893,6 @@ PRREImage& PRREImage::operator=(const PRREImage&)
 {
     // UNUSED
     return *this;
-}
-
-
-/**
-    Acquires the resources and properties of the given PRREImage object, meaning that
-    the given image will lose the pixels and other resources.
-    This is a way of moving assets of an image to another image, MOVING, so no array copy is involved.
-
-    @return True on success, false on failure.
-*/
-TPRREbool PRREImage::cannibalize(PRREImage& victim)
-{
-    // Note that we cannot easily copy victim's Impl since copy ctor and assignment operators are empty!
-    // Thus the following assignment cannot be used: *(this->pImpl) = *(victim.pImpl)
-    // We wouldn't even want to use copy ctor or assignment here since we do not want any array copy.
-    // That is why this function is written, to "steal" the arrays of the victim so victim will be "empty".
-    // In C++11 this could be done with a move ctor.
-
-    SetName(victim.getName());          // copy the Managed part
-    SetFilename(victim.getFilename());  // copy the FiledManaged part
-
-    pImpl->nBits = victim.pImpl->nBits;
-    pImpl->nWidth = victim.pImpl->nWidth;
-    pImpl->nHeight = victim.pImpl->nHeight;
-    pImpl->clrCompOrderOrig = victim.pImpl->clrCompOrderOrig;
-    pImpl->clrCompOrder = victim.pImpl->clrCompOrder;
-    pImpl->bUpsideDown = victim.pImpl->bUpsideDown;
-    pImpl->bChanged = victim.pImpl->bChanged;
-    pImpl->nSizePixels = victim.pImpl->nSizePixels;
-    pImpl->pPixels = victim.pImpl->pPixels;
-
-    victim.pImpl->nBits = 0;
-    victim.pImpl->nWidth = 0;
-    victim.pImpl->nHeight = 0;
-    victim.pImpl->bChanged = true;
-    victim.pImpl->nSizePixels = 0;
-    victim.pImpl->pPixels = PGENULL;
-
-    return true;
-
 }
 
 

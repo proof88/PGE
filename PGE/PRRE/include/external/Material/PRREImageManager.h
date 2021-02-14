@@ -95,8 +95,6 @@ protected:
     PRREImage(const PRREImage&);
     PRREImage& operator=(const PRREImage&);
 
-    TPRREbool cannibalize(PRREImage& victim);
-
 private:
 
     class PRREImageImpl;
@@ -105,6 +103,7 @@ private:
     // ---------------------------------------------------------------------------
 
     friend class PRREImageManager;
+    friend class PRRETextureManager;
 }; // class PRREImage
 
 

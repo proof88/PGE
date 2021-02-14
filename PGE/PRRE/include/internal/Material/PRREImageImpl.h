@@ -60,6 +60,8 @@ public:
     
     virtual TPRREuint getUsedSystemMemory() const;  
 
+    TPRREbool cannibalize(PRREImage& victim);
+
 protected:
 
     // ---------------------------------------------------------------------------

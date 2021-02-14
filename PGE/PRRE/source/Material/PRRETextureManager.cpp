@@ -11,6 +11,7 @@
 #include "PRREbaseIncludes.h"  // PCH
 #include "../../include/external/Material/PRRETextureManager.h"
 #include "../../include/internal/Material/PRRETextureImpl.h"
+#include "../../include/internal/Material/PRREImageImpl.h"
 #include "../../include/external/Hardware/PRREhwInfo.h"
 #include "../../include/internal/PRREGLsafeFuncs.h"
 #include "../../include/internal/PRREGLsnippets.h"
@@ -856,7 +857,8 @@ PRRETexture* PRRETextureManager::createFromFile(const char* filename)
     try
     {
         texture = new PRRETexture(*tmpImg);
-        if ( !texture->cannibalize(*tmpImg) )
+        PRREImage* textureAsImage = (PRREImage*)texture;
+        if ( !textureAsImage->pImpl->cannibalize(*tmpImg) )
         {
             const std::string sErrMsg = "cannibalize() failed!";
             throw std::runtime_error(sErrMsg);
