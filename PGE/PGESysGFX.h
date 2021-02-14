@@ -16,7 +16,7 @@
 // #include "PURE/PURE.h"
 
 /**
-    This class doesn't use any API directly.
+    PR00F's Game Engine graphics handler class.
 */
 class PGESysGFX
 {

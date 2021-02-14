@@ -198,7 +198,6 @@ void PRREManaged::FlushResources()
 
 /**
     Gets the amount of allocated system memory for this managed.
-    Memory usage of owned managed objects are NOT calculated here.
 
     @return Amount of used system memory in Bytes.
 */
@@ -695,7 +694,7 @@ void PRREManager::WriteList() const
             getConsole().OLn("pManageds[%d] == PGENULL (free slot)", i);
     }
     getConsole().OLnOO("> total size of manageds = %d Bytes = %d kBytes = %d MBytes",
-                      nSysMemTotal, nSysMemTotal/1024, nSysMemTotal/1024/1024);
+                      nSysMemTotal, (int)ceil(nSysMemTotal/1024.0f), (int)ceil(nSysMemTotal/1024.0f/1024.0f));
     getConsole().OLn("");
 } // WriteList()
 

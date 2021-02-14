@@ -26,8 +26,6 @@ using namespace std;
 
 /**
     Managed loaded from / saved to a file.
-
-    This class doesn't use any API directly.
 */
 class PRREFiledManaged::PRREFiledManagedImpl
 {

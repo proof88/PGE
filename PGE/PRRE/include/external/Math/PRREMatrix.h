@@ -29,8 +29,6 @@ enum TPRRE_NOTABLE_MATRICES
 /**
     PRRE basic 4x4 matrix class.
     For 3D transformations, descendant PRRETransformMatrix class is recommended.
-
-    This class doesn't use any API directly.
 */
 class PRREMatrix
 {

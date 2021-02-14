@@ -18,7 +18,6 @@
 
 /**
     Incremental fixed-function hardware renderer path.
-    Uses OpenGL API.
     Only deviations from the original PRREIRenderer documentation are mentioned here.
 */
 class PRRERendererHWfixedPipe :

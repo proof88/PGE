@@ -16,8 +16,6 @@
 
 /**
     PRRE User Interface Windows Font class.
-
-    This class API usage?
 */
 class PRREuiFontWin :
     public PRREBaseClass

@@ -18,8 +18,6 @@
 
 /**
     PR00F's Game Engine World class.
-
-    This class doesn't use any API directly.
 */
 class PGEWorld
 {

@@ -33,8 +33,6 @@
 /**
     Our main window, this is where we render to.
     Only have one window, so it is singleton.
-
-    This class directly uses WinAPI.
 */
 class PRREWindow :
     public PRREBaseClass

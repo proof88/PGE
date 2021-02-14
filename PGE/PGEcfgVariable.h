@@ -36,8 +36,6 @@ enum TPGE_CFG_VARIABLE_TYPE
     PR00F's Game Engine cfg variable (cvar) class.
     This class can hold a value of an arbitrary type.
 
-    This class doesn't use any API directly.
-
 */
 class PGEcfgVariable
 {

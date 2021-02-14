@@ -41,8 +41,6 @@ enum TPRRE_ASPECTRATIO_MODE
 /**
     Camera class.
     Camera is the eye from where the scene is rendered onto the screen.
-
-    This class doesn't use any API directly.
 */
 
 class PRRECamera : 

@@ -18,8 +18,6 @@
 
 /**
     PRRE User Interface Text class.
-
-    This class API usage?
 */
 class PRREuiText
 {

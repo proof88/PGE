@@ -22,8 +22,6 @@ class CConsole;
     PRRE base class.
     Not all PRRE class must inherit from this class, but classes with more complex behavior
     and logging capability should use this as their base.
-
-    This class doesn't use any API directly.
 */
 class PRREBaseClass
 {

@@ -21,8 +21,6 @@ class PRREManager;
 /**
     Ancestor class for managed classes.
     Cannot be copied, because the copy should be inserted into the manager's array (and it's unnecessary to implement now).
-
-    This class doesn't use any API directly.
 */
 class PRREManaged :
     public PRREBaseClass
@@ -65,8 +63,6 @@ private:
 /**
     Ancestor class for manager classes.
     Copying is not available yet.
-
-    This class doesn't use any API directly.
 */
 class PRREManager :
     public PRREBaseClass

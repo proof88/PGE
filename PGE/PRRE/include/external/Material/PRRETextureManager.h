@@ -110,8 +110,6 @@ class PRRETextureManager;
 
 /**
     Texture-representing class.
-
-    This class directly uses OpenGL.
 */
 class PRRETexture :
     public PRREImage
@@ -184,7 +182,6 @@ private:
 
 /**
     Texture manager class.
-    This class doesn't use any API directly, just constant values from OpenGL.
 */
 class PRRETextureManager :
     public PRREImageManager

@@ -145,8 +145,6 @@ class PRREMaterialManager;
 
 /**
     Material class.
-
-    TODO: This class directly uses OpenGL?
 */
 class PRREMaterial :
     public PRREFiledManaged
@@ -235,8 +233,6 @@ private:
 
 /**
     Material manager class.
-
-    TODO: This class doesn't use any API directly, just constant values from OpenGL?
 */
 class PRREMaterialManager :
     public PRREFiledManager

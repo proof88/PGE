@@ -22,8 +22,6 @@ class PRREFiledManager;
 
 /**
     Managed loaded from / saved to a file.
-
-    This class doesn't use any API directly.
 */
 class PRREFiledManaged :
     public PRREManaged
@@ -61,8 +59,6 @@ private:
 
 /**
     Manager loading from / saving to a file.
-
-    This class doesn't use any API directly.
 */
 class PRREFiledManager :
     public PRREManager

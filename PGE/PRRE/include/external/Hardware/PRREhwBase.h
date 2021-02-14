@@ -17,8 +17,6 @@
 
 /**
     Base class for PRRE hardware classes.
-
-    This class doesn't use any API directly.
 */
 class PRREhwBase :
     public PRREBaseClass

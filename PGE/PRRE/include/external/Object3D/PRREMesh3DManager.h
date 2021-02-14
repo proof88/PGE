@@ -45,8 +45,6 @@ class SampleManagerForDescendantFromVertexTransfer;
      - first level (parent) has no geometry, owns submeshes,
      - second level meshes own geometry.
     This is why a Mesh is both a Managed and a Manager too: it is owned by Mesh3DManager but it owns its submeshes.
-
-    This class API usage TODO.
 */
 class PRREMesh3D :
     public PRREFiledManaged,
@@ -115,8 +113,6 @@ private:
 
 /**
     3D mesh manager class.
-
-    This class doesn't use any API directly, just constant values from OpenGL.
 */
 class PRREMesh3DManager :
     public PRREFiledManager

@@ -17,8 +17,6 @@
 
 /**
     PRRE central processor capabilities class.
-
-    This class doesn't use any API directly.
 */
 class PRREhwCentralProcessor :
     public PRREhwBase

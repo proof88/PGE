@@ -37,8 +37,6 @@ enum TPRRE_SHARED_SETTINGS
     This class is singleton, of course.
     IMPORTANT: the main PRRE object should initialize this class before any other class attempts
     to use it.
-
-    This class doesn't use any API directly.
 */
 class PRRESharedSettings :
     public PRREBaseClass

@@ -16,8 +16,6 @@
 
 /**
     PRRE video capabilities class.
-
-    This class directly uses WinAPI, OpenGL, WGL.
 */
 class PRREhwVideo :
     public PRREhwBase

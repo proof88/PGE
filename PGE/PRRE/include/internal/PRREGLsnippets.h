@@ -16,8 +16,6 @@
 
 /**
     PRRE useful functions for OpenGL.
-
-    This class directly uses OpenGL.
 */
 class PRREGLsnippets
 {

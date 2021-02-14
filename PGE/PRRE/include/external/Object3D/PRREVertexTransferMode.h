@@ -172,8 +172,6 @@ class PRREObject3D;
      - second level objects derive from level-2 VertexTransfer objects, particularly the submeshes of the level-1 mesh from where the level-1 VertexTransfer is also derived.
 
     The biggest addition of VertexTransfer to Mesh3D is the wide selection of vertex transfer modes and management of the related OpenGL resources such as vertex buffer objects.
-
-    This class directly uses OpenGL.
 */
 class PRREVertexTransfer :
     public PRREMesh3D 

@@ -14,7 +14,7 @@
 #include "PGEallHeaders.h"
 
 /**
-    This class doesn't use any API directly.
+    PR00F's Game Engine sound subsystem.
 */
 class PGESysSFX
 {

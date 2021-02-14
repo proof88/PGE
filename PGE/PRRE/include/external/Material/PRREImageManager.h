@@ -43,8 +43,6 @@ class PRREImageManager;
 
 /**
     Image class.
-
-    This class doesn't use any API directly.
 */
 class PRREImage :
     public PRREFiledManaged
@@ -109,8 +107,6 @@ private:
 
 /**
     Image manager class.
-
-    This class uses WinAPI directly.
 */
 class PRREImageManager :
     public PRREFiledManager

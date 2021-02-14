@@ -40,8 +40,6 @@ enum TPRRE_RENDERER
     The primary and main class of the graphics engine.
     Singleton, can be instantiated with static createAndGet().
     This initializes the engine.
-
-    This class directly uses WinAPI, OpenGL, WGL.
 */
 
 class PR00FsReducedRenderingEngine :

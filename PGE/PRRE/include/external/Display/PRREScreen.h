@@ -37,8 +37,6 @@ enum TPRRE_SCREEN_PF
 /**
     Screen handler class.
     Screen resolution, FSAA, etc ...
-
-    This class directly uses WinAPI and WGL.
 */
 class PRREScreen :
     public PRREBaseClass

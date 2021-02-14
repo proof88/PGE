@@ -18,8 +18,6 @@
 
 /**
     PGE mouse handling class.
-
-    This class directly uses WinAPI.
 */
 class PGEInputMouse
 {
@@ -74,8 +72,6 @@ public:
 
 /**
     PGE keyboard handling class.
-
-    This class doesn't use any API directly.
 */
 class PGEInputKeyboard
 {
@@ -98,8 +94,6 @@ public:
 
 /**
     PGE input handler class.
-
-    This class doesn't use any API directly.
 */
 class PGEInputHandler
 {

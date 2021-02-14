@@ -1584,8 +1584,6 @@ PRREMesh3D* PRREMesh3DManager::createBox(TPRREfloat a, TPRREfloat b, TPRREfloat 
         return PGENULL;
     }
 
-    
-
     getConsole().SOLnOO("> Box mesh created successfully!");
     getConsole().OLn("");
 

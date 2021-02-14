@@ -970,6 +970,7 @@ TPRREbool PRRETexture::uploadPixels()
 
 /**
     Gets the amount of allocated system memory for the texture (VRAM not included).
+    VRAM usage can be retrieved by getUsedTextureMemory().
     @return Amount of allocated system memory in Bytes.
 */
 TPRREuint PRRETexture::getUsedSystemMemory() const
@@ -980,6 +981,8 @@ TPRREuint PRRETexture::getUsedSystemMemory() const
 
 /**
     Gets the amount of VRAM allocated (considering compression, MIP mapping, etc...).
+    This does not include used system memory by the object itself, including possible cached pixel data.
+    Used system memory can be retrieved by getUsedSystemMemory().
     @return Amount of allocated video memory in Bytes.
 */
 TPRREuint PRRETexture::getUsedTextureMemory() const

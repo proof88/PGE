@@ -15,8 +15,6 @@
 
 /**
     PR00F's Game Engine World Time class.
-
-    This class doesn't use any API directly.
 */
 class PGEWorldTime
 {

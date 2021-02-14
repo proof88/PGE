@@ -61,6 +61,9 @@ public:
 
     void                  CopyScreenToTexture(PRRETexture& tex);
     
+    void PrintTexturesUnusedByMaterials() const;
+    void PrintMaterialsUnusedByMeshes() const;
+    void PrintMaterialsUnusedByObjects() const;
     void WriteStats() const;       
     void CheckConsistency() const;  
 
@@ -412,6 +415,152 @@ PRREIRenderer* PR00FsReducedRenderingEngineImpl::getRenderer() const
 }
 
 
+void PR00FsReducedRenderingEngineImpl::PrintTexturesUnusedByMaterials() const
+{
+    if ( !isInitialized() )
+        return;
+
+    const PRRETextureManager& texMgr = getTextureManager();
+    const PRREMaterialManager& matMgr = getMaterialManager();
+    
+    getConsole().OLn("List of Unused Textures (by checking Materials)");
+    getConsole().OLn("===============================================");
+
+    TPRREuint nUnusedTextures = 0;
+
+    for (TPRREint texi = 0; texi < texMgr.getCount(); texi++)
+    {
+        PRRETexture* tex = (PRRETexture*) texMgr.getAttachedAt(texi);
+        if ( !tex )
+            continue;
+
+        bool textureUsedByMaterial = false;
+        for (TPRREint mati = 0; !textureUsedByMaterial && (mati < matMgr.getCount()); mati++)
+        {
+            PRREMaterial* mat = (PRREMaterial*) matMgr.getAttachedAt(mati);
+            if ( !mat)
+                continue;
+
+            for (TPRREuint layeri = 0; !textureUsedByMaterial && (layeri < matMgr.getMaximumLayerCount()); layeri++)
+            {
+                if ( mat->getTexture(layeri) == tex )
+                    textureUsedByMaterial = true;
+            }
+        } // for mati
+        if ( !textureUsedByMaterial )
+        {
+            ++nUnusedTextures;
+            getConsole().OLn("Internal num.: %d, file name: %s", tex->getInternalNum(), tex->getFilename().c_str());
+        }
+    } // for texi
+
+    getConsole().OLn("%d Textures Found to be Unused by Checking %d Materials.", nUnusedTextures, matMgr.getCount());
+    getConsole().OLn("");
+} // PrintUnusedTextures()
+
+
+void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByMeshes() const
+{
+    if ( !isInitialized() )
+        return;
+
+    const PRREMesh3DManager& meshMgr = getMesh3DManager();
+    const PRREMaterialManager& matMgr = getMaterialManager();
+    
+    getConsole().OLn("List of Materials Unused by Meshes");
+    getConsole().OLn("==================================");
+
+    TPRREuint nUnusedMaterials = 0;
+
+    for (TPRREint mati = 0; mati < matMgr.getCount(); mati++)
+    {
+        PRREMaterial* mat = (PRREMaterial*) matMgr.getAttachedAt(mati);
+        if ( !mat )
+            continue;
+
+        bool matUsedByMesh = false;
+        for (TPRREint meshi = 0; !matUsedByMesh && (meshi < meshMgr.getCount()); meshi++)
+        {
+            PRREMesh3D* mesh = (PRREMesh3D*) meshMgr.getAttachedAt(meshi);
+            if ( !mesh)
+                continue;
+
+            if ( &(mesh->getMaterial(false)) == mat )
+                matUsedByMesh = true;
+            
+            for (TPRREint submeshi = 0; !matUsedByMesh && (submeshi < mesh->getCount()); submeshi++)
+            {
+                PRREMesh3D* submesh = (PRREMesh3D*) mesh->getAttachedAt(submeshi);
+                if ( !submesh)
+                    continue;
+
+                if ( &(submesh->getMaterial()) == mat )
+                    matUsedByMesh = true;
+            }
+        } // for meshi
+        if ( !matUsedByMesh )
+        {
+            ++nUnusedMaterials;
+            getConsole().OLn("Name: %s, file name: %s", mat->getName().c_str(), mat->getFilename().c_str());
+        }
+    } // for mati
+
+    getConsole().OLn("%d Materials Found to be Unused by checking %d Mesh3Ds.", nUnusedMaterials, meshMgr.getCount());
+    getConsole().OLn("");
+} // PrintMaterialsUnusedByMeshes()
+
+
+void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByObjects() const
+{
+    if ( !isInitialized() )
+        return;
+
+    const PRREObject3DManager& objMgr = getObject3DManager();
+    const PRREMaterialManager& matMgr = getMaterialManager();
+    
+    getConsole().OLn("List of Materials Unused by Object3Ds");
+    getConsole().OLn("=====================================");
+
+    TPRREuint nUnusedMaterials = 0;
+
+    for (TPRREint mati = 0; mati < matMgr.getCount(); mati++)
+    {
+        PRREMaterial* mat = (PRREMaterial*) matMgr.getAttachedAt(mati);
+        if ( !mat )
+            continue;
+
+        bool matUsedByObject3D = false;
+        for (TPRREint obji = 0; !matUsedByObject3D && (obji < objMgr.getCount()); obji++)
+        {
+            PRREObject3D* obj = (PRREObject3D*) objMgr.getAttachedAt(obji);
+            if ( !obj)
+                continue;
+
+            if ( &(obj->getMaterial(false)) == mat )
+                    matUsedByObject3D = true;
+            
+            for (TPRREint subobji = 0; !matUsedByObject3D && (subobji < obj->getCount()); subobji++)
+            {
+                PRREObject3D* subobj = (PRREObject3D*) obj->getAttachedAt(subobji);
+                if ( !subobj)
+                    continue;
+
+                if ( &(subobj->getMaterial()) == mat )
+                    matUsedByObject3D = true;
+            }
+        } // for obji
+        if ( !matUsedByObject3D )
+        {
+            ++nUnusedMaterials;
+            getConsole().OLn("Name: %s, file name: %s", mat->getName().c_str(), mat->getFilename().c_str());
+        }
+    } // for mati
+
+    getConsole().OLn("%d Materials Found to be Unused by checking %d Object3Ds.", nUnusedMaterials, objMgr.getCount());
+    getConsole().OLn("");
+} // PrintMaterialsUnusedByObjects()
+
+
 /**
     Invoke WriteList() of all children instances.
 */
@@ -426,7 +575,10 @@ void PR00FsReducedRenderingEngineImpl::WriteList() const
         getHardwareInfo().WriteStats();
         getImageManager().WriteList();
         getTextureManager().WriteList();
+        PrintTexturesUnusedByMaterials();
         getMaterialManager().WriteList();
+        PrintMaterialsUnusedByMeshes();
+        PrintMaterialsUnusedByObjects();
         getMesh3DManager().WriteList();
         getObject3DManager().WriteList();
         // getCamera() doesnt have such ...

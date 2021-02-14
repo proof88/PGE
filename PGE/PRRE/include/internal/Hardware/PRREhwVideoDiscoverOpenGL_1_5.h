@@ -16,8 +16,6 @@
 
 /**
     PRRE OpenGL 1.5 capabilities class.
-
-    This class does not use any API directly.
 */
 class PRREhwVideoDiscoverOpenGL_1_5 :
     public PRREhwVideoDiscoverOpenGLbase

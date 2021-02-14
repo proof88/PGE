@@ -55,8 +55,6 @@ class PRREObject3DManager;
     This is way a Object3D is both a Managed and a Manager too: it is owned by Object3DManager but it owns its subobjects.
 
     The biggest addition of Object3D to VertexTransfer is the renderability.
-
-    This class directly uses OpenGL.
 */
 class PRREObject3D :
     public PRREVertexTransfer
@@ -151,8 +149,6 @@ private:
 
 /**
     3D object manager class.
-
-    This class doesn't use any API directly, just constant values from OpenGL.
 */
 class PRREObject3DManager :
     public PRREMesh3DManager

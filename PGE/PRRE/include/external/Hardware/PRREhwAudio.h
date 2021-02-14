@@ -17,8 +17,6 @@
 
 /**
     PRRE audio capabilities class.
-
-    This class doesn't use any API directly.
 */
 class PRREhwAudio :
     public PRREhwBase

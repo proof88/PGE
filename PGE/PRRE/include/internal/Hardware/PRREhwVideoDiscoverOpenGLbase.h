@@ -22,8 +22,6 @@
 
 /**
     PRRE OpenGL capabilities base class.
-
-    This class does not use any API directly.
 */
 class PRREhwVideoDiscoverOpenGLbase :
     public PRREBaseClass

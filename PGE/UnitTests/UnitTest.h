@@ -97,9 +97,6 @@
             ...
 
         };
-
-
-    This class doesn't use any API directly.
 */
 
 class UnitTest

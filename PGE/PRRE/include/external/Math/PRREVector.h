@@ -20,8 +20,6 @@
     PRRE uses the left-handed Cartesian coordinate system.
     This means the XZ plane is horizontal, the XY and and YZ planes are vertical,
     a positive X value means right, a positive Y value means up, and a positive Z value means forward.
-
-    This class doesn't use any API directly.
 */
 class PRREVector
 {

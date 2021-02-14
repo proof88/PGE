@@ -26,8 +26,6 @@
 
 /**
     PRRE User Interface Manager class.
-
-    todo: This class API usage?
 */
 class PRREuiManager :
     public PRREBaseClass

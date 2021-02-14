@@ -17,8 +17,6 @@
 
 /**
     World Weather Cell class for PGEWorldWeather class.
-
-    This class doesn't use any API directly.
 */
 class WorldWeatherCell
 {
@@ -68,8 +66,6 @@ private:
 
 /**
     PR00F's Game Engine World Weather class.
-
-    This class doesn't use any API directly.
 */
 class PGEWorldWeather
 {

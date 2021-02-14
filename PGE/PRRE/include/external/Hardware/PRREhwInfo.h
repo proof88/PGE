@@ -21,8 +21,6 @@
 
 /**
     PRRE hardware information class.
-
-    This class doesn't use any API directly.
 */
 class PRREhwInfo :
     public PRREBaseClass

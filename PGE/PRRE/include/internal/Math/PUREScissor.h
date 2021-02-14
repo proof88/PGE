@@ -19,8 +19,6 @@
     Currently this class implements Cohen-Sutherland line clipping.
 
     Not following the Pimpl idiom here as there are no hidden members in this class for the outside world.
-
-    This class doesn't use any API directly.
 */
 class PUREScissor
 {

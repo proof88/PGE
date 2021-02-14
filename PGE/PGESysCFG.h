@@ -12,15 +12,13 @@
 */
 
 #include "PGEallHeaders.h"
-#include <shlobj.h>
 #include <map>
+#include <shlobj.h>
 #include "PGEcfgVariable.h"
 
 
 /**
     PR00F's Game Engine cfg file handler class.
-
-    This class directly uses WinAPI.
 */
 class PGESysCFG
 {

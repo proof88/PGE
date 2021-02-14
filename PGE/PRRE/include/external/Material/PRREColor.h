@@ -19,8 +19,6 @@
 
 /**
     PRRE color class.
-
-    This class doesn't use any API directly.
 */
 class PRREColor
 {

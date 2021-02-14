@@ -20,8 +20,6 @@
 
 /**
     PRRE class for PUT (position, up and target) vectors.
-
-    This class doesn't use any API directly.
 */
 class PRREPosUpTarget
 {

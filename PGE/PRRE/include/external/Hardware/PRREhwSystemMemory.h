@@ -17,8 +17,6 @@
 
 /**
     PRRE system memory info class.
-
-    This class directly uses WinAPI.
 */
 class PRREhwSystemMemory :
     public PRREhwBase

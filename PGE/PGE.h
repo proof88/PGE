@@ -37,8 +37,6 @@ enum PGE_MSG_ID
 
 /**
     PR00F's Game Engine main class.
-
-    This class uses WinAPI directly.
 */
 class PGE
 {
