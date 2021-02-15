@@ -635,6 +635,17 @@ void PRREObject3DManager::WriteList() const
     getConsole().OLnOI("");
     PRREMesh3DManager::WriteList();
     getConsole().OO();
+
+    TPRREuint nVRAMtotal = 0;
+    for (TPRREint i = 0; i < getSize(); i++)
+    {
+        const PRREObject3D* const pMngd = (PRREObject3D*) getAttachedAt(i);
+        if ( pMngd != PGENULL )
+            nVRAMtotal += pMngd->getUsedVideoMemory();
+    }
+
+    getConsole().OIOLnOO("> total used video memory = %d Bytes <= %d kBytes <= %d MBytes", nVRAMtotal, (int)(ceil(nVRAMtotal/1024.0f)), (int)(ceil(nVRAMtotal/1024.0f/1024.0f)));
+    getConsole().OLn("");
 } // WriteList()
 
 
@@ -666,7 +677,11 @@ void PRREObject3DManager::WriteListCallback(const PRREManaged& mngd) const
 {
     PRREMesh3DManager::WriteListCallback(mngd);
     const PRREObject3D& obj = (PRREObject3D&) mngd;
-    getConsole().OIOLnOO("xfer mode: %d, visible: %b", obj.getVertexTransferMode(), obj.isVisible());
+    getConsole().OIOLnOO("show: %b, xfer: %d, indexed: %b, vid mem: %d kB;",
+        obj.isVisible(),
+        obj.getVertexTransferMode(),
+        PRREVertexTransfer::isVertexReferencingIndexed(obj.getVertexTransferMode()),
+        (int)ceil(obj.getUsedVideoMemory()/1024.0f));
 } // WriteListCallback()
 
 

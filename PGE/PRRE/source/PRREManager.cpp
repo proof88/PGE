@@ -693,7 +693,7 @@ void PRREManager::WriteList() const
         else
             getConsole().OLn("pManageds[%d] == PGENULL (free slot)", i);
     }
-    getConsole().OLnOO("> total sys mem = %d Bytes = %d kBytes = %d MBytes",
+    getConsole().OLnOO("> total sys mem = %d Bytes <= %d kBytes <= %d MBytes",
                       nSysMemTotal, (int)ceil(nSysMemTotal/1024.0f), (int)ceil(nSysMemTotal/1024.0f/1024.0f));
     getConsole().OLn("");
 } // WriteList()

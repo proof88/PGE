@@ -410,7 +410,7 @@ void PRREImageManager::WriteListCallback(const PRREManaged& mngd) const
 {
     const PRREImage& img = (PRREImage&) mngd;
     PRREFiledManager::WriteListCallback(img);
-    getConsole().OIOLnOO("%dx%dx%d", img.getWidth(), img.getHeight(), img.getBitsPerPixels());
+    getConsole().OIOLnOO("%dx%dx%d bpp", img.getWidth(), img.getHeight(), img.getBitsPerPixels());
 } // WriteListCallback()
 
 

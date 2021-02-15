@@ -1135,7 +1135,7 @@ void PRRETextureManager::WriteList() const
             nVRAMtotal += pMngd->getUsedTextureMemory();
     }
 
-    getConsole().OIOLnOO("> total used texture memory = %d Bytes = %d kBytes = %d MBytes", nVRAMtotal, (int)(ceil(nVRAMtotal/1024.0f)), (int)(ceil(nVRAMtotal/1024.0f/1024.0f)));
+    getConsole().OIOLnOO("> total used texture memory = %d Bytes <= %d kBytes <= %d MBytes", nVRAMtotal, (int)(ceil(nVRAMtotal/1024.0f)), (int)(ceil(nVRAMtotal/1024.0f/1024.0f)));
     getConsole().OLn("");
 } // WriteList()
 
@@ -1162,8 +1162,10 @@ void PRRETextureManager::WriteListCallback(const PRREManaged& mngd) const
 {
     PRREImageManager::WriteListCallback(mngd);
     PRRETexture& tex = (PRRETexture&) mngd;
-    getConsole().OIOLnOO("int. num.: %d, MIPmaps: %d, texture memory: %d kB;",
-        tex.pImpl->nInternalNum, tex.getMIPmapCount(), (int)ceil(tex.getUsedTextureMemory()/1024.0f));
+    getConsole().OIOLnOO("id: %d, MIPmaps: %d, tex mem: %d kB;",
+        tex.pImpl->nInternalNum,
+        tex.getMIPmapCount(),
+        (int)ceil(tex.getUsedTextureMemory()/1024.0f));
 } // WriteListCallback()
 
 
