@@ -846,7 +846,7 @@ PRREObject3D::~PRREObject3D()
 
 
 /**
-    The details of this function are described in Mesh3D class.
+    The details of this function are described in VertexTransfer class.
     If this is a cloned object, the returned value is the same as the referred object's value.
 */
 TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::getVertexModifyingHabit() const
@@ -856,8 +856,8 @@ TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::getVertexModifyingHabit() const
 
 
 /**
-    The details of this function are described in Mesh3D class.
-    Same functionality as defined originally in Mesh3D but extended with a check for being a cloned object or not.
+    The details of this function are described in VertexTransfer class.
+    Same functionality as defined originally in VertexTransfer but extended with a check for being a cloned object or not.
     This function has no effect when called for a cloned object.
     @param vmod Vertex modifying habit to be set.
     @return     True on success, false otherwise, including if called for a cloned object.
@@ -869,7 +869,7 @@ TPRREbool PRREObject3D::setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmo
 
 
 /**
-    The details of this function are described in Mesh3D class.
+    The details of this function are described in VertexTransfer class.
     If this is a cloned object, the returned value is the same as the referred object's value.
 */
 TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::getVertexReferencingMode() const
@@ -879,8 +879,8 @@ TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::getVertexReferencingMode() const
 
  
 /**
-    The details of this function are described in Mesh3D class.
-    Same functionality as defined originally in Mesh3D but extended with a check for being a cloned object or not.
+    The details of this function are described in VertexTransfer class.
+    Same functionality as defined originally in VertexTransfer but extended with a check for being a cloned object or not.
     This function has no effect when called for a cloned object.
     @param  vref Vertex referencing mode to be set.
     @return      True on success, false otherwise, including if called for a cloned object.
@@ -892,7 +892,7 @@ TPRREbool PRREObject3D::setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE v
 
 
 /**
-    The details of this function are described in Mesh3D class.
+    The details of this function are described in VertexTransfer class.
     If this is a cloned object, the returned value is the same as the referred object's value.
 */
 TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::getVertexTransferMode() const
@@ -902,8 +902,8 @@ TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::getVertexTransferMode() const
 
 
 /**
-    The details of this function are described in Mesh3D class.
-    Same functionality as defined originally in Mesh3D but extended with a check for being a cloned object or not.
+    The details of this function are described in VertexTransfer class.
+    Same functionality as defined originally in VertexTransfer but extended with a check for being a cloned object or not.
     This function has no effect when called for a cloned object.
     @param  vtrans Vertex referencing mode to be set.
     @return        True on success, false otherwise, including if called for a cloned object.
@@ -1313,6 +1313,23 @@ TPRREuint PRREObject3D::getUsedSystemMemory() const
         PRREVertexTransfer::getUsedSystemMemory() - sizeof(PRREVertexTransfer) + 
         sizeof(*this) + pImpl->getUsedSystemMemory();
 } // getUsedSystemMemory()
+
+
+/**
+    The details of this function are described in VertexTransfer class.
+    If this is a cloned object, the returned value is 0.
+
+    @return Amount of allocated video memory in Bytes for storing geometry of the underlying mesh, including all subobjects.
+            0 is returned if this is a cloned object.
+*/
+TPRREuint PRREObject3D::getUsedVideoMemory() const
+{
+    // cloned object must report 0
+    if ( getReferredObject() )
+        return 0;
+    
+    return PRREVertexTransfer::getUsedVideoMemory(); 
+} // getUsedVideoMemory()
 
 
 /**

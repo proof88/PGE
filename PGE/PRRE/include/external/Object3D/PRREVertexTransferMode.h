@@ -210,6 +210,7 @@ public:
     virtual TPRREbool setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);     /**< Sets vertex transfer mode. */
 
     virtual TPRREuint getUsedSystemMemory() const;    /**< Gets the amount of allocated system memory. */
+    virtual TPRREuint getUsedVideoMemory() const;     /**< Gets the amount of allocated video memory. */
 
 protected:
 

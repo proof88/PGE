@@ -371,11 +371,16 @@ void PRREVertexTransfer::PRREVertexTransferImpl::TransferVertices()
         /* there is no array for geometry, so we either invoke a display list or pass vertices 1-by-1 */
 
         if ( PRREVertexTransfer::isVertexModifyingDynamic( getVertexTransferMode() ) )
+        {
             // PRRE_VT_DYN_..._1_BY_1
             ProcessGeometry( PRREVertexTransfer::isVertexReferencingIndexed( getVertexTransferMode() ) );
+        }
         else
+        {
             // PRRE_VT_STA_..._DL
+            assert(nDispList > 0);
             glCallList( nDispList );
+        }
 
         return;
     } // PRRE_VT_VA_BIT == 0u
@@ -509,6 +514,7 @@ void PRREVertexTransfer::PRREVertexTransferImpl::ProcessGeometry(TPRREbool index
             {
                 if ( _pOwner->getMaterial(false).isMultiTextured() )
                 {
+                    assert(pTexcoords2 != NULL);
                     const TUVW& uvw2 = indexed ? pTexcoords2[ _pOwner->getVertexIndex(i) ] : pTexcoords2[i];
                     glMultiTexCoord2fARB(GL_TEXTURE0_ARB, uvw.u, uvw.v);
                     glMultiTexCoord2fARB(GL_TEXTURE1_ARB, uvw2.u, uvw2.v);
@@ -1104,13 +1110,78 @@ TPRREbool PRREVertexTransfer::setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE v
 
 /**
     Gets the amount of allocated system memory.
+    Level-1 (parent) objects summarize the memory usage of their level-2 subobjects and include it in the returned value.
 
     @return Amount of allocated system memory in Bytes.
 */
 TPRREuint PRREVertexTransfer::getUsedSystemMemory() const
 {
-    return sizeof(*this) + pImpl->getUsedSystemMemory();
+    TPRREuint sumSubObjectMemoryUsage = 0;
+    for (TPRREint i = 0; i < getSize(); i++)
+    {
+        if ( getAttachedAt(i) == PGENULL )
+            continue;
+        sumSubObjectMemoryUsage += getAttachedAt(i)->getUsedSystemMemory();
+    }
+    return sumSubObjectMemoryUsage +
+        PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) +
+        PRREMesh3D::getUsedSystemMemory() - sizeof(PRREMesh3D) +
+        sizeof(*this) + pImpl->getUsedSystemMemory();
 } // getUsedSystemMemory()
+
+
+/**
+    Gets the amount of allocated video memory.
+    This function considers only the rough required video memory for storing the geometry of its underlying mesh.
+    This function doesn't consider any related textures in video memory that might be associated with the Material of this
+    object or its subobjects. 
+    Level-1 (parent) objects summarize the video memory usage of their level-2 subobjects and include it in the returned value.
+
+    @return Amount of allocated video memory in Bytes for storing geometry of the underlying mesh, including all subobjects.
+*/
+TPRREuint PRREVertexTransfer::getUsedVideoMemory() const
+{   
+    // level-2 objects' vertex transfer mode might or might not be set, but anyway, always the transfer mode of their owner level-1 object counts!
+    const TPRRE_VERTEX_TRANSFER_MODE& transferMode =
+        isLevel1() ?
+        getVertexTransferMode() :
+        ((PRREVertexTransfer*)getManager())->getVertexTransferMode();
+
+    if ( !PRREVertexTransfer::isVideoMemoryUsed(transferMode) )
+        return 0;
+
+    TPRREuint sumSubObjectMemoryUsage = 0;
+    for (TPRREint i = 0; i < getSize(); i++)
+    {
+        const PRREVertexTransfer* const subobj = (PRREVertexTransfer*) getAttachedAt(i);
+        if ( subobj == PGENULL )
+            continue;
+        sumSubObjectMemoryUsage += subobj->getUsedVideoMemory();
+    }
+
+    // VBO or display list, it doesn't matter, we always calculate with vertices, normals, colors, and 1 or 2 texture uvw arrays,
+    // since these are together always specified for both VBO and display lists.
+    // However, in case of VBO, we also add index (element) array if it is indexed rendering
+   
+    TPRREuint thisObjectVideoMemoryUsage = getVerticesCount(false) * sizeof(TXYZ) * 2 /* *2 because of we have normals too */ +
+        getMaterial(false).getColorsCount() * sizeof(TRGBAFLOAT) +
+        getMaterial(false).getTexcoordsCount() * sizeof(TUVW);
+
+    if ( getMaterial(false).getTexcoords(1) != PGENULL )
+    {
+        thisObjectVideoMemoryUsage += getMaterial(false).getTexcoordsCount(1) * sizeof(TUVW);
+    }
+    
+    if ( (BIT_READ(transferMode, PRRE_VT_SVA_BIT) == 1u) )
+    {
+        if ( pImpl->nIndicesVBO != 0 )
+        {
+            thisObjectVideoMemoryUsage += getVertexIndicesCount(false) * PRREGLsnippets::getSizeofIndexType(getVertexIndicesType());
+        }
+    }
+
+    return sumSubObjectMemoryUsage + thisObjectVideoMemoryUsage;
+} // getUsedVideoMemory()
 
 
 // ############################## PROTECTED ##############################

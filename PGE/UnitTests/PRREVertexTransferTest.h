@@ -207,6 +207,7 @@ protected:
         AddSubTest("testGetVertexTransferMode", (PFNUNITSUBTEST) &PRREVertexTransferTest::testGetVertexTransferMode);
         AddSubTest("testSetVertexTransferMode", (PFNUNITSUBTEST) &PRREVertexTransferTest::testSetVertexTransferMode);
         AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PRREVertexTransferTest::testGetUsedSystemMemory);
+        AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PRREVertexTransferTest::testGetUsedVideoMemory);
     }
 
     virtual bool setUp()
@@ -497,7 +498,7 @@ private:
         l &= assertTrue(meshFromFile->setVertexTransferMode( meshFromFile->getVertexTransferMode() ), "set sva meshFromFile 1"); // intentionally testing setting to the same
         l &= assertEquals(vtExpectedObjFromFile, meshFromFile->getVertexTransferMode(), "sva meshFromFile 1");
 
-        // make sure the mode of the 2 meshes is not just simple (PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT) (1by1 immediate mode)
+        // make sure the mode of the 2 meshes is not just basic (PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT) (1by1 immediate mode)
         l &= assertNotEquals(PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT, mesh->getVertexTransferMode(), "mesh not dir 1by1");
         l &= assertNotEquals(PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT, meshFromFile->getVertexTransferMode(), "meshFromFile not dir 1by1");
 
@@ -594,6 +595,18 @@ private:
     {
         return assertGreater(mesh->getUsedSystemMemory(),          sizeof(SampleDescendantFromVertexTransfer), "mesh") &
                assertGreater(meshFromFile->getUsedSystemMemory(),  sizeof(SampleDescendantFromVertexTransfer), "meshFromFile");
+    }
+
+    bool testGetUsedVideoMemory()
+    {
+        // by default the created objects should eat video memory
+        bool l = assertGreater(mesh->getUsedVideoMemory(),    (TPRREuint) 0, "mesh") &
+            assertGreater(meshFromFile->getUsedVideoMemory(), (TPRREuint) 0, "meshFromFile");
+        
+        l &= assertTrue(mesh->setVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT ), "set mesh basic");
+        l &= assertEquals(mesh->getUsedVideoMemory(), (TPRREuint) 0, "mesh after set");
+
+        return l;
     }
    
 }; // class PRREVertexTransferTest

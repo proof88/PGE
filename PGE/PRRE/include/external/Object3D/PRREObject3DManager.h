@@ -122,6 +122,7 @@ public:
     void      SetStickedToScreen(TPRREbool value);        /**< Sets the sticked-to-screen state. */ 
 
     virtual TPRREuint getUsedSystemMemory() const;    /**< Gets the amount of allocated system memory. */
+    virtual TPRREuint getUsedVideoMemory() const;     /**< Gets the amount of allocated video memory. */
 
     void Draw(bool bLighting);          /**< Draws the object. */
 

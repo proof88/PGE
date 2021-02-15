@@ -94,6 +94,7 @@ protected:
         AddSubTest("testIsStickedToScreen", (PFNUNITSUBTEST) &PRREObject3DTest::testIsStickedToScreen);
         AddSubTest("testSetStickedToScreen", (PFNUNITSUBTEST) &PRREObject3DTest::testSetStickedToScreen);
         AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PRREObject3DTest::testGetUsedSystemMemory);
+        AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PRREObject3DTest::testGetUsedVideoMemory);
 
         // since Object3D became a Manager also, we should test these capabalities here as well for possible changed behavior
         AddSubTest("testGetCount", (PFNUNITSUBTEST) &PRREObject3DTest::testGetCount);
@@ -789,6 +790,24 @@ private:
                assertGreater(objPlane->getUsedSystemMemory(),     sizeof(PRREObject3D), "plane") &
                assertGreater(objBox->getUsedSystemMemory(),       sizeof(PRREObject3D), "box") &
                assertGreater(objCube->getUsedSystemMemory(),      sizeof(PRREObject3D), "cube");
+    }
+
+    bool testGetUsedVideoMemory()
+    {
+        // cloned object must report 0
+        PRREObject3D* const objCloned = om->createCloned( *obj );
+        if ( !objCloned )
+        {
+            return assertNotNull(objCloned, "objCloned is NULL");
+        }
+
+        // by default the created objects should eat video memory
+        return assertEquals(objCloned->getUsedVideoMemory(), (TPRREuint) 0, "objCloned") &
+            assertGreater(obj->getUsedVideoMemory(),         (TPRREuint) 0, "obj") &
+            assertGreater(objFromFile->getUsedVideoMemory(), (TPRREuint) 0, "objFromFile") &
+            assertGreater(objPlane->getUsedVideoMemory(),    (TPRREuint) 0, "plane") &
+            assertGreater(objBox->getUsedVideoMemory(),      (TPRREuint) 0, "box") &
+            assertGreater(objCube->getUsedVideoMemory(),     (TPRREuint) 0, "cube");
     }
 
     bool testGetCount()
