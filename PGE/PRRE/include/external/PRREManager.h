@@ -88,7 +88,7 @@ public:
     void         DeleteAttachedInstance(PRREManaged& m);  /**< Removes the given managed from the manager and destructs it. */
     void         DeleteAll();                             /**< Removes and destructs every managed element in the manager. */
     virtual
-    TPRREuint    getUsedSystemMemoryTotal() const;        /**< Gets the amount of allocated system memory for all manageds owner by this manager. */
+    TPRREuint    getUsedSystemMemory() const;        /**< Gets the amount of allocated system memory for all manageds owner by this manager. */
     virtual void WriteList() const;                       /**< Writes a list of managed objects to the console. */
 
 protected:

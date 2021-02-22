@@ -249,7 +249,7 @@ public:
     void         Detach(PRREManaged& m);                  
     void         DeleteAttachedInstance(PRREManaged& m);  
     void         DeleteAll();   
-    TPRREuint    getUsedSystemMemoryTotal() const;
+    TPRREuint    getUsedSystemMemory() const;
 
 protected:
 
@@ -412,7 +412,7 @@ void PRREManager::PRREManagerImpl::DeleteAll()
 } // DeleteAll()
 
 
-TPRREuint PRREManager::PRREManagerImpl::getUsedSystemMemoryTotal() const
+TPRREuint PRREManager::PRREManagerImpl::getUsedSystemMemory() const
 {
     TPRREuint sum = 0;
     for (TPRREint i = 0; i < getSize(); i++)
@@ -423,7 +423,7 @@ TPRREuint PRREManager::PRREManagerImpl::getUsedSystemMemoryTotal() const
         sum += pManageds[i]->getUsedSystemMemory();
     }
     return sum;
-} // getUsedSystemMemoryTotal()
+} // getUsedSystemMemory()
 
 
 // ############################## PROTECTED ##############################
@@ -686,10 +686,10 @@ void PRREManager::DeleteAll()
 } // DeleteAll()
 
 
-TPRREuint PRREManager::getUsedSystemMemoryTotal() const
+TPRREuint PRREManager::getUsedSystemMemory() const
 {
-    return pImpl->getUsedSystemMemoryTotal();
-} // getUsedSystemMemoryTotal()
+    return pImpl->getUsedSystemMemory();
+} // getUsedSystemMemory()
 
 
 /**
@@ -699,7 +699,7 @@ void PRREManager::WriteList() const
 {
     getConsole().OLn("PRREManager::WriteList()");
     getConsole().OLn("========================");
-    const TPRREuint nSysMemTotal = getUsedSystemMemoryTotal();
+    const TPRREuint nSysMemTotal = getUsedSystemMemory();
 
     getConsole().OIOLn("total slots == %d, # of manageds == %d", getSize(), getCount());
     for (TPRREint i = 0; i < getSize(); i++)

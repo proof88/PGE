@@ -180,7 +180,7 @@ private:
         mgr.Attach(*mgd1);
         mgr.Attach(*mgd2);
 
-        return assertGequals(mgr.getUsedSystemMemoryTotal(), mgd1->getUsedSystemMemory() + mgd2->getUsedSystemMemory());
+        return assertGequals(mgr.getUsedSystemMemory(), mgd1->getUsedSystemMemory() + mgd2->getUsedSystemMemory());
     }
 
     bool testWriteList()
