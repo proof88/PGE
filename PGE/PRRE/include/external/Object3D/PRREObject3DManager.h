@@ -202,6 +202,8 @@ public:
 
     PRREObject3D* createCloned(PRREObject3D& referredobj);       /**< Creates a new object by cloning an already existing object. */
 
+    TPRREuint    getUsedVideoMemory() const;                     /**< Gets the amount of allocated video memory for all objects owner by this manager. */
+
     virtual void WriteList() const;
 
 protected:

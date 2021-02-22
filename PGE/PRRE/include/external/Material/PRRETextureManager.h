@@ -121,7 +121,7 @@ class PRRETexture :
 public:
     virtual ~PRRETexture();
     
-    TPRRE_TEX_FORMAT getInternalFormat() const;    /**< Gets the internal texture format. */
+    TPRRE_TEX_FORMAT getInternalFormat() const;    /**< Gets the internal texture format, including compression mode. */
     TPRREuint        getInternalNum() const;       /**< Gets the internal texture ID. */
     
     TPRRE_ISO_TEX_FILTERING getMinFilteringMode() const;  /**< Gets the isotropic filtering mode when zooming out (1 texel < 1 pixel). */

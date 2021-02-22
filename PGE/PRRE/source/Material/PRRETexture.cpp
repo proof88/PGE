@@ -494,7 +494,6 @@ PRRETexture::PRRETextureImpl::PRRETextureImpl(PRRETexture* owner, const PRREImag
     filtAniso  = PRRE_ANISO_1X;
     nInternalNum = 0;
     nMIPmapCount = 1;
-    texCompr = PRRE_TC_NONE;
     bBorder = false;
     twS = PRRE_TW_REPEAT;
     twT = PRRE_TW_REPEAT;
@@ -876,6 +875,7 @@ TPRREbool PRRETexture::setAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING filtering
 
 /**
     Gets the texture wrapping mode for S coordinates.
+    @return Texture wrapping mode for S coordinates.
 */
 TPRRE_TEX_WRAPPING PRRETexture::getTextureWrappingModeS() const
 {
@@ -884,7 +884,8 @@ TPRRE_TEX_WRAPPING PRRETexture::getTextureWrappingModeS() const
 
 
 /**
-    Gets the texture wrapping mode for S coordinates.
+    Gets the texture wrapping mode for T coordinates.
+    @return Texture wrapping mode for T coordinates.
 */
 TPRRE_TEX_WRAPPING PRRETexture::getTextureWrappingModeT() const
 {
@@ -906,6 +907,7 @@ TPRREbool PRRETexture::setTextureWrappingMode(TPRRE_TEX_WRAPPING tw_s, TPRRE_TEX
 
 /**
     Gets the border state.
+    @return Texture border state: true if has border, false otherwise.
 */
 TPRREbool PRRETexture::getBorder() const
 {
@@ -928,6 +930,7 @@ TPRREbool PRRETexture::setBorder(TPRREbool state)
 /**
     Gets color of the border.
     Texture border color is by default black.
+    @return Texture border color.
 */
 const PRREColor& PRRETexture::getBorderColor() const
 {

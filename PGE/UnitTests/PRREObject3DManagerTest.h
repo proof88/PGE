@@ -44,6 +44,7 @@ protected:
         AddSubTest("testCreateCube", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreateCube);
         AddSubTest("testCreateFromFile", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreateFromFile);
         AddSubTest("testCreateCloned", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreateCloned);
+        AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testGetUsedVideoMemory);
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testWriteList);
     }
 
@@ -250,6 +251,24 @@ private:
             assertFalse(objCloned->isVisible(), "visible") &
             assertTrue(objCloned->isWireframed(), "wireframed") &
             assertTrue(objCloned->isWireframedCulled(), "wireframeculled");
+    }
+
+    bool testGetUsedVideoMemory()
+    {
+        const PRREObject3D* const plane = om->createPlane(1.0f, 2.0f);
+        const PRREObject3D* const box = om->createBox(1.0f, 2.0f, 3.0f);
+
+        if ( !assertNotNull(plane, "plane not null"))
+        {
+            return false;
+        }
+
+        if ( !assertNotNull(box, "box not null"))
+        {
+            return false;
+        }
+
+        return assertEquals(om->getUsedVideoMemory(), plane->getUsedVideoMemory() + box->getUsedVideoMemory());
     }
 
     bool testWriteList()

@@ -60,7 +60,7 @@ public:
             TPRRE_TEX_WRAPPING tw_s,
             TPRRE_TEX_WRAPPING tw_t );
 
-          TPRREbool  getBorder() const;
+    TPRREbool        getBorder() const;
     TPRREbool        setBorder(TPRREbool state);
     const PRREColor& getBorderColor() const;
     TPRREbool        setBorderColor(const PRREColor& clr);

@@ -36,6 +36,7 @@ public:
         AddSubTest("testDetach", (PFNUNITSUBTEST) &PRREManagerTest::testDetach);
         AddSubTest("testDeleteAttachedInstance", (PFNUNITSUBTEST) &PRREManagerTest::testDeleteAttachedInstance);
         AddSubTest("testDeleteAll", (PFNUNITSUBTEST) &PRREManagerTest::testDeleteAll);
+        AddSubTest("testGetUsedSystemMemoryTotal", (PFNUNITSUBTEST) &PRREManagerTest::testGetUsedSystemMemoryTotal);
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRREManagerTest::testWriteList);
     } // PRREManagerTest()
 
@@ -170,6 +171,16 @@ private:
         l &= assertEquals(0, mgr.getCount(), "getCount 2");
 
         return l;
+    }
+
+    bool testGetUsedSystemMemoryTotal()
+    {
+        PRREManager mgr;
+        PRREManaged* const mgd1 = new PRREManaged(), * const mgd2 = new PRREManaged();
+        mgr.Attach(*mgd1);
+        mgr.Attach(*mgd2);
+
+        return assertGequals(mgr.getUsedSystemMemoryTotal(), mgd1->getUsedSystemMemory() + mgd2->getUsedSystemMemory());
     }
 
     bool testWriteList()
