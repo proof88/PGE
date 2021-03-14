@@ -28,7 +28,7 @@ using namespace std;
 
 PRREMesh3D::PRREMesh3DImpl::~PRREMesh3DImpl()
 {
-    getConsole().OLnOI("~PRREMesh3DImpl() ...");
+    _pOwner->getManagedConsole().OLnOI("~PRREMesh3DImpl() ...");
 
     delete[] pVertices;
     delete[] pNormals;
@@ -42,7 +42,7 @@ PRREMesh3D::PRREMesh3DImpl::~PRREMesh3DImpl()
 
     _pOwner->DeleteAll();
 
-    getConsole().SOLnOO("Done!");
+    _pOwner->getManagedConsole().SOLnOO("Done!");
 } // ~PRRETexture()
 
 
@@ -144,14 +144,14 @@ TPRREuint PRREMesh3D::PRREMesh3DImpl::getVertexIndex(TPRREuint index, TPRREbool 
 
     if ( (index >= nVertexIndices_h) || (index > nMaxVertexIndex) || (index < nMinVertexIndex) )
     {
-        getConsole().EOLn("getVertexIndex(%d) out of range: nVertexIndices_h: %d, nMinVertexIndex: %d, nMaxVertexIndex: %d!",
+        _pOwner->getManagedConsole().EOLn("getVertexIndex(%d) out of range: nVertexIndices_h: %d, nMinVertexIndex: %d, nMaxVertexIndex: %d!",
             index, nVertexIndices_h, nMinVertexIndex, nMaxVertexIndex);
         return 0;
     }
 
     if ( !pVertexIndices )
     {
-        getConsole().EOLn("getVertexIndex(%d) pVertexIndices is NULL! Range looks ok though: nVertexIndices_h: %d, nMinVertexIndex: %d, nMaxVertexIndex: %d!",
+        _pOwner->getManagedConsole().EOLn("getVertexIndex(%d) pVertexIndices is NULL! Range looks ok though: nVertexIndices_h: %d, nMinVertexIndex: %d, nMaxVertexIndex: %d!",
             index, nVertexIndices_h, nMinVertexIndex, nMaxVertexIndex);
         return 0;
     }
@@ -230,7 +230,7 @@ void PRREMesh3D::PRREMesh3DImpl::RecalculateSize()
     // as level-2 in theory we have geometry but check it for sure
     if ( (nVertices_h == 0) || (pVertices == PGENULL) )
     {
-        getConsole().EOLn("PRREMesh3D::PRREMesh3DImpl::RecalculateSize() in level-2 but vertex data is not present!");
+        _pOwner->getManagedConsole().EOLn("PRREMesh3D::PRREMesh3DImpl::RecalculateSize() in level-2 but vertex data is not present!");
         return;
     }
 
@@ -317,7 +317,7 @@ TPRREbool PRREMesh3D::PRREMesh3DImpl::cannibalize(PRREMesh3D& victim)
     // we should not have any submesh at this point, and no geometry yet
     if ( (_pOwner->getCount() != 0) || (pVertices != PGENULL) || (nVertices_h > 0) )
     {
-        getConsole().EOLn(
+        _pOwner->getManagedConsole().EOLn(
             "PRREMesh3D::cannibalize() ERROR: cannibalizer has non-zero managed count (%d) or has geometry (%d)!", _pOwner->getCount(), nVertices_h);
         return false;
     }
@@ -370,7 +370,7 @@ TPRREbool PRREMesh3D::PRREMesh3DImpl::cannibalize(PRREMesh3D& victim)
 PRREMesh3D::PRREMesh3DImpl::PRREMesh3DImpl(PRREMesh3D* owner, TPRRE_PRIMITIVE_FORMAT prfmt)
 {
     _pOwner = owner;
-    getConsole().OLnOI("PRREMesh3DImpl() ...");
+    _pOwner->getManagedConsole().OLnOI("PRREMesh3DImpl() ...");
 
     primitiveFormat = prfmt;
     pVertices = PGENULL;
@@ -387,7 +387,7 @@ PRREMesh3D::PRREMesh3DImpl::PRREMesh3DImpl(PRREMesh3D* owner, TPRRE_PRIMITIVE_FO
 
     pMaterial = PGENULL;
 
-    getConsole().SOLnOO("Done!");
+    _pOwner->getManagedConsole().SOLnOO("Done!");
 } // PRREMesh3D()
 
 
@@ -452,7 +452,7 @@ TPRREbool PRREMesh3D::PRREMesh3DImpl::setVertexIndex(TPRREuint index, TPRREuint 
 {
     if ( (index >= nVertexIndices_h) || (index > nMaxVertexIndex) || (index < nMinVertexIndex) )
     {
-        getConsole().EOLn("setVertexIndex(%d) out of range: nVertexIndices_h: %d, nMinVertexIndex: %d, nMaxVertexIndex: %d!",
+        _pOwner->getManagedConsole().EOLn("setVertexIndex(%d) out of range: nVertexIndices_h: %d, nMinVertexIndex: %d, nMaxVertexIndex: %d!",
             index, nVertexIndices_h, nMinVertexIndex, nMaxVertexIndex);
         return false;
     }
@@ -462,18 +462,6 @@ TPRREbool PRREMesh3D::PRREMesh3DImpl::setVertexIndex(TPRREuint index, TPRREuint 
 
 
 // ############################### PRIVATE ###############################
-
-
-/**
-    Hack to be able to use CConsole singleton instance instead of owner's protected console instance.
-    TODO: maybe the whole getConsole() stuff should be removed from everywhere because CConsole is a singleton class after all.
-          Or maybe not, maybe this is pretty useful for per-manager filtering, because this way we can pass a manager handle to
-          the static getConsoleInstance() function that returns a manager-specific instance!
-*/
-CConsole& PRREMesh3D::PRREMesh3DImpl::getConsole() const
-{
-    return CConsole::getConsoleInstance();
-}
 
 
 /*

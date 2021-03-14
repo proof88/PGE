@@ -32,6 +32,8 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    CConsole& getConsole() const;
+
     void WriteStats();
 
 protected:
@@ -65,6 +67,12 @@ PRREhwAudioImpl& PRREhwAudioImpl::get()
 {
     return hwAudioInstance;
 } // get()
+
+
+CConsole& PRREhwAudioImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRREhwAudio");
+} // getConsole()
 
 
 /**

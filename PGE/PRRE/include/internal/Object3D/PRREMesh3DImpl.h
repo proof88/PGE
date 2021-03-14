@@ -87,8 +87,6 @@ private:
     PRREMaterial* pMaterial;        /**< Pointer to material. */
 
     // ---------------------------------------------------------------------------
-
-    CConsole& getConsole() const;               /**< Hack to be able to use CConsole singleton instance instead of owner's protected console instance. */
    
     friend class PRREMesh3D;
     friend class PRREMesh3DManager;

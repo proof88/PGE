@@ -31,6 +31,8 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    CConsole& getConsole() const;
+
     void      Initialize(
         HGLRC rc, HDC wnd_dc,
         TPRREuint nResX, TPRREuint nResY,
@@ -83,6 +85,12 @@ PRREhwInfoImpl& PRREhwInfoImpl::get()
 {
     return hwInfoInstance;
 } // get()
+
+
+CConsole& PRREhwInfoImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRREhwInfo");
+} // getConsole()
 
 
 /**

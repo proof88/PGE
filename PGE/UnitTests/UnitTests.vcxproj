@@ -216,7 +216,6 @@
     <ClInclude Include="..\PRRE\include\external\Object3D\PRREVertexTransferMode.h" />
     <ClInclude Include="..\PRRE\include\external\PR00FsReducedRenderingEngine.h" />
     <ClInclude Include="..\PRRE\include\external\PRREallHeaders.h" />
-    <ClInclude Include="..\PRRE\include\external\PRREBaseClass.h" />
     <ClInclude Include="..\PRRE\include\external\PRRECamera.h" />
     <ClInclude Include="..\PRRE\include\external\PRREFiledManager.h" />
     <ClInclude Include="..\PRRE\include\external\PRREManager.h" />
@@ -232,7 +231,6 @@
     <ClInclude Include="PGESysCFGTest.h" />
     <ClInclude Include="PR00FsReducedRenderingEngineTest.h" />
     <ClInclude Include="PR00FsReducedRenderingEngineTest2.h" />
-    <ClInclude Include="PRREBaseClassTest.h" />
     <ClInclude Include="PRRECameraTest.h" />
     <ClInclude Include="PRREColorTest.h" />
     <ClInclude Include="PRREFiledManagedTest.h" />

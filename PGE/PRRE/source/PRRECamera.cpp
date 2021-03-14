@@ -263,6 +263,11 @@ PRRECamera::~PRRECamera()
     pImpl = NULL;
 }
 
+CConsole& PRRECamera::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRRECamera");
+} // getConsole()
+
 /**
     Gets camera viewport.
 */

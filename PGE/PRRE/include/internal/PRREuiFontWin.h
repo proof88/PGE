@@ -12,13 +12,11 @@
 */
 
 #include "../external/PRREallHeaders.h"
-#include "../../include/external/PRREBaseClass.h"
 
 /**
     PRRE User Interface Windows Font class.
 */
-class PRREuiFontWin :
-    public PRREBaseClass
+class PRREuiFontWin
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRREuiFontWin is included")
@@ -38,6 +36,8 @@ public:
     PRREuiFontWin& operator=(const PRREuiFontWin& uiFont);
 
     virtual ~PRREuiFontWin();
+
+    virtual CConsole& getConsole() const;
 
     const std::string& getFontFaceName() const;
 

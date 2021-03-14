@@ -130,8 +130,6 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    CConsole& getConsole() const;     /**< Hack to be able to use CConsole singleton instance instead of owner's protected console instance. */
-
     friend class PRREMaterial;
     friend class PRREMaterialManager;
 

@@ -26,10 +26,10 @@
 
 PRREManaged::PRREManagedImpl::~PRREManagedImpl()
 {
-    _pOwner->getConsole().OLnOI("~PRREManaged()");
+    _pOwner->getManagedConsole().OLnOI("~PRREManaged()");
     DetachFrom();
     nManagedsTotal--;
-    _pOwner->getConsole().OO();
+    _pOwner->getManagedConsole().OO();
 } // ~PRREManagedImpl()
 
 
@@ -104,7 +104,7 @@ PRREManaged::PRREManagedImpl::PRREManagedImpl(PRREManaged* owner)
     _pOwner = owner;
     pParentMgr = PGENULL;
     nManagedsTotal++;
-    _pOwner->getConsole().OLn("PRREManaged(con)");
+    _pOwner->getManagedConsole().OLn("PRREManaged(con)");
 } // PRREManagedImpl(...)
 
 
@@ -134,8 +134,7 @@ TPRREint PRREManaged::PRREManagedImpl::nManagedsTotal = 0;
 // ############################### PUBLIC ################################
 
 
-PRREManaged::PRREManaged() :
-    PRREBaseClass()
+PRREManaged::PRREManaged()
 {
     pImpl = new PRREManagedImpl(this);
 } // PRREManaged(...)
@@ -146,6 +145,12 @@ PRREManaged::~PRREManaged()
     delete pImpl;
     pImpl = NULL;
 } // ~PRREManaged()
+
+
+CConsole& PRREManaged::getManagedConsole() const
+{
+    return CConsole::getConsoleInstance("PRREManaged");
+} // getConsole()
 
 
 /**
@@ -572,6 +577,12 @@ PRREManager::~PRREManager()
     delete pImpl;
     pImpl = NULL;
 } // ~PRREManager()
+
+
+CConsole& PRREManager::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRREManaged");
+} // getConsole()
 
 
 /**

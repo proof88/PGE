@@ -35,6 +35,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    virtual CConsole& getConsole() const;
 
     /**
         Initializes the software renderer.

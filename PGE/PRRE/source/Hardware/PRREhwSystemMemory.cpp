@@ -31,6 +31,8 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    CConsole& getConsole() const;
+
     TPRREulong getFreeSystemMemory();
     TPRREulong getTotalSystemMemory() const;
 
@@ -71,6 +73,12 @@ PRREhwSystemMemoryImpl& PRREhwSystemMemoryImpl::get()
 {
     return hwMemoryInstance;
 } // get()
+
+
+CConsole& PRREhwSystemMemoryImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRREhwSystemMemory");
+} // getConsole()
 
 
 /**

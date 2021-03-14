@@ -31,6 +31,8 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    CConsole& getConsole() const;
+
     void WriteStats(); 
 
 protected:
@@ -66,6 +68,12 @@ PRREhwCentralProcessorImpl& PRREhwCentralProcessorImpl::get()
 {
     return hwCentralProcessorInstance;
 } // get()
+
+
+CConsole& PRREhwCentralProcessorImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRREhwCentralProcessor");
+} // getConsole()
 
 
 /**

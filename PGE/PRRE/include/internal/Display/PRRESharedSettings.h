@@ -12,7 +12,6 @@
 */
 
 #include "../../external/PRREallHeaders.h"
-#include "../../external/PRREBaseClass.h"
 
 /**
     Shared settings enumerator.
@@ -38,8 +37,7 @@ enum TPRRE_SHARED_SETTINGS
     IMPORTANT: the main PRRE object should initialize this class before any other class attempts
     to use it.
 */
-class PRRESharedSettings :
-    public PRREBaseClass
+class PRRESharedSettings
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRRESharedSettings is included")
@@ -54,6 +52,9 @@ public:
 
 
     // ---------------------------------------------------------------------------
+
+
+    CConsole& getConsole() const;
 
 
     /**

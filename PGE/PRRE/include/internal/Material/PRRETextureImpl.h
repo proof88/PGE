@@ -102,8 +102,6 @@ private:
     PRRETextureImpl(const PRRETextureImpl&);
     PRRETextureImpl& operator=(const PRRETextureImpl&);
 
-    CConsole& getConsole() const;               /**< Hack to be able to use CConsole singleton instance instead of owner's protected console instance. */
-
     GLenum getTransformedSourceFormat(
         TPRRE_PIXEL_COMPONENT_ORDER oldco );    /**< Transforms to a proper pixel component order and returns the source format. */
     GLint  getTargetInternalFormat();           /**< Figures out the target internal format. */

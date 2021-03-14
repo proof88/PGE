@@ -31,6 +31,8 @@ public:
 
     virtual ~PRREScreenImpl();
 
+    CConsole& getConsole() const;
+
     TPRREbool applyDisplaySettings(HDC dc, TPRRE_SCREEN_PF pixelFormat = PRRE_SCREEN_PF_SIMPLE);
     void ResetDisplaySettings();
 
@@ -165,6 +167,12 @@ PRREScreenImpl::~PRREScreenImpl()
 {
 
 } // ~PRREScreenImpl()
+
+
+CConsole& PRREScreenImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRREScreen");
+} // getConsole()
 
 
 /**

@@ -222,9 +222,6 @@
     <ClInclude Include="PRRE\include\external\PRREallHeaders.h">
       <Filter>Header Files\PRRE\include\external</Filter>
     </ClInclude>
-    <ClInclude Include="PRRE\include\external\PRREBaseClass.h">
-      <Filter>Header Files\PRRE\include\external</Filter>
-    </ClInclude>
     <ClInclude Include="PRRE\include\external\PRRECamera.h">
       <Filter>Header Files\PRRE\include\external</Filter>
     </ClInclude>
@@ -390,9 +387,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\source\PR00FsReducedRenderingEngine.cpp">
-      <Filter>Source Files\PRRE</Filter>
-    </ClCompile>
-    <ClCompile Include="PRRE\source\PRREBaseClass.cpp">
       <Filter>Source Files\PRRE</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\source\PRREbaseIncludes.cpp">

@@ -123,7 +123,6 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    CConsole& getConsole() const;                                                     /**< Hack to be able to use CConsole singleton instance instead of owner's protected console instance. */
     void      LoadTextureIntoTMU(const PRRETexture* tex, TPRREuint iTMU = 0) const;   /**< Loads the given texture into the texture mapping unit. */
     void      ApplyTransformations() const ;                                          /**< Applies transformations to the current modelview matrix based on the given object. */
     void      PrepareGLbeforeDraw(bool bLighting) const;

@@ -85,7 +85,7 @@ GLenum PRREObject3D::PRREObject3DImpl::getGLblendFromPRREblend(TPRRE_BLENDFACTOR
 
 PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
 {
-    getConsole().OLnOI("~PRREObject3D() ...");
+    _pOwner->getManagedConsole().OLnOI("~PRREObject3D() ...");
 
     delete[] pVerticesTransf;
     delete[] pFbBuffer;
@@ -100,7 +100,7 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
         // TODO: probably we should decrement reference count in referred object ...
     }
 
-    getConsole().SOLnOO("Done!");
+    _pOwner->getManagedConsole().SOLnOO("Done!");
 } // ~PRRETexture()
 
 
@@ -136,16 +136,16 @@ TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::PRREObject3DImpl::getVertexTransferMode
 
 TPRREbool PRREObject3D::PRREObject3DImpl::setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 {
-    getConsole().OLnOI("PRREObject3D::setVertexTransferMode()");
+    _pOwner->getManagedConsole().OLnOI("PRREObject3D::setVertexTransferMode()");
 
     if ( getReferredObject() )
     {
-        getConsole().EOLnOO("PRREObject3D::setVertexTransferMode() ignored because we are cloned object!");
+        _pOwner->getManagedConsole().EOLnOO("PRREObject3D::setVertexTransferMode() ignored because we are cloned object!");
         return false;
     }
 
     TPRREbool b = _pOwner->PRREVertexTransfer::setVertexTransferMode(vtrans);
-    getConsole().OO();
+    _pOwner->getManagedConsole().OO();
     return b;
 }
 
@@ -402,7 +402,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
     // subobject must ignore draw if its Draw() was not called by its parent level-1 object but someone else from outside ...
     if ( !((PRREObject3D*)_pOwner->getManager())->pImpl->bParentInitiatedOperation )
     {
-        getConsole().EOLn("Draw() of subobject called outside of its level-1 parent object, ignoring draw!");
+        _pOwner->getManagedConsole().EOLn("Draw() of subobject called outside of its level-1 parent object, ignoring draw!");
         return;
     }
 
@@ -471,7 +471,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         }
         catch (const std::bad_alloc&)
         {
-            getConsole().EOLn("ERROR: PRREObject3D::PRREObject3DImpl::Draw() failed to allocate pFbBuffer!");
+            _pOwner->getManagedConsole().EOLn("ERROR: PRREObject3D::PRREObject3DImpl::Draw() failed to allocate pFbBuffer!");
         }
     } 
 
@@ -545,7 +545,7 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
     TPRREbool bForceUseClientMemory )
 {
     _pOwner = owner;
-    getConsole().OLnOI("PRREObject3D() ...");
+    _pOwner->getManagedConsole().OLnOI("PRREObject3D() ...");
 
     pRefersto = NULL;
     bAffectedByLights = bAffectZBuffer = bAllowZTesting = true;
@@ -564,7 +564,7 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
 
     nFbBuffer_h = 0;
 
-    getConsole().SOLnOO("Done!");
+    _pOwner->getManagedConsole().SOLnOO("Done!");
 } // PRREObject3D()
 
 
@@ -581,16 +581,6 @@ PRREObject3D::PRREObject3DImpl& PRREObject3D::PRREObject3DImpl::operator=(const 
 
 
 // ############################### PRIVATE ###############################
-
-
-/**
-    Hack to be able to use CConsole singleton instance instead of owner's protected console instance.
-    TODO: maybe the whole getConsole() stuff should be removed from everywhere because CConsole is a singleton class after all.
-*/
-CConsole& PRREObject3D::PRREObject3DImpl::getConsole() const
-{
-    return CConsole::getConsoleInstance();
-}
 
 
 /**
@@ -611,7 +601,7 @@ void PRREObject3D::PRREObject3DImpl::LoadTextureIntoTMU(const PRRETexture* tex, 
     // currently we support only 2 textured layers ...
     if ( iTMU > 1 )
     {
-        getConsole().EOLn("ERROR: LoadTextureIntoTMU(tex, %d)", iTMU);
+        _pOwner->getManagedConsole().EOLn("ERROR: LoadTextureIntoTMU(tex, %d)", iTMU);
         _ASSERT( false );
     }
 
@@ -1364,9 +1354,9 @@ PRREObject3D::PRREObject3D(
     const TPRRE_VERTEX_REFERENCING_MODE& vref,
     TPRREbool bForceUseClientMemory ) : PRREVertexTransfer(matMgr, vmod, vref, bForceUseClientMemory)
 {
-    PRREFiledManaged::getConsole().OLnOI("PRREObject3D() ...");
+    getManagedConsole().OLnOI("PRREObject3D() ...");
     pImpl = new PRREObject3DImpl(this, vmod, vref, bForceUseClientMemory);
-    PRREFiledManaged::getConsole().SOLnOO("Done!");
+    getManagedConsole().SOLnOO("Done!");
 } // PRREObject3D()
 
 

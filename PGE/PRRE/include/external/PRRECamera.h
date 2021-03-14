@@ -12,7 +12,6 @@
 */
 
 #include "PRREallHeaders.h"
-#include "PRREBaseClass.h"
 #include "Math/PRREVector.h"
 #include "Math/PRREPosUpTarget.h"
 #include "Material/PRREColor.h"
@@ -44,7 +43,7 @@ enum TPRRE_ASPECTRATIO_MODE
 */
 
 class PRRECamera : 
-    public PRREBaseClass, public PRREPosUpTarget
+    public PRREPosUpTarget
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRRECamera is included")
@@ -58,6 +57,8 @@ public:
     PRRECamera& operator=(const PRRECamera&);   /**< Assignment operator. */
 
     virtual ~PRRECamera();
+
+    virtual CConsole& getConsole() const;
 
     const TRECT& getViewport() const;           /**< Gets camera viewport. */
     void SetViewport(

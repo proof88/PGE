@@ -42,6 +42,8 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    CConsole& getConsole() const;
+
     void Initialize(
         HGLRC rc, HDC wnd_dc,
         TPRREuint nResX, TPRREuint nResY,
@@ -226,6 +228,12 @@ PRREhwVideoImpl& PRREhwVideoImpl::get()
 {
     return hwVideoInstance;
 } // get()
+
+
+CConsole& PRREhwVideoImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRREhwVideo");
+} // getConsole()
 
 
 /**

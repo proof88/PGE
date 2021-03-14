@@ -123,7 +123,7 @@ TPRREbool PRREGLsnippets::setVertexIndex(void* arr, TPRREuint index, TPRREuint v
     case GL_UNSIGNED_BYTE :
         if ( value > UCHAR_MAX )
         {
-            CConsole::getConsoleInstance().EOLn("setVertexIndex() ERROR: storing %d as BYTE (MAX=%d)!", value, UCHAR_MAX);
+            CConsole::getConsoleInstance("PRREGLsnippets").EOLn("setVertexIndex() ERROR: storing %d as BYTE (MAX=%d)!", value, UCHAR_MAX);
             return false;
         }
         ((TPRREubyte*)arr)[index]  = (TPRREubyte) value;
@@ -131,7 +131,7 @@ TPRREbool PRREGLsnippets::setVertexIndex(void* arr, TPRREuint index, TPRREuint v
     case GL_UNSIGNED_SHORT:
         if ( value > USHRT_MAX )
         {
-            CConsole::getConsoleInstance().EOLn("setVertexIndex() ERROR: storing %d as SHORT (MAX=%d)!", value, USHRT_MAX);
+            CConsole::getConsoleInstance("PRREGLsnippets").EOLn("setVertexIndex() ERROR: storing %d as SHORT (MAX=%d)!", value, USHRT_MAX);
             return false;
         }
         ((TPRREushort*)arr)[index] = (TPRREushort) value;

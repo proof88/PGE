@@ -23,7 +23,6 @@
 #include "PGESysCFGTest.h"
 #include "PR00FsReducedRenderingEngineTest.h"
 #include "PR00FsReducedRenderingEngineTest2.h"
-#include "PRREBaseClassTest.h"
 #include "PRRECameraTest.h"
 #include "PRREColorTest.h"
 #include "PRREFiledManagedTest.h"
@@ -89,7 +88,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PRRETransformMatrixTest    testPRRETransformMatrix;
     PRREScissorTest            testPRREScissor;
     PRREColorTest              testPRREColor;
-    PRREBaseClassTest          testPRREBaseClass;
     PRREManagerTest            testPRREManager;
     PRREManagedTest            testPRREManaged;
     PRREFiledManagerTest       testPRREFiledManager;
@@ -139,7 +137,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREScissor);
           
     tests.push_back(&testPRREColor);
-    tests.push_back(&testPRREBaseClass);
     tests.push_back(&testPRREManager);
     tests.push_back(&testPRREManaged);
     tests.push_back(&testPRREFiledManager);

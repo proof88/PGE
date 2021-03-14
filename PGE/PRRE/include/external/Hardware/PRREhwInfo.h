@@ -12,7 +12,6 @@
 */
 
 #include "../PRREallHeaders.h"
-#include "../PRREBaseClass.h"
 #include "PRREhwCentralProcessor.h"
 #include "PRREhwSystemMemory.h"
 #include "PRREhwAudio.h"
@@ -22,8 +21,7 @@
 /**
     PRRE hardware information class.
 */
-class PRREhwInfo :
-    public PRREBaseClass
+class PRREhwInfo
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRREhwInfo is included")

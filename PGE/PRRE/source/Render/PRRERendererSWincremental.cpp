@@ -997,6 +997,12 @@ PRRERendererSWincremental& PRRERendererSWincremental::createAndGet(
 } // createAndGet()
 
 
+CConsole& PRRERendererSWincremental::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRRERendererSWincremental");
+} // getConsole()
+
+
 // ############################## PROTECTED ##############################
 
 

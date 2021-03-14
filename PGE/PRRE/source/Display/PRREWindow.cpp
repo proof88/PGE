@@ -33,6 +33,8 @@ public:
 
     virtual ~PRREWindowImpl();
 
+    CConsole& getConsole() const;
+
     TPRREbool initialize(
         TPRREuint width, TPRREuint height,
         TPRREbool bFullscreen,
@@ -250,6 +252,12 @@ PRREWindowImpl::~PRREWindowImpl()
 {
     Deinitialize();
 } // ~PRREWindow()
+
+
+CConsole& PRREWindowImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRREWindow");
+} // getConsole()
 
 
 /**

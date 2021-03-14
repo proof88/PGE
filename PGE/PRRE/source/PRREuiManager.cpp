@@ -460,6 +460,12 @@ PRREuiManager& PRREuiManager::createAndGet()
 }
 
 
+CConsole& PRREuiManager::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRREuiManager");
+} // getConsole()
+
+
 // ############################## PROTECTED ##############################
 
 

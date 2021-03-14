@@ -12,7 +12,6 @@
 */
 
 #include "../PRREallHeaders.h"
-#include "../PRREBaseClass.h"
 
 // todo: see comment for this in PRREWindow.h
 #ifndef WIN32_LEAN_AND_MEAN
@@ -38,8 +37,7 @@ enum TPRRE_SCREEN_PF
     Screen handler class.
     Screen resolution, FSAA, etc ...
 */
-class PRREScreen :
-    public PRREBaseClass
+class PRREScreen
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRREScreen is included")

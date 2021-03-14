@@ -12,7 +12,6 @@
 */
 
 #include "../PRREallHeaders.h"
-#include "../PRREBaseClass.h"
 #include <string>
 
 // todo:
@@ -34,8 +33,7 @@
     Our main window, this is where we render to.
     Only have one window, so it is singleton.
 */
-class PRREWindow :
-    public PRREBaseClass
+class PRREWindow
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRREWindow is included")

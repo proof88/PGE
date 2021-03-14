@@ -12,14 +12,12 @@
 */
 
 #include "../PRREallHeaders.h"
-#include "../PRREBaseClass.h"
 
 
 /**
     Base class for PRRE hardware classes.
 */
-class PRREhwBase :
-    public PRREBaseClass
+class PRREhwBase
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRREhwBase is included")

@@ -33,6 +33,12 @@ PRRESharedSettings& PRRESharedSettings::createAndGet()
 } // createAndGet()
 
 
+CConsole& PRRESharedSettings::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRRESharedSettings");
+}
+
+
 /**
     Gets the specified shared setting.
 

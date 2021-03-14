@@ -710,6 +710,12 @@ PRRERendererHWfixedPipe& PRRERendererHWfixedPipe::createAndGet(
 } // createAndGet()
 
 
+CConsole& PRRERendererHWfixedPipe::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRRERendererHWfixedPipe");
+} // getConsole()
+
+
 // ############################## PROTECTED ##############################
 
 

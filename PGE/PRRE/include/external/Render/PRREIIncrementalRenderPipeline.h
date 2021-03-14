@@ -13,7 +13,6 @@
 
 #include "../PRREallHeaders.h"
 #include "../PRREtypes.h"
-#include "../PRREBaseClass.h"
 #include "../PRRECamera.h"
 #include "../Object3D/PRREObject3DManager.h"
 #include "../PRREuiManager.h"

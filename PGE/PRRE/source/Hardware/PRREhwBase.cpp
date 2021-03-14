@@ -28,6 +28,8 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    CConsole& getConsole() const;
+
     virtual ~PRREhwBaseImpl();
 
     void      Initialize(); 
@@ -59,32 +61,38 @@ private:
 // ############################### PUBLIC ################################
 
 
+CConsole& PRREhwBase::PRREhwBaseImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRREhwBase");
+} // getConsole()
+
+
 /**
     Initializes the instance.
 */
 void PRREhwBase::PRREhwBaseImpl::Initialize()
 {
-    _parent->getConsole().OIOLn("PRREhwBase::Initialize() ...");
-    _parent->getConsole().OI();
+    getConsole().OIOLn("PRREhwBase::Initialize() ...");
+    getConsole().OI();
     if ( bInitialized )
     {
-        _parent->getConsole().OLnOO("Already initialized!");
-        _parent->getConsole().OO();
+        getConsole().OLnOO("Already initialized!");
+        getConsole().OO();
         return;
     }
 
     _parent->PreInitialize();
     if ( bInitialized = _parent->initializeBase() )
     {
-        _parent->getConsole().OOSOLn("done!");
+        getConsole().OOSOLn("done!");
     }
     else
     {
         _parent->PreInitialize();
-        _parent->getConsole().OOEOLn("failed!");
+        getConsole().OOEOLn("failed!");
     }
 
-    _parent->getConsole().OO();
+    getConsole().OO();
 } // Initialize()
 
 

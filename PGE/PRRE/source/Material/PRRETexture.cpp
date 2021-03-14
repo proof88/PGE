@@ -162,12 +162,12 @@ GLenum  PRRETexture::PRRETextureImpl::getGLnameFromPRREtexWrappingName(TPRRE_TEX
 
 PRRETexture::PRRETextureImpl::~PRRETextureImpl()
 {
-    _pOwner->getConsole().OLnOI("~PRRETexture() ...");
+    _pOwner->getManagedConsole().OLnOI("~PRRETexture() ...");
     if ( nInternalNum > 0 )
     {
         glDeleteTextures(1, &nInternalNum);
     }
-    _pOwner->getConsole().SOLnOO("Done!");
+    _pOwner->getManagedConsole().SOLnOO("Done!");
     _pOwner = NULL;
 } // ~PRRETexture()
 
@@ -256,14 +256,14 @@ TPRRE_ANISO_TEX_FILTERING PRRETexture::PRRETextureImpl::getAnisoFilteringMode() 
 
 TPRREbool PRRETexture::PRRETextureImpl::setAnisoFilteringMode(TPRRE_ANISO_TEX_FILTERING filtering)
 {
-    _pOwner->getConsole().OIOLn("PRRETexture::setAnisoFilteringMode(%fX)", PRRETextureManager::getFloatFromPRREanisoTexFilteringName(filtering));
+    _pOwner->getManagedConsole().OIOLn("PRRETexture::setAnisoFilteringMode(%fX)", PRRETextureManager::getFloatFromPRREanisoTexFilteringName(filtering));
     
     if ( _pOwner->getManager() == PGENULL )
         return false;
     
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
     {
-        _pOwner->getConsole().EOLnOO("WARNING: anisotropic filtering is not supported without acceleration!");
+        _pOwner->getManagedConsole().EOLnOO("WARNING: anisotropic filtering is not supported without acceleration!");
         return false;
     }
 
@@ -275,12 +275,12 @@ TPRREbool PRRETexture::PRRETextureImpl::setAnisoFilteringMode(TPRRE_ANISO_TEX_FI
     // This can be fixed by adding a console printout to getFloatFromPRREanisoTexFilteringName(), so probably this is some
     // compiler optimization bug which doesnt happen in Debug mode. Would be good to play with the Release mode compiler options
     // to see exactly which option causes this. This is weird because getFloatFromPRREanisoTexFilteringName() can never ever be 0.
-    // _pOwner->getConsole().OLn( "availMaxFilteringF: %f",  availMaxFilteringF);
+    // _pOwner->getManagedConsole().OLn( "availMaxFilteringF: %f",  availMaxFilteringF);
     if ( availMaxFilteringF > 1.0f )
     {
         if ( (nInternalNum == 0) || (!pglBindTexture(GL_TEXTURE_2D, nInternalNum)) )
         {
-            _pOwner->getConsole().EOLnOO("ERROR: nInternalNum is 0 or pglBindTexture() failed!");
+            _pOwner->getManagedConsole().EOLnOO("ERROR: nInternalNum is 0 or pglBindTexture() failed!");
             return false;
         }
         if ( availMaxFilteringF >= newFilteringF )
@@ -293,7 +293,7 @@ TPRREbool PRRETexture::PRRETextureImpl::setAnisoFilteringMode(TPRRE_ANISO_TEX_FI
         }
         else
         {
-            _pOwner->getConsole().EOLn("WARNING: selected mode not supported, setting max supported: %fX!", availMaxFilteringF);
+            _pOwner->getManagedConsole().EOLn("WARNING: selected mode not supported, setting max supported: %fX!", availMaxFilteringF);
             if ( pglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, (GLfloat) availMaxFilteringF) )
             {
                 filtAniso = PRRETextureManager::getPRREanisoTexFilteringNameFromFloat(availMaxFilteringF);
@@ -303,9 +303,9 @@ TPRREbool PRRETexture::PRRETextureImpl::setAnisoFilteringMode(TPRRE_ANISO_TEX_FI
     }
     else
     {
-        _pOwner->getConsole().EOLn("ERROR: anisotropic filtering is not supported");
+        _pOwner->getManagedConsole().EOLn("ERROR: anisotropic filtering is not supported");
     }
-    _pOwner->getConsole().OO();
+    _pOwner->getManagedConsole().OO();
     return result;
 } // setAnisoFilteringMode()
 
@@ -387,23 +387,23 @@ TPRREbool PRRETexture::PRRETextureImpl::setBorderColor(const PRREColor& clr)
 
 TPRREbool PRRETexture::PRRETextureImpl::uploadPixels()
 {
-    _pOwner->getConsole().OIOLn("PRRETexture::uploadPixels()");
+    _pOwner->getManagedConsole().OIOLn("PRRETexture::uploadPixels()");
 
     if ( _pOwner->getPixels() == PGENULL )
     {
-        _pOwner->getConsole().EOLnOO("ERROR: getPixels() returned NULL!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: getPixels() returned NULL!");
         return false;
     }
 
     if ( _pOwner->getManager() == PGENULL )
     {
-        _pOwner->getConsole().EOLnOO("ERROR: getManager() returned NULL!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: getManager() returned NULL!");
         return false;
     }
 
     if ( strcmp(typeid(*_pOwner->getManager()).raw_name(), typeid(PRRETextureManager&).raw_name()) )
     {
-        _pOwner->getConsole().EOLnOO("ERROR: getManager() type is not PRRETextureManager!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: getManager() type is not PRRETextureManager!");
         return false;
     }
 
@@ -419,11 +419,11 @@ TPRREbool PRRETexture::PRRETextureImpl::uploadPixels()
     const GLenum glTexFormat = getTransformedSourceFormat(oldco); // might invoke setPixelComponentOrder()!
     if ( glTexFormat == GL_INVALID_ENUM )
     {
-        _pOwner->getConsole().EOLnOO("ERROR: getTransformedSourceFormat() failed!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: getTransformedSourceFormat() failed!");
         // try reset original pixel component order
         if ( !_pOwner->setPixelComponentOrder( oldco ) )
         {
-            _pOwner->getConsole().EOLnOO("ERROR: recovery setPixelComponentOrder(oldco) failed!");
+            _pOwner->getManagedConsole().EOLnOO("ERROR: recovery setPixelComponentOrder(oldco) failed!");
         }
         return false;
     }
@@ -432,7 +432,7 @@ TPRREbool PRRETexture::PRRETextureImpl::uploadPixels()
 
     if ( !actualUploadProc(internalfmt, glTexFormat) )
     {
-        _pOwner->getConsole().EOLnOO("ERROR: actualUploadProc() failed!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: actualUploadProc() failed!");
         return false;
     }
 
@@ -442,12 +442,12 @@ TPRREbool PRRETexture::PRRETextureImpl::uploadPixels()
     {
         if ( !_pOwner->setPixelComponentOrder( oldco ) )
         {
-            _pOwner->getConsole().EOLnOO("ERROR: finished creating new texture, but setPixelComponentOrder(oldco) failed!");
+            _pOwner->getManagedConsole().EOLnOO("ERROR: finished creating new texture, but setPixelComponentOrder(oldco) failed!");
             // intentionally let function still return true
         }
     }
 
-    _pOwner->getConsole().OO();
+    _pOwner->getManagedConsole().OO();
 
     return true;
 } // uploadPixels()
@@ -509,17 +509,6 @@ PRRETexture::PRRETextureImpl::PRRETextureImpl(const PRRETexture::PRRETextureImpl
 PRRETexture::PRRETextureImpl& PRRETexture::PRRETextureImpl::operator=(const PRRETexture::PRRETextureImpl&)
 {
     return *this;
-}
-
-
-/**
-    Hack to be able to use CConsole singleton instance instead of owner's protected console instance.
-    TODO: maybe the whole getConsole() stuff should be removed from everywhere because CConsole is a singleton class after all.
-          No reason to think like different classes have different console instances, I don't see usecase for that.
-*/
-CConsole& PRRETexture::PRRETextureImpl::getConsole() const
-{
-    return CConsole::getConsoleInstance();
 }
 
 
@@ -628,17 +617,17 @@ TPRREbool PRRETexture::PRRETextureImpl::actualUploadProc(GLint internalfmt, GLen
 
     if ( !hwInfo.getVideo().isAcceleratorDetected() )
     {
-        getConsole().OLn("no need to upload texture, non-accelerated rendering is active");
+        _pOwner->getManagedConsole().OLn("no need to upload texture, non-accelerated rendering is active");
         return true;
     }
 
     if ( nMIPmapCount > 1 )
     {
-        getConsole().OLn("mipmapping on");
-        getConsole().O("auto-generating mipmaps with ");
+        _pOwner->getManagedConsole().OLn("mipmapping on");
+        _pOwner->getManagedConsole().O("auto-generating mipmaps with ");
         if ( hwInfo.getVideo().isHardwareMipMapGenerationSupported() && parent.isHardwareMipMapGenerationEnabled() )
         {        
-            getConsole().OLn("HW-support.");
+            _pOwner->getManagedConsole().OLn("HW-support.");
             if (!pglTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE) )
             {
                 return false;
@@ -652,11 +641,11 @@ TPRREbool PRRETexture::PRRETextureImpl::actualUploadProc(GLint internalfmt, GLen
         }
         else
         {
-            getConsole().OLn("SW-only.");
+            _pOwner->getManagedConsole().OLn("SW-only.");
             const GLint errCode = gluBuild2DMipmaps(GL_TEXTURE_2D, internalfmt, _pOwner->getWidth(), _pOwner->getHeight(), glTexFormat, GL_UNSIGNED_BYTE, _pOwner->getPixels());
             if ( errCode != GL_NO_ERROR )
             {
-                getConsole().EOLn("PRRETextureImpl::actualUploadProc() ERROR: %d, %s", errCode, gluErrorString(errCode));
+                _pOwner->getManagedConsole().EOLn("PRRETextureImpl::actualUploadProc() ERROR: %d, %s", errCode, gluErrorString(errCode));
                 return false;
             }
             return true;
@@ -664,7 +653,7 @@ TPRREbool PRRETexture::PRRETextureImpl::actualUploadProc(GLint internalfmt, GLen
     }
     else
     {
-        getConsole().OLn("mipmapping off");
+        _pOwner->getManagedConsole().OLn("mipmapping off");
 
         // WARNING: up to OpenGL 2.x, border is allowed to be 0 or 1. However from GL 3.0 it must be 0.
         // WARNING: if GL version does not support NPOT sizes, width must be 2n+2(border) for some integer n.
@@ -697,47 +686,47 @@ void PRRETexture::PRRETextureImpl::DescribeTexFormatAndSize(GLint internalfmt)
         if ( tmpret == GL_TRUE )
         {
             glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &tmpret);
-            getConsole().O("final internal texFormat is ");
+            _pOwner->getManagedConsole().O("final internal texFormat is ");
             switch ( tmpret )
             {
             case GL_RGBA:
-                getConsole().OLn("GL_RGBA");
+                _pOwner->getManagedConsole().OLn("GL_RGBA");
                 break;
             case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
                 texFormat = PRRE_TF_DXT1;
-                getConsole().OLn("GL_COMPRESSED_RGB_S3TC_DXT1_EXT");
+                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGB_S3TC_DXT1_EXT");
                 break;
             case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
                 texFormat = PRRE_TF_DXT1A;
-                getConsole().OLn("GL_COMPRESSED_RGBA_S3TC_DXT1_EXT");
+                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGBA_S3TC_DXT1_EXT");
                 break;
             case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
                 texFormat = PRRE_TF_DXT3A;
-                getConsole().OLn("GL_COMPRESSED_RGBA_S3TC_DXT3_EXT");
+                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGBA_S3TC_DXT3_EXT");
                 break;
             case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
                 texFormat = PRRE_TF_DXT5A;
-                getConsole().OLn("GL_COMPRESSED_RGBA_S3TC_DXT5_EXT");
+                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGBA_S3TC_DXT5_EXT");
                 break;
             case GL_COMPRESSED_RGB_FXT1_3DFX:
                 texFormat = PRRE_TF_FXT1;
-                getConsole().OLn("GL_COMPRESSED_RGB_FXT1_3DFX");
+                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGB_FXT1_3DFX");
                 break;
             case GL_COMPRESSED_RGBA_FXT1_3DFX:
                 texFormat = PRRE_TF_FXT1A;
-                getConsole().OLn("GL_COMPRESSED_RGBA_FXT1_3DFX");
+                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGBA_FXT1_3DFX");
                 break;
             /* In 14.12 AMD Catalyst Omega Software, requesting auto-compression at glTexImage2D() returns general compression here instead of any if the specific values above. */
             case GL_COMPRESSED_RGB_ARB:
                 texFormat = PRRE_TF_UNSURE;
-                getConsole().OLn("GL_COMPRESSED_RGB_ARB");
+                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGB_ARB");
                 break;
             case GL_COMPRESSED_RGBA_ARB:
                 texFormat = PRRE_TF_UNSURE;
-                getConsole().OLn("GL_COMPRESSED_RGBA_ARB");
+                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGBA_ARB");
                 break;
             default:
-                getConsole().EOLn("ERROR: glGetTexLevelParameteriv() returned %d for GL_TEXTURE_INTERNAL_FORMAT", tmpret);
+                _pOwner->getManagedConsole().EOLn("ERROR: glGetTexLevelParameteriv() returned %d for GL_TEXTURE_INTERNAL_FORMAT", tmpret);
                 break;
             }
             glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &tmpret);
@@ -1004,9 +993,9 @@ TPRREuint PRRETexture::getUsedTextureMemory() const
 */
 PRRETexture::PRRETexture()
 {
-    getConsole().OLnOI("PRRETexture() ...");
+    getManagedConsole().OLnOI("PRRETexture() ...");
     pImpl = new PRRETextureImpl(this);
-    getConsole().SOLnOO("Done!");
+    getManagedConsole().SOLnOO("Done!");
 } // PRRETexture()
 
 
@@ -1018,9 +1007,9 @@ PRRETexture::PRRETexture()
 PRRETexture::PRRETexture(const PRREImage& img) : 
    PRREImage(img)
 {
-    getConsole().OLnOI("PRRETexture(img) ...");
+    getManagedConsole().OLnOI("PRRETexture(img) ...");
     pImpl = new PRRETextureImpl(this, img);
-    getConsole().SOLnOO("Done!");
+    getManagedConsole().SOLnOO("Done!");
 } // PRRETexture(...)
 
 

@@ -51,9 +51,6 @@
     <ClInclude Include="PR00FsReducedRenderingEngineTest2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PRREBaseClassTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PRREColorTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -265,9 +262,6 @@
       <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="..\PRRE\include\external\PRREallHeaders.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\PRREBaseClass.h">
       <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
     <ClInclude Include="..\PRRE\include\external\PRRECamera.h">

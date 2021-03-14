@@ -77,6 +77,11 @@ PRREhwVideoDiscoverOpenGLbase::~PRREhwVideoDiscoverOpenGLbase()
 {
 }
 
+CConsole& PRREhwVideoDiscoverOpenGLbase::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRREhwVideoDiscoverOpenGLbase");
+}
+
 
 // ############################## PROTECTED ##############################
 

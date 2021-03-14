@@ -12,9 +12,9 @@
 */
 
 #include "PRREallHeaders.h"
-#include "PRREBaseClass.h"
+#include "PRREtypes.h"
 
-
+class CConsole;
 class PRREManager;
 
 
@@ -22,13 +22,14 @@ class PRREManager;
     Ancestor class for managed classes.
     Cannot be copied, because the copy should be inserted into the manager's array (and it's unnecessary to implement now).
 */
-class PRREManaged :
-    public PRREBaseClass
+class PRREManaged
 {
 
 public:
     PRREManaged(); /* TODO: mark this as noexcept(false) when using newer compiler! */      
-    virtual ~PRREManaged();            
+    virtual ~PRREManaged();    
+
+    virtual CConsole&  getManagedConsole() const;
 
     void               DetachFrom();                      /**< Removes the managed from its manager. */
     PRREManager*       getManager() const;                /**< Gets the manager of the managed. */
@@ -64,8 +65,7 @@ private:
     Ancestor class for manager classes.
     Copying is not available yet.
 */
-class PRREManager :
-    public PRREBaseClass
+class PRREManager
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRREManager is included")
@@ -73,7 +73,9 @@ class PRREManager :
 
 public:
     PRREManager(); /* TODO: mark this as noexcept(false) when using newer compiler! */ 
-    virtual ~PRREManager(); 
+    virtual ~PRREManager();
+
+    virtual CConsole&  getConsole() const;
 
     TPRREint     getCount() const;                        /**< Gets the number of managed objects. */
     TPRREbool    isEmpty() const;                         /**< Is the number of manageds 0? */

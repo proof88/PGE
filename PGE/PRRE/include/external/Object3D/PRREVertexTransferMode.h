@@ -14,7 +14,6 @@
 
 #include "../PRREallHeaders.h"
 #include "../../../../../../PFL/PFL/PFL.h"
-#include "../PRREBaseClass.h"
 #include "PRREMesh3DManager.h"
 #include "../Material/PRREMaterialManager.h"
 

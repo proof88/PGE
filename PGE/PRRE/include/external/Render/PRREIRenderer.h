@@ -13,7 +13,6 @@
 
 #include "../PRREallHeaders.h"
 #include "../PRREtypes.h"
-#include "../PRREBaseClass.h"
 #include "../PRRECamera.h"
 #include "../PRREuiManager.h"
 
@@ -49,8 +48,7 @@
 class PRREObject3D;
 class PRREObject3DManager;
 
-class PRREIRenderer :
-    public PRREBaseClass
+class PRREIRenderer
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRREIRenderer is included")

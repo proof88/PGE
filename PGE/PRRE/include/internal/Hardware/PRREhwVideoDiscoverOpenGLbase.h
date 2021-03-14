@@ -17,14 +17,12 @@
 #include "../gl/wglext.h"
 
 #include "../../external/PRREallHeaders.h"
-#include "../../external/PRREBaseClass.h"
 #include <vector>
 
 /**
     PRRE OpenGL capabilities base class.
 */
-class PRREhwVideoDiscoverOpenGLbase :
-    public PRREBaseClass
+class PRREhwVideoDiscoverOpenGLbase
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRREhwVideoDiscoverOpenGLbase is included")
@@ -50,7 +48,10 @@ public:
         const std::string& sVerOGL,
         const TPRREuint& nVidVerGLSLmaj,
         const TPRREuint& nVidVerGLSLmin);
+
     virtual ~PRREhwVideoDiscoverOpenGLbase();
+
+    virtual CConsole& getConsole() const;
 
     virtual std::string getVersion() const = 0;
 

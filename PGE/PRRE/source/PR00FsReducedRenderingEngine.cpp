@@ -11,7 +11,6 @@
 
 #include "PRREbaseIncludes.h"  // PCH
 #include "../include/external/PR00FsReducedRenderingEngine.h"
-#include "../include/external/PRREBaseClass.h"
 #include "../include/external/Render/PRRERendererHWfixedPipe.h"
 #include "../include/external/Render/PRRERendererSWincremental.h"
 #include "../include/internal/PRREGLsnippets.h"
@@ -692,6 +691,12 @@ PR00FsReducedRenderingEngine& PR00FsReducedRenderingEngine::createAndGet()
     static PR00FsReducedRenderingEngineImpl PRREinstance;
     return PRREinstance;
 } // createAndGet()
+
+
+CConsole& PR00FsReducedRenderingEngine::getConsole() const
+{
+    return CConsole::getConsoleInstance("PR00FsReducedRenderingEngine");
+} // getConsole()
 
 
 // ############################## PROTECTED ##############################

@@ -47,7 +47,7 @@ using namespace std;
 
 PRREMaterial::PRREMaterialImpl::~PRREMaterialImpl()
 {
-    getConsole().OLnOI("~PRREMaterial() ...");
+    _pOwner->getManagedConsole().OLnOI("~PRREMaterial() ...");
 
     for (TPRREuint i = 0; i < layers.size(); i++)
     {
@@ -60,7 +60,7 @@ PRREMaterial::PRREMaterialImpl::~PRREMaterialImpl()
     nIndices = 0;
     nIndexSize = 0;
 
-    getConsole().SOLnOO("Done!");
+    _pOwner->getManagedConsole().SOLnOO("Done!");
 } // ~PRRETexture()
 
 
@@ -68,13 +68,13 @@ TPRREbool PRREMaterial::PRREMaterialImpl::allocateArrays(TPRREuint nColorCount, 
 {
     if ( nIndexSize == 0 )
     {
-        getConsole().EOLn("PRREMaterial()::allocateArrays(%d, %d, %d, %d) fail due to nIndexSize!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
+        _pOwner->getManagedConsole().EOLn("PRREMaterial()::allocateArrays(%d, %d, %d, %d) fail due to nIndexSize!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
         return false;
     }
 
     if ( getTexcoordsCount(0) > 0 )
     {
-        getConsole().SOLn("PRREMaterial()::allocateArrays(%d, %d, %d, %d) skip, already allocated!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
+        _pOwner->getManagedConsole().SOLn("PRREMaterial()::allocateArrays(%d, %d, %d, %d) skip, already allocated!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
         return true;
     }
 
@@ -94,7 +94,7 @@ TPRREbool PRREMaterial::PRREMaterialImpl::allocateArrays(TPRREuint nColorCount, 
     }
     catch (const std::bad_alloc&)
     {
-        getConsole().EOLn("PRREMaterial()::allocateArrays(%d, %d, %d, %d) fail due to out of memory!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
+        _pOwner->getManagedConsole().EOLn("PRREMaterial()::allocateArrays(%d, %d, %d, %d) fail due to out of memory!", nColorCount, nTexcoordCount, nIndexCount, nIndexSize);
         for (TPRREuint i = 0; i < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount(); i++)
         {
             layers[i].nColors_h = 0;
@@ -384,7 +384,7 @@ TPRREbool PRREMaterial::PRREMaterialImpl::copyFromMaterial(PRREMaterial& srcMat,
             {
                 if ( !setTexture( srcMat.getTexture(srcLevel), dstLevel ) )
                 {
-                    getConsole().EOLn("ERROR: %s setTexture() failed for dstLevel %d!", __FUNCTION__, dstLevel);
+                    _pOwner->getManagedConsole().EOLn("ERROR: %s setTexture() failed for dstLevel %d!", __FUNCTION__, dstLevel);
                     return false;
                 }
             }
@@ -421,7 +421,7 @@ PRREMaterial::PRREMaterialImpl::PRREMaterialImpl(
     PRREMaterial* owner, TPRREuint nLayers)
 {
     _pOwner = owner;
-    getConsole().OLnOI("PRREMaterial() ...");
+    _pOwner->getManagedConsole().OLnOI("PRREMaterial() ...");
 
     // sanity check
     if ( nLayers < 1 )
@@ -447,7 +447,7 @@ PRREMaterial::PRREMaterialImpl::PRREMaterialImpl(
 
     // we dont store nLayers because from now layers.size() is fix until this instance is deleted
 
-    getConsole().SOLnOO("Done!");
+    _pOwner->getManagedConsole().SOLnOO("Done!");
 } // PRREObject3D()
 
 
@@ -464,16 +464,6 @@ PRREMaterial::PRREMaterialImpl& PRREMaterial::PRREMaterialImpl::operator=(const 
 
 
 // ############################### PRIVATE ###############################
-
-
-/**
-    Hack to be able to use CConsole singleton instance instead of owner's protected console instance.
-    TODO: maybe the whole getConsole() stuff should be removed from everywhere because CConsole is a singleton class after all.
-*/
-CConsole& PRREMaterial::PRREMaterialImpl::getConsole() const
-{
-    return CConsole::getConsoleInstance();
-}
 
 
 /*

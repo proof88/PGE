@@ -167,6 +167,12 @@ PRREuiFontWin::~PRREuiFontWin()
 }
 
 
+CConsole& PRREuiFontWin::getConsole() const
+{
+    return CConsole::getConsoleInstance("PRREuiFontWin");
+}
+
+
 const std::string& PRREuiFontWin::getFontFaceName() const
 {
     return sFontFaceName;

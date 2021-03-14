@@ -164,12 +164,12 @@ GLenum PRREVertexTransfer::PRREVertexTransferImpl::getGLprimitiveFromPRREprimiti
 
 PRREVertexTransfer::PRREVertexTransferImpl::~PRREVertexTransferImpl()
 {
-    getConsole().OLnOI("~PRREVertexTransferImpl() ...");
+    _pOwner->getManagedConsole().OLnOI("~PRREVertexTransferImpl() ...");
     
     FreeGLresources();
     _pOwner->DeleteAll();
 
-    getConsole().SOLnOO("Done!");
+    _pOwner->getManagedConsole().SOLnOO("Done!");
 } // ~PRRETexture()
 
 
@@ -205,7 +205,7 @@ TPRRE_VERTEX_TRANSFER_MODE PRREVertexTransfer::PRREVertexTransferImpl::getVertex
 
 TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 {
-    getConsole().OLnOI("PRREVertexTransfer::setVertexTransferMode()");
+    _pOwner->getManagedConsole().OLnOI("PRREVertexTransfer::setVertexTransferMode()");
 
     if ( _pOwner->isLevel2() )
     {
@@ -215,7 +215,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexTransferMode(TPRR
             // either user invokes Detach() for a submesh of a complete level-1 mesh,
             // or when we are still creating a mesh and it is not yet attached or it does not have any children.
             // any case, we should IGNORE execution of this function.
-            getConsole().EOLnOO("setVertexTransferMode() of submesh called WITHOUT existing level-1 parent mesh, rejecting!");
+            _pOwner->getManagedConsole().EOLnOO("setVertexTransferMode() of submesh called WITHOUT existing level-1 parent mesh, rejecting!");
             return false;
         }
         
@@ -223,7 +223,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexTransferMode(TPRR
         // note: our manager in this case is a level-1 VertexTransfer (Mesh3D) mesh
         if ( !((PRREVertexTransfer*)_pOwner->getManager())->pImpl->bParentInitiatedOperation )
         {
-            getConsole().EOLnOO("setVertexTransferMode() of submesh called outside of its level-1 parent mesh, rejecting!");
+            _pOwner->getManagedConsole().EOLnOO("setVertexTransferMode() of submesh called outside of its level-1 parent mesh, rejecting!");
             return false;
         }
     }  
@@ -237,14 +237,14 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexTransferMode(TPRR
     {
         if ( !isSwitchFromIndexedAllowed() )
         {
-            getConsole().EOLnOO("ERROR: failed to switch from indexed to direct referencing mode!");
+            _pOwner->getManagedConsole().EOLnOO("ERROR: failed to switch from indexed to direct referencing mode!");
             return false;
         }
     }
 
     if ( !PRREVertexTransfer::isVertexTransferModeSelectable(vtrans) )
     {
-        getConsole().EOLnOO("ERROR: given mode %d is unavailable!", (int)vtrans);
+        _pOwner->getManagedConsole().EOLnOO("ERROR: given mode %d is unavailable!", (int)vtrans);
         return false;
     }
 
@@ -261,7 +261,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexTransferMode(TPRR
                 PRREVertexTransfer::isVertexModifyingDynamic(vtrans) ) )
             {
                 FreeGLresources();   // we cannot know exactly what was allocated and what no, make sure we don't keep anything!
-                getConsole().EOLnOO("ERROR: compileIntoVertexBufferObjects() failed!");
+                _pOwner->getManagedConsole().EOLnOO("ERROR: compileIntoVertexBufferObjects() failed!");
                 return false;
             }
         }
@@ -274,7 +274,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexTransferMode(TPRR
                 if ( !compileIntoDisplayList(PRREVertexTransfer::isVertexReferencingIndexed(vtrans)) )
                 {
                     FreeGLresources();   // we cannot know exactly what was allocated and what no, make sure we don't keep anything!
-                    getConsole().EOLnOO("ERROR: compileIntoDisplayList() failed!");
+                    _pOwner->getManagedConsole().EOLnOO("ERROR: compileIntoDisplayList() failed!");
                     return false;
                 }
             }
@@ -286,25 +286,25 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexTransferMode(TPRR
     else
     {
         bParentInitiatedOperation = true;
-        getConsole().OLn("Ok, applying for subobjects ...");
+        _pOwner->getManagedConsole().OLn("Ok, applying for subobjects ...");
         for (TPRREint i = 0; i < _pOwner->getCount(); i++)
         {
             if ( !((PRREVertexTransfer*)(_pOwner->getAttachedAt)(i))->setVertexTransferMode( vtrans ) )
             {
-                getConsole().EOLn("Failed a setVertexTransferMode() for subobject %d!", i);
+                _pOwner->getManagedConsole().EOLn("Failed a setVertexTransferMode() for subobject %d!", i);
                 FreeGLresources();   // we cannot know exactly what was allocated and what no, make sure we don't keep anything!
                 vertexTransferMode = 0;
                 bParentInitiatedOperation = false;
-                getConsole().OO();
+                _pOwner->getManagedConsole().OO();
                 return false;
             }
         }
-        getConsole().OLn("Done!");
+        _pOwner->getManagedConsole().OLn("Done!");
         bParentInitiatedOperation = false;
         vertexTransferMode = vtrans;
     }
 
-    getConsole().OO();
+    _pOwner->getManagedConsole().OO();
     return true;
 } // setVertexTransferMode()
 
@@ -336,7 +336,7 @@ PRREVertexTransfer::PRREVertexTransferImpl::PRREVertexTransferImpl(
     TPRREbool bForceUseClientMemory ) : materialMgr(matMgr)
 {
     _pOwner = pOwner;
-    getConsole().OLnOI("PRREVertexTransferImpl() ...");
+    _pOwner->getManagedConsole().OLnOI("PRREVertexTransferImpl() ...");
 
     bParentInitiatedOperation = false;
     nDispList = 0;
@@ -345,7 +345,7 @@ PRREVertexTransfer::PRREVertexTransferImpl::PRREVertexTransferImpl(
 
     vertexTransferMode = PRREVertexTransfer::selectVertexTransferMode(vmod, vref, bForceUseClientMemory);
 
-    getConsole().SOLnOO("Done!");
+    _pOwner->getManagedConsole().SOLnOO("Done!");
 } // PRREObject3D()
 
 
@@ -437,16 +437,6 @@ void PRREVertexTransfer::PRREVertexTransferImpl::TransferVertices()
 
 
 // ############################### PRIVATE ###############################
-
-
-/**
-    Hack to be able to use CConsole singleton instance instead of owner's protected console instance.
-    TODO: maybe the whole getConsole() stuff should be removed from everywhere because CConsole is a singleton class after all.
-*/
-CConsole& PRREVertexTransfer::PRREVertexTransferImpl::getConsole() const
-{
-    return CConsole::getConsoleInstance();
-}
 
 
 /**
@@ -559,27 +549,27 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList(TPR
 
     if ( _pOwner->getVertices(false) == NULL )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList() getVertices() is NULL!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList() getVertices() is NULL!");
         return false;
     }
 
     nDispList = pglGenLists(1);
     if ( nDispList == 0 )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList() glGenLists() failed!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList() glGenLists() failed!");
         return false;
     }
 
     if ( !pglNewList(nDispList, GL_COMPILE) )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList() glNewList() failed!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList() glNewList() failed!");
         return false;
     }
 
     ProcessGeometry( indexed );
     if ( !pglEndList() )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList() glEndList() failed!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList() glEndList() failed!");
         return false;
     }
 
@@ -604,17 +594,17 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObj
 
     if ( nVerticesVBO != 0 )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() already has vertex VBO!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() already has vertex VBO!");
         return false;
     }
     if ( _pOwner->getVertices(false) == NULL )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() getVertices() is NULL!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() getVertices() is NULL!");
         return false;
     }
     if ( _pOwner->getNormals(false) == NULL )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() getNormals() is NULL!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() getNormals() is NULL!");
         return false;
     }
 
@@ -622,12 +612,12 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObj
     {
         if ( nIndicesVBO != 0 )
         {
-            getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() nIndicesVBO != 0!");
+            _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() nIndicesVBO != 0!");
             return false;
         }
         if ( _pOwner->getVertexIndices(false) == NULL )
         {
-            getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() getVertexIndices() is NULL!");
+            _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() getVertexIndices() is NULL!");
             return false;
         }
         if ( ( !pglGenBuffersARB(1, &nIndicesVBO) ) ||
@@ -636,7 +626,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObj
              ( !pglBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, _pOwner->getVertexIndicesCount(false) * PRREGLsnippets::getSizeofIndexType(_pOwner->getVertexIndicesType()), _pOwner->getVertexIndices(false), GL_STATIC_DRAW_ARB) ) ||
              ( !pglBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0) ) )
         {
-            getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create element array buffer!");
+            _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create element array buffer!");
             return false;
         }
     }
@@ -647,7 +637,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObj
          ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, nVerticesVBO) ) ||
          ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB,  _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getVertices(false), usage) ) )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create vertex VBO!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create vertex VBO!");
         return false;
     }
  
@@ -656,7 +646,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObj
          ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, nColorsVBO) ) ||
          ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getColorsCount() * sizeof(TRGBAFLOAT), _pOwner->getMaterial(false).getColors(), usage) ) )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create color VBO!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create color VBO!");
         return false;
     }
 
@@ -665,7 +655,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObj
          ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[0]) ) ||
          ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount() * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(), usage) ) )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create texcoords VBO!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create texcoords VBO!");
         return false;
     }
 
@@ -678,7 +668,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObj
                  ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, nTexcoordsVBO[1]) ) ||
                  ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getMaterial(false).getTexcoordsCount(1) * sizeof(TUVW), _pOwner->getMaterial(false).getTexcoords(1), usage) ) )
             {
-                getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create 2nd texcoords VBO!");
+                _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create 2nd texcoords VBO!");
                 return false;
             }
         }
@@ -689,7 +679,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObj
          ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getNormals(false), usage) ) ||
          ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, 0) ) )
     {
-        getConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create normals VBO!");
+        _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create normals VBO!");
         return false;
     }
 
@@ -1205,9 +1195,9 @@ PRREVertexTransfer::PRREVertexTransfer(
     const TPRRE_VERTEX_REFERENCING_MODE& vref,
     TPRREbool bForceUseClientMemory )
 {
-    PRREFiledManaged::getConsole().OLnOI("PRREVertexTransfer() ...");
+    getManagedConsole().OLnOI("PRREVertexTransfer() ...");
     pImpl = new PRREVertexTransferImpl(this, matMgr, vmod, vref, bForceUseClientMemory);
-    PRREFiledManaged::getConsole().SOLnOO("Done!");
+    getManagedConsole().SOLnOO("Done!");
 } // PRREObject3D()
 
 
@@ -1216,9 +1206,9 @@ PRREVertexTransfer::PRREVertexTransfer(
 */
 PRREVertexTransfer::PRREVertexTransfer()
 {
-    PRREFiledManaged::getConsole().OLnOI("PRREVertexTransfer() default ctor ...");
+    getManagedConsole().OLnOI("PRREVertexTransfer() default ctor ...");
     pImpl = PGENULL;
-    PRREFiledManaged::getConsole().SOLnOO("Done!");
+    getManagedConsole().SOLnOO("Done!");
 } // PRREObject3D()
 
 

@@ -28,10 +28,10 @@ using namespace std;
 
 PRREImage::PRREImageImpl::~PRREImageImpl()
 {
-    _pOwner->getConsole().OLnOI("~PRREImage() ...");
+    _pOwner->getManagedConsole().OLnOI("~PRREImage() ...");
     FlushResources();
     nImagesTotal--;
-    _pOwner->getConsole().SOLnOO("Done!");
+    _pOwner->getManagedConsole().SOLnOO("Done!");
     _pOwner = NULL;
 } // ~PRREImage()
 
@@ -68,15 +68,15 @@ TPRRE_PIXEL_COMPONENT_ORDER PRREImage::PRREImageImpl::getOriginalPixelComponentO
 
 TPRREbool PRREImage::PRREImageImpl::setPixelComponentOrder(TPRRE_PIXEL_COMPONENT_ORDER cord)
 {
-    _pOwner->getConsole().OLn("PRREImage::setPixelComponentOrder(%PXCO)", cord);
+    _pOwner->getManagedConsole().OLn("PRREImage::setPixelComponentOrder(%PXCO)", cord);
 
     if ( pPixels == PGENULL )
         return false;
 
     if ( cord == clrCompOrder )
     {
-        _pOwner->getConsole().OLn("  WARNING: nothing to do, equal component orders!");
-        _pOwner->getConsole().OLn("  clrCompOrder == %PXCO", clrCompOrder);
+        _pOwner->getManagedConsole().OLn("  WARNING: nothing to do, equal component orders!");
+        _pOwner->getManagedConsole().OLn("  clrCompOrder == %PXCO", clrCompOrder);
         return true;
     }
 
@@ -87,17 +87,17 @@ TPRREbool PRREImage::PRREImageImpl::setPixelComponentOrder(TPRRE_PIXEL_COMPONENT
     {
         bChanged = true;
         TPRREuint swapcount = PRREImageManager::getColorConversionSwapCount(cord, clrCompOrder);
-        _pOwner->getConsole().OLn("  swapcount = %d", swapcount);
+        _pOwner->getManagedConsole().OLn("  swapcount = %d", swapcount);
         while ( swapcount > 0 )
         {
-            _pOwner->getConsole().OI();
+            _pOwner->getManagedConsole().OI();
             retVal &= swapColors(clrCompOrder, cord, (TPRREbyte) swapcount);
             swapcount--;
-            _pOwner->getConsole().OO();
+            _pOwner->getManagedConsole().OO();
         }
     }
 
-    _pOwner->getConsole().OLn("");
+    _pOwner->getManagedConsole().OLn("");
     return retVal;
 } // setPixelComponentOrder()
 
@@ -374,16 +374,16 @@ TPRREuint PRREImage::PRREImageImpl::getIndexToPixel(TPRREuint x, TPRREuint y) co
 */
 TPRREbool PRREImage::PRREImageImpl::swapColors(TPRRE_PIXEL_COMPONENT_ORDER from, TPRRE_PIXEL_COMPONENT_ORDER to, TPRREbyte swapcount)
 {
-    _pOwner->getConsole().OLn("PRREImage::swapColors(%PXCO, %PXCO, %d)", from, to, swapcount);
+    _pOwner->getManagedConsole().OLn("PRREImage::swapColors(%PXCO, %PXCO, %d)", from, to, swapcount);
     if ( swapcount < 1 )
     {
-        _pOwner->getConsole().OLn("");
+        _pOwner->getManagedConsole().OLn("");
         return true;
     }
     else if ( swapcount == 2 )
     {
         to = getIntermediatePixelCompOrder(from, to);
-        _pOwner->getConsole().OLn("  New target order is %PXCO.", to);
+        _pOwner->getManagedConsole().OLn("  New target order is %PXCO.", to);
     }
     
     TPRREbyte dstR, dstG, dstB, dstA;
@@ -394,9 +394,9 @@ TPRREbool PRREImage::PRREImageImpl::swapColors(TPRRE_PIXEL_COMPONENT_ORDER from,
     if ( !setColorComponentsIndices(srcR, srcG, srcB, srcA, from) )
         return false;
 
-    _pOwner->getConsole().OLn("  dstR, srcR == %d, %d", dstR, srcR);
-    _pOwner->getConsole().OLn("  dstG, srcG == %d, %d", dstG, srcG);
-    _pOwner->getConsole().OLn("  dstB, srcB == %d, %d", dstB, srcB);
+    _pOwner->getManagedConsole().OLn("  dstR, srcR == %d, %d", dstR, srcR);
+    _pOwner->getManagedConsole().OLn("  dstG, srcG == %d, %d", dstG, srcG);
+    _pOwner->getManagedConsole().OLn("  dstB, srcB == %d, %d", dstB, srcB);
 
     clrCompOrder = to;
 
@@ -432,7 +432,7 @@ TPRREbool PRREImage::PRREImageImpl::swapColors(TPRRE_PIXEL_COMPONENT_ORDER from,
         }
     } // for i
 
-    _pOwner->getConsole().OLn("");
+    _pOwner->getManagedConsole().OLn("");
     return true;
 } // swapColors()
 
@@ -521,14 +521,14 @@ unsigned char* PRREImage::PRREImageImpl::readPaletteIndices(const HANDLE f)
         ReadFile(f, pPaletteIndexArray, nPaletteIndexArraySize, &bytesread, NULL);
         if ( bytesread != nPaletteIndexArraySize )
         {
-            _pOwner->getConsole().EOLn("ERROR: bytesread != nPaletteIndexArraySize: %d != %d", bytesread, nPaletteIndexArraySize);
+            _pOwner->getManagedConsole().EOLn("ERROR: bytesread != nPaletteIndexArraySize: %d != %d", bytesread, nPaletteIndexArraySize);
             delete[] pPaletteIndexArray;
             return NULL;
         }
     }
     catch (const std::bad_alloc&)
     {
-        _pOwner->getConsole().EOLn("  ERROR: failed to allocate pPaletteIndexArray!");
+        _pOwner->getManagedConsole().EOLn("  ERROR: failed to allocate pPaletteIndexArray!");
     }
 
     return pPaletteIndexArray;
@@ -543,7 +543,7 @@ TPRREbool PRREImage::PRREImageImpl::readBMP8pixels(const HANDLE f, const RGBQUAD
 {
     if ( (nWidth % 4) != 0 )
     {
-        _pOwner->getConsole().EOLn("ERROR: 8 bpp image nWidth doesnt divisible by 4 (%d mod 4 == %d)!",
+        _pOwner->getManagedConsole().EOLn("ERROR: 8 bpp image nWidth doesnt divisible by 4 (%d mod 4 == %d)!",
                            nWidth, nWidth % 4);
         return false;
     }
@@ -578,7 +578,7 @@ TPRREbool PRREImage::PRREImageImpl::readBMP4pixels(HANDLE f, const RGBQUAD* pale
 {
     if ( (nWidth % 8) != 0 )
     {
-        _pOwner->getConsole().EOLn("ERROR: 4 bpp image nWidth doesnt divisible by 8 (%d mod 8 == %d)!",
+        _pOwner->getManagedConsole().EOLn("ERROR: 4 bpp image nWidth doesnt divisible by 8 (%d mod 8 == %d)!",
                            nWidth, nWidth % 8);
         return false;
     }
@@ -619,7 +619,7 @@ TPRREbool PRREImage::PRREImageImpl::readBMP1pixels(HANDLE f, const RGBQUAD* pale
 {
     if ( (nWidth % 32) != 0 )
     {
-        _pOwner->getConsole().EOLn("ERROR: 1 bpp image nWidth doesnt divisible by 32 (%d mod 32 == %d)!",
+        _pOwner->getManagedConsole().EOLn("ERROR: 1 bpp image nWidth doesnt divisible by 32 (%d mod 32 == %d)!",
                            nWidth, nWidth % 32);
         return false;
     }
@@ -870,9 +870,9 @@ TPRREuint PRREImage::getUsedSystemMemory() const
 */
 PRREImage::PRREImage()
 {
-    getConsole().OLnOI("PRREImage() ...");
+    getManagedConsole().OLnOI("PRREImage() ...");
     pImpl = new PRREImageImpl(this);
-    getConsole().SOLnOO("> Done!");
+    getManagedConsole().SOLnOO("> Done!");
 } // PRREImage()
 
 
@@ -882,10 +882,10 @@ PRREImage::PRREImage()
 PRREImage::PRREImage(const PRREImage& img)
     : PRREFiledManaged( img )
 {
-    getConsole().OLnOI("PRREImage(img) ...");
+    getManagedConsole().OLnOI("PRREImage(img) ...");
     pImpl = new PRREImageImpl(*img.pImpl);
     pImpl->_pOwner = this;
-    getConsole().SOLnOO("> Done!");
+    getManagedConsole().SOLnOO("> Done!");
 } // PRREImage(...)
 
 

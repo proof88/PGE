@@ -12,7 +12,6 @@
 */
 
 #include "PRREallHeaders.h"
-#include "PRREBaseClass.h"
 #include "Material/PRREColor.h"
 #include "../internal/PRREuiText.h"
 
@@ -27,8 +26,7 @@
 /**
     PRRE User Interface Manager class.
 */
-class PRREuiManager :
-    public PRREBaseClass
+class PRREuiManager
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PRREuiManager is included")
@@ -42,6 +40,8 @@ public:
     static PRREuiManager& createAndGet();
 
     // ---------------------------------------------------------------------------
+
+    virtual CConsole& getConsole() const;
 
     /**
         Sets members to real values within the singleton instance.

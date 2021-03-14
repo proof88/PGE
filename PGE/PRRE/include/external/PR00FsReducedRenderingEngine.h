@@ -13,7 +13,6 @@
 
 #include "PRREallHeaders.h"
 #include "PRREtypes.h"
-#include "PRREBaseClass.h"
 #include "Display/PRREScreen.h"
 #include "Display/PRREWindow.h"
 #include "Hardware/PRREhwInfo.h"
@@ -42,8 +41,7 @@ enum TPRRE_RENDERER
     This initializes the engine.
 */
 
-class PR00FsReducedRenderingEngine :
-    public PRREBaseClass
+class PR00FsReducedRenderingEngine
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PR00FsReducedRenderingEngine is included")
@@ -53,6 +51,8 @@ public:
     static PR00FsReducedRenderingEngine& createAndGet();    /**< Creates and gets the singleton implementation instance. */
 
     // ---------------------------------------------------------------------------
+
+    virtual CConsole& getConsole() const;
 
     virtual TPRREuint initialize(
         TPRRE_RENDERER rndr,
