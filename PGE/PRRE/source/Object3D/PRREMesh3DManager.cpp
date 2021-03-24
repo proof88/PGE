@@ -1455,6 +1455,31 @@ PRREMesh3DManager::~PRREMesh3DManager()
 
 
 /**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+CConsole& PRREMesh3DManager::getConsole() const
+{
+    return CConsole::getConsoleInstance(getLoggerModuleName());
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+const char* PRREMesh3DManager::getLoggerModuleName() const
+{
+    return "PRREMesh3DManager";
+} // getLoggerModuleName()
+
+
+/**
     Tells whether the object is correctly initialized or not.
     @return True if the given TextureManager instance was initialized correctly, false otherwise.
 */

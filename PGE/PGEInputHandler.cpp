@@ -42,6 +42,9 @@ public:
 
     virtual ~PGEInputMouseImpl();
 
+    CConsole&   getConsole() const;            /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
+
     bool initialize(HWND hWindow = NULL);
 
     bool isPreciseMovementAvailable() const;
@@ -63,7 +66,6 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    CConsole& con;
     RAWINPUTDEVICE Rid[1];
     int  mx, my;
     int  tempMovementX, tempMovementY;
@@ -92,6 +94,31 @@ PGEInputMouseImpl::~PGEInputMouseImpl()
 
 
 /**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+CConsole& PGEInputMouseImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance(getLoggerModuleName());
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+const char* PGEInputMouseImpl::getLoggerModuleName() const
+{
+    return "PGEInputMouse";
+} // getLoggerModuleName()
+
+
+/**
     Initializes mouse handling.
 
     @param hWindow The window of which input should be handled.
@@ -103,15 +130,15 @@ PGEInputMouseImpl::~PGEInputMouseImpl()
 */
 bool PGEInputMouseImpl::initialize(HWND hWindow)
 {
-    con.OLn("PGEInputMouse::initialize()");
+    getConsole().OLn("PGEInputMouse::initialize()");
     if ( hWindow != PGENULL )
     {
         Rid[0].hwndTarget = hWindow;
         bPreciseMovementAvailable = (RegisterRawInputDevices(Rid, 1, sizeof(Rid[0])) == TRUE);
         if ( bPreciseMovementAvailable )
-            con.SOLn("  Raw input device registration okay!");
+            getConsole().SOLn("  Raw input device registration okay!");
         else
-            con.EOLn("  Raw input device registration failed!");
+            getConsole().EOLn("  Raw input device registration failed!");
         SetPreciseMovementActive(bPreciseMovementAvailable);
         return bPreciseMovementAvailable;
     }
@@ -204,8 +231,7 @@ void PGEInputMouseImpl::ApplyRelativeInput()
 // ############################### PRIVATE ###############################
 
 
-PGEInputMouseImpl::PGEInputMouseImpl() :
-    con( CConsole::getConsoleInstance() )
+PGEInputMouseImpl::PGEInputMouseImpl()
 {
     bPreciseMovementActive = bPreciseMovementAvailable = false;
     Rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC; 
@@ -215,8 +241,7 @@ PGEInputMouseImpl::PGEInputMouseImpl() :
 }
 
 
-PGEInputMouseImpl::PGEInputMouseImpl(const PGEInputMouseImpl&) :
-    con( CConsole::getConsoleInstance() )
+PGEInputMouseImpl::PGEInputMouseImpl(const PGEInputMouseImpl&)
 {
 
 } 
@@ -248,6 +273,37 @@ PGEInputMouse& PGEInputMouse::createAndGet()
 } // createAndGet()
 
 
+/**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
+#pragma warning(disable:4717)
+CConsole& PGEInputMouse::getConsole() const
+{
+    return createAndGet().getConsole();
+    #pragma warning(default:4717)
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
+#pragma warning(disable:4717)
+const char* PGEInputMouse::getLoggerModuleName() const
+{
+    return createAndGet().getLoggerModuleName();
+    #pragma warning(default:4717)
+} // getLoggerModuleName()
+
+
 // ############################## PROTECTED ##############################
 
 
@@ -269,6 +325,9 @@ public:
 
     virtual ~PGEInputKeyboardImpl();
 
+    CConsole&   getConsole() const;            /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
+
     bool isKeyPressed(unsigned char key) const;
     void SetKeyPressed(unsigned char key, bool state);
 
@@ -278,7 +337,6 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    CConsole& con;
     bool bKeys[256];
 
     // ---------------------------------------------------------------------------
@@ -303,6 +361,31 @@ PGEInputKeyboardImpl::~PGEInputKeyboardImpl()
 }
 
 
+/**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+CConsole& PGEInputKeyboardImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance(getLoggerModuleName());
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+const char* PGEInputKeyboardImpl::getLoggerModuleName() const
+{
+    return "PGEInputKeyboard";
+} // getLoggerModuleName()
+
+
 bool PGEInputKeyboardImpl::isKeyPressed(unsigned char key) const
 {
     return bKeys[key];
@@ -320,16 +403,14 @@ void PGEInputKeyboardImpl::SetKeyPressed(unsigned char key, bool state)
 // ############################### PRIVATE ###############################
 
 
-PGEInputKeyboardImpl::PGEInputKeyboardImpl() :
-    con( CConsole::getConsoleInstance() )
+PGEInputKeyboardImpl::PGEInputKeyboardImpl()
 {
     for (int i = 0; i < 256; i++)
         bKeys[i] = false;    
 }
 
 
-PGEInputKeyboardImpl::PGEInputKeyboardImpl(const PGEInputKeyboardImpl&) :
-    con( CConsole::getConsoleInstance() )
+PGEInputKeyboardImpl::PGEInputKeyboardImpl(const PGEInputKeyboardImpl&)
 {
 
 }         
@@ -361,6 +442,37 @@ PGEInputKeyboard& PGEInputKeyboard::createAndGet()
 } // createAndGet()
 
 
+/**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
+#pragma warning(disable:4717)
+CConsole& PGEInputKeyboard::getConsole() const
+{
+    return createAndGet().getConsole();
+    #pragma warning(default:4717)
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
+#pragma warning(disable:4717)
+const char* PGEInputKeyboard::getLoggerModuleName() const
+{
+    return createAndGet().getLoggerModuleName();
+    #pragma warning(default:4717)
+} // getLoggerModuleName()
+
+
 
 // ############################## PROTECTED ##############################
 
@@ -386,6 +498,9 @@ public:
 
     virtual ~PGEInputHandlerImpl();
 
+    CConsole&   getConsole() const;            /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
+
     bool initialize(HWND hWindow = PGENULL);
 
     PGEInputKeyboard& getKeyboard() const;
@@ -397,7 +512,6 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    CConsole&         con;
     PGEInputKeyboard& keyboard;
     PGEInputMouse&    mouse;
 
@@ -424,6 +538,31 @@ PGEInputHandlerImpl::~PGEInputHandlerImpl()
 
 
 /**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+CConsole& PGEInputHandlerImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance(getLoggerModuleName());
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+const char* PGEInputHandlerImpl::getLoggerModuleName() const
+{
+    return "PGEInputHandler";
+} // getLoggerModuleName()
+
+
+/**
     Initializes input handling.
 
     @param hWindow The window of which input should be handled. Optional.
@@ -434,9 +573,9 @@ PGEInputHandlerImpl::~PGEInputHandlerImpl()
 */
 bool PGEInputHandlerImpl::initialize(HWND hWindow)
 {
-    con.OLnOI("PGEInputHandler::initialize()");
+    getConsole().OLnOI("PGEInputHandler::initialize()");
     bool b = mouse.initialize(hWindow);
-    con.OLnOO("");
+    getConsole().OLnOO("");
     return b;
 } // initialize()
 
@@ -459,7 +598,6 @@ PGEInputMouse& PGEInputHandlerImpl::getMouse() const
 
 
 PGEInputHandlerImpl::PGEInputHandlerImpl() :
-    con( CConsole::getConsoleInstance() ),
     keyboard( PGEInputKeyboard::createAndGet() ),
     mouse( PGEInputMouse::createAndGet() )
 {
@@ -468,7 +606,6 @@ PGEInputHandlerImpl::PGEInputHandlerImpl() :
 
 
 PGEInputHandlerImpl::PGEInputHandlerImpl(const PGEInputHandlerImpl&) :
-    con( CConsole::getConsoleInstance() ),
     keyboard( PGEInputKeyboard::createAndGet() ),
     mouse( PGEInputMouse::createAndGet() )
 {};     
@@ -496,6 +633,37 @@ PGEInputHandler& PGEInputHandler::createAndGet()
     static PGEInputHandlerImpl inHndlrInstance;
     return inHndlrInstance;
 } // createAndGet()
+
+
+/**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
+#pragma warning(disable:4717)
+CConsole& PGEInputHandler::getConsole() const
+{
+    return createAndGet().getConsole();
+    #pragma warning(default:4717)
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
+#pragma warning(disable:4717)
+const char* PGEInputHandler::getLoggerModuleName() const
+{
+    return createAndGet().getLoggerModuleName();
+    #pragma warning(default:4717)
+} // getLoggerModuleName()
 
 
 // ############################## PROTECTED ##############################

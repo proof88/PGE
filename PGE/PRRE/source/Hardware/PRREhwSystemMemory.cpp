@@ -31,7 +31,8 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    CConsole& getConsole() const;
+    CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     TPRREulong getFreeSystemMemory();
     TPRREulong getTotalSystemMemory() const;
@@ -75,10 +76,29 @@ PRREhwSystemMemoryImpl& PRREhwSystemMemoryImpl::get()
 } // get()
 
 
+/**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
 CConsole& PRREhwSystemMemoryImpl::getConsole() const
 {
-    return CConsole::getConsoleInstance("PRREhwSystemMemory");
+    return CConsole::getConsoleInstance(getLoggerModuleName());
 } // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+const char* PRREhwSystemMemoryImpl::getLoggerModuleName() const
+{
+    return "PRREhwSystemMemory";
+} // getLoggerModuleName()
 
 
 /**

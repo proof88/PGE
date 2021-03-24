@@ -481,6 +481,31 @@ PRREMesh3D::~PRREMesh3D()
 
 
 /**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+CConsole& PRREMesh3D::getManagedConsole() const
+{
+    return CConsole::getConsoleInstance(getLoggerModuleName());
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+const char* PRREMesh3D::getLoggerModuleName() const
+{
+    return "PRREMesh3D";
+} // getLoggerModuleName()
+
+
+/**
     Tells if the mesh is a level-1 parent mesh.
     A mesh cannot be both level-1 and level-2 at the same time.
     A level-1 mesh does not have vertex data on its own, but its level-2 submeshes own vertex data.

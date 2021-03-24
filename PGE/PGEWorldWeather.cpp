@@ -192,6 +192,9 @@ public:
 
     virtual ~PGEWorldWeatherImpl();
 
+    CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
+
     bool initialize(
         int numCellsX, int numCellsY, int numCellsZ,
         int cellSize = WorldWeatherCell::PGE_WORLD_WEATHER_DEF_CELL_SIZE);
@@ -204,7 +207,6 @@ protected:
 
 private:
 
-    CConsole& con;
     bool bInitialized;
     WorldWeatherCell* cells;          /**< Cells array. */
     int nCellsX, nCellsY, nCellsZ;    /**< Number of cells horizontally, vertically, and over Z. */
@@ -232,16 +234,41 @@ PGEWorldWeatherImpl::~PGEWorldWeatherImpl()
 
 
 /**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+CConsole& PGEWorldWeatherImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance(getLoggerModuleName());
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+const char* PGEWorldWeatherImpl::getLoggerModuleName() const
+{
+    return "PGEWorldWeather";
+} // getLoggerModuleName()
+
+
+/**
     Initializes the weather.
 */
 bool PGEWorldWeatherImpl::initialize(int numCellsX, int numCellsY, int numCellsZ, int cellSize)   
 {
-    con.OLnOI("PGEWorldWeather::initialize(%d, %d, %d, %d)", numCellsX, numCellsY, numCellsZ, cellSize);
+    getConsole().OLnOI("PGEWorldWeather::initialize(%d, %d, %d, %d)", numCellsX, numCellsY, numCellsZ, cellSize);
 
     if ( bInitialized )
     {
-        con.SOLnOO("  > already initialized!");
-        con.OLn("");
+        getConsole().SOLnOO("  > already initialized!");
+        getConsole().OLn("");
         return true;
     }
 
@@ -253,15 +280,15 @@ bool PGEWorldWeatherImpl::initialize(int numCellsX, int numCellsY, int numCellsZ
         nCellsZ = numCellsZ;
         cells = new WorldWeatherCell[nCellsX * nCellsY * nCellsZ];
         bInitialized = true;
-        con.OLn("allocated %d Bytes for weather data", sizeof(WorldWeatherCell) * nCellsX * nCellsY * nCellsZ);
-        con.SOLnOO("> initialized!");
-        con.OLn("");
+        getConsole().OLn("allocated %d Bytes for weather data", sizeof(WorldWeatherCell) * nCellsX * nCellsY * nCellsZ);
+        getConsole().SOLnOO("> initialized!");
+        getConsole().OLn("");
         return true;
     }
     catch (const std::bad_alloc&)
     {
-        con.EOLnOO("ERROR: memory allocation failure!");
-        con.OLn("");
+        getConsole().EOLnOO("ERROR: memory allocation failure!");
+        getConsole().OLn("");
         return false;
     }
 }
@@ -275,7 +302,7 @@ bool PGEWorldWeatherImpl::isInitialized() const
 
 void PGEWorldWeatherImpl::Shutdown()
 {
-    con.OLn("PGEWorldWeather::Shutdown()");
+    getConsole().OLn("PGEWorldWeather::Shutdown()");
     bInitialized = false;
     delete[] cells;
     cells = NULL;
@@ -289,7 +316,6 @@ void PGEWorldWeatherImpl::Shutdown()
 
 
 PGEWorldWeatherImpl::PGEWorldWeatherImpl() :
-    con( CConsole::getConsoleInstance() ),
     bInitialized( false ),
     cells( NULL ),
     nCellsX( 0 ), nCellsY( 0 ), nCellsZ( 0 )
@@ -299,7 +325,6 @@ PGEWorldWeatherImpl::PGEWorldWeatherImpl() :
 
 
 PGEWorldWeatherImpl::PGEWorldWeatherImpl(const PGEWorldWeatherImpl&) :
-    con( CConsole::getConsoleInstance() ),
     bInitialized( false ),
     cells( NULL ),
     nCellsX( 0 ), nCellsY( 0 ), nCellsZ( 0 )
@@ -332,6 +357,37 @@ PGEWorldWeather& PGEWorldWeather::createAndGet()
     static PGEWorldWeatherImpl worldWeatherInstance;
     return worldWeatherInstance;
 }
+
+
+/**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
+#pragma warning(disable:4717)
+CConsole& PGEWorldWeather::getConsole() const
+{
+    return createAndGet().getConsole();
+    #pragma warning(default:4717)
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
+#pragma warning(disable:4717)
+const char* PGEWorldWeather::getLoggerModuleName() const
+{
+    return createAndGet().getLoggerModuleName();
+    #pragma warning(default:4717)
+} // getLoggerModuleName()
 
 
 // ############################## PROTECTED ##############################

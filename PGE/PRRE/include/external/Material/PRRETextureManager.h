@@ -120,7 +120,11 @@ class PRRETexture :
 
 public:
     virtual ~PRRETexture();
-    
+
+    CConsole&   getManagedConsole() const;            /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
+
+   
     TPRRE_TEX_FORMAT getInternalFormat() const;    /**< Gets the internal texture format, including compression mode. */
     TPRREuint        getInternalNum() const;       /**< Gets the internal texture ID. */
     
@@ -216,6 +220,9 @@ public:
 
     PRRETextureManager();             /**< Sets default values. */ /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRRETextureManager();
+
+    CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     TPRREbool isInitialized() const;  /**< Tells whether the object is correctly initialized or not. */
   

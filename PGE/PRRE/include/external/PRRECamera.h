@@ -12,6 +12,7 @@
 */
 
 #include "PRREallHeaders.h"
+#include "../../../../../CConsole/CConsole/src/CConsole.h"
 #include "Math/PRREVector.h"
 #include "Math/PRREPosUpTarget.h"
 #include "Material/PRREColor.h"
@@ -58,7 +59,8 @@ public:
 
     virtual ~PRRECamera();
 
-    virtual CConsole& getConsole() const;
+    CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     const TRECT& getViewport() const;           /**< Gets camera viewport. */
     void SetViewport(

@@ -61,6 +61,11 @@ using namespace std;
 
 #pragma warning(disable:4100)  /* unreferenced formal parameter */
 
+static CConsole& getConsole()
+{
+    return CConsole::getConsoleInstance();
+}
+
 /**
     Entry point for UnitTests.
 
@@ -68,12 +73,12 @@ using namespace std;
 */
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-
-    CConsole& con = CConsole::getConsoleInstance();
-    con.Initialize(CON_TITLE, true);
-    con.OLn(CON_TITLE);
-    con.L();
-    con.OLn("");
+    getConsole().Initialize(CON_TITLE, true);
+    //getConsole().SetLoggingState("4LLM0DUL3S", true);
+    getConsole().SetErrorsAlwaysOn(false);
+    getConsole().OLn(CON_TITLE);
+    getConsole().L();
+    getConsole().OLn("");
 
     PFLTest                    testPFL;
     PGEcfgVariableTest         testPGEcfgVariable;
@@ -178,70 +183,72 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     vector<UnitTest*>::size_type nTotalPassedSubTests = 0;
     for (vector<UnitTest*>::size_type i = 0; i < tests.size(); ++i)
     {
+        getConsole().OLn("Running test %d / %d ... ", i+1, tests.size());
         tests[i]->run();
     }
 
-    con.OLn("");
+    // summarizing
+    getConsole().OLn("");
     for (vector<UnitTest*>::size_type i = 0; i < tests.size(); ++i)
     {
         if ( tests[i]->isPassed() )
         {
             ++nSucceededTests;
-            con.SOn();
+            getConsole().SOn();
             if ( tests[i]->getName().empty() )
             {
-                con.OLn("Test passed: %s(%d)!", tests[i]->getFile().c_str(), tests[i]->getSubTestCount());
+                getConsole().OLn("Test passed: %s(%d)!", tests[i]->getFile().c_str(), tests[i]->getSubTestCount());
             }
             else if ( tests[i]->getFile().empty() )
             {
-                con.OLn("Test passed: %s(%d)!", tests[i]->getName().c_str(), tests[i]->getSubTestCount());
+                getConsole().OLn("Test passed: %s(%d)!", tests[i]->getName().c_str(), tests[i]->getSubTestCount());
             }
             else
             {
-                con.OLn("Test passed: %s(%d) in %s!", tests[i]->getName().c_str(), tests[i]->getSubTestCount(), tests[i]->getFile().c_str());
+                getConsole().OLn("Test passed: %s(%d) in %s!", tests[i]->getName().c_str(), tests[i]->getSubTestCount(), tests[i]->getFile().c_str());
             }
-            con.SOff();
+            getConsole().SOff();
         }
         else
         {
-            con.EOn();
+            getConsole().EOn();
             if ( tests[i]->getName().empty() )
             {
-                con.OLn("Test failed: %s", tests[i]->getFile().c_str());
+                getConsole().OLn("Test failed: %s", tests[i]->getFile().c_str());
             }
             else if ( tests[i]->getFile().empty() )
             {
-                con.OLn("Test failed: %s", tests[i]->getName().c_str());
+                getConsole().OLn("Test failed: %s", tests[i]->getName().c_str());
             }
             else
             {
-                con.OLn("Test failed: %s in %s", tests[i]->getName().c_str(), tests[i]->getFile().c_str());
+                getConsole().OLn("Test failed: %s in %s", tests[i]->getName().c_str(), tests[i]->getFile().c_str());
             }
-            con.Indent();
+            getConsole().Indent();
             for (vector<string>::size_type j = 0; j < tests[i]->getMessages().size(); ++j)
             {
-                con.OLn("%s", tests[i]->getMessages()[j].c_str());
+                getConsole().OLn("%s", tests[i]->getMessages()[j].c_str());
             }
-            con.Outdent();
-            con.EOff();
+            getConsole().Outdent();
+            getConsole().EOff();
         }
         nTotalSubTests += tests[i]->getSubTestCount();
         nTotalPassedSubTests += tests[i]->getPassedSubTestCount();
     }
 
-    con.OLn("");
-    con.OLn("========================================================");
+    getConsole().OLn("");
+    getConsole().OLn("========================================================");
     if ( nSucceededTests == tests.size() )
     {
-        con.SOn();
+        getConsole().SOn();
     }
     else
     {
-        con.EOn();
+        getConsole().EOn();
     }
-    con.OLn("Passed tests: %d / %d (SubTests: %d / %d)", nSucceededTests, tests.size(), nTotalPassedSubTests, nTotalSubTests);
-    con.NOn();
-    con.OLn("========================================================");
+    getConsole().OLn("Passed tests: %d / %d (SubTests: %d / %d)", nSucceededTests, tests.size(), nTotalPassedSubTests, nTotalSubTests);
+    getConsole().NOn();
+    getConsole().OLn("========================================================");
     
     system("pause");
 

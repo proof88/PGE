@@ -19,10 +19,9 @@ using namespace std;
 // ############################### PUBLIC ################################
 
 
-PGESysCFG::PGESysCFG(const char* gameTitle) :
-    con( CConsole::getConsoleInstance() )
+PGESysCFG::PGESysCFG(const char* gameTitle)
 {
-    con.OLnOI("PGESysCFG::PGESysCFG(%s)", gameTitle);
+    getConsole().OLnOI("PGESysCFG::PGESysCFG(%s)", gameTitle);
     
     MAX_PATH;
     nActiveProfile = -1;
@@ -32,7 +31,7 @@ PGESysCFG::PGESysCFG(const char* gameTitle) :
 
     if ( !findMyDocsFolder() )
     {
-        con.EOLnOO("ERROR: couldn't find Documents folder!");
+        getConsole().EOLnOO("ERROR: couldn't find Documents folder!");
         return;
     }
 
@@ -41,7 +40,7 @@ PGESysCFG::PGESysCFG(const char* gameTitle) :
     {
         f.close();
         sLangFileName = std::string(PGE_LANG_FOLDER) + "english.txt";
-        con.EOLnOO("ERROR: couldn't find "PGE_1ST_CFG_FILENAME" !");
+        getConsole().EOLnOO("ERROR: couldn't find "PGE_1ST_CFG_FILENAME" !");
         return;
     } // f.fail()
 
@@ -68,18 +67,18 @@ PGESysCFG::PGESysCFG(const char* gameTitle) :
         sPathToProfiles += "\\";
         SetCurrentDirectory( pOrigCurrDirr );
     }
-    con.OLn("user profile dir is: %s", sPathToProfiles.c_str());
+    getConsole().OLn("user profile dir is: %s", sPathToProfiles.c_str());
 
     LoadProfilesList();
 
-    con.SOLnOO("> done!");
+    getConsole().SOLnOO("> done!");
     
 } // PGESysCFG(...)
 
 
 PGESysCFG::~PGESysCFG()
 {
-    con.OLn("PGESysCFG::~PGESysCFG()");
+    getConsole().OLn("PGESysCFG::~PGESysCFG()");
     for (int i = 0; i < nProfilesCount; i++)
     {
         delete sFoundProfiles[i];
@@ -88,6 +87,31 @@ PGESysCFG::~PGESysCFG()
     delete[] sFoundProfiles;
     delete[] sFoundProfilePlayerNames;
 } // ~PGESysCFG()
+
+
+/**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+CConsole& PGESysCFG::getConsole() const
+{
+    return CConsole::getConsoleInstance(getLoggerModuleName());
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+const char* PGESysCFG::getLoggerModuleName() const
+{
+    return "PGESysCFG";
+} // getLoggerModuleName()
 
 
 /**
@@ -115,11 +139,11 @@ string PGESysCFG::getLangFileName() const
 */
 int PGESysCFG::readLanguageData(string** &langTable) const
 {
-    con.OLnOI("PGESysCFG::readLanguageData(...)");
+    getConsole().OLnOI("PGESysCFG::readLanguageData(...)");
     ifstream f( sLangFileName.c_str() );
     if ( f.fail() )
     {
-        con.EOLnOO("ERROR: couldn't open lang file: %s!", sLangFileName.c_str());
+        getConsole().EOLnOO("ERROR: couldn't open lang file: %s!", sLangFileName.c_str());
         return 0;
     }
 
@@ -138,7 +162,7 @@ int PGESysCFG::readLanguageData(string** &langTable) const
     ifstream g( sLangFileName.c_str() );
     if ( g.fail() )
     {
-        con.EOLnOO("ERROR: couldn't open lang file (2nd time): %s!", sLangFileName.c_str());
+        getConsole().EOLnOO("ERROR: couldn't open lang file (2nd time): %s!", sLangFileName.c_str());
         return 0;
     }
 
@@ -159,7 +183,7 @@ int PGESysCFG::readLanguageData(string** &langTable) const
     }
     catch (const std::bad_alloc&)
     {
-        con.EOLnOO("ERROR: memory allocation failure during lang file read!");
+        getConsole().EOLnOO("ERROR: memory allocation failure during lang file read!");
         if ( langTable != NULL )
         {
             for (int i = 0; i < n; i++)
@@ -172,7 +196,7 @@ int PGESysCFG::readLanguageData(string** &langTable) const
     }
                                     
 
-    con.SOLnOO("> done!");
+    getConsole().SOLnOO("> done!");
 
     return n;
 } // readLanguageData()
@@ -244,7 +268,7 @@ int PGESysCFG::addProfile(const char* sUser, const char* sNick)
     if ( (sUser == NULL) || (sNick == NULL) )
         return -2;
 
-    con.OLnOI("PGESysCFG::addProfile(%s, %s)", sUser, sNick);
+    getConsole().OLnOI("PGESysCFG::addProfile(%s, %s)", sUser, sNick);
 
     const std::string sFileToCreate = getPathToProfiles() + sUser + "\\" + sUser + ".cfg";
     const std::string sDirToCreate = getPathToProfiles() + sUser;
@@ -260,20 +284,20 @@ int PGESysCFG::addProfile(const char* sUser, const char* sNick)
 
     if ( bSameUserFound )
     {
-        con.EOLnOO("ERROR: same user found!");
+        getConsole().EOLnOO("ERROR: same user found!");
         return -1;
     }
 
     if ( _mkdir( sDirToCreate.c_str() ) != 0 )
     {
-        con.EOLnOO("ERROR: couldn't create dir: %s", sDirToCreate.c_str());
+        getConsole().EOLnOO("ERROR: couldn't create dir: %s", sDirToCreate.c_str());
         return -2;
     }
 
     ofstream f_cfg( sFileToCreate );
     if ( f_cfg.fail() )
     {
-        con.EOLnOO("ERROR: couldn't create file: %s", sFileToCreate.c_str());
+        getConsole().EOLnOO("ERROR: couldn't create file: %s", sFileToCreate.c_str());
         return -2;
     }
 
@@ -287,13 +311,13 @@ int PGESysCFG::addProfile(const char* sUser, const char* sNick)
     {
         if ( *(sNewProfileList[i]) == sUser )
         {
-            con.SOLnOO("> done!");
+            getConsole().SOLnOO("> done!");
             return i;
         }
     }
 
     // if we have reached this point, we couldn't find the added user, so return error
-    con.EOLnOO("ERROR: couldn't find the added profile!");
+    getConsole().EOLnOO("ERROR: couldn't find the added profile!");
     return -2;
 } // addProfile()
 
@@ -314,15 +338,15 @@ int PGESysCFG::addProfile(const char* sUser, const char* sNick)
 */
 int PGESysCFG::deleteProfile(int nIndex)
 {
-    con.OLnOI("PGESysCFG::deleteProfile(%d)", nIndex);
+    getConsole().OLnOI("PGESysCFG::deleteProfile(%d)", nIndex);
     if ( (nIndex < 0) || (nIndex >= getProfilesCount()) )
     {
-        con.EOLnOO("ERROR: invalid index!");
+        getConsole().EOLnOO("ERROR: invalid index!");
         return -1;
     }
     if ( nIndex == getProfile() )
     {
-        con.OLn("deleting current profile ...");
+        getConsole().OLn("deleting current profile ...");
         SetProfile( -1 );
     }
     const string sUserToDelete = *getProfilesList()[nIndex];
@@ -331,7 +355,7 @@ int PGESysCFG::deleteProfile(int nIndex)
     
     if ( remove( sFileToDelete.c_str() ) != 0 )
     {
-        con.EOLnOO("ERROR: couldn't delete file: %s", sFileToDelete.c_str());
+        getConsole().EOLnOO("ERROR: couldn't delete file: %s", sFileToDelete.c_str());
         return -2;
     }
 
@@ -342,13 +366,13 @@ int PGESysCFG::deleteProfile(int nIndex)
         // at this point the cfg is deleted, so not a big problem if the directory can't be deleted.
         // if the user stores other files in that dir, those won't be deleted thus the dir can't be deleted.
         // _rmdir() only deletes empty folders, so the functionality is okay.
-        con.EOLnOO("WARNING: couldn't delete dir: %s", sDirToDelete.c_str());
+        getConsole().EOLnOO("WARNING: couldn't delete dir: %s", sDirToDelete.c_str());
         retVal = -3;
     }
 
     LoadProfilesList();
 
-    con.SOLnOO("> done!");
+    getConsole().SOLnOO("> done!");
 
     return retVal;
 } // deleteProfile()
@@ -370,20 +394,20 @@ int PGESysCFG::getProfile() const
 */
 void PGESysCFG::SetProfile(int nIndex)
 {
-    con.OLnOI("PGESysCFG::SetProfile(%d)", nIndex);
+    getConsole().OLnOI("PGESysCFG::SetProfile(%d)", nIndex);
     if ( nIndex >= getProfilesCount() )
     {
-        con.EOLnOO("ERROR: invalid index!");
+        getConsole().EOLnOO("ERROR: invalid index!");
         return;
     }
     if ( nIndex == getProfile() )
     {
-        con.OLnOO("current profile index was given, return.");
+        getConsole().OLnOO("current profile index was given, return.");
         return;
     }
     if ( nIndex < -1 )
     {
-        con.EOLnOO("ERROR: invalid index!");
+        getConsole().EOLnOO("ERROR: invalid index!");
         return;
     }
 
@@ -391,17 +415,17 @@ void PGESysCFG::SetProfile(int nIndex)
     if ( nIndex == -1 )
     {
         ClearVars();
-        con.OO();
+        getConsole().OO();
         return;
     }
 
     // at this point, a valid, actual profile index was given which is not the currently set profile
     if ( !readConfiguration() )
     {
-        con.EOLnOO("ERROR: readConfiguration() failed!");
+        getConsole().EOLnOO("ERROR: readConfiguration() failed!");
         nActiveProfile = -1;
     }
-    con.SOLnOO("> done!");
+    getConsole().SOLnOO("> done!");
 } // SetActiveProfile()
 
 
@@ -476,10 +500,10 @@ int PGESysCFG::getVarsCount() const
 */
 bool PGESysCFG::readConfiguration()
 {
-    con.OLnOI("PGESysCFG::readConfiguration()");
+    getConsole().OLnOI("PGESysCFG::readConfiguration()");
     if ( getProfile() == -1 )
     {
-        con.EOLnOO("ERROR: current profile index is -1!");
+        getConsole().EOLnOO("ERROR: current profile index is -1!");
         return false;
     }
 
@@ -488,7 +512,7 @@ bool PGESysCFG::readConfiguration()
 
     if ( f_cfg.fail() )
     {
-        con.EOLnOO("ERROR: couldn't open file: %s", sFile.c_str());
+        getConsole().EOLnOO("ERROR: couldn't open file: %s", sFile.c_str());
         return false;
     }
 
@@ -497,7 +521,7 @@ bool PGESysCFG::readConfiguration()
     if ( tmp != PGE_SYS_CFG_FILE_MAGIC_START )
     {
         f_cfg.close();
-        con.EOLnOO("ERROR: no magic start!");
+        getConsole().EOLnOO("ERROR: no magic start!");
         return false;
     }    
 
@@ -552,7 +576,7 @@ bool PGESysCFG::readConfiguration()
     f_cfg.close();
     // log number of parsed cvars
 
-    con.SOLnOO("> done!");
+    getConsole().SOLnOO("> done!");
     return true;
 } // readConfiguration()
 
@@ -564,10 +588,10 @@ bool PGESysCFG::readConfiguration()
 */
 bool PGESysCFG::writeConfiguration()
 {
-    con.OLnOI("PGESysCFG::writeConfiguration()");
+    getConsole().OLnOI("PGESysCFG::writeConfiguration()");
     if ( getProfile() == -1 )
     {
-        con.EOLnOO("ERROR: current profile index is -1!");
+        getConsole().EOLnOO("ERROR: current profile index is -1!");
         return false;
     }
 
@@ -575,14 +599,14 @@ bool PGESysCFG::writeConfiguration()
     ofstream f_cfg( sFile );
     if ( f_cfg.fail() )
     {
-        con.EOLnOO("ERROR: couldn't open file: %s", sFile.c_str());
+        getConsole().EOLnOO("ERROR: couldn't open file: %s", sFile.c_str());
         return false;
     }
 
     WriteConfiguration(f_cfg, *sFoundProfiles[getProfile()], "");
     f_cfg.close();
 
-    con.SOLnOO("> done!");
+    getConsole().SOLnOO("> done!");
 
     return true;
 } // writeConfiguration()
@@ -594,15 +618,13 @@ bool PGESysCFG::writeConfiguration()
 // ############################### PRIVATE ###############################
 
 
-PGESysCFG::PGESysCFG() :
-    con( CConsole::getConsoleInstance() )       /**< Cannot create like this. */
+PGESysCFG::PGESysCFG()
 {
 
 }
 
 
-PGESysCFG::PGESysCFG(const PGESysCFG&) :
-    con( CConsole::getConsoleInstance() )
+PGESysCFG::PGESysCFG(const PGESysCFG&)
 {
 
 } 
@@ -694,7 +716,7 @@ bool PGESysCFG::getPlayerNameFromFile(const char* cFilename, std::string& sPlaye
 */
 void PGESysCFG::LoadProfilesList()
 {
-    con.OLnOI("PGESysCFG::LoadProfilesList() ...");
+    getConsole().OLnOI("PGESysCFG::LoadProfilesList() ...");
     // save current user
     string sOriginalCurrentProfileUser;
     if ( getProfile() != -1 )
@@ -707,7 +729,7 @@ void PGESysCFG::LoadProfilesList()
     GetCurrentDirectory(1024, pCurrDirr);
     if ( !SetCurrentDirectory(sPathToProfiles.c_str()) && (GetLastError() != ERROR_SUCCESS) )
     {
-        con.EOLnOO("ERROR: couldn't set current dir to: %s", sPathToProfiles.c_str());
+        getConsole().EOLnOO("ERROR: couldn't set current dir to: %s", sPathToProfiles.c_str());
         return;
     }
 
@@ -717,7 +739,7 @@ void PGESysCFG::LoadProfilesList()
     HANDLE hDirSearch = FindFirstFile("*.*", &dirdata);
     if ( hDirSearch == INVALID_HANDLE_VALUE )
     {
-        con.EOLnOO("ERROR: hDirSearch == INVALID_HANDLE_VALUE");
+        getConsole().EOLnOO("ERROR: hDirSearch == INVALID_HANDLE_VALUE");
         return;
     }
 
@@ -772,7 +794,7 @@ void PGESysCFG::LoadProfilesList()
                                     sFoundProfilePlayerNames = new string*[nProfilesCount]();
                                 }
                                 sFoundProfilePlayerNames[nProfilesCount-1] = new string(sPlayerName);
-                                con.OLn("added user %s ~ %s", dirdata.cFileName, sPlayerName.c_str());
+                                getConsole().OLn("added user %s ~ %s", dirdata.cFileName, sPlayerName.c_str());
                                 if ( getProfile() != -1 )
                                 {   // update current profile index that may change during this function
                                     if ( *(sFoundProfiles[nProfilesCount-1]) == sOriginalCurrentProfileUser )
@@ -800,7 +822,7 @@ void PGESysCFG::LoadProfilesList()
                                 }
                                 delete[] sFoundProfiles;
                                 delete[] sFoundProfilePlayerNames;
-                                con.EOLnOO("ERROR: memory allocation failure!");
+                                getConsole().EOLnOO("ERROR: memory allocation failure!");
                                 return;
                             }
                         }
@@ -816,7 +838,7 @@ void PGESysCFG::LoadProfilesList()
     FindClose(hDirSearch);
     SetCurrentDirectory( pOrigCurrDirr );
 
-    con.SOLnOO("> done!");
+    getConsole().SOLnOO("> done!");
 
 } // LoadProfilesList()
 

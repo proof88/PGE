@@ -14,8 +14,6 @@
 
 #include "PGEallHeaders.h"
 
-
-
 /**
     PGE mouse handling class.
 */
@@ -30,6 +28,9 @@ public:
     static PGEInputMouse& createAndGet();
 
     // ---------------------------------------------------------------------------
+
+    CConsole&   getConsole() const;            /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;   /**< Returns the logger module name of this class. */
 
     /**
         Initializes mouse handling.
@@ -69,7 +70,6 @@ public:
 }; // class PGEInputMouse
 
 
-
 /**
     PGE keyboard handling class.
 */
@@ -85,11 +85,13 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    CConsole&   getConsole() const;                   /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
+
     virtual bool isKeyPressed(unsigned char key) const = 0;
     virtual void SetKeyPressed(unsigned char key, bool state) = 0;
 
 }; // class PGEInputKeyboard
-
 
 
 /**
@@ -106,6 +108,9 @@ public:
     static PGEInputHandler& createAndGet();
 
     // ---------------------------------------------------------------------------
+
+    CConsole&   getConsole() const;                   /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     /**
         Initializes input handling.

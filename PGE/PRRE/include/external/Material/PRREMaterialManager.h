@@ -156,6 +156,9 @@ class PRREMaterial :
 public:
     virtual              ~PRREMaterial();
 
+    CConsole&   getManagedConsole() const;            /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
+
             TPRREbool    allocateArrays(                                      
                             TPRREuint nColorCount,
                             TPRREuint nTexcoordCount,
@@ -247,6 +250,9 @@ public:
 
     PRREMaterialManager();  /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREMaterialManager();
+
+    CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     TPRREbool isInitialized() const;  /**< Tells whether the object is correctly initialized or not. */
     

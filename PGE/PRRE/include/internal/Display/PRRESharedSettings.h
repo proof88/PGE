@@ -11,6 +11,7 @@
     ########################################################################################
 */
 
+#include "../../../../../../CConsole/CConsole/src/CConsole.h"
 #include "../../external/PRREallHeaders.h"
 
 /**
@@ -54,7 +55,8 @@ public:
     // ---------------------------------------------------------------------------
 
 
-    CConsole& getConsole() const;
+    CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
 
     /**

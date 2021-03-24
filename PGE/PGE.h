@@ -13,6 +13,7 @@
 
 #include "PGEallHeaders.h"
 #include <string>
+#include "../../CConsole/CConsole/src/CConsole.h"
 #include "PRRE/include/external/PR00FsReducedRenderingEngine.h"
 #include "PGEInputHandler.h"
 #include "PGEWorld.h"
@@ -57,7 +58,8 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    CConsole& getConsole() const;                       /**< Gets the associated console object. */
+    CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     const std::string& getGameTitle() const;                 /**< Gets the game title. */
     void               SetGameTitle(const char* gameTitle);  /**< Sets the game title. */

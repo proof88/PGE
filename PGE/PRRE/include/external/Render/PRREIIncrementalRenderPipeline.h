@@ -22,8 +22,6 @@
     Incremental renderer pipeline interface.
 
 */
-
-
 class PRREIIncrementalRenderPipeline
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION

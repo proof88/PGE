@@ -32,6 +32,9 @@ public:
 
     virtual ~PGEWorldTimeImpl();
 
+    CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
+
     bool initialize(int days = 0, int hours = 0, int mins = 0, int secs = 0);   
     bool isInitialized() const;  
     void Shutdown();
@@ -78,7 +81,6 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    CConsole& con;
     bool bInitialized;
 
     int nCurrentDayMilliSecs;                /**< Current time of the day in millisecs. */
@@ -111,11 +113,36 @@ PGEWorldTimeImpl::~PGEWorldTimeImpl()
 
 
 /**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+CConsole& PGEWorldTimeImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance(getLoggerModuleName());
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+const char* PGEWorldTimeImpl::getLoggerModuleName() const
+{
+    return "PGEWorldTime";
+} // getLoggerModuleName()
+
+
+/**
     Initializes the virtual time.
 */
 bool PGEWorldTimeImpl::initialize(int days, int hours, int mins, int secs)
 {
-    con.OLn("PGEWorldTime::initialize(%d, %d, %d, %d)", days, hours, mins, secs);
+    getConsole().OLn("PGEWorldTime::initialize(%d, %d, %d, %d)", days, hours, mins, secs);
     SetTimeAbsolute(days, hours, mins, secs);
     bInitialized = true;
     return true;
@@ -130,7 +157,7 @@ bool PGEWorldTimeImpl::isInitialized() const
 
 void PGEWorldTimeImpl::Shutdown()
 {
-    con.OLn("PGEWorldTime::Shutdown()");
+    getConsole().OLn("PGEWorldTime::Shutdown()");
     bInitialized = false;
     SetTimeAbsolute(0, 0, 0, 0);
 }
@@ -420,7 +447,6 @@ const int PGEWorldTimeImpl::PGE_WORLD_TIME_HOURS_PER_DAY = 24;
 
 
 PGEWorldTimeImpl::PGEWorldTimeImpl() :
-    con( CConsole::getConsoleInstance() ),
     bInitialized( false ),
     nCurrentDayMilliSecs( 0 ),
     nCurrentDay( 0 ),
@@ -430,7 +456,6 @@ PGEWorldTimeImpl::PGEWorldTimeImpl() :
 }
 
 PGEWorldTimeImpl::PGEWorldTimeImpl(const PGEWorldTimeImpl&) :
-    con( CConsole::getConsoleInstance() ),
     bInitialized( false ),
     nCurrentDayMilliSecs( 0 ),
     nCurrentDay( 0 ),
@@ -487,6 +512,37 @@ PGEWorldTime& PGEWorldTime::createAndGet()
     static PGEWorldTimeImpl worldTimeInstance;
     return worldTimeInstance;
 }
+
+
+/**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
+#pragma warning(disable:4717)
+CConsole& PGEWorldTime::getConsole() const
+{
+    return createAndGet().getConsole();
+    #pragma warning(default:4717)
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
+#pragma warning(disable:4717)
+const char* PGEWorldTime::getLoggerModuleName() const
+{
+    return createAndGet().getLoggerModuleName();
+    #pragma warning(default:4717)
+} // getLoggerModuleName()
 
 
 // ############################## PROTECTED ##############################

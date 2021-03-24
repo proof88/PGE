@@ -41,7 +41,8 @@ public:
 
     virtual ~PGEimpl();
 
-    CConsole& getConsole() const;                
+    CConsole& getConsole() const;    
+    const char* getLoggerModuleName() const;
 
     const std::string& getGameTitle() const;               
     void               SetGameTitle(const char* gameTitle); 
@@ -77,7 +78,6 @@ private:
 
     PGE*      _pOwner;                 /**< The owner public object who creates this pimpl object. */
 
-    CConsole&  con;
     PGESysCFG  SysCFG;
     PGESysGFX  SysGFX;
     PGESysNET  SysNET;
@@ -120,8 +120,14 @@ PGE::PGEimpl::~PGEimpl()
 
 CConsole& PGE::PGEimpl::getConsole() const
 {
-    return con;
+    return CConsole::getConsoleInstance(getLoggerModuleName());
 } // getConsole()
+
+
+const char* PGE::PGEimpl::getLoggerModuleName() const
+{
+    return "PGE";
+} // getLoggerModuleName()
 
 
 const string& PGE::PGEimpl::getGameTitle() const
@@ -249,7 +255,6 @@ int PGE::PGEimpl::showWindowsMessageDialogWin32(PGE_MSG_ID msg_id, PGE_MSG_ID cp
 
 
 PGE::PGEimpl::PGEimpl() :
-    con( CConsole::getConsoleInstance() ),
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
@@ -260,7 +265,6 @@ PGE::PGEimpl::PGEimpl() :
 
 
 PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
-    con( CConsole::getConsoleInstance() ),
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
@@ -281,7 +285,6 @@ PGE::PGEimpl& PGE::PGEimpl::operator=(const PGE::PGEimpl&)
     This is the only usable ctor, this is used by the static createAndGet().
 */
 PGE::PGEimpl::PGEimpl(const char* gameTitle) :
-    con( CConsole::getConsoleInstance() ),
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
@@ -390,7 +393,8 @@ int PGE::showInfoDialog(PGE_MSG_ID msg_id)
 
 
 /**
-    Gets the associated console object.
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
 
     @return Console instance used by the game engine.
 */
@@ -398,6 +402,19 @@ CConsole& PGE::getConsole() const
 {
     return p->getConsole();
 } // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+const char* PGE::getLoggerModuleName() const
+{
+    return p->getLoggerModuleName();
+} // getLoggerModuleName()
 
 
 /**
@@ -509,72 +526,73 @@ int PGE::initializeGame()
 {
 
 #ifdef PGE_CCONSOLE_IS_ENABLED
-    p->con.Initialize("PGE log", true);
-    p->con.SetFGColor( FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE, "999999" );
-    p->con.SetIntsColor( FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY, "FFFF00" );
-    p->con.SetStringsColor( FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY, "FFFFFF" );
-    p->con.SetFloatsColor( FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY, "FFFF00" );
-    p->con.SetBoolsColor( FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY, "00FFFF" );
+    getConsole().Initialize("PGE log", true);
+    getConsole().SetLoggingState(getLoggerModuleName(), true);
+    getConsole().SetFGColor( FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE, "999999" );
+    getConsole().SetIntsColor( FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY, "FFFF00" );
+    getConsole().SetStringsColor( FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY, "FFFFFF" );
+    getConsole().SetFloatsColor( FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY, "FFFF00" );
+    getConsole().SetBoolsColor( FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY, "00FFFF" );
 #endif
 
-    p->con.OLn("PGE::initializeGame()");
+    getConsole().OLn("PGE::initializeGame()");
     if ( p->bIsGameRunning )
     {
-        p->con.OLn("  already initialized!");
+        getConsole().OLn("  already initialized!");
         return 0;
     }
-    p->con.OI();
+    getConsole().OI();
     onGameInitializing();
-    p->con.OLn("pGameTitle: %s", p->sGameTitle.c_str());
-    p->con.OLn("MyDocs: %s", p->SysCFG.getMyDocsFolder().c_str());
+    getConsole().OLn("pGameTitle: %s", p->sGameTitle.c_str());
+    getConsole().OLn("MyDocs: %s", p->SysCFG.getMyDocsFolder().c_str());
     p->nLangTable = p->SysCFG.readLanguageData( p->pLangTable );
-    p->con.OLn("Lang Table with %d rows from %s.", p->nLangTable, p->SysCFG.getLangFileName().c_str());
+    getConsole().OLn("Lang Table with %d rows from %s.", p->nLangTable, p->SysCFG.getLangFileName().c_str());
     if ( p->nLangTable == 0 )
     {
-        p->con.EOLnOO("ERROR: Failed to read language data, exiting!");
+        getConsole().EOLnOO("ERROR: Failed to read language data, exiting!");
         return 99;
     }
-    p->con.OLn("Profiles stored in MyDocs: %b", p->SysCFG.areProfilesInMyDocs());
-    p->con.OLn("Profiles: %s", p->SysCFG.getPathToProfiles().c_str());
-    p->con.OIOLn("Count: %d", p->SysCFG.getProfilesCount());
+    getConsole().OLn("Profiles stored in MyDocs: %b", p->SysCFG.areProfilesInMyDocs());
+    getConsole().OLn("Profiles: %s", p->SysCFG.getPathToProfiles().c_str());
+    getConsole().OIOLn("Count: %d", p->SysCFG.getProfilesCount());
     for (int i = 0; i < p->SysCFG.getProfilesCount(); i++)
     {
-        p->con.OLn("%s.cfg ~ %s", p->SysCFG.getProfilesList()[i]->c_str(), p->SysCFG.getProfilePlayersList()[i]->c_str());
+        getConsole().OLn("%s.cfg ~ %s", p->SysCFG.getProfilesList()[i]->c_str(), p->SysCFG.getProfilePlayersList()[i]->c_str());
     }
-    p->con.OO();
+    getConsole().OO();
 
-    p->con.L();
-    p->con.OLnOI("Initializing SysNET ...");
+    getConsole().L();
+    getConsole().OLnOI("Initializing SysNET ...");
     if ( (p->pNET = p->SysNET.initSysNET()) == PGENULL )
     {
-        p->con.EOLnOO("Failed!");
-        p->con.OLn("");
+        getConsole().EOLnOO("Failed!");
+        getConsole().OLn("");
         /*return 1;*/
     }
     else
     {
-        p->con.SOLnOO("Done!");
-        p->con.OLn("");
+        getConsole().SOLnOO("Done!");
+        getConsole().OLn("");
     } 
-    p->con.L();
+    getConsole().L();
         
-    p->con.L();
-    p->con.OLnOI("Initializing SysSFX ...");
+    getConsole().L();
+    getConsole().OLnOI("Initializing SysSFX ...");
     if ( (p->pSFX = p->SysSFX.initSysSFX()) == PGENULL )
     {
-        p->con.EOLnOO("Failed!");
-        p->con.OLn("");
+        getConsole().EOLnOO("Failed!");
+        getConsole().OLn("");
         /*return 1;*/
     }
     else
     {
-        p->con.SOLnOO("Done!");
-        p->con.OLn("");
+        getConsole().SOLnOO("Done!");
+        getConsole().OLn("");
     }
-    p->con.L();
+    getConsole().L();
 
-    p->con.L();
-    p->con.OLnOI("Initializing SysGFX ...");
+    getConsole().L();
+    getConsole().OLnOI("Initializing SysGFX ...");
     bool bGFXinit;
     if ( MessageBox(0, "Teljes képernyõ?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES )
         bGFXinit = p->SysGFX.initSysGFX(0, 0, PRRE_FULLSCREEN, 0, 32, 24, 0, 0);
@@ -583,16 +601,16 @@ int PGE::initializeGame()
 
     if ( !bGFXinit )
     {
-        p->con.EOLnOO("Failed!");
-        p->con.OLnOO("");
+        getConsole().EOLnOO("Failed!");
+        getConsole().OLnOO("");
         return 1;
     }
     else
     {
-        p->con.SOLnOO("Done!");
-        p->con.OLn("");
+        getConsole().SOLnOO("Done!");
+        getConsole().OLn("");
     }
-    p->con.L();
+    getConsole().L();
 
     PRREWindow& window = p->GFX.getWindow();
     window.SetAutoCleanupOnQuitOn(false);
@@ -602,38 +620,38 @@ int PGE::initializeGame()
     //window.SetCursorVisible(false);
     p->GFX.getScreen().SetVSyncEnabled(true);
 
-    p->con.L();
-    p->con.OLnOI("Initializing InputHandler ...");
+    getConsole().L();
+    getConsole().OLnOI("Initializing InputHandler ...");
     if ( p->inputHandler.initialize( window.getWndHandle() ) )
     {
-        p->con.SOLnOO("Done!");
-        p->con.OLn("");
+        getConsole().SOLnOO("Done!");
+        getConsole().OLn("");
     }
     else
     {
-        p->con.EOLnOO("Failed!");
-        p->con.OLn("");
+        getConsole().EOLnOO("Failed!");
+        getConsole().OLn("");
     }
-    p->con.L();
+    getConsole().L();
 
-    p->con.L();
-    p->con.OLnOI("Initializing World ...");
+    getConsole().L();
+    getConsole().OLnOI("Initializing World ...");
     if ( p->world.initialize() )
     {
-        p->con.SOLnOO("Done!");
-        p->con.OLn("");
+        getConsole().SOLnOO("Done!");
+        getConsole().OLn("");
     }
     else
     {
-        p->con.EOLnOO("Failed!");
-        p->con.OLn("");
+        getConsole().EOLnOO("Failed!");
+        getConsole().OLn("");
     }
-    p->con.L();
+    getConsole().L();
 
     p->bIsGameRunning = true;
 
     onGameInitialized();
-    p->con.OO();
+    getConsole().OO();
 
     return 0;
 } // initializeGame()

@@ -30,6 +30,9 @@ public:
 
     virtual ~PGEWorldImpl();
 
+    CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
+
     bool initialize();
     void Shutdown();
 
@@ -42,7 +45,6 @@ protected:
 
 private:
 
-    CConsole& con;
     PGEWorldTime& worldTime;
     PGEWorldWeather& worldWeather;
 
@@ -68,39 +70,64 @@ PGEWorldImpl::~PGEWorldImpl()
 
 
 /**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+CConsole& PGEWorldImpl::getConsole() const
+{
+    return CConsole::getConsoleInstance(getLoggerModuleName());
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+const char* PGEWorldImpl::getLoggerModuleName() const
+{
+    return "PGEWorld";
+} // getLoggerModuleName()
+
+
+/**
     Initializes the world.
 */
 bool PGEWorldImpl::initialize()
 {
-    con.OLnOI("PGEWorld::initialize()");
+    getConsole().OLnOI("PGEWorld::initialize()");
     if ( !worldTime.initialize() )
     {
-        con.OIEOLnOO("failed to initialize WorldTime!");
-        con.OO();
+        getConsole().OIEOLnOO("failed to initialize WorldTime!");
+        getConsole().OO();
         Shutdown();
         return false;
     }
 
     if ( !worldWeather.initialize(10, 10, 10) )
     {
-        con.OIEOLnOO("failed to initialize WorldWeather!");
-        con.OO();
+        getConsole().OIEOLnOO("failed to initialize WorldWeather!");
+        getConsole().OO();
         Shutdown();
         return false;
     }
         
-    con.SOLnOO("> World initialized!");
-    con.OLn("");
+    getConsole().SOLnOO("> World initialized!");
+    getConsole().OLn("");
     return true;
 }
 
 
 void PGEWorldImpl::Shutdown()
 {
-    con.OLnOI("PGEWorld::Shutdown()");
+    getConsole().OLnOI("PGEWorld::Shutdown()");
     worldWeather.Shutdown();
     worldTime.Shutdown();
-    con.OO();
+    getConsole().OO();
 }
 
 
@@ -122,7 +149,6 @@ PGEWorldWeather& PGEWorldImpl::getWorldWeather() const
 
 
 PGEWorldImpl::PGEWorldImpl() :
-    con( CConsole::getConsoleInstance() ),
     worldTime( PGEWorldTime::createAndGet() ),
     worldWeather( PGEWorldWeather::createAndGet() )
 {
@@ -130,7 +156,6 @@ PGEWorldImpl::PGEWorldImpl() :
 }
 
 PGEWorldImpl::PGEWorldImpl(const PGEWorldImpl&) :
-    con( CConsole::getConsoleInstance() ),
     worldTime( PGEWorldTime::createAndGet() ),
     worldWeather( PGEWorldWeather::createAndGet() )
 {
@@ -162,6 +187,37 @@ PGEWorld& PGEWorld::createAndGet()
     static PGEWorldImpl worldInstance;
     return worldInstance;
 } // createAndGet()
+
+
+/**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
+// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
+#pragma warning(disable:4717)
+CConsole& PGEWorld::getConsole() const
+{
+    return createAndGet().getConsole();
+    #pragma warning(default:4717)
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
+#pragma warning(disable:4717)
+const char* PGEWorld::getLoggerModuleName() const
+{
+    return createAndGet().getLoggerModuleName();
+    #pragma warning(default:4717)
+} // getLoggerModuleName()
 
 
 // ############################## PROTECTED ##############################

@@ -30,6 +30,9 @@ public:
     explicit PGESysCFG(const char* gameTitle);
     virtual ~PGESysCFG();
 
+    CConsole&   getConsole() const;                   /**< Returns access to console preset with logger module name as this class. */
+    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
+
     // Profile-independent
     // ---------------------------------------------------------------------------
     std::string         getMyDocsFolder() const;               /**< Returns the path to user documents. */
@@ -59,7 +62,6 @@ private:
     #define PGE_SYS_CFG_FILE_MAGIC_START "!PNGGECFG"
     #define PGE_SYS_CFG_PLAYER_NAME_CVAR "cl_name"
 
-    CConsole&     con;
     std::string   sPathToMyDocs;     /**< Path to user documents. */
     std::string   sLangFileName;     /**< Filename of language file. */
     bool          bMainCFGinMyDocs;  /**< Do we store cfg file in user documents folder? */

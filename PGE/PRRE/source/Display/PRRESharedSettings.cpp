@@ -33,10 +33,29 @@ PRRESharedSettings& PRRESharedSettings::createAndGet()
 } // createAndGet()
 
 
+/**
+    Returns access to console preset with logger module name as this class.
+    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
+
+    @return Console instance used by this class.
+*/
 CConsole& PRRESharedSettings::getConsole() const
 {
-    return CConsole::getConsoleInstance("PRRESharedSettings");
-}
+    return CConsole::getConsoleInstance(getLoggerModuleName());
+} // getConsole()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+const char* PRRESharedSettings::getLoggerModuleName() const
+{
+    return "PRRESharedSettings";
+} // getLoggerModuleName()
 
 
 /**
