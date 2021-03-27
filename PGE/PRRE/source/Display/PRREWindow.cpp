@@ -29,12 +29,13 @@ class PRREWindowImpl :
 
 public:
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
     // ---------------------------------------------------------------------------
 
     virtual ~PRREWindowImpl();
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     TPRREbool initialize(
         TPRREuint width, TPRREuint height,
@@ -274,7 +275,7 @@ CConsole& PRREWindowImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREWindowImpl::getLoggerModuleName() const
+const char* PRREWindowImpl::getLoggerModuleName()
 {
     return "PRREWindow";
 } // getLoggerModuleName()

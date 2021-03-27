@@ -29,15 +29,16 @@ public:
         engine = NULL;
     }
 
-    ~PRREhwInfoTest()
+    virtual ~PRREhwInfoTest()
     {
-        Finalize();   
+        Finalize();
     }
 
 protected:
 
     virtual void Initialize()
     {
+        //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         engine = NULL;
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREhwInfoTest::testCtor);
         AddSubTest("testInitialize", (PFNUNITSUBTEST) &PRREhwInfoTest::testInitialize);
@@ -58,7 +59,7 @@ protected:
 
     virtual void TearDown()
     {
-        
+        CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", false);    
     }
 
     virtual void Finalize()

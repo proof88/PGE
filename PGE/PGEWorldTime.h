@@ -26,10 +26,11 @@ public:
 
     static PGEWorldTime& PGEWorldTime::createAndGet();   /**< Creates and gets the singleton instance. */
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
     // ---------------------------------------------------------------------------
 
     CConsole&   getConsole() const;                   /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     virtual bool initialize(int days = 0, int hours = 0, int mins = 0, int secs = 0) = 0;   /**< Initializes the virtual time. */
     virtual bool isInitialized() const = 0;  

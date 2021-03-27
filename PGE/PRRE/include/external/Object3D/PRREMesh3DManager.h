@@ -55,10 +55,13 @@ class PRREMesh3D :
 #endif
 
 public:
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+
     virtual ~PRREMesh3D();
 
     CConsole&   getManagedConsole() const;            /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     TPRREbool isLevel1() const;   /**< Tells if the mesh is a level-1 parent mesh. */
     TPRREbool isLevel2() const;   /**< Tells if the mesh is a level-2 submesh. */
@@ -125,11 +128,14 @@ class PRREMesh3DManager :
 #endif
 
 public:
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+
     PRREMesh3DManager(PRREMaterialManager& matMgr); /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREMesh3DManager();
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     TPRREbool isInitialized() const;  /**< Tells whether the object is correctly initialized or not. */
 

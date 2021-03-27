@@ -40,10 +40,11 @@ class PRREhwVideoImpl :
 public:
     static PRREhwVideoImpl& get();
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
     // ---------------------------------------------------------------------------
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     void Initialize(
         HGLRC rc, HDC wnd_dc,
@@ -250,7 +251,7 @@ CConsole& PRREhwVideoImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREhwVideoImpl::getLoggerModuleName() const
+const char* PRREhwVideoImpl::getLoggerModuleName()
 {
     return "PRREhwVideo";
 } // getLoggerModuleName()

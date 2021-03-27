@@ -32,7 +32,7 @@ public:
         mm = NULL;
     }
 
-    ~PRREMaterialManagerTest()
+    virtual ~PRREMaterialManagerTest()
     {
         Finalize();
     } // ~PRREMaterialManagerTest()
@@ -41,6 +41,14 @@ protected:
 
     virtual void Initialize()
     {
+        /*
+        CConsole::getConsoleInstance().SetLoggingState(PRREMaterial::getLoggerModuleName(), true);
+        CConsole::getConsoleInstance().SetLoggingState(PRREMaterialManager::getLoggerModuleName(), true);
+        CConsole::getConsoleInstance().SetLoggingState(PRRETexture::getLoggerModuleName(), true);
+        CConsole::getConsoleInstance().SetLoggingState(PRRETextureManager::getLoggerModuleName(), true);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImage::getLoggerModuleName(), true);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImageManager::getLoggerModuleName(), true);
+        */
         engine = NULL;
         mm = NULL;
         AddSubTest("testCtor1", (PFNUNITSUBTEST) &PRREMaterialManagerTest::testCtor1);
@@ -82,6 +90,12 @@ protected:
             engine->shutdown();
             engine = NULL;
         }
+        CConsole::getConsoleInstance().SetLoggingState(PRREMaterial::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREMaterialManager::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRRETexture::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRRETextureManager::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImage::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImageManager::getLoggerModuleName(), false);
     }
 
 

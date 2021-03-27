@@ -39,9 +39,10 @@ public:
         engine = NULL;
         im = NULL;
         tm = NULL;
+        
     }
 
-    ~PRRETextureManagerTest()
+    virtual ~PRRETextureManagerTest()
     {
         Finalize();
     } // ~PRRETextureManagerTest()
@@ -50,6 +51,10 @@ protected:
 
     virtual void Initialize()
     {
+        /*CConsole::getConsoleInstance().SetLoggingState(PRRETexture::getLoggerModuleName(), true);
+        CConsole::getConsoleInstance().SetLoggingState(PRRETextureManager::getLoggerModuleName(), true);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImage::getLoggerModuleName(), true);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImageManager::getLoggerModuleName(), true);*/
         engine = NULL;
         tm = NULL;
         AddSubTest("testGetMIPmapCount", (PFNUNITSUBTEST) &PRRETextureManagerTest::testGetMIPmapCount);
@@ -114,6 +119,10 @@ protected:
             engine->shutdown();
             engine = NULL;
         }
+        CConsole::getConsoleInstance().SetLoggingState(PRRETexture::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRRETextureManager::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImage::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImageManager::getLoggerModuleName(), false);
     }
 
 

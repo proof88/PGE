@@ -56,10 +56,11 @@ public:
     static int  showInfoDialog(const char* msg);      /**< Shows an info dialog box. */
     static int  showInfoDialog(PGE_MSG_ID msg_id);    /**< Shows an info dialog box. */
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
     // ---------------------------------------------------------------------------
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     const std::string& getGameTitle() const;                 /**< Gets the game title. */
     void               SetGameTitle(const char* gameTitle);  /**< Sets the game title. */

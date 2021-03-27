@@ -52,7 +52,7 @@ CConsole& PRRESharedSettings::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRRESharedSettings::getLoggerModuleName() const
+const char* PRRESharedSettings::getLoggerModuleName()
 {
     return "PRRESharedSettings";
 } // getLoggerModuleName()

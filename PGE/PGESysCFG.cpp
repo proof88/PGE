@@ -108,7 +108,7 @@ CConsole& PGESysCFG::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PGESysCFG::getLoggerModuleName() const
+const char* PGESysCFG::getLoggerModuleName()
 {
     return "PGESysCFG";
 } // getLoggerModuleName()

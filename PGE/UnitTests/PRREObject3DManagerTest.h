@@ -25,12 +25,22 @@ public:
 
     PRREObject3DManagerTest() :
         UnitTest( __FILE__ )
-    {};
+    {
+    };
+
+    virtual ~PRREObject3DManagerTest()
+    {
+    }
 
 protected:
 
     virtual void Initialize()
     {
+        //CConsole::getConsoleInstance().SetLoggingState(PRREMesh3DManager::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PRREMesh3D::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PRREVertexTransfer::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PRREObject3D::getLoggerModuleName(), true);
         engine = NULL;
         om = NULL;
         AddSubTest("testIsBlendFuncBlends", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testIsBlendFuncBlends);
@@ -74,6 +84,11 @@ protected:
             engine->shutdown();
             engine = NULL;
         }
+        CConsole::getConsoleInstance().SetLoggingState(PRREMesh3DManager::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREMesh3D::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREVertexTransfer::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREObject3D::getLoggerModuleName(), false);
     }
 
 

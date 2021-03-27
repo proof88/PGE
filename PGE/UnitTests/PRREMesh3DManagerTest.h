@@ -24,12 +24,21 @@ public:
 
     PRREMesh3DManagerTest() :
         UnitTest( __FILE__ )
-    {};
+    {
+        
+    };
+
+    virtual ~PRREMesh3DManagerTest()
+    {
+        
+    }
 
 protected:
 
     virtual void Initialize()
     {
+        //CConsole::getConsoleInstance().SetLoggingState(PRREMesh3DManager::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PRREMesh3D::getLoggerModuleName(), true);
         engine = NULL;
         mm = NULL;
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREMesh3DManagerTest::testCtor);
@@ -70,6 +79,8 @@ protected:
             engine->shutdown();
             engine = NULL;
         }
+        CConsole::getConsoleInstance().SetLoggingState(PRREMesh3DManager::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREMesh3D::getLoggerModuleName(), false);
     }
 
 

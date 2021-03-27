@@ -33,18 +33,19 @@ public:
         monitorpwrOrig = false;
         standbyOrig = false;
         vsyncOrig = false;
+        
     }
 
-    ~PRREScreenTest()
+    virtual ~PRREScreenTest()
     {
-
+        
     }
 
 protected:
 
     virtual void Initialize()
     {
-        
+        //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         screensvrOrig = scr.isScreensaverEnabled();
         monitorpwrOrig = scr.isMonitorPowersaveEnabled();
         standbyOrig = scr.isStandbyEnabled();
@@ -88,6 +89,7 @@ protected:
             engine->shutdown();
             engine = NULL;
         }
+        CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", false);
     }
 
 

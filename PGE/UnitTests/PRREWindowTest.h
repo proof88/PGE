@@ -24,9 +24,11 @@ public:
     PRREWindowTest() :
         UnitTest(__FILE__, "not inited"),
         wnd( PRREWindow::createAndGet() )
-    {}
+    {
+        
+    }
 
-    ~PRREWindowTest()
+    virtual ~PRREWindowTest()
     {
         Finalize();
     } // ~PRREWindowTest()
@@ -35,6 +37,7 @@ protected:
 
     virtual void Initialize()
     {
+        //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREWindowTest::testCtor);
         AddSubTest("testInitialize", (PFNUNITSUBTEST) &PRREWindowTest::testInitialize);
         AddSubTest("testInitializeInvalid", (PFNUNITSUBTEST) &PRREWindowTest::testInitializeInvalid);
@@ -95,6 +98,7 @@ protected:
     virtual void Finalize()
     {
         wnd.Deinitialize();
+        CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", false);
     }
 
 

@@ -19,12 +19,21 @@ public:
 
     PR00FsReducedRenderingEngineTest() :
         UnitTest( __FILE__, "not inited" )
-    {}
+    {
+        
+    }
+
+    virtual ~PR00FsReducedRenderingEngineTest()
+    {
+        
+    }
 
 protected:
 
     virtual void Initialize()
     {
+        //CConsole::getConsoleInstance().SetLoggingState(PR00FsReducedRenderingEngine::getLoggerModuleName(), true);
+
         engine = NULL;
         
         AddSubTest("testInitializeInvalidResolution2", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest::testInitializeInvalidResolution2);
@@ -65,6 +74,11 @@ protected:
             engine->shutdown();
             engine = NULL;
         }
+    }
+
+    virtual void Finalize()
+    {
+        CConsole::getConsoleInstance().SetLoggingState(PR00FsReducedRenderingEngine::getLoggerModuleName(), false);    
     }
 
 private:

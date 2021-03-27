@@ -29,10 +29,13 @@ class PRREScreenImpl :
 
 public:
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+
     virtual ~PRREScreenImpl();
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     TPRREbool applyDisplaySettings(HDC dc, TPRRE_SCREEN_PF pixelFormat = PRRE_SCREEN_PF_SIMPLE);
     void ResetDisplaySettings();
@@ -189,7 +192,7 @@ CConsole& PRREScreenImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREScreenImpl::getLoggerModuleName() const
+const char* PRREScreenImpl::getLoggerModuleName()
 {
     return "PRREScreen";
 } // getLoggerModuleName()

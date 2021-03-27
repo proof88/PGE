@@ -282,7 +282,7 @@ CConsole& PRRECamera::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRRECamera::getLoggerModuleName() const
+const char* PRRECamera::getLoggerModuleName()
 {
     return "PRRECamera";
 } // getLoggerModuleName()

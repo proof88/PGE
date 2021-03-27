@@ -29,12 +29,19 @@ public:
         monitorpwrOrig = false;
         standbyOrig = false;
         vsyncOrig = false;
+        
+    }
+
+    virtual ~PRRESharedSettingsTest()
+    {
+        
     }
 
 protected:
 
     virtual void Initialize()
     {
+        //CConsole::getConsoleInstance().SetLoggingState(PRRESharedSettings::getLoggerModuleName(), true);
         screensvrOrig = ss.get(PRRE_SSET_SCREENSAVER_ALLOWED);
         monitorpwrOrig = ss.get(PRRE_SSET_MONITORPOWERSAVE_ALLOWED);
         standbyOrig = ss.get(PRRE_SSET_STANDBY_ALLOWED);
@@ -49,6 +56,7 @@ protected:
         ss.Set(PRRE_SSET_SCREENSAVER_ALLOWED, screensvrOrig);
         ss.Set(PRRE_SSET_STANDBY_ALLOWED, standbyOrig);
         ss.Set(PRRE_SSET_VSYNC_SUPPORTED, vsyncOrig);
+        CConsole::getConsoleInstance().SetLoggingState(PRRESharedSettings::getLoggerModuleName(), false);
     }
 
 private:

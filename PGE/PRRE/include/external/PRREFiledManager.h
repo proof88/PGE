@@ -32,11 +32,14 @@ class PRREFiledManaged :
 #endif
 
 public:
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+
     PRREFiledManaged(); /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREFiledManaged();
 
     CConsole&   getManagedConsole() const;            /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     virtual TPRREuint getUsedSystemMemory() const;   /**< Gets the amount of allocated system memory for this managed. */
 
@@ -72,11 +75,14 @@ class PRREFiledManager :
 #endif
 
 public:
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+
     PRREFiledManager(); /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREFiledManager();
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     PRREFiledManaged*
         getByFilename(const char* filename) const;  /**< Gets the FiledManaged by the specified filename. */

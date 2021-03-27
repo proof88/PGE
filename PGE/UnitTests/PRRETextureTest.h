@@ -47,9 +47,10 @@ public:
         tex128x128x24_cmp = NULL;
         tex128x128x24_mip_cmp = NULL;
         tex128x128x24_border = NULL;
+        
     }
 
-    ~PRRETextureTest()
+    virtual ~PRRETextureTest()
     {
         Finalize();
     } // ~PRRETextureTest()
@@ -58,6 +59,10 @@ protected:
 
     virtual void Initialize()
     {
+        /*CConsole::getConsoleInstance().SetLoggingState(PRRETexture::getLoggerModuleName(), true);
+        CConsole::getConsoleInstance().SetLoggingState(PRRETextureManager::getLoggerModuleName(), true);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImage::getLoggerModuleName(), true);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImageManager::getLoggerModuleName(), true);*/
         engine = &PR00FsReducedRenderingEngine::createAndGet();
         engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         tm = &engine->getTextureManager();
@@ -160,6 +165,11 @@ protected:
             engine->shutdown();
             engine = NULL;
         }
+
+        CConsole::getConsoleInstance().SetLoggingState(PRRETexture::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRRETextureManager::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImage::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImageManager::getLoggerModuleName(), false);
     }
 
 private:

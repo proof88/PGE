@@ -854,7 +854,7 @@ CConsole& PRREObject3D::getManagedConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREObject3D::getLoggerModuleName() const
+const char* PRREObject3D::getLoggerModuleName()
 {
     return "PRREObject3D";
 } // getLoggerModuleName()

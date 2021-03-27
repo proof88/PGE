@@ -42,7 +42,7 @@ public:
         img128x128x1 = NULL;
     }
 
-    ~PRREImageTest()
+    virtual ~PRREImageTest()
     {
         delete img1024x768x24blank;
         delete img128x128x32opaque;
@@ -56,6 +56,8 @@ protected:
 
     virtual void Initialize()
     {
+        /*CConsole::getConsoleInstance().SetLoggingState(PRREImage::getLoggerModuleName(), true);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImageManager::getLoggerModuleName(), true);*/
         im = new PRREImageManager();
         img128x128x24 = NULL;
         img1024x768x24blank = im->createBlank(1024, 768, 24);
@@ -103,6 +105,12 @@ protected:
             delete img128x128x24;
             img128x128x24 = NULL;
         }
+    }
+
+    virtual void Finalize()
+    {
+        CConsole::getConsoleInstance().SetLoggingState(PRREImage::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImageManager::getLoggerModuleName(), false);    
     }
 
 private:

@@ -30,7 +30,7 @@ public:
         engine = NULL;
     }
 
-    ~PRREhwAudioTest()
+    virtual ~PRREhwAudioTest()
     {
         Finalize();   
     }
@@ -39,6 +39,7 @@ protected:
 
     virtual void Initialize()
     {
+        //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         engine = NULL;
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREhwAudioTest::testCtor);
         AddSubTest("testInitialize", (PFNUNITSUBTEST) &PRREhwAudioTest::testInitialize);
@@ -69,6 +70,7 @@ protected:
             engine->shutdown();
             engine = NULL;
         }
+        CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", false);
     }
 
 private:

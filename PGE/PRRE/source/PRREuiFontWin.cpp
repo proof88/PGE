@@ -186,7 +186,7 @@ CConsole& PRREuiFontWin::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREuiFontWin::getLoggerModuleName() const
+const char* PRREuiFontWin::getLoggerModuleName()
 {
     return "PRREuiFontWin";
 } // getLoggerModuleName()

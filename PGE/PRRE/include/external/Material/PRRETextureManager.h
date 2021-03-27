@@ -119,10 +119,13 @@ class PRRETexture :
 #endif
 
 public:
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+
     virtual ~PRRETexture();
 
     CConsole&   getManagedConsole() const;            /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
    
     TPRRE_TEX_FORMAT getInternalFormat() const;    /**< Gets the internal texture format, including compression mode. */
@@ -214,7 +217,9 @@ public:
     /** Gets the value that corresponds to the given PRRE aniso texture filtering value. */
     static TPRREfloat                getFloatFromPRREanisoTexFilteringName(TPRRE_ANISO_TEX_FILTERING value);
     /** Gets the value that corresponds to the given PRRE aniso texture filtering value. */
-    static TPRREuint                 getUIntFromPRREanisoTexFilteringName(TPRRE_ANISO_TEX_FILTERING value);   
+    static TPRREuint                 getUIntFromPRREanisoTexFilteringName(TPRRE_ANISO_TEX_FILTERING value);  
+
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
     // ---------------------------------------------------------------------------
 
@@ -222,7 +227,6 @@ public:
     virtual ~PRRETextureManager();
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     TPRREbool isInitialized() const;  /**< Tells whether the object is correctly initialized or not. */
   

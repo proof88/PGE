@@ -729,7 +729,7 @@ CConsole& PRRERendererHWfixedPipe::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRRERendererHWfixedPipe::getLoggerModuleName() const
+const char* PRRERendererHWfixedPipe::getLoggerModuleName()
 {
     return "PRRERendererHWfixedPipe";
 } // getLoggerModuleName()

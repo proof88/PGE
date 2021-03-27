@@ -40,6 +40,27 @@ public:
         AddSubTest("testSubclass", (PFNUNITSUBTEST) &PRREFiledManagedTest::testSubclass);
     } // PRREFiledManagedTest()
 
+    virtual ~PRREFiledManagedTest()
+    {
+        
+    }
+
+    virtual void Initialize()
+    {
+        //CConsole::getConsoleInstance().SetLoggingState(PRREFiledManaged::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PRREManaged::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PRREFiledManager::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PRREManager::getLoggerModuleName(), true);
+    }
+
+    virtual void Finalize()
+    {
+        CConsole::getConsoleInstance().SetLoggingState(PRREFiledManaged::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREManaged::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREFiledManager::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREManager::getLoggerModuleName(), false);   
+    }
+
 protected:
 
 private:

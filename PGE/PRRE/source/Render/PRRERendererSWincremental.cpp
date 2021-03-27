@@ -1016,7 +1016,7 @@ CConsole& PRRERendererSWincremental::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRRERendererSWincremental::getLoggerModuleName() const
+const char* PRRERendererSWincremental::getLoggerModuleName()
 {
     return "PRRERendererSWincremental";
 } // getLoggerModuleName()

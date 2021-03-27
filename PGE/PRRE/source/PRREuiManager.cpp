@@ -479,7 +479,7 @@ CConsole& PRREuiManager::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREuiManager::getLoggerModuleName() const
+const char* PRREuiManager::getLoggerModuleName()
 {
     return "PRREuiManager";
 } // getLoggerModuleName()

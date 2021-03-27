@@ -25,6 +25,7 @@ public:
     PRRECameraTest() :
         UnitTest( __FILE__ )
     {
+        
         AddSubTest("testCtor1", (PFNUNITSUBTEST) &PRRECameraTest::testCtor1);
         AddSubTest("testCopyCtor", (PFNUNITSUBTEST) &PRRECameraTest::testCopyCtor);
         AddSubTest("testSetviewPort", (PFNUNITSUBTEST) &PRRECameraTest::testSetviewPort);
@@ -35,7 +36,12 @@ public:
         AddSubTest("testSetFarPlane", (PFNUNITSUBTEST) &PRRECameraTest::testSetFarPlane);
         AddSubTest("testSetFieldOfView", (PFNUNITSUBTEST) &PRRECameraTest::testSetFieldOfView);
 
-    } // PRREPosUpTargetTest()
+    } // PRRECameraTest()
+
+    virtual ~PRRECameraTest()
+    {
+        
+    }
 
 protected:
 
@@ -47,6 +53,16 @@ protected:
     virtual void TearDown()
     {
 
+    }
+
+    virtual void Initialize()
+    {
+        //CConsole::getConsoleInstance().SetLoggingState(PRRECamera::getLoggerModuleName(), true);
+    }
+
+    virtual void Finalize()
+    {
+        CConsole::getConsoleInstance().SetLoggingState(PRRECamera::getLoggerModuleName(), false);    
     }
 
 private:

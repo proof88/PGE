@@ -77,10 +77,11 @@ public:
 
     static PGEWorldWeather& PGEWorldWeather::createAndGet();   /**< Creates and gets the singleton instance. */
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
     // ---------------------------------------------------------------------------
 
     CConsole&   getConsole() const;                   /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     virtual bool initialize(
         int numCellsX, int numCellsY, int numCellsZ,

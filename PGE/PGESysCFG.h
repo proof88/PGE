@@ -27,11 +27,14 @@ class PGESysCFG
 #endif
 
 public:
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+
     explicit PGESysCFG(const char* gameTitle);
     virtual ~PGESysCFG();
 
     CConsole&   getConsole() const;                   /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     // Profile-independent
     // ---------------------------------------------------------------------------

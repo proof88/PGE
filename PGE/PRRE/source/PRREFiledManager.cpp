@@ -150,7 +150,7 @@ CConsole& PRREFiledManaged::getManagedConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREFiledManaged::getLoggerModuleName() const
+const char* PRREFiledManaged::getLoggerModuleName()
 {
     return "PRREFiledManaged";
 } // getLoggerModuleName()
@@ -351,7 +351,7 @@ CConsole& PRREFiledManager::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREFiledManager::getLoggerModuleName() const
+const char* PRREFiledManager::getLoggerModuleName()
 {
     return "PRREFiledManager";
 } // getLoggerModuleName()

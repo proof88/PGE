@@ -1038,7 +1038,7 @@ CConsole& PRREVertexTransfer::getManagedConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREVertexTransfer::getLoggerModuleName() const
+const char* PRREVertexTransfer::getLoggerModuleName()
 {
     return "PRREVertexTransfer";
 } // getLoggerModuleName()

@@ -29,10 +29,11 @@ class PRREhwInfoImpl :
 public:
     static PRREhwInfoImpl& get();
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
     // ---------------------------------------------------------------------------
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     void      Initialize(
         HGLRC rc, HDC wnd_dc,
@@ -107,7 +108,7 @@ CConsole& PRREhwInfoImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREhwInfoImpl::getLoggerModuleName() const
+const char* PRREhwInfoImpl::getLoggerModuleName()
 {
     return "PRREhwInfo";
 } // getLoggerModuleName()

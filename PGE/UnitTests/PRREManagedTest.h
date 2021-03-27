@@ -24,6 +24,7 @@ public:
     PRREManagedTest() :
         UnitTest( __FILE__ )
     {
+        
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREManagedTest::testCtor);
         AddSubTest("testDetachFrom", (PFNUNITSUBTEST) &PRREManagedTest::testDetachFrom);
         AddSubTest("testGetManager", (PFNUNITSUBTEST) &PRREManagedTest::testGetManager);
@@ -32,6 +33,23 @@ public:
         AddSubTest("testFlushResources", (PFNUNITSUBTEST) &PRREManagedTest::testFlushResources);
         AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PRREManagedTest::testGetUsedSystemMemory);
     } // PRREManagedTest()
+
+    virtual ~PRREManagedTest()
+    {
+        
+    }
+
+    virtual void Initialize()
+    {
+        //CConsole::getConsoleInstance().SetLoggingState(PRREManaged::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PRREManager::getLoggerModuleName(), true);
+    }
+
+    virtual void Finalize()
+    {
+        CConsole::getConsoleInstance().SetLoggingState(PRREManaged::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREManager::getLoggerModuleName(), false);    
+    }
 
 protected:
 

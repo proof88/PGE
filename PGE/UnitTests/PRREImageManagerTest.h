@@ -22,12 +22,22 @@ class PRREImageManagerTest :
 public:
 
     PRREImageManagerTest() :
-        UnitTest( __FILE__ ) {};
+        UnitTest( __FILE__ )
+    {
+        
+    };
+
+    virtual ~PRREImageManagerTest()
+    {
+        
+    }
 
 protected:
 
     virtual void Initialize()
     {
+        /*CConsole::getConsoleInstance().SetLoggingState(PRREImage::getLoggerModuleName(), true);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImageManager::getLoggerModuleName(), true);*/
         AddSubTest("testGetColorConversionSwapCount", (PFNUNITSUBTEST) &PRREImageManagerTest::testGetColorConversionSwapCount);
         AddSubTest("testGetMirroredPixelComponentOrder", (PFNUNITSUBTEST) &PRREImageManagerTest::testGetMirroredPixelComponentOrder);
         AddSubTest("testCtor1", (PFNUNITSUBTEST) &PRREImageManagerTest::testCtor1);
@@ -48,6 +58,12 @@ protected:
 
     virtual void TearDown()
     {}
+
+    virtual void Finalize()
+    {
+        CConsole::getConsoleInstance().SetLoggingState(PRREImage::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREImageManager::getLoggerModuleName(), false);    
+    }
 
 
 private:

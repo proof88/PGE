@@ -40,6 +40,23 @@ public:
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRREManagerTest::testWriteList);
     } // PRREManagerTest()
 
+    virtual ~PRREManagerTest()
+    {
+        
+    }
+
+    virtual void Initialize()
+    {
+        //CConsole::getConsoleInstance().SetLoggingState(PRREManager::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PRREManaged::getLoggerModuleName(), true);
+    }
+
+    virtual void Finalize()
+    {
+        CConsole::getConsoleInstance().SetLoggingState(PRREManager::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREManaged::getLoggerModuleName(), false);    
+    }
+
 protected:
 
 private:

@@ -52,6 +52,10 @@ class PRRECamera :
 
 public:
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+
     PRRECamera();                               /**< Creates camera with default settings. */ /* TODO: mark this as noexcept(false) when using newer compiler! */
 
     PRRECamera(const PRRECamera&);
@@ -60,7 +64,6 @@ public:
     virtual ~PRRECamera();
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     const TRECT& getViewport() const;           /**< Gets camera viewport. */
     void SetViewport(

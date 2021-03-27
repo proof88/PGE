@@ -29,10 +29,11 @@ class PRREhwCentralProcessorImpl :
 public:
     static PRREhwCentralProcessorImpl& get();
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
     // ---------------------------------------------------------------------------
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     void WriteStats(); 
 
@@ -90,7 +91,7 @@ CConsole& PRREhwCentralProcessorImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREhwCentralProcessorImpl::getLoggerModuleName() const
+const char* PRREhwCentralProcessorImpl::getLoggerModuleName()
 {
     return "PRREhwCentralProcessor";
 } // getLoggerModuleName()

@@ -30,7 +30,7 @@ public:
         engine = NULL;
     }
 
-    ~PRREhwSystemMemoryTest()
+    virtual ~PRREhwSystemMemoryTest()
     {
         Finalize();   
     }
@@ -39,6 +39,7 @@ protected:
 
     virtual void Initialize()
     {
+        //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         engine = NULL;
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREhwSystemMemoryTest::testCtor);
         AddSubTest("testInitialize", (PFNUNITSUBTEST) &PRREhwSystemMemoryTest::testInitialize);
@@ -72,6 +73,7 @@ protected:
             engine->shutdown();
             engine = NULL;
         }
+        CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", false);
     }
 
 private:

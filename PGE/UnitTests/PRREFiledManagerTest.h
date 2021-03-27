@@ -39,7 +39,7 @@ public:
         Initialize();
     } // PRREFiledManagerTest()
 
-    ~PRREFiledManagerTest()
+    virtual ~PRREFiledManagerTest()
     {
         Finalize();
     }
@@ -48,6 +48,10 @@ protected:
 
     virtual void Initialize()
     {
+        //CConsole::getConsoleInstance().SetLoggingState(PRREFiledManager::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PRREManager::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PRREFiledManaged::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PRREManaged::getLoggerModuleName(), true);
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREFiledManagerTest::testCtor);
         AddSubTest("testGetByFilename", (PFNUNITSUBTEST) &PRREFiledManagerTest::testGetByFilename);
         AddSubTest("testCreateFromFile", (PFNUNITSUBTEST) &PRREFiledManagerTest::testCreateFromFile);
@@ -65,7 +69,12 @@ protected:
     }
 
     virtual void Finalize()
-    {}
+    {
+        CConsole::getConsoleInstance().SetLoggingState(PRREFiledManager::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREManager::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREFiledManaged::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PRREManaged::getLoggerModuleName(), false);
+    }
 
 private:
 

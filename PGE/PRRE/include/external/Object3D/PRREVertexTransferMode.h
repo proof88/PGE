@@ -197,12 +197,13 @@ public:
         TPRRE_VERTEX_REFERENCING_MODE vref,
         TPRREbool bForceUseClientMemory );                    /**< Selects a suitable vertex transfer mode. */
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
     // ---------------------------------------------------------------------------
 
     virtual ~PRREVertexTransfer();
 
     CConsole&   getManagedConsole() const;            /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     virtual TPRRE_VERTEX_MODIFYING_HABIT getVertexModifyingHabit() const;           /**< Gets vertex modifying habit. */
     virtual TPRREbool setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod);   /**< Sets vertex modifying habit. */

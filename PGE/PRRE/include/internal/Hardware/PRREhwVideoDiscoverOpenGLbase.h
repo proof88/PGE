@@ -44,6 +44,10 @@ public:
         GLint val1, GLint val2,
         GLint stdVal1, GLint stdVal2 );        /**< Checks given range against given standard range. */
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+    
     PRREhwVideoDiscoverOpenGLbase(
         const std::string& sFtrsOGL,
         const std::string& sFtrsWGL,
@@ -54,7 +58,6 @@ public:
     virtual ~PRREhwVideoDiscoverOpenGLbase();
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     virtual std::string getVersion() const = 0;
 

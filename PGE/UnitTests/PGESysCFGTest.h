@@ -23,12 +23,20 @@ public:
 
     PGESysCFGTest() :
         UnitTest( __FILE__ )
-    {};
+    {
+        
+    };
+
+    virtual ~PGESysCFGTest()
+    {
+        
+    }
 
 protected:
 
     virtual void Initialize()
     {
+        //CConsole::getConsoleInstance().SetLoggingState(PGESysCFG::getLoggerModuleName(), true);
         AddSubTest("testCtor1", (PFNUNITSUBTEST) &PGESysCFGTest::testCtor1);
         AddSubTest("testGetMyDocsFolder", (PFNUNITSUBTEST) &PGESysCFGTest::testGetMyDocsFolder);
         AddSubTest("testGetLangFileName", (PFNUNITSUBTEST) &PGESysCFGTest::testGetLangFileName);
@@ -57,6 +65,11 @@ protected:
 
     virtual void TearDown()
     {}
+
+    virtual void Finalize()
+    {
+        CConsole::getConsoleInstance().SetLoggingState(PGESysCFG::getLoggerModuleName(), false);    
+    }
 
 
 private:

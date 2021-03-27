@@ -29,10 +29,11 @@ class PRREhwSystemMemoryImpl :
 public:
     static PRREhwSystemMemoryImpl& get();
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
     // ---------------------------------------------------------------------------
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     TPRREulong getFreeSystemMemory();
     TPRREulong getTotalSystemMemory() const;
@@ -95,7 +96,7 @@ CConsole& PRREhwSystemMemoryImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREhwSystemMemoryImpl::getLoggerModuleName() const
+const char* PRREhwSystemMemoryImpl::getLoggerModuleName()
 {
     return "PRREhwSystemMemory";
 } // getLoggerModuleName()

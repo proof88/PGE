@@ -96,7 +96,7 @@ CConsole& PRREhwVideoDiscoverOpenGLbase::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREhwVideoDiscoverOpenGLbase::getLoggerModuleName() const
+const char* PRREhwVideoDiscoverOpenGLbase::getLoggerModuleName()
 {
     return "PRREhwVideoDiscoverOpenGLbase";
 } // getLoggerModuleName()

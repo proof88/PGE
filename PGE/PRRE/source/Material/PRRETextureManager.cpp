@@ -657,7 +657,7 @@ CConsole& PRRETextureManager::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRRETextureManager::getLoggerModuleName() const
+const char* PRRETextureManager::getLoggerModuleName()
 {
     return "PRRETextureManager";
 } // getLoggerModuleName()

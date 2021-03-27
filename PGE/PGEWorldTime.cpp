@@ -30,10 +30,13 @@ class PGEWorldTimeImpl :
 
 public:
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+
     virtual ~PGEWorldTimeImpl();
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     bool initialize(int days = 0, int hours = 0, int mins = 0, int secs = 0);   
     bool isInitialized() const;  
@@ -131,7 +134,7 @@ CConsole& PGEWorldTimeImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PGEWorldTimeImpl::getLoggerModuleName() const
+const char* PGEWorldTimeImpl::getLoggerModuleName()
 {
     return "PGEWorldTime";
 } // getLoggerModuleName()
@@ -538,7 +541,7 @@ CConsole& PGEWorldTime::getConsole() const
 */
 // temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
 #pragma warning(disable:4717)
-const char* PGEWorldTime::getLoggerModuleName() const
+const char* PGEWorldTime::getLoggerModuleName()
 {
     return createAndGet().getLoggerModuleName();
     #pragma warning(default:4717)

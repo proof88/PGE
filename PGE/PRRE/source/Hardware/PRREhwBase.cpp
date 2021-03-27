@@ -26,10 +26,11 @@ class PRREhwBase::PRREhwBaseImpl
 
 public:
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
     // ---------------------------------------------------------------------------
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     virtual ~PRREhwBaseImpl();
 
@@ -81,7 +82,7 @@ CConsole& PRREhwBase::PRREhwBaseImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREhwBase::PRREhwBaseImpl::getLoggerModuleName() const
+const char* PRREhwBase::PRREhwBaseImpl::getLoggerModuleName()
 {
     return "PRREhwBase";
 } // getLoggerModuleName()

@@ -28,9 +28,10 @@ public:
         video( PRREhwVideo::get() )
     {
         engine = NULL;
+        
     }
 
-    ~PRREhwVideoTest()
+    virtual ~PRREhwVideoTest()
     {
         Finalize();   
     }
@@ -39,6 +40,7 @@ protected:
 
     virtual void Initialize()
     {
+        //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         engine = NULL;
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREhwVideoTest::testCtor);
         AddSubTest("testInitialize", (PFNUNITSUBTEST) &PRREhwVideoTest::testInitialize);
@@ -110,6 +112,7 @@ protected:
             engine->shutdown();
             engine = NULL;
         }
+        CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", false);
     }
 
 private:

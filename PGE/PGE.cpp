@@ -37,12 +37,13 @@ class PGE::PGEimpl
 
 public:
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
     // ---------------------------------------------------------------------------
 
     virtual ~PGEimpl();
 
     CConsole& getConsole() const;    
-    const char* getLoggerModuleName() const;
 
     const std::string& getGameTitle() const;               
     void               SetGameTitle(const char* gameTitle); 
@@ -124,7 +125,7 @@ CConsole& PGE::PGEimpl::getConsole() const
 } // getConsole()
 
 
-const char* PGE::PGEimpl::getLoggerModuleName() const
+const char* PGE::PGEimpl::getLoggerModuleName()
 {
     return "PGE";
 } // getLoggerModuleName()
@@ -411,9 +412,9 @@ CConsole& PGE::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PGE::getLoggerModuleName() const
+const char* PGE::getLoggerModuleName()
 {
-    return p->getLoggerModuleName();
+    return PGE::PGEimpl::getLoggerModuleName();
 } // getLoggerModuleName()
 
 

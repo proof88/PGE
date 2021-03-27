@@ -40,10 +40,13 @@ class PGEInputMouseImpl :
 
 public:
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+
     virtual ~PGEInputMouseImpl();
 
     CConsole&   getConsole() const;            /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     bool initialize(HWND hWindow = NULL);
 
@@ -112,7 +115,7 @@ CConsole& PGEInputMouseImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PGEInputMouseImpl::getLoggerModuleName() const
+const char* PGEInputMouseImpl::getLoggerModuleName()
 {
     return "PGEInputMouse";
 } // getLoggerModuleName()
@@ -297,7 +300,7 @@ CConsole& PGEInputMouse::getConsole() const
 */
 // temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
 #pragma warning(disable:4717)
-const char* PGEInputMouse::getLoggerModuleName() const
+const char* PGEInputMouse::getLoggerModuleName()
 {
     return createAndGet().getLoggerModuleName();
     #pragma warning(default:4717)
@@ -323,10 +326,13 @@ class PGEInputKeyboardImpl :
 
 public:
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+
     virtual ~PGEInputKeyboardImpl();
 
     CConsole&   getConsole() const;            /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     bool isKeyPressed(unsigned char key) const;
     void SetKeyPressed(unsigned char key, bool state);
@@ -380,7 +386,7 @@ CConsole& PGEInputKeyboardImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PGEInputKeyboardImpl::getLoggerModuleName() const
+const char* PGEInputKeyboardImpl::getLoggerModuleName()
 {
     return "PGEInputKeyboard";
 } // getLoggerModuleName()
@@ -466,7 +472,7 @@ CConsole& PGEInputKeyboard::getConsole() const
 */
 // temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
 #pragma warning(disable:4717)
-const char* PGEInputKeyboard::getLoggerModuleName() const
+const char* PGEInputKeyboard::getLoggerModuleName()
 {
     return createAndGet().getLoggerModuleName();
     #pragma warning(default:4717)
@@ -496,10 +502,13 @@ class PGEInputHandlerImpl :
 
 public:
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+
     virtual ~PGEInputHandlerImpl();
 
     CConsole&   getConsole() const;            /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     bool initialize(HWND hWindow = PGENULL);
 
@@ -556,7 +565,7 @@ CConsole& PGEInputHandlerImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PGEInputHandlerImpl::getLoggerModuleName() const
+const char* PGEInputHandlerImpl::getLoggerModuleName()
 {
     return "PGEInputHandler";
 } // getLoggerModuleName()
@@ -659,7 +668,7 @@ CConsole& PGEInputHandler::getConsole() const
 */
 // temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
 #pragma warning(disable:4717)
-const char* PGEInputHandler::getLoggerModuleName() const
+const char* PGEInputHandler::getLoggerModuleName()
 {
     return createAndGet().getLoggerModuleName();
     #pragma warning(default:4717)

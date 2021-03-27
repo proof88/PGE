@@ -28,10 +28,13 @@ class PGEWorldImpl :
 
 public:
 
+    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    // ---------------------------------------------------------------------------
+
     virtual ~PGEWorldImpl();
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
-    const char* getLoggerModuleName() const;          /**< Returns the logger module name of this class. */
 
     bool initialize();
     void Shutdown();
@@ -88,7 +91,7 @@ CConsole& PGEWorldImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PGEWorldImpl::getLoggerModuleName() const
+const char* PGEWorldImpl::getLoggerModuleName()
 {
     return "PGEWorld";
 } // getLoggerModuleName()
@@ -213,7 +216,7 @@ CConsole& PGEWorld::getConsole() const
 */
 // temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
 #pragma warning(disable:4717)
-const char* PGEWorld::getLoggerModuleName() const
+const char* PGEWorld::getLoggerModuleName()
 {
     return createAndGet().getLoggerModuleName();
     #pragma warning(default:4717)

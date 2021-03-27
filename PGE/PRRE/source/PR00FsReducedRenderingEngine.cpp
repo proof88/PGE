@@ -712,7 +712,7 @@ CConsole& PR00FsReducedRenderingEngine::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PR00FsReducedRenderingEngine::getLoggerModuleName() const
+const char* PR00FsReducedRenderingEngine::getLoggerModuleName()
 {
     return "PR00FsReducedRenderingEngine";
 } // getLoggerModuleName()

@@ -501,7 +501,7 @@ CConsole& PRREMaterial::getManagedConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREMaterial::getLoggerModuleName() const
+const char* PRREMaterial::getLoggerModuleName()
 {
     return "PRREMaterial";
 } // getLoggerModuleName()

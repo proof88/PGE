@@ -699,7 +699,7 @@ CConsole& PRREImage::getManagedConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREImage::getLoggerModuleName() const
+const char* PRREImage::getLoggerModuleName()
 {
     return "PRREImage";
 } // getLoggerModuleName()

@@ -1473,7 +1473,7 @@ CConsole& PRREMesh3DManager::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PRREMesh3DManager::getLoggerModuleName() const
+const char* PRREMesh3DManager::getLoggerModuleName()
 {
     return "PRREMesh3DManager";
 } // getLoggerModuleName()
