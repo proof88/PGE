@@ -202,6 +202,8 @@ int PGE::PGEimpl::destroyGame()
     SysGFX.destroySysGFX();
     SysSFX.destroySysSFX();
     SysNET.destroySysNET();
+    getConsole().Deinitialize();
+    
 
     return 0;
 } // destroyGameEngine()

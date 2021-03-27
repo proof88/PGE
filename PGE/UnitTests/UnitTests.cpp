@@ -252,6 +252,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     system("pause");
 
+    getConsole().Deinitialize();
+
     return 0;
 
 } // WinMain()
