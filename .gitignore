@@ -340,3 +340,7 @@ PGE/Docs/logo/pure_flat_center.rar
 PGE/Docs/logo/pure_flat_square.rar
 *.avi
 PGE/Docs/PURE/html/wglext_8h.js
+*.~dpr
+*.~dsk
+*.dcu
+PGE/Samples/EV2008P03/gfxcore.dll
