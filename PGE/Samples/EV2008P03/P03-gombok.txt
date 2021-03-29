@@ -1,0 +1,34 @@
+kezdés: szürke középen, jobbra barna
+
+1 - minden látszik
+
+2 - balra pajzs,
+    balra távol 4x felém,
+    középen szembe csiga felém néz,
+    közeli oszlop tetején csiga elfelé néz
+
+3 - aréna sarok,
+    balra fal,
+    szembe csiga pálya közepe felé néz,
+    proofps feliratnál 4x el van 90 fokkal forgatva balra azaz 4-es van közelebb
+
+4 - aréna alsó részén vagyok,
+    balra barna
+
+5 - rooms egyik szobájában vagyok,
+    proofps felirat látszik,
+    balra jelöletlen ammo,
+    jobbra jelölt ammo
+
+6 - rooms másik szobája,
+    kb semmi nem látszik
+
+7 - aréna, balra 4x háttal felém
+
+8 - rooms felülrõl,
+    jobb alul egy aréna éppen látszik,
+    jobbra sárga teapot
+
+9 - arena alatt,
+    minden felettem van,
+    barna éppen látszik balra
