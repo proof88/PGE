@@ -1,8 +1,8 @@
 
 # Introduction
-This documentation describes how my engine works and explains relevant technologies.  
+This documentation describes how [my engine](https://github.com/proof88/PGE/) works and explains relevant technologies.  
 You are reading the **internal documentation** which contains info about both the API usage and its implementation.  
-If that is too much for you, you can always generate an **external documentation** with DoxyGen using the PURE_Doxyfile_external config file.  
+If that is too much for you, you can always generate an **external documentation** with DoxyGen using the [PURE_Doxyfile_external config file](https://github.com/proof88/PGE/tree/master/PGE/Docs).  
 I wrote this documentation with easy online Markdown editor [StackEdit](https://stackedit.io/).
 
 ## Motivation
