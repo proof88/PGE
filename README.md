@@ -3,7 +3,7 @@ PR00F's Game Engine
 
 This game engine is being developed to make my games with it.
 
-**Requires:**
+**v0.2 Requires:**
  - [PFL v1.0](https://github.com/proof88/PFL);
  - [CConsole v1.0](https://github.com/proof88/Console).
 
