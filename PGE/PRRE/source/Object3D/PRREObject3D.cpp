@@ -23,6 +23,254 @@
 using namespace std;
 
 /*
+
+    Notes
+
+    ***************************
+
+    There are some online OpenGL capability reports can be used to find out how widely an extension is supported:
+    https://www.gpuinfo.org/
+     - https://opengl.gpuinfo.org/listextensions.php
+     - https://opengles.gpuinfo.org/
+    https://feedback.wildfiregames.com/report/opengl/
+
+
+    Vertex Culling (Object-Space)
+    *****************************
+
+    GL_EXT_cull_vertex: https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_cull_vertex.txt
+     - 1996
+     - "Culling a polygon by examining its vertexes in object space can be more efficient than screen space polygon culling since
+       the transformation to screen space (which may include a division by w) can be avoided for culled vertexes. Also, vertex culling
+       can be computed before vertexes are assembled into primitives. This is a useful property when drawing meshes with shared vertexes,
+       since a vertex can be culled once, and the resulting state can be used for all primitives which share the vertex."
+     - This extension was most probably introduced for optimisation before HW T&L spread. Lack of HW T&L was present in the pre-Geforce era,
+       i.e. TNT, etc.
+       Desktop: was mostly supported by early integrated Intel VGA.
+       Mobile: no support at all!
+     - Verdict: don't use it if neither 3dfx nor other major vendors supported it before TnL!
+
+
+    Occlusion Culling
+    *****************
+
+    Idea of occlusion culling is that we separate objects into 2 groups: occluders and occludees. Occluders are usually the big
+    static objects like buildings in a map, we render them first so their depth data is written into the depth buffer first.
+    Occludees are usually smaller, but may be even more complex objects that might be occluded by occluders. We do occlusion tests
+    for each of the bounding box of the occludees, and see if we need to actually render any occludees.
+
+    "For the cost of rendering a bounding box, you can potentially save rendering a normal object. A bounding box consists of only
+    12 triangles, whereas the original object might have contained thousands or even millions of triangles.
+    Using bounding box occlusion queries may either help or hurt in fill-limited situations, because rendering the pixels of a
+    bounding box is not free. In most situations, a bounding box will probably have more pixels than the original object.
+    Those pixels can probably be rendered more quickly, though, since they involve only Z reads (no Z writes or color traffic),
+    and they need not be textured or otherwise shaded.
+    [...]
+    Usually, if an object is visible one frame, it will be visible the next frame, and if it is not visible, it will not be visible
+    the next frame. Of course, for most applications, "usually" isn't good enough. It is undesirable, but acceptable, to render an
+    object that *isn't* visible, because that only costs performance. It is generally unacceptable to *not* render an object that *is*
+    visible.
+    The simplest approach is that visible objects should be checked every N frames (where, say, N=5) to see if they have become
+    occluded, while objects that were occluded last frame must be rechecked again in the current frame to guarantee that they are
+    still occluded. This will reduce the number of wasteful occlusion queries by almost a factor of N."
+    (https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_occlusion_query.txt)
+
+    Rendering:
+    "Because we can see through translucent objects (and they cannot be written to the depth buffer!), these can act only as occludees and not occluders.
+    On the other hand, opaque objects can be both occluders and occludees, which means that they should be sorted from front to back and rendered before
+    translucent objects. After that, translucent objects are sorted back to front and rendered on-screen as well."
+
+    "The rule of thumb is that objects that are not fill-rate bound (that is, objects that don't use complex fragment programs, many texture layers, and so on)
+    should not be tested for occlusion at higher resolutions. This is because there are more pixels to fill at a higher resolution, so it's likely the GPU will
+    spend more time rendering the object's bounding box than the object itself. Keep in mind that if the object is occluded, the early-z rejection will do its
+    work at the per-pixel level, so processing complex fragment programs will be avoided.
+    The fill-rate problem can get even worse, because sometimes a bounding box needs to be rendered from both sides, with front-facing and back-facing polygons!
+    The catch is that when you test an object that is very close to the view origin, the viewer ends up inside the bounding box. That's why we need to render
+    back faces also; otherwise, because of back-face culling, no pixels will be drawn on-screen, and we'll get a false result. To be safe, skip occlusion testing
+    for models that are too near the viewer; it can really do more harm than good, and an object that close is definitely visible."
+    "When only depth testing or stencil writing is taking place, some new GPUs (such as the GeForce FX family) use a higher-performance rendering path.
+    In the past, hardware didn't benefit much when the color buffer was switched off during testing for the visibility of a bounding box, because the circuits
+    for color and depth value output were in the same pipeline. Now, however, on newer hardware, if the color-buffer output is switched off, the pipelines are
+    used for depth testing and the bounding box testing is faster."
+    (https://developer.nvidia.com/gpugems/gpugems/part-v-performance-and-practicalities/chapter-29-efficient-occlusion-culling)
+
+    Pseudo-code:
+
+    For every object, we need 3 variables:
+     - iOcclusionQuery - the ID of the OpenGL occlusion query;
+     - nFramesWithoutOcclusionTest - how many frames elapsed without testing if the object is occluded;
+     - bOcclusionQueryStarted - if true, there is an ongoing occlusion query for this object.
+
+    When creating an object, an occlusion query object should be created (but not started) for it, and:
+      - iOcclusionQuery = 0;
+      - nFramesWithoutOcclusionTest = MAX_FRAMES_WO_OCCLUSION_TESTING;
+      - bOcclusionQueryStarted = false;
+      - nFramesWaitedForOcclusionTestResult = 0;  // just for statistics
+      - nFramesWaitedForOcclusionTestResultMin = MAX_UINT;  // just for statistics
+      - nFramesWaitedForOcclusionTestResultMax = 0;  // just for statistics
+    
+    The bOcclusionQueryStarted member is needed because although theoretically we could get GL_GET_QUERY_AVAILABLE
+    for queries never yet started, I did not find any requirement on implementing the result for GL_GET_QUERY_AVAILABLE
+    when a query has never started yet. I'm afraid of differences in implementations.
+    I would rather maintain my own bOcclusionQueryStarted.
+
+    Frustum cull your scene against any kind of object (translucent or opaque)
+    Sort remaining objects opaque coarsely from front to back
+    Render a z-pre-pass (no fragment shading, color masking turned on), maybe just large occluders here, like terrain, large buildings and stuff
+    For each of N occludees:
+      - if ( framesWithoutOcclusionTest >= MAX_FRAMES_WO_OCCLUSION_TESTING ):
+        - yes: either this has been declared as visible object for the previous few frames or this was declared as occluded in last frame or this is the first rendered frame;
+          - bOcclusionQueryStarted ?
+            - yes: nothing
+            - no:
+              - start query;
+              - bOcclusionQueryStarted = true;
+              - nFramesWaitedForOcclusionTestResult = 0;
+              - Disable color- and depth-writes (you’ll use the depth buffer written by rendering occluders):
+                - glColorMask(false, false, false, false);
+                - glDepthMask(false);
+              - "Render" bounding volume of occludee;
+              - end query;
+              - Enable color- and depth-writes:
+                - glColorMask(true, true, true, true); 
+                - glDepthMask(true);
+        - no:
+          - framesWithoutOcclusionTest++;
+          - render the occludee object;
+        
+      - bOcclusionQueryStarted ?
+        - yes:
+          - nFramesWaitedForOcclusionTestResult++;
+          - get(GL_GET_QUERY_AVAILABLE) ?
+            - no:
+              - render the occludee object;  // this could be controlled with a const boolean: render unsure occludees or not?
+                // if we render here then hidden occludees will be rendered every next frame if query result need more than 1 frame!!!
+            - yes:
+              - if ( nFramesWaitedForOcclusionTestResult < nFramesWaitedForOcclusionTestResultMin )
+                - nFramesWaitedForOcclusionTestResultMin = nFramesWaitedForOcclusionTestResult;
+              - if ( nFramesWaitedForOcclusionTestResult > nFramesWaitedForOcclusionTestResultMax )
+                - nFramesWaitedForOcclusionTestResultMax = nFramesWaitedForOcclusionTestResult;
+              - nFramesWaitedForOcclusionTestResult = 0;
+              - bOcclusionQueryStarted = false;
+              - get query result;
+              - number of visible fragments is greater than 0 ?:
+                - yes:
+                  - render the occludee object;
+                  - framesWithoutOcclusionTest = 0;  // we can wait for a few frames before testing again
+                - no:
+                  - framesWithoutOcclusionTest = MAX_FRAMES_WO_OCCLUSION_TESTING;   // this is occluded now, skip draw, but re-test is needed immediately!
+        - no: nothing.
+
+    Render translucent object from back to front
+
+    Material to read:
+
+        https://developer.nvidia.com/gpugems/gpugems/part-v-performance-and-practicalities/chapter-29-efficient-occlusion-culling
+        https://community.khronos.org/t/occlusion-culling-with-arb-occlusion-query/68688/4
+        https://gamedev.stackexchange.com/questions/118651/opengl-occlusion-culling-huge-performance-drop
+        https://github.com/ychding11/GraphicsCollection/wiki/Occlusion-Culling-and-Visibility-Filter-in-Graphics
+        CHC: https://developer.nvidia.com/gpugems/gpugems2/part-i-geometric-complexity/chapter-6-hardware-occlusion-queries-made-useful
+        CHC++: https://www.cg.tuwien.ac.at/research/publications/2008/mattausch-2008-CHC/
+        Battlefield: Bad Company: https://blog.selfshadow.com/publications/practical-visibility/
+        https://software.intel.com/content/www/us/en/develop/topics/gamedev.html
+
+        Software Occlusion Culling
+        https://software.intel.com/content/www/us/en/develop/articles/software-occlusion-culling.html
+        https://software.intel.com/content/www/us/en/develop/articles/masked-software-occlusion-culling.html
+        https://software.intel.com/content/www/us/en/develop/articles/merging-masked-occlusion-culling-hierarchical-buffers-for-faster-rendering.html
+
+        Core Techniques and Algorithms in Game Programming - Daniel Sanchez-Crespo Dalmau.pdf
+        3D Game Engine Architecture - Engineering Real Time Applications with Wild Magic - David H. Eberl.pdf
+        3D Game Engine Design - David H. Eberly.pdf
+
+    Related OpenGL extensions for HW occlusion culling support:
+
+        GL_HP_occlusion_test
+        (https://www.scitepress.org/Papers/2007/20725/20725.pdf)
+        GDC2002_occlusion.pdf
+        SimpleFastHWaccelPoint-in-PolygonTest.pdf
+         - was supported in early 2000s, also supported by Geforce 7600 GT in 2006
+         - doesn't look to be supported by Geforce 1060 GT in 2021
+         - Desktop: Looks like for some reason vendors supported it around 2005-2007, but then they stopped supporting it!
+           Mobile: no support at all!
+         - simple GL_TRUE/GL_FALSE result;
+         - simple "stop-and-wait" model for using multiple queries. The application begins an occlusion test and ends it;
+           then, at some later point, it asks for the result, at which point the driver must stop and wait until the result
+           from the previous test is back before the application can even begin the next one. This means that usage of this
+           is not recommended as it can easily stall the graphics pipeline.
+         - Verdict: don't use it.
+
+        GL_HP_visibility_test: http://www.vgamuseum.info/images/doc/profi/hpfx10.txt
+         - Desktop: nothing found.
+           Mobile: nothing found.
+         - improves upon HP's occlusion test extension by letting applications perform multiple visibility tests before getting
+           back the results. This is different than the occlusion test extension which provides only a single visibility test result.
+           To perform multiple visibility tests with the occlusion test extension, the result of the previous test must be obtained before
+           starting a new test. With the Visibility Test extension, performance is improved because the results of many tests can be obtained in
+           a single call.
+         - Verdict: don't use it.
+
+        GL_HP_visibility_stats: http://www.vgamuseum.info/images/doc/profi/hpfx10.txt
+         - Desktop: nothing found.
+           Mobile: nothing found.
+         - Visibility Statistics is a logical extension to HP's occlusion test and visibility test extensions. While visibility testing gives a
+           binary answer of visible or NOT visible, visibility statistics gives a quantative answer of how visible in the form of a pass count and
+           a fail count. Applications can use these counts to compute "percent visible" numbers and use the results in Level Of Detail (LOD) algorithms.
+         - Verdict: don't use it.
+
+        GL_NV_occlusion_query: https://www.khronos.org/registry/OpenGL/extensions/NV/NV_occlusion_query.txt
+        GDC2002_occlusion.pdf
+         - vendor-specification from around 2002; 
+         - Desktop: some NV and AMD drivers support it;
+           Mobile: nothing found.
+         - not supported widely enough, better to favor standard GL_ARB_occlusion_query
+         - Verdict: don't use this. 
+
+        GL_NV_occlusion_query_samples
+         - cannot even find an official page about this extension;
+         - Desktop: nothing found.
+           Mobile: only with nvidia Tegra!
+         - Verdict: don't use this.
+
+        GL_ARB_occlusion_query: https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_occlusion_query.txt
+         - 2003
+         - its result the number of samples that pass the depth and stencil tests. Samples are counted immediately after
+           _both_ the depth and stencil tests, i.e., samples that pass both;
+         - occlusion queries in "query objects" that allow applications to issue many queries before asking for the result of
+           any one. As a result, they can overlap the time it takes for the occlusion query results to be returned with other,
+           more useful work, such as rendering other parts of the scene or performing other computations on the CPU;
+         - occlusion queries return in order. If occlusion test X occurred before occlusion query Y, and the driver informs the app
+           that occlusion query Y is done, the app can infer that occlusion query X is also done.
+         - the polling  method introduced in the NV_occlusion_query spec allowed for a potential infinite loop if the application
+           does not do a flush. This version of the spec clarifies the behavior which now makes such a flush unnecessary.
+         - "An implementation can either set QUERY_COUNTER_BITS_ARB to the value 0, or to some number greater than or equal to n.
+           If an implementation returns 0 for QUERY_COUNTER_BITS_ARB, then the occlusion queries will always return that zero samples
+           passed the occlusion test, and so an application should not use occlusion queries on that implementation."
+         - Desktop: widely supported.
+           Mobile: nothing found.
+         - Verdict: use this for desktop.
+
+        GL_ARB_occlusion_query2: https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_occlusion_query2.txt
+        https://www.diva-portal.org/smash/get/diva2:830875/FULLTEXT01.pdf
+         - 2010, looks to be widely supported until today
+         - depends on GL_ARB_occlusion_query, the difference is that it can simply return bool true/false instead of the number
+           of passing samples.
+         - Verdict: 
+
+        GL_EXT_occlusion_query_boolean: https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_occlusion_query_boolean.txt
+         - 2011
+         - I guess this is more likely for mobile instead of GL_ARB_occlusion_query2;
+         - This is also async query as GL_ARB_occlusion_query, so it can avoid stalling pipeline;
+         - Desktop: nothing found.
+           Mobile: lot of Mali, Tegra, Rogue, SGX chips support it.
+         - Verdict: use this for mobile. Note that, even in 2020, article states that occlusion culling on mobile is slow, and
+           a software occlusion culling implementation is recommended. In Unreal engine, software occlusion culling is recommended:
+           https://docs.microsoft.com/en-us/windows/mixed-reality/develop/unreal/performance-recommendations-for-unreal
+           Software occlusion culling like PVS and/or partial software rendering to find out if something is occluded or not.
+    
+*/
+
+/*
    PRREObject3D::PRREObject3DImpl
    ###########################################################################
 */

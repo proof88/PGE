@@ -28,6 +28,8 @@ using namespace std;
 
     ***************************
 
+    https://developer.nvidia.com/gpugems/gpugems/part-v-performance-and-practicalities/chapter-28-graphics-pipeline-performance
+
     GeForce 2 cards (and probably GeForce 4MX) only supported 16-bit indexing in HW, so
     if you went over 64Ki vertices then it would have to do the indexing in software.
 
