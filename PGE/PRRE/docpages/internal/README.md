@@ -1,3 +1,4 @@
+**Important:** you are reading a markdown file that can be rendered by github, but this and other markdown files are the input for the [official doxygen-generated documentation of PURE](https://proof88.github.io/pure-doc/). So please go to that site for full navigation and else, because here you can see only partial content.
 
 # Introduction
 This documentation describes how [my engine](https://github.com/proof88/PGE/) works and explains relevant technologies.  
