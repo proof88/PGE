@@ -113,6 +113,7 @@ using namespace std;
     Element Array: memory used by glDrawElements call.
 	    Might be host memory or an Element Buffer Object if it is bound using glBindBuffer command with GL_ELEMENT_ARRAY_BUFFER.
 
+    !!! https://sakura7.blog.hu/2010/03/15/to_vbo_or_not_to_vbo !!!
 
     ***************************
 

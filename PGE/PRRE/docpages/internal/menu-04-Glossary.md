@@ -220,6 +220,10 @@ There is some other vertex cache optimization: [http://home.comcast.net/~tom_for
 
 [http://www.opentk.com/doc/advanced/vertex-cache-optimization](http://www.opentk.com/doc/advanced/vertex-cache-optimization)
 
+## Culling
+
+Removing hidden objects from rendering. This means we can determine hidden objects somehow and skip rendering them since they wouldn't make any change to the final rendered image anyway.
+
 ## AGP Fast Writes
 
 A method of allowing the CPU to send data directly to the AGP bus without having to use main system memory. Speeds up AGP reads. Doesn’t have effect on AGP writes.

@@ -94,7 +94,7 @@ using namespace std;
     used for depth testing and the bounding box testing is faster."
     (https://developer.nvidia.com/gpugems/gpugems/part-v-performance-and-practicalities/chapter-29-efficient-occlusion-culling)
 
-    Pseudo-code:
+    Pseudo-code for an async (non-stop-and-wait) way of querying:
 
     For every object, we need 3 variables:
      - iOcclusionQuery - the ID of the OpenGL occlusion query;
@@ -137,7 +137,10 @@ using namespace std;
         - no:
           - framesWithoutOcclusionTest++;
           - render the occludee object;
-        
+
+      // this is intentionally not in else branch, so we check if query already finished in the same frame
+      // although I think I will see no query being finished in the same frame ... but this is the first approach!
+      // on the long run maybe we can move this into the yes-branch of the above "bOcclusionQueryStarted ?" condition
       - bOcclusionQueryStarted ?
         - yes:
           - nFramesWaitedForOcclusionTestResult++;
@@ -163,7 +166,88 @@ using namespace std;
 
     Render translucent object from back to front
 
+
+    CHC: Coherent Hierarchical Culling
+
+    "The algorithm exploits the spatial and temporal coherence of visibility. (...)
+    Spatial coherence: storing the scene in a hierarchical data structure, processing nodes of the hierarchy in a front-to-back order. (...)
+    If geometry is not the main rendering bottleneck, but rather the number of draw calls issued (Wloka 2003), then making additional draw calls to issue
+    the occlusion queries is a performance loss. With hierarchies, though, interior nodes group a larger number of draw calls, which are all saved if the node
+    is occluded using a single query. (...)
+    Temporal coherence: if we know what's visible and what's occluded in one frame, it is very likely that the same classification will be correct for most
+    objects in the following frame as well. (...) If we want to have correct images, we need to verify our guess and rectify our choice in case it was wrong.
+    In the first case (the node was actually occluded), we update the classification for the next frame. In the second case (the node was actually visible),
+    we just process (that is, traverse or render) the node normally. The good news is that we can do all of this later, whenever the query result arrives.
+    Note also that the accuracy of our guess is not critical, because we are going to verify it anyway. (...)
+    Issue occlusion queries only for previously visible leaf nodes and for the largest possible occluded nodes in the hierarchy (in other words, an occluded
+    node is not tested if its parent is occluded as well). The number of queries issued is therefore linear in the number of visible objects."
+    (https://developer.nvidia.com/gpugems/gpugems2/part-i-geometric-complexity/chapter-6-hardware-occlusion-queries-made-useful)
+    The algorithm can be further optimized with a few ideas mentioned on the page in "6.6 Optimizations".
+    
+    "The CHC algorithm works well in densely occluded scenes, but the overhead of hardware occlusion queries makes it fall behind even simple view-frustum culling
+    (VFC) in some situations. (...) It traverses the hierarchy in a front-to-back order and issues queries only for previously visible leaves and nodes of the
+    previously invisible boundary. Previously visible leaves are assumed to stay visible in the current frame, and hence they are rendered immediately.
+    The result of the query for these nodes only updates their classification for the next frame. The invisible nodes are assumed to stay invisible, but the
+    algorithm retrieves the query result in the current frame in order to discover visibility changes.(...)
+    The algorithm works very well for scenarios that have a lot of occlusion. However, on newer hardware where rendering geometry becomes cheap compared to querying,
+    or view points where much of the scene is visible, the method can become even slower than conventional view-frustum culling. This is a result of wasted queries and
+    unnecessary state changes. "
+    (https://www.cg.tuwien.ac.at/research/publications/2008/mattausch-2008-CHC/mattausch-2008-CHC-draft.pdf)
+
+    
+    CHC++: a further optimized form of CHC bringing much better speedup
+
+    Following citations are from: https://www.cg.tuwien.ac.at/research/publications/2008/mattausch-2008-CHC/mattausch-2008-CHC-draft.pdf
+
+    "Queues for batching of queries: Before a node is queried, it is appended to a queue. Separate queues are used for accumulating previously visible and previously invisible
+    nodes. We use the queues to issue batches of queries instead of individual queries. This reduces state changes by one to two orders of magnitude."
+    Details:
+    "It turns out that changes of rendering state cause an even larger overhead than the query itself. (...)
+    Game developers refer to about 200 state changes per frame as an acceptable value on current hardware.
+    The invisible nodes to be queried are appended to a queue which we call i-queue. When the number of nodes in the i-queue reaches a user-defined batch size b,
+    we change the rendering state for querying and issue an occlusion query for each node in the i-queue. (...)
+    Similarly to CHC, our proposed method renders the geometry of previously visible nodes during the hierarchy traversal. However the queries are not issued immediately.
+    Instead the corresponding nodes are stored in a queue which we call v-queue. (...) The queries for these nodes are not critical for the current frame since their result
+    will only be used in the next frame. We exploit this observation by using nodes from the v-queue to fill up waiting time: whenever the traversal queue is empty and no
+    outstanding query result is available, we process nodes from the v-queue. (...)
+    We propose to use an additional queue in the algorithm which we call render queue. This queue accumulates all nodes scheduled for rendering and is processed
+    when a batch of queries is about to be issued. When processing the render queue the engine can apply its internal material shader sorting and then render the objects stored
+    in the queue in the new order."
+    
+    "Multiqueries. We compile multiqueries (Section 5.1), which are able to cover more nodes by a single occlusion query. This reduces the number of queries for previously
+    invisible nodes up to an order of magnitude."
+    Details:
+    "If some previously invisible part of a scene remains invisible in the current frame, a single occlusion query for the whole part is sufficient to verify its visibility status.
+    Such a query would render all bounding boxes of primitives in this scene part, and return zero if all primitives remain occluded. (...) Our new technique aims to identify such
+    scene parts by forming groups of previously invisible nodes that are equally likely to remain invisible. A single occlusion query is issued for each such group, which we call a
+    multiquery. If the multiquery returns zero, all nodes in the group remain invisible and their status has been updated by the single query. Otherwise the coherence was broken for
+    this group and we issue individual queries for all nodes by reinserting them in the i-queue."
+
+    "Randomized sampling pattern for visible nodes. We apply a temporally jittered sampling pattern (Section 5.2) for scheduling queries for previously visible nodes.
+    This reduces the number of queries for visible nodes and while spreading them evenly over the frames of the walkthrough."
+    Details:
+    "The original CHC algorithm introduced an important optimization in order to reduce the number of queries on previously visible nodes. A visible node is assumed to stay visible
+    for nav frames and it will only be tested in the frame nav +1. (...) This simple method however has a problem that the queries can be temporally aligned. This query alignment
+    becomes problematic in situations when nodes tend to become visible in the same frame. (...) The average number of queries per frame will still be reduced, but the
+    alignment can cause observable frame rate drops. (...) We found that the most satisfying solution is achieved by randomizing the first invocation of the occlusion query. After
+    a node has turned visible, we use a random value 0 < r < nav for determining the next frame when a query will be issued. Subsequently, if the node was already visible in the previous
+    test, we use a regular sampling interval given by nav."
+
+    "Tight bounding volumes. We use tight bounding volumes (Section 6) without the need for their explicit construction. This provides a reduction of the number of rendered
+    triangles as well as a reduction of the number of queries."
+    Details:
+    "We propose a simple method for determining tighter bounds for inner nodes in the context of hardware occlusion queries applied to an arbitrary bounding volume hierarchy.
+    For a particular node we determine its tight bounding volume as a collection of bounding volumes of its children at a particular depth. (...)
+    Tight bounding volumes provide several benefits at almost no cost: (1) earlier culling of interior nodes of the hierarchy, (2) culling of leaves which would otherwise be classified
+    as visible, (3) increase of coherence of visibility classification of interior nodes. The first property leads to a reduction of the number of queries. The second property provides a
+    reduction of the number of rendered triangles. Finally, the third benefit avoids changes in visibility classification for interior nodes caused by repeated pull-up and pull-down of
+    visibility."
+    
+    
     Material to read:
+
+        https://documents.pub/document/visibility-optimization-for-games-sampo-lappalainen-lead-programmer-umbra-software-ltd.html
+        documents.pub_visibility-optimization-for-games-sampo-lappalainen-lead-programmer-umbra-software-ltd.ppt
 
         https://developer.nvidia.com/gpugems/gpugems/part-v-performance-and-practicalities/chapter-29-efficient-occlusion-culling
         https://community.khronos.org/t/occlusion-culling-with-arb-occlusion-query/68688/4
@@ -171,6 +255,7 @@ using namespace std;
         https://github.com/ychding11/GraphicsCollection/wiki/Occlusion-Culling-and-Visibility-Filter-in-Graphics
         CHC: https://developer.nvidia.com/gpugems/gpugems2/part-i-geometric-complexity/chapter-6-hardware-occlusion-queries-made-useful
         CHC++: https://www.cg.tuwien.ac.at/research/publications/2008/mattausch-2008-CHC/
+               mattausch-2008-CHC-draft.pdf
         Battlefield: Bad Company: https://blog.selfshadow.com/publications/practical-visibility/
         https://software.intel.com/content/www/us/en/develop/topics/gamedev.html
 
@@ -254,8 +339,8 @@ using namespace std;
         https://www.diva-portal.org/smash/get/diva2:830875/FULLTEXT01.pdf
          - 2010, looks to be widely supported until today
          - depends on GL_ARB_occlusion_query, the difference is that it can simply return bool true/false instead of the number
-           of passing samples.
-         - Verdict: 
+           of passing samples. Probably faster, since it can stop the query at the first passing fragment depth test. Need to verify this though.
+         - Verdict: use this for desktop. Unclear if it has speed advantage over the first version if this ext.
 
         GL_EXT_occlusion_query_boolean: https://www.khronos.org/registry/OpenGL/extensions/EXT/EXT_occlusion_query_boolean.txt
          - 2011
