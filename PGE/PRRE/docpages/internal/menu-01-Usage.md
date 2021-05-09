@@ -1,4 +1,4 @@
-# Engine Usage
+\page usage Engine Usage
 
 [TOC]
 
@@ -6,7 +6,7 @@ Main class of the engine is PR00FsReducedRenderingEngine. Initialization, shutdo
 
 This page gives you a brief hint on the usage, but you can always check the UnitTests as well for different cases.  
 
-## Initialization
+\section initialization Initialization
 
 PR00FsReducedRenderingEngine::initialize() is responsible for initialization.  
 The user can select which renderer should be initialized with the engine.  
@@ -32,7 +32,7 @@ Example code snippet for initializing the engine, with PRRERendererHWfixedPipe r
 
 Related PURE API: PR00FsReducedRenderingEngine::initialize(), PRREIRenderer::initialize().  
 
-## Loading Resources
+\section loading Loading Resources
 
 Resources such as textures, 3D models, etc. can be created or loaded by Managers.  
 Any class descending from PRREManager class is a manager.
@@ -74,7 +74,7 @@ Example code snippet for creating a renderable object from a 3D mesh file:
 
 Related PURE API: TODO  
 
-## Rendering
+\section rendering Rendering
 
 As mentioned at the Initialization section above, there are multiple renderers available. 
 The initialized renderer object can be accessed with PR00FsReducedRenderingEngine::getRenderer().
@@ -89,7 +89,7 @@ Example code snippet for rendering (since default position of PRRECamera object 
 
 Related PURE API: PR00FsReducedRenderingEngine::getRenderer(), PRREIRenderer::RenderScene().  
 
-## Shutdown
+\section shutdown Shutdown
 
 Graceful termination of the application can be a reason for shutting down the graphics engine.  
 Another reason could be the need for changing some basic renderer setting that can be specified only in PR00FsReducedRenderingEngine::initialize().  
@@ -110,6 +110,6 @@ Example code snippet for shutdown:
 Related PURE API: PR00FsReducedRenderingEngine::shutdown(), PRREIRenderer::shutdown().
 
 
-## Samples
+\section samples Samples
 
 TODO

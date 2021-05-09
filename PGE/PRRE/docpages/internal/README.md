@@ -1,6 +1,7 @@
 **Important:** you are reading a markdown file that can be rendered by github, but this and other markdown files are the input for the [official doxygen-generated documentation of PURE](https://proof88.github.io/pure-doc/). So please go to that site for full navigation and else, because here you can see only partial content.
 
 # Introduction
+
 This documentation describes how [my engine](https://github.com/proof88/PGE/) works and explains relevant technologies.  
 You are reading the **internal documentation** which contains info about both the API usage and its implementation.  
 If that is too much for you, you can always generate an **external documentation** with DoxyGen using the [PURE_Doxyfile_external config file](https://github.com/proof88/PGE/tree/master/PGE/Docs).  

@@ -1,4 +1,4 @@
-# Rendering Architecture & Pipeline
+\page architecture Rendering Architecture & Pipeline
 
 [TOC]
 
@@ -8,9 +8,9 @@ PURE currently supports fixed function pipeline (i.e. neither vertex- nor fragme
 
 It is useful to note that operations in the early geometry stage of the pipeline are done **per vertex**, the rest is done **per primitive (triangle)**, and rendering operations are done **per pixel**.
 
-## Geometry Stage
+\section geometry_stage Geometry Stage
 
-### Vertex Specification
+\subsection vertex_spec Vertex Specification
 
 In this early stage, we define the vertex stream by specifying following:
  - **vertex attributes** (e.g. object-space position);
@@ -25,7 +25,7 @@ The latter has an advantage on memory consumption and performance, since same (r
 
 TODO: add PPP info on this.
 
-### Vertex Processing
+\subsection vertex_proc Vertex Processing
 
 *Vertices* are transformed from object-space to clip-space with multiple matrix multiplication operations.  
 Optional normals are transformed from object-space to eye-space/view-space.  
@@ -93,7 +93,7 @@ Related OpenGL API: gluPerspective(), gluLookAt(), glFrustum().
 
 Related PURE API: TODO.
 
-### Primitive (Triangle) Assembly
+\subsection primitive_assembly Primitive (Triangle) Assembly
 
 Primitives are assembled from the *vertices* coming from the previous stage. *Vertices* are transformed from **clip-space to screen-space**.
 
@@ -150,9 +150,9 @@ Related OpenGL API: glFrontFace(), glEnable(GL_CULL_FACE), glCullFace().
 
 Related PURE API: TODO.
 
-## Rasterization / Rendering Stage
+\section raster_stage Rasterization / Rendering Stage
 
-### Triangle Setup / Scan-Line Conversion
+\subsection triangle_setup Triangle Setup / Scan-Line Conversion
 
 *Fragments* are generated from the primitives in this stage.
 
@@ -185,7 +185,7 @@ Related OpenGL API: TODO.
 
 Related PURE API: TODO.
 
-### Fragment Processing
+\subsection fragment_processing Fragment Processing
 
 A *texel* is generated from texture memory and it is applied to each *fragment*. Then fog calculations are applied.
 
@@ -197,7 +197,7 @@ Related OpenGL API: TODO.
 
 Related PURE API: TODO.
 
-### Per-Sample Processing
+\subsection sample_processing Per-Sample Processing
 
 Usual operations of this final stage are depth testing, blending, etc.
 
