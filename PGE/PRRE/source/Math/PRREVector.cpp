@@ -284,9 +284,9 @@ PRREVector PRREVector::getCrossProduct(const PRREVector& vec) const
 */
 TPRREbool PRREVector::operator==(const PRREVector& vec) const
 {
-    const bool bX = (pos.x - vec.pos.x) < PFL::E;
-    const bool bY = (pos.y - vec.pos.y) < PFL::E;
-    const bool bZ = (pos.z - vec.pos.z) < PFL::E;
+    const bool bX = abs(pos.x - vec.pos.x) < PFL::E;
+    const bool bY = abs(pos.y - vec.pos.y) < PFL::E;
+    const bool bZ = abs(pos.z - vec.pos.z) < PFL::E;
 
     return ( bX && bY && bZ );
 } // operator==()

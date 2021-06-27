@@ -362,6 +362,7 @@
     <ClInclude Include="PRRE\include\internal\PRREpragmas.h" />
     <ClInclude Include="PRRE\include\internal\PRREuiFontWin.h" />
     <ClInclude Include="PRRE\include\internal\PRREuiText.h" />
+    <ClInclude Include="PRRE\include\internal\SpatialStructures\PRREAxisAlignedBoundingBox.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp" />
@@ -427,6 +428,7 @@
     <ClCompile Include="PRRE\source\PRREuiText.cpp" />
     <ClCompile Include="PRRE\source\Render\PRRERendererHWfixedPipe.cpp" />
     <ClCompile Include="PRRE\source\Render\PRRERendererSWincremental.cpp" />
+    <ClCompile Include="PRRE\source\SpatialStructures\PRREAxisAlignedBoundingBox.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

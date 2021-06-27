@@ -279,6 +279,9 @@
     <ClInclude Include="..\PRRE\include\external\PRREuiManager.h">
       <Filter>Header Files\PGE\PRRE</Filter>
     </ClInclude>
+    <ClInclude Include="PRREAxisAlignedBoundingBoxTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UnitTests.cpp">
