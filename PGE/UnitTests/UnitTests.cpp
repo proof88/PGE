@@ -24,6 +24,7 @@
 #include "PR00FsReducedRenderingEngineTest.h"
 #include "PR00FsReducedRenderingEngineTest2.h"
 #include "PRREAxisAlignedBoundingBoxTest.h"
+#include "PRREOctreeTest.h"
 #include "PRRECameraTest.h"
 #include "PRREColorTest.h"
 #include "PRREFiledManagedTest.h"
@@ -93,6 +94,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PRREMatrixTest             testPRREMatrix;
     PRRETransformMatrixTest    testPRRETransformMatrix;
     PRREAxisAlignedBoundingBoxTest testAABB;
+    PRREOctreeTest             testOctree;
     PRREScissorTest            testPRREScissor;
     PRREColorTest              testPRREColor;
     PRREManagerTest            testPRREManager;
@@ -142,8 +144,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREMatrix);  
     tests.push_back(&testPRRETransformMatrix);
     tests.push_back(&testAABB);
+    tests.push_back(&testOctree);
     tests.push_back(&testPRREScissor);
-          
+    /*      
     tests.push_back(&testPRREColor);
     tests.push_back(&testPRREManager);
     tests.push_back(&testPRREManaged);
@@ -172,6 +175,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     tests.push_back(&testPRREObject3DManager);
     tests.push_back(&testPRREObject3D);
+    */
 
     /* 
     tests.push_back(&testPRREWindow);

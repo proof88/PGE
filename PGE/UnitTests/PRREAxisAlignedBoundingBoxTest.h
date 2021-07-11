@@ -12,10 +12,6 @@
 #include "UnitTest.h"  // PCH
 #include "../PRRE/include/internal/SpatialStructures/PRREAxisAlignedBoundingBox.h"
 
-#ifndef E2
-#define E2 0.005f
-#endif // EPSILON
-
 class PRREAxisAlignedBoundingBoxTest :
     public UnitTest
 {
