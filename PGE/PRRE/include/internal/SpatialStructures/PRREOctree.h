@@ -12,7 +12,11 @@
 */
 
 
+#include <set>
+#include <vector>
+
 #include "../../../../PGEallHeaders.h"
+#include "../../external/Math/PRREVector.h"
 #include "../../external/Object3D/PRREObject3DManager.h"
 
 
@@ -27,14 +31,19 @@
     In case we already reached the maximum tree depth, we do not further subdivide but just insert the new object to the most suitable node, in this case
     a node can has multiple objects stored in it.
 
+    This is just my own simply octree implementation.
+
     There are a lot of example implementations on the internet:
+    A few simple:
      - https://iq.opengenus.org/octree/
      - https://people.inf.elte.hu/stlraai/webfejl/articles/octree.html
      - https://www.flipcode.com/archives/Octree_Implementation.shtml
+    Some more advanced:
      - http://nomis80.org/code/octree.html
      - https://github.com/PointCloudLibrary/pcl/tree/master/octree
 
     Note this is not a Loose Octree implementation, but might become in the future.
+    Info about loose octree:
      - https://sakura7.blog.hu/2010/07/05/loose_octree
      - http://www.tulrich.com/geekstuff/partitioning.html
 */
@@ -48,38 +57,76 @@ public:
 
     /**
         NodeType tells if the given node has children nodes or Objects.
+        The default type is LeafEmpty. This changes to LeafContainer after adding 1 object to the node.
+        LeafContainer can later change to Parent after adding further objects to the same node.
     */
     enum NodeType
     {
-        Parent,    /**< This non-leaf node does not have objects but 8 children nodes that might store objects. */
-        Empty,     /**< This leaf node has neither children nodes nor objects stored inside. */
-        Container  /**< This leaf node has at least 1 object stored inside. */
+        Parent,        /**< This non-leaf node does not have objects but 8 children nodes that might store objects. */
+        LeafEmpty,     /**< This leaf node has neither children nodes nor objects stored inside. */
+        LeafContainer  /**< This leaf node has at least 1 object stored inside. */
     };
+
+
+    /**
+        ChildIndex indexes a child node within a vector of children nodes.
+        It is basically a number between 0 and 7, but it is easier to read and write code if we
+        set named bits depending on where the child node is placed on each axis compared to its parent.
+        Front means facing to camera, back means looking away from camera view.
+    */
+    typedef TPRREuint ChildIndex;
+
+    static const ChildIndex BIT_AXIS_Y;                             /**< Bit to set to TOP or BOTTOM. */
+    static const ChildIndex BIT_AXIS_X;                             /**< Bit to set to LEFT or RIGHT. */
+    static const ChildIndex BIT_AXIS_Z;                             /**< Bit to set to FRONT or BACK. */
+
+    static const ChildIndex TOP;                                    /**< Child is above or in same as parent's position on Y-axis. */
+    static const ChildIndex BOTTOM;                                 /**< Child is under parent's position on Y-axis. */
+    static const ChildIndex LEFT;                                   /**< Child is left to parent's position on X-axis. */
+    static const ChildIndex RIGHT;                                  /**< Child is right to or in same as parent's position on X-axis. */
+    static const ChildIndex FRONT;                                  /**< Child is closer to camera than parent's position on Z-axis. */
+    static const ChildIndex BACK;                                   /**< Child is farther or same distance from camera than parent's position on Z-axis. */
 
     // ---------------------------------------------------------------------------
 
-    PRREOctree();
+    PRREOctree(const PRREVector& pos, TPRREfloat size, TPRREuint maxDepthLevel, TPRREuint currentDepthLevel);
     virtual ~PRREOctree();
 
-    PRREOctree* insertObject(const PRREObject3D& obj);
-    PRREOctree* removeObject(const PRREObject3D& obj);
-    const PRREOctree* findObject(const PRREObject3D& obj) const;
-    TPRREuint getDepthLevel() const;
-    TPRREuint getMaxDepthLevel() const;
-    NodeType getNodeType() const;
+    ChildIndex calculateIndex(const PRREVector& pos) const;         /**< Calculates child node index for the given position in the current node. */
+
+    PRREOctree* insertObject(const PRREObject3D& obj);              /**< Inserts the given object in the octree. */
+    // remove is not supported, since currently Octree is used for static objects, which are not being deleted,
+    // only when the octree would need full rebuild anyway
+    //TPRREbool removeObject(const PRREObject3D& obj);              /**< Removes the given object from the octree. */
+    const PRREOctree* findObject(const PRREObject3D& obj) const;    /**< Finds the given object in the octree. */
+    TPRREuint getDepthLevel() const;                                /**< Gets the current depth level of the octree node. */
+    TPRREuint getMaxDepthLevel() const;                             /**< Gets the maximum depth level of the octree node as it was specified in the constructor of the octree. */
+    NodeType getNodeType() const;                                   /**< Gets the type of the octree node which depends on if the node has any objects or children nodes. */
+    const PRREVector& getPos() const;                               /**< Gets the world-space position of the node as specified in the constructor. */
+    TPRREfloat getSize() const;                                     /**< Gets the length of the side of the cube represented by this node as it was specified in the constructor. */
+    const std::vector<PRREOctree>& getChildren() const;             /**< Gets the children nodes of this node. */
+    const std::set<const PRREObject3D*>& getObjects() const;        /**< Gets the stored objects of this node. */
 
 
 protected:
 
     // ---------------------------------------------------------------------------
        
-    PRREOctree(const PRREOctree&);
-    PRREOctree& operator=(const PRREOctree&);
+    PRREOctree();
+    
+    // defaults will be fine
+    //PRREOctree(const PRREOctree&);
+    //PRREOctree& operator=(const PRREOctree&);
 
 private:
 
-    PRREVector pos;
-    PRREVector size;
+    PRREVector vPos;
+    TPRREfloat fSize;
+    TPRREuint nCurrentDepth;
+    TPRREuint nMaxDepth;
+    NodeType nodeType;
+    std::vector<PRREOctree> vChildren;
+    std::set<const PRREObject3D*> vObjects;
 
 }; // class PRREOctree 
 
