@@ -32,6 +32,8 @@
     a node can has multiple objects stored in it.
 
     This is just my own simply octree implementation.
+    Note that although the octree divides the space perfectly, the objects being put inside this tree are allowed to overlap multiple tree nodes.
+    Their position decides which tree node they will be put into, overlapping across different nodes is not considered.
 
     There are a lot of example implementations on the internet:
     A few simple:
