@@ -2,25 +2,25 @@
 
 /*
     ###################################################################################
-    PRREOctreeTest.h
-    Unit test for PRREOctree.
+    PRREBoundingVolumeHierarchyTest.h
+    Unit test for PRREBoundingVolumeHierarchy.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PRRE/include/internal/SpatialStructures/PRREOctree.h"
+#include "../PRRE/include/internal/SpatialStructures/PRREBoundingVolumeHierarchy.h"
 
-class PRREOctreeTest :
+class PRREBoundingVolumeHierarchyTest :
     public UnitTest
 {
 public:
 
-    PRREOctreeTest() :
+    PRREBoundingVolumeHierarchyTest() :
         UnitTest( __FILE__ )
     {
-    } // PRREOctreeTest()
+    } // PRREBoundingVolumeHierarchyTest()
 
 protected:
 
@@ -28,12 +28,8 @@ protected:
     {
         engine = NULL;
         om = NULL;
-        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PRREOctreeTest::testCtor1);
-        AddSubTest("testCalculateIndex", (PFNUNITSUBTEST) &PRREOctreeTest::testCalculateIndex);
-        AddSubTest("testInsertObject", (PFNUNITSUBTEST) &PRREOctreeTest::testInsertObject);
-        AddSubTest("testFindObject", (PFNUNITSUBTEST) &PRREOctreeTest::testFindObject);
-        
-        // getDepthLevel(), getMaxDepthLevel(), getNodeType(), getChildren() and getObjects() are tested within above functions
+        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PRREBoundingVolumeHierarchyTest::testCtor1);
+        AddSubTest("testInsertObject", (PFNUNITSUBTEST) &PRREBoundingVolumeHierarchyTest::testInsertObject);
     }
 
     virtual bool setUp()
@@ -70,17 +66,17 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PRREOctreeTest(const PRREOctreeTest&)
+    PRREBoundingVolumeHierarchyTest(const PRREBoundingVolumeHierarchyTest&)
     {}         
 
-    PRREOctreeTest& operator=(const PRREOctreeTest&)
+    PRREBoundingVolumeHierarchyTest& operator=(const PRREBoundingVolumeHierarchyTest&)
     {
         return *this;
     }
 
     bool testCtor1()
     {
-        PRREOctree tree(PRREVector(1, 2, 3), 1000.0f, 3, 0);
+        PRREBoundingVolumeHierarchy tree(PRREVector(1, 2, 3), 1000.0f, 3, 0);
         
         return assertEquals(1.0f, tree.getPos().getX(), "pos.x") &
         assertEquals(2.0f, tree.getPos().getY(), "pos.y") &
@@ -90,29 +86,19 @@ private:
         assertEquals(1000.0f, tree.getSize(), "size") &
         assertEquals(PRREOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
         assertEquals((std::size_t)0, tree.getChildren().size(), "children") &
-        assertEquals((PRREOctree*)PGENULL, tree.getParent(), "parent") &
         assertEquals((std::size_t)0, tree.getObjects().size(), "objects");
-    }
-
-    bool testCalculateIndex()
-    {
-        PRREOctree tree(PRREVector(), 1000.0f, 2, 0);
-        PRREVector vec1(-200.f, 200.f, 200.f);
-        PRREVector vec2(200.f, -200.f, -200.f);
-        PRREVector vec3;
-
-        return assertEquals(PRREOctree::ChildIndex(PRREOctree::TOP | PRREOctree::LEFT | PRREOctree::BACK), tree.calculateIndex(vec1), "vec1") &
-            assertEquals(PRREOctree::ChildIndex(PRREOctree::BOTTOM | PRREOctree::RIGHT | PRREOctree::FRONT), tree.calculateIndex(vec2), "vec2") &
-            assertEquals(PRREOctree::ChildIndex(PRREOctree::TOP | PRREOctree::RIGHT | PRREOctree::BACK), tree.calculateIndex(vec3), "vec3");
     }
 
     bool testInsertObject()
     {
+        // basically this is the same test as found in PRREOctreeTest.h, but here we are interested in the
+        // BVH-related stuff only
+
         // used to test if the given world-space position other than (0,0,0) is really taken into calculations;
         // if there is any issue, change this to (0,0,0) to find out probable reason of tree not properly taking origin pos into account!
         const PRREVector treeOrigin(100.f, 200.f, 300.f);
 
-        PRREOctree tree(treeOrigin, 1000.0f, 2, 0);
+        PRREBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
         /*
 
         This is a 1000 x 1000 x 1000 size octree, in pos treeOrigin.
@@ -189,14 +175,12 @@ private:
             assertEquals(1000.0f, tree.getSize(), "tree size") &
             assertEquals(PRREOctree::NodeType::Parent, tree.getNodeType(), "tree nodeType") &
             assertEquals((std::size_t)8, tree.getChildren().size(), "tree children") &
-            assertEquals((PRREOctree*)PGENULL, tree.getParent(), "parent") &
             assertEquals((std::size_t)0, tree.getObjects().size(), "tree objects");
 
         // check level 1 nodes' common properties
         for (std::size_t i = 0; i < tree.getChildren().size(); i++)
         {
             b &= assertEquals(500.0f, tree.getChildren()[i]->getSize(), (std::string("node 1 children ") + std::to_string(i) + " size").c_str());
-            b &= assertEquals(&tree, tree.getChildren()[i]->getParent(), (std::string("node 1 children ") + std::to_string(i) + " parent").c_str());
             b &= assertEquals((TPRREuint)2, tree.getChildren()[i]->getMaxDepthLevel(), (std::string("node 1 children ") + std::to_string(i) + " maxDepthLevel").c_str());
             b &= assertEquals((TPRREuint)1, tree.getChildren()[i]->getDepthLevel(), (std::string("node 1 children ") + std::to_string(i) + " depthLevel").c_str());
         }
@@ -273,7 +257,6 @@ private:
         for (std::size_t i = 0; i < tree_BRF.getChildren().size(); i++)
         {
             b &= assertEquals(250.0f, tree_BRF.getChildren()[i]->getSize(), (std::string("tree_BRF children ") + std::to_string(i) + " size").c_str());
-            b &= assertEquals(&tree_BRF, tree_BRF.getChildren()[i]->getParent(), (std::string("node 1 children ") + std::to_string(i) + " parent").c_str());
             b &= assertEquals((TPRREuint)2, tree_BRF.getChildren()[i]->getMaxDepthLevel(), (std::string("tree_BRF children ") + std::to_string(i) + " maxDepthLevel").c_str());
             b &= assertEquals((TPRREuint)2, tree_BRF.getChildren()[i]->getDepthLevel(), (std::string("tree_BRF children ") + std::to_string(i) + " depthLevel").c_str());
         }
@@ -346,73 +329,7 @@ private:
             assertEquals(treeOrigin.getY()-375.0f, tree_BRF_BRB.getPos().getY(), "tree_BRF_BRB pos.y") &
             assertEquals(treeOrigin.getZ()-125.0f, tree_BRF_BRB.getPos().getZ(), "tree_BRF_BRB pos.z");
 
-        return b;
+        return false;
     }
 
-    bool testFindObject()
-    {
-        // we are building the same tree as in testInsertObject()
-
-        PRREOctree tree(PRREVector(), 1000.0f, 2, 0);
-        
-        PRREObject3D* const obj1 = om->createBox(2.0f, 2.0f, 2.0f);
-        PRREObject3D* const obj2 = om->createBox(2.0f, 2.0f, 2.0f);
-        PRREObject3D* const obj3 = om->createBox(2.0f, 2.0f, 2.0f);
-        PRREObject3D* const obj4 = om->createBox(2.0f, 2.0f, 2.0f);
-        PRREObject3D* const obj5 = om->createBox(2.0f, 2.0f, 2.0f);
-        if ( !assertNotNull(obj1, "obj1 not null") || !assertNotNull(obj2, "obj2 not null") || !assertNotNull(obj3, "obj3 not null") || !assertNotNull(obj4, "obj4 not null") || !assertNotNull(obj5, "obj5 not null") )
-        {
-            return false;
-        }
-
-        obj1->getPosVec().Set(-200.f, 200.f, 200.f);
-        obj2->getPosVec().Set(200.f, -200.f, -200.f);
-        obj3->getPosVec().Set(200.f, -200.f, -200.f);
-        // obj4 is at default (0,0,0)
-
-        const PRREOctree* const node1 = tree.insertObject(*obj1);
-        const PRREOctree* const node2 = tree.insertObject(*obj2);
-        const PRREOctree* const node3 = tree.insertObject(*obj3);
-        const PRREOctree* const node4 = tree.insertObject(*obj4);
-        // we intentionally not inserting obj5
-        if ( !assertNotNull(node1, "node 1") || !assertNotNull(node2, "node 2") || !assertNotNull(node3, "node 3") || !assertNotNull(node4, "node 4") )
-        {
-            return false;
-        }
-
-        const PRREOctree* const found_node1 = tree.findObject(*obj1);
-        const PRREOctree* const found_node2 = tree.findObject(*obj2);
-        const PRREOctree* const found_node3 = tree.findObject(*obj3);
-        const PRREOctree* const found_node4 = tree.findObject(*obj4);
-        const PRREOctree* const not_found_node5 = tree.findObject(*obj5);
-        if ( !assertNotNull(found_node1, "found_node1") || !assertNotNull(found_node2, "found_node2") || !assertNotNull(found_node3, "found_node3") || !assertNotNull(found_node4, "found_node4") || !assertNull(not_found_node5, "not_found_node5") )
-        {
-            return false;
-        }
-
-        // now check if actually the proper nodes have been found!
-        if ( !assertEquals((std::size_t)8, tree.getChildren().size(), "tree children size") )
-        {   // avoid crash
-            return false;
-        }
-
-        const PRREOctree& tree_TLB = *(tree.getChildren()[PRREOctree::TOP    | PRREOctree::LEFT  | PRREOctree::BACK ]);
-        const PRREOctree& tree_BRF = *(tree.getChildren()[PRREOctree::BOTTOM | PRREOctree::RIGHT | PRREOctree::FRONT]);
-        const PRREOctree& tree_TRB = *(tree.getChildren()[PRREOctree::TOP    | PRREOctree::RIGHT | PRREOctree::BACK ]);
-
-        bool b = assertEquals(&tree_TLB, found_node1, "found_node1 is tree_TLB");
-        b &= assertEquals(&tree_TRB, found_node4, "found_node4 is tree_TRB");
-
-        if ( !assertEquals((std::size_t)8, tree_BRF.getChildren().size(), "tree_BRF children size") )
-        {   // avoid crash
-            return false;
-        }
-        const PRREOctree& tree_BRF_TLB = *(tree_BRF.getChildren()[PRREOctree::TOP    | PRREOctree::LEFT  | PRREOctree::BACK ]);
-
-        b &= assertEquals(&tree_BRF_TLB, found_node2, "found_node2 is tree_BRF_TLB");
-        b &= assertEquals(&tree_BRF_TLB, found_node3, "found_node3 is tree_BRF_TLB");
-
-        return b;
-    }
-
-}; // class PRREOctreeTest
+}; // class PRREBoundingVolumeHierarchyTest

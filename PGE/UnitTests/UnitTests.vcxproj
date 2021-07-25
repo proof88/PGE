@@ -323,6 +323,7 @@
     <ClInclude Include="PR00FsReducedRenderingEngineTest.h" />
     <ClInclude Include="PR00FsReducedRenderingEngineTest2.h" />
     <ClInclude Include="PRREAxisAlignedBoundingBoxTest.h" />
+    <ClInclude Include="PRREBoundingVolumeHierarchyTest.h" />
     <ClInclude Include="PRRECameraTest.h" />
     <ClInclude Include="PRREColorTest.h" />
     <ClInclude Include="PRREFiledManagedTest.h" />

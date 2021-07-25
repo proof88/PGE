@@ -34,6 +34,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    PRREAxisAlignedBoundingBox();
     PRREAxisAlignedBoundingBox(const PRREVector& pos_, const PRREVector& size_);
     virtual ~PRREAxisAlignedBoundingBox();
 
@@ -48,8 +49,6 @@ public:
 protected:
 
     // ---------------------------------------------------------------------------
-    
-    PRREAxisAlignedBoundingBox();
     
     // allow the defaults to be generated
     /*PRREAxisAlignedBoundingBox(const PRREAxisAlignedBoundingBox&);

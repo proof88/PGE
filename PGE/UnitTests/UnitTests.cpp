@@ -25,6 +25,7 @@
 #include "PR00FsReducedRenderingEngineTest2.h"
 #include "PRREAxisAlignedBoundingBoxTest.h"
 #include "PRREOctreeTest.h"
+#include "PRREBoundingVolumeHierarchyTest.h"
 #include "PRRECameraTest.h"
 #include "PRREColorTest.h"
 #include "PRREFiledManagedTest.h"
@@ -87,31 +88,32 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PGESysCFGTest              testPGESysCFG; 
     
     /*   */
-    PRREScreenTest             testScreen;
-    PRRESharedSettingsTest     testSharedSettings;
-    PRREVectorTest             testPRREVector;
-    PRREPosUpTargetTest        testPosUpTarget;
-    PRREMatrixTest             testPRREMatrix;
-    PRRETransformMatrixTest    testPRRETransformMatrix;
-    PRREAxisAlignedBoundingBoxTest testAABB;
-    PRREOctreeTest             testOctree;
-    PRREScissorTest            testPRREScissor;
-    PRREColorTest              testPRREColor;
-    PRREManagerTest            testPRREManager;
-    PRREManagedTest            testPRREManaged;
-    PRREFiledManagerTest       testPRREFiledManager;
-    PRREFiledManagedTest       testPRREFiledManaged;
-    PRREhwInfoTest             testPRREhwInfo;
-    PRREhwCentralProcessorTest testPRREhwCentralProcessor;
-    PRREhwSystemMemoryTest     testPRREhwSystemMemory;
-    PRREhwAudioTest            testPRREhwAudio;
-    PRREhwVideoTest            testPRREhwVideo;
-    PRREImageManagerTest       testPRREImageManager;
-    PRREImageTest              testPRREImage;
-    PRRETextureManagerTest     testPRRETextureManager;
-    PRRETextureTest            testPRRETexture; 
-    PRREMaterialManagerTest    testPRREMaterialManager;
-    PRREMaterialTest           testPRREMaterial;
+    PRREScreenTest                  testScreen;
+    PRRESharedSettingsTest          testSharedSettings;
+    PRREVectorTest                  testPRREVector;
+    PRREPosUpTargetTest             testPosUpTarget;
+    PRREMatrixTest                  testPRREMatrix;
+    PRRETransformMatrixTest         testPRRETransformMatrix;
+    PRREAxisAlignedBoundingBoxTest  testAABB;
+    PRREOctreeTest                  testOctree;
+    PRREBoundingVolumeHierarchyTest testBVH;
+    PRREScissorTest                 testPRREScissor;
+    PRREColorTest                   testPRREColor;
+    PRREManagerTest                 testPRREManager;
+    PRREManagedTest                 testPRREManaged;
+    PRREFiledManagerTest            testPRREFiledManager;
+    PRREFiledManagedTest            testPRREFiledManaged;
+    PRREhwInfoTest                  testPRREhwInfo;
+    PRREhwCentralProcessorTest      testPRREhwCentralProcessor;
+    PRREhwSystemMemoryTest          testPRREhwSystemMemory;
+    PRREhwAudioTest                 testPRREhwAudio;
+    PRREhwVideoTest                 testPRREhwVideo;
+    PRREImageManagerTest            testPRREImageManager;
+    PRREImageTest                   testPRREImage;
+    PRRETextureManagerTest          testPRRETextureManager;
+    PRRETextureTest                 testPRRETexture; 
+    PRREMaterialManagerTest         testPRREMaterialManager;
+    PRREMaterialTest                testPRREMaterial;
 
     PRRECameraTest             testPRRECamera;
     PRREMesh3DManagerTest      testPRREMesh3DManager;
@@ -145,8 +147,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRRETransformMatrix);
     tests.push_back(&testAABB);
     tests.push_back(&testOctree);
+    tests.push_back(&testBVH);
     tests.push_back(&testPRREScissor);
-          
+/*          
     tests.push_back(&testPRREColor);
     tests.push_back(&testPRREManager);
     tests.push_back(&testPRREManaged);
@@ -175,7 +178,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     tests.push_back(&testPRREObject3DManager);
     tests.push_back(&testPRREObject3D);
-    
+*/    
 
     /* 
     tests.push_back(&testPRREWindow);

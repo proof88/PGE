@@ -48,7 +48,8 @@ PRREOctree::PRREOctree(const PRREVector& pos, TPRREfloat size, TPRREuint maxDept
     fSize(size),
     nMaxDepth(maxDepthLevel),
     nCurrentDepth(currentDepthLevel),
-    nodeType(NodeType::LeafEmpty)
+    nodeType(NodeType::LeafEmpty),
+    parent(PGENULL)
 {
 
 } // PRREOctree(...)
@@ -56,7 +57,7 @@ PRREOctree::PRREOctree(const PRREVector& pos, TPRREfloat size, TPRREuint maxDept
 
 PRREOctree::~PRREOctree()
 {
-
+    DeleteChildren();
 } // ~PRREOctree()
 
 
@@ -85,7 +86,7 @@ PRREOctree::ChildIndex PRREOctree::calculateIndex(const PRREVector& pos) const
     }
 
     return iChild;
-}
+} // calculateIndex()
 
 
 /**
@@ -118,7 +119,7 @@ PRREOctree* PRREOctree::insertObject(const PRREObject3D& obj)
     else if ( getNodeType() == Parent )
     {   // pass the object to next depth level
         const ChildIndex iChild = calculateIndex(obj.getPosVec());
-        return vChildren[iChild].insertObject(obj);
+        return vChildren[iChild]->insertObject(obj);
     }
     
     // getNodeType() == LeafContainer
@@ -131,32 +132,39 @@ PRREOctree* PRREOctree::insertObject(const PRREObject3D& obj)
     else
     {
         // subdivide this node now, depth level increases
-        PRREOctree referenceChildNode(PRREVector(), fSize/2.f, nMaxDepth, nCurrentDepth + 1);
-        vChildren.resize(8, referenceChildNode);
-        vChildren[TOP    | LEFT  | FRONT].vPos.Set(vPos.getX() - fSize/4.f, vPos.getY() + fSize/4.f, vPos.getZ() - fSize/4.f);
-        vChildren[BOTTOM | LEFT  | FRONT].vPos.Set(vPos.getX() - fSize/4.f, vPos.getY() - fSize/4.f, vPos.getZ() - fSize/4.f);
-        vChildren[TOP    | RIGHT | FRONT].vPos.Set(vPos.getX() + fSize/4.f, vPos.getY() + fSize/4.f, vPos.getZ() - fSize/4.f);
-        vChildren[BOTTOM | RIGHT | FRONT].vPos.Set(vPos.getX() + fSize/4.f, vPos.getY() - fSize/4.f, vPos.getZ() - fSize/4.f);
-        vChildren[TOP    | LEFT  | BACK ].vPos.Set(vPos.getX() - fSize/4.f, vPos.getY() + fSize/4.f, vPos.getZ() + fSize/4.f);
-        vChildren[BOTTOM | LEFT  | BACK ].vPos.Set(vPos.getX() - fSize/4.f, vPos.getY() - fSize/4.f, vPos.getZ() + fSize/4.f);
-        vChildren[TOP    | RIGHT | BACK ].vPos.Set(vPos.getX() + fSize/4.f, vPos.getY() + fSize/4.f, vPos.getZ() + fSize/4.f);
-        vChildren[BOTTOM | RIGHT | BACK ].vPos.Set(vPos.getX() + fSize/4.f, vPos.getY() - fSize/4.f, vPos.getZ() + fSize/4.f);
+        Subdivide();
+        for (TPRREuint i = 0; i < vChildren.size(); i++)
+        {
+            vChildren[i]->parent = this;
+        }
+        vChildren[TOP    | LEFT  | FRONT]->vPos.Set(vPos.getX() - fSize/4.f, vPos.getY() + fSize/4.f, vPos.getZ() - fSize/4.f);
+        vChildren[BOTTOM | LEFT  | FRONT]->vPos.Set(vPos.getX() - fSize/4.f, vPos.getY() - fSize/4.f, vPos.getZ() - fSize/4.f);
+        vChildren[TOP    | RIGHT | FRONT]->vPos.Set(vPos.getX() + fSize/4.f, vPos.getY() + fSize/4.f, vPos.getZ() - fSize/4.f);
+        vChildren[BOTTOM | RIGHT | FRONT]->vPos.Set(vPos.getX() + fSize/4.f, vPos.getY() - fSize/4.f, vPos.getZ() - fSize/4.f);
+        vChildren[TOP    | LEFT  | BACK ]->vPos.Set(vPos.getX() - fSize/4.f, vPos.getY() + fSize/4.f, vPos.getZ() + fSize/4.f);
+        vChildren[BOTTOM | LEFT  | BACK ]->vPos.Set(vPos.getX() - fSize/4.f, vPos.getY() - fSize/4.f, vPos.getZ() + fSize/4.f);
+        vChildren[TOP    | RIGHT | BACK ]->vPos.Set(vPos.getX() + fSize/4.f, vPos.getY() + fSize/4.f, vPos.getZ() + fSize/4.f);
+        vChildren[BOTTOM | RIGHT | BACK ]->vPos.Set(vPos.getX() + fSize/4.f, vPos.getY() - fSize/4.f, vPos.getZ() + fSize/4.f);
         
         // add the already inserted object to one of the new child nodes, remove it from this node
         const PRREObject3D* objAlreadyInTree = *(vObjects.begin());
         vObjects.clear();
         const ChildIndex iChildForObjAlreadyInTree = calculateIndex(objAlreadyInTree->getPosVec());
-        vChildren[iChildForObjAlreadyInTree].insertObject(*objAlreadyInTree);
+        vChildren[iChildForObjAlreadyInTree]->insertObject(*objAlreadyInTree);
 
         // add the new object also to one of the new child nodes
         const ChildIndex iChild = calculateIndex(obj.getPosVec());
-        return vChildren[iChild].insertObject(obj);
+        return vChildren[iChild]->insertObject(obj);
     }
-}
+} // insertObject()
 
 
 /**
     Finds the given object in the octree.
+    Note that the search will NOT involve the whole tree. The current position of the given object will be used
+    to select the nodes to be searched in the tree. This means that if the position of the given object has changed
+    since it was put in the tree, the search might fail.
+
     @param obj The object to be found.
     @return The octree node containing the object. If the object is not found, PGENULL is returned.
 */
@@ -170,7 +178,7 @@ const PRREOctree* PRREOctree::findObject(const PRREObject3D& obj) const
     {
         // request the suitable children on next depth level to try find the object
         const ChildIndex iChild = calculateIndex(obj.getPosVec());
-        return vChildren[iChild].findObject(obj);
+        return vChildren[iChild]->findObject(obj);
     }
 
     // getNodeType() == LeafContainer
@@ -182,7 +190,7 @@ const PRREOctree* PRREOctree::findObject(const PRREObject3D& obj) const
     {
         return PGENULL;
     }
-}
+} // findObject()
 
 
 /**
@@ -222,7 +230,7 @@ PRREOctree::NodeType PRREOctree::getNodeType() const
     }
 
     return NodeType::LeafEmpty;
-}
+} // getNodeType()
 
 
 /**
@@ -259,9 +267,21 @@ TPRREfloat PRREOctree::getSize() const
 
     @return The children nodes of this node.
 */
-const std::vector<PRREOctree>& PRREOctree::getChildren() const
+const std::vector<PRREOctree*>& PRREOctree::getChildren() const
 {
     return vChildren;
+}
+
+
+/**
+    Gets the parent node of this node.
+    The root node does not have parent.
+
+    @return The parent node of this node.
+*/
+const PRREOctree* PRREOctree::getParent() const
+{
+    return parent;
 }
 
 
@@ -279,10 +299,39 @@ const std::set<const PRREObject3D*>& PRREOctree::getObjects() const
 // ############################## PROTECTED ##############################
 
 
-PRREOctree::PRREOctree()
+PRREOctree::PRREOctree() :
+    fSize(0.f),
+    nMaxDepth(0),
+    nCurrentDepth(0),
+    nodeType(NodeType::LeafEmpty),
+    parent(PGENULL)
 {
 
 } // PRREOctree()
+
+
+void PRREOctree::Subdivide()
+{
+    for (TPRREuint i = 0; i < 8; i++)
+    {
+        PRREOctree* const pChildNode = new PRREOctree(PRREVector(), fSize/2.f, nMaxDepth, nCurrentDepth + 1);
+        vChildren.push_back(pChildNode);
+    }
+}
+
+
+void PRREOctree::DeleteChildren()
+{
+    if ( NodeType::Parent == getNodeType() )
+    {
+        for (TPRREuint i = 0; i < 8; i++)
+        {
+            vChildren[i]->DeleteChildren();
+            delete vChildren[i];
+        }
+        vChildren.resize(0);
+    }
+}
 
 
 // ############################### PRIVATE ###############################

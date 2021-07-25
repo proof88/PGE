@@ -96,29 +96,36 @@ public:
 
     ChildIndex calculateIndex(const PRREVector& pos) const;         /**< Calculates child node index for the given position in the current node. */
 
-    PRREOctree* insertObject(const PRREObject3D& obj);              /**< Inserts the given object in the octree. */
+    virtual PRREOctree* insertObject(const PRREObject3D& obj);      /**< Inserts the given object in the octree. */
     // remove is not supported, since currently Octree is used for static objects, which are not being deleted,
     // only when the octree would need full rebuild anyway
     //TPRREbool removeObject(const PRREObject3D& obj);              /**< Removes the given object from the octree. */
-    const PRREOctree* findObject(const PRREObject3D& obj) const;    /**< Finds the given object in the octree. */
+    virtual const PRREOctree* findObject(const PRREObject3D& obj) const;  /**< Finds the given object in the octree. */
     TPRREuint getDepthLevel() const;                                /**< Gets the current depth level of the octree node. */
     TPRREuint getMaxDepthLevel() const;                             /**< Gets the maximum depth level of the octree node as it was specified in the constructor of the octree. */
     NodeType getNodeType() const;                                   /**< Gets the type of the octree node which depends on if the node has any objects or children nodes. */
     const PRREVector& getPos() const;                               /**< Gets the world-space position of the node as specified in the constructor. */
     TPRREfloat getSize() const;                                     /**< Gets the length of the side of the cube represented by this node as it was specified in the constructor. */
-    const std::vector<PRREOctree>& getChildren() const;             /**< Gets the children nodes of this node. */
+    const std::vector<PRREOctree*>& getChildren() const;            /**< Gets the children nodes of this node. */
+    const PRREOctree* getParent() const;                            /**< Gets the parent node of this node. */
     const std::set<const PRREObject3D*>& getObjects() const;        /**< Gets the stored objects of this node. */
-
 
 protected:
 
     // ---------------------------------------------------------------------------
        
+    std::vector<PRREOctree*> vChildren;   // TODO: with Cpp11 we could use std::reference_wrapper and store references instead of ptrs.
+    PRREOctree* parent;
+    
     PRREOctree();
     
     // defaults will be fine
     //PRREOctree(const PRREOctree&);
     //PRREOctree& operator=(const PRREOctree&);
+
+    // virtual subdivide so derived can override by resizing vector with derived instances!
+    virtual void Subdivide();
+    void DeleteChildren();
 
 private:
 
@@ -127,7 +134,6 @@ private:
     TPRREuint nCurrentDepth;
     TPRREuint nMaxDepth;
     NodeType nodeType;
-    std::vector<PRREOctree> vChildren;
     std::set<const PRREObject3D*> vObjects;
 
 }; // class PRREOctree 

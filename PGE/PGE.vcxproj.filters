@@ -366,6 +366,9 @@
     <ClInclude Include="PRRE\include\internal\SpatialStructures\PRREOctree.h">
       <Filter>Header Files\PRRE\include\internal\SpatialStructures</Filter>
     </ClInclude>
+    <ClInclude Include="PRRE\include\internal\SpatialStructures\PRREBoundingVolumeHierarchy.h">
+      <Filter>Header Files\PRRE\include\internal\SpatialStructures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -522,6 +525,9 @@
       <Filter>Source Files\PRRE\SpatialStructures</Filter>
     </ClCompile>
     <ClCompile Include="PRRE\source\SpatialStructures\PRREOctree.cpp">
+      <Filter>Source Files\PRRE\SpatialStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\source\SpatialStructures\PRREBoundingVolumeHierarchy.cpp">
       <Filter>Source Files\PRRE\SpatialStructures</Filter>
     </ClCompile>
   </ItemGroup>

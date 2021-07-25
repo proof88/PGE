@@ -22,6 +22,12 @@ using namespace std;
 // ############################### PUBLIC ################################
 
 
+PRREAxisAlignedBoundingBox::PRREAxisAlignedBoundingBox()
+{
+
+} // PRREAxisAlignedBoundingBox
+
+
 PRREAxisAlignedBoundingBox::PRREAxisAlignedBoundingBox(const PRREVector& pos_, const PRREVector& size_) :
     pos(pos_),
     size(size_)
@@ -146,12 +152,6 @@ void PRREAxisAlignedBoundingBox::ExtendBy(const PRREAxisAlignedBoundingBox& aabb
 
 
 // ############################## PROTECTED ##############################
-
-
-PRREAxisAlignedBoundingBox::PRREAxisAlignedBoundingBox()
-{
-
-}
 
 
 /*
