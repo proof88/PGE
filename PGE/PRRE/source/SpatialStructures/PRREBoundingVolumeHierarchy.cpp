@@ -56,14 +56,30 @@ PRREBoundingVolumeHierarchy* PRREBoundingVolumeHierarchy::insertObject(const PRR
 {
     // Note 1:
     // most of the time dynamic_cast should be used for downcasting, however in this specific case,
-    // we can guarantee that the found Octree node is actually a derived PRREBoundingVolumeHierarchy node,
+    // we can guarantee that the returned Octree node is actually a derived PRREBoundingVolumeHierarchy node,
     // since we are in PRREBoundingVolumeHierarchy method. So we can use static_cast for faster cast.
 
     // Note 2: although we call ancestor's insertObject(), due to polymorphism it will still call our
     // derived Subdivide() method, so children will be PRREBoundingVolumeHierarchy instances!
-    return static_cast<PRREBoundingVolumeHierarchy*>(PRREOctree::insertObject(obj));
+    PRREBoundingVolumeHierarchy* node = static_cast<PRREBoundingVolumeHierarchy*>(PRREOctree::insertObject(obj));
+    if ( PGENULL == node )
+    {
+        return PGENULL;
+    }
 
-    // TODO: update aabb's
+    const PRREAxisAlignedBoundingBox obj_bbox(obj.getPosVec(), obj.getScaledSizeVec());
+    node->aabb.ExtendBy(obj_bbox);
+
+    PRREBoundingVolumeHierarchy* prevChild = node;
+    PRREBoundingVolumeHierarchy* p = static_cast<PRREBoundingVolumeHierarchy*>(node->parent);
+    while (p != PGENULL)
+    {
+        p->aabb.ExtendBy(prevChild->aabb);
+        prevChild = p;
+        p = static_cast<PRREBoundingVolumeHierarchy*>(p->parent);
+    }
+
+    return node;
 } // insertObject()
 
 
@@ -109,6 +125,17 @@ PRREBoundingVolumeHierarchy::PRREBoundingVolumeHierarchy()
 {
 
 } // PRREBoundingVolumeHierarchy()
+
+
+PRREBoundingVolumeHierarchy::PRREBoundingVolumeHierarchy(const PRREBoundingVolumeHierarchy&)
+{
+}
+
+
+PRREBoundingVolumeHierarchy& PRREBoundingVolumeHierarchy::operator=(const PRREBoundingVolumeHierarchy&)
+{
+    return *this;
+}
 
 
 void PRREBoundingVolumeHierarchy::Subdivide()

@@ -310,6 +310,17 @@ PRREOctree::PRREOctree() :
 } // PRREOctree()
 
 
+PRREOctree::PRREOctree(const PRREOctree&)
+{
+}
+
+
+PRREOctree& PRREOctree::operator=(const PRREOctree&)
+{
+    return *this;
+}
+
+
 void PRREOctree::Subdivide()
 {
     for (TPRREuint i = 0; i < 8; i++)

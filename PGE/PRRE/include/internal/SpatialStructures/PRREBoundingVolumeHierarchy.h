@@ -52,9 +52,8 @@ protected:
        
     PRREBoundingVolumeHierarchy();
     
-    // defaults will be fine
-    //PRREBoundingVolumeHierarchy(const PRREBoundingVolumeHierarchy&);
-    //PRREBoundingVolumeHierarchy& operator=(const PRREBoundingVolumeHierarchy&);
+    PRREBoundingVolumeHierarchy(const PRREBoundingVolumeHierarchy&);
+    PRREBoundingVolumeHierarchy& operator=(const PRREBoundingVolumeHierarchy&);
 
     virtual void Subdivide(); // override
 

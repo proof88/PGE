@@ -21,12 +21,19 @@ public:
         UnitTest( __FILE__ )
     {
         AddSubTest("testCtor1", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testCtor1);
+        AddSubTest("testCtor2", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testCtor2);
         AddSubTest("testIsPointInside", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testIsPointInside);
+        AddSubTest("testIsPointInside_no_bounds", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testIsPointInside_no_bounds);
         AddSubTest("testIsBoxInside", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testIsBoxInside);
+        AddSubTest("testIsBoxInside_no_bounds", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testIsBoxInside_no_bounds);
         AddSubTest("testExtendByPointOutside", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testExtendByPointOutside);
+        AddSubTest("testExtendByPointOutside_is_commutative", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testExtendByPointOutside_is_commutative);
+        AddSubTest("testExtendByPointOutside_no_bounds", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testExtendByPointOutside_no_bounds);
         AddSubTest("testExtendByPointOutside_2", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testExtendByPointOutside_2);
         AddSubTest("testExtendByPointInside", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testExtendByPointInside);
         AddSubTest("testExtendByBoxOutside", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testExtendByBoxOutside);
+        AddSubTest("testExtendByBoxOutside_is_commutative", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testExtendByBoxOutside_is_commutative);
+        AddSubTest("testExtendByBoxOutside_no_bounds", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testExtendByBoxOutside_no_bounds);
         AddSubTest("testExtendByBoxInside", (PFNUNITSUBTEST) &PRREAxisAlignedBoundingBoxTest::testExtendByBoxInside);
     } // PRREAxisAlignedBoundingBoxTest()
 
@@ -54,6 +61,14 @@ private:
             assertEquals(size, bbox.getSizeVec(), "size");    
     }
 
+    bool testCtor2()
+    {
+        const PRREAxisAlignedBoundingBox bbox;
+
+        return assertEquals(PRREVector(), bbox.getPosVec(), "pos") &
+            assertEquals(PRREVector(), bbox.getSizeVec(), "size");    
+    }
+
     bool testIsPointInside()
     {
         const PRREVector pos(10.0f, 20.0f, 30.0f);
@@ -78,6 +93,14 @@ private:
             assertTrue(bbox.isInside(goodPoint1), "goodPoint 1");
     }
 
+    bool testIsPointInside_no_bounds()
+    {
+        const PRREAxisAlignedBoundingBox bbox;
+
+        return assertFalse(bbox.isInside(PRREVector(1.f, 2.f, 3.f)), "badPoint 1") &
+            assertFalse(bbox.isInside(PRREVector()), "badPoint 2");
+    }
+
     bool testIsBoxInside()
     {
         const PRREVector pos(10.0f, 20.0f, 30.0f);
@@ -99,6 +122,14 @@ private:
         return assertTrue(bbox.isInside(insideBox1), "insideBox1") &
             assertTrue(bbox.isInside(insideBox2), "insideBox2") &
             assertFalse(bbox.isInside(outsideBox), "outsideBox");
+    }
+
+    bool testIsBoxInside_no_bounds()
+    {
+        const PRREAxisAlignedBoundingBox bbox;
+        const PRREAxisAlignedBoundingBox outsideBox(PRREVector(1.f, 2.f, 3.f), PRREVector(1.f, 2.f, 3.f));
+
+        return assertFalse(bbox.isInside(outsideBox), "outsideBox");
     }
 
     bool testExtendByPointOutside()
@@ -149,7 +180,46 @@ private:
         return b;
     }
 
-     bool testExtendByPointOutside_2()
+    bool testExtendByPointOutside_is_commutative()
+    {
+        PRREAxisAlignedBoundingBox bbox_original_1(PRREVector(10.f, 20.f, 30.f), PRREVector(5.f, 6.f, 7.f));
+        PRREAxisAlignedBoundingBox bbox_original_2(bbox_original_1);
+
+        const PRREVector newPoint_1(12.f, 20.f, 40.0f);
+        const PRREVector newPoint_2(30.f, 40.f, 60.0f);
+
+        bbox_original_1.ExtendBy(newPoint_1);
+        bbox_original_1.ExtendBy(newPoint_2);
+
+        bbox_original_2.ExtendBy(newPoint_2);
+        bbox_original_2.ExtendBy(newPoint_1);
+
+        bool b = assertEquals(bbox_original_1.getPosVec(), bbox_original_2.getPosVec(), "new pos");
+        b &= assertEquals(bbox_original_1.getSizeVec(), bbox_original_2.getSizeVec(), "new size");
+
+        return b;
+    }
+
+    bool testExtendByPointOutside_no_bounds()
+    {
+        PRREAxisAlignedBoundingBox bbox;
+
+        const PRREVector newPoint(12.f, 20.f, 40.0f);
+
+        bool b = assertFalse(bbox.isInside(newPoint), "newPoint before");
+
+        // nothing should happen, as an uninitialized box can be altered by another box only
+        bbox.ExtendBy(newPoint);
+
+        b &= assertFalse(bbox.isInside(newPoint), "newPoint after");
+
+        b &= assertEquals(PRREVector(), bbox.getPosVec(), "new pos");
+        b &= assertEquals(PRREVector(), bbox.getSizeVec(), "new size");
+
+        return b;
+    }
+
+    bool testExtendByPointOutside_2()
     {
         /*
 
@@ -233,6 +303,40 @@ private:
 
         bool b = assertEquals(newExpectedPos, bbox.getPosVec(), "new pos");
         b &= assertEquals(newExpectedSize, bbox.getSizeVec(), "new size");
+
+        return b;
+    }
+
+    bool testExtendByBoxOutside_is_commutative()
+    {
+        PRREAxisAlignedBoundingBox bbox_original_1(PRREVector(10.f, 20.f, 30.f), PRREVector(5.f, 6.f, 7.f));
+        PRREAxisAlignedBoundingBox bbox_original_2(bbox_original_1);
+
+        const PRREAxisAlignedBoundingBox bboxExtender_1(PRREVector(20.f, 30.f, 40.f), PRREVector(5.f, 6.f, 7.f));
+        const PRREAxisAlignedBoundingBox bboxExtender_2(PRREVector(50.f, 60.f, 70.f), PRREVector(10.f, 12.f, 21.f));
+
+        bbox_original_1.ExtendBy(bboxExtender_1);
+        bbox_original_1.ExtendBy(bboxExtender_2);
+
+        bbox_original_2.ExtendBy(bboxExtender_2);
+        bbox_original_2.ExtendBy(bboxExtender_1);
+
+        bool b = assertEquals(bbox_original_1.getPosVec(), bbox_original_2.getPosVec(), "new pos");
+        b &= assertEquals(bbox_original_1.getSizeVec(), bbox_original_2.getSizeVec(), "new size");
+
+        return b;
+    }
+
+    bool testExtendByBoxOutside_no_bounds()
+    {
+        PRREAxisAlignedBoundingBox bbox;
+        const PRREAxisAlignedBoundingBox bboxExtender(PRREVector(20.f, 30.f, 40.f), PRREVector(5.f, 6.f, 7.f));
+
+        // bboxExtender is basically copied
+        bbox.ExtendBy(bboxExtender);
+
+        bool b = assertEquals(bboxExtender.getPosVec(), bbox.getPosVec(), "new pos");
+        b &= assertEquals(bboxExtender.getSizeVec(), bbox.getSizeVec(), "new size");
 
         return b;
     }

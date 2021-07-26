@@ -155,181 +155,109 @@ private:
         obj4->getPosVec().Set(treeOrigin.getX(), treeOrigin.getY(), treeOrigin.getZ());
         obj5->getPosVec().Set(treeOrigin.getX() + 3000.f, treeOrigin.getY(), treeOrigin.getZ());
 
-        const PRREOctree* const node1 = tree.insertObject(*obj1);
-        const PRREOctree* const node2 = tree.insertObject(*obj2);
-        const PRREOctree* const node3 = tree.insertObject(*obj3);
-        const PRREOctree* const node4 = tree.insertObject(*obj4);
-        const PRREOctree* const node5 = tree.insertObject(*obj5);  // out of tree bounds
+        const PRREBoundingVolumeHierarchy* const node1 = tree.insertObject(*obj1);
+        const PRREBoundingVolumeHierarchy* const node2 = tree.insertObject(*obj2);
+        const PRREBoundingVolumeHierarchy* const node3 = tree.insertObject(*obj3);
+        const PRREBoundingVolumeHierarchy* const node4 = tree.insertObject(*obj4);
+        const PRREBoundingVolumeHierarchy* const node5 = tree.insertObject(*obj5);  // out of tree bounds
         if ( !assertNotNull(node1, "node 1") || !assertNotNull(node2, "node 2") || !assertNotNull(node3, "node 3") || !assertNotNull(node4, "node 4") || !assertNull(node5, "node 5") )
         {
             return false;
         }
 
-        // check level 0 alias root node
-        bool b = assertEquals(&tree, node1, "tree root is node1") &
-            assertEquals(treeOrigin.getX(), tree.getPos().getX(), "tree pos.x") &
-            assertEquals(treeOrigin.getY(), tree.getPos().getY(), "tree pos.y") &
-            assertEquals(treeOrigin.getZ(), tree.getPos().getZ(), "tree pos.z") &
-            assertEquals((TPRREuint)2, tree.getMaxDepthLevel(), "tree max depth level") &
-            assertEquals((TPRREuint)0, tree.getDepthLevel(), "tree depth level") &
-            assertEquals(1000.0f, tree.getSize(), "tree size") &
-            assertEquals(PRREOctree::NodeType::Parent, tree.getNodeType(), "tree nodeType") &
-            assertEquals((std::size_t)8, tree.getChildren().size(), "tree children") &
-            assertEquals((std::size_t)0, tree.getObjects().size(), "tree objects");
-
-        // check level 1 nodes' common properties
-        for (std::size_t i = 0; i < tree.getChildren().size(); i++)
+        if ( !assertEquals(PRREOctree::NodeType::Parent, tree.getNodeType(), "tree nodeType") )
         {
-            b &= assertEquals(500.0f, tree.getChildren()[i]->getSize(), (std::string("node 1 children ") + std::to_string(i) + " size").c_str());
-            b &= assertEquals((TPRREuint)2, tree.getChildren()[i]->getMaxDepthLevel(), (std::string("node 1 children ") + std::to_string(i) + " maxDepthLevel").c_str());
-            b &= assertEquals((TPRREuint)1, tree.getChildren()[i]->getDepthLevel(), (std::string("node 1 children ") + std::to_string(i) + " depthLevel").c_str());
+            return false;
         }
 
-        // check level 1 nodes' different properties too
-        const PRREOctree& tree_TLF = *(tree.getChildren()[PRREOctree::TOP    | PRREOctree::LEFT  | PRREOctree::FRONT]);
-        const PRREOctree& tree_BLF = *(tree.getChildren()[PRREOctree::BOTTOM | PRREOctree::LEFT  | PRREOctree::FRONT]);
-        const PRREOctree& tree_TRF = *(tree.getChildren()[PRREOctree::TOP    | PRREOctree::RIGHT | PRREOctree::FRONT]);
-        const PRREOctree& tree_BRF = *(tree.getChildren()[PRREOctree::BOTTOM | PRREOctree::RIGHT | PRREOctree::FRONT]);
-        const PRREOctree& tree_TLB = *(tree.getChildren()[PRREOctree::TOP    | PRREOctree::LEFT  | PRREOctree::BACK ]);
-        const PRREOctree& tree_BLB = *(tree.getChildren()[PRREOctree::BOTTOM | PRREOctree::LEFT  | PRREOctree::BACK ]);
-        const PRREOctree& tree_TRB = *(tree.getChildren()[PRREOctree::TOP    | PRREOctree::RIGHT | PRREOctree::BACK ]);
-        const PRREOctree& tree_BRB = *(tree.getChildren()[PRREOctree::BOTTOM | PRREOctree::RIGHT | PRREOctree::BACK ]);
+        const PRREBoundingVolumeHierarchy* tree_TLF = static_cast<const PRREBoundingVolumeHierarchy*>(tree.getChildren()[PRREOctree::TOP    | PRREOctree::LEFT  | PRREOctree::FRONT]);
+        const PRREBoundingVolumeHierarchy* tree_BLF = static_cast<const PRREBoundingVolumeHierarchy*>(tree.getChildren()[PRREOctree::BOTTOM | PRREOctree::LEFT  | PRREOctree::FRONT]);
+        const PRREBoundingVolumeHierarchy* tree_TRF = static_cast<const PRREBoundingVolumeHierarchy*>(tree.getChildren()[PRREOctree::TOP    | PRREOctree::RIGHT | PRREOctree::FRONT]);
+        const PRREBoundingVolumeHierarchy* tree_BRF = static_cast<const PRREBoundingVolumeHierarchy*>(tree.getChildren()[PRREOctree::BOTTOM | PRREOctree::RIGHT | PRREOctree::FRONT]);
+        const PRREBoundingVolumeHierarchy* tree_TLB = static_cast<const PRREBoundingVolumeHierarchy*>(tree.getChildren()[PRREOctree::TOP    | PRREOctree::LEFT  | PRREOctree::BACK ]);
+        const PRREBoundingVolumeHierarchy* tree_BLB = static_cast<const PRREBoundingVolumeHierarchy*>(tree.getChildren()[PRREOctree::BOTTOM | PRREOctree::LEFT  | PRREOctree::BACK ]);
+        const PRREBoundingVolumeHierarchy* tree_TRB = static_cast<const PRREBoundingVolumeHierarchy*>(tree.getChildren()[PRREOctree::TOP    | PRREOctree::RIGHT | PRREOctree::BACK ]);
+        const PRREBoundingVolumeHierarchy* tree_BRB = static_cast<const PRREBoundingVolumeHierarchy*>(tree.getChildren()[PRREOctree::BOTTOM | PRREOctree::RIGHT | PRREOctree::BACK ]);
 
-        b &= assertEquals(PRREOctree::NodeType::LeafEmpty, tree_TLF.getNodeType(), "tree_TLF nodeType") &
-            assertEquals((std::size_t)0, tree_TLF.getChildren().size(), "tree_TLF children") &
-            assertEquals((std::size_t)0, tree_TLF.getObjects().size(), "tree_TLF objects") &
-            assertEquals(treeOrigin.getX()-250.0f, tree_TLF.getPos().getX(), "tree_TLF pos.x") &
-            assertEquals(treeOrigin.getY()+250.0f, tree_TLF.getPos().getY(), "tree_TLF pos.y") &
-            assertEquals(treeOrigin.getZ()-250.0f, tree_TLF.getPos().getZ(), "tree_TLF pos.z");
-        
-        b &= assertEquals(PRREOctree::NodeType::LeafEmpty, tree_BLF.getNodeType(), "tree_BLF nodeType") &
-            assertEquals((std::size_t)0, tree_BLF.getChildren().size(), "tree_BLF children") &
-            assertEquals((std::size_t)0, tree_BLF.getObjects().size(), "tree_BLF objects") &
-            assertEquals(treeOrigin.getX()-250.0f, tree_BLF.getPos().getX(), "tree_BLF pos.x") &
-            assertEquals(treeOrigin.getY()-250.0f, tree_BLF.getPos().getY(), "tree_BLF pos.y") &
-            assertEquals(treeOrigin.getZ()-250.0f, tree_BLF.getPos().getZ(), "tree_BLF pos.z");
-
-        b &= assertEquals(PRREOctree::NodeType::LeafEmpty, tree_TRF.getNodeType(), "tree_TRF nodeType") &
-            assertEquals((std::size_t)0, tree_TRF.getChildren().size(), "tree_TRF children") &
-            assertEquals((std::size_t)0, tree_TRF.getObjects().size(), "tree_TRF objects") &
-            assertEquals(treeOrigin.getX()+250.0f, tree_TRF.getPos().getX(), "tree_TRF pos.x") &
-            assertEquals(treeOrigin.getY()+250.0f, tree_TRF.getPos().getY(), "tree_TRF pos.y") &
-            assertEquals(treeOrigin.getZ()-250.0f, tree_TRF.getPos().getZ(), "tree_TRF pos.z");
-
-        b &= assertEquals(PRREOctree::NodeType::Parent, tree_BRF.getNodeType(), "tree_BRF nodeType") &
-            assertEquals((std::size_t)8, tree_BRF.getChildren().size(), "tree_BRF children") &
-            assertEquals((std::size_t)0, tree_BRF.getObjects().size(), "tree_BRF objects") &
-            assertEquals(treeOrigin.getX()+250.0f, tree_BRF.getPos().getX(), "tree_BRF pos.x") &
-            assertEquals(treeOrigin.getY()-250.0f, tree_BRF.getPos().getY(), "tree_BRF pos.y") &
-            assertEquals(treeOrigin.getZ()-250.0f, tree_BRF.getPos().getZ(), "tree_BRF pos.z");
-
-        b &= assertEquals(PRREOctree::NodeType::LeafContainer, tree_TLB.getNodeType(), "tree_TLB nodeType") &
-            assertEquals((std::size_t)0, tree_TLB.getChildren().size(), "tree_TLB children") &
-            assertEquals((std::size_t)1, tree_TLB.getObjects().size(), "tree_TLB objects") &
-            assertTrue(tree_TLB.getObjects().end() != tree_TLB.getObjects().find(obj1), "tree_TLB objects contains obj1") &
-            assertEquals(treeOrigin.getX()-250.0f, tree_TLB.getPos().getX(), "tree_TLB pos.x") &
-            assertEquals(treeOrigin.getY()+250.0f, tree_TLB.getPos().getY(), "tree_TLB pos.y") &
-            assertEquals(treeOrigin.getZ()+250.0f, tree_TLB.getPos().getZ(), "tree_TLB pos.z");
-
-        b &= assertEquals(PRREOctree::NodeType::LeafEmpty, tree_BLB.getNodeType(), "tree_BLB nodeType") &
-            assertEquals((std::size_t)0, tree_BLB.getChildren().size(), "tree_BLB children") &
-            assertEquals((std::size_t)0, tree_BLB.getObjects().size(), "tree_BLB objects") &
-            assertEquals(treeOrigin.getX()-250.0f, tree_BLB.getPos().getX(), "tree_BLB pos.x") &
-            assertEquals(treeOrigin.getY()-250.0f, tree_BLB.getPos().getY(), "tree_BLB pos.y") &
-            assertEquals(treeOrigin.getZ()+250.0f, tree_BLB.getPos().getZ(), "tree_BLB pos.z");
-
-        b &= assertEquals(PRREOctree::NodeType::LeafContainer, tree_TRB.getNodeType(), "tree_TRB nodeType") &
-            assertEquals((std::size_t)0, tree_TRB.getChildren().size(), "tree_TRB children") &
-            assertEquals((std::size_t)1, tree_TRB.getObjects().size(), "tree_TRB objects") &
-            assertTrue(tree_TRB.getObjects().end() != tree_TRB.getObjects().find(obj4), "tree_TRB objects contains obj4") &
-            assertEquals(treeOrigin.getX()+250.0f, tree_TRB.getPos().getX(), "tree_TRB pos.x") &
-            assertEquals(treeOrigin.getY()+250.0f, tree_TRB.getPos().getY(), "tree_TRB pos.y") &
-            assertEquals(treeOrigin.getZ()+250.0f, tree_TRB.getPos().getZ(), "tree_TRB pos.z");
-
-        b &= assertEquals(PRREOctree::NodeType::LeafEmpty, tree_BRB.getNodeType(), "tree_BRB nodeType") &
-            assertEquals((std::size_t)0, tree_BRB.getChildren().size(), "tree_BRB children") &
-            assertEquals((std::size_t)0, tree_BRB.getObjects().size(), "tree_BRB objects") &
-            assertEquals(treeOrigin.getX()+250.0f, tree_BRB.getPos().getX(), "tree_BRB pos.x") &
-            assertEquals(treeOrigin.getY()-250.0f, tree_BRB.getPos().getY(), "tree_BRB pos.y") &
-            assertEquals(treeOrigin.getZ()+250.0f, tree_BRB.getPos().getZ(), "tree_BRB pos.z");
-        
-        // check level 2 nodes' common properties (we have level 2 because tree_BRF node have children)
-        for (std::size_t i = 0; i < tree_BRF.getChildren().size(); i++)
+        if ( !assertEquals(PRREOctree::NodeType::Parent, tree_BRF->getNodeType(), "tree_BRF nodeType") )
         {
-            b &= assertEquals(250.0f, tree_BRF.getChildren()[i]->getSize(), (std::string("tree_BRF children ") + std::to_string(i) + " size").c_str());
-            b &= assertEquals((TPRREuint)2, tree_BRF.getChildren()[i]->getMaxDepthLevel(), (std::string("tree_BRF children ") + std::to_string(i) + " maxDepthLevel").c_str());
-            b &= assertEquals((TPRREuint)2, tree_BRF.getChildren()[i]->getDepthLevel(), (std::string("tree_BRF children ") + std::to_string(i) + " depthLevel").c_str());
+            return false;
         }
 
-        // check level 2 nodes' different properties too
-        const PRREOctree& tree_BRF_TLF = *(tree_BRF.getChildren()[PRREOctree::TOP    | PRREOctree::LEFT  | PRREOctree::FRONT]);
-        const PRREOctree& tree_BRF_BLF = *(tree_BRF.getChildren()[PRREOctree::BOTTOM | PRREOctree::LEFT  | PRREOctree::FRONT]);
-        const PRREOctree& tree_BRF_TRF = *(tree_BRF.getChildren()[PRREOctree::TOP    | PRREOctree::RIGHT | PRREOctree::FRONT]);
-        const PRREOctree& tree_BRF_BRF = *(tree_BRF.getChildren()[PRREOctree::BOTTOM | PRREOctree::RIGHT | PRREOctree::FRONT]);
-        const PRREOctree& tree_BRF_TLB = *(tree_BRF.getChildren()[PRREOctree::TOP    | PRREOctree::LEFT  | PRREOctree::BACK ]);
-        const PRREOctree& tree_BRF_BLB = *(tree_BRF.getChildren()[PRREOctree::BOTTOM | PRREOctree::LEFT  | PRREOctree::BACK ]);
-        const PRREOctree& tree_BRF_TRB = *(tree_BRF.getChildren()[PRREOctree::TOP    | PRREOctree::RIGHT | PRREOctree::BACK ]);
-        const PRREOctree& tree_BRF_BRB = *(tree_BRF.getChildren()[PRREOctree::BOTTOM | PRREOctree::RIGHT | PRREOctree::BACK ]);
+        const PRREBoundingVolumeHierarchy* tree_BRF_TLF = static_cast<const PRREBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PRREOctree::TOP    | PRREOctree::LEFT  | PRREOctree::FRONT]);
+        const PRREBoundingVolumeHierarchy* tree_BRF_BLF = static_cast<const PRREBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PRREOctree::BOTTOM | PRREOctree::LEFT  | PRREOctree::FRONT]);
+        const PRREBoundingVolumeHierarchy* tree_BRF_TRF = static_cast<const PRREBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PRREOctree::TOP    | PRREOctree::RIGHT | PRREOctree::FRONT]);
+        const PRREBoundingVolumeHierarchy* tree_BRF_BRF = static_cast<const PRREBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PRREOctree::BOTTOM | PRREOctree::RIGHT | PRREOctree::FRONT]);
+        const PRREBoundingVolumeHierarchy* tree_BRF_TLB = static_cast<const PRREBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PRREOctree::TOP    | PRREOctree::LEFT  | PRREOctree::BACK ]);
+        const PRREBoundingVolumeHierarchy* tree_BRF_BLB = static_cast<const PRREBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PRREOctree::BOTTOM | PRREOctree::LEFT  | PRREOctree::BACK ]);
+        const PRREBoundingVolumeHierarchy* tree_BRF_TRB = static_cast<const PRREBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PRREOctree::TOP    | PRREOctree::RIGHT | PRREOctree::BACK ]);
+        const PRREBoundingVolumeHierarchy* tree_BRF_BRB = static_cast<const PRREBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PRREOctree::BOTTOM | PRREOctree::RIGHT | PRREOctree::BACK ]);
 
-        b &= assertEquals(PRREOctree::NodeType::LeafEmpty, tree_BRF_TLF.getNodeType(), "tree_BRF_TLF nodeType") &
-            assertEquals((std::size_t)0, tree_BRF_TLF.getChildren().size(), "tree_BRF_TLF children") &
-            assertEquals((std::size_t)0, tree_BRF_TLF.getObjects().size(), "tree_BRF_TLF objects") &
-            assertEquals(treeOrigin.getX()+125.0f, tree_BRF_TLF.getPos().getX(), "tree_BRF_TLF pos.x") &
-            assertEquals(treeOrigin.getY()-125.0f, tree_BRF_TLF.getPos().getY(), "tree_BRF_TLF pos.y") &
-            assertEquals(treeOrigin.getZ()-375.0f, tree_BRF_TLF.getPos().getZ(), "tree_BRF_TLF pos.z");
-        
-        b &= assertEquals(PRREOctree::NodeType::LeafEmpty, tree_BRF_BLF.getNodeType(), "tree_BRF_BLF nodeType") &
-            assertEquals((std::size_t)0, tree_BRF_BLF.getChildren().size(), "tree_BRF_BLF children") &
-            assertEquals((std::size_t)0, tree_BRF_BLF.getObjects().size(), "tree_BRF_BLF objects") &
-            assertEquals(treeOrigin.getX()+125.0f, tree_BRF_BLF.getPos().getX(), "tree_BRF_BLF pos.x") &
-            assertEquals(treeOrigin.getY()-375.0f, tree_BRF_BLF.getPos().getY(), "tree_BRF_BLF pos.y") &
-            assertEquals(treeOrigin.getZ()-375.0f, tree_BRF_BLF.getPos().getZ(), "tree_BRF_BLF pos.z");
+        // checking bounding boxes bottom-up
 
-        b &= assertEquals(PRREOctree::NodeType::LeafEmpty, tree_BRF_TRF.getNodeType(), "tree_BRF_TRF nodeType") &
-            assertEquals((std::size_t)0, tree_BRF_TRF.getChildren().size(), "tree_BRF_TRF children") &
-            assertEquals((std::size_t)0, tree_BRF_TRF.getObjects().size(), "tree_BRF_TRF objects") &
-            assertEquals(treeOrigin.getX()+375.0f, tree_BRF_TRF.getPos().getX(), "tree_BRF_TRF pos.x") &
-            assertEquals(treeOrigin.getY()-125.0f, tree_BRF_TRF.getPos().getY(), "tree_BRF_TRF pos.y") &
-            assertEquals(treeOrigin.getZ()-375.0f, tree_BRF_TRF.getPos().getZ(), "tree_BRF_TRF pos.z");
+        // level-2 bounds
+        const PRREAxisAlignedBoundingBox aabb_obj2(obj2->getPosVec(), obj2->getScaledSizeVec());
+        const PRREAxisAlignedBoundingBox aabb_obj3(obj3->getPosVec(), obj3->getScaledSizeVec());
+        PRREAxisAlignedBoundingBox aabb_BRF_TLB_expected;
+        aabb_BRF_TLB_expected.ExtendBy(aabb_obj2);
+        aabb_BRF_TLB_expected.ExtendBy(aabb_obj3);
 
-        b &= assertEquals(PRREOctree::NodeType::LeafEmpty, tree_BRF_BRF.getNodeType(), "tree_BRF_BRF nodeType") &
-            assertEquals((std::size_t)0, tree_BRF_BRF.getChildren().size(), "tree_BRF_BRF children") &
-            assertEquals((std::size_t)0, tree_BRF_BRF.getObjects().size(), "tree_BRF_BRF objects") &
-            assertEquals(treeOrigin.getX()+375.0f, tree_BRF_BRF.getPos().getX(), "tree_BRF_BRF pos.x") &
-            assertEquals(treeOrigin.getY()-375.0f, tree_BRF_BRF.getPos().getY(), "tree_BRF_BRF pos.y") &
-            assertEquals(treeOrigin.getZ()-375.0f, tree_BRF_BRF.getPos().getZ(), "tree_BRF_BRF pos.z");
+        bool b = assertEquals(aabb_BRF_TLB_expected.getPosVec(), tree_BRF_TLB->getAABB().getPosVec(), "tree_BRF_TLB AABB pos") &
+            assertEquals(aabb_BRF_TLB_expected.getSizeVec(), tree_BRF_TLB->getAABB().getSizeVec(), "tree_BRF_TLB AABB size");
 
-        b &= assertEquals(PRREOctree::NodeType::LeafContainer, tree_BRF_TLB.getNodeType(), "tree_BRF_TLB nodeType") &
-            assertEquals((std::size_t)0, tree_BRF_TLB.getChildren().size(), "tree_BRF_TLB children") &
-            assertEquals((std::size_t)2, tree_BRF_TLB.getObjects().size(), "tree_BRF_TLB objects") &
-            assertTrue(tree_BRF_TLB.getObjects().end() != tree_BRF_TLB.getObjects().find(obj2), "tree_BRF_TLB objects contains obj2") &
-            assertTrue(tree_BRF_TLB.getObjects().end() != tree_BRF_TLB.getObjects().find(obj3), "tree_BRF_TLB objects contains obj3") &
-            assertEquals(treeOrigin.getX()+125.0f, tree_BRF_TLB.getPos().getX(), "tree_BRF_TLB pos.x") &
-            assertEquals(treeOrigin.getY()-125.0f, tree_BRF_TLB.getPos().getY(), "tree_BRF_TLB pos.y") &
-            assertEquals(treeOrigin.getZ()-125.0f, tree_BRF_TLB.getPos().getZ(), "tree_BRF_TLB pos.z");
+        b &= assertEquals(PRREVector(), tree_BRF_TLF->getAABB().getPosVec(), "tree_BRF_TLF AABB pos") &
+            assertEquals(PRREVector(), tree_BRF_TLF->getAABB().getSizeVec(), "tree_BRF_TLF AABB size") &
+            assertEquals(PRREVector(), tree_BRF_BLF->getAABB().getPosVec(),  "tree_BRF_BLF AABB pos") &
+            assertEquals(PRREVector(), tree_BRF_BLF->getAABB().getSizeVec(), "tree_BRF_BLF AABB size") &
+            assertEquals(PRREVector(), tree_BRF_TRF->getAABB().getPosVec(),  "tree_BRF_TRF AABB pos") &
+            assertEquals(PRREVector(), tree_BRF_TRF->getAABB().getSizeVec(), "tree_BRF_TRF AABB size") &
+            assertEquals(PRREVector(), tree_BRF_BRF->getAABB().getPosVec(),  "tree_BRF_BRF AABB pos") &
+            assertEquals(PRREVector(), tree_BRF_BRF->getAABB().getSizeVec(), "tree_BRF_BRF AABB size") &
+            assertEquals(PRREVector(), tree_BRF_BLB->getAABB().getPosVec(),  "tree_BRF_BLB AABB pos") &
+            assertEquals(PRREVector(), tree_BRF_BLB->getAABB().getSizeVec(), "tree_BRF_BLB AABB size") &
+            assertEquals(PRREVector(), tree_BRF_TRB->getAABB().getPosVec(),  "tree_BRF_TRB AABB pos") &
+            assertEquals(PRREVector(), tree_BRF_TRB->getAABB().getSizeVec(), "tree_BRF_TRB AABB size") &
+            assertEquals(PRREVector(), tree_BRF_BRB->getAABB().getPosVec(),  "tree_BRF_BRB AABB pos") &
+            assertEquals(PRREVector(), tree_BRF_BRB->getAABB().getSizeVec(), "tree_BRF_BRB AABB size");
 
-        b &= assertEquals(PRREOctree::NodeType::LeafEmpty, tree_BRF_BLB.getNodeType(), "tree_BRF_BLB nodeType") &
-            assertEquals((std::size_t)0, tree_BRF_BLB.getChildren().size(), "tree_BRF_BLB children") &
-            assertEquals((std::size_t)0, tree_BRF_BLB.getObjects().size(), "tree_BRF_BLB objects") &
-            assertEquals(treeOrigin.getX()+125.0f, tree_BRF_BLB.getPos().getX(), "tree_BRF_BLB pos.x") &
-            assertEquals(treeOrigin.getY()-375.0f, tree_BRF_BLB.getPos().getY(), "tree_BRF_BLB pos.y") &
-            assertEquals(treeOrigin.getZ()-125.0f, tree_BRF_BLB.getPos().getZ(), "tree_BRF_BLB pos.z");
+        // level-1 bounds
+        const PRREAxisAlignedBoundingBox aabb_TLB_expected(obj1->getPosVec(), obj1->getScaledSizeVec());
 
-        b &= assertEquals(PRREOctree::NodeType::LeafEmpty, tree_BRF_TRB.getNodeType(), "tree_BRF_TRB nodeType") &
-            assertEquals((std::size_t)0, tree_BRF_TRB.getChildren().size(), "tree_BRF_TRB children") &
-            assertEquals((std::size_t)0, tree_BRF_TRB.getObjects().size(), "tree_BRF_TRB objects") &
-            assertEquals(treeOrigin.getX()+375.0f, tree_BRF_TRB.getPos().getX(), "tree_BRF_TRB pos.x") &
-            assertEquals(treeOrigin.getY()-125.0f, tree_BRF_TRB.getPos().getY(), "tree_BRF_TRB pos.y") &
-            assertEquals(treeOrigin.getZ()-125.0f, tree_BRF_TRB.getPos().getZ(), "tree_BRF_TRB pos.z");
+        b &= assertEquals(aabb_TLB_expected.getPosVec(), tree_TLB->getAABB().getPosVec(), "tree_TLB AABB pos") &
+            assertEquals(aabb_TLB_expected.getSizeVec(), tree_TLB->getAABB().getSizeVec(), "tree_TLB AABB size");
 
-        b &= assertEquals(PRREOctree::NodeType::LeafEmpty, tree_BRF_BRB.getNodeType(), "tree_BRF_BRB nodeType") &
-            assertEquals((std::size_t)0, tree_BRF_BRB.getChildren().size(), "tree_BRF_BRB children") &
-            assertEquals((std::size_t)0, tree_BRF_BRB.getObjects().size(), "tree_BRF_BRB objects") &
-            assertEquals(treeOrigin.getX()+375.0f, tree_BRF_BRB.getPos().getX(), "tree_BRF_BRB pos.x") &
-            assertEquals(treeOrigin.getY()-375.0f, tree_BRF_BRB.getPos().getY(), "tree_BRF_BRB pos.y") &
-            assertEquals(treeOrigin.getZ()-125.0f, tree_BRF_BRB.getPos().getZ(), "tree_BRF_BRB pos.z");
+        const PRREAxisAlignedBoundingBox aabb_TRB_expected(obj4->getPosVec(), obj4->getScaledSizeVec());
 
-        return false;
+        b &= assertEquals(aabb_TRB_expected.getPosVec(), tree_TRB->getAABB().getPosVec(),  "tree_TRB AABB pos") &
+            assertEquals(aabb_TRB_expected.getSizeVec(), tree_TRB->getAABB().getSizeVec(), "tree_TRB AABB size");
+
+        PRREAxisAlignedBoundingBox aabb_BRF_expected;
+        aabb_BRF_expected.ExtendBy(aabb_obj2);
+        aabb_BRF_expected.ExtendBy(aabb_obj3);
+
+        b &= assertEquals(aabb_BRF_expected.getPosVec(), tree_BRF->getAABB().getPosVec(),  "tree_BRF AABB pos") &
+            assertEquals(aabb_BRF_expected.getSizeVec(), tree_BRF->getAABB().getSizeVec(), "tree_BRF AABB size");
+
+        b &= assertEquals(PRREVector(), tree_TLF->getAABB().getPosVec(), "tree_TLF AABB pos") &
+            assertEquals(PRREVector(), tree_TLF->getAABB().getSizeVec(), "tree_TLF AABB size") &
+            assertEquals(PRREVector(), tree_BLF->getAABB().getPosVec(),  "tree_BLF AABB pos") &
+            assertEquals(PRREVector(), tree_BLF->getAABB().getSizeVec(), "tree_BLF AABB size") &
+            assertEquals(PRREVector(), tree_TRF->getAABB().getPosVec(),  "tree_TRF AABB pos") &
+            assertEquals(PRREVector(), tree_TRF->getAABB().getSizeVec(), "tree_TRF AABB size") &
+            assertEquals(PRREVector(), tree_BLB->getAABB().getPosVec(),  "tree_BLB AABB pos") &
+            assertEquals(PRREVector(), tree_BLB->getAABB().getSizeVec(), "tree_BLB AABB size") &
+            assertEquals(PRREVector(), tree_BRB->getAABB().getPosVec(),  "tree_BRB AABB pos") &
+            assertEquals(PRREVector(), tree_BRB->getAABB().getSizeVec(), "tree_BRB AABB size");
+
+        // level-0 bounds
+        PRREAxisAlignedBoundingBox aabb_root_expected(aabb_TLB_expected);
+        aabb_root_expected.ExtendBy(aabb_TRB_expected);
+        aabb_root_expected.ExtendBy(aabb_BRF_expected);
+
+        b &= assertEquals(aabb_root_expected.getPosVec(), tree.getAABB().getPosVec(),  "root AABB pos") &
+            assertEquals(aabb_root_expected.getSizeVec(), tree.getAABB().getSizeVec(), "root AABB size");
+
+        return b;
     }
 
 }; // class PRREBoundingVolumeHierarchyTest

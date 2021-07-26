@@ -69,6 +69,9 @@ const PRREVector& PRREAxisAlignedBoundingBox::getSizeVec() const
 */
 TPRREbool PRREAxisAlignedBoundingBox::isInside(const PRREVector& p) const
 {
+    if ( (size.getX() == 0.f) || (size.getY() == 0.f) || (size.getZ() == 0.f) )
+        return false;
+
     return ( (p.getX() >= (pos.getX() - size.getX()/2.f)) && (p.getX() <= (pos.getX() + size.getX()/2.f)) ) &&
         ( (p.getY() >= (pos.getY() - size.getY()/2.f)) && (p.getY() <= (pos.getY() + size.getY()/2.f)) ) &&
         ( (p.getZ() >= (pos.getZ() - size.getZ()/2.f)) && (p.getZ() <= (pos.getZ() + size.getZ()/2.f)) );
@@ -98,10 +101,17 @@ TPRREbool PRREAxisAlignedBoundingBox::isInside(const PRREAxisAlignedBoundingBox&
 /**
     Extends the size of the bounding box so the given point will be inside the box.
     The position of the bounding box is also expected to change after the extend.
+    If this is a 0-sized (uninitialized) box, nothing will happen.
+
     @param p The point to be included. Coordinates are expected in world-space.
 */
 void PRREAxisAlignedBoundingBox::ExtendBy(const PRREVector& p)
 {
+    if ( (size.getX() == 0.f) || (size.getY() == 0.f) || (size.getZ() == 0.f) )
+    {
+        return;
+    }
+
     const PRREVector oldPos = pos;
 
     if ( p.getX() < pos.getX() - size.getX()/2.f ) {
@@ -133,10 +143,19 @@ void PRREAxisAlignedBoundingBox::ExtendBy(const PRREVector& p)
 /**
     Extends the size of the bounding box so the given box will be inside the box.
     The position of the bounding box is also expected to change after the extend.
+    If this is a 0-sized (uninitialized) box, its position and size will be set to the position and size of the given box (copy).
+
     @param aabb The box to be included.
 */
 void PRREAxisAlignedBoundingBox::ExtendBy(const PRREAxisAlignedBoundingBox& aabb)
 {
+    if ( (size.getX() == 0.f) || (size.getY() == 0.f) || (size.getZ() == 0.f) )
+    {
+        pos = aabb.pos;
+        size = aabb.size;
+        return;
+    }
+
     const PRREVector aabb_min(
         aabb.getPosVec().getX() - aabb.getSizeVec().getX()/2.f,
         aabb.getPosVec().getY() - aabb.getSizeVec().getY()/2.f,

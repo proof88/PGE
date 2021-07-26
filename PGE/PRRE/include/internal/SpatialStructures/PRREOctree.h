@@ -119,9 +119,8 @@ protected:
     
     PRREOctree();
     
-    // defaults will be fine
-    //PRREOctree(const PRREOctree&);
-    //PRREOctree& operator=(const PRREOctree&);
+    PRREOctree(const PRREOctree&);
+    PRREOctree& operator=(const PRREOctree&);
 
     // virtual subdivide so derived can override by resizing vector with derived instances!
     virtual void Subdivide();
