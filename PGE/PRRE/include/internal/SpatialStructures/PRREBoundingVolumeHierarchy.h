@@ -55,7 +55,7 @@ protected:
     PRREBoundingVolumeHierarchy(const PRREBoundingVolumeHierarchy&);
     PRREBoundingVolumeHierarchy& operator=(const PRREBoundingVolumeHierarchy&);
 
-    virtual void Subdivide(); // override
+    virtual TPRREbool subdivide(); // override
 
 private:
 

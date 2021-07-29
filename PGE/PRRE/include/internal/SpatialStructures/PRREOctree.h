@@ -123,7 +123,7 @@ protected:
     PRREOctree& operator=(const PRREOctree&);
 
     // virtual subdivide so derived can override by resizing vector with derived instances!
-    virtual void Subdivide();
+    virtual TPRREbool subdivide();
     void DeleteChildren();
 
 private:

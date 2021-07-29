@@ -10,6 +10,9 @@
 
 #include "PRREbaseIncludes.h"  // PCH
 #include "../../include/internal/SpatialStructures/PRREOctree.h"
+
+#include <cassert>
+
 #include "../../../../../PFL/PFL/PFL.h"
 
 using namespace std;
@@ -116,7 +119,8 @@ PRREOctree* PRREOctree::insertObject(const PRREObject3D& obj)
         vObjects.insert(&obj);
         return this;
     }
-    else if ( getNodeType() == Parent )
+    
+    if ( getNodeType() == Parent )
     {   // pass the object to next depth level
         const ChildIndex iChild = calculateIndex(obj.getPosVec());
         return vChildren[iChild]->insertObject(obj);
@@ -132,7 +136,10 @@ PRREOctree* PRREOctree::insertObject(const PRREObject3D& obj)
     else
     {
         // subdivide this node now, depth level increases
-        Subdivide();
+        if ( !subdivide() )
+        {
+            return PGENULL;
+        }
         for (TPRREuint i = 0; i < vChildren.size(); i++)
         {
             vChildren[i]->parent = this;
@@ -321,13 +328,29 @@ PRREOctree& PRREOctree::operator=(const PRREOctree&)
 }
 
 
-void PRREOctree::Subdivide()
+TPRREbool PRREOctree::subdivide()
 {
-    for (TPRREuint i = 0; i < 8; i++)
+    try
     {
-        PRREOctree* const pChildNode = new PRREOctree(PRREVector(), fSize/2.f, nMaxDepth, nCurrentDepth + 1);
-        vChildren.push_back(pChildNode);
+      for (TPRREuint i = 0; i < 8; i++)
+      {
+          PRREOctree* const pChildNode = new PRREOctree(PRREVector(), fSize/2.f, nMaxDepth, nCurrentDepth + 1);
+          vChildren.push_back(pChildNode);
+      }
     }
+    catch (const std::exception&)
+    {
+        for (TPRREuint i = 0; i < 8; i++)
+        {
+            if ( vChildren[i] != PGENULL )
+            {
+                delete vChildren[i];
+            }
+            vChildren.resize(0);
+        }
+        return false;
+    }
+    return true;
 }
 
 

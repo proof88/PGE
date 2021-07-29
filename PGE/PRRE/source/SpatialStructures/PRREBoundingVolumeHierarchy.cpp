@@ -10,6 +10,9 @@
 
 #include "PRREbaseIncludes.h"  // PCH
 #include "../../include/internal/SpatialStructures/PRREBoundingVolumeHierarchy.h"
+
+#include <cassert>
+
 #include "../../../../../PFL/PFL/PFL.h"
 
 using namespace std;
@@ -138,13 +141,30 @@ PRREBoundingVolumeHierarchy& PRREBoundingVolumeHierarchy::operator=(const PRREBo
 }
 
 
-void PRREBoundingVolumeHierarchy::Subdivide()
+TPRREbool PRREBoundingVolumeHierarchy::subdivide()
 {
-    for (TPRREuint i = 0; i < 8; i++)
+    assert(vChildren.size() == 0);
+    try
     {
-        PRREBoundingVolumeHierarchy* const pChildNode = new PRREBoundingVolumeHierarchy(PRREVector(), getSize()/2.f, getMaxDepthLevel(), getDepthLevel() + 1);
-        vChildren.push_back(pChildNode);
+      for (TPRREuint i = 0; i < 8; i++)
+      {
+          PRREBoundingVolumeHierarchy* const pChildNode = new PRREBoundingVolumeHierarchy(PRREVector(), getSize()/2.f, getMaxDepthLevel(), getDepthLevel() + 1);
+          vChildren.push_back(pChildNode);
+      }
     }
+    catch (const std::exception&)
+    {
+        for (TPRREuint i = 0; i < 8; i++)
+        {
+            if ( vChildren[i] != PGENULL )
+            {
+                delete vChildren[i];
+            }
+            vChildren.resize(0);
+        }
+        return false;
+    }
+    return true;
 }
 
 
