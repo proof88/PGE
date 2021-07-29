@@ -79,6 +79,9 @@ public:
     TPRREbool isStickedToScreen() const;               
     void      SetStickedToScreen(TPRREbool value);  
 
+    TPRREbool isOccluder() const;
+    void      SetOccluder(TPRREbool value);
+
     TPRREuint getUsedSystemMemory() const; 
 
     void Draw(bool bLighting);                  
@@ -112,6 +115,7 @@ private:
     TPRREbool bAffectZBuffer;       /**< Writes to Z-Buffer. */
     TPRREbool bAllowZTesting;       /**< Tests to Z-Buffer. */
     TPRREbool bStickedToScreen;     /**< Sticked to screen. */
+    TPRREbool bOccluder;            /**< Should renderer treat this as occluder in occlusion culling tests? */
     TPRRE_ROTATION_ORDER rotation;  /**< Rotation order. */
     TPRREbool bParentInitiatedOperation;   /**< Parent objects set this to true at the beginning of draw, subobjects ignore draw if this is not true in parent. */
 

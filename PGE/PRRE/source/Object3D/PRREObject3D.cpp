@@ -381,6 +381,18 @@ void PRREObject3D::PRREObject3DImpl::SetStickedToScreen(TPRREbool value)
 } // SetStickedToScreen()
 
 
+TPRREbool PRREObject3D::PRREObject3DImpl::isOccluder() const
+{
+    return bOccluder;
+}
+
+
+void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
+{
+    bOccluder = value;
+}
+
+
 TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
 {
     return (
@@ -583,6 +595,7 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
     bParentInitiatedOperation = false;
     bColliding = bDoubleSided = false;
     bWireframe = bWireframedCull = bStickedToScreen = false;
+    bOccluder = false;
 
     vScaling.Set(1.0f, 1.0f, 1.0f);
     rotation = PRRE_YXZ;
@@ -891,7 +904,7 @@ const char* PRREObject3D::getLoggerModuleName()
 
 
 /**
-    The details of this function are described in VertexTransfer class.
+    The details of this function are described in PRREVertexTransfer class.
     If this is a cloned object, the returned value is the same as the referred object's value.
 */
 TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::getVertexModifyingHabit() const
@@ -901,8 +914,8 @@ TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::getVertexModifyingHabit() const
 
 
 /**
-    The details of this function are described in VertexTransfer class.
-    Same functionality as defined originally in VertexTransfer but extended with a check for being a cloned object or not.
+    The details of this function are described in PRREVertexTransfer class.
+    Same functionality as defined originally in PRREVertexTransfer::setVertexModifyingHabit() but extended with a check for being a cloned object or not.
     This function has no effect when called for a cloned object.
     @param vmod Vertex modifying habit to be set.
     @return     True on success, false otherwise, including if called for a cloned object.
@@ -914,7 +927,7 @@ TPRREbool PRREObject3D::setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmo
 
 
 /**
-    The details of this function are described in VertexTransfer class.
+    The details of this function are described in PRREVertexTransfer class.
     If this is a cloned object, the returned value is the same as the referred object's value.
 */
 TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::getVertexReferencingMode() const
@@ -924,8 +937,8 @@ TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::getVertexReferencingMode() const
 
  
 /**
-    The details of this function are described in VertexTransfer class.
-    Same functionality as defined originally in VertexTransfer but extended with a check for being a cloned object or not.
+    The details of this function are described in PRREVertexTransfer class.
+    Same functionality as defined originally in PRREVertexTransfer::setVertexTransferMode() but extended with a check for being a cloned object or not.
     This function has no effect when called for a cloned object.
     @param  vref Vertex referencing mode to be set.
     @return      True on success, false otherwise, including if called for a cloned object.
@@ -937,7 +950,7 @@ TPRREbool PRREObject3D::setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE v
 
 
 /**
-    The details of this function are described in VertexTransfer class.
+    The details of this function are described in PRREVertexTransfer class.
     If this is a cloned object, the returned value is the same as the referred object's value.
 */
 TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::getVertexTransferMode() const
@@ -947,8 +960,8 @@ TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::getVertexTransferMode() const
 
 
 /**
-    The details of this function are described in VertexTransfer class.
-    Same functionality as defined originally in VertexTransfer but extended with a check for being a cloned object or not.
+    The details of this function are described in PRREVertexTransfer class.
+    Same functionality as defined originally in PRREVertexTransfer::setVertexTransferMode() but extended with a check for being a cloned object or not.
     This function has no effect when called for a cloned object.
     @param  vtrans Vertex referencing mode to be set.
     @return        True on success, false otherwise, including if called for a cloned object.
@@ -1004,6 +1017,7 @@ TPRRE_TRANSFORMED_VERTEX* PRREObject3D::getTransformedVertices(TPRREbool implici
 /**
     Gets the rotation angles.
     Rotation angle is currently ignored for level-2 objects, they are rotated by the same factor as their level-1 parent object using the same pivot point.
+    By default this property is (0.0f, 0.0f, 0.0f).
     @return Rotation angles vector.
 */
 PRREVector& PRREObject3D::getAngleVec()
@@ -1015,6 +1029,7 @@ PRREVector& PRREObject3D::getAngleVec()
 /**
     Gets the rotation angles.
     Rotation angle is currently ignored for level-2 objects, they are rotated by the same factor as their level-1 parent object using the same pivot point.
+    By default this property is (0.0f, 0.0f, 0.0f).
     @return Rotation angles vector.
 */
 const PRREVector& PRREObject3D::getAngleVec() const
@@ -1046,6 +1061,7 @@ PRREVector PRREObject3D::getScaledSizeVec() const
 
 /**
     Gets the scaling factor.
+    By default this property is (1.0f, 1.0f, 1.0f).
     @return Scaling.
 */
 const PRREVector& PRREObject3D::getScaling() const
@@ -1057,6 +1073,7 @@ const PRREVector& PRREObject3D::getScaling() const
 /**
     Sets the scaling factor to given scalar.
     Scaling factor is currently ignored for level-2 objects, they are scaled by the same factor as their level-1 parent object.
+    By default this property is (1.0f, 1.0f, 1.0f).
 */
 void PRREObject3D::SetScaling(TPRREfloat value)
 {
@@ -1067,6 +1084,7 @@ void PRREObject3D::SetScaling(TPRREfloat value)
 /**
     Sets the scaling factor to given vector.
     Scaling factor is currently ignored for level-2 objects, they are scaled by the same factor as their level-1 parent object.
+    By default this property is (1.0f, 1.0f, 1.0f).
 */
 void PRREObject3D::SetScaling(const PRREVector& value)
 {
@@ -1077,6 +1095,7 @@ void PRREObject3D::SetScaling(const PRREVector& value)
 /**
     Scales by the given scalar value. 
     Scaling factor is currently ignored for level-2 objects, they are scaled by the same factor as their level-1 parent object.
+    By default this property is (1.0f, 1.0f, 1.0f).
 */
 void PRREObject3D::Scale(TPRREfloat value)
 {
@@ -1087,6 +1106,7 @@ void PRREObject3D::Scale(TPRREfloat value)
 /**
     Scales by the given vector.
     Scaling factor is currently ignored for level-2 objects, they are scaled by the same factor as their level-1 parent object.
+    By default this property is (1.0f, 1.0f, 1.0f).
 */
 void PRREObject3D::Scale(const PRREVector& value)
 {
@@ -1097,7 +1117,9 @@ void PRREObject3D::Scale(const PRREVector& value)
 /**
     Gets the visibility state.
     If an object is not visible, it is not rendered.
+    This property is manual setting, not related to any visibility calculations that might be done by renderer.
     Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
+    By default this property is true.
     @return True, if visible, false otherwise.
 */
 TPRREbool PRREObject3D::isVisible() const
@@ -1109,7 +1131,9 @@ TPRREbool PRREObject3D::isVisible() const
 /**
     Sets the visibility state.
     If an object is not visible, it is not rendered.
+    This property is manual setting, not related to any visibility calculations that might be done by renderer.
     Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
+    By default this property is true.
 */
 void PRREObject3D::SetVisible(TPRREbool state)
 {
@@ -1144,6 +1168,7 @@ void PRREObject3D::Hide()
 /**
     Gets whether colliding is enabled.
     Legacy function unrelated to the purpose of this class, will need to be removed!
+    By default this property is false.
     @return True, if colliding is enabled, false otherwise.
 */
 TPRREbool PRREObject3D::isColliding_TO_BE_REMOVED() const
@@ -1155,6 +1180,7 @@ TPRREbool PRREObject3D::isColliding_TO_BE_REMOVED() const
 /**
     Sets whether colliding is enabled.
     Legacy function unrelated to the purpose of this class, will need to be removed!
+    By default this property is false.
 */
 void PRREObject3D::SetColliding_TO_BE_REMOVED(TPRREbool value)
 {
@@ -1165,6 +1191,7 @@ void PRREObject3D::SetColliding_TO_BE_REMOVED(TPRREbool value)
 /**
     Gets the rotation order.
     Rotation order is currently ignored for level-2 objects, they are rotated the same way as their level-1 parent object.
+    By default this property is PRRE_YXZ.
     @return Rotation order.
 */
 TPRRE_ROTATION_ORDER PRREObject3D::getRotationOrder() const
@@ -1176,6 +1203,7 @@ TPRRE_ROTATION_ORDER PRREObject3D::getRotationOrder() const
 /**
     Sets the rotation order.
     Rotation order is currently ignored for level-2 objects, they are rotated the same way as their level-1 parent object.
+    By default this property is PRRE_YXZ.
 */
 void PRREObject3D::SetRotationOrder(TPRRE_ROTATION_ORDER value)
 {
@@ -1186,6 +1214,7 @@ void PRREObject3D::SetRotationOrder(TPRRE_ROTATION_ORDER value)
 /**
     Gets the lit state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is true.
     @return True if lit, false otherwise.
 */
 TPRREbool PRREObject3D::isLit() const
@@ -1197,6 +1226,7 @@ TPRREbool PRREObject3D::isLit() const
 /**
     Sets the lit state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is true.
 */
 void PRREObject3D::SetLit(TPRREbool value)
 {
@@ -1207,6 +1237,7 @@ void PRREObject3D::SetLit(TPRREbool value)
 /**
     Gets the double sided state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is false.
     @return True if double sided, false otherwise.
 */
 TPRREbool PRREObject3D::isDoubleSided() const
@@ -1218,6 +1249,7 @@ TPRREbool PRREObject3D::isDoubleSided() const
 /**
     Sets the double sided state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is false.
 */
 void PRREObject3D::SetDoubleSided(TPRREbool value)
 {
@@ -1228,6 +1260,7 @@ void PRREObject3D::SetDoubleSided(TPRREbool value)
 /**
     Gets the wireframed state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is false.
     @return True if wireframed, false otherwise.
 */
 TPRREbool PRREObject3D::isWireframed() const
@@ -1239,6 +1272,7 @@ TPRREbool PRREObject3D::isWireframed() const
 /**
     Sets the wireframed state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is false.
 */
 void PRREObject3D::SetWireframed(TPRREbool value)
 {
@@ -1249,6 +1283,7 @@ void PRREObject3D::SetWireframed(TPRREbool value)
 /**
     Gets the wireframed culling state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is false.
     @return True if culling is enabled in wireframed state, false otherwise.
 */
 TPRREbool PRREObject3D::isWireframedCulled() const
@@ -1260,6 +1295,7 @@ TPRREbool PRREObject3D::isWireframedCulled() const
 /**
     Sets the wireframed culling state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is false.
 */
 void PRREObject3D::SetWireframedCulled(TPRREbool value)
 {
@@ -1270,6 +1306,7 @@ void PRREObject3D::SetWireframedCulled(TPRREbool value)
 /**
     Gets whether we write to the Z-Buffer while rendering.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is true.
     @return True if we write to Z-Buffer while rendering, false otherwise.
 */
 TPRREbool PRREObject3D::isAffectingZBuffer() const
@@ -1281,6 +1318,7 @@ TPRREbool PRREObject3D::isAffectingZBuffer() const
 /**
     Sets whether we write to the Z-Buffer while rendering.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is true.
 */
 void PRREObject3D::SetAffectingZBuffer(TPRREbool value)
 {
@@ -1291,6 +1329,7 @@ void PRREObject3D::SetAffectingZBuffer(TPRREbool value)
 /**
     Gets whether we test against the Z-Buffer while rendering.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is true.
     @return True if we test against the Z-Buffer while rendering, false otherwise.
 */
 TPRREbool PRREObject3D::isTestingAgainstZBuffer() const
@@ -1302,6 +1341,7 @@ TPRREbool PRREObject3D::isTestingAgainstZBuffer() const
 /**
     Sets whether we test against the Z-Buffer while rendering.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is true.
 */
 void PRREObject3D::SetTestingAgainstZBuffer(TPRREbool value)
 {
@@ -1312,6 +1352,7 @@ void PRREObject3D::SetTestingAgainstZBuffer(TPRREbool value)
 /**
     Gets the sticked-to-screen state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is false.
     @return True if sticked to screen, false otherwise.
 */
 TPRREbool PRREObject3D::isStickedToScreen() const
@@ -1329,11 +1370,35 @@ TPRREbool PRREObject3D::isStickedToScreen() const
      - SetLit(false);
      - SetTestingAgainstZBuffer(false).
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is false.
 */
 void PRREObject3D::SetStickedToScreen(TPRREbool value)
 {
     pImpl->SetStickedToScreen(value);
 } // SetStickedToScreen()
+
+
+/**
+    Gets whether this object should be considered as an occluder during rendering.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is false.
+    @return True if considered as occluder, false otherwise (potential occludee).
+*/
+TPRREbool PRREObject3D::isOccluder() const
+{
+    return pImpl->isOccluder();
+}
+
+
+/**
+    Sets whether this object should be considered as an occluder during rendering.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    By default this property is false.
+*/
+void PRREObject3D::SetOccluder(TPRREbool value)
+{
+    pImpl->SetOccluder(value);
+}
 
 
 /**

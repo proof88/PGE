@@ -149,7 +149,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testOctree);
     tests.push_back(&testBVH);
     tests.push_back(&testPRREScissor);
-/*          
+/*  */        
     tests.push_back(&testPRREColor);
     tests.push_back(&testPRREManager);
     tests.push_back(&testPRREManaged);
@@ -177,8 +177,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREVertexTransfer);
 
     tests.push_back(&testPRREObject3DManager);
-    tests.push_back(&testPRREObject3D);
-*/    
+    tests.push_back(&testPRREObject3D);   
 
     /* 
     tests.push_back(&testPRREWindow);

@@ -127,6 +127,9 @@ public:
     TPRREbool isStickedToScreen() const;                  /**< Gets the sticked-to-screen state. */
     void      SetStickedToScreen(TPRREbool value);        /**< Sets the sticked-to-screen state. */ 
 
+    TPRREbool isOccluder() const;                         /**< Gets whether this object should be considered as an occluder during rendering. */
+    void      SetOccluder(TPRREbool value);               /**< Sets whether this object should be considered as an occluder during rendering. */
+
     virtual TPRREuint getUsedSystemMemory() const;    /**< Gets the amount of allocated system memory. */
     virtual TPRREuint getUsedVideoMemory() const;     /**< Gets the amount of allocated video memory. */
 
