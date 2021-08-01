@@ -412,7 +412,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
 
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
     {
-        DrawSW();
+        Draw_DrawSW();
         return;
     }
 
@@ -426,8 +426,8 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         // So transformations and other basic things are set by parent objects having subobjects.
         // Or by cloned objects which refer to another original objects but still have their own position, angle, etc.
         
-        ApplyTransformations();
-        PrepareGLbeforeDraw(bLighting);
+        Draw_ApplyTransformations();
+        Draw_PrepareGLbeforeDraw(bLighting);
 
         // take care of attached objects (subobjects)
         // note that either we have our own subobjects, OR we are just a cloned object and we need to draw original object's subobjects
@@ -448,123 +448,15 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
         return;
     }
 
-    if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
-    {
-        if ( _pOwner->getMaterial().isMultiTextured() )
-        {
-            // enable blending of 2nd layer
-            glEnable(GL_BLEND);
-	          glBlendFunc(getGLblendFromPRREblend(_pOwner->getMaterial().getSourceBlendFunc(1)), getGLblendFromPRREblend(_pOwner->getMaterial().getDestinationBlendFunc(1)));
-            LoadTextureIntoTMU( _pOwner->getMaterial().getTexture(0), 0 );
-            LoadTextureIntoTMU( _pOwner->getMaterial().getTexture(1), 1 );
-        }
-        else
-        {
-            // disable blending only if base layer is not blended ...
-            if ( ! PRREObject3DManager::isBlendFuncBlends(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
-                glDisable(GL_BLEND);
-            LoadTextureIntoTMU( _pOwner->getMaterial().getTexture(0), 0 );
-            LoadTextureIntoTMU( PGENULL, 1 );
-        }
-    }
-    else
-    {
-        // disable blending only if base layer is not blended ...
-        if ( ! PRREObject3DManager::isBlendFuncBlends(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
-            glDisable(GL_BLEND);
-        LoadTextureIntoTMU( _pOwner->getMaterial().getTexture() );
-    }
-
     /* currently not supporting any vendor-specific mode */
     if ( BITF_READ(_pOwner->getVertexTransferMode(),PRRE_VT_VENDOR_BITS,3) != 0 )
         return;
 
-    if ( pFbBuffer == NULL )
-    {
-        /* We create this buffer only once at first run. */
-        /* We intentionally switch to feedback mode only once since now it is for debugging purposes only, for breakpoint, etc.
-           but in the future when HW transform and SW rasterization can be combined, this will be controlled by public API */
-       
-        /* num of values can be stored in this buffer */
-        /* we need to store not only the transformed values but also some extra values for grammar */
-        /* in this case, the items placed in this array are polygon items (GL_POLYGON_TOKEN) which look like this:
-            GL_POLYGON_TOKEN 3 (value value value value (value value value value) (value value value value))
-            So for a standard cube where each side has 2 triangles, it is 12 triangles in total, meaning
-            12 polygons. GL_POLYGON_TOKEN itself is 1 value, 3 itself is also 1 value, and then 3*12 values for 3 vertices.
-            So the total num of values is: numOfTriangles * (2+3*12)
-            Example with some real data is in later comment with debugbuffer[]. */
+    Draw_LoadTexturesAndSetBlendState();
 
-       
-        nFbBuffer_h = GLsizei(ceil((_pOwner->getVerticesCount(false) / 3.0f))) * (2+3*12);
-        try
-        {
-            /* TODO: probably in future we should rather use pVerticesTransf here as well since we already have it for that purpose, right? ;) */
-            pFbBuffer = new GLfloat[nFbBuffer_h];
-
-            /* unfortunately only the most detailed option GL_4D_COLOR_TEXTURE will give us the w-coord of vertices so we need to use that */
-            if ( pglFeedbackBuffer(nFbBuffer_h, GL_4D_COLOR_TEXTURE, pFbBuffer) )
-            {
-                // If you want all vertices to be transformed and catched in feedback mode then dont forget to disable culling and depth testing (maybe only 1 is needed to be disabled).
-                //glDisable(GL_DEPTH_TEST);
-                glDisable(GL_CULL_FACE); /* otherwise only the front facing side of cube would be written to feedback buffer */
-
-                glRenderMode(GL_FEEDBACK);
-            }
-        }
-        catch (const std::bad_alloc&)
-        {
-            _pOwner->getManagedConsole().EOLn("ERROR: PRREObject3D::PRREObject3DImpl::Draw() failed to allocate pFbBuffer!");
-        }
-    } 
-
+    Draw_FeedbackBuffer_Start();
     ((PRREVertexTransfer*)_pOwner)->pImpl->TransferVertices();
-
-    /* The number of values (not vertices) transferred to the feedback buffer. */
-    const GLint nFbBufferWritten_h = glRenderMode(GL_RENDER);
-
-    GLfloat debugbuffer[500];
-
-    if ( nFbBufferWritten_h > 0 )
-    {
-        // we are happy
-        for (int i = 0; i < min(500,nFbBufferWritten_h); i++)
-            debugbuffer[i] = pFbBuffer[i];
-        //Sleep(1); // suitable for placing breakpoint
-        /*
-            debugbuffer[0] = GL_POLYGON_TOKEN;
-            debugbuffer[1] = 3;
-            debugbuffer[ 2.. 5] = x y z w (xyz are in window coordinates while w is clip coordinate)
-            debugbuffer[ 6.. 9] = r g b a
-            debugbuffer[10..13] = texture coords, probably x y u w
-            debugbuffer[14..17] = x y z w (xyz are in window coordinates while w is clip coordinate)
-            debugbuffer[18..21] = r g b a
-            debugbuffer[22..25] = texture coords, probably x y u w
-            debugbuffer[26..29] = x y z w (xyz are in window coordinates while w is clip coordinate)
-            debugbuffer[30..33] = r g b a
-            debugbuffer[34..37] = texture coords, probably x y u w
-            debugbuffer[38] = GL_POLYGON_TOKEN;
-            debugbuffer[39] = 3;
-
-            example: gamedata\\models\\cube.obj
-            assuming that nearplane is 0.1f, farplane is 100.0f, depthrange is [0, 1], fovy is 80
-            box
-            i=2 (3. vertex) debugbuffer[26]
-                model space        -> world space       -> view/eye space    -> clip space                   -> normalized device coords     -> screen coords
-            sw: [-0.5, -0.5, -0.5] -> [-0.5, -0.5, 2.5] -> [-0.5, -0.5, 2.5] -> [-0.446, -0.595, 2.348, 2.5] -> [-0.178, -0.238, 0.939, 2.5] -> [328, 228, 0.961, 2.5]
-            hw:                                                                                                                                 [328, 228, 0.961, 2.5]
-
-            i=6 (7. vertex) debugbuffer[?]
-                model space        -> world space       -> view/eye space    -> clip space                   -> normalized device coords     -> screen coords
-            sw: [ 0.5,  0.5,  0.5] -> [ 0.5,  0.5, 3.5] -> [ 0.5,  0.5, 3.5] -> [ 0.446,  0.595, 3.368, 3.5] -> [ 0.127,  0.170, 0.962, 3.5] -> [451, 351, 0.972, 3.5]
-            hw:                                                                                                                                 [451, 351, 0.972, 3.5]
-
-            ...
-        */
-    }
-    else
-    {
-        // we were already in GL_RENDER (0) mode, OR nothing was returned, OR we were in FEEDBACK but buffer was not enough to hold all values (<0) ...
-    }
+    Draw_FeedbackBuffer_Finish(); 
 } // Draw()
 
 
@@ -632,7 +524,7 @@ PRREObject3D::PRREObject3DImpl& PRREObject3D::PRREObject3DImpl::operator=(const 
     @param tex  Texture to be loaded. If NULL, texturing will be disabled on the specified texture mapping unit.
     @param iTMU Into which TMU we want to load the texture. Currently it must be either 0 or 1.
 */
-void PRREObject3D::PRREObject3DImpl::LoadTextureIntoTMU(const PRRETexture* tex, TPRREuint iTMU) const
+void PRREObject3D::PRREObject3DImpl::Draw_LoadTextureIntoTMU(const PRRETexture* tex, TPRREuint iTMU) const
 {
     /* Make sure we don't call GL functions when no accelerator is present */
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
@@ -644,7 +536,7 @@ void PRREObject3D::PRREObject3DImpl::LoadTextureIntoTMU(const PRRETexture* tex, 
     // currently we support only 2 textured layers ...
     if ( iTMU > 1 )
     {
-        _pOwner->getManagedConsole().EOLn("ERROR: LoadTextureIntoTMU(tex, %d)", iTMU);
+        _pOwner->getManagedConsole().EOLn("ERROR: Draw_LoadTextureIntoTMU(tex, %d)", iTMU);
         _ASSERT( false );
     }
 
@@ -674,13 +566,150 @@ void PRREObject3D::PRREObject3DImpl::LoadTextureIntoTMU(const PRRETexture* tex, 
         else
             glDisable(GL_TEXTURE_2D);
     }
-} // LoadTextureIntoTMU()
+} // Draw_LoadTextureIntoTMU()
+
+
+/**
+    Loads all textures into all texture mapping units and sets blending if needed.
+*/
+void PRREObject3D::PRREObject3DImpl::Draw_LoadTexturesAndSetBlendState() const
+{
+    if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
+    {
+        if ( _pOwner->getMaterial().isMultiTextured() )
+        {
+            // enable blending of 2nd layer
+            glEnable(GL_BLEND);
+	          glBlendFunc(getGLblendFromPRREblend(_pOwner->getMaterial().getSourceBlendFunc(1)), getGLblendFromPRREblend(_pOwner->getMaterial().getDestinationBlendFunc(1)));
+            Draw_LoadTextureIntoTMU( _pOwner->getMaterial().getTexture(0), 0 );
+            Draw_LoadTextureIntoTMU( _pOwner->getMaterial().getTexture(1), 1 );
+        }
+        else
+        {
+            // disable blending only if base layer is not blended ...
+            if ( ! PRREObject3DManager::isBlendFuncBlends(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
+                glDisable(GL_BLEND);
+            Draw_LoadTextureIntoTMU( _pOwner->getMaterial().getTexture(0), 0 );
+            Draw_LoadTextureIntoTMU( PGENULL, 1 );
+        }
+    }
+    else
+    {
+        // disable blending only if base layer is not blended ...
+        if ( ! PRREObject3DManager::isBlendFuncBlends(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
+            glDisable(GL_BLEND);
+        Draw_LoadTextureIntoTMU( _pOwner->getMaterial().getTexture() );
+    }
+} // Draw_LoadTexturesAndSetBlendState()
+
+
+/**
+    Set render mode to feedback and allocate buffer for transformed vertices.
+    This is done only once, when the functions is called for the first time.
+    Any consecutive call to this function has no effect, so pFbBuffer and nFbBuffer_h variables
+    will hold the same values that have been stored during the rendereing of the 1st frame.
+    This is for debugging purposes only, for breakpoint, etc.
+    But in the future when HW transform and SW rasterization can be combined, this will be controlled by public API.
+*/
+void PRREObject3D::PRREObject3DImpl::Draw_FeedbackBuffer_Start()
+{
+    /* We create this buffer only once at first run. */
+    /* We intentionally switch to feedback mode only once since now  */
+    if ( pFbBuffer != NULL )
+        return;
+
+    /* num of values can be stored in this buffer */
+    /* we need to store not only the transformed values but also some extra values for grammar */
+    /* in this case, the items placed in this array are polygon items (GL_POLYGON_TOKEN) which look like this:
+        GL_POLYGON_TOKEN 3 (value value value value (value value value value) (value value value value))
+        So for a standard cube where each side has 2 triangles, it is 12 triangles in total, meaning
+        12 polygons. GL_POLYGON_TOKEN itself is 1 value, 3 itself is also 1 value, and then 3*12 values for 3 vertices.
+        So the total num of values is: numOfTriangles * (2+3*12)
+        Example with some real data is in later comment with debugbuffer[]. */
+    
+    nFbBuffer_h = GLsizei(ceil((_pOwner->getVerticesCount(false) / 3.0f))) * (2+3*12);
+    try
+    {
+        /* TODO: probably in future we should rather use pVerticesTransf here as well since we already have it for that purpose, right? ;) */
+        pFbBuffer = new GLfloat[nFbBuffer_h];
+
+        /* unfortunately only the most detailed option GL_4D_COLOR_TEXTURE will give us the w-coord of vertices so we need to use that */
+        if ( pglFeedbackBuffer(nFbBuffer_h, GL_4D_COLOR_TEXTURE, pFbBuffer) )
+        {
+            // If you want all vertices to be transformed and catched in feedback mode then dont forget to disable culling and depth testing (maybe only 1 is needed to be disabled).
+            //glDisable(GL_DEPTH_TEST);
+            glDisable(GL_CULL_FACE); /* otherwise only the front facing side of cube would be written to feedback buffer */
+
+            glRenderMode(GL_FEEDBACK);
+        }
+    }
+    catch (const std::bad_alloc&)
+    {
+        _pOwner->getManagedConsole().EOLn("ERROR: PRREObject3D::PRREObject3DImpl::Draw() failed to allocate pFbBuffer!");
+    }
+}
+
+
+/**
+    Set render mode to default render.
+    This is for debugging purposes only, for breakpoint, etc.
+    If a breakpoint is set inside this function, the coordinates of HW-transformed vertices can be examined.
+*/
+void PRREObject3D::PRREObject3DImpl::Draw_FeedbackBuffer_Finish()
+{
+    /* The number of values (not vertices) transferred to the feedback buffer. */
+    const GLint nFbBufferWritten_h = glRenderMode(GL_RENDER);
+
+    GLfloat debugbuffer[500];
+
+    if ( nFbBufferWritten_h > 0 )
+    {
+        // we are happy
+        for (int i = 0; i < min(500,nFbBufferWritten_h); i++)
+            debugbuffer[i] = pFbBuffer[i];
+        //Sleep(1); // suitable for placing breakpoint
+        /*
+            debugbuffer[0] = GL_POLYGON_TOKEN;
+            debugbuffer[1] = 3;
+            debugbuffer[ 2.. 5] = x y z w (xyz are in window coordinates while w is clip coordinate)
+            debugbuffer[ 6.. 9] = r g b a
+            debugbuffer[10..13] = texture coords, probably x y u w
+            debugbuffer[14..17] = x y z w (xyz are in window coordinates while w is clip coordinate)
+            debugbuffer[18..21] = r g b a
+            debugbuffer[22..25] = texture coords, probably x y u w
+            debugbuffer[26..29] = x y z w (xyz are in window coordinates while w is clip coordinate)
+            debugbuffer[30..33] = r g b a
+            debugbuffer[34..37] = texture coords, probably x y u w
+            debugbuffer[38] = GL_POLYGON_TOKEN;
+            debugbuffer[39] = 3;
+
+            example: gamedata\\models\\cube.obj
+            assuming that nearplane is 0.1f, farplane is 100.0f, depthrange is [0, 1], fovy is 80
+            box
+            i=2 (3. vertex) debugbuffer[26]
+                model space        -> world space       -> view/eye space    -> clip space                   -> normalized device coords     -> screen coords
+            sw: [-0.5, -0.5, -0.5] -> [-0.5, -0.5, 2.5] -> [-0.5, -0.5, 2.5] -> [-0.446, -0.595, 2.348, 2.5] -> [-0.178, -0.238, 0.939, 2.5] -> [328, 228, 0.961, 2.5]
+            hw:                                                                                                                                 [328, 228, 0.961, 2.5]
+
+            i=6 (7. vertex) debugbuffer[?]
+                model space        -> world space       -> view/eye space    -> clip space                   -> normalized device coords     -> screen coords
+            sw: [ 0.5,  0.5,  0.5] -> [ 0.5,  0.5, 3.5] -> [ 0.5,  0.5, 3.5] -> [ 0.446,  0.595, 3.368, 3.5] -> [ 0.127,  0.170, 0.962, 3.5] -> [451, 351, 0.972, 3.5]
+            hw:                                                                                                                                 [451, 351, 0.972, 3.5]
+
+            ...
+        */
+    }
+    else
+    {
+        // we were already in GL_RENDER (0) mode, OR nothing was returned, OR we were in FEEDBACK but buffer was not enough to hold all values (<0) ...
+    }
+}
 
 
 /**
     Applies transformations to the current modelview matrix based on the given object.
 */
-void PRREObject3D::PRREObject3DImpl::ApplyTransformations() const    
+void PRREObject3D::PRREObject3DImpl::Draw_ApplyTransformations() const    
 {
     /* Make sure we don't call GL functions when no accelerator is present */
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
@@ -739,7 +768,7 @@ void PRREObject3D::PRREObject3DImpl::ApplyTransformations() const
 }
 
 
-void PRREObject3D::PRREObject3DImpl::PrepareGLbeforeDraw(bool bLighting) const
+void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeDraw(bool bLighting) const
 {
     /*AmbientLightPos[0] =  cam.getX() - obj->getPosVec().getX();
     AmbientLightPos[1] =  cam.getY() - obj->getPosVec().getY();
@@ -833,7 +862,7 @@ void PRREObject3D::PRREObject3DImpl::PrepareGLbeforeDraw(bool bLighting) const
 }
 
 
-void PRREObject3D::PRREObject3DImpl::DrawSW()
+void PRREObject3D::PRREObject3DImpl::Draw_DrawSW()
 {
     if ( !bVisible )
         return;
@@ -847,7 +876,7 @@ void PRREObject3D::PRREObject3DImpl::DrawSW()
         // So transformations and other basic things are set by parent objects having subobjects.
         // Or by cloned objects which refer to another original objects but still have their own position, angle, etc.
 
-        ApplyTransformations();
+        Draw_ApplyTransformations();
 
         // take care of attached objects (subobjects)
         // note that either we have our own subobjects, OR we are just a cloned object and we need to draw original object's subobjects

@@ -520,7 +520,7 @@ void PRRERendererSWincrementalImpl::VertexProcessing(
         PRRETransformMatrix mScalingTr;
         mScalingTr.SetScale(scaling.x, scaling.y, scaling.z);
         transfdVertex = mScalingTr * transfdVertex;
-        // Note that we need to detect negative scaling factor and change front face winding order on-the-fly, see details in PRREObject3D::PRREObject3DImpl::ApplyTransformations()
+        // Note that we need to detect negative scaling factor and change front face winding order on-the-fly, see details in PRREObject3D::PRREObject3DImpl::Draw_ApplyTransformations()
         
         PRRETransformMatrix mRotation;
         // TODO: we should set rotation on all axes with 1 matrix but unfortunately currently we just have separate setrotation methods for each axes

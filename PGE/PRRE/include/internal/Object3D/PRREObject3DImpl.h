@@ -127,10 +127,13 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    void      LoadTextureIntoTMU(const PRRETexture* tex, TPRREuint iTMU = 0) const;   /**< Loads the given texture into the texture mapping unit. */
-    void      ApplyTransformations() const ;                                          /**< Applies transformations to the current modelview matrix based on the given object. */
-    void      PrepareGLbeforeDraw(bool bLighting) const;
-    void      DrawSW(); 
+    void      Draw_LoadTextureIntoTMU(const PRRETexture* tex, TPRREuint iTMU = 0) const;   /**< Loads the given texture into the texture mapping unit. */
+    void      Draw_LoadTexturesAndSetBlendState() const;                                   /**< Loads all textures into all texture mapping units and sets blending if needed. */
+    void      Draw_FeedbackBuffer_Start();                                                 /**< Set render mode to feedback and allocate buffer for transformed vertices. */
+    void      Draw_FeedbackBuffer_Finish();                                                /**< Set render mode to default render. */
+    void      Draw_ApplyTransformations() const ;                                          /**< Applies transformations to the current modelview matrix based on the given object. */
+    void      Draw_PrepareGLbeforeDraw(bool bLighting) const;
+    void      Draw_DrawSW(); 
 
     friend class PRREObject3D;
     friend class PRREObject3DManager;
