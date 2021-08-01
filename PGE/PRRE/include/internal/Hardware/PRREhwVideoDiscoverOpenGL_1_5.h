@@ -83,7 +83,8 @@ public:
         functions.push_back( glGetQueryivARB );
         functions.push_back( glGetQueryObjectivARB );
         functions.push_back( glGetQueryObjectuivARB );
-        result &= printExtensionSupported("Occlusion query is ", "GL_ARB_occlusion_query", functions);
+        bSuppOcclusionQuery = printExtensionSupported("Occlusion query is ", "GL_ARB_occlusion_query", functions);
+        result &= bSuppOcclusionQuery;
 
         result &= printExtensionSupported("Shadow funcs are ", "GL_EXT_shadow_funcs", functions);
 
@@ -105,17 +106,54 @@ public:
     } // DiscoverVertexBuffersAvailability()
 
     /**
+        Query HW occlusion query availability.
+    */
+    void DiscoverHwOcclusionQueryAvailability()
+    {
+        if ( bSuppOcclusionQuery )
+        {
+            PRREGLsnippets::ClearGLerror();
+
+            glGetQueryivARB(GL_SAMPLES_PASSED_ARB, GL_QUERY_COUNTER_BITS_ARB, &(tmpRet[0]));
+            if ( (glGetError() != GL_NO_ERROR) || (tmpRet[0] < 1) )
+            {
+                getConsole().EOLn("Occlusion query ext. is exported, but query cntr bits is %d.", tmpRet[0]);
+                getConsole().EOLn("Occlusion query is disabled, upgrade graphics card driver!");
+                bSuppOcclusionQuery = false;
+                PRREGLsnippets::ClearGLerror();
+                return;
+            }
+        
+            getConsole().SOLn("Occlusion query supported!");
+            getConsole().OLn("  Occlusion query counter bits: %d", tmpRet[0]);
+        }
+        else
+            getConsole().EOLn("Occlusion query not supported!");
+    } // DiscoverHwOcclusionQueryAvailability()
+
+    /**
         Gets whether Vertex Buffer Object is supported or not.
+        @return True if Vertex Buffer Object is supported, otherwise false.
     */
     TPRREbool isVertexBufferObjectSupported() const
     {
         return bSuppVertexBuffers;
     } // isVertexBufferObjectSupported()
 
+    /**
+        Gets whether HW occlusion query is supported or not.
+        @return True if HW occlusion query is supported, otherwise false.
+    */
+    TPRREbool isOcclusionQuerySupported() const
+    {
+        return bSuppOcclusionQuery;
+    } // isOcclusionQuerySupported()
+
 protected:
     PRREhwVideoDiscoverOpenGL_1_5()
     {
         bSuppVertexBuffers = false;
+        bSuppOcclusionQuery = false;
     };
 
     PRREhwVideoDiscoverOpenGL_1_5(const PRREhwVideoDiscoverOpenGL_1_5&) {};
@@ -123,5 +161,6 @@ protected:
 
 private:
     TPRREbool bSuppVertexBuffers;         /**< Is Vertex Buffer Object supported? */
+    TPRREbool bSuppOcclusionQuery;        /**< Is HW occlusion query supported? */
     
 };

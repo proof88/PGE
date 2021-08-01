@@ -86,7 +86,9 @@ public:
     TPRREbool  isATIMapObjectBufferSupported() const;    
     TPRREbool  isATIElementArraySupported() const;      
     TPRREbool  isVertexBufferObjectSupported() const;    
-    TPRREbool  isATITruFormSupported() const;           
+    TPRREbool  isATITruFormSupported() const;   
+    TPRREbool  isOcclusionQuerySupported() const;
+    TPRREbool  isBooleanOcclusionQuerySupported() const;
     const std::string& getVideocardOSName() const;          
     const std::string& getVideocardOGLName() const;        
     const std::string& getVideocardOGLVersion() const;
@@ -208,12 +210,10 @@ private:
     void DiscoverATIVertexArrayObjectAvailability();
     void DiscoverATIMapObjectBufferAvailability();
     void DiscoverATIElementArrayAvailability();
-    void DiscoverVertexBuffersAvailability();
     void DiscoverATITruFormAvailability();
     void DiscoverVertexRenderingAvailability();
     void DiscoverAnisoFilteringAvailability();
     void DiscoverTexturingAvailability();
-    void DiscoverOpenGL_X_Y_availability(const char* text, bool (PRREhwVideoImpl::*f)());
     void DiscoverOpenGLavailability();      
 
 };
@@ -628,6 +628,24 @@ TPRREbool PRREhwVideoImpl::isATITruFormSupported() const
 {
     return isInitialized() && bSuppATITruForm;
 } // isATITruFormSupported()
+
+
+/**
+    Gets whether HW occlusion culling is supported.
+*/
+TPRREbool PRREhwVideoImpl::isOcclusionQuerySupported() const
+{
+    return isInitialized() && discoverGL_1_5.isOcclusionQuerySupported();
+} // isOcclusionQuerySupported()
+
+
+/**
+    Gets whether HW boolean occlusion culling is supported.
+*/
+TPRREbool PRREhwVideoImpl::isBooleanOcclusionQuerySupported() const
+{
+    return isInitialized() && discoverGL_3_3.isBooleanOcclusionQuerySupported();
+} // isBooleanOcclusionQuerySupported()
 
 
 /**
@@ -1360,6 +1378,8 @@ void PRREhwVideoImpl::DiscoverVertexRenderingAvailability()
     DiscoverATIVertexArrayObjectAvailability();
     DiscoverATIMapObjectBufferAvailability();
     discoverGL_1_5.DiscoverVertexBuffersAvailability();
+    discoverGL_1_5.DiscoverHwOcclusionQueryAvailability();
+    discoverGL_3_3.DiscoverBooleanHwOcclusionQueryAvailability(discoverGL_1_5.isOcclusionQuerySupported());
     DiscoverATITruFormAvailability();
 
     getConsole().OLnOO("");

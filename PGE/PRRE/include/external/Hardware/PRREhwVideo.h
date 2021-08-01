@@ -72,6 +72,8 @@ public:
     virtual TPRREbool  isATIElementArraySupported() const = 0;          /**< Gets whether the ATI-specific Element Array is supported. */
     virtual TPRREbool  isVertexBufferObjectSupported() const = 0;       /**< Gets whether Vertex Buffer Object is supported or not. */
     virtual TPRREbool  isATITruFormSupported() const = 0;               /**< Gets whether the ATI-specific TruForm is supported. */
+    virtual TPRREbool  isOcclusionQuerySupported() const = 0;           /**< Gets whether Occlusion Query is supported. */
+    virtual TPRREbool  isBooleanOcclusionQuerySupported() const = 0;    /**< Gets whether Boolean Occlusion Query is supported. */
     virtual const std::string& getVideocardOSName() const = 0;          /**< Gets the Windows-based VGA name. */
     virtual const std::string& getVideocardOGLName() const = 0;         /**< Gets the OpenGL-based VGA name. */
     virtual const std::string& getVideocardOGLVersion() const = 0;      /**< Gets the OpenGL version supported by the driver. */

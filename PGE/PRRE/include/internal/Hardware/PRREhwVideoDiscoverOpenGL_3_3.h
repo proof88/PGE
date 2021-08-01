@@ -66,7 +66,8 @@ public:
 
         result &= printExtensionSupported("Shader-defined attr loc is ", "GL_ARB_explicit_attrib_location", functions);
 
-        result &= printExtensionSupported("Simple bool Occlusion Query is ", "GL_ARB_occlusion_query2", functions);
+        bSuppBooleanOcclusionQuery = printExtensionSupported("Boolean Occlusion Query is ", "GL_ARB_occlusion_query2", functions);
+        result &= bSuppBooleanOcclusionQuery;
 
         functions.push_back(glGenSamplers);
         functions.push_back(glDeleteSamplers);
@@ -154,14 +155,51 @@ public:
         getConsole().OO();
 
         return result;
-    }
+    } // discoverOpenGLavailability()
+
+    /**
+        Query boolean HW occlusion query availability.
+        @param isRegularHwOcclusionQueryAvailable True if the original HW occlusion query functionality is supported.
+               Higher-level logic has the correct value when it invokes this function.
+    */
+    void DiscoverBooleanHwOcclusionQueryAvailability(TPRREbool isRegularHwOcclusionQueryAvailable)
+    {
+        if ( bSuppBooleanOcclusionQuery )
+        {
+            if ( !isRegularHwOcclusionQueryAvailable )
+            {
+                getConsole().EOLn("Boolean occl. query ext. is exported, but original HW occl. query is unavailable!");
+                getConsole().EOLn("Boolean Occlusion query is disabled, upgrade graphics card driver!");
+                bSuppBooleanOcclusionQuery = false;
+                return;
+            }
+        
+            getConsole().SOLn("Boolean Occlusion query supported!");
+        }
+        else
+            getConsole().EOLn("Boolean Occlusion query not supported!");
+    } // DiscoverBooleanHwOcclusionQueryAvailability()
+
+    /**
+        Gets whether boolean (true/false) HW occlusion query is supported or not.
+        @return True if boolean (true/false) HW occlusion query is supported, otherwise false.
+    */
+    TPRREbool isBooleanOcclusionQuerySupported() const
+    {
+        return bSuppBooleanOcclusionQuery;
+    } // isOcclusionQuerySupported()
 
 protected:
-    PRREhwVideoDiscoverOpenGL_3_3() {};
+    PRREhwVideoDiscoverOpenGL_3_3()
+    {
+        bSuppBooleanOcclusionQuery = false;
+    };
 
     PRREhwVideoDiscoverOpenGL_3_3(const PRREhwVideoDiscoverOpenGL_3_3&) {};
     PRREhwVideoDiscoverOpenGL_3_3& operator=(const PRREhwVideoDiscoverOpenGL_3_3&) { return *this; };
 
 private:
+
+    TPRREbool bSuppBooleanOcclusionQuery;        /**< Is true/false HW occlusion query supported? */
     
 };

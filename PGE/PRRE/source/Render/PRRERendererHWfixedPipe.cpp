@@ -595,9 +595,23 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects(PRREIRenderer& renderer)
     glEnable(GL_DEPTH_TEST);
 
     bool blended = true;
+    bool occluders;
     glPushMatrix();
 
-    for (int i2 = 1; i2 < 3; i2++)
+    // TODO: obviously on the long run it would be better to put blended and unblended objects into separate containers,
+    // so there would be no need to loop over objectmgr multiple times ...
+    // and this escalates with ordering by different options like occluder/occludee, etc.
+    // I agree that it is not straightforward to be done because blending and other options are stored in objects, and these
+    // objects are NOT bound to renderer instance, so any property change just cannot be detected by renderer instance on-the-fly
+    // so I think the renderer cannot hold different containers for different ordering purposes.
+    // However I think Object3DManager should hold different containers for different ordering purposes, for ANY renderer.
+    // And renderer could just get the container ref from the manager.
+
+    // PRREhwInfo::get().getVideo() ... should query
+    // TODO: here we should take care of ordering of occluder/occludee property, and maybe pass variable to object being drawn
+    // about if this would be a bounding box draw for query or not.
+      
+    for (int iBlend = 1; iBlend < 3; iBlend++)
     {
         blended = !blended;
         if ( blended )
@@ -610,33 +624,42 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects(PRREIRenderer& renderer)
             glPushMatrix();            
             glDisable(GL_BLEND);
         }
-        for (int i = 0; i < pObject3DMgr->getSize(); i++)
+
+        occluders = false;  // occluders to be drawn first, this will be negated immediately below
+        for (int iOccl = 1; iOccl < 3; iOccl++)
         {
+          occluders = !occluders;
+          for (int i = 0; i < pObject3DMgr->getSize(); i++)
+          {
+          
+              PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
+          
+              if ( obj == PGENULL )
+                  continue;
+          
+              if ( occluders != obj->isOccluder() )
+                  continue;
 
-            PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
+              if ( (blended == PRREObject3DManager::isBlendFuncBlends(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
+                   &&
+                   ( obj->isVisible() )
+                   &&
+                   ( !obj->isStickedToScreen() )
+                 )
+              {
+                  glPushMatrix();
+                  obj->Draw(bLighting);
+                  glPopMatrix();
+              }
+          } // for i
+        } // for iOccl
 
-            if ( obj == PGENULL )
-                continue;
-
-            if ( (blended == PRREObject3DManager::isBlendFuncBlends(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
-                 &&
-                 ( obj->isVisible() )
-                 &&
-                 ( !obj->isStickedToScreen() )
-               )
-            {
-                glPushMatrix();
-                obj->Draw(bLighting);
-                glPopMatrix();
-            }
-        } // for i
-
-        if ( !blended )
-            glPopMatrix();
-        else
-            glDepthMask(GL_TRUE);
-
-    } // for i2
+      if ( !blended )
+          glPopMatrix();
+      else
+          glDepthMask(GL_TRUE);
+    
+    } // for iBlend
 
     glPopMatrix();
     

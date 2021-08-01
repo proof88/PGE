@@ -80,6 +80,8 @@ protected:
         AddSubTest("testIsATIElementArraySupported", (PFNUNITSUBTEST) &PRREhwVideoTest::testIsATIElementArraySupported);
         AddSubTest("testIsVertexBufferObjectSupported", (PFNUNITSUBTEST) &PRREhwVideoTest::testIsVertexBufferObjectSupported);
         AddSubTest("testIsATITruFormSupported", (PFNUNITSUBTEST) &PRREhwVideoTest::testIsATITruFormSupported);
+        AddSubTest("testIsHwOcclusionQuerySupported", (PFNUNITSUBTEST) &PRREhwVideoTest::testIsHwOcclusionQuerySupported);
+        AddSubTest("testIsHwBooleanOcclusionQuerySupported", (PFNUNITSUBTEST) &PRREhwVideoTest::testIsHwBooleanOcclusionQuerySupported);
         AddSubTest("testGetVideocardOSName", (PFNUNITSUBTEST) &PRREhwVideoTest::testGetVideocardOSName);
         AddSubTest("testGetVideocardOGLName", (PFNUNITSUBTEST) &PRREhwVideoTest::testGetVideocardOGLName);
         AddSubTest("testGetVideocardOGLVersion", (PFNUNITSUBTEST) &PRREhwVideoTest::testGetVideocardOGLVersion);
@@ -373,6 +375,16 @@ private:
     bool testIsATITruFormSupported()
     {
         return true; // we just don't test this, should be okay on older hardware
+    }
+
+    bool testIsHwOcclusionQuerySupported()
+    {
+        return assertTrue(video.isOcclusionQuerySupported()); // should be okay on main test machine
+    }
+
+    bool testIsHwBooleanOcclusionQuerySupported()
+    {
+        return assertTrue(video.isBooleanOcclusionQuerySupported()); // should be okay on main test machine
     }
 
     bool testGetVideocardOSName()

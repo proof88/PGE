@@ -197,7 +197,7 @@ public:
         TPRRE_VERTEX_REFERENCING_MODE vref,
         TPRREbool bForceUseClientMemory );                    /**< Selects a suitable vertex transfer mode. */
 
-    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+    static const char* getLoggerModuleName();                 /**< Returns the logger module name of this class. */
 
     // ---------------------------------------------------------------------------
 
