@@ -15,6 +15,7 @@
 #include "../../include/internal/Object3D/PRREMesh3DManagerImpl.h"
 #include "../../include/external/Hardware/PRREhwInfo.h"
 #include "../../include/internal/PRREGLextensionFuncs.h"
+#include "../../include/internal/PRREGLsafeFuncs.h"
 #include "../../include/internal/PRREGLsnippets.h"
 #include "../../include/internal/PRREpragmas.h"
 
@@ -480,6 +481,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
                 throw std::runtime_error(sErrMsg);
             }
 
+            TPRREuint nVerticesTotalTmpMesh = 0;
             for (TPRREint i = 0; i < tmpMesh->getCount(); i++) 
             {
                 subobject = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
@@ -490,6 +492,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
                     throw std::runtime_error(sErrMsg);
                 }
                 subobject->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobject->getVerticesCount()];
+                nVerticesTotalTmpMesh += subobject->getVerticesCount();
                 
                 // Legacy tmcsgfxlib behavior: auto-load textures for subobjects where pipe character is present in name
                 const std::string::size_type nPipePos = subobject->getName().find('|');
@@ -519,6 +522,19 @@ PRREObject3D* PRREObject3DManager::createFromFile(
             obj->SetFilename(filename);
             getConsole().OO();
             Attach( *obj );
+
+            if ( PRREhwInfo::get().getVideo().isOcclusionQuerySupported() && (nVerticesTotalTmpMesh >= 100) )
+            {
+                if ( !pglGenQueries(1, &(obj->pImpl->nOcclusionQuery)) ) 
+                {
+                    getConsole().EOLn("ERROR: Could not generate occlusion query! Continuing ...");
+                    obj->pImpl->nOcclusionQuery = 0;  // just in case pglGenQueries() changed it to something else ...
+                }
+                else
+                {
+                    getConsole().OLn("Occlusion query ID: %d", obj->pImpl->nOcclusionQuery);
+                }
+            }
 
             // although PPP has already selected the vtransmode, we set it again
             // to actually allocate the needed resources for the geometry

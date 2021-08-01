@@ -43,3 +43,4 @@ TPRREbool pglTexParameteriv (GLenum target, GLenum pname, const GLint *params);
 TPRREbool pglGetTexParameterfv (GLenum target, GLenum pname, GLfloat *params);
 TPRREbool pglGetTexParameteriv (GLenum target, GLenum pname, GLint *params);
 TPRREbool pglTexImage2D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
+TPRREbool pglGenQueries (GLsizei n, GLuint *ids);

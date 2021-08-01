@@ -399,3 +399,15 @@ TPRREbool pglTexImage2D (GLenum target, GLint level, GLint internalformat, GLsiz
     }
     return true;
 }
+
+TPRREbool pglGenQueries (GLsizei n, GLuint *ids)
+{
+    PRREGLsnippets::ClearGLerror();
+    glGenQueriesARB(n, ids);
+    if ( PRREGLsnippets::isGLerrorPresent() )
+    {
+        CConsole::getConsoleInstance().EOLn("ERROR: %s(%d) failed: %s", __FUNCTION__, n, PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+        return false;
+    }
+    return true;
+}

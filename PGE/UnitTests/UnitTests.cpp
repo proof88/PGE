@@ -115,14 +115,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PRREMaterialManagerTest         testPRREMaterialManager;
     PRREMaterialTest                testPRREMaterial;
 
-    PRRECameraTest             testPRRECamera;
-    PRREMesh3DManagerTest      testPRREMesh3DManager;
-    PRREMesh3DTest             testPRREMesh3D;
-    PRREVertexTransferTest     testPRREVertexTransfer;
-    PRREObject3DManagerTest    testPRREObject3DManager;
-    PRREObject3DTest           testPRREObject3D;
-    PRREWindowTest             testPRREWindow;
-    PRREWindowTest2            testPRREWindow2;
+    PRRECameraTest                  testPRRECamera;
+    PRREMesh3DManagerTest           testPRREMesh3DManager;
+    PRREMesh3DTest                  testPRREMesh3D;
+    PRREVertexTransferTest          testPRREVertexTransfer;
+    PRREObject3DManagerTest         testPRREObject3DManager;
+    PRREObject3DTest                testPRREObject3D;
+    PRREWindowTest                  testPRREWindow;
+    PRREWindowTest2                 testPRREWindow2;
     
     PR00FsReducedRenderingEngineTest  testPRRE;
     PR00FsReducedRenderingEngineTest2 testPRRE2;

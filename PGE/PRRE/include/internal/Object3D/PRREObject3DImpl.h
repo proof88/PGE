@@ -84,7 +84,8 @@ public:
 
     TPRREuint getUsedSystemMemory() const; 
 
-    void Draw(bool bLighting);                  
+    void Draw_NoOcclusionQuery(bool bLighting);
+    void Draw_NaiveOcclusionQuery(bool bLighting);
 
     // ---------------------------------------------------------------------------
 
@@ -115,15 +116,18 @@ private:
     TPRREbool bAffectZBuffer;       /**< Writes to Z-Buffer. */
     TPRREbool bAllowZTesting;       /**< Tests to Z-Buffer. */
     TPRREbool bStickedToScreen;     /**< Sticked to screen. */
-    TPRREbool bOccluder;            /**< Should renderer treat this as occluder in occlusion culling tests? */
     TPRRE_ROTATION_ORDER rotation;  /**< Rotation order. */
     TPRREbool bParentInitiatedOperation;   /**< Parent objects set this to true at the beginning of draw, subobjects ignore draw if this is not true in parent. */
 
     TPRREbool bColliding;           /**< Colliding state. DEPRECATED: to be removed ... */
 
-    TPRRE_TRANSFORMED_VERTEX*      pVerticesTransf;    /**< Pointer to transformed vertices. */
-    GLfloat*    pFbBuffer;          /**< Feedback buffer. */
-    GLsizei     nFbBuffer_h;        /**< Size of feedback buffer. */
+    TPRRE_TRANSFORMED_VERTEX* pVerticesTransf;    /**< Pointer to transformed vertices. */
+    GLfloat*                  pFbBuffer;          /**< Feedback buffer. */
+    GLsizei                   nFbBuffer_h;        /**< Size of feedback buffer. */
+
+    TPRREbool   bOccluder;                /**< Should renderer treat this as occluder in occlusion culling tests? */
+    GLuint      nOcclusionQuery;          /**< OpenGL Occlusion query id. */
+    TPRREbool   bOcclusionQueryStarted;   /**< Is nOcclusionQuery currently running? */
 
     // ---------------------------------------------------------------------------
 

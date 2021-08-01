@@ -403,7 +403,7 @@ TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
 } // getUsedSystemMemory()     
 
 
-void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
+void PRREObject3D::PRREObject3DImpl::Draw_NoOcclusionQuery(bool bLighting)
 {
     // caller renderer is expected to check for GL errors, so we don't check them here
 
@@ -457,11 +457,67 @@ void PRREObject3D::PRREObject3DImpl::Draw(bool bLighting)
     Draw_FeedbackBuffer_Start();
     ((PRREVertexTransfer*)_pOwner)->pImpl->TransferVertices();
     Draw_FeedbackBuffer_Finish(); 
-} // Draw()
+} // Draw_NoOcclusionQuery()
+
+
+void PRREObject3D::PRREObject3DImpl::Draw_NaiveOcclusionQuery(bool bLighting)
+{
+    // caller renderer is expected to check for GL errors, so we don't check them here
+
+    if ( !bVisible )
+        return;
+
+    if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
+    {
+        Draw_DrawSW();
+        return;
+    }
+
+    // see if we are parent or referring to another object i.e. we are cloned object
+    if ( _pOwner->isLevel1() || getReferredObject() )
+    {
+        // Currently 3D objects are 2-level entities:
+        // first level (parent) has no geometry, owns subobjects, sets basic things,
+        // while second level (subobjects) own geometry, inherit basic things set by parent.
+
+        // So transformations and other basic things are set by parent objects having subobjects.
+        // Or by cloned objects which refer to another original objects but still have their own position, angle, etc.
+        
+        Draw_ApplyTransformations();
+        Draw_PrepareGLbeforeDraw(bLighting);
+
+        // take care of attached objects (subobjects)
+        // note that either we have our own subobjects, OR we are just a cloned object and we need to draw original object's subobjects
+        PRREObject3D* pWhichParent = getReferredObject() ? getReferredObject() : _pOwner;
+        pWhichParent->pImpl->bParentInitiatedOperation = true;
+        for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
+            ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(bLighting);
+        pWhichParent->pImpl->bParentInitiatedOperation = false;
+        return;
+    }
+
+    // if we reach this point then either our parent is drawing us as its subobject, or a cloned object is drawing us on behalf of our parent
+
+    // subobject must ignore draw if its Draw() was not called by its parent level-1 object but someone else from outside ...
+    if ( !((PRREObject3D*)_pOwner->getManager())->pImpl->bParentInitiatedOperation )
+    {
+        _pOwner->getManagedConsole().EOLn("Draw() of subobject called outside of its level-1 parent object, ignoring draw!");
+        return;
+    }
+
+    /* currently not supporting any vendor-specific mode */
+    if ( BITF_READ(_pOwner->getVertexTransferMode(),PRRE_VT_VENDOR_BITS,3) != 0 )
+        return;
+
+    Draw_LoadTexturesAndSetBlendState();
+
+    Draw_FeedbackBuffer_Start();
+    ((PRREVertexTransfer*)_pOwner)->pImpl->TransferVertices();
+    Draw_FeedbackBuffer_Finish(); 
+} // Draw_NaiveOcclusionQuery()
 
 
 // ############################## PROTECTED ##############################
-
 
 
 /**
@@ -488,6 +544,8 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
     bColliding = bDoubleSided = false;
     bWireframe = bWireframedCull = bStickedToScreen = false;
     bOccluder = false;
+    bOcclusionQueryStarted = false;
+    nOcclusionQuery = 0;
 
     vScaling.Set(1.0f, 1.0f, 1.0f);
     rotation = PRRE_YXZ;
@@ -1478,7 +1536,7 @@ TPRREuint PRREObject3D::getUsedVideoMemory() const
 */
 void PRREObject3D::Draw(bool bLighting)
 {
-    pImpl->Draw(bLighting);
+    pImpl->Draw_NaiveOcclusionQuery(bLighting);
 } // Draw()
 
 
