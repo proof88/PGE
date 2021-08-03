@@ -124,6 +124,14 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
 
     _pOwner->DeleteAll();
 
+    if ( nOcclusionQuery > 0 )
+    {
+        glDeleteQueriesARB(1, &nOcclusionQuery);
+        nOcclusionQuery = 0;
+        delete pBoundingBox;
+        pBoundingBox = PGENULL;
+    }
+
     // if we are just a cloned object, above code should have done essentially nothing
     if ( getReferredObject() )
     {
@@ -391,6 +399,12 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
 {
     bOccluder = value;
 }
+                                                                                                                           
+
+const PRREObject3D* PRREObject3D::PRREObject3DImpl::getBoundingBoxObject() const
+{
+    return pBoundingBox;
+}
 
 
 TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
@@ -398,7 +412,8 @@ TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
     return (
         sizeof(*this) +
         nFbBuffer_h * sizeof(GLfloat) +
-        sizeof(TPRRE_TRANSFORMED_VERTEX) * _pOwner->getVertexIndicesCount(false)
+        sizeof(TPRRE_TRANSFORMED_VERTEX) * _pOwner->getVertexIndicesCount(false) +
+        (pBoundingBox ? pBoundingBox->getUsedSystemMemory() : 0)
     );
 } // getUsedSystemMemory()     
 
@@ -546,6 +561,7 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
     bOccluder = false;
     bOcclusionQueryStarted = false;
     nOcclusionQuery = 0;
+    pBoundingBox = PGENULL;
 
     vScaling.Set(1.0f, 1.0f, 1.0f);
     rotation = PRRE_YXZ;
@@ -1161,6 +1177,8 @@ const PRREVector& PRREObject3D::getScaling() const
     Sets the scaling factor to given scalar.
     Scaling factor is currently ignored for level-2 objects, they are scaled by the same factor as their level-1 parent object.
     By default this property is (1.0f, 1.0f, 1.0f).
+
+    @param value The desired scaling factor.
 */
 void PRREObject3D::SetScaling(TPRREfloat value)
 {
@@ -1172,6 +1190,8 @@ void PRREObject3D::SetScaling(TPRREfloat value)
     Sets the scaling factor to given vector.
     Scaling factor is currently ignored for level-2 objects, they are scaled by the same factor as their level-1 parent object.
     By default this property is (1.0f, 1.0f, 1.0f).
+
+    @param value The desired scaling factor.
 */
 void PRREObject3D::SetScaling(const PRREVector& value)
 {
@@ -1183,6 +1203,8 @@ void PRREObject3D::SetScaling(const PRREVector& value)
     Scales by the given scalar value. 
     Scaling factor is currently ignored for level-2 objects, they are scaled by the same factor as their level-1 parent object.
     By default this property is (1.0f, 1.0f, 1.0f).
+
+    @param value The factor to be scalen by.
 */
 void PRREObject3D::Scale(TPRREfloat value)
 {
@@ -1194,6 +1216,8 @@ void PRREObject3D::Scale(TPRREfloat value)
     Scales by the given vector.
     Scaling factor is currently ignored for level-2 objects, they are scaled by the same factor as their level-1 parent object.
     By default this property is (1.0f, 1.0f, 1.0f).
+
+    @param value The vector to be scalen by.
 */
 void PRREObject3D::Scale(const PRREVector& value)
 {
@@ -1221,6 +1245,8 @@ TPRREbool PRREObject3D::isVisible() const
     This property is manual setting, not related to any visibility calculations that might be done by renderer.
     Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
     By default this property is true.
+
+    @param value The desired state.
 */
 void PRREObject3D::SetVisible(TPRREbool state)
 {
@@ -1268,6 +1294,8 @@ TPRREbool PRREObject3D::isColliding_TO_BE_REMOVED() const
     Sets whether colliding is enabled.
     Legacy function unrelated to the purpose of this class, will need to be removed!
     By default this property is false.
+
+    @param value The desired state.
 */
 void PRREObject3D::SetColliding_TO_BE_REMOVED(TPRREbool value)
 {
@@ -1291,6 +1319,8 @@ TPRRE_ROTATION_ORDER PRREObject3D::getRotationOrder() const
     Sets the rotation order.
     Rotation order is currently ignored for level-2 objects, they are rotated the same way as their level-1 parent object.
     By default this property is PRRE_YXZ.
+
+    @param value The desired state.
 */
 void PRREObject3D::SetRotationOrder(TPRRE_ROTATION_ORDER value)
 {
@@ -1314,6 +1344,8 @@ TPRREbool PRREObject3D::isLit() const
     Sets the lit state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is true.
+
+    @param value The desired state.
 */
 void PRREObject3D::SetLit(TPRREbool value)
 {
@@ -1337,6 +1369,8 @@ TPRREbool PRREObject3D::isDoubleSided() const
     Sets the double sided state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is false.
+
+    @param value The desired state.
 */
 void PRREObject3D::SetDoubleSided(TPRREbool value)
 {
@@ -1360,6 +1394,8 @@ TPRREbool PRREObject3D::isWireframed() const
     Sets the wireframed state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is false.
+
+    @param value The desired state.
 */
 void PRREObject3D::SetWireframed(TPRREbool value)
 {
@@ -1383,6 +1419,8 @@ TPRREbool PRREObject3D::isWireframedCulled() const
     Sets the wireframed culling state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is false.
+
+    @param value The desired state.
 */
 void PRREObject3D::SetWireframedCulled(TPRREbool value)
 {
@@ -1406,6 +1444,8 @@ TPRREbool PRREObject3D::isAffectingZBuffer() const
     Sets whether we write to the Z-Buffer while rendering.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is true.
+
+    @param value The desired state.
 */
 void PRREObject3D::SetAffectingZBuffer(TPRREbool value)
 {
@@ -1429,6 +1469,8 @@ TPRREbool PRREObject3D::isTestingAgainstZBuffer() const
     Sets whether we test against the Z-Buffer while rendering.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is true.
+
+    @param value The desired state.
 */
 void PRREObject3D::SetTestingAgainstZBuffer(TPRREbool value)
 {
@@ -1458,6 +1500,8 @@ TPRREbool PRREObject3D::isStickedToScreen() const
      - SetTestingAgainstZBuffer(false).
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is false.
+
+    @param value The desired state.
 */
 void PRREObject3D::SetStickedToScreen(TPRREbool value)
 {
@@ -1467,25 +1511,40 @@ void PRREObject3D::SetStickedToScreen(TPRREbool value)
 
 /**
     Gets whether this object should be considered as an occluder during rendering.
+    Occluders are rendered before non-occluder objects.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is false.
+
     @return True if considered as occluder, false otherwise (potential occludee).
 */
 TPRREbool PRREObject3D::isOccluder() const
 {
     return pImpl->isOccluder();
-}
+} // isOccluder()
 
 
 /**
     Sets whether this object should be considered as an occluder during rendering.
+    Occluders are rendered before non-occluder objects.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is false.
+
+    @param value The desired state.
 */
 void PRREObject3D::SetOccluder(TPRREbool value)
 {
     pImpl->SetOccluder(value);
-}
+} // SetOccluder()
+
+
+/**
+    Gets the bounding box object used for occlusion tests.
+    @return The bounding box object used for occlusion tests. It might be PGENULL, if occlusion tests are not done for this object.
+*/
+const PRREObject3D* PRREObject3D::getBoundingBoxObject() const
+{
+    return pImpl->getBoundingBoxObject();
+} // getBoundingBoxObject()
 
 
 /**
@@ -1515,17 +1574,22 @@ TPRREuint PRREObject3D::getUsedSystemMemory() const
 /**
     The details of this function are described in VertexTransfer class.
     If this is a cloned object, the returned value is 0.
+    Small amount of extra video memory might be also used for the bounding box object utilized by this object.
 
     @return Amount of allocated video memory in Bytes for storing geometry of the underlying mesh, including all subobjects.
-            0 is returned if this is a cloned object.
 */
 TPRREuint PRREObject3D::getUsedVideoMemory() const
 {
-    // cloned object must report 0
-    if ( getReferredObject() )
-        return 0;
-    
-    return PRREVertexTransfer::getUsedVideoMemory(); 
+    TPRREuint vidMemory = 0;
+
+    if ( getBoundingBoxObject() != PGENULL )
+        vidMemory += getBoundingBoxObject()->getUsedVideoMemory();
+
+    // cloned object doesnt have underlying mesh geometry
+    if ( !getReferredObject() )
+        vidMemory += PRREVertexTransfer::getUsedVideoMemory();
+
+    return vidMemory;
 } // getUsedVideoMemory()
 
 

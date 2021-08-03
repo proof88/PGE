@@ -100,6 +100,7 @@ protected:
         AddSubTest("testSetStickedToScreen", (PFNUNITSUBTEST) &PRREObject3DTest::testSetStickedToScreen);
         AddSubTest("testIsOccluder", (PFNUNITSUBTEST) &PRREObject3DTest::testIsOccluder);
         AddSubTest("testSetOccluder", (PFNUNITSUBTEST) &PRREObject3DTest::testSetOccluder);
+        AddSubTest("testGetBoundingBoxObject", (PFNUNITSUBTEST) &PRREObject3DTest::testGetBoundingBoxObject);
         AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PRREObject3DTest::testGetUsedSystemMemory);
         AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PRREObject3DTest::testGetUsedVideoMemory);
 
@@ -192,18 +193,21 @@ private:
 
     bool testDtor()
     {
+        const TPRREint objCount = om->getCount();
+
         delete obj;
         obj = NULL;
 
         delete objFromFile;
         objFromFile = NULL;
 
-        return assertEquals(3, om->getCount());
+        // dtor of Object3D is also responsible for removing itself from its manager, and in this case,
+        // we will have 3 objects fewer because obj is the 1st, objFromFile is the 2nd, and latter also has bounding box object as 3rd.
+        return assertEquals(objCount-3, om->getCount(), "getCount 2nd");
     }
 
     bool testGetReferredObject()
     {
-        
         PRREObject3D* const objCloned = om->createCloned(*obj);
         if ( !objCloned )
         {
@@ -213,7 +217,7 @@ private:
         PRREObject3D* const objFromFileCloned = om->createCloned(*objFromFile);
         if ( !objFromFileCloned )
         {
-            return assertNotNull(objFromFileCloned, "objCloned is NULL");
+            return assertNotNull(objFromFileCloned, "objFromFileCloned is NULL");
         }
 
         return assertNull(obj->getReferredObject(), "obj") &
@@ -813,6 +817,22 @@ private:
         return assertTrue(obj->isOccluder(), "obj") & assertTrue(objFromFile->isOccluder(), "objFromFile");
     }
 
+    bool testGetBoundingBoxObject()
+    {
+        bool b = assertNull(obj->getBoundingBoxObject(), "obj") &
+            assertNotNull(objFromFile->getBoundingBoxObject(), "objFromFile") &
+            assertNull(objPlane->getBoundingBoxObject(), "plane") &
+            assertNull(objBox->getBoundingBoxObject(), "box") &
+            assertNull(objCube->getBoundingBoxObject(), "cube");
+
+        if ( b )
+        {
+            b &= assertNull(objFromFile->getBoundingBoxObject()->getBoundingBoxObject(), "objFromFile no recursive bounding boxes");
+        }
+
+        return b;
+    }
+
     bool testGetUsedSystemMemory()
     {
         return assertGreater(obj->getUsedSystemMemory(),          sizeof(PRREObject3D), "obj") &
@@ -824,14 +844,14 @@ private:
 
     bool testGetUsedVideoMemory()
     {
-        // cloned object must report 0
         PRREObject3D* const objCloned = om->createCloned( *obj );
         if ( !objCloned )
         {
             return assertNotNull(objCloned, "objCloned is NULL");
         }
 
-        // by default the created objects should eat video memory
+        // by default the created objects should eat video memory, except the cloned object
+        // since it doesn't have underlying geometry, or bounding box object in this case!
         return assertEquals(objCloned->getUsedVideoMemory(), (TPRREuint) 0, "objCloned") &
             assertGreater(obj->getUsedVideoMemory(),         (TPRREuint) 0, "obj") &
             assertGreater(objFromFile->getUsedVideoMemory(), (TPRREuint) 0, "objFromFile") &

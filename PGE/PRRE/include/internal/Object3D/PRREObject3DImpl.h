@@ -79,8 +79,9 @@ public:
     TPRREbool isStickedToScreen() const;               
     void      SetStickedToScreen(TPRREbool value);  
 
-    TPRREbool isOccluder() const;
-    void      SetOccluder(TPRREbool value);
+    TPRREbool           isOccluder() const;
+    void                SetOccluder(TPRREbool value);
+    const PRREObject3D* getBoundingBoxObject() const;
 
     TPRREuint getUsedSystemMemory() const; 
 
@@ -125,9 +126,10 @@ private:
     GLfloat*                  pFbBuffer;          /**< Feedback buffer. */
     GLsizei                   nFbBuffer_h;        /**< Size of feedback buffer. */
 
-    TPRREbool   bOccluder;                /**< Should renderer treat this as occluder in occlusion culling tests? */
-    GLuint      nOcclusionQuery;          /**< OpenGL Occlusion query id. */
-    TPRREbool   bOcclusionQueryStarted;   /**< Is nOcclusionQuery currently running? */
+    TPRREbool     bOccluder;                /**< Should renderer treat this as occluder in occlusion culling tests? */
+    GLuint        nOcclusionQuery;          /**< OpenGL Occlusion query id. */
+    TPRREbool     bOcclusionQueryStarted;   /**< Is nOcclusionQuery currently running? */
+    PRREObject3D* pBoundingBox;             /**< Box to be rendered for occlusion testing. Stays NULL when nOcclusionQuery also stays 0. */
 
     // ---------------------------------------------------------------------------
 

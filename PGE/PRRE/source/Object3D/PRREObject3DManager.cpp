@@ -533,6 +533,13 @@ PRREObject3D* PRREObject3DManager::createFromFile(
                 else
                 {
                     getConsole().OLn("Occlusion query ID: %d", obj->pImpl->nOcclusionQuery);
+                    obj->pImpl->pBoundingBox = createBox(obj->getSizeVec().getX(), obj->getSizeVec().getY(), obj->getSizeVec().getZ(), PRRE_VMOD_STATIC, PRRE_VREF_INDEXED);
+                    if ( PGENULL == obj->pImpl->pBoundingBox )
+                    {
+                        const std::string sErrMsg = "failed to create pBoundingBox!";
+                        throw std::runtime_error(sErrMsg);
+                    }
+                    obj->pImpl->pBoundingBox->Hide();
                 }
             }
 
@@ -654,6 +661,26 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
             referredobj.getMaterial().getTextureEnvColor().getAlpha() );
 
         obj->SetName("Object3D " + std::to_string(pImpl->nRunningCounter++) + " (clone of " + referredobj.getName() + ")");
+
+        if ( referredobj.getBoundingBoxObject() )
+        {
+            if ( !pglGenQueries(1, &(obj->pImpl->nOcclusionQuery)) ) 
+            {
+                getConsole().EOLn("ERROR: Could not generate occlusion query! Continuing ...");
+                obj->pImpl->nOcclusionQuery = 0;  // just in case pglGenQueries() changed it to something else ...
+            }
+            else
+            {
+                getConsole().OLn("Occlusion query ID: %d", obj->pImpl->nOcclusionQuery);
+                obj->pImpl->pBoundingBox = createBox(obj->getSizeVec().getX(), obj->getSizeVec().getY(), obj->getSizeVec().getZ(), PRRE_VMOD_STATIC, PRRE_VREF_INDEXED);
+                if ( PGENULL == obj->pImpl->pBoundingBox )
+                {
+                    const std::string sErrMsg = "failed to create pBoundingBox!";
+                    throw std::runtime_error(sErrMsg);
+                }
+                obj->pImpl->pBoundingBox->Hide();
+            }
+        }
         
         getConsole().SOLnOO("> Object cloned successfully, name: %s!", obj->getName().c_str());
     } // try

@@ -191,7 +191,7 @@ private:
         // we could check for other default properties such as vertex transfer mode, etc but for some reason we check them in Object3DTest instead
         const PRREObject3D* const obj = om->createCube(1.0f);
 
-        if ( !assertNotNull(obj, "obj not null"))
+        if ( !assertNotNull(obj, "obj not null") )
         {
             return false;
         }
@@ -243,10 +243,21 @@ private:
         objPlane->SetWireframedCulled(true);
 
         PRREObject3D* const objCloned = om->createCloned( *objPlane );
-
         if ( !assertNotNull(objCloned, "objCloned not null"))
         {
-            return false;
+            return assertNotNull(objCloned, "objCloned is NULL");
+        }
+
+        PRREObject3D* const objFromFile = om->createFromFile("_res/models/snail_proofps/snail.obj");
+        if ( !assertNotNull(objFromFile, "objFromFile not null"))
+        {
+            return assertNotNull(objFromFile, "objFromFile is NULL");
+        }
+
+        PRREObject3D* const objFromFileCloned = om->createCloned(*objFromFile);
+        if ( !objFromFileCloned )
+        {
+            return assertNotNull(objFromFileCloned, "objFromFileCloned is NULL");
         }
 
         const bool b = assertNotEquals(objPlane->getName(), objCloned->getName(), "name") &
@@ -265,7 +276,10 @@ private:
             assertTrue(objCloned->isStickedToScreen(), "stickedtoscreen") &
             assertFalse(objCloned->isVisible(), "visible") &
             assertTrue(objCloned->isWireframed(), "wireframed") &
-            assertTrue(objCloned->isWireframedCulled(), "wireframeculled");
+            assertTrue(objCloned->isWireframedCulled(), "wireframeculled") &
+            assertNull(objCloned->getBoundingBoxObject(), "objCloned bounding box") &
+            assertNotNull(objFromFileCloned->getBoundingBoxObject(), "objCloned bounding box") &
+            assertNotEquals(objFromFileCloned->getBoundingBoxObject(), objFromFile->getBoundingBoxObject(), "different bounding boxes");
     }
 
     bool testGetUsedVideoMemory()
