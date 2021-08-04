@@ -139,6 +139,9 @@ private:
     void      Draw_FeedbackBuffer_Finish();                                                /**< Set render mode to default render. */
     void      Draw_ApplyTransformations() const ;                                          /**< Applies transformations to the current modelview matrix based on the given object. */
     void      Draw_PrepareGLbeforeDraw(bool bLighting) const;
+    void      Draw_PrepareGLbeforeOcclusionQuery() const;
+    void      Draw_ResetGLafterOcclusionQuery() const;
+    TPRREbool Draw_CheckIfOccluded_Sync() const;
     void      Draw_DrawSW(); 
 
     friend class PRREObject3D;

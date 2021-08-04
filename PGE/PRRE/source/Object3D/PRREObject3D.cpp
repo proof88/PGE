@@ -497,8 +497,14 @@ void PRREObject3D::PRREObject3DImpl::Draw_NaiveOcclusionQuery(bool bLighting)
 
         // So transformations and other basic things are set by parent objects having subobjects.
         // Or by cloned objects which refer to another original objects but still have their own position, angle, etc.
-        
+
         Draw_ApplyTransformations();
+
+        if ( Draw_CheckIfOccluded_Sync() )
+        {
+            return;
+        }
+        
         Draw_PrepareGLbeforeDraw(bLighting);
 
         // take care of attached objects (subobjects)
@@ -721,7 +727,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_FeedbackBuffer_Start()
     {
         _pOwner->getManagedConsole().EOLn("ERROR: PRREObject3D::PRREObject3DImpl::Draw() failed to allocate pFbBuffer!");
     }
-}
+} // Draw_FeedbackBuffer_Start()
 
 
 /**
@@ -777,7 +783,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_FeedbackBuffer_Finish()
     {
         // we were already in GL_RENDER (0) mode, OR nothing was returned, OR we were in FEEDBACK but buffer was not enough to hold all values (<0) ...
     }
-}
+} // Draw_FeedbackBuffer_Finish()
 
 
 /**
@@ -839,7 +845,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_ApplyTransformations() const
         glFrontFace(GL_CW);
     else
         glFrontFace(GL_CCW);
-}
+} // Draw_ApplyTransformations()
 
 
 void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeDraw(bool bLighting) const
@@ -933,7 +939,86 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeDraw(bool bLighting) co
         glDisable(GL_BLEND);
         glDisable(GL_ALPHA_TEST);
     }
-}
+} // Draw_PrepareGLbeforeDraw()
+
+
+void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeOcclusionQuery() const
+{
+    /* Make sure we don't call GL functions when no accelerator is present */
+    if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
+        return;
+
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    glDepthMask(GL_FALSE);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_LIGHTING);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDisable(GL_BLEND);
+    glDisable(GL_ALPHA_TEST);
+    if ( PRREhwInfo::get().getVideo().isBooleanOcclusionQuerySupported() )
+    {
+        glBeginQueryARB(GL_ANY_SAMPLES_PASSED, nOcclusionQuery);
+    }
+    else
+    {
+        glBeginQueryARB(GL_SAMPLES_PASSED_ARB, nOcclusionQuery);
+    }
+} // Draw_PrepareGLbeforeOcclusionQuery()
+
+
+void PRREObject3D::PRREObject3DImpl::Draw_ResetGLafterOcclusionQuery() const
+{
+    /* Make sure we don't call GL functions when no accelerator is present */
+    if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
+        return;
+
+    if ( PRREhwInfo::get().getVideo().isBooleanOcclusionQuerySupported() )
+    {
+        glEndQueryARB(GL_ANY_SAMPLES_PASSED);
+    }
+    else
+    {
+        glEndQueryARB(GL_SAMPLES_PASSED_ARB);
+    }
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glDepthMask(GL_TRUE);
+    glFlush();
+} // Draw_ResetGLafterOcclusionQuery()
+
+
+TPRREbool PRREObject3D::PRREObject3DImpl::Draw_CheckIfOccluded_Sync() const
+{
+    if ( nOcclusionQuery == 0 )
+    {
+        // no occlusion test so we return NOT occluded, so it should be rendered normally
+        return false;
+    }
+
+    assert(pBoundingBox != PGENULL);
+    assert(pBoundingBox->getCount() > 0);
+    Draw_PrepareGLbeforeOcclusionQuery();
+    ((PRREVertexTransfer*)pBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
+    Draw_ResetGLafterOcclusionQuery();
+
+    GLint queryResultAvailable;
+    do {
+        glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_AVAILABLE_ARB, &queryResultAvailable);
+    } while (!queryResultAvailable);
+
+    if ( PRREhwInfo::get().getVideo().isBooleanOcclusionQuerySupported() )
+    {
+        GLint sampleBoolean;
+        glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_ARB, &sampleBoolean);
+        return ( sampleBoolean == GL_FALSE );
+    }
+    else
+    {
+        GLuint sampleCount;
+        glGetQueryObjectuivARB(nOcclusionQuery, GL_QUERY_RESULT_ARB, &sampleCount);
+        return ( sampleCount == 0 );
+    }
+} // Draw_CheckIfOccluded_Sync()
 
 
 void PRREObject3D::PRREObject3DImpl::Draw_DrawSW()
@@ -962,7 +1047,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_DrawSW()
 
     // actual draw here
     // todo: wtf, we should finally decide if it is renderer's responsibility to actually render an object or object's responsibility?
-}
+} // Draw_DrawSW()
 
 
 /*
@@ -1600,7 +1685,8 @@ TPRREuint PRREObject3D::getUsedVideoMemory() const
 */
 void PRREObject3D::Draw(bool bLighting)
 {
-    pImpl->Draw_NaiveOcclusionQuery(bLighting);
+    //pImpl->Draw_NaiveOcclusionQuery(bLighting);
+    pImpl->Draw_NoOcclusionQuery(bLighting);
 } // Draw()
 
 
