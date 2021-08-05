@@ -61,7 +61,6 @@ private:
     PRREuiManager*       pUImgr;       /**< UI manager, singleton. */
 
     HGLRC                rc;           /**< Rendering context, initially NULL. Determines whether the renderer is initialized or not. */
-    TPRREbool            bLighting;
     GLfloat mat4x4Identity[4][4];
 
     // ---------------------------------------------------------------------------
@@ -90,7 +89,8 @@ private:
     void BeginRendering();                 /**< Sets viewport size and clears buffers. */
     void SwitchToPerspectiveProjection();  /**< Sets perspective projection. */
     void SwitchToOrtographicProjection();  /**< Sets orthographic projection. */
-    void Draw3DObjects(PRREIRenderer& renderer);                  /**< Draws 3D objects. */
+    void Draw3DObjects_Legacy(PRREIRenderer& renderer);                  /**< Draws 3D objects. */
+    void Draw3DObjects_Sync_OcclusionQuery(PRREIRenderer& renderer);                  /**< Draws 3D objects. */
     void Draw2DObjects(PRREIRenderer& renderer);                  /**< Draws 2D objects. */
     void FinishRendering();                /**< Forces pending tasks to be finished and displays the rendered picture. */
 
@@ -300,7 +300,7 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
     BeginRendering();
 
     SwitchToPerspectiveProjection();
-    Draw3DObjects(*this);
+    Draw3DObjects_Legacy(*this);
 
     SwitchToOrtographicProjection();
     Draw2DObjects(*this);
@@ -349,7 +349,6 @@ PRRERendererHWfixedPipeImpl::PRRERendererHWfixedPipeImpl() :
     pUImgr( NULL )
 {
     rc = NULL;
-    bLighting = false;
 } // PRRERendererHWfixedPipeImpl(...)
 
 
@@ -365,7 +364,6 @@ PRRERendererHWfixedPipeImpl::PRRERendererHWfixedPipeImpl(
     pUImgr( NULL )
 {
     rc = NULL;
-    bLighting = false;
 } // PRRERendererHWfixedPipeImpl(...)
 
 
@@ -588,15 +586,10 @@ void PRRERendererHWfixedPipeImpl::SwitchToOrtographicProjection()
 /**
     Draws 3D objects (non-stickedToScreen).
 */
-void PRRERendererHWfixedPipeImpl::Draw3DObjects(PRREIRenderer& renderer)
+void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
 {
-    glEnable(GL_CULL_FACE);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glEnable(GL_DEPTH_TEST);
-
     bool blended = true;
     bool occluders;
-    glPushMatrix();
 
     // TODO: obviously on the long run it would be better to put blended and unblended objects into separate containers,
     // so there would be no need to loop over objectmgr multiple times ...
@@ -606,23 +599,13 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects(PRREIRenderer& renderer)
     // so I think the renderer cannot hold different containers for different ordering purposes.
     // However I think Object3DManager should hold different containers for different ordering purposes, for ANY renderer.
     // And renderer could just get the container ref from the manager.
-
-    // PRREhwInfo::get().getVideo() ... should query
-    // TODO: here we should take care of ordering of occluder/occludee property, and maybe pass variable to object being drawn
-    // about if this would be a bounding box draw for query or not.
-      
+     
     for (int iBlend = 1; iBlend < 3; iBlend++)
     {
         blended = !blended;
         if ( blended )
         {
-            glEnable(GL_BLEND);
             glDepthMask(GL_FALSE);
-        }
-        else
-        {
-            glPushMatrix();            
-            glDisable(GL_BLEND);
         }
 
         occluders = false;  // occluders to be drawn first, this will be negated immediately below
@@ -648,22 +631,95 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects(PRREIRenderer& renderer)
                  )
               {
                   glPushMatrix();
-                  obj->Draw(bLighting);
+                  obj->Draw(PRRE_RPASS_NORMAL);
                   glPopMatrix();
               }
           } // for i
         } // for iOccl
 
-      if ( !blended )
-          glPopMatrix();
-      else
+      if ( blended )
+      {
           glDepthMask(GL_TRUE);
+      }
     
     } // for iBlend
-
-    glPopMatrix();
     
-}
+} // Draw3DObjects_Legacy
+
+
+/**
+    Draws 3D objects (non-stickedToScreen).
+*/
+void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRenderer& renderer)
+{
+    bool blended = true;
+    bool occluders;
+
+    // TODO: obviously on the long run it would be better to put blended and unblended objects into separate containers,
+    // so there would be no need to loop over objectmgr multiple times ...
+    // and this escalates with ordering by different options like occluder/occludee, etc.
+    // I agree that it is not straightforward to be done because blending and other options are stored in objects, and these
+    // objects are NOT bound to renderer instance, so any property change just cannot be detected by renderer instance on-the-fly
+    // so I think the renderer cannot hold different containers for different ordering purposes.
+    // However I think Object3DManager should hold different containers for different ordering purposes, for ANY renderer.
+    // And renderer could just get the container ref from the manager.
+      
+    for (int iBlend = 1; iBlend < 3; iBlend++)
+    {
+        blended = !blended;
+        if ( blended )
+        {
+            glDepthMask(GL_FALSE);
+        }
+
+        occluders = false;  // occluders to be drawn first, this will be negated immediately below
+        for (int iOccl = 1; iOccl < 3; iOccl++)
+        {
+          occluders = !occluders;
+          for (int i = 0; i < pObject3DMgr->getSize(); i++)
+          {
+          
+              PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
+          
+              if ( obj == PGENULL )
+                  continue;
+          
+              if ( occluders != obj->isOccluder() )
+                  continue;
+
+              if ( (blended == PRREObject3DManager::isBlendFuncBlends(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
+                   &&
+                   ( obj->isVisible() )
+                   &&
+                   ( !obj->isStickedToScreen() )
+                 )
+              {
+                  glPushMatrix();
+                  obj->Draw(PRRE_RPASS_SYNC_OCCLUSION_START);
+                  glPopMatrix();
+              }
+          } // for i
+        } // for iOccl
+
+      if ( blended )
+      {
+          glDepthMask(GL_TRUE);
+      }
+    
+    } // for iBlend
+    
+} // Draw3DObjects_Sync_OcclusionQuery
+
+ /*
+ glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    glDepthMask(GL_FALSE);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_LIGHTING);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDisable(GL_BLEND);
+    glDisable(GL_ALPHA_TEST);
+    */
 
 
 /**
@@ -689,7 +745,7 @@ void PRRERendererHWfixedPipeImpl::Draw2DObjects(PRREIRenderer& renderer)
             )
         {
             glPushMatrix();
-            obj->Draw(bLighting);
+            obj->Draw(PRRE_RPASS_NORMAL);
             glPopMatrix();
         }
     } // for i

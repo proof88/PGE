@@ -33,6 +33,14 @@ enum TPRRE_ROTATION_ORDER
 }; // TPRRE_ROTATION_ORDER
 
 
+enum TPRRE_RENDER_PASS
+{
+    PRRE_RPASS_NORMAL,
+    PRRE_RPASS_SYNC_OCCLUSION_START,
+    PRRE_RPASS_SYNC_OCCLUSION_FINISH
+}; // TPRRE_RENDER_PASS
+
+
 /**
     Array of transformed vertices stores the result XYZW-coordinates of vertices calculated by CPU after Vertex Processing stage.
     This is currently used by software renderer implementation only as hardware renderer does such calculation in GPU.
@@ -131,10 +139,10 @@ public:
     void                SetOccluder(TPRREbool value);     /**< Sets whether this object should be considered as an occluder during rendering. */
     const PRREObject3D* getBoundingBoxObject() const;     /**< Gets the bounding box object used for occlusion tests. */
 
-    virtual TPRREuint getUsedSystemMemory() const;    /**< Gets the amount of allocated system memory. */
-    virtual TPRREuint getUsedVideoMemory() const;     /**< Gets the amount of allocated video memory. */
+    virtual TPRREuint getUsedSystemMemory() const;        /**< Gets the amount of allocated system memory. */
+    virtual TPRREuint getUsedVideoMemory() const;         /**< Gets the amount of allocated video memory. */
 
-    void Draw(bool bLighting);          /**< Draws the object. */
+    void Draw(const TPRRE_RENDER_PASS& renderPass);       /**< Draws the object. */
 
 protected:
 
