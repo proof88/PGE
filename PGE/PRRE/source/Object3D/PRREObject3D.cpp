@@ -904,12 +904,12 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeDraw(bool bLighting) co
         }
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     } // isWireframed()
-
+    
     if ( isTestingAgainstZBuffer() )
         glEnable(GL_DEPTH_TEST);
     else
         glDisable(GL_DEPTH_TEST);
-
+    
     // TODO: nope, we shouldnt specify color this way because glColor4f() is called per-vertex anyway later
     // getTextureEnvColor() is used by texture environment mode / function, not blending!
     // we should rather use glBlendColor() for this with GL_*_CONSTANT_* blendfunc, or modify the code not to specify color per-vertex
@@ -920,10 +920,25 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeDraw(bool bLighting) co
         _pOwner->getMaterial().getTextureEnvColor().getBlueAsFloat(),
         _pOwner->getMaterial().getTextureEnvColor().getAlphaAsFloat() );
                 
-                
+             
+    /*
+        Probably later these info will be useful:
+
+        "glEnable(GL_DEPTH_TEST) should always be enabled, depthmask relies on it"
+        https://www.gamedev.net/forums/topic/87480-gldepthmask-not-working/
+
+        "Due to an odd quirk of OpenGL, writing to the depth buffer is always inactive if GL_DEPTH_TEST is disabled, regardless of the depth mask.
+         If you just want to write to the depth buffer, without actually doing a test, you must enable GL_DEPTH_TEST and use the depth function of GL_ALWAYS."
+        https://paroj.github.io/gltut/Positioning/Tut05%20Overlap%20and%20Depth%20Buffering.html
+
+        "glDepthMask(GL_FALSE);
+         Note that this only has effect if depth testing is enabled."
+        https://learnopengl.com/Advanced-OpenGL/Depth-testing
+    */
     if ( PRREObject3DManager::isBlendFuncBlends(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
     {
         glEnable(GL_BLEND);
+        glDepthMask(GL_FALSE);
         glBlendFunc(getGLblendFromPRREblend(_pOwner->getMaterial().getSourceBlendFunc()), getGLblendFromPRREblend(_pOwner->getMaterial().getDestinationBlendFunc()));
         glAlphaFunc(GL_GREATER, 0.1f);
         glEnable(GL_ALPHA_TEST);
@@ -931,6 +946,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeDraw(bool bLighting) co
     else
     {
         glDisable(GL_BLEND);
+        glDepthMask(GL_TRUE);
         glDisable(GL_ALPHA_TEST);
     }
 } // Draw_PrepareGLbeforeDraw()

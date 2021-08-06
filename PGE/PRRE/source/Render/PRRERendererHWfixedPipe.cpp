@@ -514,6 +514,13 @@ void PRRERendererHWfixedPipeImpl::BeginRendering()
     glViewport(vpX, vpY, vpW, vpH);
     glScissor(vpX, vpY, vpW, vpH);
 
+    /*
+        "A common error when using glDepthMask(GL_FALSE) is that you forget to enable it again before the next glClear;
+         if it's still disabled, you will have last frame's depth information still in the buffer."
+        https://www.reddit.com/r/opengl/comments/66bnsn/strange_behavior_with_depth_test_and_mask/
+    */
+    glDepthMask(GL_TRUE); // if we dont set this to true, glClear() wont even clear Depth Buffer!
+
     switch (pCamera->getClearMode())
     {
     case PRRE_CLEAR_ZBUFFER_COLORBUFFER:
@@ -527,7 +534,7 @@ void PRRERendererHWfixedPipeImpl::BeginRendering()
         glClear(GL_DEPTH_BUFFER_BIT);
         break;
     }
-}
+} // BeginRendering()
 
 
 /**
@@ -559,7 +566,7 @@ void PRRERendererHWfixedPipeImpl::SwitchToPerspectiveProjection()
 
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixf(mView.getTransposed());
-}
+} // SwitchToPerspectiveProjection()
 
 
 /**
@@ -579,8 +586,7 @@ void PRRERendererHWfixedPipeImpl::SwitchToOrtographicProjection()
     glLoadMatrixf(*mat4x4Identity);
     // initial translation so 2D objects will be placed correctly on screen
     glTranslatef(pCamera->getViewport().size.width/2.f, pCamera->getViewport().size.height/2.f, 0.f);
-
-}
+} // SwitchToOrtographicProjection()
 
 
 /**
@@ -589,7 +595,6 @@ void PRRERendererHWfixedPipeImpl::SwitchToOrtographicProjection()
 void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
 {
     bool blended = true;
-    bool occluders;
 
     // TODO: obviously on the long run it would be better to put blended and unblended objects into separate containers,
     // so there would be no need to loop over objectmgr multiple times ...
@@ -603,45 +608,26 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
     for (int iBlend = 1; iBlend < 3; iBlend++)
     {
         blended = !blended;
-        if ( blended )
+
+        for (int i = 0; i < pObject3DMgr->getSize(); i++)
         {
-            glDepthMask(GL_FALSE);
-        }
-
-        occluders = false;  // occluders to be drawn first, this will be negated immediately below
-        for (int iOccl = 1; iOccl < 3; iOccl++)
-        {
-          occluders = !occluders;
-          for (int i = 0; i < pObject3DMgr->getSize(); i++)
-          {
-          
-              PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
-          
-              if ( obj == PGENULL )
-                  continue;
-          
-              if ( occluders != obj->isOccluder() )
-                  continue;
-
-              if ( (blended == PRREObject3DManager::isBlendFuncBlends(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
-                   &&
-                   ( obj->isVisible() )
-                   &&
-                   ( !obj->isStickedToScreen() )
-                 )
-              {
-                  glPushMatrix();
-                  obj->Draw(PRRE_RPASS_NORMAL);
-                  glPopMatrix();
-              }
-          } // for i
-        } // for iOccl
-
-      if ( blended )
-      {
-          glDepthMask(GL_TRUE);
-      }
-    
+            PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
+        
+            if ( obj == PGENULL )
+                continue;
+        
+            if ( (blended == PRREObject3DManager::isBlendFuncBlends(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
+                 &&
+                 ( obj->isVisible() )
+                 &&
+                 ( !obj->isStickedToScreen() )
+               )
+            {
+                glPushMatrix();
+                obj->Draw(PRRE_RPASS_NORMAL);
+                glPopMatrix();
+            }
+        } // for i    
     } // for iBlend
     
 } // Draw3DObjects_Legacy
@@ -667,10 +653,6 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
     for (int iBlend = 1; iBlend < 3; iBlend++)
     {
         blended = !blended;
-        if ( blended )
-        {
-            glDepthMask(GL_FALSE);
-        }
 
         occluders = false;  // occluders to be drawn first, this will be negated immediately below
         for (int iOccl = 1; iOccl < 3; iOccl++)
@@ -678,7 +660,6 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
           occluders = !occluders;
           for (int i = 0; i < pObject3DMgr->getSize(); i++)
           {
-          
               PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
           
               if ( obj == PGENULL )
@@ -699,13 +680,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
                   glPopMatrix();
               }
           } // for i
-        } // for iOccl
-
-      if ( blended )
-      {
-          glDepthMask(GL_TRUE);
-      }
-    
+        } // for iOccl   
     } // for iBlend
     
 } // Draw3DObjects_Sync_OcclusionQuery
@@ -727,10 +702,6 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
 */
 void PRRERendererHWfixedPipeImpl::Draw2DObjects(PRREIRenderer& renderer)
 {
-    glDisable(GL_CULL_FACE);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDisable(GL_DEPTH_TEST);
-
     /* legacy 2D code begins */
 
     for (int i = 0; i < pObject3DMgr->getSize(); i++)
@@ -754,7 +725,7 @@ void PRRERendererHWfixedPipeImpl::Draw2DObjects(PRREIRenderer& renderer)
 
     glTranslatef( -pCamera->getViewport().size.width / 2.0f, -pCamera->getViewport().size.height / 2.0f, 0.0f );
     pUImgr->Render();
-}
+} // Draw2DObjects()
 
 
 /**
@@ -764,7 +735,7 @@ void PRRERendererHWfixedPipeImpl::FinishRendering()
 {
     glFlush();
     SwapBuffers( wnd.getWndDC() );
-}
+} // FinishRendering()
 
 
 /*
