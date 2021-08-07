@@ -85,8 +85,7 @@ public:
 
     TPRREuint getUsedSystemMemory() const; 
 
-    void Draw_NoOcclusionQuery(const TPRRE_RENDER_PASS& renderPass);
-    void Draw_NaiveOcclusionQuery(const TPRRE_RENDER_PASS& renderPass);
+    void Draw(const TPRRE_RENDER_PASS& renderPass);
 
     // ---------------------------------------------------------------------------
 
@@ -142,6 +141,7 @@ private:
     void      Draw_PrepareGLbeforeOcclusionQuery() const;
     void      Draw_ResetGLafterOcclusionQuery() const;
     void      Draw_Sync_OcclusionQuery_Start() const;
+    TPRREbool Draw_Sync_OcclusionQuery_Finish() const;
     void      Draw_DrawSW(); 
 
     friend class PRREObject3D;

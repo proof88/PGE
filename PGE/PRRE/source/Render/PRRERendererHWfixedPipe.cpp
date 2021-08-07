@@ -301,6 +301,7 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
 
     SwitchToPerspectiveProjection();
     Draw3DObjects_Legacy(*this);
+    //Draw3DObjects_Sync_OcclusionQuery(*this);
 
     SwitchToOrtographicProjection();
     Draw2DObjects(*this);
@@ -594,8 +595,6 @@ void PRRERendererHWfixedPipeImpl::SwitchToOrtographicProjection()
 */
 void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
 {
-    bool blended = true;
-
     // TODO: obviously on the long run it would be better to put blended and unblended objects into separate containers,
     // so there would be no need to loop over objectmgr multiple times ...
     // and this escalates with ordering by different options like occluder/occludee, etc.
@@ -605,6 +604,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
     // However I think Object3DManager should hold different containers for different ordering purposes, for ANY renderer.
     // And renderer could just get the container ref from the manager.
      
+    bool blended = true;
     for (int iBlend = 1; iBlend < 3; iBlend++)
     {
         blended = !blended;
@@ -638,9 +638,6 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
 */
 void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRenderer& renderer)
 {
-    bool blended = true;
-    bool occluders;
-
     // TODO: obviously on the long run it would be better to put blended and unblended objects into separate containers,
     // so there would be no need to loop over objectmgr multiple times ...
     // and this escalates with ordering by different options like occluder/occludee, etc.
@@ -649,53 +646,74 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
     // so I think the renderer cannot hold different containers for different ordering purposes.
     // However I think Object3DManager should hold different containers for different ordering purposes, for ANY renderer.
     // And renderer could just get the container ref from the manager.
-      
-    for (int iBlend = 1; iBlend < 3; iBlend++)
+    
+    for (/*TPRRE_RENDER_PASS*/ int iRenderPass = PRRE_RPASS_SYNC_OCCLUSION_QUERY; iRenderPass <= PRRE_RPASS_NORMAL; iRenderPass++)
     {
-        blended = !blended;
-
-        occluders = false;  // occluders to be drawn first, this will be negated immediately below
-        for (int iOccl = 1; iOccl < 3; iOccl++)
+        switch (iRenderPass)
         {
-          occluders = !occluders;
-          for (int i = 0; i < pObject3DMgr->getSize(); i++)
-          {
-              PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
-          
-              if ( obj == PGENULL )
-                  continue;
-          
-              if ( occluders != obj->isOccluder() )
-                  continue;
+        case PRRE_RPASS_SYNC_OCCLUSION_QUERY:
+          // obj->Draw() must not set these states when the given renderPass is PRRE_RPASS_SYNC_OCCLUSION_START
+          glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+          glDepthMask(GL_FALSE);
+          glEnable(GL_DEPTH_TEST);
+          glDisable(GL_CULL_FACE);
+          glDisable(GL_LIGHTING);
+          glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+          glDisable(GL_BLEND);
+          glDisable(GL_ALPHA_TEST);
+          break;
+        case PRRE_RPASS_NORMAL:
+        default:
+          glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+          glDepthMask(GL_TRUE);
+          glFlush();
+          break;
+        }
 
-              if ( (blended == PRREObject3DManager::isBlendFuncBlends(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
-                   &&
-                   ( obj->isVisible() )
-                   &&
-                   ( !obj->isStickedToScreen() )
-                 )
+        bool blended = true;
+        for (int iBlend = 1; iBlend < 3; iBlend++)
+        {
+            blended = !blended;
+
+            bool occluders = false;  // occluders to be drawn first, this will be negated immediately below
+            for (int iOccl = 1; iOccl < 3; iOccl++)
+            {
+              occluders = !occluders;
+              for (int i = 0; i < pObject3DMgr->getSize(); i++)
               {
-                  glPushMatrix();
-                  obj->Draw(PRRE_RPASS_SYNC_OCCLUSION_START);
-                  glPopMatrix();
-              }
-          } // for i
-        } // for iOccl   
-    } // for iBlend
+                  PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
+          
+                  if ( obj == PGENULL )
+                      continue;
+          
+                  if ( occluders != obj->isOccluder() )
+                      continue;
+
+                  if ( (blended == PRREObject3DManager::isBlendFuncBlends(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
+                       &&
+                       ( obj->isVisible() )
+                       &&
+                       ( !obj->isStickedToScreen() )
+                     )
+                  {
+                      glPushMatrix();
+                      obj->Draw((TPRRE_RENDER_PASS)iRenderPass);
+                      glPopMatrix();
+                  }
+              } // for i
+            } // for iOccl   
+        } // for iBlend
+    } // iRenderPass
     
 } // Draw3DObjects_Sync_OcclusionQuery
 
  /*
- glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-    glDepthMask(GL_FALSE);
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_LIGHTING);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDisable(GL_BLEND);
-    glDisable(GL_ALPHA_TEST);
+
     */
 
+/*
+
+    */
 
 /**
     Draws 2D objects (stickedToScreen and UI).
