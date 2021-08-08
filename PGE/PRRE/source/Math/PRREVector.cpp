@@ -253,7 +253,7 @@ void PRREVector::Normalize()
     @param vec The other vector used for the calculation with this vector.
 
     @return Dot product of the 2 vectors.
-            -1 if they look into exactly same direction, 0 when the 2 vectors are perpendicular to each other, -1 if they look into opposite direction.
+            1 if they look into exactly same direction, 0 when the 2 vectors are perpendicular to each other, -1 if they look into opposite direction.
 */
 TPRREfloat PRREVector::getDotProduct(const PRREVector& vec) const
 {
