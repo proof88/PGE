@@ -22,6 +22,10 @@ class PRREObject3D::PRREObject3DImpl
 
 public:
 
+    static TPRREuint MAX_FRAMES_WO_OCCLUSION_TESTING;
+
+    // ---------------------------------------------------------------------------
+
     virtual ~PRREObject3DImpl();
 
     TPRRE_VERTEX_MODIFYING_HABIT getVertexModifyingHabit() const;
@@ -118,10 +122,16 @@ private:
     GLfloat*                  pFbBuffer;          /**< Feedback buffer. */
     GLsizei                   nFbBuffer_h;        /**< Size of feedback buffer. */
 
-    TPRREbool     bOccluder;                /**< Should renderer treat this as occluder in occlusion culling tests? */
-    GLuint        nOcclusionQuery;          /**< OpenGL Occlusion query id. */
-    TPRREbool     bOcclusionQueryStarted;   /**< Is nOcclusionQuery currently running? */
-    PRREObject3D* pBoundingBox;             /**< Box to be rendered for occlusion testing. Stays NULL when nOcclusionQuery also stays 0. */
+    TPRREbool     bOccluder;                                 /**< Should renderer treat this as occluder in occlusion culling tests? */   
+    // following variables are for the sync occlusion query
+    GLuint        nOcclusionQuery;                           /**< OpenGL Occlusion query id. Can stay 0 if occlusion query will never be run for this object. */
+    PRREObject3D* pBoundingBox;                              /**< Box to be rendered for occlusion testing. Stays NULL when nOcclusionQuery also stays 0. */
+    // following variables extend the previous variables for the async occlusion query
+    TPRREbool     bOcclusionQueryStarted;                    /**< Is nOcclusionQuery currently running? */
+    TPRREuint     nFramesWithoutOcclusionTest;               /**< How many frames elapsed without testing if the object is occluded? */
+    TPRREuint     nFramesWaitedForOcclusionTestResult;       // just for statistics
+    TPRREuint     nFramesWaitedForOcclusionTestResultMin;    // just for statistics
+    TPRREuint     nFramesWaitedForOcclusionTestResultMax;    // just for statistics
 
     // ---------------------------------------------------------------------------
 

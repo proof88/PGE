@@ -28,13 +28,6 @@ using namespace std;
 
     ***************************
 
-    There are some online OpenGL capability reports can be used to find out how widely an extension is supported:
-    https://www.gpuinfo.org/
-     - https://opengl.gpuinfo.org/listextensions.php
-     - https://opengles.gpuinfo.org/
-    https://feedback.wildfiregames.com/report/opengl/
-
-
     Vertex Culling (Object-Space)
     *****************************
 
@@ -59,6 +52,9 @@ using namespace std;
 
 
 // ############################### PUBLIC ################################
+
+
+TPRREuint PRREObject3D::PRREObject3DImpl::MAX_FRAMES_WO_OCCLUSION_TESTING = 5;
 
 
 PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
@@ -469,10 +465,15 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
     bParentInitiatedOperation = false;
     bColliding = bDoubleSided = false;
     bWireframe = bWireframedCull = bStickedToScreen = false;
+
     bOccluder = false;
-    bOcclusionQueryStarted = false;
-    nOcclusionQuery = 0;
     pBoundingBox = PGENULL;
+    nOcclusionQuery = 0;
+    bOcclusionQueryStarted = false;
+    nFramesWithoutOcclusionTest = MAX_FRAMES_WO_OCCLUSION_TESTING;
+    nFramesWaitedForOcclusionTestResult = 0;
+    nFramesWaitedForOcclusionTestResultMin = UINT_MAX;
+    nFramesWaitedForOcclusionTestResultMax = 0;
 
     vScaling.Set(1.0f, 1.0f, 1.0f);
     rotation = PRRE_YXZ;

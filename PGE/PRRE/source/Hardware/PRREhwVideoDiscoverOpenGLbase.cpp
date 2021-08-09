@@ -111,6 +111,14 @@ const char* PRREhwVideoDiscoverOpenGLbase::getLoggerModuleName()
 */
 TPRREbool PRREhwVideoDiscoverOpenGLbase::isExtensionSupported(const char* extname) const
 {
+    /*
+        There are some online OpenGL capability reports can be used to find out how widely an extension is supported:
+        https://www.gpuinfo.org/
+         - https://opengl.gpuinfo.org/listextensions.php
+         - https://opengles.gpuinfo.org/
+        https://feedback.wildfiregames.com/report/opengl/
+    */
+
     return isExtensionSupported(extname, sVidFeaturesOGL, sVidFeaturesWGL);
 } // isExtensionSupported()
 

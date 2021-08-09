@@ -234,6 +234,12 @@ Core Techniques and Algorithms in Game Programming - Daniel Sanchez-Crespo Dalma
 
 \section occlusion_extensions OpenGL Extensions for HW Occlusion Culling Support
 
+There are some online OpenGL capability reports can be used to find out how widely an extension is supported:  
+https://www.gpuinfo.org/  
+https://opengl.gpuinfo.org/listextensions.php  
+https://opengles.gpuinfo.org/  
+https://feedback.wildfiregames.com/report/opengl/  
+
 \subsection GL_HP_occlusion_test GL_HP_occlusion_test
 
  - https://www.scitepress.org/Papers/2007/20725/20725.pdf  
