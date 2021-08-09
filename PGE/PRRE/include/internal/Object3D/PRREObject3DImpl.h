@@ -22,13 +22,6 @@ class PRREObject3D::PRREObject3DImpl
 
 public:
 
-    static TPRRE_BLENDFACTORS
-        getPRREblendFromGLblend(GLenum glb);             /**< Gets the appropriate PRRE blend factor for the given GL enum. */
-    static GLenum
-        getGLblendFromPRREblend(TPRRE_BLENDFACTORS bf);  /**< Gets the appropriate GL enum for the given PRRE blend factor. */
-
-    // ---------------------------------------------------------------------------
-
     virtual ~PRREObject3DImpl();
 
     TPRRE_VERTEX_MODIFYING_HABIT getVertexModifyingHabit() const;

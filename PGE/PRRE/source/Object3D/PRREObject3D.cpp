@@ -61,58 +61,6 @@ using namespace std;
 // ############################### PUBLIC ################################
 
 
-/**
-    Gets the appropriate PRRE blend factor for the given GL enum.
-
-    @return The appropriate PRRE blend factor for the given GL enum.
-            PRRE_ZERO for invalid GL enum.
-*/
-TPRRE_BLENDFACTORS PRREObject3D::PRREObject3DImpl::getPRREblendFromGLblend(GLenum glb)
-{
-    switch( glb )
-    {
-    case GL_ZERO                : return PRRE_ZERO;
-    case GL_ONE                 : return PRRE_ONE;
-    case GL_SRC_COLOR           : return PRRE_SRC_COLOR;
-    case GL_ONE_MINUS_SRC_COLOR : return PRRE_ONE_MINUS_SRC_COLOR;
-    case GL_DST_COLOR           : return PRRE_DST_COLOR;
-    case GL_ONE_MINUS_DST_COLOR : return PRRE_ONE_MINUS_DST_COLOR;
-    case GL_SRC_ALPHA           : return PRRE_SRC_ALPHA;
-    case GL_ONE_MINUS_SRC_ALPHA : return PRRE_ONE_MINUS_SRC_ALPHA;
-    case GL_DST_ALPHA           : return PRRE_DST_ALPHA;         
-    case GL_ONE_MINUS_DST_ALPHA : return PRRE_ONE_MINUS_DST_ALPHA;
-    case GL_SRC_ALPHA_SATURATE  : return PRRE_SRC_ALPHA_SATURATE;
-    default                     : return PRRE_ZERO;
-    }
-} // getPRREblendFromGLblend()
-
-
-/**
-    Gets the appropriate GL enum for the given PRRE blend factor.
-
-    @return The appropriate GL enum for the given PRRE blend factor.
-            GL_ZERO for invalid PRRE blend factor.
-*/
-GLenum PRREObject3D::PRREObject3DImpl::getGLblendFromPRREblend(TPRRE_BLENDFACTORS bf)
-{
-    switch( bf )
-    {
-    case PRRE_ZERO                : return GL_ZERO;
-    case PRRE_ONE                 : return GL_ONE;
-    case PRRE_SRC_COLOR           : return GL_SRC_COLOR;
-    case PRRE_ONE_MINUS_SRC_COLOR : return GL_ONE_MINUS_SRC_COLOR;
-    case PRRE_DST_COLOR           : return GL_DST_COLOR;
-    case PRRE_ONE_MINUS_DST_COLOR : return GL_ONE_MINUS_DST_COLOR;
-    case PRRE_SRC_ALPHA           : return GL_SRC_ALPHA;
-    case PRRE_ONE_MINUS_SRC_ALPHA : return GL_ONE_MINUS_SRC_ALPHA;
-    case PRRE_DST_ALPHA           : return GL_DST_ALPHA;         
-    case PRRE_ONE_MINUS_DST_ALPHA : return GL_ONE_MINUS_DST_ALPHA;
-    case PRRE_SRC_ALPHA_SATURATE  : return GL_SRC_ALPHA_SATURATE;
-    default                       : return GL_ZERO;
-    }
-} // getGLblendFromPRREblend()
-
-
 PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
 {
     _pOwner->getManagedConsole().OLnOI("~PRREObject3D() ...");
@@ -497,7 +445,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
     if ( BITF_READ(_pOwner->getVertexTransferMode(),PRRE_VT_VENDOR_BITS,3) != 0 )
         return;
 
-    Draw_LoadTexturesAndSetBlendState();
+    PRREGLsnippets::glLoadTexturesAndSetBlendState(&(_pOwner->getMaterial()), _pOwner->isStickedToScreen());
 
     Draw_FeedbackBuffer_Start();
     ((PRREVertexTransfer*)_pOwner)->pImpl->TransferVertices();
@@ -563,91 +511,6 @@ PRREObject3D::PRREObject3DImpl& PRREObject3D::PRREObject3DImpl::operator=(const 
 
 
 // ############################### PRIVATE ###############################
-
-
-/**
-    Loads the given texture into the texture mapping unit.
-
-    @param tex  Texture to be loaded. If NULL, texturing will be disabled on the specified texture mapping unit.
-    @param iTMU Into which TMU we want to load the texture. Currently it must be either 0 or 1.
-*/
-void PRREObject3D::PRREObject3DImpl::Draw_LoadTextureIntoTMU(const PRRETexture* tex, TPRREuint iTMU) const
-{
-    /* Make sure we don't call GL functions when no accelerator is present */
-    if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
-        return;
-
-    // TODO: the PR00FPS-style lasttex method is not present here currently ... later it should be implemented.
-    // A general TMU manager should record which TMU holds which texture, so that can avoid unnecessary glBindTexture() calls.
-
-    // currently we support only 2 textured layers ...
-    if ( iTMU > 1 )
-    {
-        _pOwner->getManagedConsole().EOLn("ERROR: Draw_LoadTextureIntoTMU(tex, %d)", iTMU);
-        _ASSERT( false );
-    }
-
-    if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
-    {
-        glActiveTextureARB(GL_TEXTURE0_ARB + iTMU);
-        if ( tex != PGENULL )
-        {
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, tex->getInternalNum());
-            glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-        }
-        else
-            glDisable(GL_TEXTURE_2D);
-    }
-    else
-    {
-        if ( tex != PGENULL )
-        {
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, tex->getInternalNum());
-            if ( isStickedToScreen() )
-                glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-            else
-                glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-        }
-        else
-            glDisable(GL_TEXTURE_2D);
-    }
-} // Draw_LoadTextureIntoTMU()
-
-
-/**
-    Loads all textures into all texture mapping units and sets blending if needed.
-*/
-void PRREObject3D::PRREObject3DImpl::Draw_LoadTexturesAndSetBlendState() const
-{
-    if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
-    {
-        if ( _pOwner->getMaterial().isMultiTextured() )
-        {
-            // enable blending of 2nd layer
-            glEnable(GL_BLEND);
-	          glBlendFunc(getGLblendFromPRREblend(_pOwner->getMaterial().getSourceBlendFunc(1)), getGLblendFromPRREblend(_pOwner->getMaterial().getDestinationBlendFunc(1)));
-            Draw_LoadTextureIntoTMU( _pOwner->getMaterial().getTexture(0), 0 );
-            Draw_LoadTextureIntoTMU( _pOwner->getMaterial().getTexture(1), 1 );
-        }
-        else
-        {
-            // disable blending only if base layer is not blended ...
-            if ( ! PRREObject3DManager::isBlendFuncBlends(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
-                glDisable(GL_BLEND);
-            Draw_LoadTextureIntoTMU( _pOwner->getMaterial().getTexture(0), 0 );
-            Draw_LoadTextureIntoTMU( PGENULL, 1 );
-        }
-    }
-    else
-    {
-        // disable blending only if base layer is not blended ...
-        if ( ! PRREObject3DManager::isBlendFuncBlends(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
-            glDisable(GL_BLEND);
-        Draw_LoadTextureIntoTMU( _pOwner->getMaterial().getTexture() );
-    }
-} // Draw_LoadTexturesAndSetBlendState()
 
 
 /**
@@ -907,11 +770,11 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeDraw(bool bLighting) co
          Note that this only has effect if depth testing is enabled."
         https://learnopengl.com/Advanced-OpenGL/Depth-testing
     */
-    if ( PRREObject3DManager::isBlendFuncBlends(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
+    if ( PRREMaterial::isBlendFuncBlends(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
     {
         glEnable(GL_BLEND);
         glDepthMask(GL_FALSE);
-        glBlendFunc(getGLblendFromPRREblend(_pOwner->getMaterial().getSourceBlendFunc()), getGLblendFromPRREblend(_pOwner->getMaterial().getDestinationBlendFunc()));
+        glBlendFunc(PRREGLsnippets::getGLblendFromPRREblend(_pOwner->getMaterial().getSourceBlendFunc()), PRREGLsnippets::getGLblendFromPRREblend(_pOwner->getMaterial().getDestinationBlendFunc()));
         glAlphaFunc(GL_GREATER, 0.1f);
         glEnable(GL_ALPHA_TEST);
     }

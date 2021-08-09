@@ -18,11 +18,11 @@
 
 
 /**
-    Blend factors.
+    Blend factor.
 
-    Rendering a blended object means that the affected pixels in the color buffer won't be completely overwritten, but the color of the
-    affected pixels will be taken into account with the source color and blending factors.
-    Blending factors are floating point values between 0 and 1.
+    Blend factors are floating point values between 0 and 1.
+    Rendering a blended object means that the affected pixels in the color buffer won't be completely overwritten, but
+    will be taken into account with the source color and blending factors.
     We call the colors of the affected pixels already in the color buffer as destination colors.
     
     The written values will be:
@@ -155,6 +155,8 @@ class PRREMaterial :
 
 public:
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
+    static TPRREbool isBlendFuncBlends(TPRRE_BLENDFACTORS sfactor, TPRRE_BLENDFACTORS dfactor);  /**< Gets whether the given source and destination factors really mean blending or not. */
 
     // ---------------------------------------------------------------------------
 

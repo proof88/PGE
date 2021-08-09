@@ -56,6 +56,7 @@ protected:
         tm = &engine->getTextureManager();
         mm = &engine->getMaterialManager();
 
+        AddSubTest("testIsBlendFuncBlends", (PFNUNITSUBTEST) &PRREMaterialTest::testIsBlendFuncBlends);
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREMaterialTest::testCtor);
         AddSubTest("testDtor", (PFNUNITSUBTEST) &PRREMaterialTest::testDtor);
         AddSubTest("testAllocateArrays", (PFNUNITSUBTEST) &PRREMaterialTest::testAllocateArrays);
@@ -119,6 +120,21 @@ private:
     {
         return *this;
     };
+
+    bool testIsBlendFuncBlends()
+    {
+        return assertFalse(PRREMaterial::isBlendFuncBlends(PRRE_ONE, PRRE_ZERO), "(ONE, ZERO)") &
+            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_ONE, PRRE_ONE), "(ONE, ONE)") &
+            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_SRC_COLOR, PRRE_ZERO), "(SRC_COLOR, ZERO)") &
+            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_DST_COLOR, PRRE_ONE), "(DST_COLOR, ONE)") &
+            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_ZERO, PRRE_DST_ALPHA), "(ZERO, DST_ALPHA)") &
+            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_ONE_MINUS_CONSTANT_COLOR, PRRE_ONE), "(ONE_MINUS_CONSTANT_COLOR, ONE)") &
+            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_CONSTANT_COLOR, PRRE_ONE), "(CONSTANT_COLOR, ONE)") &
+            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_ZERO, PRRE_ONE_MINUS_DST_ALPHA), "(ZERO, ONE_MINUS_DST_ALPHA)") &
+            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_ZERO, PRRE_CONSTANT_ALPHA), "(ZERO, CONSTANT_ALPHA)") &
+            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_SRC_ALPHA_SATURATE, PRRE_ONE), "(SRC_ALPHA_SATURATE, ONE)");
+        // not checking every combination, no problem
+    }
 
     bool testCtor()
     {

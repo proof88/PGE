@@ -176,13 +176,6 @@ class PRREObject3DManager :
 #endif
 
 public:
-    static TPRREbool isBlendFuncBlends(
-        TPRRE_BLENDFACTORS sfactor,     
-        TPRRE_BLENDFACTORS dfactor);    /**< Gets whether the given source and destination factors really mean blending or not. */
-
-    static TPRREbool isBFB(
-        TPRRE_BLENDFACTORS sfactor,                 
-        TPRRE_BLENDFACTORS dfactor);    /**< Same as isBlendFuncBlends(). */
 
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 

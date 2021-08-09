@@ -43,10 +43,6 @@ protected:
         //CConsole::getConsoleInstance().SetLoggingState(PRREObject3D::getLoggerModuleName(), true);
         engine = NULL;
         om = NULL;
-        AddSubTest("testIsBlendFuncBlends", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testIsBlendFuncBlends);
-        AddSubTest("testIsBFB", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testIsBFB);
-        AddSubTest("testGetPRREblendFromGLblend", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testGetPRREblendFromGLblend);
-        AddSubTest("testGetGLblendFromPRREblend", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testGetGLblendFromPRREblend);
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCtor);
         AddSubTest("testIsInitialized", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testIsInitialized);
         AddSubTest("testCreatePlane", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreatePlane);
@@ -105,48 +101,6 @@ private:
     {
         return *this;
     };
-
-    bool testIsBlendFuncBlends()
-    {
-        return assertFalse(PRREObject3DManager::isBlendFuncBlends(PRRE_ONE, PRRE_ZERO), "(ONE, ZERO)") &
-            assertTrue(PRREObject3DManager::isBlendFuncBlends(PRRE_ONE, PRRE_ONE), "(ONE, ONE)") &
-            assertTrue(PRREObject3DManager::isBlendFuncBlends(PRRE_SRC_COLOR, PRRE_ZERO), "(SRC_COLOR, ZERO)") &
-            assertTrue(PRREObject3DManager::isBlendFuncBlends(PRRE_DST_COLOR, PRRE_ONE), "(DST_COLOR, ONE)") &
-            assertTrue(PRREObject3DManager::isBlendFuncBlends(PRRE_ZERO, PRRE_DST_ALPHA), "(ZERO, DST_ALPHA)") &
-            assertTrue(PRREObject3DManager::isBlendFuncBlends(PRRE_ONE_MINUS_CONSTANT_COLOR, PRRE_ONE), "(ONE_MINUS_CONSTANT_COLOR, ONE)") &
-            assertTrue(PRREObject3DManager::isBlendFuncBlends(PRRE_CONSTANT_COLOR, PRRE_ONE), "(CONSTANT_COLOR, ONE)") &
-            assertTrue(PRREObject3DManager::isBlendFuncBlends(PRRE_ZERO, PRRE_ONE_MINUS_DST_ALPHA), "(ZERO, ONE_MINUS_DST_ALPHA)") &
-            assertTrue(PRREObject3DManager::isBlendFuncBlends(PRRE_ZERO, PRRE_CONSTANT_ALPHA), "(ZERO, CONSTANT_ALPHA)") &
-            assertTrue(PRREObject3DManager::isBlendFuncBlends(PRRE_SRC_ALPHA_SATURATE, PRRE_ONE), "(SRC_ALPHA_SATURATE, ONE)");
-        // not checking every combination, no problem
-    }
-
-    bool testIsBFB()
-    {
-        return assertFalse(PRREObject3DManager::isBFB(PRRE_ONE, PRRE_ZERO), "(ONE, ZERO)") &
-            assertTrue(PRREObject3DManager::isBFB(PRRE_ONE, PRRE_ONE), "(ONE, ONE)") &
-            assertTrue(PRREObject3DManager::isBFB(PRRE_SRC_COLOR, PRRE_ZERO), "(SRC_COLOR, ZERO)") &
-            assertTrue(PRREObject3DManager::isBFB(PRRE_DST_COLOR, PRRE_ONE), "(DST_COLOR, ONE)") &
-            assertTrue(PRREObject3DManager::isBFB(PRRE_ZERO, PRRE_DST_ALPHA), "(ZERO, DST_ALPHA)") &
-            assertTrue(PRREObject3DManager::isBFB(PRRE_ONE_MINUS_CONSTANT_COLOR, PRRE_ONE), "(ONE_MINUS_CONSTANT_COLOR, ONE)") &
-            assertTrue(PRREObject3DManager::isBFB(PRRE_CONSTANT_COLOR, PRRE_ONE), "(CONSTANT_COLOR, ONE)") &
-            assertTrue(PRREObject3DManager::isBFB(PRRE_ZERO, PRRE_ONE_MINUS_DST_ALPHA), "(ZERO, ONE_MINUS_DST_ALPHA)") &
-            assertTrue(PRREObject3DManager::isBFB(PRRE_ZERO, PRRE_CONSTANT_ALPHA), "(ZERO, CONSTANT_ALPHA)") &
-            assertTrue(PRREObject3DManager::isBFB(PRRE_SRC_ALPHA_SATURATE, PRRE_ONE), "(SRC_ALPHA_SATURATE, ONE)");
-        // not checking every combination, no problem
-    }
-
-    bool testGetPRREblendFromGLblend()
-    {
-        // we believe its okay
-        return true;
-    }
-
-    bool testGetGLblendFromPRREblend()
-    {
-        // we believe its okay
-        return true;
-    }
 
     bool testCtor()
     {

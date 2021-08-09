@@ -508,6 +508,18 @@ const char* PRREMaterial::getLoggerModuleName()
 
 
 /**
+    Gets whether the given source and destination blend factors really mean blending or not.
+    If source factor is PRRE_ONE and destination factor is PRRE_ZERO, there's no blending even if blending is enabled.
+
+    @return True if the given blend factors really mean blending, false otherwise.
+*/
+TPRREbool PRREMaterial::isBlendFuncBlends(TPRRE_BLENDFACTORS sfactor, TPRRE_BLENDFACTORS dfactor)
+{
+    return !( (sfactor == PRRE_ONE) && (dfactor == PRRE_ZERO) );
+} // isBlendFuncBlends()
+
+
+/**
     Allocate color-, texture coordinate-, and index arrays on all available levels.
     Although the size of color- and texture coordinate arrays may differ, the
     allocated color index arrays and texture coordinate index arrays will have same size since indexing is done per-vertex.

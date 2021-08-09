@@ -143,28 +143,6 @@ PRREObject3DManager::PRREObject3DManagerImpl& PRREObject3DManager::PRREObject3DM
 
 
 /**
-    Gets whether the given source and destination blend factors really mean blending or not.
-    If source factor is PRRE_ONE and destination factor is PRRE_ZERO, there's no blending even if blending is enabled.
-
-    @return True if the given blend factors really mean blending, false otherwise.
-*/
-TPRREbool PRREObject3DManager::isBlendFuncBlends(TPRRE_BLENDFACTORS sfactor, TPRRE_BLENDFACTORS dfactor)
-{
-    return !( (sfactor == PRRE_ONE) && (dfactor == PRRE_ZERO) );
-} // isBlendFuncBlends()
-
-
-/**
-    Same as isBlendFuncBlends().
-    @return True if the given blend factors really mean blending, false otherwise.
-*/
-TPRREbool PRREObject3DManager::isBFB(TPRRE_BLENDFACTORS sfactor, TPRRE_BLENDFACTORS dfactor)
-{
-    return isBlendFuncBlends(sfactor, dfactor);
-} // isBFB()
-
-
-/**
     @param texMgr A TextureManager instance to be used for loading textures used by Object3D instances.
     @param matMgr A MaterialManager instance to be used for creating materials used by Object3D instances.
 

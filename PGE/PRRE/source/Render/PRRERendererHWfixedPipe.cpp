@@ -86,12 +86,13 @@ private:
 
     void RenderObject(PRREObject3D& object);
 
-    void BeginRendering();                 /**< Sets viewport size and clears buffers. */
-    void SwitchToPerspectiveProjection();  /**< Sets perspective projection. */
-    void SwitchToOrtographicProjection();  /**< Sets orthographic projection. */
+    void BeginRendering();                                               /**< Sets viewport size and clears buffers. */
+    void SwitchToPerspectiveProjection();                                /**< Sets perspective projection. */
+    void SwitchToOrtographicProjection();                                /**< Sets orthographic projection. */
     void Draw3DObjects_Legacy(PRREIRenderer& renderer);                  /**< Draws 3D objects. */
-    void Draw3DObjects_Sync_OcclusionQuery(PRREIRenderer& renderer);                  /**< Draws 3D objects. */
-    void Draw2DObjects(PRREIRenderer& renderer);                  /**< Draws 2D objects. */
+    void Draw3DObjects_Sync_OcclusionQuery(PRREIRenderer& renderer);     /**< Draws 3D objects. */
+    void Draw3DObjects_ASync_OcclusionQuery(PRREIRenderer& renderer);    /**< Draws 3D objects. */
+    void Draw2DObjects(PRREIRenderer& renderer);                         /**< Draws 2D objects. */
     void FinishRendering();                /**< Forces pending tasks to be finished and displays the rendered picture. */
 
     friend class PRRERendererHWfixedPipe;
@@ -300,8 +301,8 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
     BeginRendering();
 
     SwitchToPerspectiveProjection();
-    Draw3DObjects_Legacy(*this);
-    //Draw3DObjects_Sync_OcclusionQuery(*this);
+    //Draw3DObjects_Legacy(*this);
+    Draw3DObjects_Sync_OcclusionQuery(*this);
 
     SwitchToOrtographicProjection();
     Draw2DObjects(*this);
@@ -520,7 +521,7 @@ void PRRERendererHWfixedPipeImpl::BeginRendering()
          if it's still disabled, you will have last frame's depth information still in the buffer."
         https://www.reddit.com/r/opengl/comments/66bnsn/strange_behavior_with_depth_test_and_mask/
     */
-    glDepthMask(GL_TRUE); // if we dont set this to true, glClear() wont even clear Depth Buffer!
+    glDepthMask(GL_TRUE);
 
     switch (pCamera->getClearMode())
     {
@@ -616,7 +617,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
             if ( obj == PGENULL )
                 continue;
         
-            if ( (blended == PRREObject3DManager::isBlendFuncBlends(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
+            if ( (blended == PRREMaterial::isBlendFuncBlends(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
                  &&
                  ( obj->isVisible() )
                  &&
@@ -652,21 +653,10 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
         switch (iRenderPass)
         {
         case PRRE_RPASS_SYNC_OCCLUSION_QUERY:
-          // obj->Draw() must not set these states when the given renderPass is PRRE_RPASS_SYNC_OCCLUSION_START
-          glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-          glDepthMask(GL_FALSE);
-          glEnable(GL_DEPTH_TEST);
-          glDisable(GL_CULL_FACE);
-          glDisable(GL_LIGHTING);
-          glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-          glDisable(GL_BLEND);
-          glDisable(GL_ALPHA_TEST);
+          PRREGLsnippets::glBoundingBoxRendering(true);
           break;
-        case PRRE_RPASS_NORMAL:
-        default:
-          glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-          glDepthMask(GL_TRUE);
-          glFlush();
+        default: // PRRE_RPASS_NORMAL
+          PRREGLsnippets::glBoundingBoxRendering(false);
           break;
         }
 
@@ -689,7 +679,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
                   if ( occluders != obj->isOccluder() )
                       continue;
 
-                  if ( (blended == PRREObject3DManager::isBlendFuncBlends(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
+                  if ( (blended == PRREMaterial::isBlendFuncBlends(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
                        &&
                        ( obj->isVisible() )
                        &&
@@ -707,13 +697,6 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
     
 } // Draw3DObjects_Sync_OcclusionQuery
 
- /*
-
-    */
-
-/*
-
-    */
 
 /**
     Draws 2D objects (stickedToScreen and UI).
