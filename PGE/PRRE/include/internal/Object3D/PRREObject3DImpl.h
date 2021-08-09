@@ -134,7 +134,7 @@ private:
     void      Draw_PrepareGLbeforeOcclusionQuery() const;
     void      Draw_ResetGLafterOcclusionQuery() const;
     void      Draw_Sync_OcclusionQuery_Start() const;
-    TPRREbool Draw_Sync_OcclusionQuery_Finish() const;
+    TPRREbool Draw_Sync_OcclusionQuery_Finish_And_Occluded() const;
     void      Draw_DrawSW(); 
 
     friend class PRREObject3D;

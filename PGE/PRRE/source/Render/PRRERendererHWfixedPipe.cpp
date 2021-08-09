@@ -650,15 +650,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
     
     for (/*TPRRE_RENDER_PASS*/ int iRenderPass = PRRE_RPASS_SYNC_OCCLUSION_QUERY; iRenderPass <= PRRE_RPASS_NORMAL; iRenderPass++)
     {
-        switch (iRenderPass)
-        {
-        case PRRE_RPASS_SYNC_OCCLUSION_QUERY:
-          PRREGLsnippets::SetGLBoundingBoxRendering(true);
-          break;
-        default: // PRRE_RPASS_NORMAL
-          PRREGLsnippets::SetGLBoundingBoxRendering(false);
-          break;
-        }
+        PRREGLsnippets::SetGLBoundingBoxRendering(iRenderPass == PRRE_RPASS_SYNC_OCCLUSION_QUERY);
 
         bool blended = true;
         for (int iBlend = 1; iBlend < 3; iBlend++)

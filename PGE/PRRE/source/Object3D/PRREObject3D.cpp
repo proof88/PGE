@@ -391,23 +391,13 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
         
         if ( renderPass == PRRE_RPASS_NORMAL )
         {
-            if ( nOcclusionQuery == 0 )
+            if ( (nOcclusionQuery != 0) && Draw_Sync_OcclusionQuery_Finish_And_Occluded() )
             {
-                Draw_ApplyTransformations();
-                Draw_PrepareGLbeforeDraw(false);
+                return;
             }
-            else
-            {
-                if ( Draw_Sync_OcclusionQuery_Finish() )
-                {
-                    return;
-                }
-                else
-                {
-                    Draw_ApplyTransformations();
-                    Draw_PrepareGLbeforeDraw(false);
-                }
-            }
+            
+            Draw_ApplyTransformations();
+            Draw_PrepareGLbeforeDraw(false);
             // continue with drawing our subobjects
         }
         else
@@ -839,7 +829,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Start() const
 /**
     @return True if occluded, false if not occluded or cannot conclude
 */
-TPRREbool PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Finish() const
+TPRREbool PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Finish_And_Occluded() const
 {
     if ( nOcclusionQuery == 0 )
     {
@@ -863,7 +853,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Finish() cons
         glGetQueryObjectuivARB(nOcclusionQuery, GL_QUERY_RESULT_ARB, &sampleCount);
         return ( sampleCount == 0 );
     }
-} // Draw_Sync_OcclusionQuery_Finish()
+} // Draw_Sync_OcclusionQuery_Finish_And_Occluded()
 
 
 void PRREObject3D::PRREObject3DImpl::Draw_DrawSW()
