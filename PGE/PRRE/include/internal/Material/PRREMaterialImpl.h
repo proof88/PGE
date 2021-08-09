@@ -31,8 +31,8 @@ struct TPRRE_MATERIAL_LAYER
 	PRREColor      clrTexEnv;           /**< Texture environment color. */
 	TPRRE_TEX_FUNC texEnvMode;          /**< Texture environment mode / function. */
 	TPRREfloat     fTransparancy;       /**< Layer transparency. */
-    TPRRE_BLENDFACTORS blendFactorSource;       /**< Source blend factor. */
-    TPRRE_BLENDFACTORS blendFactorDestination;  /**< Destination blend factor.  */
+    TPRRE_BLENDFACTOR blendFactorSource;       /**< Source blend factor. */
+    TPRRE_BLENDFACTOR blendFactorDestination;  /**< Destination blend factor.  */
 };
 
 class PRREMaterial::PRREMaterialImpl
@@ -71,24 +71,24 @@ public:
             PRREColor&   getTextureEnvColor(TPRREuint level = 0);
     const   PRREColor&   getTextureEnvColor(TPRREuint level = 0) const;
 
-            TPRRE_BLENDFACTORS getSourceBlendFunc(TPRREuint level = 0) const;
+            TPRRE_BLENDFACTOR getSourceBlendFunc(TPRREuint level = 0) const;
             TPRREbool          setSourceBlendFunc(
-                                TPRRE_BLENDFACTORS value,
+                                TPRRE_BLENDFACTOR value,
                                 TPRREuint level = 0);
 
-            TPRRE_BLENDFACTORS getDestinationBlendFunc(TPRREuint level = 0) const;
+            TPRRE_BLENDFACTOR getDestinationBlendFunc(TPRREuint level = 0) const;
             TPRREbool          setDestinationBlendFunc(
-                                TPRRE_BLENDFACTORS value,
+                                TPRRE_BLENDFACTOR value,
                                 TPRREuint level = 0);
 
             TPRREbool          setBlendFuncs(
-                                TPRRE_BLENDFACTORS src,
-                                TPRRE_BLENDFACTORS dst,
+                                TPRRE_BLENDFACTOR src,
+                                TPRRE_BLENDFACTOR dst,
                                 TPRREuint level = 0);
 
-            TPRRE_BLENDMODES   getBlendMode(TPRREuint level = 0) const;
+            TPRRE_BLENDMODE   getBlendMode(TPRREuint level = 0) const;
             TPRREbool          setBlendMode(
-                                TPRRE_BLENDMODES mode,
+                                TPRRE_BLENDMODE mode,
                                 TPRREuint level = 0);
 
             TPRREbool    copyFromMaterial(

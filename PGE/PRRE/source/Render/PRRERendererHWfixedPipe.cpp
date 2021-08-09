@@ -391,9 +391,9 @@ PRRERendererHWfixedPipeImpl& PRRERendererHWfixedPipeImpl::operator=(const PRRERe
 */
 void PRRERendererHWfixedPipeImpl::printOGLerrorBrief()
 {
-    while ( PRREGLsnippets::isGLerrorPresent() )
+    while ( PRREGLsnippets::isGLErrorPresent() )
         getConsole().EOLn("Last error: %s",
-                           PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));   
+                           PRREGLsnippets::getGLErrorTextFromEnum( PRREGLsnippets::getLastSavedGLError() ));   
 } // printOGLerrorBrief()
 
 
@@ -402,12 +402,12 @@ void PRRERendererHWfixedPipeImpl::printOGLerrorBrief()
 */
 void PRRERendererHWfixedPipeImpl::printOGLerrorFull()
 {
-    if ( PRREGLsnippets::isGLerrorPresent() )
+    if ( PRREGLsnippets::isGLErrorPresent() )
         getConsole().EOLn("Last error: %s",
-                           PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+                           PRREGLsnippets::getGLErrorTextFromEnum( PRREGLsnippets::getLastSavedGLError() ));
     else
         getConsole().SOLn("Last error: %s",
-                           PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+                           PRREGLsnippets::getGLErrorTextFromEnum( PRREGLsnippets::getLastSavedGLError() ));
 } // printOGLerrorFull()
 
 
@@ -617,7 +617,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
             if ( obj == PGENULL )
                 continue;
         
-            if ( (blended == PRREMaterial::isBlendFuncBlends(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
+            if ( (blended == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
                  &&
                  ( obj->isVisible() )
                  &&
@@ -653,10 +653,10 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
         switch (iRenderPass)
         {
         case PRRE_RPASS_SYNC_OCCLUSION_QUERY:
-          PRREGLsnippets::glBoundingBoxRendering(true);
+          PRREGLsnippets::SetGLBoundingBoxRendering(true);
           break;
         default: // PRRE_RPASS_NORMAL
-          PRREGLsnippets::glBoundingBoxRendering(false);
+          PRREGLsnippets::SetGLBoundingBoxRendering(false);
           break;
         }
 
@@ -679,7 +679,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
                   if ( occluders != obj->isOccluder() )
                       continue;
 
-                  if ( (blended == PRREMaterial::isBlendFuncBlends(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
+                  if ( (blended == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
                        &&
                        ( obj->isVisible() )
                        &&

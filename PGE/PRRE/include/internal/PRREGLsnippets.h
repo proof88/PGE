@@ -26,19 +26,19 @@ class PRREGLsnippets
 
 public:
 
-    static const char* getGLerrorTextFromEnum(GLenum err);  /**< Gets the string representation of the given GL error. */
-    static TPRREbool   isGLerrorPresent();                  /**< Gets whether there is an error in OpenGL or not. */
-    static GLenum      getLastSavedGLerror();               /**< Gets the last saved GL error. */
-    static void        ClearGLerror();                      /**< Clears GL error state. */
+    static const char* getGLErrorTextFromEnum(GLenum err);  /**< Gets the string representation of the given GL error. */
+    static TPRREbool   isGLErrorPresent();                  /**< Gets whether there is an error in OpenGL or not. */
+    static GLenum      getLastSavedGLError();               /**< Gets the last saved GL error. */
+    static void        ClearGLError();                      /**< Clears GL error state. */
 
     static TPRREuint getSizeofIndexType(GLenum iType);                                           /**< Returns the size in Bytes of the given OpenGL index type. */
     static TPRREuint getVertexIndex(const void* arr, TPRREuint index, GLenum iType);             /**< Returns arr[index] element from the given array of iType type elements. */
     static TPRREbool setVertexIndex(void* arr, TPRREuint index, TPRREuint value, GLenum iType);  /**< Sets arr[index] element of the given array of iType type elements to value. */
 
-    static void      glBoundingBoxRendering(TPRREbool state);                                    /**< Sets GL states up for bounding box rendering or reset them. */
+    static void      SetGLBoundingBoxRendering(TPRREbool state);                                 /**< Sets GL states up for bounding box rendering or resets them. */
 
-    static TPRRE_BLENDFACTORS getPRREblendFromGLblend(GLenum glb);                               /**< Gets the appropriate PRRE blend factor for the given GL enum. */
-    static GLenum             getGLblendFromPRREblend(TPRRE_BLENDFACTORS bf);                    /**< Gets the appropriate GL enum for the given PRRE blend factor. */
+    static TPRRE_BLENDFACTOR getPRREBlendFromGLBlend(GLenum glb);                               /**< Gets the appropriate PRRE blend factor for the given GL enum. */
+    static GLenum             getGLBlendFromPRREBlend(TPRRE_BLENDFACTOR bf);                    /**< Gets the appropriate GL enum for the given PRRE blend factor. */
     
     static void      glLoadTextureIntoTMU(const PRRETexture* tex, TPRREuint iTMU, TPRREbool bSticked);  /**< Loads the given texture into the texture mapping unit. */
     static void      glLoadTexturesAndSetBlendState(const PRREMaterial* mat, TPRREbool bSticked);       /**< Loads all textures into texture mapping units and sets blending if needed for single-pass multitexturing. */

@@ -850,7 +850,7 @@ TPRREbool PRREhwVideoImpl::initializeBase()
         }
 
         // OGL error may be generated due to querying GL_SHADING_LANGUAGE_VERSION which may not be supported by all implementations
-        PRREGLsnippets::ClearGLerror();
+        PRREGLsnippets::ClearGLError();
         
         if ( ptmp = glGetString(GL_EXTENSIONS) )
         {
@@ -868,7 +868,7 @@ TPRREbool PRREhwVideoImpl::initializeBase()
             getConsole().EOLn("WARNING: failed to query WGL_EXTENSIONS!");
 
         // OGL error may be generated due to querying WGL_EXTENSIONS which may not be supported by all implementations
-        PRREGLsnippets::ClearGLerror();
+        PRREGLsnippets::ClearGLError();
 
         getConsole().OLn("Extensions:");
         getConsole().OLn("");
@@ -1118,7 +1118,7 @@ void PRREhwVideoImpl::DiscoverViewportAvailability()
 {
     getConsole().OLnOI("Viewport:");
 
-    PRREGLsnippets::ClearGLerror();
+    PRREGLsnippets::ClearGLError();
 
     glGetIntegerv(GL_MAX_VIEWPORT_DIMS, tmpRet);
     if ( glGetError() == GL_NO_ERROR )
@@ -1404,7 +1404,7 @@ void PRREhwVideoImpl::DiscoverAnisoFilteringAvailability()
             getConsole().EOLn("Anisotropic filtering is disabled, upgrade graphics card driver!");
             nAnisoFilterMax = 0.0;
             bSuppAnisoFiltering = false;
-            PRREGLsnippets::ClearGLerror();
+            PRREGLsnippets::ClearGLError();
         }
     }
     else
@@ -1420,7 +1420,7 @@ void PRREhwVideoImpl::DiscoverTexturingAvailability()
 {
     getConsole().OLnOI("Texturing Caps:");
 
-    PRREGLsnippets::ClearGLerror();
+    PRREGLsnippets::ClearGLError();
 
     glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, tmpRetf);
     if ( glGetError() == GL_NO_ERROR )

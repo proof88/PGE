@@ -30,7 +30,7 @@ static const char* const sLoggerModuleName = "PRREGLsnippets";
 
     @return A string representing the given GL error.
 */
-const char* PRREGLsnippets::getGLerrorTextFromEnum(GLenum err)
+const char* PRREGLsnippets::getGLErrorTextFromEnum(GLenum err)
 {
     switch (err)
     {
@@ -43,17 +43,17 @@ const char* PRREGLsnippets::getGLerrorTextFromEnum(GLenum err)
     case GL_OUT_OF_MEMORY     : return GL_ERR_STR_OUT_OF_MEMORY;
     default                   : return "Unknown Error";
     }
-} // getGLerrorTextFromEnum()
+} // getGLErrorTextFromEnum()
 
 
 /**
     Gets whether there is an error in OpenGL or not.
-    The error gets saved by this function and can be further evaluated later by calling getLastSavedGLerror().
+    The error gets saved by this function and can be further evaluated later by calling getLastSavedGLError().
     OpenGL error state is also cleared.
 
     @return True if there is an OpenGL error, false otherwise.
 */
-TPRREbool PRREGLsnippets::isGLerrorPresent()
+TPRREbool PRREGLsnippets::isGLErrorPresent()
 {
     errLast = glGetError();
     return ( errLast != GL_NO_ERROR );
@@ -62,24 +62,24 @@ TPRREbool PRREGLsnippets::isGLerrorPresent()
 
 /**
     Gets the last saved OpenGL error.
-    The last saved OpenGL error code is GL_NO_ERROR by default so it is recommended to call isGLerrorPresent() first.
+    The last saved OpenGL error code is GL_NO_ERROR by default so it is recommended to call isGLErrorPresent() first.
 
-    @return The last OpenGL error code saved by isGLerrorPresent().
+    @return The last OpenGL error code saved by isGLErrorPresent().
 */
-GLenum PRREGLsnippets::getLastSavedGLerror()
+GLenum PRREGLsnippets::getLastSavedGLError()
 {
     return errLast;
-} // getLastSavedGLerror()
+} // getLastSavedGLError()
 
 
 /**
     Clears OpenGL error state.
-    Error code is not saved, so this function has no impact on return code of getLastSavedGLerror().
+    Error code is not saved, so this function has no impact on return code of getLastSavedGLError().
 */
-void PRREGLsnippets::ClearGLerror()
+void PRREGLsnippets::ClearGLError()
 {
     while ( glGetError() != GL_NO_ERROR ) ;
-} // ClearGLerror()
+} // ClearGLError()
 
 
 /**
@@ -152,10 +152,10 @@ TPRREbool PRREGLsnippets::setVertexIndex(void* arr, TPRREuint index, TPRREuint v
 
 
 /**
-    Sets GL states up for bounding box rendering or reset them.
+    Sets GL states up for bounding box rendering or resets them.
     @param state If true, GL states are set for bounding box rendering. If false, some states are reset for normal rendering (rest of states are controlled by Object3D in such case).
 */
-void PRREGLsnippets::glBoundingBoxRendering(TPRREbool state)
+void PRREGLsnippets::SetGLBoundingBoxRendering(TPRREbool state)
 {
     if ( state )
     {
@@ -176,7 +176,7 @@ void PRREGLsnippets::glBoundingBoxRendering(TPRREbool state)
         glDepthMask(GL_TRUE);
         glFlush(); // this to make sure any initiated GL query is actually starts to be processed by GPU so later we dont have to wait that much for results
     }
-} // glBoundingBoxRendering()
+} // SetGLBoundingBoxRendering()
 
 
 /**
@@ -185,7 +185,7 @@ void PRREGLsnippets::glBoundingBoxRendering(TPRREbool state)
     @return The appropriate PRRE blend factor for the given GL enum.
             PRRE_ZERO for invalid GL enum.
 */
-TPRRE_BLENDFACTORS PRREGLsnippets::getPRREblendFromGLblend(GLenum glb)
+TPRRE_BLENDFACTOR PRREGLsnippets::getPRREBlendFromGLBlend(GLenum glb)
 {
     switch( glb )
     {
@@ -202,7 +202,7 @@ TPRRE_BLENDFACTORS PRREGLsnippets::getPRREblendFromGLblend(GLenum glb)
     case GL_SRC_ALPHA_SATURATE  : return PRRE_SRC_ALPHA_SATURATE;
     default                     : return PRRE_ZERO;
     }
-} // getPRREblendFromGLblend()
+} // getPRREBlendFromGLBlend()
 
 
 /**
@@ -211,7 +211,7 @@ TPRRE_BLENDFACTORS PRREGLsnippets::getPRREblendFromGLblend(GLenum glb)
     @return The appropriate GL enum for the given PRRE blend factor.
             GL_ZERO for invalid PRRE blend factor.
 */
-GLenum PRREGLsnippets::getGLblendFromPRREblend(TPRRE_BLENDFACTORS bf)
+GLenum PRREGLsnippets::getGLBlendFromPRREBlend(TPRRE_BLENDFACTOR bf)
 {
     switch( bf )
     {
@@ -228,7 +228,7 @@ GLenum PRREGLsnippets::getGLblendFromPRREblend(TPRRE_BLENDFACTORS bf)
     case PRRE_SRC_ALPHA_SATURATE  : return GL_SRC_ALPHA_SATURATE;
     default                       : return GL_ZERO;
     }
-} // getGLblendFromPRREblend()
+} // getGLBlendFromPRREBlend()
 
 
 /**
@@ -307,14 +307,14 @@ void PRREGLsnippets::glLoadTexturesAndSetBlendState(const PRREMaterial* mat, TPR
         {
             // enable blending of 2nd layer
             glEnable(GL_BLEND);
-	        glBlendFunc(getGLblendFromPRREblend(mat->getSourceBlendFunc(1)), getGLblendFromPRREblend(mat->getDestinationBlendFunc(1)));
+	        glBlendFunc(getGLBlendFromPRREBlend(mat->getSourceBlendFunc(1)), getGLBlendFromPRREBlend(mat->getDestinationBlendFunc(1)));
             glLoadTextureIntoTMU( mat->getTexture(0), 0, bSticked );
             glLoadTextureIntoTMU( mat->getTexture(1), 1, bSticked );
         }
         else
         {
             // disable blending only if base layer is not blended ...
-            if ( ! PRREMaterial::isBlendFuncBlends(mat->getSourceBlendFunc(), mat->getDestinationBlendFunc()) )
+            if ( ! PRREMaterial::isBlendFuncReallyBlending(mat->getSourceBlendFunc(), mat->getDestinationBlendFunc()) )
             {
                 glDisable(GL_BLEND);
             }
@@ -325,7 +325,7 @@ void PRREGLsnippets::glLoadTexturesAndSetBlendState(const PRREMaterial* mat, TPR
     else
     {
         // disable blending only if base layer is not blended ...
-        if ( ! PRREMaterial::isBlendFuncBlends(mat->getSourceBlendFunc(), mat->getDestinationBlendFunc()) )
+        if ( ! PRREMaterial::isBlendFuncReallyBlending(mat->getSourceBlendFunc(), mat->getDestinationBlendFunc()) )
         {
             glDisable(GL_BLEND);
         }

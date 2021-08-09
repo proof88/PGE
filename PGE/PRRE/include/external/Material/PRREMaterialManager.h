@@ -72,7 +72,7 @@
         Alpha = 0.8 * srcA + 1 * dstA = 0.8*srcA + dstA
 
 */
-enum TPRRE_BLENDFACTORS
+enum TPRRE_BLENDFACTOR
 {
     PRRE_ZERO,                     /**< Full zero (0,0,0,0). */
     PRRE_ONE,                      /**< Full one (1,1,1,1). */
@@ -89,17 +89,17 @@ enum TPRRE_BLENDFACTORS
     PRRE_CONSTANT_ALPHA,           /**< Alpha component specified by glBlendColor(). */
     PRRE_ONE_MINUS_CONSTANT_ALPHA, /**< 1 minus value of PRRE_CONSTANT_ALPHA. */
     PRRE_SRC_ALPHA_SATURATE        /**< (p,p,p,1) where p = min(srcA, maxA-dstA) / maxA. */
-}; // TPRRE_BLENDFACTORS
+}; // TPRRE_BLENDFACTOR
 
 /**
     Preset blend modes.
 */
-enum TPRRE_BLENDMODES
+enum TPRRE_BLENDMODE
 {
     PRRE_BM_NONE,                   /**< No blending. */
     PRRE_BM_MANUAL,                 /**< Manual blending, using custom blend factors. */
     PRRE_BM_STANDARD_TRANSPARENCY   /**< Transparency. */
-}; // TPRRE_BLENDMODES
+}; // TPRRE_BLENDMODE
 
 
 /**
@@ -156,7 +156,7 @@ class PRREMaterial :
 public:
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
-    static TPRREbool isBlendFuncBlends(TPRRE_BLENDFACTORS sfactor, TPRRE_BLENDFACTORS dfactor);  /**< Gets whether the given source and destination factors really mean blending or not. */
+    static TPRREbool isBlendFuncReallyBlending(TPRRE_BLENDFACTOR sfactor, TPRRE_BLENDFACTOR dfactor);  /**< Gets whether the given source and destination factors really mean blending or not. */
 
     // ---------------------------------------------------------------------------
 
@@ -192,25 +192,25 @@ public:
             PRREColor&   getTextureEnvColor(TPRREuint level = 0);             /**< Gets the texture environment color of the material on the specified level. */
     const   PRREColor&   getTextureEnvColor(TPRREuint level = 0) const;       /**< Gets the texture environment color of the material on the specified level. */
 
-            TPRRE_BLENDFACTORS getSourceBlendFunc(TPRREuint level = 0) const;       /**< Gets the source blend factor on the specified level. */
-            TPRREbool          setSourceBlendFunc(
-                                TPRRE_BLENDFACTORS value,
-                                TPRREuint level = 0);                               /**< Sets the source blend factor on the specified level. */
+            TPRRE_BLENDFACTOR getSourceBlendFunc(TPRREuint level = 0) const;       /**< Gets the source blend factor on the specified level. */
+            TPRREbool         setSourceBlendFunc(
+                               TPRRE_BLENDFACTOR value,
+                               TPRREuint level = 0);                               /**< Sets the source blend factor on the specified level. */
 
-            TPRRE_BLENDFACTORS getDestinationBlendFunc(TPRREuint level = 0) const;  /**< Gets the destination blend factor on the specified level. */
-            TPRREbool          setDestinationBlendFunc(
-                                TPRRE_BLENDFACTORS value,
-                                TPRREuint level = 0);                               /**< Sets the destination blend factor on the specified level. */
+            TPRRE_BLENDFACTOR getDestinationBlendFunc(TPRREuint level = 0) const;  /**< Gets the destination blend factor on the specified level. */
+            TPRREbool         setDestinationBlendFunc(
+                               TPRRE_BLENDFACTOR value,
+                               TPRREuint level = 0);                               /**< Sets the destination blend factor on the specified level. */
 
-            TPRREbool          setBlendFuncs(
-                                TPRRE_BLENDFACTORS src,
-                                TPRRE_BLENDFACTORS dst,
-                                TPRREuint level = 0);                               /**< Sets the blend factors on the specified level. */
+            TPRREbool         setBlendFuncs(
+                               TPRRE_BLENDFACTOR src,
+                               TPRRE_BLENDFACTOR dst,
+                               TPRREuint level = 0);                               /**< Sets the blend factors on the specified level. */
 
-            TPRRE_BLENDMODES   getBlendMode(TPRREuint level = 0) const;             /**< Gets the blend mode on the specified level. */
-            TPRREbool          setBlendMode(
-                                TPRRE_BLENDMODES mode,
-                                TPRREuint level = 0);                               /**< Sets the blend mode on the specified level. */
+            TPRRE_BLENDMODE   getBlendMode(TPRREuint level = 0) const;             /**< Gets the blend mode on the specified level. */
+            TPRREbool         setBlendMode(
+                               TPRRE_BLENDMODE mode,
+                               TPRREuint level = 0);                               /**< Sets the blend mode on the specified level. */
 
             TPRREbool    copyFromMaterial(
                             PRREMaterial& srcMat,

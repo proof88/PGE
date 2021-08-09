@@ -112,7 +112,7 @@ public:
     {
         if ( bSuppOcclusionQuery )
         {
-            PRREGLsnippets::ClearGLerror();
+            PRREGLsnippets::ClearGLError();
 
             glGetQueryivARB(GL_SAMPLES_PASSED_ARB, GL_QUERY_COUNTER_BITS_ARB, &(tmpRet[0]));
             if ( (glGetError() != GL_NO_ERROR) || (tmpRet[0] < 1) )
@@ -120,7 +120,7 @@ public:
                 getConsole().EOLn("Occlusion query ext. is exported, but query cntr bits is %d.", tmpRet[0]);
                 getConsole().EOLn("Occlusion query is disabled, upgrade graphics card driver!");
                 bSuppOcclusionQuery = false;
-                PRREGLsnippets::ClearGLerror();
+                PRREGLsnippets::ClearGLError();
                 return;
             }
         

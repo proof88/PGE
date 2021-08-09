@@ -123,16 +123,16 @@ private:
 
     bool testIsBlendFuncBlends()
     {
-        return assertFalse(PRREMaterial::isBlendFuncBlends(PRRE_ONE, PRRE_ZERO), "(ONE, ZERO)") &
-            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_ONE, PRRE_ONE), "(ONE, ONE)") &
-            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_SRC_COLOR, PRRE_ZERO), "(SRC_COLOR, ZERO)") &
-            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_DST_COLOR, PRRE_ONE), "(DST_COLOR, ONE)") &
-            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_ZERO, PRRE_DST_ALPHA), "(ZERO, DST_ALPHA)") &
-            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_ONE_MINUS_CONSTANT_COLOR, PRRE_ONE), "(ONE_MINUS_CONSTANT_COLOR, ONE)") &
-            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_CONSTANT_COLOR, PRRE_ONE), "(CONSTANT_COLOR, ONE)") &
-            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_ZERO, PRRE_ONE_MINUS_DST_ALPHA), "(ZERO, ONE_MINUS_DST_ALPHA)") &
-            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_ZERO, PRRE_CONSTANT_ALPHA), "(ZERO, CONSTANT_ALPHA)") &
-            assertTrue(PRREMaterial::isBlendFuncBlends(PRRE_SRC_ALPHA_SATURATE, PRRE_ONE), "(SRC_ALPHA_SATURATE, ONE)");
+        return assertFalse(PRREMaterial::isBlendFuncReallyBlending(PRRE_ONE, PRRE_ZERO), "(ONE, ZERO)") &
+            assertTrue(PRREMaterial::isBlendFuncReallyBlending(PRRE_ONE, PRRE_ONE), "(ONE, ONE)") &
+            assertTrue(PRREMaterial::isBlendFuncReallyBlending(PRRE_SRC_COLOR, PRRE_ZERO), "(SRC_COLOR, ZERO)") &
+            assertTrue(PRREMaterial::isBlendFuncReallyBlending(PRRE_DST_COLOR, PRRE_ONE), "(DST_COLOR, ONE)") &
+            assertTrue(PRREMaterial::isBlendFuncReallyBlending(PRRE_ZERO, PRRE_DST_ALPHA), "(ZERO, DST_ALPHA)") &
+            assertTrue(PRREMaterial::isBlendFuncReallyBlending(PRRE_ONE_MINUS_CONSTANT_COLOR, PRRE_ONE), "(ONE_MINUS_CONSTANT_COLOR, ONE)") &
+            assertTrue(PRREMaterial::isBlendFuncReallyBlending(PRRE_CONSTANT_COLOR, PRRE_ONE), "(CONSTANT_COLOR, ONE)") &
+            assertTrue(PRREMaterial::isBlendFuncReallyBlending(PRRE_ZERO, PRRE_ONE_MINUS_DST_ALPHA), "(ZERO, ONE_MINUS_DST_ALPHA)") &
+            assertTrue(PRREMaterial::isBlendFuncReallyBlending(PRRE_ZERO, PRRE_CONSTANT_ALPHA), "(ZERO, CONSTANT_ALPHA)") &
+            assertTrue(PRREMaterial::isBlendFuncReallyBlending(PRRE_SRC_ALPHA_SATURATE, PRRE_ONE), "(SRC_ALPHA_SATURATE, ONE)");
         // not checking every combination, no problem
     }
 
@@ -154,9 +154,9 @@ private:
                 assertNull(mat->getTexcoords(i), "getTexcoords") &
                 assertNull(mat->getTexture(i), "getTexture") &
                 assertTrue(clrWhite == mat->getTextureEnvColor(i), "getTextureEnvColor") &
-                assertEquals(TPRRE_BLENDFACTORS::PRRE_ONE, mat->getSourceBlendFunc(i), "getSourceBlendFunc") &
-                assertEquals(TPRRE_BLENDFACTORS::PRRE_ZERO, mat->getDestinationBlendFunc(i), "getDestinationBlendFunc") &
-                assertEquals(TPRRE_BLENDMODES::PRRE_BM_NONE, mat->getBlendMode(i), "getBlendMode");
+                assertEquals(TPRRE_BLENDFACTOR::PRRE_ONE, mat->getSourceBlendFunc(i), "getSourceBlendFunc") &
+                assertEquals(TPRRE_BLENDFACTOR::PRRE_ZERO, mat->getDestinationBlendFunc(i), "getDestinationBlendFunc") &
+                assertEquals(TPRRE_BLENDMODE::PRRE_BM_NONE, mat->getBlendMode(i), "getBlendMode");
             i++;
         }
         std::stringstream ss;
@@ -306,37 +306,37 @@ private:
 
     bool testSetSourceBlendFunc()
     {
-        bool b = assertTrue(mat->setSourceBlendFunc(TPRRE_BLENDFACTORS::PRRE_CONSTANT_ALPHA), "PRRE_CONSTANT_ALPHA");
-        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(), "1st");
+        bool b = assertTrue(mat->setSourceBlendFunc(TPRRE_BLENDFACTOR::PRRE_CONSTANT_ALPHA), "PRRE_CONSTANT_ALPHA");
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(), "1st");
 
-        b &= assertTrue(mat->setSourceBlendFunc(TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, 1), "PRRE_CONSTANT_COLOR");
-        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "2nd");
+        b &= assertTrue(mat->setSourceBlendFunc(TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, 1), "PRRE_CONSTANT_COLOR");
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "2nd");
 
-        b &= assertFalse(mat->setSourceBlendFunc(TPRRE_BLENDFACTORS::PRRE_SRC_COLOR), "PRRE_SRC_COLOR"); // invalid param
-        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "3rd");
+        b &= assertFalse(mat->setSourceBlendFunc(TPRRE_BLENDFACTOR::PRRE_SRC_COLOR), "PRRE_SRC_COLOR"); // invalid param
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "3rd");
 
-        b &= assertFalse(mat->setSourceBlendFunc(TPRRE_BLENDFACTORS::PRRE_ONE_MINUS_SRC_COLOR), "PRRE_ONE_MINUS_SRC_COLOR"); // invalid param
-        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "4th");
+        b &= assertFalse(mat->setSourceBlendFunc(TPRRE_BLENDFACTOR::PRRE_ONE_MINUS_SRC_COLOR), "PRRE_ONE_MINUS_SRC_COLOR"); // invalid param
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "4th");
 
         return b;
     }
 
     bool testSetDestinationBlendFunc()
     {
-        bool b = assertTrue(mat->setDestinationBlendFunc(TPRRE_BLENDFACTORS::PRRE_CONSTANT_ALPHA), "PRRE_CONSTANT_ALPHA");
-        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_ALPHA, mat->getDestinationBlendFunc(), "1st");
+        bool b = assertTrue(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_CONSTANT_ALPHA), "PRRE_CONSTANT_ALPHA");
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_ALPHA, mat->getDestinationBlendFunc(), "1st");
 
-        b &= assertTrue(mat->setDestinationBlendFunc(TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, 1), "PRRE_CONSTANT_COLOR");
-        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "2nd");
+        b &= assertTrue(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, 1), "PRRE_CONSTANT_COLOR");
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "2nd");
 
-        b &= assertFalse(mat->setDestinationBlendFunc(TPRRE_BLENDFACTORS::PRRE_DST_COLOR, 1), "PRRE_DST_COLOR"); // invalid param
-        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "3rd");
+        b &= assertFalse(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_DST_COLOR, 1), "PRRE_DST_COLOR"); // invalid param
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "3rd");
 
-        b &= assertFalse(mat->setDestinationBlendFunc(TPRRE_BLENDFACTORS::PRRE_ONE_MINUS_DST_COLOR, 1), "PRRE_ONE_MINUS_DST_COLOR"); // invalid param
-        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "4th");
+        b &= assertFalse(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_ONE_MINUS_DST_COLOR, 1), "PRRE_ONE_MINUS_DST_COLOR"); // invalid param
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "4th");
 
-        b &= assertFalse(mat->setDestinationBlendFunc(TPRRE_BLENDFACTORS::PRRE_SRC_ALPHA_SATURATE, 1), "PRRE_SRC_ALPHA_SATURATE"); // invalid param
-        b &= assertEquals( TPRRE_BLENDFACTORS::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "5th");
+        b &= assertFalse(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_SRC_ALPHA_SATURATE, 1), "PRRE_SRC_ALPHA_SATURATE"); // invalid param
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "5th");
 
         return b;
     }
@@ -376,12 +376,12 @@ private:
 
     bool testSetBlendMode()
     {
-        bool b = assertTrue(mat->setBlendMode(TPRRE_BLENDMODES::PRRE_BM_STANDARD_TRANSPARENCY), "PRRE_BM_STANDARD_TRANSPARENCY");
+        bool b = assertTrue(mat->setBlendMode(TPRRE_BLENDMODE::PRRE_BM_STANDARD_TRANSPARENCY), "PRRE_BM_STANDARD_TRANSPARENCY");
         b &= assertEquals( PRRE_BM_STANDARD_TRANSPARENCY, mat->getBlendMode(), "1st mode") & 
             assertEquals( PRRE_SRC_ALPHA, mat->getSourceBlendFunc(), "1st src") &
             assertEquals( PRRE_ONE_MINUS_SRC_ALPHA, mat->getDestinationBlendFunc(), "1st dst");
 
-        b &= assertTrue(mat->setBlendMode(TPRRE_BLENDMODES::PRRE_BM_NONE, 1), "PRRE_BM_NONE, 1");
+        b &= assertTrue(mat->setBlendMode(TPRRE_BLENDMODE::PRRE_BM_NONE, 1), "PRRE_BM_NONE, 1");
         b &= assertEquals( PRRE_BM_NONE, mat->getBlendMode(1), "2nd mode") & 
             assertEquals( PRRE_ONE, mat->getSourceBlendFunc(1), "2nd src") &
             assertEquals( PRRE_ZERO, mat->getDestinationBlendFunc(1), "2nd dst");

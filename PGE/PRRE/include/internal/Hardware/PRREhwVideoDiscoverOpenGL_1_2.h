@@ -104,7 +104,7 @@ public:
     {
         if ( bSuppDrawRangeElements )
         {
-            PRREGLsnippets::ClearGLerror();
+            PRREGLsnippets::ClearGLError();
 
             glGetIntegerv(GL_MAX_ELEMENTS_VERTICES_EXT, &(tmpRet[0]));
             if ( (glGetError() != GL_NO_ERROR) || (tmpRet[0] < 1) )
@@ -112,7 +112,7 @@ public:
                 getConsole().EOLn("DrawRangeElements ext. is exported, but MRVAV is %d.", tmpRet[0]);
                 getConsole().EOLn("DrawRangeElements is disabled, upgrade graphics card driver!");
                 bSuppDrawRangeElements = false;
-                PRREGLsnippets::ClearGLerror();
+                PRREGLsnippets::ClearGLError();
                 return;
             }
 
@@ -122,7 +122,7 @@ public:
                 getConsole().EOLn("DrawRangeElements ext. is exported, but MRVAI is %d.", tmpRet[1]);
                 getConsole().EOLn("DrawRangeElements is disabled, upgrade graphics card driver!");
                 bSuppDrawRangeElements = false;
-                PRREGLsnippets::ClearGLerror();
+                PRREGLsnippets::ClearGLError();
                 return;
             }
         

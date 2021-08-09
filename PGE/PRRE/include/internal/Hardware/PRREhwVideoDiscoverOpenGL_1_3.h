@@ -271,7 +271,7 @@ public:
         {
             getConsole().SOLn("Texture compression supported!");
             glGetIntegerv(GL_NUM_COMPRESSED_TEXTURE_FORMATS_ARB, tmpRet);
-            if ( !PRREGLsnippets::isGLerrorPresent() )
+            if ( !PRREGLsnippets::isGLErrorPresent() )
             {
                 getConsole().OLn("  %d compressed texture formats available:", tmpRet[0]);
                 CheckAgainstStandardMinValue(tmpRet[0], GL_STANDARD_MIN_COMPRESSED_TEXTURE_FORMATS);
@@ -279,7 +279,7 @@ public:
                 {
                     GLint* compressedFormats = new GLint[tmpRet[0]];
                     glGetIntegerv(GL_COMPRESSED_TEXTURE_FORMATS_ARB, compressedFormats);
-                    if ( !PRREGLsnippets::isGLerrorPresent() )
+                    if ( !PRREGLsnippets::isGLErrorPresent() )
                     {
                         getConsole().OI();
                         for (GLint i = 0; i < tmpRet[0]; i++)
@@ -291,7 +291,7 @@ public:
                     }
                     else
                     {
-                        getConsole().EOLn("  glGetIntegerv() failed: %s", PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+                        getConsole().EOLn("  glGetIntegerv() failed: %s", PRREGLsnippets::getGLErrorTextFromEnum( PRREGLsnippets::getLastSavedGLError() ));
                     }
                     delete[] compressedFormats;
                 }
@@ -301,7 +301,7 @@ public:
                 }
             }
             else
-                getConsole().EOLn("  Compressed texture formats available: ? (error: %s)", PRREGLsnippets::getGLerrorTextFromEnum( PRREGLsnippets::getLastSavedGLerror() ));
+                getConsole().EOLn("  Compressed texture formats available: ? (error: %s)", PRREGLsnippets::getGLErrorTextFromEnum( PRREGLsnippets::getLastSavedGLError() ));
 
             if ( bSuppVTC = isExtensionSupported("GL_NV_texture_compression_vtc") )
                 getConsole().SOLn("  VTC also supported.");
@@ -331,7 +331,7 @@ public:
                 getConsole().EOLn("Multitexturing is disabled, upgrade graphics card driver!");
                 nTMUcount = 1;
                 bSuppMultiTexturing = false;
-                PRREGLsnippets::ClearGLerror();
+                PRREGLsnippets::ClearGLError();
             }
         }
         else

@@ -770,11 +770,11 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeDraw(bool bLighting) co
          Note that this only has effect if depth testing is enabled."
         https://learnopengl.com/Advanced-OpenGL/Depth-testing
     */
-    if ( PRREMaterial::isBlendFuncBlends(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
+    if ( PRREMaterial::isBlendFuncReallyBlending(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
     {
         glEnable(GL_BLEND);
         glDepthMask(GL_FALSE);
-        glBlendFunc(PRREGLsnippets::getGLblendFromPRREblend(_pOwner->getMaterial().getSourceBlendFunc()), PRREGLsnippets::getGLblendFromPRREblend(_pOwner->getMaterial().getDestinationBlendFunc()));
+        glBlendFunc(PRREGLsnippets::getGLBlendFromPRREBlend(_pOwner->getMaterial().getSourceBlendFunc()), PRREGLsnippets::getGLBlendFromPRREBlend(_pOwner->getMaterial().getDestinationBlendFunc()));
         glAlphaFunc(GL_GREATER, 0.1f);
         glEnable(GL_ALPHA_TEST);
     }
