@@ -22,7 +22,9 @@ class PRREObject3D::PRREObject3DImpl
 
 public:
 
-    static TPRREuint MAX_FRAMES_WO_OCCLUSION_TESTING;
+    static TPRREuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE;
+    static TPRREuint OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCLUDED;
+    static TPRREbool OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING;
 
     // ---------------------------------------------------------------------------
 
@@ -83,6 +85,7 @@ public:
     TPRREuint getUsedSystemMemory() const; 
 
     void Draw(const TPRRE_RENDER_PASS& renderPass);
+    void DrawASyncQuery(const TPRRE_RENDER_PASS& renderPass);
 
     // ---------------------------------------------------------------------------
 
@@ -127,6 +130,7 @@ private:
     GLuint        nOcclusionQuery;                           /**< OpenGL Occlusion query id. Can stay 0 if occlusion query will never be run for this object. */
     PRREObject3D* pBoundingBox;                              /**< Box to be rendered for occlusion testing. Stays NULL when nOcclusionQuery also stays 0. */
     // following variables extend the previous variables for the async occlusion query
+    TPRREbool     bOccluded;                                 /**< True if occlusion query resulted in it is occluded, false otherwise. Default value is false. */
     TPRREbool     bOcclusionQueryStarted;                    /**< Is nOcclusionQuery currently running? */
     TPRREuint     nFramesWithoutOcclusionTest;               /**< How many frames elapsed without testing if the object is occluded? */
     TPRREuint     nFramesWaitedForOcclusionTestResult;       // just for statistics
@@ -144,7 +148,9 @@ private:
     void      Draw_PrepareGLbeforeOcclusionQuery() const;
     void      Draw_ResetGLafterOcclusionQuery() const;
     void      Draw_Sync_OcclusionQuery_Start() const;
+    void      Draw_ASync_OcclusionQuery_Start();
     TPRREbool Draw_Sync_OcclusionQuery_Finish_And_Occluded() const;
+    TPRREbool Draw_ASync_OcclusionQuery_Finish_And_Occluded();
     void      Draw_DrawSW(); 
 
     friend class PRREObject3D;

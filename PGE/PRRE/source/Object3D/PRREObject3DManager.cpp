@@ -132,7 +132,6 @@ PRREObject3DManager::PRREObject3DManagerImpl& PRREObject3DManager::PRREObject3DM
 }
 
 
-
 /*
    PRREObject3DManager
    ###########################################################################

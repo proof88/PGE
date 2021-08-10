@@ -141,7 +141,8 @@ public:
     virtual TPRREuint getUsedSystemMemory() const;        /**< Gets the amount of allocated system memory. */
     virtual TPRREuint getUsedVideoMemory() const;         /**< Gets the amount of allocated video memory. */
 
-    void Draw(const TPRRE_RENDER_PASS& renderPass);       /**< Draws the object. */
+    void Draw(const TPRRE_RENDER_PASS& renderPass);             /**< Draws the object. */
+    void DrawASyncQuery(const TPRRE_RENDER_PASS& renderPass);   /**< Draws the object. */
 
 protected:
 

@@ -54,7 +54,9 @@ using namespace std;
 // ############################### PUBLIC ################################
 
 
-TPRREuint PRREObject3D::PRREObject3DImpl::MAX_FRAMES_WO_OCCLUSION_TESTING = 5;
+TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE  = 5;
+TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCLUDED = 0;
+TPRREbool PRREObject3D::PRREObject3DImpl::OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING = true;
 
 
 PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
@@ -436,7 +438,84 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
     Draw_FeedbackBuffer_Start();
     ((PRREVertexTransfer*)_pOwner)->pImpl->TransferVertices();
     Draw_FeedbackBuffer_Finish(); 
-} // Draw_NoOcclusionQuery()
+} // Draw()
+
+
+void PRREObject3D::PRREObject3DImpl::DrawASyncQuery(const TPRRE_RENDER_PASS& renderPass)
+{
+    // caller renderer is expected to check for GL errors, so we don't check them here
+
+    if ( !bVisible )
+        return;
+
+    if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
+    {
+        Draw_DrawSW();
+        return;
+    }
+
+    // see if we are parent or referring to another object i.e. we are cloned object
+    if ( _pOwner->isLevel1() || getReferredObject() )
+    {
+        // Currently 3D objects are 2-level entities:
+        // first level (parent) has no geometry, owns subobjects, sets basic things,
+        // while second level (subobjects) own geometry, inherit basic things set by parent.
+
+        // So transformations and other basic things are set by parent objects having subobjects.
+        // Or by cloned objects which refer to another original objects but still have their own position, angle, etc.
+        
+        if ( renderPass == PRRE_RPASS_NORMAL )
+        {
+            if ( (nOcclusionQuery != 0) && Draw_ASync_OcclusionQuery_Finish_And_Occluded() )
+            {
+                return;
+            }
+            
+            Draw_ApplyTransformations();
+            Draw_PrepareGLbeforeDraw(false);
+            // continue with drawing our subobjects
+        }
+        else
+        {   // PRRE_RPASS_SYNC_OCCLUSION_QUERY
+            if ( nOcclusionQuery == 0 )
+            {
+                // there is nothing to do in this pass
+                return;
+            }
+            Draw_ApplyTransformations();
+            Draw_ASync_OcclusionQuery_Start();
+            return;
+        }
+
+        // take care of attached objects (subobjects)
+        // note that either we have our own subobjects, OR we are just a cloned object and we need to draw original object's subobjects
+        PRREObject3D* pWhichParent = getReferredObject() ? getReferredObject() : _pOwner;
+        pWhichParent->pImpl->bParentInitiatedOperation = true;
+        for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
+            ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(PRRE_RPASS_NORMAL);
+        pWhichParent->pImpl->bParentInitiatedOperation = false;
+        return;
+    }
+
+    // if we reach this point then either our parent is drawing us as its subobject, or a cloned object is drawing us on behalf of our parent
+
+    // subobject must ignore draw if its Draw() was not called by its parent level-1 object but someone else from outside ...
+    if ( !((PRREObject3D*)_pOwner->getManager())->pImpl->bParentInitiatedOperation )
+    {
+        _pOwner->getManagedConsole().EOLn("Draw() of subobject called outside of its level-1 parent object, ignoring draw!");
+        return;
+    }
+
+    /* currently not supporting any vendor-specific mode */
+    if ( BITF_READ(_pOwner->getVertexTransferMode(),PRRE_VT_VENDOR_BITS,3) != 0 )
+        return;
+
+    PRREGLsnippets::glLoadTexturesAndSetBlendState(&(_pOwner->getMaterial()), _pOwner->isStickedToScreen());
+
+    Draw_FeedbackBuffer_Start();
+    ((PRREVertexTransfer*)_pOwner)->pImpl->TransferVertices();
+    Draw_FeedbackBuffer_Finish(); 
+} // Draw()
 
 
 // ############################## PROTECTED ##############################
@@ -469,8 +548,9 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
     bOccluder = false;
     pBoundingBox = PGENULL;
     nOcclusionQuery = 0;
+    bOccluded = false;
     bOcclusionQueryStarted = false;
-    nFramesWithoutOcclusionTest = MAX_FRAMES_WO_OCCLUSION_TESTING;
+    nFramesWithoutOcclusionTest = 0;
     nFramesWaitedForOcclusionTestResult = 0;
     nFramesWaitedForOcclusionTestResultMin = UINT_MAX;
     nFramesWaitedForOcclusionTestResultMax = 0;
@@ -827,8 +907,49 @@ void PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Start() const
 } // Draw_CheckIfOccluded_Sync()
 
 
+void PRREObject3D::PRREObject3DImpl::Draw_ASync_OcclusionQuery_Start()
+{
+    if ( nOcclusionQuery == 0 )
+    {
+        return;
+    }
+
+    assert(pBoundingBox != PGENULL);
+    assert(pBoundingBox->getCount() > 0);
+
+    if ( bOcclusionQueryStarted )
+    {
+        return;
+    }
+
+    if ( bOccluded )
+    {
+        if ( nFramesWithoutOcclusionTest <= OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCLUDED )
+        {
+            nFramesWithoutOcclusionTest++;
+            return;
+        }
+    }
+    else
+    {
+        if ( nFramesWithoutOcclusionTest <= OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE )
+        {
+            nFramesWithoutOcclusionTest++;
+            return;
+        }
+    }
+
+    Draw_PrepareGLbeforeOcclusionQuery();
+    ((PRREVertexTransfer*)pBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
+    Draw_ResetGLafterOcclusionQuery();
+
+    bOcclusionQueryStarted = true;
+    nFramesWaitedForOcclusionTestResult = 0;
+} // Draw_CheckIfOccluded_Sync()
+
+
 /**
-    @return True if occluded, false if not occluded or cannot conclude
+    @return True if occluded, false if not occluded or cannot conclude.
 */
 TPRREbool PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Finish_And_Occluded() const
 {
@@ -854,6 +975,54 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Finish_And_Oc
         glGetQueryObjectuivARB(nOcclusionQuery, GL_QUERY_RESULT_ARB, &sampleCount);
         return ( sampleCount == 0 );
     }
+} // Draw_Sync_OcclusionQuery_Finish_And_Occluded()
+
+
+/**
+    @return True if occluded, false if not occluded or cannot conclude.
+*/
+TPRREbool PRREObject3D::PRREObject3DImpl::Draw_ASync_OcclusionQuery_Finish_And_Occluded()
+{
+    if ( nOcclusionQuery == 0 )
+    {
+        return false; // let it be rendered
+    }
+
+    if ( !bOcclusionQueryStarted )
+    {
+        return bOccluded; // let it be rendered
+    }
+
+    GLint queryResultAvailable;
+    glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_AVAILABLE_ARB, &queryResultAvailable);
+
+    if ( queryResultAvailable == GL_FALSE )
+    {
+        return OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING ? false : bOccluded;
+    }
+
+    bOcclusionQueryStarted = false;
+    if ( nFramesWaitedForOcclusionTestResult < nFramesWaitedForOcclusionTestResultMin )
+        nFramesWaitedForOcclusionTestResultMin = nFramesWaitedForOcclusionTestResult;
+    if ( nFramesWaitedForOcclusionTestResult > nFramesWaitedForOcclusionTestResultMax )
+        nFramesWaitedForOcclusionTestResultMax = nFramesWaitedForOcclusionTestResult;
+    nFramesWaitedForOcclusionTestResult = 0;
+    nFramesWithoutOcclusionTest = 0;
+
+    if ( PRREhwInfo::get().getVideo().isBooleanOcclusionQuerySupported() )
+    {
+        GLint sampleBoolean;
+        glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_ARB, &sampleBoolean);
+        bOccluded = ( sampleBoolean == GL_FALSE );
+    }
+    else
+    {
+        GLuint sampleCount;
+        glGetQueryObjectuivARB(nOcclusionQuery, GL_QUERY_RESULT_ARB, &sampleCount);
+        bOccluded = ( sampleCount == 0 );
+    }
+
+    return bOccluded;
 } // Draw_Sync_OcclusionQuery_Finish_And_Occluded()
 
 
@@ -1522,6 +1691,17 @@ TPRREuint PRREObject3D::getUsedVideoMemory() const
 void PRREObject3D::Draw(const TPRRE_RENDER_PASS& renderPass)
 {
     pImpl->Draw(renderPass);
+} // Draw()
+
+
+/**
+    Draws the object.
+    This is only valid from outside for level-1 objects.
+    The call is ignored by level-2 subobjects. Only their level-1 parent object can call on its subobjects.
+*/
+void PRREObject3D::DrawASyncQuery(const TPRRE_RENDER_PASS& renderPass)
+{
+    pImpl->DrawASyncQuery(renderPass);
 } // Draw()
 
 

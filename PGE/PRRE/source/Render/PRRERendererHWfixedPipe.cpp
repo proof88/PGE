@@ -736,7 +736,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_ASync_OcclusionQuery(PRREIRender
                      )
                   {
                       glPushMatrix();
-                      obj->Draw((TPRRE_RENDER_PASS)iRenderPass);
+                      obj->DrawASyncQuery((TPRRE_RENDER_PASS)iRenderPass);
                       glPopMatrix();
                   }
               } // for i
