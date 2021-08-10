@@ -147,9 +147,9 @@ private:
     void      Draw_PrepareGLbeforeDraw(bool bLighting) const;
     void      Draw_PrepareGLbeforeOcclusionQuery() const;
     void      Draw_ResetGLafterOcclusionQuery() const;
-    void      Draw_Sync_OcclusionQuery_Start() const;
+    void      Draw_Sync_OcclusionQuery_Start();
     void      Draw_ASync_OcclusionQuery_Start();
-    TPRREbool Draw_Sync_OcclusionQuery_Finish_And_Occluded() const;
+    TPRREbool Draw_Sync_OcclusionQuery_Finish_And_Occluded();
     TPRREbool Draw_ASync_OcclusionQuery_Finish_And_Occluded();
     void      Draw_DrawSW(); 
 

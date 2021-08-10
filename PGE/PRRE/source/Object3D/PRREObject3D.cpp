@@ -892,7 +892,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_ResetGLafterOcclusionQuery() const
 } // Draw_ResetGLafterOcclusionQuery()
 
 
-void PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Start() const
+void PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Start()
 {
     if ( nOcclusionQuery == 0 )
     {
@@ -904,6 +904,8 @@ void PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Start() const
     Draw_PrepareGLbeforeOcclusionQuery();
     ((PRREVertexTransfer*)pBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
     Draw_ResetGLafterOcclusionQuery();
+
+    bOcclusionQueryStarted = true;
 } // Draw_CheckIfOccluded_Sync()
 
 
@@ -951,17 +953,26 @@ void PRREObject3D::PRREObject3DImpl::Draw_ASync_OcclusionQuery_Start()
 /**
     @return True if occluded, false if not occluded or cannot conclude.
 */
-TPRREbool PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Finish_And_Occluded() const
+TPRREbool PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Finish_And_Occluded()
 {
     if ( nOcclusionQuery == 0 )
     {
-        return false;
+        return false; // let it be rendered
+    }
+
+    if ( !bOcclusionQueryStarted )
+    {
+        // we always end up here with legacy renderer which never starts query for any objects but
+        // still invokes this function
+        return false; // let it be rendered
     }
 
     GLint queryResultAvailable;
     do {
         glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_AVAILABLE_ARB, &queryResultAvailable);
     } while (!queryResultAvailable);
+
+    bOcclusionQueryStarted = false;
 
     if ( PRREhwInfo::get().getVideo().isBooleanOcclusionQuerySupported() )
     {
