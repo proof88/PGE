@@ -73,11 +73,13 @@ Pseudo-code for an async (non-stop-and-wait) way of querying:
 	For every object, we need 3 variables:
      - iOcclusionQuery - the ID of the OpenGL occlusion query;
      - nFramesWithoutOcclusionTest - how many frames elapsed without testing if the object is occluded;
+	 - bOccluded - the last result of occlusion query;
      - bOcclusionQueryStarted - if true, there is an ongoing occlusion query for this object.
 
     When creating an object, an occlusion query object should be created (but not started) for it, and:
-      - iOcclusionQuery = 0;
+      - iOcclusionQuery = the ID of the created OpenGL occlusion query;
       - nFramesWithoutOcclusionTest = MAX_FRAMES_WO_OCCLUSION_TESTING;
+	  - bOccluded = false;
       - bOcclusionQueryStarted = false;
       - nFramesWaitedForOcclusionTestResult = 0;  // just for statistics
       - nFramesWaitedForOcclusionTestResultMin = MAX_UINT;  // just for statistics
@@ -110,7 +112,7 @@ Pseudo-code for an async (non-stop-and-wait) way of querying:
                 - glDepthMask(true);
         - no:
           - framesWithoutOcclusionTest++;
-          - render the occludee object;
+          - render the occludee if bOccluded is false, or always render it regardless bOccluded;
 
       // this is intentionally not in else branch, so we check if query already finished in the same frame
       // although I think I will see no query being finished in the same frame ... but this is the first approach!
@@ -120,8 +122,7 @@ Pseudo-code for an async (non-stop-and-wait) way of querying:
           - nFramesWaitedForOcclusionTestResult++;
           - get(GL_GET_QUERY_AVAILABLE) ?
             - no:
-              - render the occludee object;  // this could be controlled with a const boolean: render unsure occludees or not?
-                // if we render here then hidden occludees will be rendered every next frame if query result need more than 1 frame!!!
+              - render the occludee if bOccluded is false, or always render it regardless bOccluded;
             - yes:
               - if ( nFramesWaitedForOcclusionTestResult < nFramesWaitedForOcclusionTestResultMin )
                 - nFramesWaitedForOcclusionTestResultMin = nFramesWaitedForOcclusionTestResult;
@@ -132,9 +133,11 @@ Pseudo-code for an async (non-stop-and-wait) way of querying:
               - get query result;
               - number of visible fragments is greater than 0 ?:
                 - yes:
+				  - bOccluded = false;
                   - render the occludee object;
                   - framesWithoutOcclusionTest = 0;  // we can wait for a few frames before testing again
                 - no:
+				  - bOccluded = true;
                   - framesWithoutOcclusionTest = MAX_FRAMES_WO_OCCLUSION_TESTING;   // this is occluded now, skip draw, but re-test is needed immediately!
         - no: nothing.
 
