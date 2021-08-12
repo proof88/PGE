@@ -57,6 +57,7 @@ using namespace std;
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE  = 5;
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCLUDED = 0;
 TPRREbool PRREObject3D::PRREObject3DImpl::OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING = true;
+TPRREbool PRREObject3D::PRREObject3DImpl::OQ_RENDER_BOUNDING_BOXES = true;
 
 
 PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
@@ -395,7 +396,13 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
             }
             
             Draw_ApplyTransformations();
-            Draw_PrepareGLbeforeDraw(false);
+            if ( OQ_RENDER_BOUNDING_BOXES )
+            {
+                Draw_PrepareGLBeforeDrawBoundingBox();
+                Draw_RenderBoundingBox();
+
+            }
+            Draw_PrepareGLBeforeDrawNormal(false);
             // continue with drawing our subobjects
         }
         else
@@ -472,7 +479,7 @@ void PRREObject3D::PRREObject3DImpl::DrawASyncQuery(const TPRRE_RENDER_PASS& ren
             }
             
             Draw_ApplyTransformations();
-            Draw_PrepareGLbeforeDraw(false);
+            Draw_PrepareGLBeforeDrawNormal(false);
             // continue with drawing our subobjects
         }
         else
@@ -749,7 +756,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_ApplyTransformations() const
 } // Draw_ApplyTransformations()
 
 
-void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeDraw(bool bLighting) const
+void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLBeforeDrawNormal(bool bLighting) const
 {
     /*AmbientLightPos[0] =  cam.getX() - obj->getPosVec().getX();
     AmbientLightPos[1] =  cam.getY() - obj->getPosVec().getY();
@@ -855,7 +862,19 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeDraw(bool bLighting) co
         glDepthMask(GL_TRUE);
         glDisable(GL_ALPHA_TEST);
     }
-} // Draw_PrepareGLbeforeDraw()
+} // Draw_PrepareGLBeforeDrawNormal()
+
+
+void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLBeforeDrawBoundingBox() const
+{
+    glDisable(GL_CULL_FACE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glDepthMask(GL_TRUE);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
+    glDisable(GL_ALPHA_TEST);
+    glColor4f(0.f, 1.f, 0.f, 1.f );
+} // Draw_PrepareGLBeforeDrawBoundingBox()
 
 
 void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeOcclusionQuery() const
@@ -890,6 +909,19 @@ void PRREObject3D::PRREObject3DImpl::Draw_ResetGLafterOcclusionQuery() const
         glEndQueryARB(GL_SAMPLES_PASSED_ARB);
     }
 } // Draw_ResetGLafterOcclusionQuery()
+
+
+void PRREObject3D::PRREObject3DImpl::Draw_RenderBoundingBox() const
+{
+    if ( nOcclusionQuery == 0 )
+    {
+        return;
+    }
+
+    assert(pBoundingBox != PGENULL);
+    assert(pBoundingBox->getCount() > 0);
+    ((PRREVertexTransfer*)pBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
+} // Draw_RenderBoundingBox()
 
 
 void PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Start()

@@ -25,6 +25,7 @@ public:
     static TPRREuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE;
     static TPRREuint OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCLUDED;
     static TPRREbool OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING;
+    static TPRREbool OQ_RENDER_BOUNDING_BOXES;
 
     // ---------------------------------------------------------------------------
 
@@ -144,9 +145,11 @@ private:
     void      Draw_FeedbackBuffer_Start();                                                 /**< Set render mode to feedback and allocate buffer for transformed vertices. */
     void      Draw_FeedbackBuffer_Finish();                                                /**< Set render mode to default render. */
     void      Draw_ApplyTransformations() const ;                                          /**< Applies transformations to the current modelview matrix based on the given object. */
-    void      Draw_PrepareGLbeforeDraw(bool bLighting) const;
+    void      Draw_PrepareGLBeforeDrawNormal(bool bLighting) const;
+    void      Draw_PrepareGLBeforeDrawBoundingBox() const;
     void      Draw_PrepareGLbeforeOcclusionQuery() const;
     void      Draw_ResetGLafterOcclusionQuery() const;
+    void      Draw_RenderBoundingBox() const;
     void      Draw_Sync_OcclusionQuery_Start();
     void      Draw_ASync_OcclusionQuery_Start();
     TPRREbool Draw_Sync_OcclusionQuery_Finish_And_Occluded();

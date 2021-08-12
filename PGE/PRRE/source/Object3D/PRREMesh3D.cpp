@@ -175,6 +175,12 @@ PRREVector& PRREMesh3D::PRREMesh3DImpl::getPosVec()
 } // getPosVec()
 
 
+const PRREVector& PRREMesh3D::PRREMesh3DImpl::getRelPosVec() const
+{
+    return vRelPos;
+} // getRelPosVec()
+
+
 const PRREVector& PRREMesh3D::PRREMesh3DImpl::getPosVec() const
 {
     return vPos;
@@ -200,9 +206,9 @@ void PRREMesh3D::PRREMesh3DImpl::RecalculateSize()
         minvals.x = ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getPosVec().getX() - ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getSizeVec().getX() / 2.0f;
         minvals.y = ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getPosVec().getY() - ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getSizeVec().getY() / 2.0f;
         minvals.z = ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getPosVec().getZ() - ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getSizeVec().getZ() / 2.0f;
-        maxvals.x = -minvals.x;
-        maxvals.y = -minvals.y;
-        maxvals.z = -minvals.z;
+        maxvals.x = ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getPosVec().getX() + ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getSizeVec().getX() / 2.0f;
+        maxvals.y = ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getPosVec().getY() + ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getSizeVec().getY() / 2.0f;
+        maxvals.z = ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getPosVec().getZ() + ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getSizeVec().getZ() / 2.0f;
 
         for (TPRREint i = 1; i < _pOwner->getCount(); i++)
         {
@@ -225,6 +231,12 @@ void PRREMesh3D::PRREMesh3DImpl::RecalculateSize()
         vSize.SetZ( abs( minvals.z - maxvals.z ) );
 
         // since we are parent we dont need to modify our world-space position at all based on our subobjects
+
+        vRelPos.SetX( minvals.x + vSize.getX() / 2.0f );
+        vRelPos.SetY( minvals.y + vSize.getY() / 2.0f );
+        vRelPos.SetZ( minvals.z + vSize.getZ() / 2.0f );
+
+        return;
     }
 
     // as level-2 in theory we have geometry but check it for sure
@@ -261,6 +273,8 @@ void PRREMesh3D::PRREMesh3DImpl::RecalculateSize()
     vPos.SetX( minvals.x + vSize.getX() / 2.0f );
     vPos.SetY( minvals.y + vSize.getY() / 2.0f );
     vPos.SetZ( minvals.z + vSize.getZ() / 2.0f );
+
+    // vRelPos is not updated for level-2, as default [0,0,0] is always valid since we set position above based on minvals and size!
     
 } // RecalculateSize()
 
@@ -341,6 +355,7 @@ TPRREbool PRREMesh3D::PRREMesh3DImpl::cannibalize(PRREMesh3D& victim)
     nFaces_h = victim.pImpl->nFaces_h;
 
     vPos = victim.pImpl->vPos;
+    vRelPos = victim.pImpl->vRelPos;
     vSize = victim.pImpl->vSize;
 
     pMaterial = victim.pImpl->pMaterial;
@@ -718,6 +733,17 @@ const PRREVector& PRREMesh3D::getPosVec() const
     return pImpl->getPosVec();
 } // getPosVec()
 
+
+/**
+    Gets the mesh-local relative position.
+    This position tells the offset of the vertex positions relative to the center of the mesh [0,0,0].
+    For level-2 (sub)mesh, this vector is always expected to be [0,0,0] since the position of submeshes is calculated with vertex positions and size.
+    @return Mesh-local relative position vector.
+*/
+const PRREVector& PRREMesh3D::getRelPosVec() const
+{
+    return pImpl->getRelPosVec();
+} // getRelPosVec()
 
 /**
     Gets the base sizes.

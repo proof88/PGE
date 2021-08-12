@@ -78,6 +78,7 @@ protected:
         AddSubTest("testGetVertexIndex", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetVertexIndex);
         AddSubTest("testGetNormals", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetNormals);
         AddSubTest("testGetPosVec", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetPosVec);
+        AddSubTest("testGetRelPosVec", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetRelPosVec);
         AddSubTest("testGetSizeVec", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetSizeVec);
         AddSubTest("testRecalculateSize", (PFNUNITSUBTEST) &PRREMesh3DTest::testRecalculateSize);
         AddSubTest("testGetMaterialNoTexture", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetMaterialNoTexture);
@@ -387,7 +388,10 @@ private:
         for (TPRREint i = 0; i < meshCube->getCount(); i++)
             b4 = b4 & assertTrue( ((PRREMesh3D*)meshCube->getAttachedAt(i))->getPosVec().isZero(), "pos zero cube sub" );
 
-        return assertEquals(0.0f, meshPlane->getPosVec().getX(), E, "plane x") &        
+        return assertEquals(0.0f, meshFromFile->getPosVec().getX(), E, "meshFromFile x") &        
+            assertEquals(0.0f, meshFromFile->getPosVec().getY(), E, "meshFromFile y") &
+            assertEquals(0.0f, meshFromFile->getPosVec().getZ(), E, "meshFromFile z") &
+            assertEquals(0.0f, meshPlane->getPosVec().getX(), E, "plane x") &        
             assertEquals(0.0f, meshPlane->getPosVec().getY(), E, "plane y") &
             assertEquals(0.0f, meshPlane->getPosVec().getZ(), E, "plane z") &
             assertEquals(0.0f, meshBox->getPosVec().getX(), E, "box x") &        
@@ -397,6 +401,41 @@ private:
             assertEquals(0.0f, meshCube->getPosVec().getY(), E, "cube y") &
             assertEquals(0.0f, meshCube->getPosVec().getZ(), E, "cube z") &
             assertTrue(b1 & b2 & b3 & b4, "subobject position");
+    }
+
+    bool testGetRelPosVec()
+    {
+        // all subobjects should have their relpos as [0,0,0] since their position is calculated from their vertices' position and size
+        bool b1 = true;
+        for (TPRREint i = 0; i < meshFromFile->getCount(); i++)
+            b1 = b1 & assertTrue( ((PRREMesh3D*)meshFromFile->getAttachedAt(i))->getRelPosVec().isZero(), "relpos zero mesh sub" );
+
+        // in other objects, this is also valid!
+        bool b2 = true;
+        for (TPRREint i = 0; i < meshPlane->getCount(); i++)
+            b2 = b2 & assertTrue( ((PRREMesh3D*)meshPlane->getAttachedAt(i))->getRelPosVec().isZero(), "relpos zero plane sub" );
+
+        bool b3 = true;
+        for (TPRREint i = 0; i < meshBox->getCount(); i++)
+            b3 = b3 & assertTrue( ((PRREMesh3D*)meshBox->getAttachedAt(i))->getRelPosVec().isZero(), "relpos zero box sub" );
+
+        bool b4 = true;
+        for (TPRREint i = 0; i < meshCube->getCount(); i++)
+            b4 = b4 & assertTrue( ((PRREMesh3D*)meshCube->getAttachedAt(i))->getRelPosVec().isZero(), "relpos zero cube sub" );
+
+        return assertEquals(0.0f, meshFromFile->getRelPosVec().getX(), E, "meshFromFile x") &        
+            assertEquals(0.0f, meshFromFile->getRelPosVec().getY(), E, "meshFromFile y") &
+            assertEquals(0.0f, meshFromFile->getRelPosVec().getZ(), E, "meshFromFile z") &
+            assertEquals(0.0f, meshPlane->getRelPosVec().getX(), E, "plane x") &        
+            assertEquals(0.0f, meshPlane->getRelPosVec().getY(), E, "plane y") &
+            assertEquals(0.0f, meshPlane->getRelPosVec().getZ(), E, "plane z") &
+            assertEquals(0.0f, meshBox->getRelPosVec().getX(), E, "box x") &        
+            assertEquals(0.0f, meshBox->getRelPosVec().getY(), E, "box y") &
+            assertEquals(0.0f, meshBox->getRelPosVec().getZ(), E, "box z") &
+            assertEquals(0.0f, meshCube->getRelPosVec().getX(), E, "cube x") &        
+            assertEquals(0.0f, meshCube->getRelPosVec().getY(), E, "cube y") &
+            assertEquals(0.0f, meshCube->getRelPosVec().getZ(), E, "cube z") &
+            assertTrue(b1 & b2 & b3 & b4, "subobject relative position");
     }
 
     bool testGetSizeVec()

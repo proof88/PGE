@@ -45,6 +45,7 @@ public:
 
     PRREVector&       getPosVec();                  
     const PRREVector& getPosVec() const;
+    const PRREVector& getRelPosVec() const;
     const PRREVector& getSizeVec() const; 
     void              RecalculateSize();
 
@@ -72,7 +73,8 @@ protected:
     TPRREuint   nVertices_h;        /**< Number of vertices. */
     TPRREuint   nFaces_h;           /**< Number of faces. */
 
-    PRREVector vPos;                /**< 3D Position. */
+    PRREVector vPos;                /**< 3D World-space Position. */
+    PRREVector vRelPos;             /**< 3D offset position of vertices relative to center of mesh [0,0,0]. */
     PRREVector vSize;               /**< 3D Size. */
     
     PRREMesh3DImpl(PRREMesh3D* owner, TPRRE_PRIMITIVE_FORMAT prfmt);

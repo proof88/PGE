@@ -510,15 +510,26 @@ PRREObject3D* PRREObject3DManager::createFromFile(
                 else
                 {
                     getConsole().OLn("Occlusion query ID: %d", obj->pImpl->nOcclusionQuery);
-                    obj->pImpl->pBoundingBox = createBox(obj->getSizeVec().getX(), obj->getSizeVec().getY(), obj->getSizeVec().getZ(), PRRE_VMOD_STATIC, PRRE_VREF_INDEXED);
+                    // here we specify forcing bounding box geometry in client memory because we alter vertex positions a few lines below ...
+                    obj->pImpl->pBoundingBox = createBox(obj->getSizeVec().getX(), obj->getSizeVec().getY(), obj->getSizeVec().getZ(), PRRE_VMOD_STATIC, PRRE_VREF_INDEXED, true);
                     if ( PGENULL == obj->pImpl->pBoundingBox )
                     {
                         const std::string sErrMsg = "failed to create pBoundingBox!";
                         throw std::runtime_error(sErrMsg);
                     }
+
                     obj->pImpl->pBoundingBox->Hide();
+                    // sometimes geometry is not exactly placed in mesh's [0,0,0], so we need to offset bounding box vertices based on object's relpos!
+                    for (TPRREuint i = 0; i < obj->pImpl->pBoundingBox->getVerticesCount(); i++)
+                    {
+                        obj->pImpl->pBoundingBox->getVertices()[i].x += obj->getRelPosVec().getX();
+                        obj->pImpl->pBoundingBox->getVertices()[i].y += obj->getRelPosVec().getY();
+                        obj->pImpl->pBoundingBox->getVertices()[i].z += obj->getRelPosVec().getZ();
+                    }
+                    // upload bounding box geometry to host memory with altered vertex positions
+                    obj->pImpl->pBoundingBox->setVertexTransferMode( obj->pImpl->pBoundingBox->selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_INDEXED, false) );
                 }
-            }
+            } // endif create bounding box of occlusion query
 
             // although PPP has already selected the vtransmode, we set it again
             // to actually allocate the needed resources for the geometry

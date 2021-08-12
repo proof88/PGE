@@ -302,8 +302,8 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
 
     SwitchToPerspectiveProjection();
     //Draw3DObjects_Legacy(*this);
-    //Draw3DObjects_Sync_OcclusionQuery(*this);
-    Draw3DObjects_ASync_OcclusionQuery(*this);
+    Draw3DObjects_Sync_OcclusionQuery(*this);
+    //Draw3DObjects_ASync_OcclusionQuery(*this);
 
     SwitchToOrtographicProjection();
     Draw2DObjects(*this);
