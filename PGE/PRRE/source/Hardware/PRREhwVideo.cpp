@@ -128,7 +128,7 @@ private:
     static TPRREint  nStencilBits, nFSAAlevel;   /**< Stencil Buffer depth, FSAA-level. */
 
     static bool      bAlreadyInitializedOnceOGL; /**< True if OGL-initialization has been done once already.
-                                                      This is to speed up consecutive start-stop initializations with same OGL renderer. */
+                                                      This is to speed up consecutive stop-start initializations with same OGL renderer. */
     static TPRREbool bSuppAnisoFiltering;        /**< Is anisotropic filtering available? */
     static GLfloat   nAnisoFilterMax;            /**< Maximum level of anisotropic filtering. */
     static TPRREbool bSuppHWmipmapGen;           /**< Is HW MIP map generation available? */

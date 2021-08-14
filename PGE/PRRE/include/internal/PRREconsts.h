@@ -27,6 +27,6 @@
 #endif
 
 #define PRRE_NAME    "PR00F's Reduced Rendering Engine (PRRE)"           /**< Name of the engine. */
-#define PRRE_VERSION "0.1 private alpha built on "__DATE__" @ "__TIME__  /**< Version of the engine. */
+#define PRRE_VERSION "0.3 private alpha built on "__DATE__" @ "__TIME__  /**< Version of the engine. */
 
 

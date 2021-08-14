@@ -55,7 +55,9 @@ protected:
         CConsole::getConsoleInstance().SetLoggingState(PRRETextureManager::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(PRREImage::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(PRREImageManager::getLoggerModuleName(), true);*/
+        
         engine = NULL;
+        im = NULL;
         tm = NULL;
         AddSubTest("testGetMIPmapCount", (PFNUNITSUBTEST) &PRRETextureManagerTest::testGetMIPmapCount);
         AddSubTest("testGetWidthAtLevel", (PFNUNITSUBTEST) &PRRETextureManagerTest::testGetWidthAtLevel);
@@ -282,6 +284,12 @@ private:
     {
         const PRRETexture* const tex24 = tm->createFromFile(BMP128x128x24);
         const PRRETexture* const tex32 = tm->createFromFile(BMP128x128x32op);
+
+        if ( !assertNotNull(tex24, "tex24 null") || !assertNotNull(tex32, "tex32 null") )
+        {
+            return false;
+        }
+
         bool b = assertEquals(tex24->getUsedTextureMemory() + tex32->getUsedTextureMemory(), tm->getUsedTextureMemory(), "b1" );
 
         tm->DeleteAll();

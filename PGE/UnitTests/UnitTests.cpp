@@ -87,9 +87,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PGEcfgVariableTest         testPGEcfgVariable;
     PGESysCFGTest              testPGESysCFG; 
     
-    /*   */
     PRREScreenTest                  testScreen;
     PRRESharedSettingsTest          testSharedSettings;
+
     PRREVectorTest                  testPRREVector;
     PRREPosUpTargetTest             testPosUpTarget;
     PRREMatrixTest                  testPRREMatrix;
@@ -129,14 +129,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     vector<UnitTest*> tests;
     
-     /*  
     tests.push_back(&testPFL);
-          
     tests.push_back(&testPGEcfgVariable);
     tests.push_back(&testPGESysCFG);
-    */
-
-    /*     
+   
+    /*
     tests.push_back(&testScreen);
     tests.push_back(&testSharedSettings);
     */
@@ -149,7 +146,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testOctree);
     tests.push_back(&testBVH);
     tests.push_back(&testPRREScissor);
-/*  */        
+         
     tests.push_back(&testPRREColor);
     tests.push_back(&testPRREManager);
     tests.push_back(&testPRREManaged);
@@ -163,7 +160,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPRREhwVideo); 
 
     tests.push_back(&testPRREImageManager);
-    tests.push_back(&testPRREImage);
+    tests.push_back(&testPRREImage); 
     tests.push_back(&testPRRETextureManager);
     tests.push_back(&testPRRETexture);
     tests.push_back(&testPRREMaterialManager);

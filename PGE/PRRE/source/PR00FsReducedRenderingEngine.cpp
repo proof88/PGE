@@ -164,6 +164,11 @@ TPRREuint PR00FsReducedRenderingEngineImpl::initialize(
     // Note in case of SW rendering there is no OpenGL, but managers are able to detect that condition so we are safe here.
     try
     {
+        // I know this error handling is a joke!
+        // the try is added to catch the exceptions might be thrown by new,
+        // but since the ctors are not throwing YET, I need to check isInitialized() after each other.
+        // obviously I will add exception throwing to ctors and then this code will be much cleaner.
+
         pImageMgr = new PRREImageManager();
 
         pTextureMgr  = new PRRETextureManager();
