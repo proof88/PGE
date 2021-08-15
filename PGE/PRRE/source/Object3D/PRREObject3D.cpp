@@ -132,13 +132,13 @@ TPRREbool PRREObject3D::PRREObject3DImpl::setVertexTransferMode(TPRRE_VERTEX_TRA
     TPRREbool b = _pOwner->PRREVertexTransfer::setVertexTransferMode(vtrans);
     _pOwner->getManagedConsole().OO();
     return b;
-}
+} // setVertexTransferMode()
 
 
 PRREObject3D* PRREObject3D::PRREObject3DImpl::getReferredObject() const
 {
     return pRefersto; 
-}
+} // getReferredObject()
 
 
 TPRRE_TRANSFORMED_VERTEX* PRREObject3D::PRREObject3DImpl::getTransformedVertices(TPRREbool implicitAccessSubobject)
@@ -147,7 +147,7 @@ TPRRE_TRANSFORMED_VERTEX* PRREObject3D::PRREObject3DImpl::getTransformedVertices
         return ((PRREObject3D*) (_pOwner->getAttachedAt(0)))->getTransformedVertices();
     else
         return pVerticesTransf;
-}
+} // getTransformedVertices()
 
 
 PRREVector& PRREObject3D::PRREObject3DImpl::getAngleVec()
@@ -872,9 +872,9 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLBeforeDrawBoundingBox() const
     glDepthMask(GL_TRUE);
     //glDisable(GL_DEPTH_TEST);
     glEnable(GL_DEPTH_TEST);
-    glDisable(GL_BLEND);
     glDisable(GL_ALPHA_TEST);
     glColor4f(0.f, 1.f, 0.f, 1.f );
+    PRREGLsnippets::glLoadTexturesAndSetBlendState(PGENULL, false);
 } // Draw_PrepareGLBeforeDrawBoundingBox()
 
 
