@@ -870,7 +870,8 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLBeforeDrawBoundingBox() const
     glDisable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDepthMask(GL_TRUE);
-    glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
     glDisable(GL_ALPHA_TEST);
     glColor4f(0.f, 1.f, 0.f, 1.f );
@@ -1275,14 +1276,29 @@ const PRREVector& PRREObject3D::getAngleVec() const
 
 
 /**
+    Gets the mesh-local relative position.
+    This position tells the offset of the vertex positions relative to the center of the mesh [0,0,0].
+    For level-2 (sub)mesh, this vector is always expected to be [0,0,0] since the position of submeshes is calculated with vertex positions and size.
+    The Mesh3D part of a cloned object does not have its own geometry, thus even Mesh3D::RecalculateSize() would calculate it to 0.
+    Thus if we are a cloned object, we need to return the relative position vector of the object we are referring to.
+    @return Mesh-local relative position vector.
+*/
+const PRREVector& PRREObject3D::getRelPosVec() const
+{
+    return (getReferredObject() == PGENULL) ? PRREMesh3D::getRelPosVec() : getReferredObject()->getRelPosVec();
+} // getRelPosVec()
+
+
+/**
     Gets the base sizes.
     The Mesh3D part of a cloned object does not have its own geometry, thus even Mesh3D::RecalculateSize() would calculate it to 0.
     Thus if we are a cloned object, we need to return the size of the object we are referring to.
+    @return Base sizes vector.
 */
 const PRREVector& PRREObject3D::getSizeVec() const
 {
     return (getReferredObject() == PGENULL) ? PRREMesh3D::getSizeVec() : getReferredObject()->getSizeVec();
-}
+} // getSizeVec()
 
 
 /**

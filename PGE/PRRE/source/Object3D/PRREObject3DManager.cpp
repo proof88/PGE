@@ -511,7 +511,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
                 {
                     getConsole().OLn("Occlusion query ID: %d", obj->pImpl->nOcclusionQuery);
                     // here we specify forcing bounding box geometry in client memory because we alter vertex positions a few lines below ...
-                    obj->pImpl->pBoundingBox = createBox(obj->getSizeVec().getX(), obj->getSizeVec().getY(), obj->getSizeVec().getZ(), PRRE_VMOD_STATIC, PRRE_VREF_INDEXED, true);
+                    obj->pImpl->pBoundingBox = createBox(obj->getSizeVec().getX(), obj->getSizeVec().getY(), obj->getSizeVec().getZ(), PRRE_VMOD_DYNAMIC, PRRE_VREF_INDEXED, true);
                     if ( PGENULL == obj->pImpl->pBoundingBox )
                     {
                         const std::string sErrMsg = "failed to create pBoundingBox!";
@@ -617,6 +617,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         obj->pImpl->pRefersto = &referredobj;
 
         obj->getPosVec() = referredobj.getPosVec();
+        // we dont need to copy vRelPos, since getRelPosVec() is overridden in Object3D to work for cloned objects too!
         obj->pImpl->vAngle = referredobj.getAngleVec();
         obj->pImpl->bAffectedByLights = referredobj.isLit();
         obj->pImpl->bDoubleSided = referredobj.isDoubleSided();
@@ -660,13 +661,23 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
             else
             {
                 getConsole().OLn("Occlusion query ID: %d", obj->pImpl->nOcclusionQuery);
-                obj->pImpl->pBoundingBox = createBox(obj->getSizeVec().getX(), obj->getSizeVec().getY(), obj->getSizeVec().getZ(), PRRE_VMOD_STATIC, PRRE_VREF_INDEXED);
+                obj->pImpl->pBoundingBox = createBox(obj->getSizeVec().getX(), obj->getSizeVec().getY(), obj->getSizeVec().getZ(), PRRE_VMOD_DYNAMIC, PRRE_VREF_INDEXED, true);
                 if ( PGENULL == obj->pImpl->pBoundingBox )
                 {
                     const std::string sErrMsg = "failed to create pBoundingBox!";
                     throw std::runtime_error(sErrMsg);
                 }
+
                 obj->pImpl->pBoundingBox->Hide();
+                // sometimes geometry is not exactly placed in mesh's [0,0,0], so we need to offset bounding box vertices based on object's relpos!
+                for (TPRREuint i = 0; i < obj->pImpl->pBoundingBox->getVerticesCount(); i++)
+                {
+                    obj->pImpl->pBoundingBox->getVertices()[i].x += obj->getRelPosVec().getX();
+                    obj->pImpl->pBoundingBox->getVertices()[i].y += obj->getRelPosVec().getY();
+                    obj->pImpl->pBoundingBox->getVertices()[i].z += obj->getRelPosVec().getZ();
+                }
+                // upload bounding box geometry to host memory with altered vertex positions
+                obj->pImpl->pBoundingBox->setVertexTransferMode( obj->pImpl->pBoundingBox->selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_INDEXED, false) );
             }
         }
         

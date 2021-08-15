@@ -97,6 +97,7 @@ public:
           PRREVector& getAngleVec();                /**< Gets the rotation angles. */
     const PRREVector& getAngleVec() const;          /**< Gets the rotation angles. */
 
+    virtual const PRREVector& getRelPosVec() const; /**< Gets the mesh-local relative position. */
     virtual const PRREVector& getSizeVec() const;   /**< Gets the base sizes. */
 
           PRREVector  getScaledSizeVec() const;     /**< Gets the real sizes considering the geometry size calculated from vertex data and the current scaling factor. */

@@ -202,7 +202,7 @@ private:
             return assertNotNull(objCloned, "objCloned is NULL");
         }
 
-        PRREObject3D* const objFromFile = om->createFromFile("_res/models/snail_proofps/snail.obj");
+        PRREObject3D* const objFromFile = om->createFromFile("_res/models/robot_proofps/robot.obj");
         if ( !assertNotNull(objFromFile, "objFromFile not null"))
         {
             return assertNotNull(objFromFile, "objFromFile is NULL");
@@ -218,6 +218,7 @@ private:
             assertNotEquals(std::string::npos, objCloned->getName().find("clone of " + objPlane->getName()), "name substr");
 
         return assertTrue(objPlane->getPosVec() == objCloned->getPosVec(), "pos") &
+            assertTrue(objPlane->getRelPosVec() == objCloned->getRelPosVec(), "rel pos") &
             assertTrue(objPlane->getAngleVec() == objCloned->getAngleVec(), "angle") &
             assertTrue(objPlane->getScaling() == objCloned->getScaling(), "scale") &
             b &
@@ -233,7 +234,8 @@ private:
             assertTrue(objCloned->isWireframedCulled(), "wireframeculled") &
             assertNull(objCloned->getBoundingBoxObject(), "objCloned bounding box") &
             assertNotNull(objFromFileCloned->getBoundingBoxObject(), "objCloned bounding box") &
-            assertNotEquals(objFromFileCloned->getBoundingBoxObject(), objFromFile->getBoundingBoxObject(), "different bounding boxes");
+            assertNotEquals(objFromFileCloned->getBoundingBoxObject(), objFromFile->getBoundingBoxObject(), "different bounding boxes") &
+            assertTrue(objFromFileCloned->getRelPosVec() == objFromFile->getRelPosVec(), "objFromFile rel pos");
     }
 
     bool testGetUsedVideoMemory()

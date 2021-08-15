@@ -203,27 +203,29 @@ void PRREMesh3D::PRREMesh3DImpl::RecalculateSize()
 
         // now we can determine our own size as parent based on min and max subobject positions and size
         TXYZ minvals, maxvals;
-        minvals.x = ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getPosVec().getX() - ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getSizeVec().getX() / 2.0f;
-        minvals.y = ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getPosVec().getY() - ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getSizeVec().getY() / 2.0f;
-        minvals.z = ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getPosVec().getZ() - ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getSizeVec().getZ() / 2.0f;
-        maxvals.x = ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getPosVec().getX() + ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getSizeVec().getX() / 2.0f;
-        maxvals.y = ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getPosVec().getY() + ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getSizeVec().getY() / 2.0f;
-        maxvals.z = ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getPosVec().getZ() + ((PRREMesh3D*)_pOwner->getAttachedAt(0))->getSizeVec().getZ() / 2.0f;
+        const PRREMesh3D* subMesh = (PRREMesh3D*)_pOwner->getAttachedAt(0);
+        minvals.x = subMesh->getPosVec().getX() - subMesh->getSizeVec().getX() / 2.0f;
+        minvals.y = subMesh->getPosVec().getY() - subMesh->getSizeVec().getY() / 2.0f;
+        minvals.z = subMesh->getPosVec().getZ() - subMesh->getSizeVec().getZ() / 2.0f;
+        maxvals.x = subMesh->getPosVec().getX() + subMesh->getSizeVec().getX() / 2.0f;
+        maxvals.y = subMesh->getPosVec().getY() + subMesh->getSizeVec().getY() / 2.0f;
+        maxvals.z = subMesh->getPosVec().getZ() + subMesh->getSizeVec().getZ() / 2.0f;
 
         for (TPRREint i = 1; i < _pOwner->getCount(); i++)
         {
-            if ( minvals.x > ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getPosVec().getX() - ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getSizeVec().getX() / 2.0f )
-                minvals.x = ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getPosVec().getX() - ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getSizeVec().getX() / 2.0f;
-            if ( maxvals.x < ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getPosVec().getX() + ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getSizeVec().getX() / 2.0f )
-                maxvals.x = ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getPosVec().getX() + ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getSizeVec().getX() / 2.0f;
-            if ( minvals.y > ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getPosVec().getY() - ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getSizeVec().getY() / 2.0f )
-                minvals.y = ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getPosVec().getY() - ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getSizeVec().getY() / 2.0f;
-            if ( maxvals.y < ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getPosVec().getY() + ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getSizeVec().getY() / 2.0f )
-                maxvals.y = ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getPosVec().getY() + ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getSizeVec().getY() / 2.0f;
-            if ( minvals.z > ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getPosVec().getZ() - ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getSizeVec().getZ() / 2.0f )
-                minvals.z = ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getPosVec().getZ() - ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getSizeVec().getZ() / 2.0f;
-            if ( maxvals.z < ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getPosVec().getZ() + ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getSizeVec().getZ() / 2.0f )
-                maxvals.z = ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getPosVec().getZ() + ((PRREMesh3D*)_pOwner->getAttachedAt(i))->getSizeVec().getZ() / 2.0f;
+            subMesh = (PRREMesh3D*)_pOwner->getAttachedAt(i);
+            if ( minvals.x > subMesh->getPosVec().getX() - subMesh->getSizeVec().getX() / 2.0f )
+                minvals.x = subMesh->getPosVec().getX() - subMesh->getSizeVec().getX() / 2.0f;
+            if ( maxvals.x < subMesh->getPosVec().getX() + subMesh->getSizeVec().getX() / 2.0f )
+                maxvals.x = subMesh->getPosVec().getX() + subMesh->getSizeVec().getX() / 2.0f;
+            if ( minvals.y > subMesh->getPosVec().getY() - subMesh->getSizeVec().getY() / 2.0f )
+                minvals.y = subMesh->getPosVec().getY() - subMesh->getSizeVec().getY() / 2.0f;
+            if ( maxvals.y < subMesh->getPosVec().getY() + subMesh->getSizeVec().getY() / 2.0f )
+                maxvals.y = subMesh->getPosVec().getY() + subMesh->getSizeVec().getY() / 2.0f;
+            if ( minvals.z > subMesh->getPosVec().getZ() - subMesh->getSizeVec().getZ() / 2.0f )
+                minvals.z = subMesh->getPosVec().getZ() - subMesh->getSizeVec().getZ() / 2.0f;
+            if ( maxvals.z < subMesh->getPosVec().getZ() + subMesh->getSizeVec().getZ() / 2.0f )
+                maxvals.z = subMesh->getPosVec().getZ() + subMesh->getSizeVec().getZ() / 2.0f;
         }
 
         vSize.SetX( abs( minvals.x - maxvals.x ) );

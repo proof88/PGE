@@ -86,7 +86,7 @@ public:
 
           PRREVector& getPosVec();                  /**< Gets the position. */
     const PRREVector& getPosVec() const;            /**< Gets the position. */
-    const PRREVector& getRelPosVec() const;         /**< Gets the mesh-local relative position. */
+    virtual const PRREVector& getRelPosVec() const; /**< Gets the mesh-local relative position. */
     virtual const PRREVector& getSizeVec() const;   /**< Gets the base sizes. */
     void              RecalculateSize();            /**< Recalculates the sizes. */
 
