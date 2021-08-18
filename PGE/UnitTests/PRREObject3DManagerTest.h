@@ -235,7 +235,10 @@ private:
             assertNull(objCloned->getBoundingBoxObject(), "objCloned bounding box") &
             assertNotNull(objFromFileCloned->getBoundingBoxObject(), "objCloned bounding box") &
             assertNotEquals(objFromFileCloned->getBoundingBoxObject(), objFromFile->getBoundingBoxObject(), "different bounding boxes") &
-            assertTrue(objFromFileCloned->getRelPosVec() == objFromFile->getRelPosVec(), "objFromFile rel pos");
+            assertTrue(objFromFileCloned->getRelPosVec() == objFromFile->getRelPosVec(), "objFromFile rel pos") &
+            assertTrue(objFromFileCloned->isOccluded() == false, "objFromFile isOccluded") &
+            assertTrue(objFromFileCloned->isOccluder() == false, "objFromFile isOccluder") &
+            assertTrue(objFromFileCloned->isOcclusionTested() == true, "objFromFile isOcclusionTested");
     }
 
     bool testGetUsedVideoMemory()

@@ -36,9 +36,11 @@ public:
     static TPRREbool setVertexIndex(void* arr, TPRREuint index, TPRREuint value, GLenum iType);  /**< Sets arr[index] element of the given array of iType type elements to value. */
 
     static void      SetGLBoundingBoxRendering(TPRREbool state);                                 /**< Sets GL states up for bounding box rendering or resets them. */
+    static void      glPrepareBeforeDrawBoundingBox();
+    static void      SetZPassRendering(TPRREbool state);
 
     static TPRRE_BLENDFACTOR getPRREBlendFromGLBlend(GLenum glb);                               /**< Gets the appropriate PRRE blend factor for the given GL enum. */
-    static GLenum             getGLBlendFromPRREBlend(TPRRE_BLENDFACTOR bf);                    /**< Gets the appropriate GL enum for the given PRRE blend factor. */
+    static GLenum            getGLBlendFromPRREBlend(TPRRE_BLENDFACTOR bf);                     /**< Gets the appropriate GL enum for the given PRRE blend factor. */
     
     static void      glLoadTextureIntoTMU(const PRRETexture* tex, TPRREuint iTMU, TPRREbool bSticked);  /**< Loads the given texture into the texture mapping unit. */
     static void      glLoadTexturesAndSetBlendState(const PRREMaterial* mat, TPRREbool bSticked);       /**< Loads all textures into texture mapping units and sets blending if needed for single-pass multitexturing. */

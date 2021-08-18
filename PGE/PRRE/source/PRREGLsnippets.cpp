@@ -161,12 +161,11 @@ void PRREGLsnippets::SetGLBoundingBoxRendering(TPRREbool state)
     {
         // obj->Draw() must not set these states when the given renderPass is PRRE_RPASS_SYNC_OCCLUSION_START
         glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-        glDepthMask(GL_FALSE);
         glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
         glDisable(GL_CULL_FACE);
         glDisable(GL_LIGHTING);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glDisable(GL_BLEND);
         glDisable(GL_ALPHA_TEST);
         glLoadTexturesAndSetBlendState(PGENULL, false);
     }
@@ -177,6 +176,38 @@ void PRREGLsnippets::SetGLBoundingBoxRendering(TPRREbool state)
         glFlush(); // this to make sure any initiated GL query is actually starts to be processed by GPU so later we dont have to wait that much for results
     }
 } // SetGLBoundingBoxRendering()
+
+
+void PRREGLsnippets::glPrepareBeforeDrawBoundingBox()
+{
+    glDepthMask(GL_TRUE);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_LIGHTING);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glDisable(GL_ALPHA_TEST);
+    glLoadTexturesAndSetBlendState(PGENULL, false);
+} // glPrepareBeforeDrawBoundingBox()
+
+
+void PRREGLsnippets::SetZPassRendering(TPRREbool state)
+{
+    if ( state )
+    {
+        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+        glEnable(GL_DEPTH_TEST);
+        glDepthMask(GL_TRUE);
+        glEnable(GL_CULL_FACE);
+        glDisable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glDisable(GL_ALPHA_TEST);
+        glLoadTexturesAndSetBlendState(PGENULL, false);
+    }
+    else
+    {
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    }
+} // SetZPassRendering()
 
 
 /**

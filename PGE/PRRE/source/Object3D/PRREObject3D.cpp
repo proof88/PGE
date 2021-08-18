@@ -57,7 +57,6 @@ using namespace std;
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE  = 5;
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCLUDED = 0;
 TPRREbool PRREObject3D::PRREObject3DImpl::OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING = true;
-TPRREbool PRREObject3D::PRREObject3DImpl::OQ_RENDER_BOUNDING_BOXES = true;
 
 
 PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
@@ -346,6 +345,18 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
 {
     bOccluder = value;
 }
+
+
+TPRREbool PRREObject3D::PRREObject3DImpl::isOccluded() const
+{
+    return bOccluded;
+}
+
+
+TPRREbool PRREObject3D::PRREObject3DImpl::isOcclusionTested() const
+{
+    return nOcclusionQuery > 0;
+}
                                                                                                                            
 
 const PRREObject3D* PRREObject3D::PRREObject3DImpl::getBoundingBoxObject() const
@@ -396,17 +407,11 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
             }
             
             Draw_ApplyTransformations();
-            if ( OQ_RENDER_BOUNDING_BOXES )
-            {
-                Draw_PrepareGLBeforeDrawBoundingBox();
-                Draw_RenderBoundingBox();
-
-            }
             Draw_PrepareGLBeforeDrawNormal(false);
             // continue with drawing our subobjects
         }
-        else
-        {   // PRRE_RPASS_SYNC_OCCLUSION_QUERY
+        else if ( renderPass == PRRE_RPASS_SYNC_OCCLUSION_QUERY )
+        {
             if ( nOcclusionQuery == 0 )
             {
                 // there is nothing to do in this pass
@@ -416,13 +421,35 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
             Draw_Sync_OcclusionQuery_Start();
             return;
         }
+        else if ( renderPass == PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY )
+        {
+            if ( nOcclusionQuery == 0 )
+            {
+                // there is nothing to do in this pass
+                return;
+            }
+            Draw_ApplyTransformations();
+            Draw_RenderBoundingBox();
+            return;
+        }
+        else if ( renderPass == PRRE_RPASS_Z_ONLY )
+        {
+            // condition to be changed in the future: if NOT occluder, then return!
+            if ( nOcclusionQuery == 0 )
+            {
+                // there is nothing to do in this pass
+                return;
+            }
+            Draw_ApplyTransformations();
+            // continue with drawing our subobjects
+        }
 
         // take care of attached objects (subobjects)
         // note that either we have our own subobjects, OR we are just a cloned object and we need to draw original object's subobjects
         PRREObject3D* pWhichParent = getReferredObject() ? getReferredObject() : _pOwner;
         pWhichParent->pImpl->bParentInitiatedOperation = true;
         for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
-            ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(PRRE_RPASS_NORMAL);
+            ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(renderPass);
         pWhichParent->pImpl->bParentInitiatedOperation = false;
         return;
     }
@@ -440,7 +467,10 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
     if ( BITF_READ(_pOwner->getVertexTransferMode(),PRRE_VT_VENDOR_BITS,3) != 0 )
         return;
 
-    PRREGLsnippets::glLoadTexturesAndSetBlendState(&(_pOwner->getMaterial()), _pOwner->isStickedToScreen());
+    if ( renderPass == PRRE_RPASS_NORMAL )
+    {
+        PRREGLsnippets::glLoadTexturesAndSetBlendState(&(_pOwner->getMaterial()), _pOwner->isStickedToScreen());
+    }
 
     Draw_FeedbackBuffer_Start();
     ((PRREVertexTransfer*)_pOwner)->pImpl->TransferVertices();
@@ -482,8 +512,8 @@ void PRREObject3D::PRREObject3DImpl::DrawASyncQuery(const TPRRE_RENDER_PASS& ren
             Draw_PrepareGLBeforeDrawNormal(false);
             // continue with drawing our subobjects
         }
-        else
-        {   // PRRE_RPASS_SYNC_OCCLUSION_QUERY
+        else if ( renderPass == PRRE_RPASS_SYNC_OCCLUSION_QUERY )
+        { 
             if ( nOcclusionQuery == 0 )
             {
                 // there is nothing to do in this pass
@@ -491,6 +521,17 @@ void PRREObject3D::PRREObject3DImpl::DrawASyncQuery(const TPRRE_RENDER_PASS& ren
             }
             Draw_ApplyTransformations();
             Draw_ASync_OcclusionQuery_Start();
+            return;
+        }
+        else if ( renderPass == PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY )
+        {
+            if ( nOcclusionQuery == 0 )
+            {
+                // there is nothing to do in this pass
+                return;
+            }
+            Draw_ApplyTransformations();
+            Draw_RenderBoundingBox();
             return;
         }
 
@@ -865,19 +906,6 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLBeforeDrawNormal(bool bLighti
 } // Draw_PrepareGLBeforeDrawNormal()
 
 
-void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLBeforeDrawBoundingBox() const
-{
-    glDisable(GL_CULL_FACE);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDepthMask(GL_TRUE);
-    //glDisable(GL_DEPTH_TEST);
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_ALPHA_TEST);
-    glColor4f(0.f, 1.f, 0.f, 1.f );
-    PRREGLsnippets::glLoadTexturesAndSetBlendState(PGENULL, false);
-} // Draw_PrepareGLBeforeDrawBoundingBox()
-
-
 void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeOcclusionQuery() const
 {
     /* Make sure we don't call GL functions when no accelerator is present */
@@ -921,6 +949,15 @@ void PRREObject3D::PRREObject3DImpl::Draw_RenderBoundingBox() const
 
     assert(pBoundingBox != PGENULL);
     assert(pBoundingBox->getCount() > 0);
+
+    if ( isOccluded() )
+    {
+        glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+    }
+    else
+    {
+        glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+    }
     ((PRREVertexTransfer*)pBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
 } // Draw_RenderBoundingBox()
 
@@ -1011,14 +1048,16 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Finish_And_Oc
     {
         GLint sampleBoolean;
         glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_ARB, &sampleBoolean);
-        return ( sampleBoolean == GL_FALSE );
+        bOccluded = ( sampleBoolean == GL_FALSE );
     }
     else
     {
         GLuint sampleCount;
         glGetQueryObjectuivARB(nOcclusionQuery, GL_QUERY_RESULT_ARB, &sampleCount);
-        return ( sampleCount == 0 );
+        bOccluded = ( sampleCount == 0 );
     }
+
+    return bOccluded;
 } // Draw_Sync_OcclusionQuery_Finish_And_Occluded()
 
 
@@ -1377,7 +1416,8 @@ void PRREObject3D::Scale(const PRREVector& value)
 /**
     Gets the visibility state.
     If an object is not visible, it is not rendered.
-    This property is manual setting, not related to any visibility calculations that might be done by renderer.
+    This property is manual user setting, not related to any visibility calculations that might be done by renderer.
+    This means that even if the object is seen by the camera, not occluded by other object, it won't be rendered if this property is manually set to false.
     Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
     By default this property is true.
     @return True, if visible, false otherwise.
@@ -1391,7 +1431,8 @@ TPRREbool PRREObject3D::isVisible() const
 /**
     Sets the visibility state.
     If an object is not visible, it is not rendered.
-    This property is manual setting, not related to any visibility calculations that might be done by renderer.
+    This property is manual user setting, not related to any visibility calculations that might be done by renderer.
+    This means that even if the object is seen by the camera, not occluded by other object, it won't be rendered if this property is manually set to false.
     Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
     By default this property is true.
 
@@ -1405,9 +1446,7 @@ void PRREObject3D::SetVisible(TPRREbool state)
 
 /**
     Sets the visibility state to true.
-    Equivalent to SetVisible(true).
-    If an object is not visible, it is not rendered.
-    Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
+    Equivalent to SetVisible(true). See the details there.
 */
 void PRREObject3D::Show()
 {
@@ -1417,9 +1456,7 @@ void PRREObject3D::Show()
 
 /**
     Sets the visibility state to false.
-    Equivalent to SetVisible(false).
-    If an object is not visible, it is not rendered.
-    Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
+    Equivalent to SetVisible(false). See the details there.
 */
 void PRREObject3D::Hide()
 {
@@ -1684,6 +1721,30 @@ void PRREObject3D::SetOccluder(TPRREbool value)
 {
     pImpl->SetOccluder(value);
 } // SetOccluder()
+
+
+/**
+    Gets whether this object was occluded or not based on the last finished occlusion query.
+    This last state might be a few rendered frames behind the current occlusion status, as occlusion queries might not be finished in
+    the same frame they are started.
+
+    @return True if last occlusion query said it was occluded, false otherwise.
+*/
+TPRREbool PRREObject3D::isOccluded() const
+{
+    return pImpl->isOccluded();
+} // isOccluded()
+
+
+/**
+    Gets whether this object is being tested if it is occluded or not.
+
+    @return True if occlusion test is executed for this object, false otherwise.
+*/
+TPRREbool PRREObject3D::isOcclusionTested() const
+{
+    return pImpl->isOcclusionTested();
+} // isOcclusionTested()
 
 
 /**

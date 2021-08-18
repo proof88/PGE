@@ -30,6 +30,11 @@ class PRRERendererHWfixedPipeImpl :
     public PRRERendererHWfixedPipe
 {
 public:
+    static TPRREbool OQ_RENDER_BOUNDING_BOXES;
+    static TPRREbool OQ_ZPASS_FOR_OCCLUDERS;
+
+    // ---------------------------------------------------------------------------
+
     virtual ~PRRERendererHWfixedPipeImpl();       /**< Calls shutdown(). */
 
     TPRREuint initialize(
@@ -62,6 +67,12 @@ private:
 
     HGLRC                rc;           /**< Rendering context, initially NULL. Determines whether the renderer is initialized or not. */
     GLfloat mat4x4Identity[4][4];
+
+    TPRREuint nObjectsTotal;
+    TPRREuint nObjectVisible;
+    TPRREuint nObjectsOcclusionTested;
+    TPRREuint nObjectsOccluded;
+    TPRREuint nObjectsNonOccluded;
 
     // ---------------------------------------------------------------------------
 
@@ -101,6 +112,10 @@ private:
 
 
 // ############################### PUBLIC ################################
+
+
+TPRREbool PRRERendererHWfixedPipeImpl::OQ_RENDER_BOUNDING_BOXES = true;
+TPRREbool PRRERendererHWfixedPipeImpl::OQ_ZPASS_FOR_OCCLUDERS = false;
 
 
 /**
@@ -483,7 +498,7 @@ void PRRERendererHWfixedPipeImpl::SetBasicThingsInOpenGL()
 {
     glEnable(GL_DEPTH_TEST);  // some objects like sticked objects or 2-sided AND wireframed objects may temporarily modify this
     glClearDepth(1.0f);
-    glDepthFunc(GL_LESS);  // permanent setting, don't change in middle of rendering to get use of depth buffer optimisations
+    glDepthFunc(GL_LEQUAL);  // permanent setting, don't change in middle of rendering to get use of depth buffer optimisations
     glDepthRange(0, 1);    // permanent
     glCullFace(GL_BACK);      // 2-sided objects may temporarily modify this
     glFrontFace(GL_CCW);      // usually this is true, however some negative-scaled objects may temporarily modify this
@@ -640,15 +655,70 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
 */
 void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRenderer& renderer)
 {
-    // TODO: obviously on the long run it would be better to put blended and unblended objects into separate containers,
-    // so there would be no need to loop over objectmgr multiple times ...
-    // and this escalates with ordering by different options like occluder/occludee, etc.
-    // I agree that it is not straightforward to be done because blending and other options are stored in objects, and these
-    // objects are NOT bound to renderer instance, so any property change just cannot be detected by renderer instance on-the-fly
-    // so I think the renderer cannot hold different containers for different ordering purposes.
-    // However I think Object3DManager should hold different containers for different ordering purposes, for ANY renderer.
-    // And renderer could just get the container ref from the manager.
+    static TPRREuint frameCntr = 0;
+
+    if ( OQ_ZPASS_FOR_OCCLUDERS )
+    {
+        // first render the occluders into Z-buffer only
+        PRREGLsnippets::SetZPassRendering(true);
+
+        for (int i = 0; i < pObject3DMgr->getSize(); i++)
+        {
+            PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
+        
+            if ( obj == PGENULL )
+                continue;
+        
+            if ( !obj->isVisible() )
+                continue;
+
+            if ( !obj->isOccluder() )
+                continue;
+        
+            if ( (false == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
+                 &&
+                 ( obj->isVisible() )
+                 &&
+                 ( !obj->isStickedToScreen() )
+               )
+            {
+                glPushMatrix();
+                obj->Draw(PRRE_RPASS_Z_ONLY);
+                glPopMatrix();
+            }
+        } // for i
+
+        PRREGLsnippets::SetZPassRendering(false);
+    } // zpass for occluders
+
+    // first render the occluders normally
+    for (int i = 0; i < pObject3DMgr->getSize(); i++)
+    {
+        PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
     
+        if ( obj == PGENULL )
+            continue;
+    
+        if ( !obj->isVisible() )
+            continue;
+
+        if ( !obj->isOccluder() )
+            continue;
+    
+        if ( (false == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
+             &&
+             ( obj->isVisible() )
+             &&
+             ( !obj->isStickedToScreen() )
+           )
+        {
+            glPushMatrix();
+            obj->Draw(PRRE_RPASS_NORMAL);
+            glPopMatrix();
+        }
+    } // occluders for i
+
+    // then render the occludees with occlusion query
     for (/*TPRRE_RENDER_PASS*/ int iRenderPass = PRRE_RPASS_SYNC_OCCLUSION_QUERY; iRenderPass <= PRRE_RPASS_NORMAL; iRenderPass++)
     {
         PRREGLsnippets::SetGLBoundingBoxRendering(iRenderPass == PRRE_RPASS_SYNC_OCCLUSION_QUERY);
@@ -658,35 +728,101 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
         {
             blended = !blended;
 
-            bool occluders = false;  // occluders to be drawn first, this will be negated immediately below
-            for (int iOccl = 1; iOccl < 3; iOccl++)
+            for (int i = 0; i < pObject3DMgr->getSize(); i++)
             {
-              occluders = !occluders;
-              for (int i = 0; i < pObject3DMgr->getSize(); i++)
-              {
-                  PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
+                PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
           
-                  if ( obj == PGENULL )
-                      continue;
+                if ( obj == PGENULL )
+                    continue;
           
-                  if ( occluders != obj->isOccluder() )
-                      continue;
+                if ( obj->isOccluder() )
+                    continue;
 
-                  if ( (blended == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
-                       &&
-                       ( obj->isVisible() )
-                       &&
-                       ( !obj->isStickedToScreen() )
-                     )
-                  {
-                      glPushMatrix();
-                      obj->Draw((TPRRE_RENDER_PASS)iRenderPass);
-                      glPopMatrix();
-                  }
-              } // for i
-            } // for iOccl   
+                if ( (blended == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
+                     &&
+                     ( obj->isVisible() )
+                     &&
+                     ( !obj->isStickedToScreen() )
+                   )
+                {
+                    glPushMatrix();
+                    obj->Draw((TPRRE_RENDER_PASS)iRenderPass);
+                    glPopMatrix();
+                }
+            } // for i
         } // for iBlend
-    } // iRenderPass
+    } // occludess iRenderPass
+
+    frameCntr++;
+    if ( (frameCntr % 1000) == 0 )
+    {
+        frameCntr = 0;
+
+        nObjectsTotal = 0;
+        nObjectVisible = 0;
+        nObjectsOcclusionTested = 0;
+        nObjectsOccluded = 0;
+        nObjectsNonOccluded = 0;
+        // this separate statistics loop wont be needed after the above loop will be simpler: ordering of objects simplified!
+        for (int i = 0; i < pObject3DMgr->getSize(); i++)
+        {
+            PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
+        
+            if ( obj == PGENULL )
+                continue;
+        
+            nObjectsTotal++;
+        
+            if ( !obj->isVisible() )
+                continue;
+        
+            nObjectVisible++;
+        
+            if ( obj->isOcclusionTested() )
+            {
+                nObjectsOcclusionTested++;
+                if ( obj->isOccluded() )
+                {
+                    nObjectsOccluded++;
+                }
+                else
+                {
+                    nObjectsNonOccluded++;
+                }
+            }
+        } // for i    
+        
+        getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), true);
+        getConsole().OLn("Number of total objects: %d", nObjectsTotal);
+        getConsole().OLn(" - of which visible: %d", nObjectVisible);
+        getConsole().OLn("Number of occlusion-tested objects: %d", nObjectsOcclusionTested);
+        getConsole().OLn(" - of which occluded: %d", nObjectsOccluded);
+        getConsole().OLn(" - of which not occluded: %d", nObjectsNonOccluded);
+        getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), false);
+    } // frameCntr
+
+    
+
+    if ( OQ_RENDER_BOUNDING_BOXES )
+    {
+        PRREGLsnippets::glPrepareBeforeDrawBoundingBox();
+
+        for (int i = 0; i < pObject3DMgr->getSize(); i++)
+        {
+            PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
+        
+            if ( obj == PGENULL )
+                continue;
+
+            if ( !obj->isVisible() )
+                continue;
+
+            glPushMatrix();
+            obj->Draw(PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY);
+            glPopMatrix();
+            
+        } // for i
+    } // OQ_RENDER_BOUNDING_BOXES
     
 } // Draw3DObjects_Sync_OcclusionQuery
 

@@ -81,6 +81,8 @@ public:
 
     TPRREbool           isOccluder() const;
     void                SetOccluder(TPRREbool value);
+    TPRREbool           isOccluded() const;
+    TPRREbool           isOcclusionTested() const;
     const PRREObject3D* getBoundingBoxObject() const;
 
     TPRREuint getUsedSystemMemory() const; 
@@ -146,7 +148,6 @@ private:
     void      Draw_FeedbackBuffer_Finish();                                                /**< Set render mode to default render. */
     void      Draw_ApplyTransformations() const ;                                          /**< Applies transformations to the current modelview matrix based on the given object. */
     void      Draw_PrepareGLBeforeDrawNormal(bool bLighting) const;
-    void      Draw_PrepareGLBeforeDrawBoundingBox() const;
     void      Draw_PrepareGLbeforeOcclusionQuery() const;
     void      Draw_ResetGLafterOcclusionQuery() const;
     void      Draw_RenderBoundingBox() const;

@@ -35,7 +35,9 @@ enum TPRRE_ROTATION_ORDER
 
 enum TPRRE_RENDER_PASS
 {
-    PRRE_RPASS_SYNC_OCCLUSION_QUERY = 0,
+    PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY = 0,
+    PRRE_RPASS_Z_ONLY,
+    PRRE_RPASS_SYNC_OCCLUSION_QUERY,
     PRRE_RPASS_NORMAL,
 }; // TPRRE_RENDER_PASS
 
@@ -137,6 +139,8 @@ public:
 
     TPRREbool           isOccluder() const;               /**< Gets whether this object should be considered as an occluder during rendering. */
     void                SetOccluder(TPRREbool value);     /**< Sets whether this object should be considered as an occluder during rendering. */
+    TPRREbool           isOccluded() const;               /**< Gets whether this object was occluded or not based on the last finished occlusion query. */
+    TPRREbool           isOcclusionTested() const;        /**< Gets whether this object is being tested if it is occluded or not. */
     const PRREObject3D* getBoundingBoxObject() const;     /**< Gets the bounding box object used for occlusion tests. */
 
     virtual TPRREuint getUsedSystemMemory() const;        /**< Gets the amount of allocated system memory. */

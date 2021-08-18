@@ -100,6 +100,8 @@ protected:
         AddSubTest("testSetStickedToScreen", (PFNUNITSUBTEST) &PRREObject3DTest::testSetStickedToScreen);
         AddSubTest("testIsOccluder", (PFNUNITSUBTEST) &PRREObject3DTest::testIsOccluder);
         AddSubTest("testSetOccluder", (PFNUNITSUBTEST) &PRREObject3DTest::testSetOccluder);
+        AddSubTest("testIsOccluded", (PFNUNITSUBTEST) &PRREObject3DTest::testIsOccluded);
+        AddSubTest("testIsOcclusionTested", (PFNUNITSUBTEST) &PRREObject3DTest::testIsOcclusionTested);
         AddSubTest("testGetBoundingBoxObject", (PFNUNITSUBTEST) &PRREObject3DTest::testGetBoundingBoxObject);
         AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PRREObject3DTest::testGetUsedSystemMemory);
         AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PRREObject3DTest::testGetUsedVideoMemory);
@@ -815,6 +817,24 @@ private:
         objFromFile->SetOccluder(true);
 
         return assertTrue(obj->isOccluder(), "obj") & assertTrue(objFromFile->isOccluder(), "objFromFile");
+    }
+
+    bool testIsOccluded()
+    {
+        return assertFalse(obj->isOccluded(), "obj") &
+            assertFalse(objFromFile->isOccluded(), "objFromFile") &
+            assertFalse(objPlane->isOccluded(), "plane") &
+            assertFalse(objBox->isOccluded(), "box") &
+            assertFalse(objCube->isOccluded(), "cube");
+    }
+
+    bool testIsOcclusionTested()
+    {
+        return assertFalse(obj->isOcclusionTested(), "obj") &
+            assertTrue(objFromFile->isOcclusionTested(), "objFromFile") &
+            assertFalse(objPlane->isOcclusionTested(), "plane") &
+            assertFalse(objBox->isOcclusionTested(), "box") &
+            assertFalse(objCube->isOcclusionTested(), "cube");
     }
 
     bool testGetBoundingBoxObject()
