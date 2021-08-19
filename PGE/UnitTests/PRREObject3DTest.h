@@ -102,6 +102,7 @@ protected:
         AddSubTest("testSetOccluder", (PFNUNITSUBTEST) &PRREObject3DTest::testSetOccluder);
         AddSubTest("testIsOccluded", (PFNUNITSUBTEST) &PRREObject3DTest::testIsOccluded);
         AddSubTest("testIsOcclusionTested", (PFNUNITSUBTEST) &PRREObject3DTest::testIsOcclusionTested);
+        AddSubTest("testSetOcclusionTested", (PFNUNITSUBTEST) &PRREObject3DTest::testSetOcclusionTested);
         AddSubTest("testGetBoundingBoxObject", (PFNUNITSUBTEST) &PRREObject3DTest::testGetBoundingBoxObject);
         AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PRREObject3DTest::testGetUsedSystemMemory);
         AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PRREObject3DTest::testGetUsedVideoMemory);
@@ -835,6 +836,27 @@ private:
             assertFalse(objPlane->isOcclusionTested(), "plane") &
             assertFalse(objBox->isOcclusionTested(), "box") &
             assertFalse(objCube->isOcclusionTested(), "cube");
+    }
+
+    bool testSetOcclusionTested()
+    {
+        obj->SetOcclusionTested(true);
+        objFromFile->SetOcclusionTested(true);
+
+        bool b = assertTrue(obj->isOcclusionTested(), "obj is 1") &
+            assertTrue(objFromFile->isOcclusionTested(), "objFromFile is 1") &
+            assertNotNull(obj->getBoundingBoxObject(), "obj bounding 1") &
+            assertNotNull(objFromFile->getBoundingBoxObject(), "objFromFile bounding 1");
+
+        obj->SetOcclusionTested(false);
+        objFromFile->SetOcclusionTested(false);
+
+        b &= assertFalse(obj->isOcclusionTested(), "obj is 2") &
+            assertFalse(objFromFile->isOcclusionTested(), "objFromFile is 2") &
+            assertNull(obj->getBoundingBoxObject(), "obj bounding 2") &
+            assertNull(objFromFile->getBoundingBoxObject(), "objFromFile bounding 2");
+
+        return b;
     }
 
     bool testGetBoundingBoxObject()

@@ -61,8 +61,6 @@ private:
     PRREObject3DManagerImpl(const PRREObject3DManagerImpl&);
     PRREObject3DManagerImpl& operator=(const PRREObject3DManagerImpl&);
 
-    void PrepareObjectForOcclusionQuery(PRREObject3D& obj);  /**< Creates occlusion query object and bounding box for the given object. */
-
     friend class PRREObject3DManager;
 
 };
@@ -144,43 +142,6 @@ PRREObject3DManager::PRREObject3DManagerImpl& PRREObject3DManager::PRREObject3DM
 {
     return *this;    
 }
-
-
-/**
-    Creates occlusion query object and bounding box for the given object.
-    If it failes to generate occlusion query id, the object won't be tested for occlusion later.
-    @exception std::runtime_error - In case of inability of creating bounding box object.
-*/
-void PRREObject3DManager::PRREObject3DManagerImpl::PrepareObjectForOcclusionQuery(PRREObject3D& obj)
-{
-    if ( !pglGenQueries(1, &(obj.pImpl->nOcclusionQuery)) ) 
-    {
-        _pOwner->getConsole().EOLn("%s() ERROR: Could not generate occlusion query, this object won't be tested for occlusion!", __FUNCTION__);
-        obj.pImpl->nOcclusionQuery = 0;  // just in case pglGenQueries() changed it to something else ...
-        return;
-    }
-    
-    _pOwner->getConsole().OLn("Occlusion query ID: %d", obj.pImpl->nOcclusionQuery);
-
-    // here we specify forcing bounding box geometry in client memory because we alter vertex positions with rel pos vec, and then we upload it to host memory
-    obj.pImpl->pBoundingBox = _pOwner->createBox(obj.getSizeVec().getX(), obj.getSizeVec().getY(), obj.getSizeVec().getZ(), PRRE_VMOD_DYNAMIC, PRRE_VREF_INDEXED, true);
-    if ( PGENULL == obj.pImpl->pBoundingBox )
-    {
-        const std::string sErrMsg = "failed to create pBoundingBox!";
-        throw std::runtime_error(sErrMsg);
-    }
-
-    obj.pImpl->pBoundingBox->Hide();
-    // sometimes geometry is not exactly placed in mesh's [0,0,0], so we need to offset bounding box vertices based on object's relpos!
-    for (TPRREuint i = 0; i < obj.pImpl->pBoundingBox->getVerticesCount(); i++)
-    {
-        obj.pImpl->pBoundingBox->getVertices()[i].x += obj.getRelPosVec().getX();
-        obj.pImpl->pBoundingBox->getVertices()[i].y += obj.getRelPosVec().getY();
-        obj.pImpl->pBoundingBox->getVertices()[i].z += obj.getRelPosVec().getZ();
-    }
-    // upload bounding box geometry now to host memory with altered vertex positions
-    obj.pImpl->pBoundingBox->setVertexTransferMode( obj.pImpl->pBoundingBox->selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_INDEXED, false) );
-} // prepareObjectForOcclusionQuery()
 
 
 /*
@@ -553,7 +514,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
 
             if ( PRREhwInfo::get().getVideo().isOcclusionQuerySupported() && pImpl->isEligibleForOcclusionQuery(nVerticesTotalTmpMesh) )
             {
-                pImpl->PrepareObjectForOcclusionQuery(*obj);
+                obj->SetOcclusionTested(true);
             }
 
             // although PPP has already selected the vtransmode, we set it again
@@ -678,7 +639,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
 
         if ( referredobj.getBoundingBoxObject() )
         {
-            pImpl->PrepareObjectForOcclusionQuery(*obj);
+            obj->SetOcclusionTested(true);
         }
         
         getConsole().SOLnOO("> Object cloned successfully, name: %s!", obj->getName().c_str());
@@ -693,7 +654,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
 
     getConsole().OLn("");
     return obj;
-}
+} // createCloned()
 
 
 /**
@@ -711,7 +672,7 @@ TPRREuint PRREObject3DManager::getUsedVideoMemory() const
             nVRAMtotal += pMngd->getUsedVideoMemory();
     }
     return nVRAMtotal;
-}
+} // getUsedVideoMemory()
 
 
 void PRREObject3DManager::WriteList() const
@@ -757,11 +718,14 @@ void PRREObject3DManager::WriteListCallback(const PRREManaged& mngd) const
 {
     PRREMesh3DManager::WriteListCallback(mngd);
     const PRREObject3D& obj = (PRREObject3D&) mngd;
+    getConsole().OIOLnOO("scaled size: [%f,%f,%f]", obj.getScaledSizeVec().getX(), obj.getScaledSizeVec().getY(), obj.getScaledSizeVec().getZ());
     getConsole().OIOLnOO("show: %b, xfer: %d, indexed: %b, vid mem: %d kB;",
         obj.isVisible(),
         obj.getVertexTransferMode(),
         PRREVertexTransfer::isVertexReferencingIndexed(obj.getVertexTransferMode()),
         (int)ceil(obj.getUsedVideoMemory()/1024.0f));
+    getConsole().OIOLnOO("dblSided: %b, wirefr: %b, writeZ: %b, testZ: %b;", obj.isDoubleSided(), obj.isWireframed(), obj.isAffectingZBuffer(), obj.isTestingAgainstZBuffer());
+    getConsole().OIOLnOO("occlTest: %b, qId: %d, occludee: %b, occluded: %b;", obj.isOcclusionTested(), obj.pImpl->nOcclusionQuery, !(obj.isOccluder()), obj.isOccluded());
 } // WriteListCallback()
 
 

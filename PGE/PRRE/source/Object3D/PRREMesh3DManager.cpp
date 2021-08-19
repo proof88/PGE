@@ -1766,6 +1766,11 @@ void PRREMesh3DManager::WriteListCallback(const PRREManaged& mngd) const
             continue;
         sumVertices += currSubObj->getVerticesCount();
     }
+
+    getConsole().OIOLnOO("pos: [%f,%f,%f], rel pos: [%f,%f,%f], size: [%f,%f,%f]",
+                          mesh.getPosVec().getX(), mesh.getPosVec().getY(), mesh.getPosVec().getZ(),
+                          mesh.getRelPosVec().getX(), mesh.getRelPosVec().getY(), mesh.getRelPosVec().getZ(),
+                          mesh.getSizeVec().getX(), mesh.getSizeVec().getY(), mesh.getSizeVec().getZ());
     getConsole().OIOLnOO("%d subobjects, %d vertices", mesh.getCount(), sumVertices);
 } // WriteListCallback()
 

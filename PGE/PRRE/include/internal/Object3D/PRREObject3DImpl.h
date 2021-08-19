@@ -83,6 +83,7 @@ public:
     void                SetOccluder(TPRREbool value);
     TPRREbool           isOccluded() const;
     TPRREbool           isOcclusionTested() const;
+    void                SetOcclusionTested(TPRREbool state);
     const PRREObject3D* getBoundingBoxObject() const;
 
     TPRREuint getUsedSystemMemory() const; 

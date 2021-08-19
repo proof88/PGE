@@ -68,16 +68,9 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
     pVerticesTransf = PGENULL;
     pFbBuffer = PGENULL;
 
+    SetOcclusionTested(false);
+
     _pOwner->DeleteAll();
-
-    if ( nOcclusionQuery > 0 )
-    {
-        glDeleteQueriesARB(1, &nOcclusionQuery);
-        nOcclusionQuery = 0;
-    }
-
-    delete pBoundingBox;
-    pBoundingBox = PGENULL;
 
     // if we are just a cloned object, above code should have done essentially nothing
     if ( getReferredObject() )
@@ -339,31 +332,89 @@ void PRREObject3D::PRREObject3DImpl::SetStickedToScreen(TPRREbool value)
 TPRREbool PRREObject3D::PRREObject3DImpl::isOccluder() const
 {
     return bOccluder;
-}
+} // isOccluder()
 
 
 void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
 {
     bOccluder = value;
-}
+} // SetOccluder()
 
 
 TPRREbool PRREObject3D::PRREObject3DImpl::isOccluded() const
 {
     return bOccluded;
-}
+} // isOccluded()
 
 
 TPRREbool PRREObject3D::PRREObject3DImpl::isOcclusionTested() const
 {
     return nOcclusionQuery > 0;
-}
+} // isOcclusionTested()
+
+
+void PRREObject3D::PRREObject3DImpl::SetOcclusionTested(TPRREbool state)
+{
+    if ( !PRREhwInfo::get().getVideo().isOcclusionQuerySupported() )
+        return;
+
+    if ( state )
+    {
+        if ( !pglGenQueries(1, &nOcclusionQuery) ) 
+        {
+            _pOwner->getConsole().EOLn("%s() ERROR: Could not generate occlusion query, this object won't be tested for occlusion!", __FUNCTION__);
+            nOcclusionQuery = 0;  // just in case pglGenQueries() changed it to something else ...
+            return;
+        }
+        
+        _pOwner->getConsole().OLn("Occlusion query ID: %d", nOcclusionQuery);
+
+        if ( PGENULL == _pOwner->getManager() )
+        {
+            const std::string sErrMsg = "no manager!";
+            throw std::runtime_error(sErrMsg);
+        }
+
+        // here we specify forcing bounding box geometry in client memory because we alter vertex positions with rel pos vec, and then we upload it to host memory
+        pBoundingBox = ((PRREObject3DManager*)_pOwner->getManager())->createBox(_pOwner->getSizeVec().getX(), _pOwner->getSizeVec().getY(), _pOwner->getSizeVec().getZ(), PRRE_VMOD_DYNAMIC, PRRE_VREF_INDEXED, true);
+        if ( PGENULL == pBoundingBox )
+        {
+            const std::string sErrMsg = "failed to create pBoundingBox!";
+            throw std::runtime_error(sErrMsg);
+        }
+
+        pBoundingBox->Hide();
+        // sometimes geometry is not exactly placed in mesh's [0,0,0], so we need to offset bounding box vertices based on object's relpos!
+        for (TPRREuint i = 0; i < pBoundingBox->getVerticesCount(); i++)
+        {
+            pBoundingBox->getVertices()[i].x += _pOwner->getRelPosVec().getX();
+            pBoundingBox->getVertices()[i].y += _pOwner->getRelPosVec().getY();
+            pBoundingBox->getVertices()[i].z += _pOwner->getRelPosVec().getZ();
+        }
+        // upload bounding box geometry now to host memory with altered vertex positions
+        pBoundingBox->setVertexTransferMode( pBoundingBox->selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_INDEXED, false) );
+    }
+    else
+    {
+        if ( nOcclusionQuery > 0 )
+        {
+            glDeleteQueriesARB(1, &nOcclusionQuery);
+            nOcclusionQuery = 0;
+        }
+
+        delete pBoundingBox;
+        pBoundingBox = PGENULL;
+
+        bOccluded = false;
+        bOcclusionQueryStarted = false;
+    }
+} // SetOcclusionTested()
                                                                                                                            
 
 const PRREObject3D* PRREObject3D::PRREObject3DImpl::getBoundingBoxObject() const
 {
     return pBoundingBox;
-}
+} // getBoundingBoxObject()
 
 
 TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
@@ -1700,7 +1751,7 @@ void PRREObject3D::SetStickedToScreen(TPRREbool value)
     Gets whether this object should be considered as an occluder during rendering.
     Occluders are rendered before non-occluder objects.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
-    By default this property is false.
+    By default this property is decided based on the size of the object compared to other objects.
 
     @return True if considered as occluder, false otherwise (potential occludee).
 */
@@ -1714,7 +1765,7 @@ TPRREbool PRREObject3D::isOccluder() const
     Sets whether this object should be considered as an occluder during rendering.
     Occluders are rendered before non-occluder objects.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
-    By default this property is false.
+    By default this property is decided based on the size of the object compared to other objects.
 
     @param value The desired state.
 */
@@ -1725,11 +1776,13 @@ void PRREObject3D::SetOccluder(TPRREbool value)
 
 
 /**
-    Gets whether this object was occluded or not based on the last finished occlusion query.
-    This last state might be a few rendered frames behind the current occlusion status, as occlusion queries might not be finished in
+    Gets whether this object was occluded or not based on the last finished occlusion test.
+    This last state might be a few rendered frames behind the current occlusion status, as occlusion tests might not be finished in
     the same frame they are started.
+    By default this property is false after creating the object, but might be changed after the first rendering.
 
-    @return True if last occlusion query said it was occluded, false otherwise.
+    @return True if last occlusion test said it was occluded, false otherwise.
+            Result is always false if the object is not tested for occlusion, see isOcclusionTested() member function for more info.
 */
 TPRREbool PRREObject3D::isOccluded() const
 {
@@ -1739,6 +1792,13 @@ TPRREbool PRREObject3D::isOccluded() const
 
 /**
     Gets whether this object is being tested if it is occluded or not.
+    Objects tested for occlusion are continuously checked if they occluded or not by renderer, and that result can be obtained with isOccluded()
+    member function.
+    By default this property is decided based on the geometric complexity of the object.
+    Occlusion tests are curently based on hardware occlusion queries, so this is not available on all hardware.
+    Usually it is available since 2003 on desktop computers.
+    Mobile is not yet supported by PURE.
+    Occlusion tests are not supported when software rendering is active.
 
     @return True if occlusion test is executed for this object, false otherwise.
 */
@@ -1746,6 +1806,27 @@ TPRREbool PRREObject3D::isOcclusionTested() const
 {
     return pImpl->isOcclusionTested();
 } // isOcclusionTested()
+
+
+/**
+    Sets whether this object should be tested for occlusion or not.
+    Creates or deletes an occlusion query object and bounding box for the given object.
+    If it failes to generate occlusion query id, the object won't be tested for occlusion later. Check state with isOcclusionTested() member function.
+    Objects tested for occlusion are continuously checked by renderer, so rendering is needed, and the result can be obtained with isOccluded()
+    member function.
+    By default this property is decided based on the geometric complexity of the object.
+    Occlusion tests are curently based on hardware occlusion queries, so this is not available on all hardware.
+    Usually it is available since 2003 on desktop computers.
+    Mobile is not yet supported by PURE.
+    Occlusion tests are not supported when software rendering is active.
+
+    @exception std::runtime_error - In case of inability of creating bounding box object or if this object instance doesn't have manager associated.
+    @return True if occlusion test is executed for this object, false otherwise.
+*/
+void PRREObject3D::SetOcclusionTested(TPRREbool state)
+{
+    return pImpl->SetOcclusionTested(state);
+} // SetOcclusionTested()
 
 
 /**

@@ -137,10 +137,11 @@ public:
     TPRREbool isStickedToScreen() const;                  /**< Gets the sticked-to-screen state. */
     void      SetStickedToScreen(TPRREbool value);        /**< Sets the sticked-to-screen state. */ 
 
-    TPRREbool           isOccluder() const;               /**< Gets whether this object should be considered as an occluder during rendering. */
-    void                SetOccluder(TPRREbool value);     /**< Sets whether this object should be considered as an occluder during rendering. */
-    TPRREbool           isOccluded() const;               /**< Gets whether this object was occluded or not based on the last finished occlusion query. */
-    TPRREbool           isOcclusionTested() const;        /**< Gets whether this object is being tested if it is occluded or not. */
+    TPRREbool isOccluder() const;                         /**< Gets whether this object should be considered as an occluder during rendering. */
+    void      SetOccluder(TPRREbool value);               /**< Sets whether this object should be considered as an occluder during rendering. */
+    TPRREbool isOccluded() const;                         /**< Gets whether this object was occluded or not based on the last finished occlusion test. */
+    TPRREbool isOcclusionTested() const;                  /**< Gets whether this object is being tested if it is occluded or not. */
+    void      SetOcclusionTested(TPRREbool state);        /**< Sets whether this object should be tested if it is occluded or not. */
     const PRREObject3D* getBoundingBoxObject() const;     /**< Gets the bounding box object used for occlusion tests. */
 
     virtual TPRREuint getUsedSystemMemory() const;        /**< Gets the amount of allocated system memory. */
