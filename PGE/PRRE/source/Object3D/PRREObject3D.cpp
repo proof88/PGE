@@ -906,7 +906,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLBeforeDrawNormal(bool bLighti
 } // Draw_PrepareGLBeforeDrawNormal()
 
 
-void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeOcclusionQuery() const
+void PRREObject3D::PRREObject3DImpl::glBeginOcclusionQuery() const
 {
     /* Make sure we don't call GL functions when no accelerator is present */
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
@@ -920,10 +920,10 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLbeforeOcclusionQuery() const
     {
         glBeginQueryARB(GL_SAMPLES_PASSED_ARB, nOcclusionQuery);
     }
-} // Draw_PrepareGLbeforeOcclusionQuery()
+} // glBeginOcclusionQuery()()
 
 
-void PRREObject3D::PRREObject3DImpl::Draw_ResetGLafterOcclusionQuery() const
+void PRREObject3D::PRREObject3DImpl::glEndOcclusionQuery() const
 {
     /* Make sure we don't call GL functions when no accelerator is present */
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
@@ -937,7 +937,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_ResetGLafterOcclusionQuery() const
     {
         glEndQueryARB(GL_SAMPLES_PASSED_ARB);
     }
-} // Draw_ResetGLafterOcclusionQuery()
+} // glEndOcclusionQuery()()
 
 
 void PRREObject3D::PRREObject3DImpl::Draw_RenderBoundingBox() const
@@ -971,9 +971,9 @@ void PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Start()
 
     assert(pBoundingBox != PGENULL);
     assert(pBoundingBox->getCount() > 0);
-    Draw_PrepareGLbeforeOcclusionQuery();
+    glBeginOcclusionQuery();
     ((PRREVertexTransfer*)pBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
-    Draw_ResetGLafterOcclusionQuery();
+    glEndOcclusionQuery();
 
     bOcclusionQueryStarted = true;
 } // Draw_CheckIfOccluded_Sync()
@@ -1011,9 +1011,9 @@ void PRREObject3D::PRREObject3DImpl::Draw_ASync_OcclusionQuery_Start()
         }
     }
 
-    Draw_PrepareGLbeforeOcclusionQuery();
+    glBeginOcclusionQuery();
     ((PRREVertexTransfer*)pBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
-    Draw_ResetGLafterOcclusionQuery();
+    glEndOcclusionQuery();
 
     bOcclusionQueryStarted = true;
     nFramesWaitedForOcclusionTestResult = 0;

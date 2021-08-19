@@ -148,8 +148,8 @@ private:
     void      Draw_FeedbackBuffer_Finish();                                                /**< Set render mode to default render. */
     void      Draw_ApplyTransformations() const ;                                          /**< Applies transformations to the current modelview matrix based on the given object. */
     void      Draw_PrepareGLBeforeDrawNormal(bool bLighting) const;
-    void      Draw_PrepareGLbeforeOcclusionQuery() const;
-    void      Draw_ResetGLafterOcclusionQuery() const;
+    void      glBeginOcclusionQuery() const;
+    void      glEndOcclusionQuery() const;
     void      Draw_RenderBoundingBox() const;
     void      Draw_Sync_OcclusionQuery_Start();
     void      Draw_ASync_OcclusionQuery_Start();
