@@ -41,6 +41,8 @@ private:
 
     static TPRREuint nRunningCounter;    /**< Always increased when creating a new level-1 Object3D instance. */
 
+    static TPRREbool isEligibleForOcclusionQuery(TPRREuint nTotalVerticesCount);  /**< Decides if an object is eligible for automatically turn on occlusion query on it. */
+
     PRREObject3DManager* _pOwner;        /**< The owner public object who creates this pimpl object. */
 
     TPRREbool            bInited;               /**< True if successfully inited, false if not functional. */
@@ -59,7 +61,7 @@ private:
     PRREObject3DManagerImpl(const PRREObject3DManagerImpl&);
     PRREObject3DManagerImpl& operator=(const PRREObject3DManagerImpl&);
 
-    void PrepareObjectForOcclusionQuery(PRREObject3D& obj);
+    void PrepareObjectForOcclusionQuery(PRREObject3D& obj);  /**< Creates occlusion query object and bounding box for the given object. */
 
     friend class PRREObject3DManager;
 
@@ -91,6 +93,16 @@ TPRREbool PRREObject3DManager::PRREObject3DManagerImpl::isInitialized() const
 
 
 TPRREuint PRREObject3DManager::PRREObject3DManagerImpl::nRunningCounter = 0;
+
+
+/**
+    Decides if an object is eligible for automatically turn on occlusion query on it.
+    @return True if object should be prepared for occlusion querying, false otherwise.
+*/
+TPRREbool PRREObject3DManager::PRREObject3DManagerImpl::isEligibleForOcclusionQuery(TPRREuint nTotalVerticesCount)
+{
+    return nTotalVerticesCount >= 100;
+} // isEligibleForOcclusionQuery()
 
 
 PRREObject3DManager::PRREObject3DManagerImpl::PRREObject3DManagerImpl() :
@@ -539,7 +551,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
             getConsole().OO();
             Attach( *obj );
 
-            if ( PRREhwInfo::get().getVideo().isOcclusionQuerySupported() && (nVerticesTotalTmpMesh >= 100) )
+            if ( PRREhwInfo::get().getVideo().isOcclusionQuerySupported() && pImpl->isEligibleForOcclusionQuery(nVerticesTotalTmpMesh) )
             {
                 pImpl->PrepareObjectForOcclusionQuery(*obj);
             }
