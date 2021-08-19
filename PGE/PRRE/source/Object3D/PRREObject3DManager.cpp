@@ -41,7 +41,7 @@ private:
 
     static TPRREuint nRunningCounter;    /**< Always increased when creating a new level-1 Object3D instance. */
 
-    PRREObject3DManager* _pOwner;      /**< The owner public object who creates this pimpl object. */
+    PRREObject3DManager* _pOwner;        /**< The owner public object who creates this pimpl object. */
 
     TPRREbool            bInited;               /**< True if successfully inited, false if not functional. */
     TPRREbool            bMinimalIndexStorage;  /**< True if storage of indices is minimalized. */
@@ -58,6 +58,8 @@ private:
 
     PRREObject3DManagerImpl(const PRREObject3DManagerImpl&);
     PRREObject3DManagerImpl& operator=(const PRREObject3DManagerImpl&);
+
+    void PrepareObjectForOcclusionQuery(PRREObject3D& obj);
 
     friend class PRREObject3DManager;
 
@@ -130,6 +132,43 @@ PRREObject3DManager::PRREObject3DManagerImpl& PRREObject3DManager::PRREObject3DM
 {
     return *this;    
 }
+
+
+/**
+    Creates occlusion query object and bounding box for the given object.
+    If it failes to generate occlusion query id, the object won't be tested for occlusion later.
+    @exception std::runtime_error - In case of inability of creating bounding box object.
+*/
+void PRREObject3DManager::PRREObject3DManagerImpl::PrepareObjectForOcclusionQuery(PRREObject3D& obj)
+{
+    if ( !pglGenQueries(1, &(obj.pImpl->nOcclusionQuery)) ) 
+    {
+        _pOwner->getConsole().EOLn("%s() ERROR: Could not generate occlusion query, this object won't be tested for occlusion!", __FUNCTION__);
+        obj.pImpl->nOcclusionQuery = 0;  // just in case pglGenQueries() changed it to something else ...
+        return;
+    }
+    
+    _pOwner->getConsole().OLn("Occlusion query ID: %d", obj.pImpl->nOcclusionQuery);
+
+    // here we specify forcing bounding box geometry in client memory because we alter vertex positions with rel pos vec, and then we upload it to host memory
+    obj.pImpl->pBoundingBox = _pOwner->createBox(obj.getSizeVec().getX(), obj.getSizeVec().getY(), obj.getSizeVec().getZ(), PRRE_VMOD_DYNAMIC, PRRE_VREF_INDEXED, true);
+    if ( PGENULL == obj.pImpl->pBoundingBox )
+    {
+        const std::string sErrMsg = "failed to create pBoundingBox!";
+        throw std::runtime_error(sErrMsg);
+    }
+
+    obj.pImpl->pBoundingBox->Hide();
+    // sometimes geometry is not exactly placed in mesh's [0,0,0], so we need to offset bounding box vertices based on object's relpos!
+    for (TPRREuint i = 0; i < obj.pImpl->pBoundingBox->getVerticesCount(); i++)
+    {
+        obj.pImpl->pBoundingBox->getVertices()[i].x += obj.getRelPosVec().getX();
+        obj.pImpl->pBoundingBox->getVertices()[i].y += obj.getRelPosVec().getY();
+        obj.pImpl->pBoundingBox->getVertices()[i].z += obj.getRelPosVec().getZ();
+    }
+    // upload bounding box geometry now to host memory with altered vertex positions
+    obj.pImpl->pBoundingBox->setVertexTransferMode( obj.pImpl->pBoundingBox->selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_INDEXED, false) );
+} // prepareObjectForOcclusionQuery()
 
 
 /*
@@ -502,34 +541,8 @@ PRREObject3D* PRREObject3DManager::createFromFile(
 
             if ( PRREhwInfo::get().getVideo().isOcclusionQuerySupported() && (nVerticesTotalTmpMesh >= 100) )
             {
-                if ( !pglGenQueries(1, &(obj->pImpl->nOcclusionQuery)) ) 
-                {
-                    getConsole().EOLn("ERROR: Could not generate occlusion query! Continuing ...");
-                    obj->pImpl->nOcclusionQuery = 0;  // just in case pglGenQueries() changed it to something else ...
-                }
-                else
-                {
-                    getConsole().OLn("Occlusion query ID: %d", obj->pImpl->nOcclusionQuery);
-                    // here we specify forcing bounding box geometry in client memory because we alter vertex positions a few lines below ...
-                    obj->pImpl->pBoundingBox = createBox(obj->getSizeVec().getX(), obj->getSizeVec().getY(), obj->getSizeVec().getZ(), PRRE_VMOD_DYNAMIC, PRRE_VREF_INDEXED, true);
-                    if ( PGENULL == obj->pImpl->pBoundingBox )
-                    {
-                        const std::string sErrMsg = "failed to create pBoundingBox!";
-                        throw std::runtime_error(sErrMsg);
-                    }
-
-                    obj->pImpl->pBoundingBox->Hide();
-                    // sometimes geometry is not exactly placed in mesh's [0,0,0], so we need to offset bounding box vertices based on object's relpos!
-                    for (TPRREuint i = 0; i < obj->pImpl->pBoundingBox->getVerticesCount(); i++)
-                    {
-                        obj->pImpl->pBoundingBox->getVertices()[i].x += obj->getRelPosVec().getX();
-                        obj->pImpl->pBoundingBox->getVertices()[i].y += obj->getRelPosVec().getY();
-                        obj->pImpl->pBoundingBox->getVertices()[i].z += obj->getRelPosVec().getZ();
-                    }
-                    // upload bounding box geometry to host memory with altered vertex positions
-                    obj->pImpl->pBoundingBox->setVertexTransferMode( obj->pImpl->pBoundingBox->selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_INDEXED, false) );
-                }
-            } // endif create bounding box of occlusion query
+                pImpl->PrepareObjectForOcclusionQuery(*obj);
+            }
 
             // although PPP has already selected the vtransmode, we set it again
             // to actually allocate the needed resources for the geometry
@@ -653,32 +666,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
 
         if ( referredobj.getBoundingBoxObject() )
         {
-            if ( !pglGenQueries(1, &(obj->pImpl->nOcclusionQuery)) ) 
-            {
-                getConsole().EOLn("ERROR: Could not generate occlusion query! Continuing ...");
-                obj->pImpl->nOcclusionQuery = 0;  // just in case pglGenQueries() changed it to something else ...
-            }
-            else
-            {
-                getConsole().OLn("Occlusion query ID: %d", obj->pImpl->nOcclusionQuery);
-                obj->pImpl->pBoundingBox = createBox(obj->getSizeVec().getX(), obj->getSizeVec().getY(), obj->getSizeVec().getZ(), PRRE_VMOD_DYNAMIC, PRRE_VREF_INDEXED, true);
-                if ( PGENULL == obj->pImpl->pBoundingBox )
-                {
-                    const std::string sErrMsg = "failed to create pBoundingBox!";
-                    throw std::runtime_error(sErrMsg);
-                }
-
-                obj->pImpl->pBoundingBox->Hide();
-                // sometimes geometry is not exactly placed in mesh's [0,0,0], so we need to offset bounding box vertices based on object's relpos!
-                for (TPRREuint i = 0; i < obj->pImpl->pBoundingBox->getVerticesCount(); i++)
-                {
-                    obj->pImpl->pBoundingBox->getVertices()[i].x += obj->getRelPosVec().getX();
-                    obj->pImpl->pBoundingBox->getVertices()[i].y += obj->getRelPosVec().getY();
-                    obj->pImpl->pBoundingBox->getVertices()[i].z += obj->getRelPosVec().getZ();
-                }
-                // upload bounding box geometry to host memory with altered vertex positions
-                obj->pImpl->pBoundingBox->setVertexTransferMode( obj->pImpl->pBoundingBox->selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_INDEXED, false) );
-            }
+            pImpl->PrepareObjectForOcclusionQuery(*obj);
         }
         
         getConsole().SOLnOO("> Object cloned successfully, name: %s!", obj->getName().c_str());
@@ -686,6 +674,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
     catch (const std::exception& e)
     {
         delete obj; // if new PRREObject3D() fails, obj is null so this has no effect, but if createMaterialForMesh() fails, this will properly get rid of obj
+        // PrepareObjectForOcclusionQuery() could also throw, in such case obj's dtor will also take care of any leftovers made by PrepareObjectForOcclusionQuery()
         obj = PGENULL;
         getConsole().EOLnOO("ERROR: failed to instantiate PRREObject3D: %s!", e.what());
     }

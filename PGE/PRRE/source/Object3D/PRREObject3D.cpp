@@ -74,9 +74,10 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
     {
         glDeleteQueriesARB(1, &nOcclusionQuery);
         nOcclusionQuery = 0;
-        delete pBoundingBox;
-        pBoundingBox = PGENULL;
     }
+
+    delete pBoundingBox;
+    pBoundingBox = PGENULL;
 
     // if we are just a cloned object, above code should have done essentially nothing
     if ( getReferredObject() )
