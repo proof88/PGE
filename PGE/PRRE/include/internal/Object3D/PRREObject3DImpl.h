@@ -54,6 +54,9 @@ public:
     void              Scale(TPRREfloat value);
     void              Scale(const PRREVector& value);
 
+    TPRREfloat        getBiggestAreaScaled() const;
+    TPRREfloat        recalculateBiggerAreaScaled();
+
     TPRREbool isVisible() const;                    
     void      SetVisible(TPRREbool state);          
     void      Show();                               
@@ -112,6 +115,7 @@ private:
 
     PRREVector vAngle;              /**< 3D Angle. */
     PRREVector vScaling;            /**< 3D Scaling. */
+    TPRREfloat fBiggestAreaScaled;  /**< Biggest area of object on either plane (XY, XZ or YZ), scaled by current scaling factor. */
     TPRREbool bVisible;             /**< Visible state. */
     TPRREbool bAffectedByLights;    /**< State of lit. */
     TPRREbool bDoubleSided;         /**< Double sided. */
@@ -156,7 +160,7 @@ private:
     void      Draw_ASync_OcclusionQuery_Start();
     TPRREbool Draw_Sync_OcclusionQuery_Finish_And_Occluded();
     TPRREbool Draw_ASync_OcclusionQuery_Finish_And_Occluded();
-    void      Draw_DrawSW(); 
+    void      Draw_DrawSW();
 
     friend class PRREObject3D;
     friend class PRREObject3DManager;

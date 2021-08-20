@@ -469,6 +469,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
                 const std::string sErrMsg = "cannibalize() failed for level-1 obj!";
                 throw std::runtime_error(sErrMsg);
             }
+            obj->SetName("Object3D " + std::to_string(pImpl->nRunningCounter++));
 
             TPRREuint nVerticesTotalTmpMesh = 0;
             for (TPRREint i = 0; i < tmpMesh->getCount(); i++) 
@@ -548,8 +549,6 @@ PRREObject3D* PRREObject3DManager::createFromFile(
         getConsole().OLn("");
         return PGENULL;
     }
-
-    obj->SetName("Object3D " + std::to_string(pImpl->nRunningCounter++));
 
     getConsole().SOLnOO("> Object loaded successfully, name: %s!", obj->getName().c_str());
     getConsole().OLn("");
@@ -718,7 +717,8 @@ void PRREObject3DManager::WriteListCallback(const PRREManaged& mngd) const
 {
     PRREMesh3DManager::WriteListCallback(mngd);
     const PRREObject3D& obj = (PRREObject3D&) mngd;
-    getConsole().OIOLnOO("scaled size: [%f,%f,%f]", obj.getScaledSizeVec().getX(), obj.getScaledSizeVec().getY(), obj.getScaledSizeVec().getZ());
+    getConsole().OIOLnOO("scaled size: [%f, %f, %f]", obj.getScaledSizeVec().getX(), obj.getScaledSizeVec().getY(), obj.getScaledSizeVec().getZ());
+    getConsole().OIOLnOO("biggest area: %f", obj.getBiggestAreaScaled());
     getConsole().OIOLnOO("show: %b, xfer: %d, indexed: %b, vid mem: %d kB;",
         obj.isVisible(),
         obj.getVertexTransferMode(),

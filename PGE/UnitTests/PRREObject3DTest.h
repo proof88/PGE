@@ -76,6 +76,8 @@ protected:
         AddSubTest("testSetScalingToVector", (PFNUNITSUBTEST) &PRREObject3DTest::testSetScalingToVector);
         AddSubTest("testScaleByScalar", (PFNUNITSUBTEST) &PRREObject3DTest::testScaleByScalar);
         AddSubTest("testScaleByVector", (PFNUNITSUBTEST) &PRREObject3DTest::testScaleByVector);
+        AddSubTest("testGetBiggestAreaScaled", (PFNUNITSUBTEST) &PRREObject3DTest::testGetBiggestAreaScaled);
+        AddSubTest("testRecalculateBiggerAreaScaled", (PFNUNITSUBTEST) &PRREObject3DTest::testRecalculateBiggerAreaScaled);
         AddSubTest("testIsVisible", (PFNUNITSUBTEST) &PRREObject3DTest::testIsVisible);
         AddSubTest("testSetVisible", (PFNUNITSUBTEST) &PRREObject3DTest::testSetVisible);
         AddSubTest("testShow", (PFNUNITSUBTEST) &PRREObject3DTest::testShow);
@@ -558,43 +560,117 @@ private:
         const bool b2 = ( vUnit == objBox->getScaling() );
         const bool b3 = ( vUnit == objCube->getScaling() );
         const bool b4 = ( vUnit == objFromFile->getScaling() );
+        const bool b5 = objFromFile->getBoundingBoxObject() ? ( vUnit == objFromFile->getBoundingBoxObject()->getScaling() ) : false;
 
         return assertTrue(b1, "plane") &
             assertTrue(b2, "box") &
             assertTrue(b3, "cube") &
-            assertTrue(b4, "objFromFile");
+            assertTrue(b4, "objFromFile") &
+            assertTrue(b5, "objFromFile bounding box");
     }
 
     bool testSetScalingToScalar()
     {
+        const TPRREfloat fOriginalBiggestAreaScaledObj = obj->getBiggestAreaScaled();
+        const TPRREfloat fOriginalBiggestAreaScaledObjFromFile = objFromFile->getBiggestAreaScaled();
+
         obj->SetScaling(3.0f);
+        objFromFile->SetScaling(3.0f);
+
+        bool b = true;
+        if ( objFromFile->getBoundingBoxObject() )
+        {
+            b &= assertEquals(3.0f, objFromFile->getBoundingBoxObject()->getScaling().getX(), E, "X file bounding") &
+            assertEquals(3.0f, objFromFile->getBoundingBoxObject()->getScaling().getY(), E, "Y file bounding") &
+            assertEquals(3.0f, objFromFile->getBoundingBoxObject()->getScaling().getZ(), E, "Z file bounding");
+        }
+        else
+        {
+            b = false;
+        }
+
         return assertEquals(3.0f, obj->getScaling().getX(), E, "X") &
             assertEquals(3.0f, obj->getScaling().getY(), E, "Y") &
-            assertEquals(3.0f, obj->getScaling().getZ(), E, "Z");
+            assertEquals(3.0f, obj->getScaling().getZ(), E, "Z") &
+            assertEquals(3.0f, objFromFile->getScaling().getX(), E, "X file") &
+            assertEquals(3.0f, objFromFile->getScaling().getY(), E, "Y file") &
+            assertEquals(3.0f, objFromFile->getScaling().getZ(), E, "Z file") &
+            assertEquals(fOriginalBiggestAreaScaledObj * 3.0f*3.0f, obj->getBiggestAreaScaled(), 0.01f, "area") &
+            assertEquals(fOriginalBiggestAreaScaledObjFromFile * 3.0f*3.0f, objFromFile->getBiggestAreaScaled(), 0.01f, "area file") &
+            assertTrue(b, "b");
     }
 
     bool testSetScalingToVector()
     {
         const PRREVector vNewScaling(2.0f, 3.0f, 4.0f);
         obj->SetScaling(vNewScaling);
+        objFromFile->SetScaling(vNewScaling);
+
+        bool b = true;
+        if ( objFromFile->getBoundingBoxObject() )
+        {
+            b &= assertEquals(2.0f, objFromFile->getBoundingBoxObject()->getScaling().getX(), E, "X file bounding") &
+            assertEquals(3.0f, objFromFile->getBoundingBoxObject()->getScaling().getY(), E, "Y file bounding") &
+            assertEquals(4.0f, objFromFile->getBoundingBoxObject()->getScaling().getZ(), E, "Z file bounding");
+        }
+        else
+        {
+            b = false;
+        }
 
         return assertEquals(2.0f, obj->getScaling().getX(), E, "X") &
             assertEquals(3.0f, obj->getScaling().getY(), E, "Y") &
-            assertEquals(4.0f, obj->getScaling().getZ(), E, "Z");
+            assertEquals(4.0f, obj->getScaling().getZ(), E, "Z") &
+            assertEquals(2.0f, objFromFile->getScaling().getX(), E, "X file") &
+            assertEquals(3.0f, objFromFile->getScaling().getY(), E, "Y file") &
+            assertEquals(4.0f, objFromFile->getScaling().getZ(), E, "Z file") &
+            /* because obj has size [1,2,3] and with scaling vector its YZ area will be biggest */
+            assertEquals(obj->getSizeVec().getY() * 3.0f * obj->getSizeVec().getZ() * 4.0f, obj->getBiggestAreaScaled(), 0.01f, "area") &
+            /* because objFromFile has size around ~[67, 47, 68] and with scaling vector its YZ area will be biggest, not its XZ */
+            assertEquals(objFromFile->getSizeVec().getY() * 3.0f * objFromFile->getSizeVec().getZ() * 4.0f, objFromFile->getBiggestAreaScaled(), 0.01f, "area file") &
+            assertTrue(b, "b");
     }
 
     bool testScaleByScalar()
     {
+        const TPRREfloat fOriginalBiggestAreaScaledObj = obj->getBiggestAreaScaled();
+        const TPRREfloat fOriginalBiggestAreaScaledObjFromFile = objFromFile->getBiggestAreaScaled();
+
         obj->Scale(3.0f);
         bool b = assertEquals(3.0f, obj->getScaling().getX(), E, "b X") &
             assertEquals(3.0f, obj->getScaling().getY(), E, "b Y") &
-            assertEquals(3.0f, obj->getScaling().getZ(), E, "b Z");
+            assertEquals(3.0f, obj->getScaling().getZ(), E, "b Z") &
+            assertEquals(fOriginalBiggestAreaScaledObj * 3.0f*3.0f, obj->getBiggestAreaScaled(), 0.01f, "area");
 
         obj->Scale(2.5f);
         b &= assertEquals(3.0f*2.5f, obj->getScaling().getX(), E, "b2 X") &
             assertEquals(3.0f*2.5f, obj->getScaling().getY(), E, "b2 Y") &
-            assertEquals(3.0f*2.5f, obj->getScaling().getZ(), E, "b2 Z");
+            assertEquals(3.0f*2.5f, obj->getScaling().getZ(), E, "b2 Z") &
+            assertEquals(fOriginalBiggestAreaScaledObj * 3.0f*3.0f * 2.5f*2.5f, obj->getBiggestAreaScaled(), 0.1f, "area");;
         
+        objFromFile->Scale(3.0f);
+        b &= assertEquals(3.0f, objFromFile->getScaling().getX(), E, "b file X") &
+            assertEquals(3.0f, objFromFile->getScaling().getY(), E, "b file Y") &
+            assertEquals(3.0f, objFromFile->getScaling().getZ(), E, "b file Z") &
+            assertEquals(fOriginalBiggestAreaScaledObjFromFile * 3.0f*3.0f, objFromFile->getBiggestAreaScaled(), 0.01f, "area file");
+
+        objFromFile->Scale(2.5f);
+        b &= assertEquals(3.0f*2.5f, objFromFile->getScaling().getX(), E, "b2 file X") &
+            assertEquals(3.0f*2.5f, objFromFile->getScaling().getY(), E, "b2 file Y") &
+            assertEquals(3.0f*2.5f, objFromFile->getScaling().getZ(), E, "b2 file Z") &
+            assertEquals(fOriginalBiggestAreaScaledObjFromFile * 3.0f*3.0f * 2.5f*2.5f, objFromFile->getBiggestAreaScaled(), 0.1f, "area file");
+
+        if ( objFromFile->getBoundingBoxObject() )
+        {
+            b &= assertEquals(3.0f*2.5f, objFromFile->getBoundingBoxObject()->getScaling().getX(), E, "X file bounding") &
+            assertEquals(3.0f*2.5f, objFromFile->getBoundingBoxObject()->getScaling().getY(), E, "Y file bounding") &
+            assertEquals(3.0f*2.5f, objFromFile->getBoundingBoxObject()->getScaling().getZ(), E, "Z file bounding");
+        }
+        else
+        {
+            b = false;
+        }
+
         return b;
     }
 
@@ -610,7 +686,91 @@ private:
         obj->Scale(vScaleBy);
         b &= assertEquals(2.0f*2.0f, obj->getScaling().getX(), E, "b2 X") &
             assertEquals(3.0f*3.0f, obj->getScaling().getY(), E, "b2 Y") &
-            assertEquals(4.0f*4.0f, obj->getScaling().getZ(), E, "b2 Z");
+            assertEquals(4.0f*4.0f, obj->getScaling().getZ(), E, "b2 Z") &
+            /* because obj has size [1,2,3] and with scaling vector its YZ area will be biggest */
+            assertEquals(obj->getSizeVec().getY() * 3.0f * 3.0f * obj->getSizeVec().getZ() * 4.0f * 4.0f, obj->getBiggestAreaScaled(), 0.01f, "area");
+
+        objFromFile->Scale(vScaleBy);
+        b &= assertEquals(2.0f, objFromFile->getScaling().getX(), E, "b file X") &
+            assertEquals(3.0f, objFromFile->getScaling().getY(), E, "b file Y") &
+            assertEquals(4.0f, objFromFile->getScaling().getZ(), E, "b file Z");
+
+        objFromFile->Scale(vScaleBy);
+        b &= assertEquals(2.0f*2.0f, objFromFile->getScaling().getX(), E, "b2 file X") &
+            assertEquals(3.0f*3.0f, objFromFile->getScaling().getY(), E, "b2 file Y") &
+            assertEquals(4.0f*4.0f, objFromFile->getScaling().getZ(), E, "b2 file Z") &
+            /* because objFromFile has size around ~[67, 47, 68] and with scaling vector its YZ area will be biggest, not its XZ */
+            assertEquals(objFromFile->getSizeVec().getY() * 3.0f * 3.0f * objFromFile->getSizeVec().getZ() * 4.0f * 4.0f, objFromFile->getBiggestAreaScaled(), 0.1f, "area file");
+
+        if ( objFromFile->getBoundingBoxObject() )
+        {
+            b &= assertEquals(2.0f*2.0f, objFromFile->getBoundingBoxObject()->getScaling().getX(), E, "X file bounding") &
+            assertEquals(3.0f*3.0f, objFromFile->getBoundingBoxObject()->getScaling().getY(), E, "Y file bounding") &
+            assertEquals(4.0f*4.0f, objFromFile->getBoundingBoxObject()->getScaling().getZ(), E, "Z file bounding");
+        }
+        else
+        {
+            b = false;
+        }
+
+        return b;
+    }
+
+    bool testGetBiggestAreaScaled()
+    {
+        bool b = assertEquals(6.0f, obj->getBiggestAreaScaled(), E, "obj") &
+            assertEquals(2.0f, objPlane->getBiggestAreaScaled(), E, "objPlane") &
+            assertEquals(6.0f, objBox->getBiggestAreaScaled(), E, "objBox") &
+            assertEquals(1.0f, objCube->getBiggestAreaScaled(), E, "objCube");
+        
+        TPRREfloat fObjFileAreaXY = objFromFile->getSizeVec().getX() * objFromFile->getSizeVec().getY();
+        TPRREfloat fObjFileAreaXZ = objFromFile->getSizeVec().getX() * objFromFile->getSizeVec().getZ();
+        TPRREfloat fObjFileAreaYZ = objFromFile->getSizeVec().getY() * objFromFile->getSizeVec().getZ();
+
+        TPRREfloat fObjFileExpectedBiggestArea;
+        if ( fObjFileAreaXY > fObjFileAreaXZ )
+        {
+            fObjFileExpectedBiggestArea = fObjFileAreaXY > fObjFileAreaYZ ? fObjFileAreaXY : fObjFileAreaYZ;
+        }
+        else
+        {
+            fObjFileExpectedBiggestArea = fObjFileAreaXZ > fObjFileAreaYZ ? fObjFileAreaXZ : fObjFileAreaYZ;
+        }
+
+        b &= assertEquals(fObjFileExpectedBiggestArea, objFromFile->getBiggestAreaScaled(), 0.01f, "objFromFile 1");
+
+        const PRREVector vScaleBy(2.0f, 3.0f, 4.0f);
+        objFromFile->Scale(vScaleBy);
+
+        fObjFileAreaXY *= vScaleBy.getX() * vScaleBy.getY();
+        fObjFileAreaXZ *= vScaleBy.getX() * vScaleBy.getZ();
+        fObjFileAreaYZ *= vScaleBy.getY() * vScaleBy.getZ();
+
+        TPRREfloat fObjFileExpectedBiggestAreaScaled;
+        if ( fObjFileAreaXY > fObjFileAreaXZ )
+        {
+            fObjFileExpectedBiggestAreaScaled = fObjFileAreaXY > fObjFileAreaYZ ? fObjFileAreaXY : fObjFileAreaYZ;
+        }
+        else
+        {
+            fObjFileExpectedBiggestAreaScaled = fObjFileAreaXZ > fObjFileAreaYZ ? fObjFileAreaXZ : fObjFileAreaYZ;
+        }
+
+        b &= assertEquals(fObjFileExpectedBiggestAreaScaled, objFromFile->getBiggestAreaScaled(), 0.01f, "objFromFile 2");
+
+        return b;
+    }
+
+    bool testRecalculateBiggerAreaScaled()
+    {
+        const TPRREfloat fObjAreaBiggest = obj->getBiggestAreaScaled();
+        const TPRREfloat fObjFromFileAreaBiggest = objFromFile->getBiggestAreaScaled();
+
+        bool b = assertEquals(fObjAreaBiggest, obj->recalculateBiggerAreaScaled(), E, "obj") &
+            assertEquals(fObjFromFileAreaBiggest, objFromFile->recalculateBiggerAreaScaled(), E, "objFromFile");
+
+        // LAZY: we could also test if we change vertex geometry and upload it again to host with setVertexTransferMode()
+        // and expect the area to change automatically, but for now we just believe it is also ok ...
 
         return b;
     }
