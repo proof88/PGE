@@ -206,9 +206,8 @@ private:
         delete objFromFile;
         objFromFile = NULL;
 
-        // dtor of Object3D is also responsible for removing itself from its manager, and in this case,
-        // we will have 3 objects fewer because obj is the 1st, objFromFile is the 2nd, and latter also has bounding box object as 3rd.
-        return assertEquals(objCount-3, om->getCount(), "getCount 2nd");
+        // dtor of Object3D is also responsible for removing itself from its manager
+        return assertEquals(objCount-2, om->getCount(), "getCount 2nd");
     }
 
     bool testGetReferredObject()

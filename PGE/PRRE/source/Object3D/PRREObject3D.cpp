@@ -421,6 +421,7 @@ void PRREObject3D::PRREObject3DImpl::SetOcclusionTested(TPRREbool state)
         }
         // upload bounding box geometry now to host memory with altered vertex positions
         pBoundingBox->setVertexTransferMode( pBoundingBox->selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_INDEXED, false) );
+        pBoundingBox->DetachFrom();  // Object3DManager is no longer responsible for this but the Object3D that has the ptr to it!
     }
     else
     {
