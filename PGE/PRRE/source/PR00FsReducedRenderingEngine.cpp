@@ -543,6 +543,22 @@ void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByObjects() const
             if ( &(obj->getMaterial(false)) == mat )
                     matUsedByObject3D = true;
             
+            if ( obj->getBoundingBoxObject() )
+            {
+                if ( &(obj->getBoundingBoxObject()->getMaterial(false)) == mat )
+                    matUsedByObject3D = true;
+
+                for (TPRREint subobji = 0; !matUsedByObject3D && (subobji < obj->getBoundingBoxObject()->getCount()); subobji++)
+                {
+                    PRREObject3D* subobj = (PRREObject3D*) obj->getBoundingBoxObject()->getAttachedAt(subobji);
+                    if ( !subobj)
+                        continue;
+
+                    if ( &(subobj->getMaterial()) == mat )
+                        matUsedByObject3D = true;
+                }
+            } // bounding box
+
             for (TPRREint subobji = 0; !matUsedByObject3D && (subobji < obj->getCount()); subobji++)
             {
                 PRREObject3D* subobj = (PRREObject3D*) obj->getAttachedAt(subobji);

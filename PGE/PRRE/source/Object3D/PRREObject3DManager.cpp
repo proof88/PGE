@@ -733,8 +733,11 @@ void PRREObject3DManager::WriteListCallback(const PRREManaged& mngd) const
         WriteListCallback( *(obj.pImpl->pBoundingBox) );
         getConsole().Outdent();
     }
-
-    getConsole().OLn("");
+    else
+    {
+        getConsole().OLn("");
+    }
+    
 } // WriteListCallback()
 
 

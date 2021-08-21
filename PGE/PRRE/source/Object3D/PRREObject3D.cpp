@@ -1933,6 +1933,7 @@ TPRREuint PRREObject3D::getUsedSystemMemory() const
             continue;
         sumSubObjectMemoryUsage += getAttachedAt(i)->getUsedSystemMemory();
     }
+
     return sumSubObjectMemoryUsage +
         PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) +
         PRREMesh3D::getUsedSystemMemory() - sizeof(PRREMesh3D) +
