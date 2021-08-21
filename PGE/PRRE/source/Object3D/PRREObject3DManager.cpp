@@ -581,6 +581,9 @@ PRREObject3D* PRREObject3DManager::createFromFile(const char* filename)
 */
 PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
 {
+    // referredobj cannot be const ref, since we need to store to non-const ptr, so later non-const Draw() can be invoked on it.
+    // so the reason of referredobj not const is because Draw() is non-const.
+
     if ( !pImpl->isInitialized() )
     {
         return PGENULL;
