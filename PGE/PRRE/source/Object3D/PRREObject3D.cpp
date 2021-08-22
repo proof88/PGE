@@ -1518,6 +1518,9 @@ void PRREObject3D::Scale(const PRREVector& value)
     Gets the biggest area of the object on either plane (XY, XZ or YZ), scaled by current scaling factor.
     Note that if you change the geometry on your own without a call to setVertexTransferMode(), this may give outdated area.
     See details at recalculateBiggerAreaScaled().
+    This value is used by the engine to determine which object should be an occluder. Although occluder state
+    can be turned on or off manually by SetOccluder(), the engine automatically sets this state whenever recalculateBiggerAreaScaled()
+    is invoked either automatically or manually.
 
     @return Biggest area of the object on either plane (XY, XZ or YZ), scaled by current scaling factor.
 */
@@ -1534,6 +1537,9 @@ TPRREfloat PRREObject3D::getBiggestAreaScaled() const
     (e.g. through accessing them with PRREMesh3D::getVertices() ), and don't invoke setVertexTransferMode() to
     upload changed geometry to host (e.g. because you keep geometry in client memory). In such case it is recommended to
     invoke this function yourself.
+    This value is used by the engine to determine which object should be an occluder. Although occluder state
+    can be turned on or off manually by SetOccluder(), the engine automatically sets this state whenever recalculateBiggerAreaScaled()
+    is invoked either automatically or manually.
 
     @return The recalculated biggest area, scaled by current scaling factor.
 */

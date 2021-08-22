@@ -199,8 +199,8 @@ const char* PRREObject3DManager::getLoggerModuleName()
 
 
 /**
-    Tells whether the object is correctly initialized or not.
-    @return True if the given TextureManager instance was initialized correctly, false otherwise.
+    Tells whether the manager is correctly initialized or not.
+    @return True if the given Object3DManager instance was initialized correctly, false otherwise.
 */
 TPRREbool PRREObject3DManager::isInitialized() const
 {
@@ -657,6 +657,58 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
     getConsole().OLn("");
     return obj;
 } // createCloned()
+
+
+/**
+    Iterates over its manageds and updates their occluder states.
+    It uses their getBiggestAreaScaled() values to determine which should be occluder.
+    It sets states on and off, based on how their getBiggestAreaScaled() compare to others'.
+    Blended and "sticked to screen" objects are NOT considered as occluders.
+    A renderer might invoke this function periodically based on its configuration.
+*/
+void PRREObject3DManager::UpdateOccluderStates()
+{
+    //LOGGGG getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), true);
+
+    TPRREfloat fAverageBiggestAreaScaled = 0.0f;
+    TPRREuint nCount = 0;
+    for (TPRREint i = 0; i < getSize(); i++)
+    {
+        const PRREObject3D* const pMngd = (PRREObject3D*) getAttachedAt(i);
+        if ( pMngd != PGENULL )
+        {
+            if ( PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(), pMngd->getMaterial().getDestinationBlendFunc()) )
+                continue;
+
+            if ( pMngd->isStickedToScreen() )
+                continue;
+
+            nCount++;
+            fAverageBiggestAreaScaled += pMngd->getBiggestAreaScaled();
+        }
+    }
+    fAverageBiggestAreaScaled /= (TPRREfloat)nCount;
+
+    //LOGGGG getConsole().OLnOI("%s() START: avg area: %f", __FUNCTION__, fAverageBiggestAreaScaled);
+    //LOGGGG getConsole().OLn("area, bAreaBiggerThanAvg, bNotBlended, bNotSticked, name, filename");
+    for (TPRREint i = 0; i < getSize(); i++)
+    {
+        PRREObject3D* const pMngd = (PRREObject3D*) getAttachedAt(i);
+        if ( pMngd != PGENULL )
+        {
+            const TPRREbool bAreaBiggerThanAvg = (pMngd->getBiggestAreaScaled() > fAverageBiggestAreaScaled);
+            const TPRREbool bNotBlended = (!PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(), pMngd->getMaterial().getDestinationBlendFunc()));
+            const TPRREbool bNotSticked = (!pMngd->isStickedToScreen());
+
+            //LOGGGG getConsole().OLn("%f, %b, %b, %b, %s, %s", pMngd->getBiggestAreaScaled(), bAreaBiggerThanAvg, bNotBlended, bNotSticked, pMngd->getName().c_str(), pMngd->getFilename().c_str());
+            
+            pMngd->SetOccluder(bAreaBiggerThanAvg && bNotBlended && bNotSticked);
+        }
+    }
+    //LOGGGG getConsole().OOOLn("%s() END", __FUNCTION__);
+
+    //LOGGGG getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), false);
+} // UpdateOccluderStates()
 
 
 /**

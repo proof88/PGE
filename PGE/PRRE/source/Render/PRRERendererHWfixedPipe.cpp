@@ -31,6 +31,7 @@ class PRRERendererHWfixedPipeImpl :
 {
 public:
     static TPRREbool OQ_RENDER_BOUNDING_BOXES;
+    static TPRREbool OQ_AUTO_UPDATE_OCCLUDER_STATES;
     static TPRREbool OQ_ZPASS_FOR_OCCLUDERS;
 
     // ---------------------------------------------------------------------------
@@ -70,6 +71,7 @@ private:
 
     TPRREuint nObjectsTotal;
     TPRREuint nObjectVisible;
+    TPRREuint nObjectsOccluder;
     TPRREuint nObjectsOcclusionTested;
     TPRREuint nObjectsOccluded;
     TPRREuint nObjectsNonOccluded;
@@ -115,6 +117,7 @@ private:
 
 
 TPRREbool PRRERendererHWfixedPipeImpl::OQ_RENDER_BOUNDING_BOXES = true;
+TPRREbool PRRERendererHWfixedPipeImpl::OQ_AUTO_UPDATE_OCCLUDER_STATES = true;
 TPRREbool PRRERendererHWfixedPipeImpl::OQ_ZPASS_FOR_OCCLUDERS = false;
 
 
@@ -754,12 +757,22 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
     } // occludess iRenderPass
 
     frameCntr++;
+
+    if ( OQ_AUTO_UPDATE_OCCLUDER_STATES )
+    {
+        if ( (frameCntr % 100) == 0 )
+        {
+            pObject3DMgr->UpdateOccluderStates();
+        }
+    }
+
     if ( (frameCntr % 1000) == 0 )
     {
         frameCntr = 0;
 
         nObjectsTotal = 0;
         nObjectVisible = 0;
+        nObjectsOccluder = 0;
         nObjectsOcclusionTested = 0;
         nObjectsOccluded = 0;
         nObjectsNonOccluded = 0;
@@ -777,6 +790,9 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
                 continue;
         
             nObjectVisible++;
+
+            if ( obj->isOccluder() )
+                nObjectsOccluder++;
         
             if ( obj->isOcclusionTested() )
             {
@@ -795,9 +811,13 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
         getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), true);
         getConsole().OLn("Number of total objects: %d", nObjectsTotal);
         getConsole().OLn(" - of which visible: %d", nObjectVisible);
+        getConsole().OLn("Number of occluders: %d",nObjectsOccluder );
         getConsole().OLn("Number of occlusion-tested objects: %d", nObjectsOcclusionTested);
         getConsole().OLn(" - of which occluded: %d", nObjectsOccluded);
         getConsole().OLn(" - of which not occluded: %d", nObjectsNonOccluded);
+        getConsole().OLn("");
+        
+        getConsole().OLn("");
         getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), false);
     } // frameCntr
 

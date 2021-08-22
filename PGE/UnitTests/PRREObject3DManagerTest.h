@@ -50,6 +50,7 @@ protected:
         AddSubTest("testCreateCube", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreateCube);
         AddSubTest("testCreateFromFile", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreateFromFile);
         AddSubTest("testCreateCloned", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreateCloned);
+        AddSubTest("testUpdateOccluderStates", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testUpdateOccluderStates);
         AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testGetUsedVideoMemory);
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testWriteList);
     }
@@ -161,21 +162,21 @@ private:
         // We expect textures to be auto-loaded as well, so increase in number of textures.
         const TPRREint nTexturesBeforeLoad = engine->getTextureManager().getCount();
 
-        const PRREObject3D* const obj = om->createFromFile("_res/models/snail_proofps/snail.obj");
+        const PRREObject3D* const objFromFile = om->createFromFile("_res/models/snail_proofps/snail.obj");
 
-        if ( !assertNotNull(obj, "obj not null"))
+        if ( !assertNotNull(objFromFile, "obj not null"))
         {
             return false;
         }
 
         // As texture filenames shouldn't be part of final subobject names, we can check for that also.
         bool b1 = true;
-        for (TPRREint i = 0; i < obj->getCount(); i++)
-            b1 = b1 & assertNull( strstr(((PRREObject3D*)obj->getAttachedAt(i))->getName().c_str(), ".bmp"), "bmp ext in subname" );
+        for (TPRREint i = 0; i < objFromFile->getCount(); i++)
+            b1 = b1 & assertNull( strstr(((PRREObject3D*)objFromFile->getAttachedAt(i))->getName().c_str(), ".bmp"), "bmp ext in subname" );
 
         return assertLess( nTexturesBeforeLoad, engine->getTextureManager().getCount(), "textures count") &
-            assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
-            assertEquals((TPRREint)9, obj->getCount(), "subobject count") &
+            assertNotEquals(std::string::npos, objFromFile->getName().find("Object3D "), "name substr") &
+            assertEquals((TPRREint)9, objFromFile->getCount(), "subobject count") &
             b1;
     }
 
@@ -239,6 +240,51 @@ private:
             assertTrue(objFromFileCloned->isOccluded() == false, "objFromFile isOccluded") &
             assertTrue(objFromFileCloned->isOccluder() == false, "objFromFile isOccluder") &
             assertTrue(objFromFileCloned->isOcclusionTested() == true, "objFromFile isOcclusionTested");
+    }
+
+    bool testUpdateOccluderStates()
+    {
+        PRREObject3D* const objFromFile = om->createFromFile("_res/models/snail_proofps/snail.obj");
+
+        if ( !assertNotNull(objFromFile, "obj not null"))
+        {
+            return false;
+        }
+
+        std::vector<PRREObject3D*> boxes;
+        for (int i = 0; i < 100; i++)
+        {
+            boxes.push_back( om->createBox(1.0f, 1.0f, 1.0f) );
+        }
+
+        om->UpdateOccluderStates();
+
+        bool b = true;
+        for (std::size_t i = 0; i < boxes.size(); i++)
+        {
+            b &= assertFalse( boxes[i]->isOccluder(), (std::string("boxes[") + std::to_string(i) + "]").c_str() );
+        }
+
+        // size of snail with default scaling is somewhere around [67, 47, 68] or something
+        b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 1");
+
+        objFromFile->SetStickedToScreen(true);
+        om->UpdateOccluderStates();
+        b &= assertFalse(objFromFile->isOccluder(), "objFromFile not occluder 1");
+
+        objFromFile->SetStickedToScreen(false);
+        om->UpdateOccluderStates();
+        b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 2");
+
+        objFromFile->getMaterial().setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
+        om->UpdateOccluderStates();
+        b &= assertFalse(objFromFile->isOccluder(), "objFromFile not occluder 2");
+
+        objFromFile->getMaterial().setBlendMode(PRRE_BM_NONE);
+        om->UpdateOccluderStates();
+        b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 3");
+
+        return b;
     }
 
     bool testGetUsedVideoMemory()

@@ -196,7 +196,7 @@ public:
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
-    TPRREbool isInitialized() const;  /**< Tells whether the object is correctly initialized or not. */
+    TPRREbool isInitialized() const;                  /**< Tells whether the manager is correctly initialized or not. */
     
     PRREObject3D* createPlane(
         TPRREfloat a, TPRREfloat b,
@@ -225,6 +225,8 @@ public:
     PRREObject3D* createFromFile(const char* filename);          /**< Creates object from the given file. */
 
     PRREObject3D* createCloned(PRREObject3D& referredobj);       /**< Creates a new object by cloning an already existing object. */
+
+    void UpdateOccluderStates();                                 /**< Iterates over its manageds and updates their occluder states. */
 
     TPRREuint    getUsedVideoMemory() const;                     /**< Gets the amount of allocated video memory for all objects owner by this manager. */
 

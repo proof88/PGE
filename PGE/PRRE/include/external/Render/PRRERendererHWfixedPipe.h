@@ -38,7 +38,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+    CConsole&  getConsole() const;                     /**< Returns access to console preset with logger module name as this class. */
 
     /**
         Not implemented.
