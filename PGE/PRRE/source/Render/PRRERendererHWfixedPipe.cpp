@@ -660,6 +660,13 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
 {
     static TPRREuint frameCntr = 0;
 
+    // TODO: when iterating over occluders, their blending should be checked and if blended, skip them!
+    // the reason is that blending is not a state of object3d but its material, so if user sets blending,
+    // there is no way to implicitly turn occluder state off of object3d ...
+    // although invoking UpdateOccluderStates() would fix occluder state, it might happen in the future
+    // that it won't iterate over on every single object in every frame, so we need to be cautious right when
+    // iterating over the occluders!
+
     if ( OQ_ZPASS_FOR_OCCLUDERS )
     {
         // first render the occluders into Z-buffer only

@@ -888,10 +888,17 @@ private:
 
     bool testSetWireframed()
     {
+        objFromFile->SetOccluder(true);
+
+        bool b = true;
+        b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder");
+
         obj->SetWireframed(true);
         objFromFile->SetWireframed(true);
 
-        return assertTrue(obj->isWireframed(), "obj") & assertTrue(objFromFile->isWireframed(), "objFromFile");
+        b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder");
+
+        return b & assertTrue(obj->isWireframed(), "obj") & assertTrue(objFromFile->isWireframed(), "objFromFile");
     }
 
     bool testIsWireframedCulled()
@@ -922,10 +929,17 @@ private:
 
     bool testSetAffectingZBuffer()
     {
+        objFromFile->SetOccluder(true);
+
+        bool b = true;
+        b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder");
+
         obj->SetAffectingZBuffer(false);
         objFromFile->SetAffectingZBuffer(false);
 
-        return assertFalse(obj->isAffectingZBuffer(), "obj") & assertFalse(objFromFile->isAffectingZBuffer(), "objFromFile");
+        b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder");
+
+        return b & assertFalse(obj->isAffectingZBuffer(), "obj") & assertFalse(objFromFile->isAffectingZBuffer(), "objFromFile");
     }
 
     bool testIsTestingAgainstZBuffer()
@@ -956,10 +970,17 @@ private:
 
     bool testSetStickedToScreen()
     {
+        objFromFile->SetOccluder(true);
+
+        bool b = true;
+        b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder");
+
         obj->SetStickedToScreen(true);
         objFromFile->SetStickedToScreen(true);
 
-        return assertTrue(obj->isStickedToScreen(), "obj") & assertTrue(objFromFile->isStickedToScreen(), "objFromFile");
+        b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder");
+
+        return b & assertTrue(obj->isStickedToScreen(), "obj") & assertTrue(objFromFile->isStickedToScreen(), "objFromFile");
     }
 
     bool testIsOccluder()
@@ -974,9 +995,34 @@ private:
     bool testSetOccluder()
     {
         obj->SetOccluder(true);
+        objFromFile->SetOccluder(false);
+
+        bool b = true;
+        b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder 1");
+
+        objFromFile->SetStickedToScreen(true);
+        objFromFile->SetOccluder(true);
+        b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder 2");
+        objFromFile->SetStickedToScreen(false);
+
+        objFromFile->SetWireframed(true);
+        objFromFile->SetOccluder(true);
+        b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder 3");
+        objFromFile->SetWireframed(false);
+
+        objFromFile->SetAffectingZBuffer(false);
+        objFromFile->SetOccluder(true);
+        b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder 4");
+        objFromFile->SetAffectingZBuffer(true);
+
+        objFromFile->getMaterial().setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
+        objFromFile->SetOccluder(true);
+        b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder 5");
+        objFromFile->getMaterial().setBlendMode(PRRE_BM_NONE);
+
         objFromFile->SetOccluder(true);
 
-        return assertTrue(obj->isOccluder(), "obj") & assertTrue(objFromFile->isOccluder(), "objFromFile");
+        return b & assertTrue(obj->isOccluder(), "obj") & assertTrue(objFromFile->isOccluder(), "objFromFile");
     }
 
     bool testIsOccluded()

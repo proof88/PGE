@@ -301,6 +301,14 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isWireframed() const
 
 void PRREObject3D::PRREObject3DImpl::SetWireframed(TPRREbool value)
 {
+    if ( value )
+    {
+        if ( isOccluder() )
+        {
+            _pOwner->getConsole().EOLn("%s() WARNING: occluder state is forced to false due to wireframed!", __FUNCTION__);
+            SetOccluder(false);
+        }
+    }
     bWireframe = value;
 } // SetWireframed()
 
@@ -325,6 +333,14 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isAffectingZBuffer() const
 
 void PRREObject3D::PRREObject3DImpl::SetAffectingZBuffer(TPRREbool value)
 {
+    if ( !value )
+    {
+        if ( isOccluder() )
+        {
+            _pOwner->getConsole().EOLn("%s() WARNING: occluder state is forced to false due to not affecting zbuffer!", __FUNCTION__);
+            SetOccluder(false);
+        }
+    }
     bAffectZBuffer = value;
 } // SetAffectingZBuffer()
 
@@ -349,6 +365,15 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isStickedToScreen() const
 
 void PRREObject3D::PRREObject3DImpl::SetStickedToScreen(TPRREbool value)
 {
+    if ( value )
+    {
+        if ( isOccluder() )
+        {
+            _pOwner->getConsole().EOLn("%s() WARNING: occluder state is forced to false due to stickedToScreen!", __FUNCTION__);
+            SetOccluder(false);
+        }
+    }
+
     bStickedToScreen = value;
     SetDoubleSided(true);
     SetLit(false);
@@ -364,6 +389,19 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isOccluder() const
 
 void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
 {
+    if ( value )
+    {
+        if ( isStickedToScreen() ||
+            !(isAffectingZBuffer()) ||
+            isWireframed() ||
+            PRREMaterial::isBlendFuncReallyBlending(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc())
+        )
+        {
+            _pOwner->getConsole().EOLn("%s() ERROR: cannot set occluder state to true due to conflicting property!", __FUNCTION__);
+            return;
+        }
+    }
+
     bOccluder = value;
 } // SetOccluder()
 
