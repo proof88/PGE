@@ -45,6 +45,8 @@ protected:
         om = NULL;
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCtor);
         AddSubTest("testIsInitialized", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testIsInitialized);
+        // getOccluders() and getOccludees() doesn't have their own test cases since they are
+        // tested in almost all testcases here and in PRREObject3DTest::testSetOccluder() too.
         AddSubTest("testCreatePlane", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreatePlane);
         AddSubTest("testCreateBox", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreateBox);
         AddSubTest("testCreateCube", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreateCube);
@@ -105,7 +107,7 @@ private:
 
     bool testCtor()
     {
-        return assertNotNull(om);
+        return assertNotNull(om) & assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertTrue(om->getOccludees().empty(), "getOccludees empty");
     }
 
     bool testIsInitialized()
@@ -124,7 +126,8 @@ private:
         }
 
         return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
-            assertEquals((TPRREuint)4, obj->getVerticesCount(), "vertices count") ;
+            assertEquals((TPRREuint)4, obj->getVerticesCount(), "vertices count") &
+            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees empty");
     }
 
     bool testCreateBox()
@@ -138,7 +141,8 @@ private:
         }
 
         return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
-            assertEquals((TPRREuint)24, obj->getVerticesCount(), "vertices count") ;
+            assertEquals((TPRREuint)24, obj->getVerticesCount(), "vertices count") &
+            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees empty");
     }
 
     bool testCreateCube()
@@ -152,7 +156,8 @@ private:
         }
 
         return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
-            assertEquals((TPRREuint)24, obj->getVerticesCount(), "vertices count") ;
+            assertEquals((TPRREuint)24, obj->getVerticesCount(), "vertices count") &
+            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees empty");
     }
 
     bool testCreateFromFile()
@@ -177,7 +182,8 @@ private:
         return assertLess( nTexturesBeforeLoad, engine->getTextureManager().getCount(), "textures count") &
             assertNotEquals(std::string::npos, objFromFile->getName().find("Object3D "), "name substr") &
             assertEquals((TPRREint)9, objFromFile->getCount(), "subobject count") &
-            b1;
+            b1 &
+            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees empty");
     }
 
     bool testCreateCloned()
@@ -234,12 +240,14 @@ private:
             assertTrue(objCloned->isWireframed(), "wireframed") &
             assertTrue(objCloned->isWireframedCulled(), "wireframeculled") &
             assertNull(objCloned->getBoundingBoxObject(), "objCloned bounding box") &
-            assertNotNull(objFromFileCloned->getBoundingBoxObject(), "objCloned bounding box") &
+            assertNotNull(objFromFileCloned->getBoundingBoxObject(), "objFromFileCloned bounding box") &
             assertNotEquals(objFromFileCloned->getBoundingBoxObject(), objFromFile->getBoundingBoxObject(), "different bounding boxes") &
-            assertTrue(objFromFileCloned->getRelPosVec() == objFromFile->getRelPosVec(), "objFromFile rel pos") &
-            assertTrue(objFromFileCloned->isOccluded() == false, "objFromFile isOccluded") &
-            assertTrue(objFromFileCloned->isOccluder() == false, "objFromFile isOccluder") &
-            assertTrue(objFromFileCloned->isOcclusionTested() == true, "objFromFile isOcclusionTested");
+            assertTrue(objFromFileCloned->getRelPosVec() == objFromFile->getRelPosVec(), "objFromFileCloned rel pos") &
+            assertFalse(objFromFileCloned->isOccluded(), "objFromFileCloned isOccluded") &
+            assertFalse(objFromFileCloned->isOccluder(), "objFromFileCloned isOccluder") &
+            assertTrue( std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFileCloned) != om->getOccludees().end(), "objFromFileCloned is in getOccludees") &
+            assertTrue( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFileCloned) == om->getOccluders().end(), "objFromFileCloned is NOT in getOccluders") &
+            assertTrue(objFromFileCloned->isOcclusionTested() == true, "objFromFileCloned isOcclusionTested");
     }
 
     bool testUpdateOccluderStates()
@@ -256,33 +264,45 @@ private:
         {
             boxes.push_back( om->createBox(1.0f, 1.0f, 1.0f) );
         }
-
+        
         om->UpdateOccluderStates();
-
+        
         bool b = true;
         for (std::size_t i = 0; i < boxes.size(); i++)
         {
-            b &= assertFalse( boxes[i]->isOccluder(), (std::string("boxes[") + std::to_string(i) + "]").c_str() );
-        }
+            b &= assertFalse( boxes[i]->isOccluder(), (std::string("boxes[") + std::to_string(i) + "] isOccluder()").c_str() ) &
+                 assertTrue( std::find(om->getOccludees().begin(), om->getOccludees().end(), boxes[i]) != om->getOccludees().end(), (std::string("boxes[") + std::to_string(i) + "] is in getOccludees").c_str()) &
+                 assertTrue( std::find(om->getOccluders().begin(), om->getOccluders().end(), boxes[i]) == om->getOccluders().end(), (std::string("boxes[") + std::to_string(i) + "] is NOT in getOccluders").c_str());
+        } 
 
         // size of snail with default scaling is somewhere around [67, 47, 68] or something
-        b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 1");
+        b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 1") &
+             assertFalse( std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is NOT in getOccludees 1") &
+             assertFalse( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is in getOccluders 1");
 
         objFromFile->SetStickedToScreen(true);
         om->UpdateOccluderStates();
-        b &= assertFalse(objFromFile->isOccluder(), "objFromFile not occluder 1");
+        b &= assertFalse(objFromFile->isOccluder(), "objFromFile not occluder 1") &
+             assertTrue( std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is in getOccludees 2") &
+             assertTrue( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is NOT in getOccluders 2");
 
         objFromFile->SetStickedToScreen(false);
         om->UpdateOccluderStates();
-        b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 2");
+        b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 2") &
+             assertFalse( std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is NOT in getOccludees 3") &
+             assertFalse( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is in getOccluders 3");
 
         objFromFile->getMaterial().setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
         om->UpdateOccluderStates();
-        b &= assertFalse(objFromFile->isOccluder(), "objFromFile not occluder 2");
+        b &= assertFalse(objFromFile->isOccluder(), "objFromFile not occluder 2") &
+             assertTrue( std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is in getOccludees 4") &
+             assertTrue( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is NOT in getOccluders 4");
 
         objFromFile->getMaterial().setBlendMode(PRRE_BM_NONE);
         om->UpdateOccluderStates();
-        b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 3");
+        b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 3") &
+             assertFalse( std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is NOT in getOccludees 5") &
+             assertFalse( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is in getOccluders 5");
 
         return b;
     }

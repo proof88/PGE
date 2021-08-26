@@ -11,6 +11,7 @@
     ###################################################################################
 */
 
+#include <set>
 
 #include "../PRREallHeaders.h"
 #include "../PRREFiledManager.h"
@@ -197,6 +198,9 @@ public:
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
     TPRREbool isInitialized() const;                  /**< Tells whether the manager is correctly initialized or not. */
+
+    const std::set<PRREObject3D*>& getOccluders() const;  /**< Get a list of occluders. */
+    const std::set<PRREObject3D*>& getOccludees() const;  /**< Get a list of occludees. */
     
     PRREObject3D* createPlane(
         TPRREfloat a, TPRREfloat b,

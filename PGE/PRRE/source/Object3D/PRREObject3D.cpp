@@ -58,6 +58,9 @@ TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISI
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCLUDED = 0;
 TPRREbool PRREObject3D::PRREObject3DImpl::OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING = true;
 
+std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occluders;
+std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees;
+
 
 PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
 {
@@ -69,6 +72,18 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
     pFbBuffer = PGENULL;
 
     SetOcclusionTested(false);
+
+    auto occ_it = std::find(occluders.begin(), occluders.end(), _pOwner);
+    if ( occ_it != occluders.end() )
+    {
+        occluders.erase(occ_it);
+    }
+
+    occ_it = std::find(occludees.begin(), occludees.end(), _pOwner);
+    if ( occ_it != occludees.end() )
+    {
+        occludees.erase(occ_it);
+    }
 
     _pOwner->DeleteAll();
 
@@ -402,6 +417,16 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
         }
     }
 
+    std::set<PRREObject3D*>& addTo = value ? occluders : occludees;
+    std::set<PRREObject3D*>& removeFrom = value ? occludees: occluders;
+
+    addTo.insert(_pOwner);
+    auto occ_it = std::find(removeFrom.begin(), removeFrom.end(), _pOwner);
+    if ( occ_it != removeFrom.end() )
+    {
+        removeFrom.erase(occ_it);
+    }
+    
     bOccluder = value;
 } // SetOccluder()
 

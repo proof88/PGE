@@ -35,6 +35,9 @@ public:
 
     TPRREbool isInitialized() const;
 
+    const std::set<PRREObject3D*>& getOccluders() const;
+    const std::set<PRREObject3D*>& getOccludees() const;
+
 protected:
 
 private:
@@ -82,6 +85,18 @@ TPRREbool PRREObject3DManager::PRREObject3DManagerImpl::isInitialized() const
 {
     return bInited;
 } // isInitialized()
+
+
+const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::getOccluders() const
+{
+    return PRREObject3D::PRREObject3DImpl::occluders;
+} // getOccluders()
+
+
+const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::getOccludees() const
+{
+    return PRREObject3D::PRREObject3DImpl::occludees;
+} // getOccludees()
 
 
 // ############################## PROTECTED ##############################
@@ -209,6 +224,30 @@ TPRREbool PRREObject3DManager::isInitialized() const
 
 
 /**
+    Get a list of occluders.
+    If you want to get all the occluders, this way is faster than iterating over all objects and checking if they are occluders.
+
+    @return List of occluders.
+*/
+const std::set<PRREObject3D*>& PRREObject3DManager::getOccluders() const
+{
+    return pImpl->getOccluders();
+} // getOccluders()
+
+
+/**
+    Get a list of occludees.
+    If you want to get all the occluders, this way is faster than iterating over all objects and checking if they are occludees.
+
+    @return List of occludees.
+*/
+const std::set<PRREObject3D*>& PRREObject3DManager::getOccludees() const
+{
+    return pImpl->getOccludees();
+} // getOccludees()
+
+
+/**
     Creates a new plane with the given sizes.
 
     @param a                     Length of plane (size on X-axis).
@@ -273,6 +312,7 @@ PRREObject3D* PRREObject3DManager::createPlane(
     getConsole().OO();
 
     obj->SetName("Object3D " + std::to_string(pImpl->nRunningCounter++));
+    obj->SetOccluder(false);
 
     getConsole().SOLnOO("> Plane created successfully, name: %s!", obj->getName().c_str());
     getConsole().OLn("");
@@ -353,6 +393,7 @@ PRREObject3D* PRREObject3DManager::createBox(
     getConsole().OO();
 
     obj->SetName("Object3D " + std::to_string(pImpl->nRunningCounter++));
+    obj->SetOccluder(false);
 
     getConsole().SOLnOO("> Box created successfully, name: %s!", obj->getName().c_str());
     getConsole().OLn("");
@@ -513,6 +554,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
             getConsole().OO();
             Attach( *obj );
 
+            obj->SetOccluder(false);
             if ( PRREhwInfo::get().getVideo().isOcclusionQuerySupported() && pImpl->isEligibleForOcclusionQuery(nVerticesTotalTmpMesh) )
             {
                 obj->SetOcclusionTested(true);
@@ -639,6 +681,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
 
         obj->SetName("Object3D " + std::to_string(pImpl->nRunningCounter++) + " (clone of " + referredobj.getName() + ")");
 
+        obj->SetOccluder(referredobj.isOccluder());
         if ( referredobj.getBoundingBoxObject() )
         {
             obj->SetOcclusionTested(true);

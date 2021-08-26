@@ -27,6 +27,9 @@ public:
     static TPRREbool OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING;
     static TPRREbool OQ_RENDER_BOUNDING_BOXES;
 
+    static std::set<PRREObject3D*> occluders;        /**< List of occluders, should be updated whenever an object becomes an occluder. */
+    static std::set<PRREObject3D*> occludees;        /**< List of occludees, should be updated whenever an object becomes an occludee. */
+
     // ---------------------------------------------------------------------------
 
     virtual ~PRREObject3DImpl();
