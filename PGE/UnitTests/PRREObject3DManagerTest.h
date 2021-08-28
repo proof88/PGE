@@ -45,6 +45,11 @@ protected:
         om = NULL;
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCtor);
         AddSubTest("testIsInitialized", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testIsInitialized);
+        
+        // some functions from PRREManager are overrid here
+        AddSubTest("testAttachAndDetach", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testAttachAndDetach);
+        AddSubTest("testDeleteAttachedInstance", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testDeleteAttachedInstance);
+
         // getOccluders() and getOccludees() doesn't have their own test cases since they are
         // tested in almost all testcases here and in PRREObject3DTest::testSetOccluder() too.
         AddSubTest("testCreatePlane", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreatePlane);
@@ -115,6 +120,61 @@ private:
         return assertTrue( om->isInitialized() );
     }
 
+    bool testAttachAndDetach()
+    {
+        PRREObject3D* const objBox = om->createBox(1.0f, 2.0f, 3.0f);
+        PRREObject3D* const objPlane = om->createPlane(1.0f, 2.0f);
+
+        if ( !assertNotNull(objBox, "objBox not null") || !assertNotNull(objPlane, "objPlane not null"))
+        {
+            return false;
+        }
+
+        objBox->SetOcclusionTested(true);
+        objPlane->SetOccluder(true);
+
+        bool b = assertEquals((std::size_t)1, om->getOccluders().size(), "getOccluders not empty 1") & assertEquals((std::size_t)1, om->getOccludees().size(), "getOccludees not empty 1");
+        b &= assertTrue(objBox->isOcclusionTested(), "objBox occlusiontested 1") & assertTrue(objPlane->isOccluder(), "objPlane occluder 1");
+
+        om->Detach(*objPlane);
+        om->Detach(*objBox);
+
+        b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 1") & assertEquals((std::size_t)0, om->getOccludees().size(), "getOccludees empty 1");
+        b &= assertFalse(objBox->isOcclusionTested(), "objBox not occlusiontested 1") & assertFalse(objPlane->isOccluder(), "objPlane not occluder 1");
+
+        om->Attach(*objPlane);
+        om->Attach(*objBox);
+
+        b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 2") & assertEquals((std::size_t)2, om->getOccludees().size(), "getOccludees not empty 2");
+        b &= assertFalse(objBox->isOcclusionTested(), "objBox not occlusiontested 2") & assertFalse(objPlane->isOccluder(), "objPlane not occluder 2");
+
+        return b;
+    }
+
+    bool testDeleteAttachedInstance()
+    {
+        PRREObject3D* const objBox = om->createBox(1.0f, 2.0f, 3.0f);
+        PRREObject3D* const objPlane = om->createPlane(1.0f, 2.0f);
+
+        if ( !assertNotNull(objBox, "objBox not null") || !assertNotNull(objPlane, "objPlane not null"))
+        {
+            return false;
+        }
+
+        objBox->SetOcclusionTested(true);
+        objPlane->SetOccluder(true);
+
+        bool b = assertEquals((std::size_t)1, om->getOccluders().size(), "getOccluders not empty 1") & assertEquals((std::size_t)1, om->getOccludees().size(), "getOccludees not empty 1");
+        b &= assertTrue(objBox->isOcclusionTested(), "objBox occlusiontested 1") & assertTrue(objPlane->isOccluder(), "objPlane occluder 1");
+
+        om->DeleteAttachedInstance(*objBox);
+        om->DeleteAttachedInstance(*objPlane);
+
+        b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 1") & assertEquals((std::size_t)0, om->getOccludees().size(), "getOccludees empty 1");
+
+        return b;
+    }
+
     bool testCreatePlane()
     {
         // we could check for other default properties such as vertex transfer mode, etc but for some reason we check them in Object3DTest instead
@@ -127,7 +187,7 @@ private:
 
         return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
             assertEquals((TPRREuint)4, obj->getVerticesCount(), "vertices count") &
-            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees empty");
+            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees not empty");
     }
 
     bool testCreateBox()
@@ -142,7 +202,7 @@ private:
 
         return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
             assertEquals((TPRREuint)24, obj->getVerticesCount(), "vertices count") &
-            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees empty");
+            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees not empty");
     }
 
     bool testCreateCube()
@@ -157,7 +217,7 @@ private:
 
         return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
             assertEquals((TPRREuint)24, obj->getVerticesCount(), "vertices count") &
-            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees empty");
+            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees not empty");
     }
 
     bool testCreateFromFile()
@@ -183,7 +243,7 @@ private:
             assertNotEquals(std::string::npos, objFromFile->getName().find("Object3D "), "name substr") &
             assertEquals((TPRREint)9, objFromFile->getCount(), "subobject count") &
             b1 &
-            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees empty");
+            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees not empty");
     }
 
     bool testCreateCloned()

@@ -696,8 +696,7 @@ TPRREbool PRREManager::hasAttached(const PRREManaged& m) const
 
 /** 
     Adds the given managed to the manager, if the managed has no manager yet.
-    If m is a nullpointer, value of getLastError() will be PRRE_ERR_NULLPOINTER.
-    If the given managed already has a manager, value of getLastError() will be PRRE_ERR_NOTMANAGEDBY.
+    No effect if given managed already has a manager.
 */
 void PRREManager::Attach(PRREManaged& m)
 {
@@ -718,7 +717,6 @@ void PRREManager::Detach(PRREManaged& m)
 
 /**
     Removes the given managed from the manager and destructs it.
-    If the given managed is not found, value of getLastError() will be PRRE_ERR_NOTMANAGEDBY.
 */
 void PRREManager::DeleteAttachedInstance(PRREManaged& m)
 {

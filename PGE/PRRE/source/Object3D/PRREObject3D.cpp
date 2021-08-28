@@ -404,6 +404,12 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isOccluder() const
 
 void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
 {
+    if ( _pOwner->getManager() == PGENULL )
+    {
+        _pOwner->getConsole().EOLn("%s() ERROR: Object3D does not have manager associated!", __FUNCTION__);
+        return;
+    }
+
     if ( value )
     {
         if ( isStickedToScreen() ||
@@ -450,6 +456,12 @@ void PRREObject3D::PRREObject3DImpl::SetOcclusionTested(TPRREbool state)
 
     if ( state )
     {
+        if ( PGENULL == _pOwner->getManager() )
+        {
+            const std::string sErrMsg = "no manager!";
+            throw std::runtime_error(sErrMsg);
+        }
+
         if ( !pglGenQueries(1, &nOcclusionQuery) ) 
         {
             _pOwner->getConsole().EOLn("%s() ERROR: Could not generate occlusion query, this object won't be tested for occlusion!", __FUNCTION__);
@@ -458,12 +470,6 @@ void PRREObject3D::PRREObject3DImpl::SetOcclusionTested(TPRREbool state)
         }
         
         _pOwner->getConsole().OLn("Occlusion query ID: %d", nOcclusionQuery);
-
-        if ( PGENULL == _pOwner->getManager() )
-        {
-            const std::string sErrMsg = "no manager!";
-            throw std::runtime_error(sErrMsg);
-        }
 
         // here we specify forcing bounding box geometry in client memory because we alter vertex positions with rel pos vec, and then we upload it to host memory
         pBoundingBox = ((PRREObject3DManager*)_pOwner->getManager())->createBox(_pOwner->getSizeVec().getX(), _pOwner->getSizeVec().getY(), _pOwner->getSizeVec().getZ(), PRRE_VMOD_DYNAMIC, PRRE_VREF_INDEXED, true);

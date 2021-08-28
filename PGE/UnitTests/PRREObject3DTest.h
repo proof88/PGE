@@ -121,6 +121,9 @@ protected:
         AddSubTest("testDeleteAttachedInstance", (PFNUNITSUBTEST) &PRREObject3DTest::testDeleteAttachedInstance);
         AddSubTest("testDeleteAll", (PFNUNITSUBTEST) &PRREObject3DTest::testDeleteAll);
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRREObject3DTest::testWriteList);
+
+        // since DetachFrom()'s behavior depends on managers' Detach() behavior, and that is overridden in Object3DManager, we test DetachFrom() too!
+        AddSubTest("testDetachFrom", (PFNUNITSUBTEST) &PRREObject3DTest::testDetachFrom);
     }
 
     virtual bool setUp()
@@ -224,13 +227,18 @@ private:
             return assertNotNull(objFromFileCloned, "objFromFileCloned is NULL");
         }
 
-        return assertNull(obj->getReferredObject(), "obj") &
+        bool b = assertNull(obj->getReferredObject(), "obj") &
             assertNull(objFromFile->getReferredObject(), "obj") &
             assertNull(objPlane->getReferredObject(), "plane") &
             assertNull(objBox->getReferredObject(), "box") &
             assertNull(objCube->getReferredObject(), "cube") &
             assertEquals(obj, objCloned->getReferredObject(), "refobjEquals") &
             assertEquals(objFromFile, objFromFileCloned->getReferredObject(), "refobjFromFileEquals");
+
+        delete objCloned;
+        delete objFromFileCloned;
+        
+        return b;
     }
 
     bool testGetVertexModifyingHabit()
@@ -242,16 +250,19 @@ private:
         {
             return assertNotNull(objCloned, "objCloned is NULL");
         }
-        const bool b = assertTrue(obj->setVertexModifyingHabit(PRRE_VMOD_DYNAMIC), "set");
+        bool b = assertTrue(obj->setVertexModifyingHabit(PRRE_VMOD_DYNAMIC), "set");
 
-        return b &
-            assertEquals(PRRE_VMOD_STATIC, originalVertexModifyingHabit, "obj original") &
+        b &= assertEquals(PRRE_VMOD_STATIC, originalVertexModifyingHabit, "obj original") &
             assertEquals(PRRE_VMOD_DYNAMIC, obj->getVertexModifyingHabit(), "obj") &
             assertEquals(PRRE_VMOD_DYNAMIC, objCloned->getVertexModifyingHabit(), "objCloned") &
             assertEquals(PRRE_VMOD_STATIC, objFromFile->getVertexModifyingHabit(), "objFromFile") &
             assertEquals(PRRE_VMOD_STATIC, objPlane->getVertexModifyingHabit(), "plane") &
             assertEquals(PRRE_VMOD_STATIC, objBox->getVertexModifyingHabit(), "box") &
             assertEquals(PRRE_VMOD_STATIC, objCube->getVertexModifyingHabit(), "cube");
+
+        delete objCloned;
+        
+        return b;
     }
 
     bool testSetVertexModifyingHabit()
@@ -281,13 +292,17 @@ private:
         }
         b &= assertFalse(objFromFileCloned->setVertexModifyingHabit( PRRE_VMOD_STATIC ), "set objFromFileCloned");
 
-        return b &
-            assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(obj->getVertexTransferMode()), "obj" ) &
+        b &= assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(obj->getVertexTransferMode()), "obj" ) &
             assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(objFromFile->getVertexTransferMode()), "objFromFile" ) &
             assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(subobj1Obj->getVertexTransferMode()), "subobj1Obj" ) &
             assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(subobj1ObjFromFile->getVertexTransferMode()), "subobj1ObjFromFile" ) &
             assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(objCloned->getVertexTransferMode()), "objCloned" ) &
             assertTrue( PRREVertexTransfer::isVertexModifyingDynamic(objFromFileCloned->getVertexTransferMode()), "objFromFileCloned" );
+
+        delete objCloned;
+        delete objFromFileCloned;
+        
+        return b;
     }
 
     bool testGetVertexReferencingMode()
@@ -299,16 +314,19 @@ private:
         {
             return assertNotNull(objCloned, "objCloned is NULL");
         }
-        const bool b = assertTrue(obj->setVertexReferencingMode(PRRE_VREF_INDEXED), "set obj");
+        bool b = assertTrue(obj->setVertexReferencingMode(PRRE_VREF_INDEXED), "set obj");
 
-        return b &
-            assertEquals(PRRE_VREF_DIRECT, originalVertexRefMode, "obj original") &
+        b &= assertEquals(PRRE_VREF_DIRECT, originalVertexRefMode, "obj original") &
             assertEquals(PRRE_VREF_INDEXED, obj->getVertexReferencingMode(), "obj") &
             assertEquals(PRRE_VREF_INDEXED, objCloned->getVertexReferencingMode(), "objCloned") &
             assertEquals(PRRE_VREF_INDEXED, objFromFile->getVertexReferencingMode(), "objFromFile") &
             assertEquals(PRRE_VREF_DIRECT, objPlane->getVertexReferencingMode(), "plane") &
             assertEquals(PRRE_VREF_DIRECT, objBox->getVertexReferencingMode(), "box") &
             assertEquals(PRRE_VREF_DIRECT, objCube->getVertexReferencingMode(), "cube");
+
+        delete objCloned;
+
+        return b;
     }
 
     bool testSetVertexReferencingMode()
@@ -338,13 +356,17 @@ private:
         }
         b &= assertFalse(objFromFileCloned->setVertexReferencingMode( PRRE_VREF_DIRECT ), "set objFromFileCloned");
 
-        return b &
-            assertTrue( PRREVertexTransfer::isVertexReferencingIndexed(obj->getVertexTransferMode()), "obj" ) &
+        b &= assertTrue( PRREVertexTransfer::isVertexReferencingIndexed(obj->getVertexTransferMode()), "obj" ) &
             assertFalse( PRREVertexTransfer::isVertexReferencingIndexed(objFromFile->getVertexTransferMode()), "objFromFile" ) &
             assertTrue( PRREVertexTransfer::isVertexReferencingIndexed(subobj1Obj->getVertexTransferMode()), "subobj1Obj" ) &
             assertFalse( PRREVertexTransfer::isVertexReferencingIndexed(subobj1ObjFromFile->getVertexTransferMode()), "subobj1ObjFromFile" ) &
             assertTrue( PRREVertexTransfer::isVertexReferencingIndexed(objCloned->getVertexTransferMode()), "objCloned" ) &
             assertFalse( PRREVertexTransfer::isVertexReferencingIndexed(objFromFileCloned->getVertexTransferMode()), "objFromFileCloned" );
+
+        delete objCloned;
+        delete objFromFileCloned;
+
+        return b;
     }
 
     bool testGetVertexTransferMode()
@@ -359,10 +381,9 @@ private:
         {
             return assertNotNull(objCloned, "objCloned is NULL");
         }
-        const bool b = assertTrue(obj->setVertexTransferMode(vtExpectedForCloned), "set obj");
+        bool b = assertTrue(obj->setVertexTransferMode(vtExpectedForCloned), "set obj");
 
-        return b &
-            assertEquals(vtExpectedForCloned, obj->getVertexTransferMode() & vtExpectedForCloned, "obj 1") &
+        b &= assertEquals(vtExpectedForCloned, obj->getVertexTransferMode() & vtExpectedForCloned, "obj 1") &
             assertEquals(0u, BITF_READ(obj->getVertexTransferMode(), PRRE_VT_VENDOR_BITS, 3), "obj 2") &
             assertEquals(vtExpectedForCloned, objCloned->getVertexTransferMode() & vtExpectedForCloned, "objCloned 1") &
             assertEquals(0u, BITF_READ(objCloned->getVertexTransferMode(), PRRE_VT_VENDOR_BITS, 3), "objCloned 2") &
@@ -374,6 +395,10 @@ private:
             assertEquals(0u, BITF_READ(objBox->getVertexTransferMode(), PRRE_VT_VENDOR_BITS, 3), "box 2") &
             assertEquals(vtExpected, objCube->getVertexTransferMode() & vtExpected, "cube 1") &
             assertEquals(0u, BITF_READ(objCube->getVertexTransferMode(), PRRE_VT_VENDOR_BITS, 3), "cube 2");
+
+        delete objCloned;
+
+        return b;
     }
 
     bool testSetVertexTransferMode()
@@ -493,6 +518,9 @@ private:
         const TPRRE_VERTEX_TRANSFER_MODE vtExpectedStaIndDLobjFromFile = PRRE_VMOD_STATIC | PRRE_VREF_INDEXED;
         b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedStaIndDLobjFromFile ), "set objFromFile DL");
         b &= assertEquals(vtExpectedStaIndDLobjFromFile, objFromFile->getVertexTransferMode(), "ind objFromFile DL");
+
+        delete objCloned;
+        delete objFromFileCloned;
 
         return b;
     }
@@ -1111,12 +1139,16 @@ private:
 
         // by default the created objects should eat video memory, except the cloned object
         // since it doesn't have underlying geometry, or bounding box object in this case!
-        return assertEquals(objCloned->getUsedVideoMemory(), (TPRREuint) 0, "objCloned") &
+        const bool b = assertEquals(objCloned->getUsedVideoMemory(), (TPRREuint) 0, "objCloned") &
             assertGreater(obj->getUsedVideoMemory(),         (TPRREuint) 0, "obj") &
             assertGreater(objFromFile->getUsedVideoMemory(), (TPRREuint) 0, "objFromFile") &
             assertGreater(objPlane->getUsedVideoMemory(),    (TPRREuint) 0, "plane") &
             assertGreater(objBox->getUsedVideoMemory(),      (TPRREuint) 0, "box") &
             assertGreater(objCube->getUsedVideoMemory(),     (TPRREuint) 0, "cube");
+
+        delete objCloned;
+        
+        return b;
     }
 
     bool testGetCount()
@@ -1181,10 +1213,16 @@ private:
         mgr1.Attach(*obj);
         mgr2.Attach(*obj);
 
-        return assertTrue(mgr1.hasAttached(*obj), "mgr1.hasAttached()") &
+        bool b = assertTrue(mgr1.hasAttached(*obj), "mgr1.hasAttached()") &
                assertEquals(2, mgr1.getCount(), "mgr1.getCount()") &
                assertFalse(mgr2.hasAttached(*obj), "mgr2.hasAttached()") &
                assertEquals(1, mgr2.getCount(), "mgr2.getCount()");
+
+        obj->DetachFrom();
+        delete &mgr1;
+        delete &mgr2;
+
+        return b;
     }
 
     bool testDetach()
@@ -1207,7 +1245,9 @@ private:
 
     bool testDeleteAll()
     {
-        PRREObject3D* const mgd1 = om->createCube(1), * const mgd2 = om->createCube(1);
+        PRREObject3D* const mgd1 = om->createCube(1);
+        PRREObject3D* const mgd2 = om->createCube(1);
+
         obj->DeleteAll();
         bool l = assertEquals(0, obj->getCount(), "getCount 1");
 
@@ -1224,6 +1264,25 @@ private:
         obj->WriteList();
 
         return true;
+    }
+
+    bool testDetachFrom()
+    {
+        objFromFile->SetOcclusionTested(true);
+        obj->SetOccluder(true);
+
+        const std::size_t nOriginalOccludersCount = om->getOccluders().size();
+        const std::size_t nOriginalOccludeesCount = om->getOccludees().size();
+
+        bool b = assertTrue(objFromFile->isOcclusionTested(), "objFromFile occlusiontested 1") & assertTrue(obj->isOccluder(), "obj occluder 1");
+
+        objFromFile->DetachFrom();
+        obj->DetachFrom();
+
+        b &= assertEquals(nOriginalOccludersCount-1, om->getOccluders().size(), "getOccluders count 2") & assertEquals(nOriginalOccludeesCount-1, om->getOccludees().size(), "getOccludees count 2");
+        b &= assertFalse(objFromFile->isOcclusionTested(), "objFromFile not occlusiontested 1") & assertFalse(obj->isOccluder(), "obj not occluder 1");
+
+        return b;
     }
 
 }; // class PRREObject3DTest

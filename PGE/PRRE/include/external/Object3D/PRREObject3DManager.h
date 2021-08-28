@@ -195,6 +195,9 @@ public:
     PRREObject3DManager(PRRETextureManager& texMgr, PRREMaterialManager& matMgr); /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREObject3DManager();
 
+    virtual void Attach(PRREManaged& m);              /**< Adds the given managed to the manager, if the managed has no manager yet. */
+    virtual void Detach(PRREManaged& m);              /**< Removes the given managed from the manager, so the managed will have no manager. */ 
+
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
     TPRREbool isInitialized() const;                  /**< Tells whether the manager is correctly initialized or not. */

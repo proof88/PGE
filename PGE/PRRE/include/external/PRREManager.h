@@ -93,8 +93,8 @@ public:
         const PRREManaged& m) const;                      /**< Gets the index of the given managed. */
     void         PreAlloc(TPRREint count);                /**< Allocates count free slots for manageds. */
     TPRREbool    hasAttached(const PRREManaged& m) const; /**< Gets whether the given managed is managed by this manager. */
-    void         Attach(PRREManaged& m);                  /**< Adds the given managed to the manager, if the managed has no manager yet. */
-    void         Detach(PRREManaged& m);                  /**< Removes the given managed from the manager, so the managed will have no manager. */
+    virtual void Attach(PRREManaged& m);                  /**< Adds the given managed to the manager, if the managed has no manager yet. */
+    virtual void Detach(PRREManaged& m);                  /**< Removes the given managed from the manager, so the managed will have no manager. */
     void         DeleteAttachedInstance(PRREManaged& m);  /**< Removes the given managed from the manager and destructs it. */
     void         DeleteAll();                             /**< Removes and destructs every managed element in the manager. */
     virtual

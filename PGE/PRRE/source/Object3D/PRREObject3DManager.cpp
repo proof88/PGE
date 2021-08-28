@@ -189,6 +189,61 @@ PRREObject3DManager::~PRREObject3DManager()
 
 
 /**
+    Adds the given managed to the manager, if the managed has no manager yet.
+    No effect if given managed already has a manager.
+    The object will be present in getOccludees() list.
+*/
+void PRREObject3DManager::Attach(PRREManaged& m)
+{
+    if ( m.getManager() != PGENULL )
+        return;
+
+    PRREMesh3DManager::Attach(m);
+    try
+    {
+        PRREObject3D& obj = dynamic_cast<PRREObject3D&>(m);
+        // it will be an occludee for sure, since Detach() removed it from both occludee and occluders list, and without manager it cannot be set as occluder!
+        PRREObject3D::PRREObject3DImpl::occludees.insert(&obj);
+    }
+    catch (const std::exception&)
+    {
+        getConsole().OLn("WARNING: PRREObject3DManager::Attach() param is NOT Object3D ref!");
+    }
+} // Attach()
+
+
+/**
+    Removes the given managed from the manager, so the managed will have no manager.
+    The object will not be occlusion tested, and won't be an occluder, and actually it will be present in neither getOccluders() nor getOccludees() list.
+*/
+void PRREObject3DManager::Detach(PRREManaged& m)
+{
+    if ( m.getManager() == PGENULL )
+        return;
+
+    try
+    {
+        PRREObject3D& obj = dynamic_cast<PRREObject3D&>(m);
+        obj.SetOcclusionTested(false);
+        obj.SetOccluder(false);
+
+        auto occ_it = std::find(PRREObject3D::PRREObject3DImpl::occludees.begin(), PRREObject3D::PRREObject3DImpl::occludees.end(), &obj);
+        if ( occ_it != PRREObject3D::PRREObject3DImpl::occludees.end() )
+        {
+            PRREObject3D::PRREObject3DImpl::occludees.erase(occ_it);
+        }
+    }
+    catch (const std::exception&)
+    {
+        // no need to log
+        //getConsole().OLn("WARNING: PRREObject3DManager::Detach() param is NOT Object3D ref!");
+    }
+
+    PRREMesh3DManager::Detach(m);
+} // Detach()
+
+
+/**
     Returns access to console preset with logger module name as this class.
     Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
 
