@@ -103,6 +103,7 @@ PRREManaged::PRREManagedImpl::PRREManagedImpl(PRREManaged* owner)
 {
     _pOwner = owner;
     pParentMgr = PGENULL;
+    pUtiliser = PGENULL;
     nManagedsTotal++;
     _pOwner->getManagedConsole().OLn("PRREManaged(con)");
 } // PRREManagedImpl(...)
@@ -170,6 +171,33 @@ const char* PRREManaged::getLoggerModuleName()
 {
     return "PRREManaged";
 } // getLoggerModuleName()
+
+
+/**
+    Returns the managed that utilizes this managed.
+
+    @return The managed that utilizes this managed.
+*/
+const PRREManaged* PRREManaged::getUtiliser() const
+{
+    return pImpl->pUtiliser;
+} // getUtiliser()
+
+
+/**
+    Sets the managed that utilizes this managed.
+    PGENULL is also accepted.
+*/
+void PRREManaged::SetUtiliser(PRREManaged* pUtiliser)
+{
+    if ( pUtiliser == this )
+    {
+        getManagedConsole().EOLn("PRREManaged::SetUtiliser() ERROR: cannot set self!");
+        return;
+    }
+
+    pImpl->pUtiliser = pUtiliser;
+} // SetUtiliser()
 
 
 /**

@@ -765,6 +765,7 @@ PRREMaterial* PRREMesh3DManager::PRREMesh3DManagerImpl::createMaterialForMesh(PR
         }
         else
         {
+            mesh.pImpl->pMaterial->SetUtiliser(&mesh);
             _pOwner->getConsole().SOLn("PRREMesh3DManager::createMaterialForMesh() created material!");
         }
     }

@@ -47,8 +47,9 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PRREManaged* _pOwner;
+    PRREManaged* _pOwner;           /**< Public instance of which private part is this. */
     PRREManager* pParentMgr;        /**< Who manages this; descendants can read it through getManager(). */
+    PRREManaged* pUtiliser;         /**< Who utilizes this managed. */
     std::string  sName;             /**< Name. */
 
     friend class PRREManaged;

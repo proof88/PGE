@@ -98,6 +98,9 @@ protected:
         AddSubTest("testDeleteAttachedInstance", (PFNUNITSUBTEST) &PRREMesh3DTest::testDeleteAttachedInstance);
         AddSubTest("testDeleteAll", (PFNUNITSUBTEST) &PRREMesh3DTest::testDeleteAll);
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRREMesh3DTest::testWriteList);
+
+        // Material of any Mesh3D must have its utiliser set to the Mesh3D instance
+        AddSubTest("testMaterialGetUtiliser", (PFNUNITSUBTEST) &PRREMesh3DTest::testMaterialGetUtiliser);
     }
 
     virtual bool setUp()
@@ -697,6 +700,52 @@ private:
         mesh->WriteList();
 
         return true;
+    }
+
+    bool testMaterialGetUtiliser()
+    {
+        bool b = true;
+
+        for (TPRREint i = 0; b && (i < mesh->getCount()); i++)
+        {
+            const PRREMesh3D* const submesh = (PRREMesh3D*) (mesh->getAttachedAt(i));
+            const PRREMaterial& submeshMat = submesh->getMaterial();
+            b &= assertEquals(submesh, submeshMat.getUtiliser(), (std::string("mesh submeshes[") + std::to_string(i) + "]").c_str());
+        }
+
+        for (TPRREint i = 0; b && (i < meshFromFile->getCount()); i++)
+        {
+            const PRREMesh3D* const submesh = (PRREMesh3D*) (meshFromFile->getAttachedAt(i));
+            const PRREMaterial& submeshMat = submesh->getMaterial();
+            b &= assertEquals(submesh, submeshMat.getUtiliser(), (std::string("meshFromFile submeshes[") + std::to_string(i) + "]").c_str());
+        }
+
+        for (TPRREint i = 0; b && (i < meshPlane->getCount()); i++)
+        {
+            const PRREMesh3D* const submesh = (PRREMesh3D*) (meshPlane->getAttachedAt(i));
+            const PRREMaterial& submeshMat = submesh->getMaterial();
+            b &= assertEquals(submesh, submeshMat.getUtiliser(), (std::string("meshPlane submeshes[") + std::to_string(i) + "]").c_str());
+        }
+
+        for (TPRREint i = 0; b && (i < meshBox->getCount()); i++)
+        {
+            const PRREMesh3D* const submesh = (PRREMesh3D*) (meshBox->getAttachedAt(i));
+            const PRREMaterial& submeshMat = submesh->getMaterial();
+            b &= assertEquals(submesh, submeshMat.getUtiliser(), (std::string("meshBox submeshes[") + std::to_string(i) + "]").c_str());
+        }
+
+        for (TPRREint i = 0; b && (i < meshCube->getCount()); i++)
+        {
+            const PRREMesh3D* const submesh = (PRREMesh3D*) (meshCube->getAttachedAt(i));
+            const PRREMaterial& submeshMat = submesh->getMaterial();
+            b &= assertEquals(submesh, submeshMat.getUtiliser(), (std::string("meshCube submeshes[") + std::to_string(i) + "]").c_str());
+        }
+
+        return b & assertEquals(mesh, mesh->getMaterial(false).getUtiliser(), "mesh") &
+            assertEquals(meshFromFile, meshFromFile->getMaterial(false).getUtiliser(), "meshFromFile") &
+            assertEquals(meshPlane, meshPlane->getMaterial(false).getUtiliser(), "plane") &
+            assertEquals(meshBox, meshBox->getMaterial(false).getUtiliser(), "box") &
+            assertEquals(meshCube, meshCube->getMaterial(false).getUtiliser(), "cube");
     }
 
 }; // class PRREMesh3DTest

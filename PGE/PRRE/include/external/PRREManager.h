@@ -35,6 +35,9 @@ public:
 
     CConsole&   getManagedConsole() const;            /**< Returns access to console preset with logger module name as this class. */
 
+    const PRREManaged* getUtiliser() const;                  /**< Returns the managed that utilizes this managed. */
+    void               SetUtiliser(PRREManaged* pUtiliser);  /**< Sets the managed that utilizes this managed. */
+
     void               DetachFrom();                      /**< Removes the managed from its manager. */
     PRREManager*       getManager() const;                /**< Gets the manager of the managed. */
 

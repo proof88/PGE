@@ -39,7 +39,7 @@ public:
     PRREFiledManaged(); /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREFiledManaged();
 
-    CConsole&   getManagedConsole() const;            /**< Returns access to console preset with logger module name as this class. */
+    CConsole&   getManagedConsole() const;           /**< Returns access to console preset with logger module name as this class. */
 
     virtual TPRREuint getUsedSystemMemory() const;   /**< Gets the amount of allocated system memory for this managed. */
 

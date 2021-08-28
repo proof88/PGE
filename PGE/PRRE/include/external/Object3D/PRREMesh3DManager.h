@@ -129,16 +129,16 @@ class PRREMesh3DManager :
 #endif
 
 public:
-    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+    static const char* getLoggerModuleName();         /**< Returns the logger module name of this class. */
 
     // ---------------------------------------------------------------------------
 
-    PRREMesh3DManager(PRREMaterialManager& matMgr); /* TODO: mark this as noexcept(false) when using newer compiler! */
+    PRREMesh3DManager(PRREMaterialManager& matMgr);   /* TODO: mark this as noexcept(false) when using newer compiler! */
     virtual ~PRREMesh3DManager();
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
-    TPRREbool isInitialized() const;  /**< Tells whether the object is correctly initialized or not. */
+    TPRREbool isInitialized() const;                  /**< Tells whether the object is correctly initialized or not. */
 
     TPRREbool isMinimalIndexStorageEnabled() const;              /**< Tells whether storage of indices is minimalized or not. */
     void      SetMinimalIndexStorageEnabled(TPRREbool state);    /**< Sets whether storage of indices is minimalized or not. */

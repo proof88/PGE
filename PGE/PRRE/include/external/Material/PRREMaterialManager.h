@@ -162,8 +162,8 @@ public:
 
     virtual              ~PRREMaterial();
 
-    CConsole&   getManagedConsole() const;            /**< Returns access to console preset with logger module name as this class. */
-
+            CConsole&    getManagedConsole() const;                           /**< Returns access to console preset with logger module name as this class. */
+    
             TPRREbool    allocateArrays(                                      
                             TPRREuint nColorCount,
                             TPRREuint nTexcoordCount,

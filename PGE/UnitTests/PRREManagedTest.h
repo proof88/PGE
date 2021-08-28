@@ -26,6 +26,8 @@ public:
     {
         
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREManagedTest::testCtor);
+        AddSubTest("testGetUtiliser", (PFNUNITSUBTEST) &PRREManagedTest::testGetUtiliser);
+        AddSubTest("testSetUtiliser", (PFNUNITSUBTEST) &PRREManagedTest::testSetUtiliser);
         AddSubTest("testDetachFrom", (PFNUNITSUBTEST) &PRREManagedTest::testDetachFrom);
         AddSubTest("testGetManager", (PFNUNITSUBTEST) &PRREManagedTest::testGetManager);
         AddSubTest("testGetName", (PFNUNITSUBTEST) &PRREManagedTest::testGetName);
@@ -69,6 +71,27 @@ private:
     {
         const PRREManaged mgd1;
         return true;
+    }
+
+    bool testGetUtiliser()
+    {
+        const PRREManaged mgd1;
+        return assertNull(mgd1.getUtiliser(), "getUtiliser()");
+    }
+
+    bool testSetUtiliser()
+    {
+        PRREManaged mgd1;
+        PRREManaged mgd2;
+
+        // cannot set self
+        mgd1.SetUtiliser(&mgd1);
+        bool b = assertNull(mgd1.getUtiliser(), "getUtiliser() 1");
+
+        mgd1.SetUtiliser(&mgd2);
+        b &= assertEquals(&mgd2, mgd1.getUtiliser(), "getUtiliser() 2");
+
+        return b;
     }
 
     bool testDetachFrom()
