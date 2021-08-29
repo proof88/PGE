@@ -175,11 +175,32 @@ const char* PRREManaged::getLoggerModuleName()
 
 /**
     Returns the managed that utilizes this managed.
+    The utiliser is another PRREManaged instance, usually having different class, and that class becomes complete with the utilised managed instance.
+    For example: every PRREMesh3D instance has an associated PRREMaterial instance, in this case PRREMesh3D instance utilizes a PRREMaterial instance,
+    so the latter instance's getUtiliser() returns the PRREMesh3D instance.
+    A PRREManaged instance can have multiple utilised PRREManaged instances, but any PRREManaged instance can have maximum 1 utiliser instance.
 
     @return The managed that utilizes this managed.
 */
 const PRREManaged* PRREManaged::getUtiliser() const
 {
+    // BACKLOG: FTR: a PRREManaged instance might have multiple utiliser instances ...
+    return pImpl->pUtiliser;
+} // getUtiliser()
+
+
+/**
+    Returns the managed that utilizes this managed.
+    The utiliser is another PRREManaged instance, usually having different class, and that class becomes complete with the utilised managed instance.
+    For example: every PRREMesh3D instance has an associated PRREMaterial instance, in this case PRREMesh3D instance utilizes a PRREMaterial instance,
+    so the latter instance's getUtiliser() returns the PRREMesh3D instance.
+    A PRREManaged instance can have multiple utilised PRREManaged instances, but any PRREManaged instance can have maximum 1 utiliser instance.
+
+    @return The managed that utilizes this managed.
+*/
+PRREManaged* PRREManaged::getUtiliser()
+{
+    // BACKLOG: FTR: a PRREManaged instance might have multiple utiliser instances ...
     return pImpl->pUtiliser;
 } // getUtiliser()
 
@@ -759,6 +780,19 @@ void PRREManager::DeleteAll()
 {
     pImpl->DeleteAll();
 } // DeleteAll()
+
+
+/**
+    Should be invoked when a managed's property got changed from a different kind of manager or managed.
+    The manager of the managed might be interested in this property change and may implement a change handling functionality by overriding this.
+    For example: PRREObject3D has an associated PRREMaterial instance. When user changes the blending mode of the material, the PRREMaterial
+    instance invokes the PRREObject3D instance's getManager()->HandleManagedPropertyChanged() which will be actually PRREObject3DManager's
+    implemented change handler, that will handle the changed blend mode of its PRREObject3D instance, e.g.: change drawing order in its list, etc.
+*/
+void PRREManager::HandleManagedPropertyChanged(PRREManaged& m)
+{
+    // stays empty in this ancestor class
+} // HandleManagedPropertyChanged()
 
 
 TPRREuint PRREManager::getUsedSystemMemory() const

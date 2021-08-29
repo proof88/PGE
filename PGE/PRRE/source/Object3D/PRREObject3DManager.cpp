@@ -775,7 +775,7 @@ void PRREObject3DManager::UpdateOccluderStates()
         const PRREObject3D* const pMngd = (PRREObject3D*) getAttachedAt(i);
         if ( pMngd != PGENULL )
         {
-            if ( PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(), pMngd->getMaterial().getDestinationBlendFunc()) )
+            if ( PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(false), pMngd->getMaterial().getDestinationBlendFunc(false)) )
                 continue;
 
             if ( pMngd->isStickedToScreen() )
@@ -795,7 +795,7 @@ void PRREObject3DManager::UpdateOccluderStates()
         if ( pMngd != PGENULL )
         {
             const TPRREbool bAreaBiggerThanAvg = (pMngd->getBiggestAreaScaled() > fAverageBiggestAreaScaled);
-            const TPRREbool bNotBlended = (!PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(), pMngd->getMaterial().getDestinationBlendFunc()));
+            const TPRREbool bNotBlended = (!PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial(false).getSourceBlendFunc(), pMngd->getMaterial(false).getDestinationBlendFunc()));
             const TPRREbool bNotSticked = (!pMngd->isStickedToScreen());
 
             //LOGGGG getConsole().OLn("%f, %b, %b, %b, %s, %s", pMngd->getBiggestAreaScaled(), bAreaBiggerThanAvg, bNotBlended, bNotSticked, pMngd->getName().c_str(), pMngd->getFilename().c_str());
@@ -807,6 +807,33 @@ void PRREObject3DManager::UpdateOccluderStates()
 
     //LOGGGG getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), false);
 } // UpdateOccluderStates()
+
+
+/**
+    Should be invoked when a managed's property got changed from a different kind of manager or managed.
+    PRREObject3DManager is interested in some property changes related to its managed PRREObject3D instances, e.g. blend mode that might change in a PRREMaterial instance.
+*/
+void PRREObject3DManager::HandleManagedPropertyChanged(PRREManaged& m)
+{
+    try
+    {
+        PRREObject3D& obj = dynamic_cast<PRREObject3D&>(m);
+        
+        const TPRREbool bBlended = PRREMaterial::isBlendFuncReallyBlending(obj.getMaterial(false).getSourceBlendFunc(), obj.getMaterial(false).getDestinationBlendFunc());
+
+        if ( bBlended && obj.isOccluder() )
+        {
+            obj.SetOccluder(false);
+        }
+        // obj.SetOccluder(true) in different cases will be handled by UpdateOccluderStates() when invoked periodically by renderer
+    }
+    catch (const std::exception&)
+    {
+        getConsole().OLn("WARNING: PRREObject3DManager::HandleManagedPropertyChanged() param is NOT Object3D ref!");
+    }
+
+    PRREMesh3DManager::HandleManagedPropertyChanged(m);
+} // HandleManagedPropertyChanged()
 
 
 /**

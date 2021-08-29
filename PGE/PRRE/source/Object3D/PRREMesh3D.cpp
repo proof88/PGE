@@ -361,6 +361,7 @@ TPRREbool PRREMesh3D::PRREMesh3DImpl::cannibalize(PRREMesh3D& victim)
     vSize = victim.pImpl->vSize;
 
     pMaterial = victim.pImpl->pMaterial;
+    pMaterial->SetUtiliser(this->_pOwner);
 
     victim.pImpl->pVertices = PGENULL;
     victim.pImpl->pNormals = PGENULL;

@@ -21,6 +21,73 @@
 #define BMP128x128x24 "_res/proba128x128x24.bmp"
 #endif 
 
+class PRRESampleUtiliserManaged :
+    public PRREManaged
+{
+public:
+    PRRESampleUtiliserManaged() {}; /* TODO: mark this as noexcept(false) when using newer compiler! */
+    virtual ~PRRESampleUtiliserManaged() {};
+
+protected:
+
+    // ---------------------------------------------------------------------------
+
+    PRRESampleUtiliserManaged(const PRRESampleUtiliserManaged&) {};
+    PRRESampleUtiliserManaged& operator=(const PRRESampleUtiliserManaged& ) { return *this; };
+
+private:
+
+    // ---------------------------------------------------------------------------
+
+}; // class PRRESampleUtiliserManaged
+
+class PRRESampleManagerForUtiliserManaged :
+    public PRREManager
+{
+
+public:
+    PRRESampleManagerForUtiliserManaged() : bHandleManagedPropertyChangedInvoked(false) {}; /* TODO: mark this as noexcept(false) when using newer compiler! */
+    virtual ~PRRESampleManagerForUtiliserManaged() {};
+
+    PRRESampleUtiliserManaged* createManaged()
+    {
+        PRRESampleUtiliserManaged* pNewManaged = PGENULL;
+        try
+        {
+            pNewManaged = new PRRESampleUtiliserManaged();
+            Attach( *pNewManaged );
+        }
+        catch (const std::bad_alloc&)
+        {
+            getConsole().EOLn("ERROR: failed to instantiate PRRESampleUtiliserManaged!");
+            getConsole().OLn("");
+        }
+
+        return pNewManaged;
+    } // createManaged()
+
+    virtual void HandleManagedPropertyChanged(PRREManaged&)
+    {
+        bHandleManagedPropertyChangedInvoked = true;
+    } // HandleManagedPropertyChanged()
+
+    bool isHandleManagedPropertyChangedInvoked() const
+    {
+        return bHandleManagedPropertyChangedInvoked;
+    }
+
+    void ResetHandleManagedPropertyChangedInvoked()
+    {
+        bHandleManagedPropertyChangedInvoked = false;
+    }
+
+protected:
+
+private:
+    bool bHandleManagedPropertyChangedInvoked;
+
+}; // class PRRESampleManagerForUtiliserManaged
+
 class PRREMaterialTest :
     public UnitTest
 {
@@ -306,85 +373,185 @@ private:
 
     bool testSetSourceBlendFunc()
     {
-        bool b = assertTrue(mat->setSourceBlendFunc(TPRRE_BLENDFACTOR::PRRE_CONSTANT_ALPHA), "PRRE_CONSTANT_ALPHA");
-        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(), "1st");
+        PRRESampleManagerForUtiliserManaged sampleManager;
+        PRRESampleUtiliserManaged* sampleUtiliser = sampleManager.createManaged();
+        if ( !assertNotNull(sampleUtiliser, "sampleUtiliser not null"))
+        {
+            return assertNotNull(sampleUtiliser, "sampleUtiliser is NULL");
+        }
+
+        mat->SetUtiliser(sampleUtiliser);
+        bool b = assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 1");
+
+        b &= assertTrue(mat->setSourceBlendFunc(TPRRE_BLENDFACTOR::PRRE_CONSTANT_ALPHA), "PRRE_CONSTANT_ALPHA");
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(), "1st") &
+            assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 2");
+
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 3");
 
         b &= assertTrue(mat->setSourceBlendFunc(TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, 1), "PRRE_CONSTANT_COLOR");
-        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "2nd");
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "2nd") &
+            assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 4");
 
-        b &= assertFalse(mat->setSourceBlendFunc(TPRRE_BLENDFACTOR::PRRE_SRC_COLOR), "PRRE_SRC_COLOR"); // invalid param
-        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "3rd");
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 5");
 
-        b &= assertFalse(mat->setSourceBlendFunc(TPRRE_BLENDFACTOR::PRRE_ONE_MINUS_SRC_COLOR), "PRRE_ONE_MINUS_SRC_COLOR"); // invalid param
-        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "4th");
+        b &= assertFalse(mat->setSourceBlendFunc(TPRRE_BLENDFACTOR::PRRE_SRC_COLOR), "PRRE_SRC_COLOR"); // invalid src param
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "3rd") &
+            assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 6");
+
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 7");
+
+        b &= assertFalse(mat->setSourceBlendFunc(TPRRE_BLENDFACTOR::PRRE_ONE_MINUS_SRC_COLOR), "PRRE_ONE_MINUS_SRC_COLOR"); // invalid src param
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "4th") &
+            assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 8");
 
         return b;
     }
 
     bool testSetDestinationBlendFunc()
     {
-        bool b = assertTrue(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_CONSTANT_ALPHA), "PRRE_CONSTANT_ALPHA");
-        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_ALPHA, mat->getDestinationBlendFunc(), "1st");
+        PRRESampleManagerForUtiliserManaged sampleManager;
+        PRRESampleUtiliserManaged* sampleUtiliser = sampleManager.createManaged();
+        if ( !assertNotNull(sampleUtiliser, "sampleUtiliser not null"))
+        {
+            return assertNotNull(sampleUtiliser, "sampleUtiliser is NULL");
+        }
+
+        mat->SetUtiliser(sampleUtiliser);
+        bool b = assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 1");
+
+        b &= assertTrue(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_CONSTANT_ALPHA), "PRRE_CONSTANT_ALPHA");
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_ALPHA, mat->getDestinationBlendFunc(), "1st") &
+            assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 2");
+
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 3");
 
         b &= assertTrue(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, 1), "PRRE_CONSTANT_COLOR");
-        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "2nd");
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "2nd") &
+            assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 4");
 
-        b &= assertFalse(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_DST_COLOR, 1), "PRRE_DST_COLOR"); // invalid param
-        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "3rd");
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 5");
 
-        b &= assertFalse(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_ONE_MINUS_DST_COLOR, 1), "PRRE_ONE_MINUS_DST_COLOR"); // invalid param
-        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "4th");
+        b &= assertFalse(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_DST_COLOR, 1), "PRRE_DST_COLOR"); // invalid dst param
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "3rd") &
+            assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 6");
 
-        b &= assertFalse(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_SRC_ALPHA_SATURATE, 1), "PRRE_SRC_ALPHA_SATURATE"); // invalid param
-        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "5th");
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 7");
+
+        b &= assertFalse(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_ONE_MINUS_DST_COLOR, 1), "PRRE_ONE_MINUS_DST_COLOR"); // invalid dst param
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "4th") &
+            assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 8");
+
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 9");
+
+        b &= assertFalse(mat->setDestinationBlendFunc(TPRRE_BLENDFACTOR::PRRE_SRC_ALPHA_SATURATE, 1), "PRRE_SRC_ALPHA_SATURATE"); // invalid dst param
+        b &= assertEquals( TPRRE_BLENDFACTOR::PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "5th") &
+            assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 10");
 
         return b;
     }
 
     bool testSetBlendFuncs()
     {
-        bool b = assertTrue(mat->setBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_CONSTANT_COLOR), "PRRE_CONSTANT_ALPHA, PRRE_CONSTANT_COLOR");
+        PRRESampleManagerForUtiliserManaged sampleManager;
+        PRRESampleUtiliserManaged* sampleUtiliser = sampleManager.createManaged();
+        if ( !assertNotNull(sampleUtiliser, "sampleUtiliser not null"))
+        {
+            return assertNotNull(sampleUtiliser, "sampleUtiliser is NULL");
+        }
+
+        mat->SetUtiliser(sampleUtiliser);
+        bool b = assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 1");
+
+        b &= assertTrue(mat->setBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_CONSTANT_COLOR), "PRRE_CONSTANT_ALPHA, PRRE_CONSTANT_COLOR");
         b &= assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(), "1st src") &
-            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(), "1st dst");
+            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(), "1st dst") &
+            assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 1");
+
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 2");
 
         b &= assertTrue(mat->setBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_CONSTANT_COLOR, 1), "RRE_CONSTANT_ALPHA, PRRE_CONSTANT_COLOR, 1");
         b &= assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "2nd src") &
-            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "2nd dst");
+            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "2nd dst") &
+            assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 3");
 
-        b &= assertFalse(mat->setBlendFuncs(PRRE_SRC_COLOR, PRRE_CONSTANT_COLOR, 1), "PRRE_SRC_COLOR, PRRE_CONSTANT_COLOR, 1"); // invalid param
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 4");
+
+        b &= assertFalse(mat->setBlendFuncs(PRRE_SRC_COLOR, PRRE_CONSTANT_COLOR, 1), "PRRE_SRC_COLOR, PRRE_CONSTANT_COLOR, 1"); // invalid src param
         b &= assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "3rd src") &
-            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "3rd dst");
+            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "3rd dst") &
+            assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 5"); // srcBlendFunc is invalid, so dstBlendFunc will not be invoked at all thus no call to change handler!
 
-        b &= assertFalse(mat->setBlendFuncs(PRRE_ONE_MINUS_SRC_COLOR, PRRE_CONSTANT_COLOR, 1), "PRRE_ONE_MINUS_SRC_COLOR, PRRE_CONSTANT_COLOR, 1"); // invalid param
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 6");
+
+        b &= assertFalse(mat->setBlendFuncs(PRRE_ONE_MINUS_SRC_COLOR, PRRE_CONSTANT_COLOR, 1), "PRRE_ONE_MINUS_SRC_COLOR, PRRE_CONSTANT_COLOR, 1"); // invalid src param
         b &= assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "4th src") &
-            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "4th dst");
+            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "4th dst") &
+            assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 7"); // srcBlendFunc is invalid, so dstBlendFunc will not be invoked at all thus no call to change handler!
 
-        b &= assertFalse(mat->setBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_DST_COLOR, 1), "PRRE_CONSTANT_ALPHA, PRRE_DST_COLOR, 1"); // invalid param
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 8");
+
+        b &= assertFalse(mat->setBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_DST_COLOR, 1), "PRRE_CONSTANT_ALPHA, PRRE_DST_COLOR, 1"); // invalid dst param
         b &= assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "5th src") &
-            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "5th dst");
+            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "5th dst") &
+            assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 9"); // srcBlendFunc is valid, so that will be set and will invoke change handler!
 
-        b &= assertFalse(mat->setBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_ONE_MINUS_DST_COLOR, 1), "PRRE_CONSTANT_ALPHA, PRRE_ONE_MINUS_DST_COLOR, 1"); // invalid param
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 10");
+
+        b &= assertFalse(mat->setBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_ONE_MINUS_DST_COLOR, 1), "PRRE_CONSTANT_ALPHA, PRRE_ONE_MINUS_DST_COLOR, 1"); // invalid dst param
         b &= assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "6th src") &
-            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "6th dst");
+            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "6th dst") &
+            assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 11"); // srcBlendFunc is valid, so that will be set and will invoke change handler!
 
-        b &= assertFalse(mat->setBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_SRC_ALPHA_SATURATE, 1), "PRRE_CONSTANT_ALPHA, PRRE_SRC_ALPHA_SATURATE, 1"); // invalid param
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 12");
+
+        b &= assertFalse(mat->setBlendFuncs(PRRE_CONSTANT_ALPHA, PRRE_SRC_ALPHA_SATURATE, 1), "PRRE_CONSTANT_ALPHA, PRRE_SRC_ALPHA_SATURATE, 1"); // invalid dst param
         b &= assertEquals( PRRE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "7th src") &
-            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "7th dst");
+            assertEquals( PRRE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "7th dst") &
+            assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 13"); // srcBlendFunc is valid, so that will be set and will invoke change handler!
 
         return b;
     }
 
     bool testSetBlendMode()
     {
-        bool b = assertTrue(mat->setBlendMode(TPRRE_BLENDMODE::PRRE_BM_STANDARD_TRANSPARENCY), "PRRE_BM_STANDARD_TRANSPARENCY");
+        PRRESampleManagerForUtiliserManaged sampleManager;
+        PRRESampleUtiliserManaged* sampleUtiliser = sampleManager.createManaged();
+        if ( !assertNotNull(sampleUtiliser, "sampleUtiliser"))
+        {
+            return assertNotNull(sampleUtiliser, "sampleUtiliser");
+        }
+
+        mat->SetUtiliser(sampleUtiliser);
+        bool b = assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 1");
+
+        b &= assertTrue(mat->setBlendMode(TPRRE_BLENDMODE::PRRE_BM_STANDARD_TRANSPARENCY), "PRRE_BM_STANDARD_TRANSPARENCY");
         b &= assertEquals( PRRE_BM_STANDARD_TRANSPARENCY, mat->getBlendMode(), "1st mode") & 
             assertEquals( PRRE_SRC_ALPHA, mat->getSourceBlendFunc(), "1st src") &
-            assertEquals( PRRE_ONE_MINUS_SRC_ALPHA, mat->getDestinationBlendFunc(), "1st dst");
+            assertEquals( PRRE_ONE_MINUS_SRC_ALPHA, mat->getDestinationBlendFunc(), "1st dst") &
+            assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 2");
+
+        sampleManager.ResetHandleManagedPropertyChangedInvoked();
+        b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 3");
 
         b &= assertTrue(mat->setBlendMode(TPRRE_BLENDMODE::PRRE_BM_NONE, 1), "PRRE_BM_NONE, 1");
         b &= assertEquals( PRRE_BM_NONE, mat->getBlendMode(1), "2nd mode") & 
             assertEquals( PRRE_ONE, mat->getSourceBlendFunc(1), "2nd src") &
-            assertEquals( PRRE_ZERO, mat->getDestinationBlendFunc(1), "2nd dst");
+            assertEquals( PRRE_ZERO, mat->getDestinationBlendFunc(1), "2nd dst") &
+            assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 4");
 
         return b;
     }
@@ -393,7 +560,7 @@ private:
     {
         PRREMaterial* mat2 = mm->createMaterial();
         if ( !mat2 )
-            return assertNotNull(mat2, "notNull 2");
+            return assertNotNull(mat2, "mat2");
         
         const bool bAllocMat2 = assertTrue(mat2->allocateArrays(2, 2, 2, 2), "allocate mat2");
         mat2->getColors()[0].green = 1.0f;

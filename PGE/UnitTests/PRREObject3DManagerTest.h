@@ -58,6 +58,7 @@ protected:
         AddSubTest("testCreateFromFile", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreateFromFile);
         AddSubTest("testCreateCloned", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreateCloned);
         AddSubTest("testUpdateOccluderStates", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testUpdateOccluderStates);
+        AddSubTest("testHandleManagedPropertyChanged", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testHandleManagedPropertyChanged);
         AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testGetUsedVideoMemory);
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testWriteList);
     }
@@ -363,6 +364,30 @@ private:
         b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 3") &
              assertFalse( std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is NOT in getOccludees 5") &
              assertFalse( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is in getOccluders 5");
+
+        return b;
+    }
+
+    bool testHandleManagedPropertyChanged()
+    {
+        PRREObject3D* const plane = om->createPlane(1.0f, 2.0f);
+        if ( !assertNotNull(plane, "plane not null"))
+        {
+            return false;
+        }
+
+        plane->SetOccluder(true);
+        bool b = assertTrue(plane->isOccluder(), "plane is occluder 1");
+
+        // remember we dont need the explicit subobject access, we want parent object's blending to be changed!
+        plane->getMaterial(false).setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
+
+        // Material's responsibility to invoke Object3DManager's HandleManagedPropertyChanged() when blendmode is change, however
+        // it is Object3DManager's responsibility to set plane as its Material's utiliser. If that is set correctly, we assume
+        // Material would invoke it. So, in this test we don't invoke HandleManagedPropertyChanged() explicitly but expect it
+        // to be invoked my Material, and as a result, we expect plane not to be occluder anymore!
+
+        b &= assertFalse(plane->isOccluder(), "plane is occluder 2");
 
         return b;
     }

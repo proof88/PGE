@@ -294,6 +294,13 @@ TPRREbool PRREMaterial::PRREMaterialImpl::setSourceBlendFunc(TPRRE_BLENDFACTOR v
         if ( level < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount() )
         {
             layers[level].blendFactorSource = value;
+            if ( _pOwner->getUtiliser() != PGENULL )
+            {
+                // remember: Object3D is also a manager, so it could also implement its own HandleManagedPropertyChanged(),
+                // to handle changes in the material of its subobjects! Since Object3D doesnt implement such,
+                // the PRREManager's base HandleManagedPropertyChanged() is invoked when subobject's material is changed here!
+                _pOwner->getUtiliser()->getManager()->HandleManagedPropertyChanged( *(_pOwner->getUtiliser()) );
+            }
             return true;
         }
     }
@@ -320,6 +327,13 @@ TPRREbool PRREMaterial::PRREMaterialImpl::setDestinationBlendFunc(TPRRE_BLENDFAC
         if ( level < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount() )
         {
             layers[level].blendFactorDestination = value;
+            if ( _pOwner->getUtiliser() != PGENULL )
+            {
+                // remember: Object3D is also a manager, so it could also implement its own HandleManagedPropertyChanged(),
+                // to handle changes in the material of its subobjects! Since Object3D doesnt implement such,
+                // the PRREManager's base HandleManagedPropertyChanged() is invoked when subobject's material is changed here!
+                _pOwner->getUtiliser()->getManager()->HandleManagedPropertyChanged( *(_pOwner->getUtiliser()) );
+            }
             return true;
         }
     }

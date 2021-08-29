@@ -148,6 +148,10 @@ public:
     void      SetOcclusionTested(TPRREbool state);        /**< Sets whether this object should be tested if it is occluded or not. */
     const PRREObject3D* getBoundingBoxObject() const;     /**< Gets the bounding box object used for occlusion tests. */
 
+    // remember: since Object3D is also a manager, it could also implement property change handler for changes in any of its subobjects made "outside" e.g. in their material!
+    /*virtual void HandleManagedPropertyChanged(
+                 PRREManaged& m);*/
+
     virtual TPRREuint getUsedSystemMemory() const;        /**< Gets the amount of allocated system memory. */
     virtual TPRREuint getUsedVideoMemory() const;         /**< Gets the amount of allocated video memory. */
 
@@ -234,6 +238,9 @@ public:
     PRREObject3D* createCloned(PRREObject3D& referredobj);       /**< Creates a new object by cloning an already existing object. */
 
     void UpdateOccluderStates();                                 /**< Iterates over its manageds and updates their occluder states. */
+
+    virtual void HandleManagedPropertyChanged(
+                 PRREManaged& m);                                /**< Should be invoked when a managed's property got changed from a different kind of manager or managed. */
 
     TPRREuint    getUsedVideoMemory() const;                     /**< Gets the amount of allocated video memory for all objects owner by this manager. */
 

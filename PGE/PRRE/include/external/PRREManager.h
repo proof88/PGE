@@ -36,6 +36,7 @@ public:
     CConsole&   getManagedConsole() const;            /**< Returns access to console preset with logger module name as this class. */
 
     const PRREManaged* getUtiliser() const;                  /**< Returns the managed that utilizes this managed. */
+          PRREManaged* getUtiliser();                        /**< Returns the managed that utilizes this managed. */
     void               SetUtiliser(PRREManaged* pUtiliser);  /**< Sets the managed that utilizes this managed. */
 
     void               DetachFrom();                      /**< Removes the managed from its manager. */
@@ -86,7 +87,7 @@ public:
     PRREManager(); /* TODO: mark this as noexcept(false) when using newer compiler! */ 
     virtual ~PRREManager();
 
-    CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+    CConsole&    getConsole() const;                      /**< Returns access to console preset with logger module name as this class. */
 
     TPRREint     getCount() const;                        /**< Gets the number of managed objects. */
     TPRREbool    isEmpty() const;                         /**< Is the number of manageds 0? */
@@ -100,8 +101,10 @@ public:
     virtual void Detach(PRREManaged& m);                  /**< Removes the given managed from the manager, so the managed will have no manager. */
     void         DeleteAttachedInstance(PRREManaged& m);  /**< Removes the given managed from the manager and destructs it. */
     void         DeleteAll();                             /**< Removes and destructs every managed element in the manager. */
+    virtual void HandleManagedPropertyChanged(
+                 PRREManaged& m);                         /**< Should be invoked when a managed's property got changed from a different kind of manager or managed. */
     virtual
-    TPRREuint    getUsedSystemMemory() const;        /**< Gets the amount of allocated system memory for all manageds owner by this manager. */
+    TPRREuint    getUsedSystemMemory() const;             /**< Gets the amount of allocated system memory for all manageds owner by this manager. */
     virtual void WriteList() const;                       /**< Writes a list of managed objects to the console. */
 
 protected:
