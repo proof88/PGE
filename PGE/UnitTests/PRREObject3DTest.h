@@ -793,8 +793,8 @@ private:
         const TPRREfloat fObjAreaBiggest = obj->getBiggestAreaScaled();
         const TPRREfloat fObjFromFileAreaBiggest = objFromFile->getBiggestAreaScaled();
 
-        bool b = assertEquals(fObjAreaBiggest, obj->recalculateBiggerAreaScaled(), E, "obj") &
-            assertEquals(fObjFromFileAreaBiggest, objFromFile->recalculateBiggerAreaScaled(), E, "objFromFile");
+        bool b = assertEquals(fObjAreaBiggest, obj->recalculateBiggestAreaScaled(), E, "obj") &
+            assertEquals(fObjFromFileAreaBiggest, objFromFile->recalculateBiggestAreaScaled(), E, "objFromFile");
 
         // LAZY: we could also test if we change vertex geometry and upload it again to host with setVertexTransferMode()
         // and expect the area to change automatically, but for now we just believe it is also ok ...

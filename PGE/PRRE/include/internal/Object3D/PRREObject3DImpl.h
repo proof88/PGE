@@ -59,7 +59,7 @@ public:
     void              Scale(const PRREVector& value);
 
     TPRREfloat        getBiggestAreaScaled() const;
-    TPRREfloat        recalculateBiggerAreaScaled();
+    TPRREfloat        recalculateBiggestAreaScaled();
 
     TPRREbool isVisible() const;                    
     void      SetVisible(TPRREbool state);          

@@ -114,7 +114,7 @@ public:
     void  Scale(const PRREVector& value);           /**< Scales by the given vector. */
 
     TPRREfloat getBiggestAreaScaled() const;        /**< Gets the biggest area of the object on either plane (XY, XZ or YZ), scaled by current scaling factor. */
-    TPRREfloat recalculateBiggerAreaScaled();       /**< Recalculates biggest area of object on either plane (XY, XZ or YZ), scaled by current scaling factor. */
+    TPRREfloat recalculateBiggestAreaScaled();      /**< Recalculates biggest area of object on either plane (XY, XZ or YZ), scaled by current scaling factor. */
 
     TPRREbool isVisible() const;                    /**< Gets the visibility state. */
     void      SetVisible(TPRREbool state);          /**< Sets the visibility state. */

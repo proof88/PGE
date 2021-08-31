@@ -145,7 +145,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::setVertexTransferMode(TPRRE_VERTEX_TRA
     }
 
     TPRREbool b = _pOwner->PRREVertexTransfer::setVertexTransferMode(vtrans);
-    recalculateBiggerAreaScaled();
+    recalculateBiggestAreaScaled();
     _pOwner->getManagedConsole().OO();
     return b;
 } // setVertexTransferMode()
@@ -196,7 +196,7 @@ const PRREVector& PRREObject3D::PRREObject3DImpl::getScaling() const
 void PRREObject3D::PRREObject3DImpl::SetScaling(TPRREfloat value)
 {
     vScaling.Set(value, value, value);
-    recalculateBiggerAreaScaled();
+    recalculateBiggestAreaScaled();
     if ( pBoundingBox )
     {
         pBoundingBox->SetScaling(value);
@@ -207,7 +207,7 @@ void PRREObject3D::PRREObject3DImpl::SetScaling(TPRREfloat value)
 void PRREObject3D::PRREObject3DImpl::SetScaling(const PRREVector& value)
 {
     vScaling = value;
-    recalculateBiggerAreaScaled();
+    recalculateBiggestAreaScaled();
     if ( pBoundingBox )
     {
         pBoundingBox->SetScaling(value);
@@ -218,7 +218,7 @@ void PRREObject3D::PRREObject3DImpl::SetScaling(const PRREVector& value)
 void PRREObject3D::PRREObject3DImpl::Scale(TPRREfloat value)
 {
     vScaling.Set( vScaling.getX() * value, vScaling.getY() * value, vScaling.getZ() * value );
-    recalculateBiggerAreaScaled();
+    recalculateBiggestAreaScaled();
     if ( pBoundingBox )
     {
         pBoundingBox->Scale(value);
@@ -229,7 +229,7 @@ void PRREObject3D::PRREObject3DImpl::Scale(TPRREfloat value)
 void PRREObject3D::PRREObject3DImpl::Scale(const PRREVector& value)
 {
     vScaling.Set( vScaling.getX() * value.getX(), vScaling.getY() * value.getY(), vScaling.getZ() * value.getZ() );
-    recalculateBiggerAreaScaled();
+    recalculateBiggestAreaScaled();
     if ( pBoundingBox )
     {
         pBoundingBox->Scale(value);
@@ -1337,7 +1337,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_DrawSW()
 } // Draw_DrawSW()
 
 
-TPRREfloat PRREObject3D::PRREObject3DImpl::recalculateBiggerAreaScaled()
+TPRREfloat PRREObject3D::PRREObject3DImpl::recalculateBiggestAreaScaled()
 {
     const PRREVector vScaledSizeVec = _pOwner->getScaledSizeVec();
     const TPRREfloat fAreaXY = vScaledSizeVec.getX() * vScaledSizeVec.getY();
@@ -1354,7 +1354,7 @@ TPRREfloat PRREObject3D::PRREObject3DImpl::recalculateBiggerAreaScaled()
     }
 
     return fBiggestAreaScaled;
-} // recalculateBiggerAreaScaled()
+} // recalculateBiggestAreaScaled()
 
 
 /*
@@ -1635,9 +1635,9 @@ void PRREObject3D::Scale(const PRREVector& value)
 /**
     Gets the biggest area of the object on either plane (XY, XZ or YZ), scaled by current scaling factor.
     Note that if you change the geometry on your own without a call to setVertexTransferMode(), this may give outdated area.
-    See details at recalculateBiggerAreaScaled().
+    See details at recalculateBiggestAreaScaled().
     This value is used by the engine to determine which object should be an occluder. Although occluder state
-    can be turned on or off manually by SetOccluder(), the engine automatically sets this state whenever recalculateBiggerAreaScaled()
+    can be turned on or off manually by SetOccluder(), the engine automatically sets this state whenever recalculateBiggestAreaScaled()
     is invoked either automatically or manually.
 
     @return Biggest area of the object on either plane (XY, XZ or YZ), scaled by current scaling factor.
@@ -1656,14 +1656,14 @@ TPRREfloat PRREObject3D::getBiggestAreaScaled() const
     upload changed geometry to host (e.g. because you keep geometry in client memory). In such case it is recommended to
     invoke this function yourself.
     This value is used by the engine to determine which object should be an occluder. Although occluder state
-    can be turned on or off manually by SetOccluder(), the engine automatically sets this state whenever recalculateBiggerAreaScaled()
+    can be turned on or off manually by SetOccluder(), the engine automatically sets this state whenever recalculateBiggestAreaScaled()
     is invoked either automatically or manually.
 
     @return The recalculated biggest area, scaled by current scaling factor.
 */
-TPRREfloat PRREObject3D::recalculateBiggerAreaScaled()
+TPRREfloat PRREObject3D::recalculateBiggestAreaScaled()
 {
-    return pImpl->recalculateBiggerAreaScaled();
+    return pImpl->recalculateBiggestAreaScaled();
 } // getBiggestAreaScaled()
 
 
