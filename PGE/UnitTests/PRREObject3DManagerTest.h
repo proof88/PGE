@@ -331,8 +331,10 @@ private:
             assertTrue(objCloned->isWireframedCulled(), "wireframeculled") &
             assertNull(objCloned->getBoundingBoxObject(), "objCloned bounding box") &
             assertNotNull(objFromFileCloned->getBoundingBoxObject(), "objFromFileCloned bounding box") &
-            assertNotEquals(objFromFileCloned->getBoundingBoxObject(), objFromFile->getBoundingBoxObject(), "different bounding boxes") &
+            assertNotEquals(objFromFile->getBoundingBoxObject(), objFromFileCloned->getBoundingBoxObject(), "different bounding boxes") &
             assertTrue(objFromFileCloned->getRelPosVec() == objFromFile->getRelPosVec(), "objFromFileCloned rel pos") &
+            assertEquals(objCloned->getBiggestAreaScaled(), objPlane->getBiggestAreaScaled(), "objCloned biggest area scaled") &
+            assertEquals(objFromFileCloned->getBiggestAreaScaled(), objFromFile->getBiggestAreaScaled(), "objFromFileCloned biggest area scaled") &
             assertFalse(objFromFileCloned->isOccluded(), "objFromFileCloned isOccluded") &
             assertFalse(objFromFileCloned->isOccluder(), "objFromFileCloned isOccluder") &
             assertTrue( std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), objFromFileCloned) != om->getOpaqueOccludees().end(), "objFromFileCloned is in getOpaqueOccludees") &

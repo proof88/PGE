@@ -752,6 +752,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         obj->pImpl->bWireframedCull = referredobj.isWireframedCulled();
         obj->pImpl->bAffectZBuffer = referredobj.isAffectingZBuffer();
         obj->pImpl->vScaling = referredobj.getScaling();
+        obj->pImpl->fBiggestAreaScaled = referredobj.getBiggestAreaScaled();
         obj->pImpl->bVisible = referredobj.isVisible();
         obj->pImpl->rotation = referredobj.getRotationOrder();
         obj->pImpl->bStickedToScreen = referredobj.isStickedToScreen();
