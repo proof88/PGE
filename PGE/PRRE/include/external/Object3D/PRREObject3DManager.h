@@ -206,8 +206,9 @@ public:
 
     TPRREbool isInitialized() const;                  /**< Tells whether the manager is correctly initialized or not. */
 
-    const std::set<PRREObject3D*>& getOccluders() const;  /**< Get a list of occluders. */
-    const std::set<PRREObject3D*>& getOccludees() const;  /**< Get a list of occludees. */
+    const std::set<PRREObject3D*>& getOccluders() const;         /**< Get a list of occluders. */
+    const std::set<PRREObject3D*>& getOpaqueOccludees() const;   /**< Get a list of opaque occludees. */
+    const std::set<PRREObject3D*>& getBlendedOccludees() const;  /**< Get a list of blended occludees. */
     
     PRREObject3D* createPlane(
         TPRREfloat a, TPRREfloat b,

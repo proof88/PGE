@@ -36,7 +36,8 @@ public:
     TPRREbool isInitialized() const;
 
     const std::set<PRREObject3D*>& getOccluders() const;
-    const std::set<PRREObject3D*>& getOccludees() const;
+    const std::set<PRREObject3D*>& getOpaqueOccludees() const;
+    const std::set<PRREObject3D*>& getBlendedOccludees() const;
 
 protected:
 
@@ -93,10 +94,16 @@ const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get
 } // getOccluders()
 
 
-const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::getOccludees() const
+const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::getOpaqueOccludees() const
 {
-    return PRREObject3D::PRREObject3DImpl::occludees;
-} // getOccludees()
+    return PRREObject3D::PRREObject3DImpl::occludees_opaque;
+} // getOpaqueOccludees()
+
+
+const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::getBlendedOccludees() const
+{
+    return PRREObject3D::PRREObject3DImpl::occludees_blended;
+} // getBlendedOccludees()
 
 
 // ############################## PROTECTED ##############################
@@ -191,7 +198,7 @@ PRREObject3DManager::~PRREObject3DManager()
 /**
     Adds the given managed to the manager, if the managed has no manager yet.
     No effect if given managed already has a manager.
-    The object will be present in getOccludees() list.
+    The object will be present in getOpaqueOccludees() list since it will be attached as non-blended.
 */
 void PRREObject3DManager::Attach(PRREManaged& m)
 {
@@ -202,8 +209,9 @@ void PRREObject3DManager::Attach(PRREManaged& m)
     try
     {
         PRREObject3D& obj = dynamic_cast<PRREObject3D&>(m);
-        // it will be an occludee for sure, since Detach() removed it from both occludee and occluders list, and without manager it cannot be set as occluder!
-        PRREObject3D::PRREObject3DImpl::occludees.insert(&obj);
+
+        // it will be an occludee for sure, since Detach() removed it from occludee and occluders_* lists, and without manager it cannot be set as occluder!
+        obj.SetOccluder(false);
     }
     catch (const std::exception&)
     {
@@ -214,7 +222,8 @@ void PRREObject3DManager::Attach(PRREManaged& m)
 
 /**
     Removes the given managed from the manager, so the managed will have no manager.
-    The object will not be occlusion tested, and won't be an occluder, and actually it will be present in neither getOccluders() nor getOccludees() list.
+    The object will not be occlusion tested, and won't be an occluder, and actually it will NOT be present in any of the following lists:
+    getOccluders(), getOpaqueOccludees() and getBlendedOccludees().
 */
 void PRREObject3DManager::Detach(PRREManaged& m)
 {
@@ -226,11 +235,20 @@ void PRREObject3DManager::Detach(PRREManaged& m)
         PRREObject3D& obj = dynamic_cast<PRREObject3D&>(m);
         obj.SetOcclusionTested(false);
         obj.SetOccluder(false);
+        obj.getMaterial(false).setBlendMode(PRRE_BM_NONE);
 
-        auto occ_it = std::find(PRREObject3D::PRREObject3DImpl::occludees.begin(), PRREObject3D::PRREObject3DImpl::occludees.end(), &obj);
-        if ( occ_it != PRREObject3D::PRREObject3DImpl::occludees.end() )
+        auto occ_it = std::find(PRREObject3D::PRREObject3DImpl::occludees_opaque.begin(), PRREObject3D::PRREObject3DImpl::occludees_opaque.end(), &obj);
+        if ( occ_it != PRREObject3D::PRREObject3DImpl::occludees_opaque.end() )
         {
-            PRREObject3D::PRREObject3DImpl::occludees.erase(occ_it);
+            PRREObject3D::PRREObject3DImpl::occludees_opaque.erase(occ_it);
+        }
+        else
+        {
+            occ_it = std::find(PRREObject3D::PRREObject3DImpl::occludees_blended.begin(), PRREObject3D::PRREObject3DImpl::occludees_blended.end(), &obj);
+            if ( occ_it != PRREObject3D::PRREObject3DImpl::occludees_blended.end() )
+            {
+                PRREObject3D::PRREObject3DImpl::occludees_blended.erase(occ_it);
+            }
         }
     }
     catch (const std::exception&)
@@ -291,15 +309,27 @@ const std::set<PRREObject3D*>& PRREObject3DManager::getOccluders() const
 
 
 /**
-    Get a list of occludees.
-    If you want to get all the occluders, this way is faster than iterating over all objects and checking if they are occludees.
+    Get a list of opaque (non-blended) occludees.
+    If you want to get all the opaque occludees, this way is faster than iterating over all objects and checking if they are non-blended and occludees.
 
-    @return List of occludees.
+    @return List of opaque occludees.
 */
-const std::set<PRREObject3D*>& PRREObject3DManager::getOccludees() const
+const std::set<PRREObject3D*>& PRREObject3DManager::getOpaqueOccludees() const
 {
-    return pImpl->getOccludees();
-} // getOccludees()
+    return pImpl->getOpaqueOccludees();
+} // getOpaqueOccludees()
+
+
+/**
+    Get a list of blended occludees.
+    If you want to get all the blended occludees, this way is faster than iterating over all objects and checking if they are blended and occludees.
+
+    @return List of blended occludees.
+*/
+const std::set<PRREObject3D*>& PRREObject3DManager::getBlendedOccludees() const
+{
+    return pImpl->getBlendedOccludees();
+} // getBlendedOccludees()
 
 
 /**
@@ -334,14 +364,20 @@ PRREObject3D* PRREObject3DManager::createPlane(
     try
     {
         obj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
-        Attach( *obj );
+        // do not attach obj to object3dmanager yet, we need its material created first!
+
         subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
         obj->Attach( *subobj );
+
         PRREMesh3DManager* const me = this;
         if ( !(me->pImpl->convertToPlane(*obj, a, b)) )
         {
             throw std::runtime_error("convertToPlane() failed!");
         }
+
+        // now we have material, it can be attached to object3dmanager!
+        Attach( *obj );
+
         subobj->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobj->getVerticesCount()];
     }
     catch (const std::exception& e)
@@ -415,14 +451,20 @@ PRREObject3D* PRREObject3DManager::createBox(
     try
     {
         obj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
-        Attach( *obj );
+        // do not attach obj to object3dmanager yet, we need its material created first!
+
         subobj = new PRREObject3D(pImpl->materialMgr, vmod, vref, bForceUseClientMemory);
         obj->Attach( *subobj );
+
         PRREMesh3DManager* const me = this;
         if ( !me->pImpl->convertToBox(*obj, a, b, c) )
         {
             throw std::runtime_error("convertToBox() failed!");
         }
+
+        // now we have material, it can be attached to object3dmanager!
+        Attach( *obj );
+
         subobj->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobj->getVerticesCount()];
     }
     catch (const std::exception& e)
@@ -694,11 +736,11 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
     try
     {
         obj = new PRREObject3D(pImpl->materialMgr);
+        // do not attach obj to object3dmanager yet, we need material to be created first!
 
         // SetName() invoked later below ...
         obj->SetFilename( referredobj.getFilename() );
         
-        Attach( *obj );
         obj->pImpl->pRefersto = &referredobj;
 
         obj->getPosVec() = referredobj.getPosVec();
@@ -720,6 +762,9 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
             // this should not be like this, createMaterialForMesh() should throw.
             throw std::bad_alloc();
         }
+
+        // since we have material now, we can attach it to object3dmanager!
+        Attach( *obj );
 
         // for the material, no need to copy texcoords, etc ...
         // however we need to set blendfunc and envcolor, because renderer would not get referredobj blendfunc ...
@@ -761,12 +806,17 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
     Iterates over its manageds and updates their occluder states.
     It uses their getBiggestAreaScaled() values to determine which should be occluder.
     It sets states on and off, based on how their getBiggestAreaScaled() compare to others'.
-    Blended and "sticked to screen" objects are NOT considered as occluders.
+    Objects having any of the following properties are ignored during calculation since they cannot even be occluders:
+     - wireframed;
+     - having blended material;
+     - not affecting z-buffer;
+     - sticked-to-screen.
+
     A renderer might invoke this function periodically based on its configuration.
 */
 void PRREObject3DManager::UpdateOccluderStates()
 {
-    //LOGGGG getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), true);
+    //getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), true);
 
     TPRREfloat fAverageBiggestAreaScaled = 0.0f;
     TPRREuint nCount = 0;
@@ -781,31 +831,47 @@ void PRREObject3DManager::UpdateOccluderStates()
             if ( pMngd->isStickedToScreen() )
                 continue;
 
+            if ( !pMngd->isAffectingZBuffer() )
+                continue;
+
+            if ( pMngd->isWireframed() )
+                continue;
+
             nCount++;
             fAverageBiggestAreaScaled += pMngd->getBiggestAreaScaled();
         }
     }
     fAverageBiggestAreaScaled /= (TPRREfloat)nCount;
 
-    //LOGGGG getConsole().OLnOI("%s() START: avg area: %f", __FUNCTION__, fAverageBiggestAreaScaled);
-    //LOGGGG getConsole().OLn("area, bAreaBiggerThanAvg, bNotBlended, bNotSticked, name, filename");
+    //getConsole().OLnOI("%s() START: avg area: %f", __FUNCTION__, fAverageBiggestAreaScaled);
+    //getConsole().OLn("area, bAreaBiggerThanAvg, name, filename");
     for (TPRREint i = 0; i < getSize(); i++)
     {
         PRREObject3D* const pMngd = (PRREObject3D*) getAttachedAt(i);
         if ( pMngd != PGENULL )
         {
-            const TPRREbool bAreaBiggerThanAvg = (pMngd->getBiggestAreaScaled() > fAverageBiggestAreaScaled);
-            const TPRREbool bNotBlended = (!PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial(false).getSourceBlendFunc(), pMngd->getMaterial(false).getDestinationBlendFunc()));
-            const TPRREbool bNotSticked = (!pMngd->isStickedToScreen());
+            if ( PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(false), pMngd->getMaterial().getDestinationBlendFunc(false)) )
+                continue;
 
-            //LOGGGG getConsole().OLn("%f, %b, %b, %b, %s, %s", pMngd->getBiggestAreaScaled(), bAreaBiggerThanAvg, bNotBlended, bNotSticked, pMngd->getName().c_str(), pMngd->getFilename().c_str());
+            if ( pMngd->isStickedToScreen() )
+                continue;
+
+            if ( !pMngd->isAffectingZBuffer() )
+                continue;
+
+            if ( pMngd->isWireframed() )
+                continue;
+
+            const TPRREbool bAreaBiggerThanAvg = (pMngd->getBiggestAreaScaled() > fAverageBiggestAreaScaled);
+
+            //getConsole().OLn("%f, %b, %s, %s", pMngd->getBiggestAreaScaled(), bAreaBiggerThanAvg, pMngd->getName().c_str(), pMngd->getFilename().c_str());
             
-            pMngd->SetOccluder(bAreaBiggerThanAvg && bNotBlended && bNotSticked);
+            pMngd->SetOccluder(bAreaBiggerThanAvg);
         }
     }
-    //LOGGGG getConsole().OOOLn("%s() END", __FUNCTION__);
+    //getConsole().OOOLn("%s() END", __FUNCTION__);
 
-    //LOGGGG getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), false);
+    //getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), false);
 } // UpdateOccluderStates()
 
 
@@ -821,11 +887,12 @@ void PRREObject3DManager::HandleManagedPropertyChanged(PRREManaged& m)
         
         const TPRREbool bBlended = PRREMaterial::isBlendFuncReallyBlending(obj.getMaterial(false).getSourceBlendFunc(), obj.getMaterial(false).getDestinationBlendFunc());
 
-        if ( bBlended && obj.isOccluder() )
+        if ( bBlended )
         {
             obj.SetOccluder(false);
         }
-        // obj.SetOccluder(true) in different cases will be handled by UpdateOccluderStates() when invoked periodically by renderer
+        // obj.SetOccluder(true) in different cases will be handled by UpdateOccluderStates() when invoked periodically by renderer, we just cannot
+        // set occluder state to true here because only UpdateOccluderStates() is aware of Object3Ds' average biggestarea!
     }
     catch (const std::exception&)
     {

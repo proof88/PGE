@@ -59,7 +59,8 @@ TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCL
 TPRREbool PRREObject3D::PRREObject3DImpl::OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING = true;
 
 std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occluders;
-std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees;
+std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_opaque;
+std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_blended;
 
 
 PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
@@ -79,10 +80,16 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
         occluders.erase(occ_it);
     }
 
-    occ_it = std::find(occludees.begin(), occludees.end(), _pOwner);
-    if ( occ_it != occludees.end() )
+    occ_it = std::find(occludees_opaque.begin(), occludees_opaque.end(), _pOwner);
+    if ( occ_it != occludees_opaque.end() )
     {
-        occludees.erase(occ_it);
+        occludees_opaque.erase(occ_it);
+    }
+
+    occ_it = std::find(occludees_blended.begin(), occludees_blended.end(), _pOwner);
+    if ( occ_it != occludees_blended.end() )
+    {
+        occludees_blended.erase(occ_it);
     }
 
     _pOwner->DeleteAll();
@@ -410,29 +417,64 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
         return;
     }
 
+    const TPRREbool bBlended = PRREMaterial::isBlendFuncReallyBlending(_pOwner->getMaterial(false).getSourceBlendFunc(), _pOwner->getMaterial(false).getDestinationBlendFunc());
+
     if ( value )
     {
         if ( isStickedToScreen() ||
             !(isAffectingZBuffer()) ||
             isWireframed() ||
-            PRREMaterial::isBlendFuncReallyBlending(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc())
+            bBlended
         )
         {
             _pOwner->getConsole().EOLn("%s() ERROR: cannot set occluder state to true due to conflicting property!", __FUNCTION__);
             return;
         }
+
+        occluders.insert(_pOwner);
+
+        auto occ_it = std::find(occludees_opaque.begin(), occludees_opaque.end(), _pOwner);
+        if ( occ_it != occludees_opaque.end() )
+        {
+            occludees_opaque.erase(occ_it);
+        }
+
+        occ_it = std::find(occludees_blended.begin(), occludees_blended.end(), _pOwner);
+        if ( occ_it != occludees_blended.end() )
+        {
+            occludees_blended.erase(occ_it);
+        }
     }
-
-    std::set<PRREObject3D*>& addTo = value ? occluders : occludees;
-    std::set<PRREObject3D*>& removeFrom = value ? occludees: occluders;
-
-    addTo.insert(_pOwner);
-    auto occ_it = std::find(removeFrom.begin(), removeFrom.end(), _pOwner);
-    if ( occ_it != removeFrom.end() )
+    else
     {
-        removeFrom.erase(occ_it);
+        auto occ_it = std::find(occluders.begin(), occluders.end(), _pOwner);
+        if ( occ_it != occluders.end() )
+        {
+            occluders.erase(occ_it);
+        }
+
+        if ( bBlended )
+        {
+            occludees_blended.insert(_pOwner);
+
+            occ_it = std::find(occludees_opaque.begin(), occludees_opaque.end(), _pOwner);
+            if ( occ_it != occludees_opaque.end() )
+            {
+                occludees_opaque.erase(occ_it);
+            }
+        }
+        else
+        {
+            occludees_opaque.insert(_pOwner);
+
+            occ_it = std::find(occludees_blended.begin(), occludees_blended.end(), _pOwner);
+            if ( occ_it != occludees_blended.end() )
+            {
+                occludees_blended.erase(occ_it);
+            }
+        }
     }
-    
+
     bOccluder = value;
 } // SetOccluder()
 
@@ -1785,6 +1827,7 @@ TPRREbool PRREObject3D::isWireframed() const
     Sets the wireframed state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is false.
+    If set to true, the object's occluder state will be forced to false.
 
     @param value The desired state.
 */
@@ -1798,6 +1841,7 @@ void PRREObject3D::SetWireframed(TPRREbool value)
     Gets the wireframed culling state.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is false.
+
     @return True if culling is enabled in wireframed state, false otherwise.
 */
 TPRREbool PRREObject3D::isWireframedCulled() const
@@ -1835,6 +1879,7 @@ TPRREbool PRREObject3D::isAffectingZBuffer() const
     Sets whether we write to the Z-Buffer while rendering.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is true.
+    If set to false, the object's occluder state will be also forced to false.
 
     @param value The desired state.
 */
@@ -1891,6 +1936,7 @@ TPRREbool PRREObject3D::isStickedToScreen() const
      - SetTestingAgainstZBuffer(false).
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is false.
+    If set to true, the object's occluder state will be forced to false.
 
     @param value The desired state.
 */
@@ -1919,6 +1965,14 @@ TPRREbool PRREObject3D::isOccluder() const
     Occluders are rendered before non-occluder objects.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is decided based on the size of the object compared to other objects.
+    The following properties are incompatible with occluder state:
+     - wireframed;
+     - having blended material;
+     - not affecting z-buffer;
+     - sticked-to-screen.
+    Setting occluder state to true will be ignored when an Object3D already has any of the above properties.
+    Note that renderer might invoke PRREObject3DManager::UpdateOccluderStates() that can override your manual setting.
+    This function is mostly for the engine to switch occluder state, not for the user. In the future this might change though.
 
     @param value The desired state.
 */

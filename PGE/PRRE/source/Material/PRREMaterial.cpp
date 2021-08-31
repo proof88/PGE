@@ -289,18 +289,25 @@ TPRRE_BLENDFACTOR PRREMaterial::PRREMaterialImpl::getSourceBlendFunc(TPRREuint l
 
 TPRREbool PRREMaterial::PRREMaterialImpl::setSourceBlendFunc(TPRRE_BLENDFACTOR value, TPRREuint level)
 {
+    if ( !_pOwner->getUtiliser() || !_pOwner->getUtiliser()->getManager() )
+    {
+        // this way we permit the user setting blending again when the utiliser Object3D is not attached to its manager,
+        // so it can be assured that in case of reattach, it is still non-blended, without even checking blending state!
+        _pOwner->getManagedConsole().EOLn("ERROR: %s either no utiliser or utiliser has no parent!", __FUNCTION__);
+        return false;
+    }
+
     if ( (value != PRRE_SRC_COLOR) && (value != PRRE_ONE_MINUS_SRC_COLOR) )
     {
         if ( level < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount() )
         {
             layers[level].blendFactorSource = value;
-            if ( _pOwner->getUtiliser() != PGENULL )
-            {
-                // remember: Object3D is also a manager, so it could also implement its own HandleManagedPropertyChanged(),
-                // to handle changes in the material of its subobjects! Since Object3D doesnt implement such,
-                // the PRREManager's base HandleManagedPropertyChanged() is invoked when subobject's material is changed here!
-                _pOwner->getUtiliser()->getManager()->HandleManagedPropertyChanged( *(_pOwner->getUtiliser()) );
-            }
+
+            // remember: Object3D is also a manager, so it could also implement its own HandleManagedPropertyChanged(),
+            // to handle changes in the material of its subobjects! Since Object3D doesnt implement such,
+            // the PRREManager's base HandleManagedPropertyChanged() is invoked when subobject's material is changed here!
+            _pOwner->getUtiliser()->getManager()->HandleManagedPropertyChanged( *(_pOwner->getUtiliser()) );
+
             return true;
         }
     }
@@ -322,18 +329,25 @@ TPRRE_BLENDFACTOR PRREMaterial::PRREMaterialImpl::getDestinationBlendFunc(TPRREu
 
 TPRREbool PRREMaterial::PRREMaterialImpl::setDestinationBlendFunc(TPRRE_BLENDFACTOR value, TPRREuint level)
 {
+    if ( !_pOwner->getUtiliser() || !_pOwner->getUtiliser()->getManager() )
+    {
+        // this way we permit the user setting blending again when the utiliser Object3D is not attached to its manager,
+        // so it can be assured that in case of reattach, it is still non-blended, without even checking blending state!
+        _pOwner->getManagedConsole().EOLn("ERROR: %s either no utiliser or utiliser has no parent!", __FUNCTION__);
+        return false;
+    }
+
     if ( (value != PRRE_DST_COLOR) && (value != PRRE_ONE_MINUS_DST_COLOR) && (value != PRRE_SRC_ALPHA_SATURATE) )
     {
         if ( level < ((PRREMaterialManager*)_pOwner->getManager())->getMaximumLayerCount() )
         {
             layers[level].blendFactorDestination = value;
-            if ( _pOwner->getUtiliser() != PGENULL )
-            {
-                // remember: Object3D is also a manager, so it could also implement its own HandleManagedPropertyChanged(),
-                // to handle changes in the material of its subobjects! Since Object3D doesnt implement such,
-                // the PRREManager's base HandleManagedPropertyChanged() is invoked when subobject's material is changed here!
-                _pOwner->getUtiliser()->getManager()->HandleManagedPropertyChanged( *(_pOwner->getUtiliser()) );
-            }
+
+            // remember: Object3D is also a manager, so it could also implement its own HandleManagedPropertyChanged(),
+            // to handle changes in the material of its subobjects! Since Object3D doesnt implement such,
+            // the PRREManager's base HandleManagedPropertyChanged() is invoked when subobject's material is changed here!
+            _pOwner->getUtiliser()->getManager()->HandleManagedPropertyChanged( *(_pOwner->getUtiliser()) );
+
             return true;
         }
     }
@@ -793,6 +807,7 @@ TPRRE_BLENDFACTOR PRREMaterial::getSourceBlendFunc(TPRREuint level) const
     Sets the source blend factor on the specified level.
     0 is the default level.
     No effect if the given value is PRRE_SRC_COLOR or PRRE_ONE_MINUS_SRC_COLOR.
+    No effect if the material doesn't have an utiliser entity (e.g. PRREObject3D instance) or if the utiliser doesn't have its parent set (e.g. PRREObject3DManager).
 
     @param value Source blend factor to be set on the specified level.
     @param level The material level/layer we are interested in. Should be less than MaterialManager::getMaximumLayerCount().
@@ -823,6 +838,7 @@ TPRRE_BLENDFACTOR PRREMaterial::getDestinationBlendFunc(TPRREuint level) const
     0 is the default level.
     No effect if the given value is one of the following:
     PRRE_DST_COLOR, PRRE_ONE_MINUS_DST_COLOR, PRRE_SRC_ALPHA_SATURATE. 
+    No effect if the material doesn't have an utiliser entity (e.g. PRREObject3D instance) or if the utiliser doesn't have its parent set (e.g. PRREObject3DManager).
 
     @param value Destination blend factor to be set on the specified level.
     @param level The material level/layer we are interested in. Should be less than MaterialManager::getMaximumLayerCount().
@@ -838,6 +854,7 @@ TPRREbool PRREMaterial::setDestinationBlendFunc(TPRRE_BLENDFACTOR value, TPRREui
     Sets the blend factors on the specified level.
     0 is the default level.
     Equivalent to calling setSourceBlendFunc(src, level) and setDestinationBlendFunc(dst, level), so check their documentation as well for accepted values.
+    See the description of those functions for more details about the cases when there is no effect when calling them.
 
     @param src Source blend factor to be set on the specified level.
     @param dst Destination blend factor to be set on the specified level.
@@ -868,7 +885,8 @@ TPRRE_BLENDMODE PRREMaterial::getBlendMode(TPRREuint level) const
 /**
     Sets the blend mode on the specified level.
     0 is the default level.
-    PRRE_BM_MANUAL input is ignored.
+    PRRE_BM_MANUAL input is ignored, it is set by the engine when the blend factors do not match with a predefined blend mode.
+    No effect if the material doesn't have an utiliser entity (e.g. PRREObject3D instance) or if the utiliser doesn't have its parent set (e.g. PRREObject3DManager).
 
     @param mode  The requested blend mode.
     @param level The material level/layer we are interested in. Should be less than MaterialManager::getMaximumLayerCount().

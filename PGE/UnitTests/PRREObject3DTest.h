@@ -1028,41 +1028,47 @@ private:
         bool b = true;
         b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder 1") &
             assertTrue(std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is NOT in getOccluders 1") &
-            assertTrue(std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is in getOccludees 1");
+            assertTrue(std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), objFromFile) != om->getOpaqueOccludees().end(), "objFromFile is in getOpaqueOccludees 1") &
+            assertTrue(std::find(om->getBlendedOccludees().begin(), om->getBlendedOccludees().end(), objFromFile) == om->getBlendedOccludees().end(), "objFromFile is NOT in getBlendedOccludees 1");
 
         objFromFile->SetStickedToScreen(true);
         objFromFile->SetOccluder(true);
         b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder 2") &
             assertTrue(std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is NOT in getOccluders 2") &
-            assertTrue(std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is in getOccludees 2");
+            assertTrue(std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), objFromFile) != om->getOpaqueOccludees().end(), "objFromFile is in getOpaqueOccludees 2") &
+            assertTrue(std::find(om->getBlendedOccludees().begin(), om->getBlendedOccludees().end(), objFromFile) == om->getBlendedOccludees().end(), "objFromFile is NOT in getBlendedOccludees 2");
         objFromFile->SetStickedToScreen(false);
 
         objFromFile->SetWireframed(true);
         objFromFile->SetOccluder(true);
         b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder 3") &
             assertTrue(std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is NOT in getOccluders 3") &
-            assertTrue(std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is in getOccludees 3");
+            assertTrue(std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), objFromFile) != om->getOpaqueOccludees().end(), "objFromFile is in getOpaqueOccludees 3") &
+            assertTrue(std::find(om->getBlendedOccludees().begin(), om->getBlendedOccludees().end(), objFromFile) == om->getBlendedOccludees().end(), "objFromFile is NOT in getBlendedOccludees 3");
         objFromFile->SetWireframed(false);
 
         objFromFile->SetAffectingZBuffer(false);
         objFromFile->SetOccluder(true);
         b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder 4") &
             assertTrue(std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is NOT in getOccluders 4") &
-            assertTrue(std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is in getOccludees 4");
+            assertTrue(std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), objFromFile) != om->getOpaqueOccludees().end(), "objFromFile is in getOpaqueOccludees 4") &
+            assertTrue(std::find(om->getBlendedOccludees().begin(), om->getBlendedOccludees().end(), objFromFile) == om->getBlendedOccludees().end(), "objFromFile is NOT in getBlendedOccludees 4");
         objFromFile->SetAffectingZBuffer(true);
 
         objFromFile->getMaterial().setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
         objFromFile->SetOccluder(true);
         b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder 5") &
             assertTrue(std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is NOT in getOccluders 5") &
-            assertTrue(std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is in getOccludees 5");
+            assertTrue(std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), objFromFile) == om->getOpaqueOccludees().end(), "objFromFile is NOT in getOpaqueOccludees 1") &
+            assertTrue(std::find(om->getBlendedOccludees().begin(), om->getBlendedOccludees().end(), objFromFile) != om->getBlendedOccludees().end(), "objFromFile is in getBlendedOccludees 1");
         objFromFile->getMaterial().setBlendMode(PRRE_BM_NONE);
 
         objFromFile->SetOccluder(true);
 
         return b & assertTrue(obj->isOccluder(), "obj is occluder") & assertTrue(objFromFile->isOccluder(), "objFromFile is occluder") &
             assertFalse(std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is in getOccluders") &
-            assertFalse(std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is NOT in getOccludees");
+            assertFalse(std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), objFromFile) != om->getOpaqueOccludees().end(), "objFromFile is NOT in getOpaqueOccludees") &
+            assertFalse(std::find(om->getBlendedOccludees().begin(), om->getBlendedOccludees().end(), objFromFile) != om->getBlendedOccludees().end(), "objFromFile is NOT in getBlendedOccludees");
     }
 
     bool testIsOccluded()
@@ -1272,14 +1278,14 @@ private:
         obj->SetOccluder(true);
 
         const std::size_t nOriginalOccludersCount = om->getOccluders().size();
-        const std::size_t nOriginalOccludeesCount = om->getOccludees().size();
+        const std::size_t nOriginalOccludeesCount = om->getOpaqueOccludees().size();
 
         bool b = assertTrue(objFromFile->isOcclusionTested(), "objFromFile occlusiontested 1") & assertTrue(obj->isOccluder(), "obj occluder 1");
 
         objFromFile->DetachFrom();
         obj->DetachFrom();
 
-        b &= assertEquals(nOriginalOccludersCount-1, om->getOccluders().size(), "getOccluders count 2") & assertEquals(nOriginalOccludeesCount-1, om->getOccludees().size(), "getOccludees count 2");
+        b &= assertEquals(nOriginalOccludersCount-1, om->getOccluders().size(), "getOccluders count 2") & assertEquals(nOriginalOccludeesCount-1, om->getOpaqueOccludees().size(), "getOpaqueOccludees count 2");
         b &= assertFalse(objFromFile->isOcclusionTested(), "objFromFile not occlusiontested 1") & assertFalse(obj->isOccluder(), "obj not occluder 1");
 
         return b;

@@ -50,7 +50,7 @@ protected:
         AddSubTest("testAttachAndDetach", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testAttachAndDetach);
         AddSubTest("testDeleteAttachedInstance", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testDeleteAttachedInstance);
 
-        // getOccluders() and getOccludees() doesn't have their own test cases since they are
+        // getOccluders() and getOpaqueOccludees() doesn't have their own test cases since they are
         // tested in almost all testcases here and in PRREObject3DTest::testSetOccluder() too.
         AddSubTest("testCreatePlane", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreatePlane);
         AddSubTest("testCreateBox", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreateBox);
@@ -113,7 +113,7 @@ private:
 
     bool testCtor()
     {
-        return assertNotNull(om) & assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertTrue(om->getOccludees().empty(), "getOccludees empty");
+        return assertNotNull(om) & assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertTrue(om->getOpaqueOccludees().empty(), "getOpaqueOccludees empty");
     }
 
     bool testIsInitialized()
@@ -134,20 +134,40 @@ private:
         objBox->SetOcclusionTested(true);
         objPlane->SetOccluder(true);
 
-        bool b = assertEquals((std::size_t)1, om->getOccluders().size(), "getOccluders not empty 1") & assertEquals((std::size_t)1, om->getOccludees().size(), "getOccludees not empty 1");
+        bool b = assertEquals((std::size_t)1, om->getOccluders().size(), "getOccluders not empty 1") & assertEquals((std::size_t)1, om->getOpaqueOccludees().size(), "getOpaqueOccludees not empty 1")
+            & assertEquals((std::size_t)0, om->getBlendedOccludees().size(), "getBlendedOccludees empty 1");
         b &= assertTrue(objBox->isOcclusionTested(), "objBox occlusiontested 1") & assertTrue(objPlane->isOccluder(), "objPlane occluder 1");
 
         om->Detach(*objPlane);
         om->Detach(*objBox);
 
-        b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 1") & assertEquals((std::size_t)0, om->getOccludees().size(), "getOccludees empty 1");
+        b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 1") & assertEquals((std::size_t)0, om->getOpaqueOccludees().size(), "getOpaqueOccludees empty 1")
+            & assertEquals((std::size_t)0, om->getBlendedOccludees().size(), "getBlendedOccludees empty 2");
         b &= assertFalse(objBox->isOcclusionTested(), "objBox not occlusiontested 1") & assertFalse(objPlane->isOccluder(), "objPlane not occluder 1");
 
         om->Attach(*objPlane);
         om->Attach(*objBox);
 
-        b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 2") & assertEquals((std::size_t)2, om->getOccludees().size(), "getOccludees not empty 2");
+        b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 2") & assertEquals((std::size_t)2, om->getOpaqueOccludees().size(), "getOpaqueOccludees not empty 2")
+            & assertEquals((std::size_t)0, om->getBlendedOccludees().size(), "getBlendedOccludees empty 3");
         b &= assertFalse(objBox->isOcclusionTested(), "objBox not occlusiontested 2") & assertFalse(objPlane->isOccluder(), "objPlane not occluder 2");
+
+        objPlane->getMaterial(false).setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
+
+        b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 3") & assertEquals((std::size_t)1, om->getOpaqueOccludees().size(), "getOpaqueOccludees not empty 3")
+            & assertEquals((std::size_t)1, om->getBlendedOccludees().size(), "getBlendedOccludees not empty 1");
+
+        om->Detach(*objPlane);
+
+        b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 4") & assertEquals((std::size_t)1, om->getOpaqueOccludees().size(), "getOpaqueOccludees not empty 4")
+            & assertEquals((std::size_t)0, om->getBlendedOccludees().size(), "getBlendedOccludees empty 4")
+            & assertEquals(PRRE_BM_NONE, objPlane->getMaterial(false).getBlendMode(), "setBlendMode is nonblend 1");
+
+        om->Attach(*objPlane);
+
+        b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 5") & assertEquals((std::size_t)2, om->getOpaqueOccludees().size(), "getOpaqueOccludees not empty 5")
+            & assertEquals((std::size_t)0, om->getBlendedOccludees().size(), "getBlendedOccludees empty 5")
+            & assertEquals(PRRE_BM_NONE, objPlane->getMaterial(false).getBlendMode(), "setBlendMode is nonblend 2");
 
         return b;
     }
@@ -156,22 +176,27 @@ private:
     {
         PRREObject3D* const objBox = om->createBox(1.0f, 2.0f, 3.0f);
         PRREObject3D* const objPlane = om->createPlane(1.0f, 2.0f);
+        PRREObject3D* const objCube = om->createCube(1.0f);
 
-        if ( !assertNotNull(objBox, "objBox not null") || !assertNotNull(objPlane, "objPlane not null"))
+        if ( !assertNotNull(objBox, "objBox not null") || !assertNotNull(objPlane, "objPlane not null") || !assertNotNull(objCube, "objCube not null"))
         {
             return false;
         }
 
         objBox->SetOcclusionTested(true);
         objPlane->SetOccluder(true);
+        objCube->getMaterial(false).setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
 
-        bool b = assertEquals((std::size_t)1, om->getOccluders().size(), "getOccluders not empty 1") & assertEquals((std::size_t)1, om->getOccludees().size(), "getOccludees not empty 1");
+        bool b = assertEquals((std::size_t)1, om->getOccluders().size(), "getOccluders not empty 1") & assertEquals((std::size_t)1, om->getOpaqueOccludees().size(), "getOpaqueOccludees not empty 1")
+            & assertEquals((std::size_t)1, om->getBlendedOccludees().size(), "getBlendedOccludees not empty 1");
         b &= assertTrue(objBox->isOcclusionTested(), "objBox occlusiontested 1") & assertTrue(objPlane->isOccluder(), "objPlane occluder 1");
 
         om->DeleteAttachedInstance(*objBox);
         om->DeleteAttachedInstance(*objPlane);
+        om->DeleteAttachedInstance(*objCube);
 
-        b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 1") & assertEquals((std::size_t)0, om->getOccludees().size(), "getOccludees empty 1");
+        b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 1") & assertEquals((std::size_t)0, om->getOpaqueOccludees().size(), "getOpaqueOccludees empty 1") &
+            assertEquals((std::size_t)0, om->getBlendedOccludees().size(), "getBlendedOccludees empty 1");
 
         return b;
     }
@@ -188,7 +213,8 @@ private:
 
         return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
             assertEquals((TPRREuint)4, obj->getVerticesCount(), "vertices count") &
-            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees not empty");
+            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOpaqueOccludees().empty(), "getOpaqueOccludees not empty") &
+            assertTrue(om->getBlendedOccludees().empty(), "getBlendedOccludees empty");
     }
 
     bool testCreateBox()
@@ -203,7 +229,8 @@ private:
 
         return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
             assertEquals((TPRREuint)24, obj->getVerticesCount(), "vertices count") &
-            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees not empty");
+            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOpaqueOccludees().empty(), "getOpaqueOccludees not empty") &
+            assertTrue(om->getBlendedOccludees().empty(), "getBlendedOccludees empty");
     }
 
     bool testCreateCube()
@@ -218,7 +245,8 @@ private:
 
         return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
             assertEquals((TPRREuint)24, obj->getVerticesCount(), "vertices count") &
-            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees not empty");
+            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOpaqueOccludees().empty(), "getOpaqueOccludees not empty") &
+            assertTrue(om->getBlendedOccludees().empty(), "getBlendedOccludees empty");
     }
 
     bool testCreateFromFile()
@@ -244,7 +272,8 @@ private:
             assertNotEquals(std::string::npos, objFromFile->getName().find("Object3D "), "name substr") &
             assertEquals((TPRREint)9, objFromFile->getCount(), "subobject count") &
             b1 &
-            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOccludees().empty(), "getOccludees not empty");
+            assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->getOpaqueOccludees().empty(), "getOpaqueOccludees not empty") &
+            assertTrue(om->getBlendedOccludees().empty(), "getBlendedOccludees empty");
     }
 
     bool testCreateCloned()
@@ -267,7 +296,7 @@ private:
         PRREObject3D* const objCloned = om->createCloned( *objPlane );
         if ( !assertNotNull(objCloned, "objCloned not null"))
         {
-            return assertNotNull(objCloned, "objCloned is NULL");
+            return assertNotNull(objCloned, "objCloned not NULL");
         }
 
         PRREObject3D* const objFromFile = om->createFromFile("_res/models/robot_proofps/robot.obj");
@@ -306,7 +335,8 @@ private:
             assertTrue(objFromFileCloned->getRelPosVec() == objFromFile->getRelPosVec(), "objFromFileCloned rel pos") &
             assertFalse(objFromFileCloned->isOccluded(), "objFromFileCloned isOccluded") &
             assertFalse(objFromFileCloned->isOccluder(), "objFromFileCloned isOccluder") &
-            assertTrue( std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFileCloned) != om->getOccludees().end(), "objFromFileCloned is in getOccludees") &
+            assertTrue( std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), objFromFileCloned) != om->getOpaqueOccludees().end(), "objFromFileCloned is in getOpaqueOccludees") &
+            assertTrue( std::find(om->getBlendedOccludees().begin(), om->getBlendedOccludees().end(), objFromFileCloned) == om->getBlendedOccludees().end(), "objFromFileCloned is NOT in getBlendedOccludees") &
             assertTrue( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFileCloned) == om->getOccluders().end(), "objFromFileCloned is NOT in getOccluders") &
             assertTrue(objFromFileCloned->isOcclusionTested() == true, "objFromFileCloned isOcclusionTested");
     }
@@ -332,37 +362,43 @@ private:
         for (std::size_t i = 0; i < boxes.size(); i++)
         {
             b &= assertFalse( boxes[i]->isOccluder(), (std::string("boxes[") + std::to_string(i) + "] isOccluder()").c_str() ) &
-                 assertTrue( std::find(om->getOccludees().begin(), om->getOccludees().end(), boxes[i]) != om->getOccludees().end(), (std::string("boxes[") + std::to_string(i) + "] is in getOccludees").c_str()) &
+                 assertTrue( std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), boxes[i]) != om->getOpaqueOccludees().end(), (std::string("boxes[") + std::to_string(i) + "] is in getOpaqueOccludees").c_str()) &
+                 assertTrue( std::find(om->getBlendedOccludees().begin(), om->getBlendedOccludees().end(), boxes[i]) == om->getBlendedOccludees().end(), (std::string("boxes[") + std::to_string(i) + "] is NOT in getBlendedOccludees").c_str()) &
                  assertTrue( std::find(om->getOccluders().begin(), om->getOccluders().end(), boxes[i]) == om->getOccluders().end(), (std::string("boxes[") + std::to_string(i) + "] is NOT in getOccluders").c_str());
         } 
 
         // size of snail with default scaling is somewhere around [67, 47, 68] or something
         b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 1") &
-             assertFalse( std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is NOT in getOccludees 1") &
+             assertFalse( std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), objFromFile) != om->getOpaqueOccludees().end(), "objFromFile is NOT in getOpaqueOccludees 1") &
+             assertFalse( std::find(om->getBlendedOccludees().begin(), om->getBlendedOccludees().end(), objFromFile) != om->getBlendedOccludees().end(), "objFromFile is NOT in getBlendedOccludees 1") &
              assertFalse( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is in getOccluders 1");
 
         objFromFile->SetStickedToScreen(true);
         om->UpdateOccluderStates();
         b &= assertFalse(objFromFile->isOccluder(), "objFromFile not occluder 1") &
-             assertTrue( std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is in getOccludees 2") &
+             assertTrue( std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), objFromFile) != om->getOpaqueOccludees().end(), "objFromFile is in getOpaqueOccludees 2") &
+             assertFalse( std::find(om->getBlendedOccludees().begin(), om->getBlendedOccludees().end(), objFromFile) != om->getBlendedOccludees().end(), "objFromFile is NOT in getBlendedOccludees 2") &
              assertTrue( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is NOT in getOccluders 2");
 
         objFromFile->SetStickedToScreen(false);
         om->UpdateOccluderStates();
         b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 2") &
-             assertFalse( std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is NOT in getOccludees 3") &
+             assertFalse( std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), objFromFile) != om->getOpaqueOccludees().end(), "objFromFile is NOT in getOpaqueOccludees 3") &
+             assertFalse( std::find(om->getBlendedOccludees().begin(), om->getBlendedOccludees().end(), objFromFile) != om->getBlendedOccludees().end(), "objFromFile is NOT in getBlendedOccludees 3") &
              assertFalse( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is in getOccluders 3");
 
         objFromFile->getMaterial().setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
         om->UpdateOccluderStates();
         b &= assertFalse(objFromFile->isOccluder(), "objFromFile not occluder 2") &
-             assertTrue( std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is in getOccludees 4") &
+             assertTrue( std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), objFromFile) == om->getOpaqueOccludees().end(), "objFromFile is NOT in getOpaqueOccludees 4") &
+             assertTrue( std::find(om->getBlendedOccludees().begin(), om->getBlendedOccludees().end(), objFromFile) != om->getBlendedOccludees().end(), "objFromFile is in getBlendedOccludees 1") &
              assertTrue( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is NOT in getOccluders 4");
 
         objFromFile->getMaterial().setBlendMode(PRRE_BM_NONE);
         om->UpdateOccluderStates();
         b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 3") &
-             assertFalse( std::find(om->getOccludees().begin(), om->getOccludees().end(), objFromFile) != om->getOccludees().end(), "objFromFile is NOT in getOccludees 5") &
+             assertFalse( std::find(om->getOpaqueOccludees().begin(), om->getOpaqueOccludees().end(), objFromFile) != om->getOpaqueOccludees().end(), "objFromFile is NOT in getOpaqueOccludees 5") &
+             assertFalse( std::find(om->getBlendedOccludees().begin(), om->getBlendedOccludees().end(), objFromFile) != om->getBlendedOccludees().end(), "objFromFile is NOT in getBlendedOccludees 4") &
              assertFalse( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is in getOccluders 5");
 
         return b;
