@@ -251,6 +251,12 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isVisible() const
 
 void PRREObject3D::PRREObject3DImpl::SetVisible(TPRREbool state)
 {
+    if ( isOccluder() )
+    {
+        _pOwner->getConsole().EOLn("%s() WARNING: occluder state is forced to false due to set hidden!", __FUNCTION__);
+        SetOccluder(false);
+    }
+
     bVisible = state;
 } // SetVisible()
 
@@ -421,7 +427,8 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
 
     if ( value )
     {
-        if ( isStickedToScreen() ||
+        if ( !isVisible() || 
+            isStickedToScreen() ||
             !(isAffectingZBuffer()) ||
             isWireframed() ||
             bBlended
@@ -1663,11 +1670,13 @@ TPRREfloat PRREObject3D::recalculateBiggerAreaScaled()
 /**
     Gets the visibility state.
     If an object is not visible, it is not rendered.
-    This property is manual user setting, not related to any visibility calculations that might be done by renderer.
+    This property is manual user setting, not related to any visibility/occlusion calculations that might be done by renderer.
     This means that even if the object is seen by the camera, not occluded by other object, it won't be rendered if this property is manually set to false.
+    Similarly, if the object is occluded by other objects and isOccluded() returns true, this manual visibility state can stay true, since it is user's preference.
     Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
     By default this property is true.
-    @return True, if visible, false otherwise.
+
+    @return True if visibility is enabled, false otherwise.
 */
 TPRREbool PRREObject3D::isVisible() const
 {
@@ -1682,8 +1691,9 @@ TPRREbool PRREObject3D::isVisible() const
     This means that even if the object is seen by the camera, not occluded by other object, it won't be rendered if this property is manually set to false.
     Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
     By default this property is true.
+    If set to false, the object's occluder state will be also forced to false.
 
-    @param value The desired state.
+    @param value The desired state: true to let the object be rendered, false to hide (skip rendering) it.
 */
 void PRREObject3D::SetVisible(TPRREbool state)
 {
@@ -1966,6 +1976,7 @@ TPRREbool PRREObject3D::isOccluder() const
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is decided based on the size of the object compared to other objects.
     The following properties are incompatible with occluder state:
+     - hidden by user;
      - wireframed;
      - having blended material;
      - not affecting z-buffer;

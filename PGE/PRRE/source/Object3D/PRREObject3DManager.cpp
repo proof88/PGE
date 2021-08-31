@@ -807,6 +807,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
     It uses their getBiggestAreaScaled() values to determine which should be occluder.
     It sets states on and off, based on how their getBiggestAreaScaled() compare to others'.
     Objects having any of the following properties are ignored during calculation since they cannot even be occluders:
+     - hidden by user;
      - wireframed;
      - having blended material;
      - not affecting z-buffer;
@@ -825,6 +826,9 @@ void PRREObject3DManager::UpdateOccluderStates()
         const PRREObject3D* const pMngd = (PRREObject3D*) getAttachedAt(i);
         if ( pMngd != PGENULL )
         {
+            if ( !pMngd->isVisible() )
+                continue;
+
             if ( PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(false), pMngd->getMaterial().getDestinationBlendFunc(false)) )
                 continue;
 
@@ -850,6 +854,9 @@ void PRREObject3DManager::UpdateOccluderStates()
         PRREObject3D* const pMngd = (PRREObject3D*) getAttachedAt(i);
         if ( pMngd != PGENULL )
         {
+            if ( !pMngd->isVisible() )
+                continue;
+
             if ( PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(false), pMngd->getMaterial().getDestinationBlendFunc(false)) )
                 continue;
 

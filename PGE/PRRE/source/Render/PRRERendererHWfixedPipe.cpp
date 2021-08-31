@@ -614,16 +614,7 @@ void PRRERendererHWfixedPipeImpl::SwitchToOrtographicProjection()
     Draws 3D objects (non-stickedToScreen).
 */
 void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
-{
-    // TODO: obviously on the long run it would be better to put blended and unblended objects into separate containers,
-    // so there would be no need to loop over objectmgr multiple times ...
-    // and this escalates with ordering by different options like occluder/occludee, etc.
-    // I agree that it is not straightforward to be done because blending and other options are stored in objects, and these
-    // objects are NOT bound to renderer instance, so any property change just cannot be detected by renderer instance on-the-fly
-    // so I think the renderer cannot hold different containers for different ordering purposes.
-    // However I think Object3DManager should hold different containers for different ordering purposes, for ANY renderer.
-    // And renderer could just get the container ref from the manager.
-     
+{    
     bool blended = true;
     for (int iBlend = 1; iBlend < 3; iBlend++)
     {
@@ -659,13 +650,6 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
 void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRenderer& renderer)
 {
     static TPRREuint frameCntr = 0;
-
-    // TODO: when iterating over occluders, their blending should be checked and if blended, skip them!
-    // the reason is that blending is not a state of object3d but its material, so if user sets blending,
-    // there is no way to implicitly turn occluder state off of object3d ...
-    // although invoking UpdateOccluderStates() would fix occluder state, it might happen in the future
-    // that it won't iterate over on every single object in every frame, so we need to be cautious right when
-    // iterating over the occluders!
 
     if ( OQ_ZPASS_FOR_OCCLUDERS )
     {
@@ -858,16 +842,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
     Draws 3D objects (non-stickedToScreen).
 */
 void PRRERendererHWfixedPipeImpl::Draw3DObjects_ASync_OcclusionQuery(PRREIRenderer& renderer)
-{
-    // TODO: obviously on the long run it would be better to put blended and unblended objects into separate containers,
-    // so there would be no need to loop over objectmgr multiple times ...
-    // and this escalates with ordering by different options like occluder/occludee, etc.
-    // I agree that it is not straightforward to be done because blending and other options are stored in objects, and these
-    // objects are NOT bound to renderer instance, so any property change just cannot be detected by renderer instance on-the-fly
-    // so I think the renderer cannot hold different containers for different ordering purposes.
-    // However I think Object3DManager should hold different containers for different ordering purposes, for ANY renderer.
-    // And renderer could just get the container ref from the manager.
-    
+{   
     for (/*TPRRE_RENDER_PASS*/ int iRenderPass = PRRE_RPASS_SYNC_OCCLUSION_QUERY; iRenderPass <= PRRE_RPASS_NORMAL; iRenderPass++)
     {
         PRREGLsnippets::SetGLBoundingBoxRendering(iRenderPass == PRRE_RPASS_SYNC_OCCLUSION_QUERY);
