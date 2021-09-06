@@ -210,7 +210,9 @@ void PRREObject3DManager::Attach(PRREManaged& m)
     {
         PRREObject3D& obj = dynamic_cast<PRREObject3D&>(m);
 
-        // it will be an occludee for sure, since Detach() removed it from occludee and occluders_* lists, and without manager it cannot be set as occluder!
+        // it will be an occludee for sure, since:
+        // - either this is a brand new object attached first time to its manager,
+        // - or Detach() had previously removed it from occludees_* and occluders lists, and without manager it cannot be set as occluder so it stayed unchanged for sure!
         obj.SetOccluder(false);
     }
     catch (const std::exception&)
@@ -770,7 +772,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         // for the material, no need to copy texcoords, etc ...
         // however we need to set blendfunc and envcolor, because renderer would not get referredobj blendfunc ...
         // probably this should be treated as bug of renderer, however I fix it from objectmanager side here.
-        if ( !obj->getMaterial().setBlendFuncs( referredobj.getMaterial().getSourceBlendFunc(), referredobj.getMaterial().getDestinationBlendFunc() ) )
+        if ( !obj->getMaterial().setBlendFuncs( referredobj.getMaterial(false).getSourceBlendFunc(), referredobj.getMaterial(false).getDestinationBlendFunc() ) )
         {
             throw std::logic_error("setBlendFuncs() failed with referredobj's values!");
         }
@@ -830,7 +832,9 @@ void PRREObject3DManager::UpdateOccluderStates()
             if ( !pMngd->isVisible() )
                 continue;
 
-            if ( PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(false), pMngd->getMaterial().getDestinationBlendFunc(false)) )
+            const TPRREbool bOpaque = !PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(), pMngd->getMaterial().getDestinationBlendFunc() );
+
+            if ( !bOpaque )
                 continue;
 
             if ( pMngd->isStickedToScreen() )
@@ -858,7 +862,9 @@ void PRREObject3DManager::UpdateOccluderStates()
             if ( !pMngd->isVisible() )
                 continue;
 
-            if ( PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(false), pMngd->getMaterial().getDestinationBlendFunc(false)) )
+            const TPRREbool bOpaque = !PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(), pMngd->getMaterial().getDestinationBlendFunc() );
+
+            if ( !bOpaque )
                 continue;
 
             if ( pMngd->isStickedToScreen() )

@@ -43,7 +43,7 @@ public:
     static GLenum            getGLBlendFromPRREBlend(TPRRE_BLENDFACTOR bf);                     /**< Gets the appropriate GL enum for the given PRRE blend factor. */
     
     static void      glLoadTextureIntoTMU(const PRRETexture* tex, TPRREuint iTMU, TPRREbool bSticked);  /**< Loads the given texture into the texture mapping unit. */
-    static void      glLoadTexturesAndSetBlendState(const PRREMaterial* mat, TPRREbool bSticked);       /**< Loads all textures into texture mapping units and sets blending if needed for single-pass multitexturing. */
+    static void      glLoadTexturesAndSetBlendState(const PRREMaterial* mat, TPRREbool bObjLevel1Sticked, TPRREbool bObjLevel1Blended);       /**< Loads all textures into texture mapping units and sets blending if needed for single-pass multitexturing. */
 
 private:
     static const char* const GL_ERR_STR_NO_ERROR;

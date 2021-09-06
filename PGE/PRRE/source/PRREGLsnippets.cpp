@@ -167,7 +167,7 @@ void PRREGLsnippets::SetGLBoundingBoxRendering(TPRREbool state)
         glDisable(GL_LIGHTING);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDisable(GL_ALPHA_TEST);
-        glLoadTexturesAndSetBlendState(PGENULL, false);
+        glLoadTexturesAndSetBlendState(PGENULL, false, false);
     }
     else
     {
@@ -186,7 +186,7 @@ void PRREGLsnippets::glPrepareBeforeDrawBoundingBox()
     glDisable(GL_LIGHTING);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDisable(GL_ALPHA_TEST);
-    glLoadTexturesAndSetBlendState(PGENULL, false);
+    glLoadTexturesAndSetBlendState(PGENULL, false, false);
 } // glPrepareBeforeDrawBoundingBox()
 
 
@@ -201,7 +201,7 @@ void PRREGLsnippets::SetZPassRendering(TPRREbool state)
         glDisable(GL_LIGHTING);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDisable(GL_ALPHA_TEST);
-        glLoadTexturesAndSetBlendState(PGENULL, false);
+        glLoadTexturesAndSetBlendState(PGENULL, false, false);
     }
     else
     {
@@ -316,18 +316,24 @@ void PRREGLsnippets::glLoadTextureIntoTMU(const PRRETexture* tex, TPRREuint iTMU
 
 /**
     Loads all textures into texture mapping units and sets blending if needed for single-pass multitexturing.
-    @param mat      Material from where textures should be loaded. If it is PGENULL, texturing will be disabled.
-    @param bSticked True if object is sticked to screen, false otherwise.
+    This function is called per subobject. So if this is buggy, then it can cause problems around blending:
+    even though level-1 object set blending state properly, this one may accidentally change it if it messes up
+    some checks around multitexturing and such, this is also a reason why it must be aware of the blending state
+    of the subobject's level-1 parent object!
+
+    @param mat               Material from where textures should be loaded. If it is PGENULL, texturing will be disabled.
+    @param bObjLevel1Sticked True if the manager Object3D is sticked to screen, false otherwise.
+    @param bObjLevel1Blended True if the manager Object3D's material is blended, false otherwise.
 */
-void PRREGLsnippets::glLoadTexturesAndSetBlendState(const PRREMaterial* mat, TPRREbool bSticked)
+void PRREGLsnippets::glLoadTexturesAndSetBlendState(const PRREMaterial* mat, TPRREbool bObjLevel1Sticked, TPRREbool bObjLevel1Blended)
 {
     if ( PGENULL == mat )
     {
         glDisable(GL_BLEND);
-        glLoadTextureIntoTMU( PGENULL, 0, bSticked );
+        glLoadTextureIntoTMU( PGENULL, 0, bObjLevel1Sticked );
         if ( PRREhwInfo::get().getVideo().isMultiTexturingSupported() )
         {
-            glLoadTextureIntoTMU( PGENULL, 1, bSticked );
+            glLoadTextureIntoTMU( PGENULL, 1, bObjLevel1Sticked );
         }
         return;
     }
@@ -339,28 +345,28 @@ void PRREGLsnippets::glLoadTexturesAndSetBlendState(const PRREMaterial* mat, TPR
             // enable blending of 2nd layer
             glEnable(GL_BLEND);
 	        glBlendFunc(getGLBlendFromPRREBlend(mat->getSourceBlendFunc(1)), getGLBlendFromPRREBlend(mat->getDestinationBlendFunc(1)));
-            glLoadTextureIntoTMU( mat->getTexture(0), 0, bSticked );
-            glLoadTextureIntoTMU( mat->getTexture(1), 1, bSticked );
+            glLoadTextureIntoTMU( mat->getTexture(0), 0, bObjLevel1Sticked );
+            glLoadTextureIntoTMU( mat->getTexture(1), 1, bObjLevel1Sticked );
         }
         else
         {
-            // disable blending only if base layer is not blended ...
-            if ( ! PRREMaterial::isBlendFuncReallyBlending(mat->getSourceBlendFunc(), mat->getDestinationBlendFunc()) )
+            // disable blending only if base layer is not blended and level 1 object3d is also not blended ...
+            if ( !bObjLevel1Blended && !PRREMaterial::isBlendFuncReallyBlending(mat->getSourceBlendFunc(), mat->getDestinationBlendFunc()) )
             {
                 glDisable(GL_BLEND);
             }
-            glLoadTextureIntoTMU( mat->getTexture(0), 0, bSticked );
-            glLoadTextureIntoTMU( PGENULL, 1, bSticked );
+            glLoadTextureIntoTMU( mat->getTexture(0), 0, bObjLevel1Sticked );
+            glLoadTextureIntoTMU( PGENULL, 1, bObjLevel1Sticked );
         }
     }
     else
     {
-        // disable blending only if base layer is not blended ...
-        if ( ! PRREMaterial::isBlendFuncReallyBlending(mat->getSourceBlendFunc(), mat->getDestinationBlendFunc()) )
+        // disable blending only if base layer is not blended and level 1 object3d is also not blended ...
+        if ( !bObjLevel1Blended && !PRREMaterial::isBlendFuncReallyBlending(mat->getSourceBlendFunc(), mat->getDestinationBlendFunc()) )
         {
             glDisable(GL_BLEND);
         }
-        glLoadTextureIntoTMU( mat->getTexture(), 0, bSticked );
+        glLoadTextureIntoTMU( mat->getTexture(), 0, bObjLevel1Sticked );
     }
 } // glLoadTexturesAndSetBlendState()
 

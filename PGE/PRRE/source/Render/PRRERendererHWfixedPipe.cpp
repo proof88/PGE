@@ -627,7 +627,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
             if ( obj == PGENULL )
                 continue;
         
-            if ( (blended == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
+            if ( (blended == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial(false).getSourceBlendFunc(), obj->getMaterial(false).getDestinationBlendFunc()))
                  &&
                  ( obj->isVisible() )
                  &&
@@ -656,95 +656,43 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
         // first render the occluders into Z-buffer only
         PRREGLsnippets::SetZPassRendering(true);
 
-        for (int i = 0; i < pObject3DMgr->getSize(); i++)
+        for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
         {
-            PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
-        
-            if ( obj == PGENULL )
-                continue;
-        
-            if ( !obj->isVisible() )
-                continue;
-
-            if ( !obj->isOccluder() )
-                continue;
-        
-            if ( (false == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
-                 &&
-                 ( obj->isVisible() )
-                 &&
-                 ( !obj->isStickedToScreen() )
-               )
-            {
-                glPushMatrix();
-                obj->Draw(PRRE_RPASS_Z_ONLY);
-                glPopMatrix();
-            }
-        } // for i
+            glPushMatrix();
+            (*it)->Draw(PRRE_RPASS_Z_ONLY);
+            glPopMatrix();
+        }
 
         PRREGLsnippets::SetZPassRendering(false);
     } // zpass for occluders
 
     // first render the occluders normally
-    for (int i = 0; i < pObject3DMgr->getSize(); i++)
+    for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
     {
-        PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
-    
-        if ( obj == PGENULL )
-            continue;
-    
-        if ( !obj->isVisible() )
-            continue;
-
-        if ( !obj->isOccluder() )
-            continue;
-    
-        if ( (false == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
-             &&
-             ( obj->isVisible() )
-             &&
-             ( !obj->isStickedToScreen() )
-           )
-        {
-            glPushMatrix();
-            obj->Draw(PRRE_RPASS_NORMAL);
-            glPopMatrix();
-        }
-    } // occluders for i
+        glPushMatrix();
+        (*it)->Draw(PRRE_RPASS_NORMAL);
+        glPopMatrix();
+    }
 
     // then render the occludees with occlusion query
     for (/*TPRRE_RENDER_PASS*/ int iRenderPass = PRRE_RPASS_SYNC_OCCLUSION_QUERY; iRenderPass <= PRRE_RPASS_NORMAL; iRenderPass++)
     {
         PRREGLsnippets::SetGLBoundingBoxRendering(iRenderPass == PRRE_RPASS_SYNC_OCCLUSION_QUERY);
 
-        bool blended = true;
-        for (int iBlend = 1; iBlend < 3; iBlend++)
+        for (auto it = pObject3DMgr->getOpaqueOccludees().begin(); it != pObject3DMgr->getOpaqueOccludees().end(); it++)
         {
-            blended = !blended;
+            glPushMatrix();
+            (*it)->Draw((TPRRE_RENDER_PASS)iRenderPass);
+            glPopMatrix();
+        }
 
-            for (int i = 0; i < pObject3DMgr->getSize(); i++)
-            {
-                PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
-          
-                if ( obj == PGENULL )
-                    continue;
-          
-                if ( obj->isOccluder() )
-                    continue;
+        for (auto it = pObject3DMgr->getBlendedOccludees().begin(); it != pObject3DMgr->getBlendedOccludees().end(); it++)
+        {
+            glPushMatrix();
+            (*it)->Draw((TPRRE_RENDER_PASS)iRenderPass);
+            glPopMatrix();
+        }
 
-                if ( (blended == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
-                     &&
-                     ( obj->isVisible() )
-                     &&
-                     ( !obj->isStickedToScreen() )
-                   )
-                {
-                    glPushMatrix();
-                    obj->Draw((TPRRE_RENDER_PASS)iRenderPass);
-                    glPopMatrix();
-                }
-            } // for i
-        } // for iBlend
     } // occludess iRenderPass
 
     frameCntr++;
@@ -753,7 +701,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
     {
         if ( (frameCntr % 100) == 0 )
         {
-            pObject3DMgr->UpdateOccluderStates();
+           pObject3DMgr->UpdateOccluderStates();
         }
     }
 
@@ -812,27 +760,23 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
         getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), false);
     } // frameCntr
 
-    
-
     if ( OQ_RENDER_BOUNDING_BOXES )
     {
         PRREGLsnippets::glPrepareBeforeDrawBoundingBox();
 
-        for (int i = 0; i < pObject3DMgr->getSize(); i++)
+        for (auto it = pObject3DMgr->getOpaqueOccludees().begin(); it != pObject3DMgr->getOpaqueOccludees().end(); it++)
         {
-            PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
-        
-            if ( obj == PGENULL )
-                continue;
-
-            if ( !obj->isVisible() )
-                continue;
-
             glPushMatrix();
-            obj->Draw(PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY);
             glPopMatrix();
-            
-        } // for i
+        }
+
+        for (auto it = pObject3DMgr->getBlendedOccludees().begin(); it != pObject3DMgr->getBlendedOccludees().end(); it++)
+        {
+            glPushMatrix();
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY);
+            glPopMatrix();
+        }
     } // OQ_RENDER_BOUNDING_BOXES
     
 } // Draw3DObjects_Sync_OcclusionQuery
@@ -866,7 +810,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_ASync_OcclusionQuery(PRREIRender
                   if ( occluders != obj->isOccluder() )
                       continue;
 
-                  if ( (blended == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial().getSourceBlendFunc(), obj->getMaterial().getDestinationBlendFunc()))
+                  if ( (blended == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial(false).getSourceBlendFunc(), obj->getMaterial(false).getDestinationBlendFunc()))
                        &&
                        ( obj->isVisible() )
                        &&

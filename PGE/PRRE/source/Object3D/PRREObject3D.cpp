@@ -61,6 +61,8 @@ TPRREbool PRREObject3D::PRREObject3DImpl::OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING
 std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occluders;
 std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_opaque;
 std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_blended;
+std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_2d_opaque;
+std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_2d_blended;
 
 
 PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
@@ -462,22 +464,40 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
 
         if ( bBlended )
         {
-            occludees_blended.insert(_pOwner);
+            if ( isStickedToScreen() )
+                occludees_2d_blended.insert(_pOwner);
+            else
+                occludees_blended.insert(_pOwner);
 
             occ_it = std::find(occludees_opaque.begin(), occludees_opaque.end(), _pOwner);
             if ( occ_it != occludees_opaque.end() )
             {
                 occludees_opaque.erase(occ_it);
             }
+
+            occ_it = std::find(occludees_2d_opaque.begin(), occludees_2d_opaque.end(), _pOwner);
+            if ( occ_it != occludees_2d_opaque.end() )
+            {
+                occludees_2d_opaque.erase(occ_it);
+            }
         }
         else
         {
-            occludees_opaque.insert(_pOwner);
+            if ( isStickedToScreen() )
+                occludees_2d_opaque.insert(_pOwner);
+            else
+                occludees_opaque.insert(_pOwner);
 
             occ_it = std::find(occludees_blended.begin(), occludees_blended.end(), _pOwner);
             if ( occ_it != occludees_blended.end() )
             {
                 occludees_blended.erase(occ_it);
+            }
+
+            occ_it = std::find(occludees_2d_blended.begin(), occludees_2d_blended.end(), _pOwner);
+            if ( occ_it != occludees_2d_blended.end() )
+            {
+                occludees_2d_blended.erase(occ_it);
             }
         }
     }
@@ -577,7 +597,7 @@ TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
 
 void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
 {
-    // caller renderer is expected to check for GL errors, so we don't check them here
+    // caller renderer is expected to check for GL errors, probably only once per frame, so we don't check them here
 
     if ( !bVisible )
         return;
@@ -646,6 +666,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
         // take care of attached objects (subobjects)
         // note that either we have our own subobjects, OR we are just a cloned object and we need to draw original object's subobjects
         PRREObject3D* pWhichParent = getReferredObject() ? getReferredObject() : _pOwner;
+
         pWhichParent->pImpl->bParentInitiatedOperation = true;
         for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
             ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(renderPass);
@@ -654,9 +675,11 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
     }
 
     // if we reach this point then either our parent is drawing us as its subobject, or a cloned object is drawing us on behalf of our parent
+    PRREObject3D* pObjLevel1 = (PRREObject3D*)_pOwner->getManager();
+    const TPRREbool bObjLevel1Blended = PRREMaterial::isBlendFuncReallyBlending(pObjLevel1->getMaterial(false).getSourceBlendFunc(), pObjLevel1->getMaterial(false).getDestinationBlendFunc());
 
     // subobject must ignore draw if its Draw() was not called by its parent level-1 object but someone else from outside ...
-    if ( !((PRREObject3D*)_pOwner->getManager())->pImpl->bParentInitiatedOperation )
+    if ( !pObjLevel1->pImpl->bParentInitiatedOperation )
     {
         _pOwner->getManagedConsole().EOLn("Draw() of subobject called outside of its level-1 parent object, ignoring draw!");
         return;
@@ -668,7 +691,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
 
     if ( renderPass == PRRE_RPASS_NORMAL )
     {
-        PRREGLsnippets::glLoadTexturesAndSetBlendState(&(_pOwner->getMaterial()), _pOwner->isStickedToScreen());
+        PRREGLsnippets::glLoadTexturesAndSetBlendState(&(_pOwner->getMaterial(false)), pObjLevel1->isStickedToScreen(), bObjLevel1Blended);
     }
 
     Draw_FeedbackBuffer_Start();
@@ -745,6 +768,8 @@ void PRREObject3D::PRREObject3DImpl::DrawASyncQuery(const TPRRE_RENDER_PASS& ren
     }
 
     // if we reach this point then either our parent is drawing us as its subobject, or a cloned object is drawing us on behalf of our parent
+    PRREObject3D* pObjLevel1 = (PRREObject3D*)_pOwner->getManager();
+    const TPRREbool bObjLevel1Blended = PRREMaterial::isBlendFuncReallyBlending(pObjLevel1->getMaterial(false).getSourceBlendFunc(), pObjLevel1->getMaterial(false).getDestinationBlendFunc());
 
     // subobject must ignore draw if its Draw() was not called by its parent level-1 object but someone else from outside ...
     if ( !((PRREObject3D*)_pOwner->getManager())->pImpl->bParentInitiatedOperation )
@@ -757,7 +782,7 @@ void PRREObject3D::PRREObject3DImpl::DrawASyncQuery(const TPRRE_RENDER_PASS& ren
     if ( BITF_READ(_pOwner->getVertexTransferMode(),PRRE_VT_VENDOR_BITS,3) != 0 )
         return;
 
-    PRREGLsnippets::glLoadTexturesAndSetBlendState(&(_pOwner->getMaterial()), _pOwner->isStickedToScreen());
+    PRREGLsnippets::glLoadTexturesAndSetBlendState(&(_pOwner->getMaterial(false)), pObjLevel1->isStickedToScreen(), bObjLevel1Blended);
 
     Draw_FeedbackBuffer_Start();
     ((PRREVertexTransfer*)_pOwner)->pImpl->TransferVertices();
@@ -1088,11 +1113,11 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLBeforeDrawNormal(bool bLighti
          Note that this only has effect if depth testing is enabled."
         https://learnopengl.com/Advanced-OpenGL/Depth-testing
     */
-    if ( PRREMaterial::isBlendFuncReallyBlending(_pOwner->getMaterial().getSourceBlendFunc(), _pOwner->getMaterial().getDestinationBlendFunc()) )
+    if ( PRREMaterial::isBlendFuncReallyBlending(_pOwner->getMaterial(false).getSourceBlendFunc(), _pOwner->getMaterial(false).getDestinationBlendFunc()) )
     {
         glEnable(GL_BLEND);
         glDepthMask(GL_FALSE);
-        glBlendFunc(PRREGLsnippets::getGLBlendFromPRREBlend(_pOwner->getMaterial().getSourceBlendFunc()), PRREGLsnippets::getGLBlendFromPRREBlend(_pOwner->getMaterial().getDestinationBlendFunc()));
+        glBlendFunc(PRREGLsnippets::getGLBlendFromPRREBlend(_pOwner->getMaterial(false).getSourceBlendFunc()), PRREGLsnippets::getGLBlendFromPRREBlend(_pOwner->getMaterial(false).getDestinationBlendFunc()));
         glAlphaFunc(GL_GREATER, 0.1f);
         glEnable(GL_ALPHA_TEST);
     }
