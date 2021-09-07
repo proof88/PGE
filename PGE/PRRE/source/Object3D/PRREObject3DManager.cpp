@@ -772,7 +772,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         // for the material, no need to copy texcoords, etc ...
         // however we need to set blendfunc and envcolor, because renderer would not get referredobj blendfunc ...
         // probably this should be treated as bug of renderer, however I fix it from objectmanager side here.
-        if ( !obj->getMaterial().setBlendFuncs( referredobj.getMaterial(false).getSourceBlendFunc(), referredobj.getMaterial(false).getDestinationBlendFunc() ) )
+        if ( !obj->getMaterial(false).setBlendFuncs( referredobj.getMaterial(false).getSourceBlendFunc(), referredobj.getMaterial(false).getDestinationBlendFunc() ) )
         {
             throw std::logic_error("setBlendFuncs() failed with referredobj's values!");
         }
@@ -832,7 +832,7 @@ void PRREObject3DManager::UpdateOccluderStates()
             if ( !pMngd->isVisible() )
                 continue;
 
-            const TPRREbool bOpaque = !PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(), pMngd->getMaterial().getDestinationBlendFunc() );
+            const TPRREbool bOpaque = !PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial(false).getSourceBlendFunc(), pMngd->getMaterial(false).getDestinationBlendFunc() );
 
             if ( !bOpaque )
                 continue;
@@ -862,7 +862,7 @@ void PRREObject3DManager::UpdateOccluderStates()
             if ( !pMngd->isVisible() )
                 continue;
 
-            const TPRREbool bOpaque = !PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial().getSourceBlendFunc(), pMngd->getMaterial().getDestinationBlendFunc() );
+            const TPRREbool bOpaque = !PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial(false).getSourceBlendFunc(), pMngd->getMaterial(false).getDestinationBlendFunc() );
 
             if ( !bOpaque )
                 continue;
