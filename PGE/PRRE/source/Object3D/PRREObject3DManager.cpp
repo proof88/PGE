@@ -776,11 +776,11 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         {
             throw std::logic_error("setBlendFuncs() failed with referredobj's values!");
         }
-        obj->getMaterial().getTextureEnvColor().Set(
-            referredobj.getMaterial().getTextureEnvColor().getRed(),
-            referredobj.getMaterial().getTextureEnvColor().getGreen(),
-            referredobj.getMaterial().getTextureEnvColor().getBlue(),
-            referredobj.getMaterial().getTextureEnvColor().getAlpha() );
+        obj->getMaterial(false).getTextureEnvColor().Set(
+            referredobj.getMaterial(false).getTextureEnvColor().getRed(),
+            referredobj.getMaterial(false).getTextureEnvColor().getGreen(),
+            referredobj.getMaterial(false).getTextureEnvColor().getBlue(),
+            referredobj.getMaterial(false).getTextureEnvColor().getAlpha() );
 
         obj->SetName("Object3D " + std::to_string(pImpl->nRunningCounter++) + " (clone of " + referredobj.getName() + ")");
 

@@ -564,6 +564,9 @@ TPRRE_PRIMITIVE_FORMAT PRREMesh3D::getPrimitiveFormat() const
     The total number of vertices within a mesh can be calculated by summing the number of vertices of its submeshes.
     Note: in special case this returns positive value even for a level-1 mesh, see below.
 
+    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
+           will be that submesh's value. If false, the accessed value will be this mesh's value.
+
     @return Number of vertices. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
             count is the subobject's vertex count. This implicit behavior is for convenience for objects storing
             only 1 subobject like internally created objects.
@@ -579,6 +582,9 @@ TPRREuint PRREMesh3D::getVerticesCount(TPRREbool implicitAccessSubobject) const
     Pointer to vertices is NULL for a level-1 mesh since the geometry is owned by its level-2 submeshes.
     Note: in special case this returns non-NULL value even for a level-1 mesh, see below.
 
+    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
+           will be that submesh's value. If false, the accessed value will be this mesh's value.
+
     @return Pointer to vertices. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
             pointer is the subobject's vertices pointer. This implicit behavior is for convenience for objects storing
             only 1 subobject like internally created objects.
@@ -593,6 +599,9 @@ const TXYZ* PRREMesh3D::getVertices(TPRREbool implicitAccessSubobject) const
     Gets the pointer to vertices.
     Pointer to vertices is NULL for a level-1 mesh since the geometry is owned by its level-2 submeshes.
     Note: in special case this returns non-NULL value even for a level-1 mesh, see below.
+
+    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
+           will be that submesh's value. If false, the accessed value will be this mesh's value.
 
     @return Pointer to vertices. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
             pointer is the subobject's vertices pointer. This implicit behavior is for convenience for objects storing
@@ -610,6 +619,9 @@ TXYZ* PRREMesh3D::getVertices(TPRREbool implicitAccessSubobject)
     The total number of vertex indices within a mesh can be calculated by summing the number of vertex indices of its submeshes.
     Note: in special case this returns positive value even for a level-1 mesh, see below.
 
+    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
+           will be that submesh's value. If false, the accessed value will be this mesh's value.
+
     @return Number of vertex indices. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
             count is the subobject's vertex index count. This implicit behavior is for convenience for objects storing
             only 1 subobject like internally created objects.
@@ -624,6 +636,9 @@ TPRREuint PRREMesh3D::getVertexIndicesCount(TPRREbool implicitAccessSubobject) c
     Gets the pointer to vertex indices.
     Pointer to vertex indices is NULL for a level-1 mesh since the geometry is owned by its level-2 submeshes.
     Note: in special case this returns non-NULL value even for a level-1 mesh, see below.
+
+    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
+           will be that submesh's value. If false, the accessed value will be this mesh's value.
 
     @return Pointer to vertex indices. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
             pointer is the subobject's vertex indices pointer. This implicit behavior is for convenience for objects storing
@@ -640,6 +655,9 @@ const void* PRREMesh3D::getVertexIndices(TPRREbool implicitAccessSubobject) cons
     Index type is irrelevant for a level-1 mesh since the geometry is owned by its level-2 submeshes and it is unique
     for each submesh.
 
+    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
+           will be that submesh's value. If false, the accessed value will be this mesh's value.
+
     @return Vertex index type. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
             type is the subobject's vertex index type. This implicit behavior is for convenience for objects storing
             only 1 subobject like internally created objects.
@@ -655,6 +673,9 @@ unsigned int PRREMesh3D::getVertexIndicesType(TPRREbool implicitAccessSubobject)
     This value is irrelevant for a level-1 mesh since the geometry is owned by its level-2 submeshes and it is unique
     for each submesh. Still the returned value for a level-1 mesh can be a positive value, see below.
 
+    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
+           will be that submesh's value. If false, the accessed value will be this mesh's value.
+
     @return The smallest index in the vertex index array. If the object's own vertex count is 0 but it has exactly 1 subobject,
             the returned index is the subobject's smallest index. This implicit behavior is for convenience for objects storing
             only 1 subobject like internally created objects.
@@ -668,6 +689,9 @@ TPRREuint PRREMesh3D::getMinVertexIndex(TPRREbool implicitAccessSubobject) const
     Gets the greatest index in the vertex indices array.
     This value is irrelevant for a level-1 mesh since the geometry is owned by its level-2 submeshes and it is unique
     for each submesh. Still the returned value for a level-1 mesh can be a positive value, see below.
+
+    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
+           will be that submesh's value. If false, the accessed value will be this mesh's value.
 
     @return The greatest index in the vertex index array. If the object's own vertex count is 0 but it has exactly 1 subobject,
             the returned index is the subobject's greatest index. This implicit behavior is for convenience for objects storing
@@ -684,6 +708,9 @@ TPRREuint PRREMesh3D::getMaxVertexIndex(TPRREbool implicitAccessSubobject) const
     from subobject to subobject and this function considers the index type.
     This function is irrelevant for a level-1 mesh since the geometry is owned by its level-2 submeshes. Still the returned value
     for a level-1 mesh can be a valid value, see below.
+
+    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
+           will be that submesh's value. If false, the accessed value will be this mesh's value.
 
     @return An index read from the given array. If the object's own vertex count is 0 but it has exactly 1 subobject,
             the returned index is the subobject's index. This implicit behavior is for convenience for objects storing
@@ -702,6 +729,9 @@ TPRREuint PRREMesh3D::getVertexIndex(TPRREuint index, TPRREbool implicitAccessSu
 
     In indexed vertex referencing mode, the vertex indices can be used to reference normals in the array, same way
     as how vertices can be referenced.
+
+    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
+           will be that submesh's value. If false, the accessed value will be this mesh's value.
 
     @return Pointer to normals. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
             pointer is the subobject's normals pointer. This implicit behavior is for convenience for objects storing
@@ -769,6 +799,13 @@ void PRREMesh3D::RecalculateSize()
 
 /**
     Gets the material.
+    Note that some properties of a level-1 mesh are irrelevant because renderer doesn't even access them, e.g. texture, because
+    they are fetched from the level-2 meshes. Some other material properties of level-2 meshes are irrelevant because they are
+    inherited from the material of their parent level-1 mesh, e.g. texture environment color. Thus make sure you are careful
+    when you specify the argument as described below.
+
+    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
+           will be that submesh's value. If false, the accessed value will be this mesh's value.
 
     @return Material. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned material is the subobject's material.
             This implicit behavior is for convenience for objects storing only 1 subobject like internally created objects.
@@ -781,6 +818,14 @@ const PRREMaterial& PRREMesh3D::getMaterial(TPRREbool implicitAccessSubobject) c
 
 /**
     Gets the material.
+    Note that some properties of a level-1 mesh are irrelevant because renderer doesn't even access them, e.g. texture, because
+    they are fetched from the level-2 meshes. Some other material properties of level-2 meshes are irrelevant because they are
+    inherited from the material of their parent level-1 mesh, e.g. texture environment color. Thus make sure you are careful
+    when you specify the argument as described below.
+
+    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
+           will be that submesh's value. If false, the accessed value will be this mesh's value.
+
     @return Material. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned material is the subobject's material.
             This implicit behavior is for convenience for objects storing only 1 subobject like internally created objects.
 */

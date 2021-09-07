@@ -479,6 +479,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::isSwitchFromIndexedAllowed
      - immediate mode;
      - display lists.
     Handles both direct and indexed vertex reference modes.
+    Since level-1 meshes don't have geometry, this function is invoked for level-2 meshes.
 
     @param indexed If true, will go thru vertices by using pVertexIndices for ordering, otherwise won't use it.
 */

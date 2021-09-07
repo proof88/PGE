@@ -1094,10 +1094,10 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLBeforeDrawNormal(bool bLighti
     // we should rather use glBlendColor() for this with GL_*_CONSTANT_* blendfunc, or modify the code not to specify color per-vertex
     
     glColor4f(
-        _pOwner->getMaterial().getTextureEnvColor().getRedAsFloat(),
-        _pOwner->getMaterial().getTextureEnvColor().getGreenAsFloat(),
-        _pOwner->getMaterial().getTextureEnvColor().getBlueAsFloat(),
-        _pOwner->getMaterial().getTextureEnvColor().getAlphaAsFloat() );   
+        _pOwner->getMaterial(false).getTextureEnvColor().getRedAsFloat(),
+        _pOwner->getMaterial(false).getTextureEnvColor().getGreenAsFloat(),
+        _pOwner->getMaterial(false).getTextureEnvColor().getBlueAsFloat(),
+        _pOwner->getMaterial(false).getTextureEnvColor().getAlphaAsFloat() );   
              
     /*
         Probably later these info will be useful:
