@@ -94,6 +94,18 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
         occludees_blended.erase(occ_it);
     }
 
+    occ_it = std::find(occludees_2d_opaque.begin(), occludees_2d_opaque.end(), _pOwner);
+    if ( occ_it != occludees_2d_opaque.end() )
+    {
+        occludees_2d_opaque.erase(occ_it);
+    }
+
+    occ_it = std::find(occludees_2d_blended.begin(), occludees_2d_blended.end(), _pOwner);
+    if ( occ_it != occludees_2d_blended.end() )
+    {
+        occludees_2d_blended.erase(occ_it);
+    }
+
     _pOwner->DeleteAll();
 
     // if we are just a cloned object, above code should have done essentially nothing
@@ -395,16 +407,22 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isStickedToScreen() const
 
 void PRREObject3D::PRREObject3DImpl::SetStickedToScreen(TPRREbool value)
 {
+    bStickedToScreen = value;
+
     if ( value )
     {
         if ( isOccluder() )
         {
             _pOwner->getConsole().EOLn("%s() WARNING: occluder state is forced to false due to stickedToScreen!", __FUNCTION__);
-            SetOccluder(false);
         }
     }
+    // doesnt matter if it becomes sticked now or not, occluder state must change to false because:
+    // - if this object now becomes sticked object, it cannot be occluder for sure;
+    // - if now becomes non-sticked object, we cannot decide if this is occluder or not, UpdateOccluderStates() will decide it later, so now suspect false!
+    // We need to invoke this function for sure so containers are properly updated.
+    // If we dont call this function here, we should call it only if parameter "value" is true, and update containers manually if "value" is false.
+    SetOccluder(false);
 
-    bStickedToScreen = value;
     SetDoubleSided(true);
     SetLit(false);
     SetTestingAgainstZBuffer(false);
@@ -465,9 +483,25 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
         if ( bBlended )
         {
             if ( isStickedToScreen() )
+            {
                 occludees_2d_blended.insert(_pOwner);
+
+                occ_it = std::find(occludees_blended.begin(), occludees_blended.end(), _pOwner);
+                if ( occ_it != occludees_blended.end() )
+                {
+                    occludees_blended.erase(occ_it);
+                }
+            }
             else
+            {
                 occludees_blended.insert(_pOwner);
+
+                occ_it = std::find(occludees_2d_blended.begin(), occludees_2d_blended.end(), _pOwner);
+                if ( occ_it != occludees_2d_blended.end() )
+                {
+                    occludees_2d_blended.erase(occ_it);
+                }
+            }
 
             occ_it = std::find(occludees_opaque.begin(), occludees_opaque.end(), _pOwner);
             if ( occ_it != occludees_opaque.end() )
@@ -484,9 +518,25 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
         else
         {
             if ( isStickedToScreen() )
+            {
                 occludees_2d_opaque.insert(_pOwner);
+
+                occ_it = std::find(occludees_opaque.begin(), occludees_opaque.end(), _pOwner);
+                if ( occ_it != occludees_opaque.end() )
+                {
+                    occludees_opaque.erase(occ_it);
+                }
+            }
             else
+            {
                 occludees_opaque.insert(_pOwner);
+
+                occ_it = std::find(occludees_2d_opaque.begin(), occludees_2d_opaque.end(), _pOwner);
+                if ( occ_it != occludees_2d_opaque.end() )
+                {
+                    occludees_2d_opaque.erase(occ_it);
+                }
+            }
 
             occ_it = std::find(occludees_blended.begin(), occludees_blended.end(), _pOwner);
             if ( occ_it != occludees_blended.end() )

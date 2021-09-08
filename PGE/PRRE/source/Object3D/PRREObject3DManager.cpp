@@ -36,8 +36,10 @@ public:
     TPRREbool isInitialized() const;
 
     const std::set<PRREObject3D*>& getOccluders() const;
-    const std::set<PRREObject3D*>& getOpaqueOccludees() const;
-    const std::set<PRREObject3D*>& getBlendedOccludees() const;
+    const std::set<PRREObject3D*>& get3dOpaqueOccludees() const;
+    const std::set<PRREObject3D*>& get3dBlendedOccludees() const;
+    const std::set<PRREObject3D*>& get2dOpaqueOccludees() const;
+    const std::set<PRREObject3D*>& get2dBlendedOccludees() const;
 
 protected:
 
@@ -94,16 +96,28 @@ const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get
 } // getOccluders()
 
 
-const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::getOpaqueOccludees() const
+const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get3dOpaqueOccludees() const
 {
     return PRREObject3D::PRREObject3DImpl::occludees_opaque;
-} // getOpaqueOccludees()
+} // get3dOpaqueOccludees()
 
 
-const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::getBlendedOccludees() const
+const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get3dBlendedOccludees() const
 {
     return PRREObject3D::PRREObject3DImpl::occludees_blended;
-} // getBlendedOccludees()
+} // get3dBlendedOccludees()
+
+
+const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get2dOpaqueOccludees() const
+{
+    return PRREObject3D::PRREObject3DImpl::occludees_2d_opaque;
+} // get2dOpaqueOccludees()
+
+
+const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get2dBlendedOccludees() const
+{
+    return PRREObject3D::PRREObject3DImpl::occludees_2d_blended;
+} // get2dBlendedOccludees()
 
 
 // ############################## PROTECTED ##############################
@@ -198,7 +212,7 @@ PRREObject3DManager::~PRREObject3DManager()
 /**
     Adds the given managed to the manager, if the managed has no manager yet.
     No effect if given managed already has a manager.
-    The object will be present in getOpaqueOccludees() list since it will be attached as non-blended.
+    The object will be present in get3dOpaqueOccludees() or get2dOpaqueOccludees() list based on its sticked-to-screen property since it will be attached as non-blended.
 */
 void PRREObject3DManager::Attach(PRREManaged& m)
 {
@@ -225,7 +239,7 @@ void PRREObject3DManager::Attach(PRREManaged& m)
 /**
     Removes the given managed from the manager, so the managed will have no manager.
     The object will not be occlusion tested, and won't be an occluder, and actually it will NOT be present in any of the following lists:
-    getOccluders(), getOpaqueOccludees() and getBlendedOccludees().
+    getOccluders(), get3dOpaqueOccludees(), get3dBlendedOccludees(), get2dOpaqueOccludees() and get2dBlendedOccludees().
 */
 void PRREObject3DManager::Detach(PRREManaged& m)
 {
@@ -236,8 +250,8 @@ void PRREObject3DManager::Detach(PRREManaged& m)
     {
         PRREObject3D& obj = dynamic_cast<PRREObject3D&>(m);
         obj.SetOcclusionTested(false);
-        obj.SetOccluder(false);
         obj.getMaterial(false).setBlendMode(PRRE_BM_NONE);
+        obj.SetOccluder(false);
 
         auto occ_it = std::find(PRREObject3D::PRREObject3DImpl::occludees_opaque.begin(), PRREObject3D::PRREObject3DImpl::occludees_opaque.end(), &obj);
         if ( occ_it != PRREObject3D::PRREObject3DImpl::occludees_opaque.end() )
@@ -246,10 +260,10 @@ void PRREObject3DManager::Detach(PRREManaged& m)
         }
         else
         {
-            occ_it = std::find(PRREObject3D::PRREObject3DImpl::occludees_blended.begin(), PRREObject3D::PRREObject3DImpl::occludees_blended.end(), &obj);
-            if ( occ_it != PRREObject3D::PRREObject3DImpl::occludees_blended.end() )
+            occ_it = std::find(PRREObject3D::PRREObject3DImpl::occludees_2d_opaque.begin(), PRREObject3D::PRREObject3DImpl::occludees_2d_opaque.end(), &obj);
+            if ( occ_it != PRREObject3D::PRREObject3DImpl::occludees_2d_opaque.end() )
             {
-                PRREObject3D::PRREObject3DImpl::occludees_blended.erase(occ_it);
+                PRREObject3D::PRREObject3DImpl::occludees_2d_opaque.erase(occ_it);
             }
         }
     }
@@ -311,27 +325,51 @@ const std::set<PRREObject3D*>& PRREObject3DManager::getOccluders() const
 
 
 /**
-    Get a list of opaque (non-blended) occludees.
-    If you want to get all the opaque occludees, this way is faster than iterating over all objects and checking if they are non-blended and occludees.
+    Get a list of 3D (non-sticked) opaque (non-blended) occludees.
+    If you want to get all the 3D (non-sticked) opaque occludees, this way is faster than iterating over all objects and checking their properties.
 
-    @return List of opaque occludees.
+    @return List of 3D opaque occludees.
 */
-const std::set<PRREObject3D*>& PRREObject3DManager::getOpaqueOccludees() const
+const std::set<PRREObject3D*>& PRREObject3DManager::get3dOpaqueOccludees() const
 {
-    return pImpl->getOpaqueOccludees();
-} // getOpaqueOccludees()
+    return pImpl->get3dOpaqueOccludees();
+} // get3dOpaqueOccludees()
 
 
 /**
-    Get a list of blended occludees.
-    If you want to get all the blended occludees, this way is faster than iterating over all objects and checking if they are blended and occludees.
+    Get a list of 3D (non-sticked) blended occludees.
+    If you want to get all the 3D (non-sticked) blended occludees, this way is faster than iterating over all objects and checking their properties.
 
-    @return List of blended occludees.
+    @return List of 3D blended occludees.
 */
-const std::set<PRREObject3D*>& PRREObject3DManager::getBlendedOccludees() const
+const std::set<PRREObject3D*>& PRREObject3DManager::get3dBlendedOccludees() const
 {
-    return pImpl->getBlendedOccludees();
-} // getBlendedOccludees()
+    return pImpl->get3dBlendedOccludees();
+} // get3dBlendedOccludees()
+
+
+/**
+    Get a list of 2D (sticked) opaque (non-blended) occludees.
+    If you want to get all the 2D (sticked) opaque occludees, this way is faster than iterating over all objects and checking their properties.
+
+    @return List of 2D opaque occludees.
+*/
+const std::set<PRREObject3D*>& PRREObject3DManager::get2dOpaqueOccludees() const
+{
+    return pImpl->get2dOpaqueOccludees();
+} // get2dOpaqueOccludees()
+
+
+/**
+    Get a list of 2D (sticked) blended occludees.
+    If you want to get all the 2D (sticked) blended occludees, this way is faster than iterating over all objects and checking their properties.
+
+    @return List of 2D blended occludees.
+*/
+const std::set<PRREObject3D*>& PRREObject3DManager::get2dBlendedOccludees() const
+{
+    return pImpl->get2dBlendedOccludees();
+} // get2dBlendedOccludees()
 
 
 /**
@@ -899,14 +937,22 @@ void PRREObject3DManager::HandleManagedPropertyChanged(PRREManaged& m)
     {
         PRREObject3D& obj = dynamic_cast<PRREObject3D&>(m);
         
-        const TPRREbool bBlended = PRREMaterial::isBlendFuncReallyBlending(obj.getMaterial(false).getSourceBlendFunc(), obj.getMaterial(false).getDestinationBlendFunc());
-
-        if ( bBlended )
-        {
-            obj.SetOccluder(false);
-        }
-        // obj.SetOccluder(true) in different cases will be handled by UpdateOccluderStates() when invoked periodically by renderer, we just cannot
-        // set occluder state to true here because only UpdateOccluderStates() is aware of Object3Ds' average biggestarea!
+        // originally we invoked SetOccluder(false) only when bBlended was true, as seen below, however
+        // the problem with that is we need to invoke that also when bBlended became false, because
+        // SetOccluder() is the only function which properly removes the object and inserts it from/to
+        // the containers.
+        // So now we rather not check blending, but always invoke it, to have effect also when blended
+        // is turned off.
+        // This approach doesn't do any harm, but probably unnecessarily slow.
+        // Would be good if we knew WHICH property has been changed and from what to what value.
+        //const TPRREbool bBlended = PRREMaterial::isBlendFuncReallyBlending(obj.getMaterial(false).getSourceBlendFunc(), obj.getMaterial(false).getDestinationBlendFunc());
+        //
+        //if ( bBlended )
+        //{
+        //    obj.SetOccluder(false);    
+        //}
+        obj.SetOccluder(false);
+        // Note that we just cannot set occluder state to true here because only UpdateOccluderStates() is aware of Object3Ds' average biggestarea!
     }
     catch (const std::exception&)
     {
