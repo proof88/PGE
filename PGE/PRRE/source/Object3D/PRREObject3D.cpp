@@ -445,6 +445,8 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
 
     const TPRREbool bBlended = PRREMaterial::isBlendFuncReallyBlending(_pOwner->getMaterial(false).getSourceBlendFunc(), _pOwner->getMaterial(false).getDestinationBlendFunc());
 
+    std::set< std::set<PRREObject3D*>* > mapsEraseObjectFrom;
+
     if ( value )
     {
         if ( !isVisible() || 
@@ -459,98 +461,55 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
         }
 
         occluders.insert(_pOwner);
-
-        auto occ_it = std::find(occludees_opaque.begin(), occludees_opaque.end(), _pOwner);
-        if ( occ_it != occludees_opaque.end() )
-        {
-            occludees_opaque.erase(occ_it);
-        }
-
-        occ_it = std::find(occludees_blended.begin(), occludees_blended.end(), _pOwner);
-        if ( occ_it != occludees_blended.end() )
-        {
-            occludees_blended.erase(occ_it);
-        }
-    }
+        mapsEraseObjectFrom.insert(&occludees_opaque);
+        mapsEraseObjectFrom.insert(&occludees_blended);
+    } // value true
     else
     {
-        auto occ_it = std::find(occluders.begin(), occluders.end(), _pOwner);
-        if ( occ_it != occluders.end() )
-        {
-            occluders.erase(occ_it);
-        }
+        mapsEraseObjectFrom.insert(&occluders);
 
         if ( bBlended )
         {
             if ( isStickedToScreen() )
             {
                 occludees_2d_blended.insert(_pOwner);
-
-                occ_it = std::find(occludees_blended.begin(), occludees_blended.end(), _pOwner);
-                if ( occ_it != occludees_blended.end() )
-                {
-                    occludees_blended.erase(occ_it);
-                }
+                mapsEraseObjectFrom.insert(&occludees_blended);
             }
             else
             {
                 occludees_blended.insert(_pOwner);
-
-                occ_it = std::find(occludees_2d_blended.begin(), occludees_2d_blended.end(), _pOwner);
-                if ( occ_it != occludees_2d_blended.end() )
-                {
-                    occludees_2d_blended.erase(occ_it);
-                }
+                mapsEraseObjectFrom.insert(&occludees_2d_blended);
             }
 
-            occ_it = std::find(occludees_opaque.begin(), occludees_opaque.end(), _pOwner);
-            if ( occ_it != occludees_opaque.end() )
-            {
-                occludees_opaque.erase(occ_it);
-            }
-
-            occ_it = std::find(occludees_2d_opaque.begin(), occludees_2d_opaque.end(), _pOwner);
-            if ( occ_it != occludees_2d_opaque.end() )
-            {
-                occludees_2d_opaque.erase(occ_it);
-            }
-        }
+            mapsEraseObjectFrom.insert(&occludees_opaque);
+            mapsEraseObjectFrom.insert(&occludees_2d_opaque);
+        } // bBlended true
         else
         {
             if ( isStickedToScreen() )
             {
                 occludees_2d_opaque.insert(_pOwner);
-
-                occ_it = std::find(occludees_opaque.begin(), occludees_opaque.end(), _pOwner);
-                if ( occ_it != occludees_opaque.end() )
-                {
-                    occludees_opaque.erase(occ_it);
-                }
+                mapsEraseObjectFrom.insert(&occludees_opaque);
             }
             else
             {
                 occludees_opaque.insert(_pOwner);
-
-                occ_it = std::find(occludees_2d_opaque.begin(), occludees_2d_opaque.end(), _pOwner);
-                if ( occ_it != occludees_2d_opaque.end() )
-                {
-                    occludees_2d_opaque.erase(occ_it);
-                }
+                mapsEraseObjectFrom.insert(&occludees_2d_opaque);
             }
 
-            occ_it = std::find(occludees_blended.begin(), occludees_blended.end(), _pOwner);
-            if ( occ_it != occludees_blended.end() )
-            {
-                occludees_blended.erase(occ_it);
-            }
+            mapsEraseObjectFrom.insert(&occludees_blended);
+            mapsEraseObjectFrom.insert(&occludees_2d_blended);
+        } // bBlended false
+    } // value false
 
-            occ_it = std::find(occludees_2d_blended.begin(), occludees_2d_blended.end(), _pOwner);
-            if ( occ_it != occludees_2d_blended.end() )
-            {
-                occludees_2d_blended.erase(occ_it);
-            }
+    for (auto pMapEraseFrom : mapsEraseObjectFrom )
+    {
+        auto occ_it = std::find(pMapEraseFrom->begin(), pMapEraseFrom->end(), _pOwner);
+        if ( occ_it != pMapEraseFrom->end() )
+        {
+            pMapEraseFrom->erase(occ_it);
         }
-    }
+    } // end for pMapEraseFrom
 
     bOccluder = value;
 } // SetOccluder()
