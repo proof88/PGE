@@ -916,8 +916,7 @@ void PRREObject3DManager::UpdateOccluderStates()
 
             const TPRREbool bAreaBiggerThanAvg = (pMngd->getBiggestAreaScaled() > fAverageBiggestAreaScaled);
 
-            //getConsole().OLn("%f, %b, %s, %s", pMngd->getBiggestAreaScaled(), bAreaBiggerThanAvg, pMngd->getName().c_str(), pMngd->getFilename().c_str());
-            
+            //getConsole().OLn("%f, %b, %s, %s", pMngd->getBiggestAreaScaled(), bAreaBiggerThanAvg, pMngd->getName().c_str(), pMngd->getFilename().c_str());            
             pMngd->SetOccluder(bAreaBiggerThanAvg);
         }
     }

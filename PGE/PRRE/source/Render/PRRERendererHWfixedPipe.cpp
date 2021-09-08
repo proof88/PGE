@@ -764,6 +764,13 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
     {
         PRREGLsnippets::glPrepareBeforeDrawBoundingBox();
 
+        for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
+        {
+            glPushMatrix();
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY);
+            glPopMatrix();
+        }
+
         for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
         {
             glPushMatrix();
