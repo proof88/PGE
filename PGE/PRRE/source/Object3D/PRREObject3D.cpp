@@ -56,7 +56,7 @@ using namespace std;
 
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE  = 5;
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCLUDED = 0;
-TPRREbool PRREObject3D::PRREObject3DImpl::OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING = true;
+TPRREbool PRREObject3D::PRREObject3DImpl::OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING = false;
 
 std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occluders;
 std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_opaque;
@@ -791,12 +791,15 @@ void PRREObject3D::PRREObject3DImpl::DrawASyncQuery(const TPRRE_RENDER_PASS& ren
     if ( BITF_READ(_pOwner->getVertexTransferMode(),PRRE_VT_VENDOR_BITS,3) != 0 )
         return;
 
-    PRREGLsnippets::glLoadTexturesAndSetBlendState(&(_pOwner->getMaterial(false)), pObjLevel1->isStickedToScreen(), bObjLevel1Blended);
+    if ( renderPass == PRRE_RPASS_NORMAL )
+    {
+        PRREGLsnippets::glLoadTexturesAndSetBlendState(&(_pOwner->getMaterial(false)), pObjLevel1->isStickedToScreen(), bObjLevel1Blended);
+    }
 
     Draw_FeedbackBuffer_Start();
     ((PRREVertexTransfer*)_pOwner)->pImpl->TransferVertices();
     Draw_FeedbackBuffer_Finish(); 
-} // Draw()
+} // DrawASyncQuery()
 
 
 // ############################## PROTECTED ##############################
@@ -1306,7 +1309,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_ASync_OcclusionQuery_Finish_And_O
 
     if ( !bOcclusionQueryStarted )
     {
-        return bOccluded; // let it be rendered
+        return bOccluded; // let it be rendered if last result says not occluded
     }
 
     GLint queryResultAvailable;
