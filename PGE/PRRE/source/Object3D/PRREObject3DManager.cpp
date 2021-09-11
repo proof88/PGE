@@ -1032,6 +1032,11 @@ void PRREObject3DManager::WriteListCallback(const PRREManaged& mngd) const
         (int)ceil(obj.getUsedVideoMemory()/1024.0f));
     getConsole().OIOLnOO("dblSided: %b, wirefr: %b, writeZ: %b, testZ: %b;", obj.isDoubleSided(), obj.isWireframed(), obj.isAffectingZBuffer(), obj.isTestingAgainstZBuffer());
     getConsole().OIOLnOO("occlTest: %b, qId: %d, occludee: %b, occluded: %b;", obj.isOcclusionTested(), obj.pImpl->nOcclusionQuery, !(obj.isOccluder()), obj.isOccluded());
+    if ( obj.isOcclusionTested() )
+    {
+        getConsole().OIOLnOO("nFramesWaited4OcclTestRes: min %u, max: %u;", obj.pImpl->nFramesWaitedForOcclusionTestResultMin, obj.pImpl->nFramesWaitedForOcclusionTestResultMax); 
+    }
+    
     if ( obj.pImpl->pBoundingBox )
     {
         getConsole().OIOLnOO("It has bounding box for occlusion query:");

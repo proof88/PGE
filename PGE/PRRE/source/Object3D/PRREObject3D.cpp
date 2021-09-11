@@ -76,35 +76,22 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
 
     SetOcclusionTested(false);
 
-    auto occ_it = std::find(occluders.begin(), occluders.end(), _pOwner);
-    if ( occ_it != occluders.end() )
-    {
-        occluders.erase(occ_it);
-    }
+    std::set< std::set<PRREObject3D*>* > mapsEraseObjectFrom;
+    // would be much nicer with Cpp11 initializer list
+    mapsEraseObjectFrom.insert(&occluders);
+    mapsEraseObjectFrom.insert(&occludees_opaque);
+    mapsEraseObjectFrom.insert(&occludees_blended);
+    mapsEraseObjectFrom.insert(&occludees_2d_opaque);
+    mapsEraseObjectFrom.insert(&occludees_2d_blended);
 
-    occ_it = std::find(occludees_opaque.begin(), occludees_opaque.end(), _pOwner);
-    if ( occ_it != occludees_opaque.end() )
+    for (auto pMapEraseFrom : mapsEraseObjectFrom )
     {
-        occludees_opaque.erase(occ_it);
-    }
-
-    occ_it = std::find(occludees_blended.begin(), occludees_blended.end(), _pOwner);
-    if ( occ_it != occludees_blended.end() )
-    {
-        occludees_blended.erase(occ_it);
-    }
-
-    occ_it = std::find(occludees_2d_opaque.begin(), occludees_2d_opaque.end(), _pOwner);
-    if ( occ_it != occludees_2d_opaque.end() )
-    {
-        occludees_2d_opaque.erase(occ_it);
-    }
-
-    occ_it = std::find(occludees_2d_blended.begin(), occludees_2d_blended.end(), _pOwner);
-    if ( occ_it != occludees_2d_blended.end() )
-    {
-        occludees_2d_blended.erase(occ_it);
-    }
+        auto occ_it = std::find(pMapEraseFrom->begin(), pMapEraseFrom->end(), _pOwner);
+        if ( occ_it != pMapEraseFrom->end() )
+        {
+            pMapEraseFrom->erase(occ_it);
+        }
+    } // end for pMapEraseFrom
 
     _pOwner->DeleteAll();
 
@@ -629,7 +616,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
         
         if ( renderPass == PRRE_RPASS_NORMAL )
         {
-            if ( (nOcclusionQuery != 0) && Draw_Sync_OcclusionQuery_Finish_And_Occluded() )
+            if ( (nOcclusionQuery != 0) && Draw_OcclusionQuery_Finish(false) )
             {
                 return;
             }
@@ -638,7 +625,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
             Draw_PrepareGLBeforeDrawNormal(false);
             // continue with drawing our subobjects
         }
-        else if ( renderPass == PRRE_RPASS_SYNC_OCCLUSION_QUERY )
+        else if ( renderPass == PRRE_RPASS_START_OCCLUSION_QUERY )
         {
             if ( nOcclusionQuery == 0 )
             {
@@ -646,10 +633,10 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass)
                 return;
             }
             Draw_ApplyTransformations();
-            Draw_Sync_OcclusionQuery_Start();
+            Draw_OcclusionQuery_Start(false);
             return;
         }
-        else if ( renderPass == PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY )
+        else if ( renderPass == PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY )
         {
             if ( nOcclusionQuery == 0 )
             {
@@ -734,7 +721,7 @@ void PRREObject3D::PRREObject3DImpl::DrawASyncQuery(const TPRRE_RENDER_PASS& ren
         
         if ( renderPass == PRRE_RPASS_NORMAL )
         {
-            if ( (nOcclusionQuery != 0) && Draw_ASync_OcclusionQuery_Finish_And_Occluded() )
+            if ( (nOcclusionQuery != 0) && Draw_OcclusionQuery_Finish(true) )
             {
                 return;
             }
@@ -743,7 +730,7 @@ void PRREObject3D::PRREObject3DImpl::DrawASyncQuery(const TPRRE_RENDER_PASS& ren
             Draw_PrepareGLBeforeDrawNormal(false);
             // continue with drawing our subobjects
         }
-        else if ( renderPass == PRRE_RPASS_SYNC_OCCLUSION_QUERY )
+        else if ( renderPass == PRRE_RPASS_START_OCCLUSION_QUERY )
         { 
             if ( nOcclusionQuery == 0 )
             {
@@ -751,10 +738,10 @@ void PRREObject3D::PRREObject3DImpl::DrawASyncQuery(const TPRRE_RENDER_PASS& ren
                 return;
             }
             Draw_ApplyTransformations();
-            Draw_ASync_OcclusionQuery_Start();
+            Draw_OcclusionQuery_Start(true);
             return;
         }
-        else if ( renderPass == PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY )
+        else if ( renderPass == PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY )
         {
             if ( nOcclusionQuery == 0 )
             {
@@ -1198,24 +1185,13 @@ void PRREObject3D::PRREObject3DImpl::Draw_RenderBoundingBox() const
 } // Draw_RenderBoundingBox()
 
 
-void PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Start()
-{
-    if ( nOcclusionQuery == 0 )
-    {
-        return;
-    }
+/**
+    Starts occlusion query for this object if it has a query id and query should be started.
 
-    assert(pBoundingBox != PGENULL);
-    assert(pBoundingBox->getCount() > 0);
-    glBeginOcclusionQuery();
-    ((PRREVertexTransfer*)pBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
-    glEndOcclusionQuery();
-
-    bOcclusionQueryStarted = true;
-} // Draw_CheckIfOccluded_Sync()
-
-
-void PRREObject3D::PRREObject3DImpl::Draw_ASync_OcclusionQuery_Start()
+    @param async If true, it might delay query start for a next frame.
+                 If false, it will start the query for sure.
+*/
+void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
 {
     if ( nOcclusionQuery == 0 )
     {
@@ -1225,41 +1201,49 @@ void PRREObject3D::PRREObject3DImpl::Draw_ASync_OcclusionQuery_Start()
     assert(pBoundingBox != PGENULL);
     assert(pBoundingBox->getCount() > 0);
 
-    if ( bOcclusionQueryStarted )
+    if ( async )
     {
-        return;
-    }
+        if ( bOcclusionQueryStarted )
+        {
+            return;
+        }
 
-    if ( bOccluded )
-    {
-        if ( nFramesWithoutOcclusionTest <= OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCLUDED )
+        if ( bOccluded )
         {
-            nFramesWithoutOcclusionTest++;
-            return;
+            if ( nFramesWithoutOcclusionTest <= OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCLUDED )
+            {
+                nFramesWithoutOcclusionTest++;
+                return;
+            }
         }
-    }
-    else
-    {
-        if ( nFramesWithoutOcclusionTest <= OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE )
+        else
         {
-            nFramesWithoutOcclusionTest++;
-            return;
+            if ( nFramesWithoutOcclusionTest <= OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE )
+            {
+                nFramesWithoutOcclusionTest++;
+                return;
+            }
         }
-    }
+    } // async
 
     glBeginOcclusionQuery();
     ((PRREVertexTransfer*)pBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
     glEndOcclusionQuery();
 
     bOcclusionQueryStarted = true;
-    nFramesWaitedForOcclusionTestResult = 0;
-} // Draw_CheckIfOccluded_Sync()
+    nFramesWaitedForOcclusionTestResult = 0; // for async query
+} // Draw_OcclusionQuery_Start()
 
 
 /**
+    Checks for occlusion query result and decides if object is occluded or not.
+
+    @param async If true, it just checks if query is complete, but won't wait for it.
+                 If false, it will wait until query is finished.
+
     @return True if occluded, false if not occluded or cannot conclude.
 */
-TPRREbool PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Finish_And_Occluded()
+TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool async)
 {
     if ( nOcclusionQuery == 0 )
     {
@@ -1269,14 +1253,31 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Finish_And_Oc
     if ( !bOcclusionQueryStarted )
     {
         // we always end up here with legacy renderer which never starts query for any objects but
-        // still invokes this function
-        return false; // let it be rendered
+        // still invokes this function (i.e. Object3D::Draw() invokes it)
+        
+        if ( async )
+        {
+            return bOccluded; // let it be rendered if last result says not occluded
+        }
+        else
+        {
+            // it is ok to render with either legacy renderer or when occlusion query is in sync
+            // since in latter case bOcclusionQueryStarted is false only when it is not tested for occlusion
+            return false; // let it be rendered
+        }
     }
 
     GLint queryResultAvailable;
     do {
         glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_AVAILABLE_ARB, &queryResultAvailable);
-    } while (!queryResultAvailable);
+    } while (!queryResultAvailable && !async);
+
+    if ( queryResultAvailable == GL_FALSE )
+    {
+        // this is async query
+        nFramesWaitedForOcclusionTestResult++;
+        return OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING ? false : bOccluded;
+    }
 
     bOcclusionQueryStarted = false;
 
@@ -1293,34 +1294,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_Sync_OcclusionQuery_Finish_And_Oc
         bOccluded = ( sampleCount == 0 );
     }
 
-    return bOccluded;
-} // Draw_Sync_OcclusionQuery_Finish_And_Occluded()
-
-
-/**
-    @return True if occluded, false if not occluded or cannot conclude.
-*/
-TPRREbool PRREObject3D::PRREObject3DImpl::Draw_ASync_OcclusionQuery_Finish_And_Occluded()
-{
-    if ( nOcclusionQuery == 0 )
-    {
-        return false; // let it be rendered
-    }
-
-    if ( !bOcclusionQueryStarted )
-    {
-        return bOccluded; // let it be rendered if last result says not occluded
-    }
-
-    GLint queryResultAvailable;
-    glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_AVAILABLE_ARB, &queryResultAvailable);
-
-    if ( queryResultAvailable == GL_FALSE )
-    {
-        return OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING ? false : bOccluded;
-    }
-
-    bOcclusionQueryStarted = false;
+    // update async statistics
     if ( nFramesWaitedForOcclusionTestResult < nFramesWaitedForOcclusionTestResultMin )
         nFramesWaitedForOcclusionTestResultMin = nFramesWaitedForOcclusionTestResult;
     if ( nFramesWaitedForOcclusionTestResult > nFramesWaitedForOcclusionTestResultMax )
@@ -1328,21 +1302,8 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_ASync_OcclusionQuery_Finish_And_O
     nFramesWaitedForOcclusionTestResult = 0;
     nFramesWithoutOcclusionTest = 0;
 
-    if ( PRREhwInfo::get().getVideo().isBooleanOcclusionQuerySupported() )
-    {
-        GLint sampleBoolean;
-        glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_ARB, &sampleBoolean);
-        bOccluded = ( sampleBoolean == GL_FALSE );
-    }
-    else
-    {
-        GLuint sampleCount;
-        glGetQueryObjectuivARB(nOcclusionQuery, GL_QUERY_RESULT_ARB, &sampleCount);
-        bOccluded = ( sampleCount == 0 );
-    }
-
     return bOccluded;
-} // Draw_Sync_OcclusionQuery_Finish_And_Occluded()
+} // Draw_OcclusionQuery_Finish()
 
 
 void PRREObject3D::PRREObject3DImpl::Draw_DrawSW()

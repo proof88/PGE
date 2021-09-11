@@ -147,9 +147,9 @@ private:
     TPRREbool     bOccluded;                                 /**< True if occlusion query resulted in it is occluded, false otherwise. Default value is false. */
     TPRREbool     bOcclusionQueryStarted;                    /**< Is nOcclusionQuery currently running? */
     TPRREuint     nFramesWithoutOcclusionTest;               /**< How many frames elapsed without testing if the object is occluded? */
-    TPRREuint     nFramesWaitedForOcclusionTestResult;       // just for statistics
-    TPRREuint     nFramesWaitedForOcclusionTestResultMin;    // just for statistics
-    TPRREuint     nFramesWaitedForOcclusionTestResultMax;    // just for statistics
+    TPRREuint     nFramesWaitedForOcclusionTestResult;       // just for statistics of async occlusion query
+    TPRREuint     nFramesWaitedForOcclusionTestResultMin;    // just for statistics of async occlusion query
+    TPRREuint     nFramesWaitedForOcclusionTestResultMax;    // just for statistics of async occlusion query
 
     // ---------------------------------------------------------------------------
 
@@ -162,10 +162,8 @@ private:
     void      glBeginOcclusionQuery() const;
     void      glEndOcclusionQuery() const;
     void      Draw_RenderBoundingBox() const;
-    void      Draw_Sync_OcclusionQuery_Start();
-    void      Draw_ASync_OcclusionQuery_Start();
-    TPRREbool Draw_Sync_OcclusionQuery_Finish_And_Occluded();
-    TPRREbool Draw_ASync_OcclusionQuery_Finish_And_Occluded();
+    void      Draw_OcclusionQuery_Start(TPRREbool async);
+    TPRREbool Draw_OcclusionQuery_Finish(TPRREbool async);
     void      Draw_DrawSW();
 
     friend class PRREObject3D;

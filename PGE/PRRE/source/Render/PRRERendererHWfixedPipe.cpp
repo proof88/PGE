@@ -319,8 +319,8 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
     BeginRendering();
 
     SwitchToPerspectiveProjection();
-    Draw3DObjects_Legacy(*this);
-    //Draw3DObjects_Sync_OcclusionQuery(*this);
+    //Draw3DObjects_Legacy(*this);
+    Draw3DObjects_Sync_OcclusionQuery(*this);
     //Draw3DObjects_ASync_OcclusionQuery(*this);
 
     SwitchToOrtographicProjection();
@@ -675,9 +675,9 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
     }
 
     // then render the occludees with occlusion query
-    for (/*TPRRE_RENDER_PASS*/ int iRenderPass = PRRE_RPASS_SYNC_OCCLUSION_QUERY; iRenderPass <= PRRE_RPASS_NORMAL; iRenderPass++)
+    for (/*TPRRE_RENDER_PASS*/ int iRenderPass = PRRE_RPASS_START_OCCLUSION_QUERY; iRenderPass <= PRRE_RPASS_NORMAL; iRenderPass++)
     {
-        PRREGLsnippets::SetGLBoundingBoxRendering(iRenderPass == PRRE_RPASS_SYNC_OCCLUSION_QUERY);
+        PRREGLsnippets::SetGLBoundingBoxRendering(iRenderPass == PRRE_RPASS_START_OCCLUSION_QUERY);
 
         for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
         {
@@ -755,6 +755,10 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
         getConsole().OLn(" - of which occluded: %d", nObjectsOccluded);
         getConsole().OLn(" - of which not occluded: %d", nObjectsNonOccluded);
         getConsole().OLn("");
+
+        //pObject3DMgr->getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), true);
+        //pObject3DMgr->WriteList();
+        //pObject3DMgr->getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), false);
         
         getConsole().OLn("");
         getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), false);
@@ -767,21 +771,21 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
         for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
             glPopMatrix();
         }
 
         for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
             glPopMatrix();
         }
 
         for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
             glPopMatrix();
         }
     } // OQ_RENDER_BOUNDING_BOXES
@@ -820,9 +824,9 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_ASync_OcclusionQuery(PRREIRender
     }
 
     // then render the occludees with occlusion query
-    for (/*TPRRE_RENDER_PASS*/ int iRenderPass = PRRE_RPASS_SYNC_OCCLUSION_QUERY; iRenderPass <= PRRE_RPASS_NORMAL; iRenderPass++)
+    for (/*TPRRE_RENDER_PASS*/ int iRenderPass = PRRE_RPASS_START_OCCLUSION_QUERY; iRenderPass <= PRRE_RPASS_NORMAL; iRenderPass++)
     {
-        PRREGLsnippets::SetGLBoundingBoxRendering(iRenderPass == PRRE_RPASS_SYNC_OCCLUSION_QUERY);
+        PRREGLsnippets::SetGLBoundingBoxRendering(iRenderPass == PRRE_RPASS_START_OCCLUSION_QUERY);
 
         for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
         {
@@ -850,6 +854,65 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_ASync_OcclusionQuery(PRREIRender
         }
     }
 
+    if ( (frameCntr % 1000) == 0 )
+    {
+        frameCntr = 0;
+
+        nObjectsTotal = 0;
+        nObjectVisible = 0;
+        nObjectsOccluder = 0;
+        nObjectsOcclusionTested = 0;
+        nObjectsOccluded = 0;
+        nObjectsNonOccluded = 0;
+        // this separate statistics loop wont be needed after the above loop will be simpler: ordering of objects simplified!
+        for (int i = 0; i < pObject3DMgr->getSize(); i++)
+        {
+            PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
+        
+            if ( obj == PGENULL )
+                continue;
+        
+            nObjectsTotal++;
+        
+            if ( !obj->isVisible() )
+                continue;
+        
+            nObjectVisible++;
+
+            if ( obj->isOccluder() )
+                nObjectsOccluder++;
+        
+            if ( obj->isOcclusionTested() )
+            {
+                nObjectsOcclusionTested++;
+                if ( obj->isOccluded() )
+                {
+                    nObjectsOccluded++;
+                }
+                else
+                {
+                    nObjectsNonOccluded++;
+                }
+            }
+        } // for i    
+        
+        getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), true);
+        getConsole().OLn("Number of total objects: %d", nObjectsTotal);
+        getConsole().OLn(" - of which visible: %d", nObjectVisible);
+        getConsole().OLn("Number of occluders: %d",nObjectsOccluder );
+        getConsole().OLn("Number of occlusion-tested objects: %d", nObjectsOcclusionTested);
+        getConsole().OLn(" - of which occluded: %d", nObjectsOccluded);
+        getConsole().OLn(" - of which not occluded: %d", nObjectsNonOccluded);
+        getConsole().OLn("");
+
+        //pObject3DMgr->getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), true);
+        //pObject3DMgr->WriteList();
+        //pObject3DMgr->getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), false);
+        
+        getConsole().OLn("");
+        getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), false);
+    } // frameCntr
+
     if ( OQ_RENDER_BOUNDING_BOXES )
     {
         PRREGLsnippets::glPrepareBeforeDrawBoundingBox();
@@ -857,21 +920,21 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_ASync_OcclusionQuery(PRREIRender
         for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
             glPopMatrix();
         }
 
         for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
             glPopMatrix();
         }
 
         for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_FOR_OCCLUSION_QUERY);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
             glPopMatrix();
         }
     } // OQ_RENDER_BOUNDING_BOXES   
