@@ -23,9 +23,13 @@ class PRREObject3D::PRREObject3DImpl
 public:
 
     static TPRREuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE;
-    static TPRREuint OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCLUDED;
+    static TPRREuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED;
     static TPRREbool OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING;
     static TPRREbool OQ_RENDER_BOUNDING_BOXES;
+
+    static TPRREfloat fLongestGlobalWaitForSyncQueryFinish;          /**< Maximum measured per-object fLongestWaitForSyncQueryFinish value. */
+    static TPRREuint  nFramesWaitedForOcclusionTestResultGlobalMin;  /**< Async: Minimum counted per-object nFramesWaitedForOcclusionTestResultMin value. */
+    static TPRREuint  nFramesWaitedForOcclusionTestResultGlobalMax;  /**< Async: Maximum counted per-object nFramesWaitedForOcclusionTestResultMax value. */
 
     static std::set<PRREObject3D*> occluders;              /**< List of 3D occluders, should be updated whenever a 3D object becomes an occluder. */
     static std::set<PRREObject3D*> occludees_opaque;       /**< List of 3D opaque (non-blended) occludees, should be updated whenever a 3D (non-sticked) object becomes an opauqe occludee. */
@@ -146,10 +150,11 @@ private:
     // following variables extend the previous variables for the async occlusion query
     TPRREbool     bOccluded;                                 /**< True if occlusion query resulted in it is occluded, false otherwise. Default value is false. */
     TPRREbool     bOcclusionQueryStarted;                    /**< Is nOcclusionQuery currently running? */
-    TPRREuint     nFramesWithoutOcclusionTest;               /**< How many frames elapsed without testing if the object is occluded? */
-    TPRREuint     nFramesWaitedForOcclusionTestResult;       // just for statistics of async occlusion query
-    TPRREuint     nFramesWaitedForOcclusionTestResultMin;    // just for statistics of async occlusion query
-    TPRREuint     nFramesWaitedForOcclusionTestResultMax;    // just for statistics of async occlusion query
+    TPRREfloat    fLongestWaitForSyncQueryFinish;            /**< Sync: Maximum time we had to wait for the query to finish. */
+    TPRREuint     nFramesWithoutOcclusionTest;               /**< Async: How many frames elapsed without testing if the object is occluded? */
+    TPRREuint     nFramesWaitedForOcclusionTestResult;       /**< Async: Counting frames elapsed since query start until we finally had result; always reset to 0 when we have a result. */
+    TPRREuint     nFramesWaitedForOcclusionTestResultMin;    /**< Async: Minimum number of frames elapsed since query start until we finally had result. */
+    TPRREuint     nFramesWaitedForOcclusionTestResultMax;    /**< Async: Maximum number of frames elapsed since query start until we finally had result. */
 
     // ---------------------------------------------------------------------------
 

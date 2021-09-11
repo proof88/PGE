@@ -55,8 +55,12 @@ using namespace std;
 
 
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE  = 5;
-TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCLUDED = 0;
+TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED = 0;
 TPRREbool PRREObject3D::PRREObject3DImpl::OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING = false;
+
+TPRREfloat PRREObject3D::PRREObject3DImpl::fLongestGlobalWaitForSyncQueryFinish = 0.f;
+TPRREuint PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMin = UINT_MAX;
+TPRREuint PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMax = 0;
 
 std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occluders;
 std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_opaque;
@@ -821,6 +825,7 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
     nOcclusionQuery = 0;
     bOccluded = false;
     bOcclusionQueryStarted = false;
+    fLongestWaitForSyncQueryFinish = 0.f;
     nFramesWithoutOcclusionTest = 0;
     nFramesWaitedForOcclusionTestResult = 0;
     nFramesWaitedForOcclusionTestResultMin = UINT_MAX;
@@ -1210,7 +1215,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
 
         if ( bOccluded )
         {
-            if ( nFramesWithoutOcclusionTest <= OQ_MAX_FRAMES_WO_QUERY_START_WHEN_OCCLUDED )
+            if ( nFramesWithoutOcclusionTest <= OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED )
             {
                 nFramesWithoutOcclusionTest++;
                 return;
@@ -1267,10 +1272,27 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool a
         }
     }
 
+    // this should be done rather with chrono after we have C++11
+    struct PFL::timeval begin, end;
+    PFL::gettimeofday(&begin, 0);
+
     GLint queryResultAvailable;
     do {
         glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_AVAILABLE_ARB, &queryResultAvailable);
     } while (!queryResultAvailable && !async);
+
+    PFL::gettimeofday(&end, 0);
+    long seconds = end.tv_sec - begin.tv_sec;
+    long microseconds = end.tv_usec - begin.tv_usec;
+    TPRREfloat elapsed = static_cast<TPRREfloat>(seconds + microseconds*1e-6);
+    if ( elapsed > fLongestWaitForSyncQueryFinish )
+    {
+        fLongestWaitForSyncQueryFinish = elapsed;
+        if ( fLongestWaitForSyncQueryFinish > fLongestGlobalWaitForSyncQueryFinish )
+        {
+            fLongestGlobalWaitForSyncQueryFinish = fLongestWaitForSyncQueryFinish;
+        }
+    }
 
     if ( queryResultAvailable == GL_FALSE )
     {
@@ -1295,12 +1317,27 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool a
     }
 
     // update async statistics
-    if ( nFramesWaitedForOcclusionTestResult < nFramesWaitedForOcclusionTestResultMin )
-        nFramesWaitedForOcclusionTestResultMin = nFramesWaitedForOcclusionTestResult;
-    if ( nFramesWaitedForOcclusionTestResult > nFramesWaitedForOcclusionTestResultMax )
-        nFramesWaitedForOcclusionTestResultMax = nFramesWaitedForOcclusionTestResult;
-    nFramesWaitedForOcclusionTestResult = 0;
-    nFramesWithoutOcclusionTest = 0;
+    if ( async )
+    {
+        if ( nFramesWaitedForOcclusionTestResult < nFramesWaitedForOcclusionTestResultMin )
+        {
+            nFramesWaitedForOcclusionTestResultMin = nFramesWaitedForOcclusionTestResult;
+            if ( nFramesWaitedForOcclusionTestResultMin < nFramesWaitedForOcclusionTestResultGlobalMin )
+            {
+                nFramesWaitedForOcclusionTestResultGlobalMin = nFramesWaitedForOcclusionTestResultMin;
+            }
+        }
+        if ( nFramesWaitedForOcclusionTestResult > nFramesWaitedForOcclusionTestResultMax )
+        {
+            nFramesWaitedForOcclusionTestResultMax = nFramesWaitedForOcclusionTestResult;
+            if ( nFramesWaitedForOcclusionTestResultMax > nFramesWaitedForOcclusionTestResultGlobalMax )
+            {
+                nFramesWaitedForOcclusionTestResultGlobalMax = nFramesWaitedForOcclusionTestResultMax; 
+            }
+        }
+        nFramesWaitedForOcclusionTestResult = 0;
+        nFramesWithoutOcclusionTest = 0;
+    }
 
     return bOccluded;
 } // Draw_OcclusionQuery_Finish()

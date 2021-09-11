@@ -250,8 +250,8 @@ void PRREObject3DManager::Detach(PRREManaged& m)
     {
         PRREObject3D& obj = dynamic_cast<PRREObject3D&>(m);
         obj.SetOcclusionTested(false);
-        obj.getMaterial(false).setBlendMode(PRRE_BM_NONE);
-        obj.SetOccluder(false);
+        obj.getMaterial(false).setBlendMode(PRRE_BM_NONE); // removes from occludees_blended and occludees_2d_blended container
+        obj.SetOccluder(false); // removes from occluders container
 
         auto occ_it = std::find(PRREObject3D::PRREObject3DImpl::occludees_opaque.begin(), PRREObject3D::PRREObject3DImpl::occludees_opaque.end(), &obj);
         if ( occ_it != PRREObject3D::PRREObject3DImpl::occludees_opaque.end() )
@@ -990,7 +990,13 @@ void PRREObject3DManager::WriteList() const
 
     TPRREuint nVRAMtotal = getUsedVideoMemory();
 
-    getConsole().OIOLnOO("> total used video memory = %d Bytes <= %d kBytes <= %d MBytes", nVRAMtotal, (int)(ceil(nVRAMtotal/1024.0f)), (int)(ceil(nVRAMtotal/1024.0f/1024.0f)));
+    getConsole().OI();
+    getConsole().OLn("Sync: fLongestGlobalWait4SyncQueryFinish: %f", PRREObject3D::PRREObject3DImpl::fLongestGlobalWaitForSyncQueryFinish);
+    getConsole().OLn("ASync: nFramesWaited4OcclTestResGlobal: min: %u, max: %u;",
+        PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMin,
+        PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMax); 
+    getConsole().OLn("> total used video memory = %d Bytes <= %d kBytes <= %d MBytes", nVRAMtotal, (int)(ceil(nVRAMtotal/1024.0f)), (int)(ceil(nVRAMtotal/1024.0f/1024.0f)));
+    getConsole().OO();
     getConsole().OLn("");
 } // WriteList()
 
@@ -1034,7 +1040,8 @@ void PRREObject3DManager::WriteListCallback(const PRREManaged& mngd) const
     getConsole().OIOLnOO("occlTest: %b, qId: %d, occludee: %b, occluded: %b;", obj.isOcclusionTested(), obj.pImpl->nOcclusionQuery, !(obj.isOccluder()), obj.isOccluded());
     if ( obj.isOcclusionTested() )
     {
-        getConsole().OIOLnOO("nFramesWaited4OcclTestRes: min %u, max: %u;", obj.pImpl->nFramesWaitedForOcclusionTestResultMin, obj.pImpl->nFramesWaitedForOcclusionTestResultMax); 
+        getConsole().OIOLnOO("Sync: fLongestWaitForSyncQueryFinish: %f;", obj.pImpl->fLongestWaitForSyncQueryFinish); 
+        getConsole().OIOLnOO("ASync: nFramesWaited4OcclTestRes: min: %u, max: %u;", obj.pImpl->nFramesWaitedForOcclusionTestResultMin, obj.pImpl->nFramesWaitedForOcclusionTestResultMax); 
     }
     
     if ( obj.pImpl->pBoundingBox )
