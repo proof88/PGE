@@ -101,8 +101,7 @@ public:
 
     TPRREuint getUsedSystemMemory() const; 
 
-    void Draw(const TPRRE_RENDER_PASS& renderPass);
-    void DrawASyncQuery(const TPRRE_RENDER_PASS& renderPass);
+    void Draw(const TPRRE_RENDER_PASS& renderPass, TPRREbool bASyncQuery);
 
     // ---------------------------------------------------------------------------
 

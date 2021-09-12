@@ -118,7 +118,7 @@ private:
 
 TPRREbool PRRERendererHWfixedPipeImpl::OQ_RENDER_BOUNDING_BOXES = false;
 TPRREbool PRRERendererHWfixedPipeImpl::OQ_AUTO_UPDATE_OCCLUDER_STATES = true;
-TPRREbool PRRERendererHWfixedPipeImpl::OQ_ZPASS_FOR_OCCLUDERS = false;
+TPRREbool PRRERendererHWfixedPipeImpl::OQ_ZPASS_FOR_OCCLUDERS = true;
 
 
 /**
@@ -635,7 +635,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
                )
             {
                 glPushMatrix();
-                obj->Draw(PRRE_RPASS_NORMAL);
+                obj->Draw(PRRE_RPASS_NORMAL, false);
                 glPopMatrix();
             }
         } // for i    
@@ -659,7 +659,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
         for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_Z_ONLY);
+            (*it)->Draw(PRRE_RPASS_Z_ONLY, false);
             glPopMatrix();
         }
 
@@ -670,7 +670,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
     for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
     {
         glPushMatrix();
-        (*it)->Draw(PRRE_RPASS_NORMAL);
+        (*it)->Draw(PRRE_RPASS_NORMAL, false);
         glPopMatrix();
     }
 
@@ -682,14 +682,14 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
         for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw((TPRRE_RENDER_PASS)iRenderPass);
+            (*it)->Draw((TPRRE_RENDER_PASS)iRenderPass, false);
             glPopMatrix();
         }
 
         for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw((TPRRE_RENDER_PASS)iRenderPass);
+            (*it)->Draw((TPRRE_RENDER_PASS)iRenderPass, false);
             glPopMatrix();
         }
 
@@ -771,21 +771,21 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Sync_OcclusionQuery(PRREIRendere
         for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false);
             glPopMatrix();
         }
 
         for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false);
             glPopMatrix();
         }
 
         for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false);
             glPopMatrix();
         }
     } // OQ_RENDER_BOUNDING_BOXES
@@ -808,7 +808,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_ASync_OcclusionQuery(PRREIRender
         for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_Z_ONLY);
+            (*it)->Draw(PRRE_RPASS_Z_ONLY, true);
             glPopMatrix();
         }
 
@@ -819,7 +819,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_ASync_OcclusionQuery(PRREIRender
     for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
     {
         glPushMatrix();
-        (*it)->DrawASyncQuery(PRRE_RPASS_NORMAL);
+        (*it)->Draw(PRRE_RPASS_NORMAL, true);
         glPopMatrix();
     }
 
@@ -831,14 +831,14 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_ASync_OcclusionQuery(PRREIRender
         for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->DrawASyncQuery((TPRRE_RENDER_PASS)iRenderPass);
+            (*it)->Draw((TPRRE_RENDER_PASS)iRenderPass, true);
             glPopMatrix();
         }
 
         for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->DrawASyncQuery((TPRRE_RENDER_PASS)iRenderPass);
+            (*it)->Draw((TPRRE_RENDER_PASS)iRenderPass, true);
             glPopMatrix();
         }
 
@@ -920,21 +920,21 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_ASync_OcclusionQuery(PRREIRender
         for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, true);
             glPopMatrix();
         }
 
         for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, true);
             glPopMatrix();
         }
 
         for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, true);
             glPopMatrix();
         }
     } // OQ_RENDER_BOUNDING_BOXES   
@@ -960,7 +960,7 @@ void PRRERendererHWfixedPipeImpl::Draw2DObjects(PRREIRenderer& renderer)
             )
         {
             glPushMatrix();
-            obj->Draw(PRRE_RPASS_NORMAL);
+            obj->Draw(PRRE_RPASS_NORMAL, false);
             glPopMatrix();
         }
     } // for i
