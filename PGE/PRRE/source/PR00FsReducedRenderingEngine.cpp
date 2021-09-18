@@ -63,8 +63,9 @@ public:
     void PrintTexturesUnusedByMaterials() const;
     void PrintMaterialsUnusedByMeshes() const;
     void PrintMaterialsUnusedByObjects() const;
-    void WriteStats() const;       
-    void CheckConsistency() const;  
+    void WriteStats() const;     
+    TPRREbool getAutoWriteStatsAtShutdown() const;
+    void SetAutoWriteStatsAtShutdown(TPRREbool state);
 
 private:
     PRRESharedSettings&  ssets;        /**< Shared settings, singleton. */
@@ -79,6 +80,7 @@ private:
     PRRECamera*          pCamera;      /**< Camera, at least 1 instance. */
     PRREuiManager&       uiMgr;        /**< UI manager, singleton. */
     PRREIRenderer*       pRenderer;    /**< Renderer, singleton. */
+    TPRREbool            bAutoWriteStatsAtShutdown;  /** If true, will invoke WriteStats() at the beginning of shutdown(). Default false. */
 
     // ---------------------------------------------------------------------------
 
@@ -245,18 +247,20 @@ TPRREuint PR00FsReducedRenderingEngineImpl::initialize(
 */
 TPRREbool PR00FsReducedRenderingEngineImpl::shutdown()
 {
-//    getConsole().SetLoggingState("4LLM0DUL3S", true);
-
     getConsole().OLn("PR00FsReducedRenderingEngine::shutdown()");
     getConsole().OLn("");
 
-//    getConsole().OIOLn("Dumping states ...");
-//    getConsole().OLn("");
-//    
-//    WriteList();
-//    getConsole().OLnOO("");
-//
-//    getConsole().SetLoggingState("4LLM0DUL3S", false);
+    if ( getAutoWriteStatsAtShutdown() )
+    {
+        getConsole().SetLoggingState("4LLM0DUL3S", true);
+        getConsole().OIOLn("Dumping states ...");
+        getConsole().OLn("");
+        
+        WriteList();
+        getConsole().OLnOO("");
+        
+        getConsole().SetLoggingState("4LLM0DUL3S", false);
+    }
 
     getConsole().OIOLn("Shutting down subsystems ...");
     getConsole().OLn("");
@@ -623,7 +627,31 @@ void PR00FsReducedRenderingEngineImpl::WriteList() const
     }
     getConsole().OLnOO("PR00FsReducedRenderingEngine::WriteList() end");
     getConsole().OLn("");
-}
+} // WriteList()
+
+
+/**
+    Checks if invoke of WriteStats() would happen at the beginning of shutdown().
+    Default false.
+
+    @return True if WriteStats() would be invoked automatically at the beginning of shutdown(), false otherwise.
+*/
+TPRREbool PR00FsReducedRenderingEngineImpl::getAutoWriteStatsAtShutdown() const
+{
+    return bAutoWriteStatsAtShutdown;
+} // getAutoWriteStatsAtShutdown()
+
+
+/**
+    Sets if invoke of WriteStats() should happen at the beginning of shutdown().
+    Default false.
+
+    @param state If true WriteStats() will be invoked automatically at the beginning of shutdown(), otherwise it won't be invoked.
+*/
+void PR00FsReducedRenderingEngineImpl::SetAutoWriteStatsAtShutdown(TPRREbool state)
+{
+    bAutoWriteStatsAtShutdown = state;
+} // SetAutoWriteStatsAtShutdown()
 
 
 /**
@@ -682,7 +710,8 @@ PR00FsReducedRenderingEngineImpl::PR00FsReducedRenderingEngineImpl() :
     wnd( PRREWindow::createAndGet() ),
     hwInfo( PRREhwInfo::get() ),
     screen( PRREScreen::createAndGet() ),
-    uiMgr( PRREuiManager::createAndGet() )
+    uiMgr( PRREuiManager::createAndGet() ),
+    bAutoWriteStatsAtShutdown(false)
 {
     pImageMgr = PGENULL;
     pTextureMgr = PGENULL;
@@ -696,7 +725,8 @@ PR00FsReducedRenderingEngineImpl::PR00FsReducedRenderingEngineImpl(const PR00FsR
     wnd( PRREWindow::createAndGet() ),
     hwInfo( PRREhwInfo::get() ),
     screen( PRREScreen::createAndGet() ),
-    uiMgr( PRREuiManager::createAndGet() )
+    uiMgr( PRREuiManager::createAndGet() ),
+    bAutoWriteStatsAtShutdown(false)
 {
 }
 

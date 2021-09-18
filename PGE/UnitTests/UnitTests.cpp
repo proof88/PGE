@@ -179,7 +179,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     /* 
     tests.push_back(&testPRREWindow);
     tests.push_back(&testPRREWindow2);
-    
+
     tests.push_back(&testPRRE);
     tests.push_back(&testPRRE2);
     */

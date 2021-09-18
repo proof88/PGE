@@ -82,6 +82,9 @@ public:
 
     virtual void                 WriteList() const = 0;           /**< Invoke WriteList() of all children instances. */
 
+    virtual TPRREbool getAutoWriteStatsAtShutdown() const = 0;           /**< Checks if invoke of WriteStats() would happen at the beginning of shutdown(). */
+    virtual void      SetAutoWriteStatsAtShutdown(TPRREbool state) = 0;  /**< Sets if invoke of WriteStats() should happen at the beginning of shutdown(). */
+
     virtual void                 CopyScreenToTexture(PRRETexture& tex) = 0;  /**< Copies screen content to texture. */
   
 }; // class PR00FsReducedRenderingEngine

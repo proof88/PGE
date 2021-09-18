@@ -48,6 +48,8 @@ protected:
         AddSubTest("testGetRenderer", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetRenderer);
         AddSubTest("testCopyScreenToTexture", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testCopyScreenToTexture);
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testWriteList);
+        AddSubTest("testGetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetAutoWriteStatsAtShutdown);
+        AddSubTest("testSetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testSetAutoWriteStatsAtShutdown);
     }
 
     virtual bool setUp()
@@ -161,6 +163,24 @@ private:
         engine->WriteList();
 
         return true;
+    }
+
+    bool testGetAutoWriteStatsAtShutdown()
+    {
+        return assertFalse(engine->getAutoWriteStatsAtShutdown());
+    }
+
+    bool testSetAutoWriteStatsAtShutdown()
+    {
+        bool b = assertFalse(engine->getAutoWriteStatsAtShutdown(), "get 1");
+
+        engine->SetAutoWriteStatsAtShutdown(true);
+        b &= assertTrue(engine->getAutoWriteStatsAtShutdown(), "get 2");
+
+        engine->SetAutoWriteStatsAtShutdown(false);
+        b &= assertFalse(engine->getAutoWriteStatsAtShutdown(), "get 3");
+
+        return b;
     }
    
 }; // class PR00FsReducedRenderingEngineTest2
