@@ -117,7 +117,7 @@ private:
 // ############################### PUBLIC ################################
 
 
-TPRREbool PRRERendererHWfixedPipeImpl::OQ_RENDER_BOUNDING_BOXES = false;
+TPRREbool PRRERendererHWfixedPipeImpl::OQ_RENDER_BOUNDING_BOXES = true;
 TPRREbool PRRERendererHWfixedPipeImpl::OQ_AUTO_UPDATE_OCCLUDER_STATES = true;
 TPRREbool PRRERendererHWfixedPipeImpl::OQ_ZPASS_FOR_OCCLUDERS = false;
 

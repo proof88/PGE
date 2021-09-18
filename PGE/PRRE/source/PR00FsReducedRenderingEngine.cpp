@@ -245,18 +245,18 @@ TPRREuint PR00FsReducedRenderingEngineImpl::initialize(
 */
 TPRREbool PR00FsReducedRenderingEngineImpl::shutdown()
 {
-    getConsole().SetLoggingState("4LLM0DUL3S", true);
+//    getConsole().SetLoggingState("4LLM0DUL3S", true);
 
     getConsole().OLn("PR00FsReducedRenderingEngine::shutdown()");
     getConsole().OLn("");
 
-    getConsole().OIOLn("Dumping states ...");
-    getConsole().OLn("");
-    
-    WriteList();
-    getConsole().OLnOO("");
-
-    getConsole().SetLoggingState("4LLM0DUL3S", false);
+//    getConsole().OIOLn("Dumping states ...");
+//    getConsole().OLn("");
+//    
+//    WriteList();
+//    getConsole().OLnOO("");
+//
+//    getConsole().SetLoggingState("4LLM0DUL3S", false);
 
     getConsole().OIOLn("Shutting down subsystems ...");
     getConsole().OLn("");

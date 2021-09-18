@@ -35,11 +35,11 @@ public:
 
     TPRREbool isInitialized() const;
 
-    const std::set<PRREObject3D*>& getOccluders() const;
-    const std::set<PRREObject3D*>& get3dOpaqueOccludees() const;
-    const std::set<PRREObject3D*>& get3dBlendedOccludees() const;
-    const std::set<PRREObject3D*>& get2dOpaqueOccludees() const;
-    const std::set<PRREObject3D*>& get2dBlendedOccludees() const;
+    const std::deque<PRREObject3D*>& getOccluders() const;
+    const std::deque<PRREObject3D*>& get3dOpaqueOccludees() const;
+    const std::deque<PRREObject3D*>& get3dBlendedOccludees() const;
+    const std::deque<PRREObject3D*>& get2dOpaqueOccludees() const;
+    const std::deque<PRREObject3D*>& get2dBlendedOccludees() const;
 
 protected:
 
@@ -90,31 +90,31 @@ TPRREbool PRREObject3DManager::PRREObject3DManagerImpl::isInitialized() const
 } // isInitialized()
 
 
-const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::getOccluders() const
+const std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::getOccluders() const
 {
     return PRREObject3D::PRREObject3DImpl::occluders;
 } // getOccluders()
 
 
-const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get3dOpaqueOccludees() const
+const std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get3dOpaqueOccludees() const
 {
     return PRREObject3D::PRREObject3DImpl::occludees_opaque;
 } // get3dOpaqueOccludees()
 
 
-const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get3dBlendedOccludees() const
+const std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get3dBlendedOccludees() const
 {
     return PRREObject3D::PRREObject3DImpl::occludees_blended;
 } // get3dBlendedOccludees()
 
 
-const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get2dOpaqueOccludees() const
+const std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get2dOpaqueOccludees() const
 {
     return PRREObject3D::PRREObject3DImpl::occludees_2d_opaque;
 } // get2dOpaqueOccludees()
 
 
-const std::set<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get2dBlendedOccludees() const
+const std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get2dBlendedOccludees() const
 {
     return PRREObject3D::PRREObject3DImpl::occludees_2d_blended;
 } // get2dBlendedOccludees()
@@ -318,7 +318,7 @@ TPRREbool PRREObject3DManager::isInitialized() const
 
     @return List of occluders.
 */
-const std::set<PRREObject3D*>& PRREObject3DManager::getOccluders() const
+const std::deque<PRREObject3D*>& PRREObject3DManager::getOccluders() const
 {
     return pImpl->getOccluders();
 } // getOccluders()
@@ -330,7 +330,7 @@ const std::set<PRREObject3D*>& PRREObject3DManager::getOccluders() const
 
     @return List of 3D opaque occludees.
 */
-const std::set<PRREObject3D*>& PRREObject3DManager::get3dOpaqueOccludees() const
+const std::deque<PRREObject3D*>& PRREObject3DManager::get3dOpaqueOccludees() const
 {
     return pImpl->get3dOpaqueOccludees();
 } // get3dOpaqueOccludees()
@@ -342,7 +342,7 @@ const std::set<PRREObject3D*>& PRREObject3DManager::get3dOpaqueOccludees() const
 
     @return List of 3D blended occludees.
 */
-const std::set<PRREObject3D*>& PRREObject3DManager::get3dBlendedOccludees() const
+const std::deque<PRREObject3D*>& PRREObject3DManager::get3dBlendedOccludees() const
 {
     return pImpl->get3dBlendedOccludees();
 } // get3dBlendedOccludees()
@@ -354,7 +354,7 @@ const std::set<PRREObject3D*>& PRREObject3DManager::get3dBlendedOccludees() cons
 
     @return List of 2D opaque occludees.
 */
-const std::set<PRREObject3D*>& PRREObject3DManager::get2dOpaqueOccludees() const
+const std::deque<PRREObject3D*>& PRREObject3DManager::get2dOpaqueOccludees() const
 {
     return pImpl->get2dOpaqueOccludees();
 } // get2dOpaqueOccludees()
@@ -366,7 +366,7 @@ const std::set<PRREObject3D*>& PRREObject3DManager::get2dOpaqueOccludees() const
 
     @return List of 2D blended occludees.
 */
-const std::set<PRREObject3D*>& PRREObject3DManager::get2dBlendedOccludees() const
+const std::deque<PRREObject3D*>& PRREObject3DManager::get2dBlendedOccludees() const
 {
     return pImpl->get2dBlendedOccludees();
 } // get2dBlendedOccludees()

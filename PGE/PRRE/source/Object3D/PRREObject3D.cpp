@@ -13,6 +13,7 @@
 #include "../../include/internal/Object3D/PRREObject3DImpl.h"
 #include "../../include/internal/Object3D/PRREVertexTransferModeImpl.h"
 #include <cassert>
+#include <set>
 #include "../../include/external/Hardware/PRREhwInfo.h"
 #include "../../include/internal/PRREGLextensionFuncs.h"
 #include "../../include/internal/PRREGLsafeFuncs.h"
@@ -56,17 +57,17 @@ using namespace std;
 
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE  = 5;
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED = 0;
-TPRREbool PRREObject3D::PRREObject3DImpl::OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING = false;
+TPRREbool PRREObject3D::PRREObject3DImpl::OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING = true;
 
 TPRREfloat PRREObject3D::PRREObject3DImpl::fLongestGlobalWaitForSyncQueryFinish = 0.f;
 TPRREuint PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMin = UINT_MAX;
 TPRREuint PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMax = 0;
 
-std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occluders;
-std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_opaque;
-std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_blended;
-std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_2d_opaque;
-std::set<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_2d_blended;
+std::deque<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occluders;
+std::deque<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_opaque;
+std::deque<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_blended;
+std::deque<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_2d_opaque;
+std::deque<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_2d_blended;
 
 
 PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
@@ -80,7 +81,7 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
 
     SetOcclusionTested(false);
 
-    std::set< std::set<PRREObject3D*>* > mapsEraseObjectFrom;
+    std::set< std::deque<PRREObject3D*>* > mapsEraseObjectFrom;
     // would be much nicer with Cpp11 initializer list
     mapsEraseObjectFrom.insert(&occluders);
     mapsEraseObjectFrom.insert(&occludees_opaque);
@@ -91,9 +92,10 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
     for (auto pMapEraseFrom : mapsEraseObjectFrom )
     {
         auto occ_it = std::find(pMapEraseFrom->begin(), pMapEraseFrom->end(), _pOwner);
-        if ( occ_it != pMapEraseFrom->end() )
+        while ( occ_it != pMapEraseFrom->end() )
         {
             pMapEraseFrom->erase(occ_it);
+            occ_it = std::find(pMapEraseFrom->begin(), pMapEraseFrom->end(), _pOwner);
         }
     } // end for pMapEraseFrom
 
@@ -436,7 +438,7 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
 
     const TPRREbool bBlended = PRREMaterial::isBlendFuncReallyBlending(_pOwner->getMaterial(false).getSourceBlendFunc(), _pOwner->getMaterial(false).getDestinationBlendFunc());
 
-    std::set< std::set<PRREObject3D*>* > mapsEraseObjectFrom;
+    std::set< std::deque<PRREObject3D*>* > mapsEraseObjectFrom;
 
     if ( value )
     {
@@ -451,7 +453,11 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
             return;
         }
 
-        occluders.insert(_pOwner);
+        auto occ_it = std::find(occluders.begin(), occluders.end(), _pOwner);
+        if ( occ_it == occluders.end() )
+        {
+            occluders.push_back(_pOwner);
+        }
         mapsEraseObjectFrom.insert(&occludees_opaque);
         mapsEraseObjectFrom.insert(&occludees_blended);
     } // value true
@@ -463,12 +469,20 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
         {
             if ( isStickedToScreen() )
             {
-                occludees_2d_blended.insert(_pOwner);
+                auto occ_it = std::find(occludees_2d_blended.begin(), occludees_2d_blended.end(), _pOwner);
+                if ( occ_it == occludees_2d_blended.end() )
+                {
+                    occludees_2d_blended.push_back(_pOwner);
+                }
                 mapsEraseObjectFrom.insert(&occludees_blended);
             }
             else
             {
-                occludees_blended.insert(_pOwner);
+                auto occ_it = std::find(occludees_blended.begin(), occludees_blended.end(), _pOwner);
+                if ( occ_it == occludees_blended.end() )
+                {
+                    occludees_blended.push_back(_pOwner);
+                }
                 mapsEraseObjectFrom.insert(&occludees_2d_blended);
             }
 
@@ -479,12 +493,20 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
         {
             if ( isStickedToScreen() )
             {
-                occludees_2d_opaque.insert(_pOwner);
+                auto occ_it = std::find(occludees_2d_opaque.begin(), occludees_2d_opaque.end(), _pOwner);
+                if ( occ_it == occludees_2d_opaque.end() )
+                {
+                    occludees_2d_opaque.push_back(_pOwner);
+                }
                 mapsEraseObjectFrom.insert(&occludees_opaque);
             }
             else
             {
-                occludees_opaque.insert(_pOwner);
+                auto occ_it = std::find(occludees_opaque.begin(), occludees_opaque.end(), _pOwner);
+                if ( occ_it == occludees_opaque.end() )
+                {
+                    occludees_opaque.push_back(_pOwner);
+                }
                 mapsEraseObjectFrom.insert(&occludees_2d_opaque);
             }
 
@@ -496,9 +518,10 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
     for (auto pMapEraseFrom : mapsEraseObjectFrom )
     {
         auto occ_it = std::find(pMapEraseFrom->begin(), pMapEraseFrom->end(), _pOwner);
-        if ( occ_it != pMapEraseFrom->end() )
+        while ( occ_it != pMapEraseFrom->end() )
         {
             pMapEraseFrom->erase(occ_it);
+            occ_it = std::find(pMapEraseFrom->begin(), pMapEraseFrom->end(), _pOwner);
         }
     } // end for pMapEraseFrom
 

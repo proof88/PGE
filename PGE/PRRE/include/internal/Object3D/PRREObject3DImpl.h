@@ -31,11 +31,11 @@ public:
     static TPRREuint  nFramesWaitedForOcclusionTestResultGlobalMin;  /**< Async: Minimum counted per-object nFramesWaitedForOcclusionTestResultMin value. */
     static TPRREuint  nFramesWaitedForOcclusionTestResultGlobalMax;  /**< Async: Maximum counted per-object nFramesWaitedForOcclusionTestResultMax value. */
 
-    static std::set<PRREObject3D*> occluders;              /**< List of 3D occluders, should be updated whenever a 3D object becomes an occluder. */
-    static std::set<PRREObject3D*> occludees_opaque;       /**< List of 3D opaque (non-blended) occludees, should be updated whenever a 3D (non-sticked) object becomes an opauqe occludee. */
-    static std::set<PRREObject3D*> occludees_blended;      /**< List of 3D transparent/blended occludees, should be updated whenever a 3D (non-sticked) object becomes a blended occludee. */
-    static std::set<PRREObject3D*> occludees_2d_opaque;    /**< List of 2D opaque (non-blended) occludees, should be updated whenever a 2D (sticked) object becomes an opauqe occludee. */
-    static std::set<PRREObject3D*> occludees_2d_blended;   /**< List of 2D transparent/blended occludees, should be updated whenever a 2D (sticked) object becomes a blended occludee. */
+    static std::deque<PRREObject3D*> occluders;              /**< List of 3D occluders, should be updated whenever a 3D object becomes an occluder. */
+    static std::deque<PRREObject3D*> occludees_opaque;       /**< List of 3D opaque (non-blended) occludees, should be updated whenever a 3D (non-sticked) object becomes an opauqe occludee. */
+    static std::deque<PRREObject3D*> occludees_blended;      /**< List of 3D transparent/blended occludees, should be updated whenever a 3D (non-sticked) object becomes a blended occludee. */
+    static std::deque<PRREObject3D*> occludees_2d_opaque;    /**< List of 2D opaque (non-blended) occludees, should be updated whenever a 2D (sticked) object becomes an opauqe occludee. */
+    static std::deque<PRREObject3D*> occludees_2d_blended;   /**< List of 2D transparent/blended occludees, should be updated whenever a 2D (sticked) object becomes a blended occludee. */
 
     // ---------------------------------------------------------------------------
 
