@@ -52,12 +52,16 @@ public:
 
     void RenderObject(PRREObject3D& object);
 
-    void RenderScene();       
+    void RenderScene(); 
+
+    const TPRRE_RENDER_HINT& getRenderHints();
+    void  SetRenderHints(const TPRRE_RENDER_HINT& hints);
     
     void WriteStats() const;       
     void CheckConsistency() const;  
 
 private:
+    TPRRE_RENDER_HINT    renderHints;  /**< Render hints. */
     TPRREbool            bInited;
     PRREWindow&          wnd;          /**< Our window, where we draw to, singleton. */
     PRREhwInfo&          hwInfo;       /**< Hardware infos, singleton. */
@@ -379,6 +383,18 @@ void PRRERendererSWincrementalImpl::RenderScene()
 } // RenderScene()
 
 
+const TPRRE_RENDER_HINT& PRRERendererSWincrementalImpl::getRenderHints()
+{
+    return renderHints;
+} // getRenderHints()
+
+
+void PRRERendererSWincrementalImpl::SetRenderHints(const TPRRE_RENDER_HINT& hints)
+{
+    renderHints = hints;
+} // SetRenderHints()
+
+
 void PRRERendererSWincrementalImpl::WriteStats() const
 {
     getConsole().OLn("PRRERendererSWincremental::WriteStats()");
@@ -407,6 +423,7 @@ void PRRERendererSWincrementalImpl::CheckConsistency() const
     NULLs members only.
 */                                                                         
 PRRERendererSWincrementalImpl::PRRERendererSWincrementalImpl() :
+    renderHints(DefaultHints),
     wnd( wnd ),
     hwInfo( hwInfo ),
     screen( screen ),
@@ -426,6 +443,7 @@ PRRERendererSWincrementalImpl::PRRERendererSWincrementalImpl(
     PRREWindow& _wnd,
     PRREScreen& _scr,
     PRREhwInfo& _hwinfo ) :
+    renderHints(DefaultHints),
     wnd( _wnd ),
     hwInfo( _hwinfo ),
     screen( _scr ),
@@ -442,6 +460,7 @@ PRRERendererSWincrementalImpl::PRRERendererSWincrementalImpl(
 
 
 PRRERendererSWincrementalImpl::PRRERendererSWincrementalImpl(const PRRERendererSWincrementalImpl&) :
+    renderHints(DefaultHints),
     wnd( PRREWindow::createAndGet() ),
     hwInfo( PRREhwInfo::get() ),
     screen( PRREScreen::createAndGet() ),

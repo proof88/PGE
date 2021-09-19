@@ -57,6 +57,7 @@
 #include "PRREVertexTransferTest.h"
 #include "PRREWindowTest.h"
 #include "PRREWindowTest2.h"
+#include "PRRERendererHWfixedPipeTest.h"
 
 #define CON_TITLE "Unit tests for PGE"
 
@@ -123,6 +124,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PRREObject3DTest                testPRREObject3D;
     PRREWindowTest                  testPRREWindow;
     PRREWindowTest2                 testPRREWindow2;
+
+    PRRERendererHWfixedPipeTest     testPRRERendererHWfixedPipe;
     
     PR00FsReducedRenderingEngineTest  testPRRE;
     PR00FsReducedRenderingEngineTest2 testPRRE2;
@@ -179,7 +182,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     /* 
     tests.push_back(&testPRREWindow);
     tests.push_back(&testPRREWindow2);
+    */
 
+    tests.push_back(&testPRRERendererHWfixedPipe);
+
+    /*
     tests.push_back(&testPRRE);
     tests.push_back(&testPRRE2);
     */

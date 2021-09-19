@@ -17,6 +17,7 @@
 #include "../Display/PRREWindow.h"
 #include "../Hardware/PRREhwInfo.h"
 
+
 /**
     Incremental software renderer path.
     Only deviations from the original PRREIRenderer documentation are mentioned here.
@@ -29,6 +30,9 @@ class PRRERendererSWincremental :
 #endif
 
 public:
+    /** Default render hints for PRRERendererSWincremental. */
+    static const TPRRE_RENDER_HINT DefaultHints = 0;
+
     static PRRERendererSWincremental& createAndGet(
         PRREWindow& _wnd,
         PRREScreen& _scr,

@@ -37,17 +37,22 @@
                 - MSAA works with DX9 HW too.
 */
 
+
+/**
+    Render hints are basically debug settings for the renderer used in rare circumstances.
+    The available render hints are documented at each renderer implementation.    
+*/
+typedef TPRREuint TPRRE_RENDER_HINT;
+
+class PRREObject3D;
+class PRREObject3DManager;
+
 /**
     Renderer interface.
     Renderer classes implementing this interface must fully conform to the method specifications written in the comments.
 
     Basically a renderer class implementing this interface defines a rendering path.
 */
-
-
-class PRREObject3D;
-class PRREObject3DManager;
-
 class PRREIRenderer
 {
 #ifdef PRRE_CLASS_IS_INCLUDED_NOTIFICATION
@@ -59,6 +64,7 @@ public:
     /**
         Initializes the renderer.
         Tries to set the given display mode.
+        Render hints are not affected.
  
         @param width   Client width of the window being created.
                        If 0, the target width will be the current horizontal screen resolution.
@@ -88,6 +94,7 @@ public:
         Deletes everything created by the renderer.
         No effect before initialization.
         After shutdown, initialize() can be called again.
+        Render hints are not affected.
 
         @return True on successful shutdown, false otherwise.
     */
@@ -119,6 +126,20 @@ public:
         No effect if the engine is not initialized.
     */
     virtual void RenderScene() = 0;
+
+    /**
+        Get current render hints.
+        Render hints are basically debug settings for the renderer used in rare circumstances.
+        The available render hints are documented at each renderer implementation.
+    */
+    virtual const TPRRE_RENDER_HINT& getRenderHints() = 0;
+
+    /**
+        Set current render hints.
+        Render hints are basically debug settings for the renderer used in rare circumstances.
+        The available render hints are documented at each renderer implementation.
+    */
+    virtual void SetRenderHints(const TPRRE_RENDER_HINT& hints) = 0;
 
     /**
         Writes statistics to the console window.

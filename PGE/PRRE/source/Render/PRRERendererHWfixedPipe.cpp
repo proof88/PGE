@@ -53,12 +53,16 @@ public:
         PRREuiManager* _uimgr,
         PRRECamera* _cam );
 
-    void RenderScene();       
+    void RenderScene();  
+
+    const TPRRE_RENDER_HINT& getRenderHints();
+    void  SetRenderHints(const TPRRE_RENDER_HINT& hints);
     
     void WriteStats() const;       
     void CheckConsistency() const;  
 
 private:
+    TPRRE_RENDER_HINT    renderHints;  /**< Render hints. */
     PRREWindow&          wnd;          /**< Our window, where we draw to, singleton. */
     PRREhwInfo&          hwInfo;       /**< Hardware infos, singleton. */
     PRREScreen&          screen;       /**< Our screen, singleton. */
@@ -335,6 +339,18 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
 } // RenderScene()
 
 
+const TPRRE_RENDER_HINT& PRRERendererHWfixedPipeImpl::getRenderHints()
+{
+    return renderHints;
+} // getRenderHints()
+
+
+void PRRERendererHWfixedPipeImpl::SetRenderHints(const TPRRE_RENDER_HINT& hints)
+{
+    renderHints = hints;
+} // SetRenderHints()
+
+
 void PRRERendererHWfixedPipeImpl::WriteStats() const
 {
     getConsole().OLn("PRRERendererHWfixedPipe::WriteStats()");
@@ -363,6 +379,7 @@ void PRRERendererHWfixedPipeImpl::CheckConsistency() const
     NULLs members only.
 */                                                                         
 PRRERendererHWfixedPipeImpl::PRRERendererHWfixedPipeImpl() :
+    renderHints(DefaultHints),
     wnd( wnd ),
     hwInfo( hwInfo ),
     screen( screen ),
@@ -378,6 +395,7 @@ PRRERendererHWfixedPipeImpl::PRRERendererHWfixedPipeImpl(
     PRREWindow& _wnd,
     PRREScreen& _scr,
     PRREhwInfo& _hwinfo ) :
+    renderHints(DefaultHints),
     wnd( _wnd ),
     hwInfo( _hwinfo ),
     screen( _scr ),
@@ -390,6 +408,7 @@ PRRERendererHWfixedPipeImpl::PRRERendererHWfixedPipeImpl(
 
 
 PRRERendererHWfixedPipeImpl::PRRERendererHWfixedPipeImpl(const PRRERendererHWfixedPipeImpl&) :
+    renderHints(DefaultHints),
     wnd( PRREWindow::createAndGet() ),
     hwInfo( PRREhwInfo::get() ),
     screen( PRREScreen::createAndGet() ),

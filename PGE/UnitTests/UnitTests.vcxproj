@@ -353,6 +353,7 @@
     <ClInclude Include="PRREObject3DTest.h" />
     <ClInclude Include="PRREOctreeTest.h" />
     <ClInclude Include="PRREPosUpTargetTest.h" />
+    <ClInclude Include="PRRERendererHWfixedPipeTest.h" />
     <ClInclude Include="PRREScissorTest.h" />
     <ClInclude Include="PRREScreenTest.h" />
     <ClInclude Include="PRRESharedSettingsTest.h" />

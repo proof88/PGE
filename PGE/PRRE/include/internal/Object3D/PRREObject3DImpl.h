@@ -25,7 +25,6 @@ public:
     static TPRREuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE;
     static TPRREuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED;
     static TPRREbool OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING;
-    static TPRREbool OQ_RENDER_BOUNDING_BOXES;
 
     static TPRREfloat fLongestGlobalWaitForSyncQueryFinish;          /**< Maximum measured per-object fLongestWaitForSyncQueryFinish value. */
     static TPRREuint  nFramesWaitedForOcclusionTestResultGlobalMin;  /**< Async: Minimum counted per-object nFramesWaitedForOcclusionTestResultMin value. */
