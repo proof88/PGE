@@ -24,7 +24,6 @@ public:
 
     static TPRREuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE;
     static TPRREuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED;
-    static TPRREbool OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING;
 
     static TPRREfloat fLongestGlobalWaitForSyncQueryFinish;          /**< Maximum measured per-object fLongestWaitForSyncQueryFinish value. */
     static TPRREuint  nFramesWaitedForOcclusionTestResultGlobalMin;  /**< Async: Minimum counted per-object nFramesWaitedForOcclusionTestResultMin value. */
@@ -100,7 +99,10 @@ public:
 
     TPRREuint getUsedSystemMemory() const; 
 
-    void Draw(const TPRRE_RENDER_PASS& renderPass, TPRREbool bASyncQuery);
+    void Draw(
+        const TPRRE_RENDER_PASS& renderPass,
+        TPRREbool bASyncQuery,
+        TPRREbool bRenderIfQueryPending);
 
     // ---------------------------------------------------------------------------
 
@@ -166,7 +168,7 @@ private:
     void      glEndOcclusionQuery() const;
     void      Draw_RenderBoundingBox() const;
     void      Draw_OcclusionQuery_Start(TPRREbool async);
-    TPRREbool Draw_OcclusionQuery_Finish(TPRREbool async);
+    TPRREbool Draw_OcclusionQuery_Finish(TPRREbool async, TPRREbool bRenderIfQueryPending);
     void      Draw_DrawSW();
 
     friend class PRREObject3D;

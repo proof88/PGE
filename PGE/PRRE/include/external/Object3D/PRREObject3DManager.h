@@ -157,7 +157,8 @@ public:
 
     void Draw(
         const TPRRE_RENDER_PASS& renderPass,
-        TPRREbool bASyncQuery);                           /**< Draws the object. */
+        TPRREbool bASyncQuery,
+        TPRREbool bRenderIfQueryPending);                 /**< Draws the object. */
 
 protected:
 

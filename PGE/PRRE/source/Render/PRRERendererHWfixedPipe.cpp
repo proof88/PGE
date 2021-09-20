@@ -10,6 +10,7 @@
 
 #include "PRREbaseIncludes.h"  // PCH
 #include "../../include/external/Render/PRRERendererHWfixedPipe.h"
+#include <cassert>
 #include "../../include/external/Math/PRREVector.h"
 #include "../../include/external/Math/PRRETransformMatrix.h"
 #include "../../include/external/Object3D/PRREObject3DManager.h"
@@ -30,7 +31,6 @@ class PRRERendererHWfixedPipeImpl :
     public PRRERendererHWfixedPipe
 {
 public:
-    static TPRREbool OQ_RENDER_BOUNDING_BOXES;
     static TPRREbool OQ_AUTO_UPDATE_OCCLUDER_STATES;
     static TPRREbool OQ_ZPASS_FOR_OCCLUDERS;
 
@@ -120,8 +120,6 @@ private:
 
 // ############################### PUBLIC ################################
 
-
-TPRREbool PRRERendererHWfixedPipeImpl::OQ_RENDER_BOUNDING_BOXES = true;
 TPRREbool PRRERendererHWfixedPipeImpl::OQ_AUTO_UPDATE_OCCLUDER_STATES = true;
 TPRREbool PRRERendererHWfixedPipeImpl::OQ_ZPASS_FOR_OCCLUDERS = false;
 
@@ -322,11 +320,35 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
     }
 
     BeginRendering();
-
+                                                                                                
     SwitchToPerspectiveProjection();
-    //Draw3DObjects_Legacy(*this);
-    //Draw3DObjects_OcclusionQuery(*this, false);
-    Draw3DObjects_OcclusionQuery(*this, true);
+    const TPRREuint iRenderPath = BITF_READ(renderHints, PRRE_RH_RENDER_PATH_BITS, 3);
+    switch (iRenderPath)
+    {
+    case PRRE_RH_RP_LEGACY_PR00FPS:
+        Draw3DObjects_Legacy(*this);
+        break;
+    case PRRE_RH_RP_OCCLUSION_CULLED:
+        {
+            const TPRREuint iOcclusionQueryMethod = BITF_READ(renderHints, PRRE_RH_OQ_METHOD_BITS, 2);
+            switch (iOcclusionQueryMethod)
+            {
+            case PRRE_RH_OQ_METHOD_SYNC:
+                Draw3DObjects_OcclusionQuery(*this, false);
+                break;
+            case PRRE_RH_OQ_METHOD_ASYNC:
+                Draw3DObjects_OcclusionQuery(*this, true);
+                break;
+            default:
+                // later more OQ methods will come ...
+                assert(false);
+            } // switch iOcclusionQueryMethod
+        }
+        break;
+    default:
+        // later more renderpaths will come ...
+        assert(false);
+    } // switch iRenderPath
 
     SwitchToOrtographicProjection();
     Draw2DObjects(*this);
@@ -355,6 +377,23 @@ void PRRERendererHWfixedPipeImpl::WriteStats() const
 {
     getConsole().OLn("PRRERendererHWfixedPipe::WriteStats()");
     getConsole().L();
+
+    const TPRREuint iRenderPath = BITF_READ(renderHints, PRRE_RH_RENDER_PATH_BITS, 3);
+    const TPRREuint iOcclusionQueryMethod = BITF_READ(renderHints, PRRE_RH_OQ_METHOD_BITS, 2);
+    const TPRREbool bOcclusionDrawBoundingBoxes = ( BIT_READ(renderHints, PRRE_RH_OQ_DRAW_BOUNDING_BOXES_BIT) == 1u );
+    const TPRREbool bOcclusionDrawIfQueryPending = ( BIT_READ(renderHints, PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_BIT) == 1u );
+    const TPRREbool bOrderByDistance = ( BIT_READ(renderHints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u );
+
+    getConsole().OI();
+
+    getConsole().OLn("iRenderPath: %u; iOcclusionQueryMethod: %u", iRenderPath, iOcclusionQueryMethod);
+    getConsole().OLn("bOcclusionDrawBoundingBoxes: %b", bOcclusionDrawBoundingBoxes);
+    getConsole().OLn("bOcclusionDrawIfQueryPending: %b", bOcclusionDrawIfQueryPending);
+    getConsole().OLn("bOrderByDistance: %b", bOrderByDistance);
+    getConsole().OLn("");
+
+    getConsole().OO();
+    
 } // WriteStats()
 
 
@@ -655,7 +694,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
                )
             {
                 glPushMatrix();
-                obj->Draw(PRRE_RPASS_NORMAL, false);
+                obj->Draw(PRRE_RPASS_NORMAL, false, false);
                 glPopMatrix();
             }
         } // for i    
@@ -671,6 +710,13 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& re
 {
     static TPRREuint frameCntr = 0;
 
+    if ( BIT_READ(renderHints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u )
+    {
+        // TODO: order by distance ...
+    }
+
+    const TPRREbool bRenderIfQueryPending = ( BIT_READ(renderHints, PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_BIT) == 1u );
+
     if ( OQ_ZPASS_FOR_OCCLUDERS )
     {
         // first render the occluders into Z-buffer only
@@ -679,7 +725,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& re
         for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_Z_ONLY, bASyncQuery);
+            (*it)->Draw(PRRE_RPASS_Z_ONLY, bASyncQuery, bRenderIfQueryPending);
             glPopMatrix();
         }
 
@@ -690,7 +736,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& re
     for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
     {
         glPushMatrix();
-        (*it)->Draw(PRRE_RPASS_NORMAL, bASyncQuery);
+        (*it)->Draw(PRRE_RPASS_NORMAL, bASyncQuery, bRenderIfQueryPending);
         glPopMatrix();
     }
 
@@ -702,14 +748,14 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& re
         for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw((TPRRE_RENDER_PASS)iRenderPass, bASyncQuery);
+            (*it)->Draw((TPRRE_RENDER_PASS)iRenderPass, bASyncQuery, bRenderIfQueryPending);
             glPopMatrix();
         }
 
         for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw((TPRRE_RENDER_PASS)iRenderPass, bASyncQuery);
+            (*it)->Draw((TPRRE_RENDER_PASS)iRenderPass, bASyncQuery, bRenderIfQueryPending);
             glPopMatrix();
         }
 
@@ -784,28 +830,28 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& re
         getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), false);
     } // frameCntr
 
-    if ( OQ_RENDER_BOUNDING_BOXES )
+    if ( BIT_READ(renderHints, PRRE_RH_OQ_DRAW_BOUNDING_BOXES_BIT) == 1u )
     {
         PRREGLsnippets::glPrepareBeforeDrawBoundingBox();
 
         for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending);
             glPopMatrix();
         }
 
         for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending);
             glPopMatrix();
         }
 
         for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery);
+            (*it)->Draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending);
             glPopMatrix();
         }
     } // OQ_RENDER_BOUNDING_BOXES
@@ -832,7 +878,7 @@ void PRRERendererHWfixedPipeImpl::Draw2DObjects(PRREIRenderer& renderer)
             )
         {
             glPushMatrix();
-            obj->Draw(PRRE_RPASS_NORMAL, false);
+            obj->Draw(PRRE_RPASS_NORMAL, false, false);
             glPopMatrix();
         }
     } // for i

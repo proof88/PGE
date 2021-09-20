@@ -57,7 +57,6 @@ using namespace std;
 
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE  = 5;
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED = 0;
-TPRREbool PRREObject3D::PRREObject3DImpl::OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING = true;
 
 TPRREfloat PRREObject3D::PRREObject3DImpl::fLongestGlobalWaitForSyncQueryFinish = 0.f;
 TPRREuint PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMin = UINT_MAX;
@@ -618,7 +617,7 @@ TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
 } // getUsedSystemMemory()     
 
 
-void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass, TPRREbool bASyncQuery)
+void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass, TPRREbool bASyncQuery, TPRREbool bRenderIfQueryPending)
 {
     // caller renderer is expected to check for GL errors, probably only once per frame, so we don't check them here
 
@@ -643,7 +642,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass, T
         
         if ( renderPass == PRRE_RPASS_NORMAL )
         {
-            if ( (nOcclusionQuery != 0) && Draw_OcclusionQuery_Finish(bASyncQuery) )
+            if ( (nOcclusionQuery != 0) && Draw_OcclusionQuery_Finish(bASyncQuery, bRenderIfQueryPending) )
             {
                 return;
             }
@@ -686,7 +685,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass, T
 
         pWhichParent->pImpl->bParentInitiatedOperation = true;
         for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
-            ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(renderPass, bASyncQuery);
+            ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(renderPass, bASyncQuery, bRenderIfQueryPending);
         pWhichParent->pImpl->bParentInitiatedOperation = false;
         return;
     }
@@ -1167,12 +1166,17 @@ void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
 /**
     Checks for occlusion query result and decides if object is occluded or not.
 
-    @param async If true, it just checks if query is complete, but won't wait for it.
-                 If false, it will wait until query is finished.
+    @param bASyncQuery If true, it just checks if query is complete, but won't wait for it.
+                       If false, it will wait until query is finished.
+    @param bRenderIfQueryPending If true, and we do not have query result yet, the function will respond as if the object is NOT occluded.
+                                 If false, and we do not have query result yet, the function will respond based on the last occlusion state of this object,
+                                 meaning that: if the last finished query said the object was occluded, the function will respond as the object was occluded,
+                                 otherwise it will respond as the object was not occluded.
+                                 This parameter is used only with async queries.
 
     @return True if occluded, false if not occluded or cannot conclude.
 */
-TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool async)
+TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool bASyncQuery, TPRREbool bRenderIfQueryPending)
 {
     if ( nOcclusionQuery == 0 )
     {
@@ -1184,7 +1188,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool a
         // we always end up here with legacy renderer which never starts query for any objects but
         // still invokes this function (i.e. Object3D::Draw() invokes it)
         
-        if ( async )
+        if ( bASyncQuery )
         {
             return bOccluded; // let it be rendered if last result says not occluded
         }
@@ -1203,7 +1207,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool a
     GLint queryResultAvailable;
     do {
         glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_AVAILABLE_ARB, &queryResultAvailable);
-    } while (!queryResultAvailable && !async);
+    } while (!queryResultAvailable && !bASyncQuery);
 
     PFL::gettimeofday(&end, 0);
     long seconds = end.tv_sec - begin.tv_sec;
@@ -1222,7 +1226,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool a
     {
         // this is async query
         nFramesWaitedForOcclusionTestResult++;
-        return OQ_ALWAYS_RENDER_WHEN_QUERY_IS_PENDING ? false : bOccluded;
+        return bRenderIfQueryPending ? false : bOccluded;
     }
 
     bOcclusionQueryStarted = false;
@@ -1241,7 +1245,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool a
     }
 
     // update async statistics
-    if ( async )
+    if ( bASyncQuery )
     {
         if ( nFramesWaitedForOcclusionTestResult < nFramesWaitedForOcclusionTestResultMin )
         {
@@ -1287,7 +1291,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_DrawSW()
         // note that either we have our own subobjects, OR we are just a cloned object and we need to draw original object's subobjects
         PRREObject3D* pWhichParent = getReferredObject() ? getReferredObject() : _pOwner;
         for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
-            ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(PRRE_RPASS_NORMAL, false);
+            ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(PRRE_RPASS_NORMAL, false, false);
         return;
     }
 
@@ -2067,10 +2071,20 @@ TPRREuint PRREObject3D::getUsedVideoMemory() const
     Draws the object.
     This is only valid from outside for level-1 objects.
     The call is ignored by level-2 subobjects. Only their level-1 parent object can call on its subobjects.
+
+    @param renderPass Which pass/mode of rendering we are doing now for this object.
+                      Some render passes depend on the effect of other passes, so order is important.
+    @param bASyncQuery If true, it just checks if query is complete, but won't wait for it.
+                       If false, it will wait until query is finished.
+    @param bRenderIfQueryPending If true, and we do not have query result yet, the function will respond as if the object is NOT occluded.
+                                 If false, and we do not have query result yet, the function will respond based on the last occlusion state of this object,
+                                 meaning that: if the last finished query said the object was occluded, the function will respond as the object was occluded,
+                                 otherwise it will respond as the object was not occluded.
+                                 This parameter is used only with async queries.
 */
-void PRREObject3D::Draw(const TPRRE_RENDER_PASS& renderPass, TPRREbool bASyncQuery)
+void PRREObject3D::Draw(const TPRRE_RENDER_PASS& renderPass, TPRREbool bASyncQuery, TPRREbool bRenderIfQueryPending)
 {
-    pImpl->Draw(renderPass, bASyncQuery);
+    pImpl->Draw(renderPass, bASyncQuery, bRenderIfQueryPending);
 } // Draw()
 
 
