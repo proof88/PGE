@@ -173,6 +173,20 @@ var
   snail: integer;
   isItemNow: boolean;
 
+  key_r_stop: boolean;
+  key_f_stop: boolean;
+  key_o_stop: boolean;
+  key_b_stop: boolean;
+  key_p_stop: boolean;
+  key_c_stop: boolean;
+  key_space_stop: boolean;
+  
+  prre_rh_iRenderPath: word;
+  prre_rh_iOCmethod: word;
+  prre_rh_bOCdrawBoundingBoxes: boolean;
+  prre_rh_bOCdrawIfQueryPending: boolean;
+  prre_rh_bOrderByDistance: boolean;
+
 
 function messageProcessing: boolean;
 var
@@ -273,6 +287,99 @@ begin
       tmcsSetCameraAngle(0, 0, 0);
     end;
 
+  // next render path
+  if ( inputiskeypressed(vkkeyscan('r')) ) then
+    begin
+      if ( not(key_r_stop) ) then
+        begin
+          key_r_stop := TRUE;
+          prre_rh_iRenderPath := prre_rh_iRenderPath+1;
+          if ( prre_rh_iRenderPath > 2 ) then
+            prre_rh_iRenderPath := 0;
+
+          tmcsSetRenderPath(prre_rh_iRenderPath);
+        end;
+    end
+   else key_r_stop := FALSE;
+
+  // prev render path
+  if ( inputiskeypressed(vkkeyscan('f')) ) then
+    begin
+      if ( not(key_f_stop) ) then
+        begin
+          key_f_stop := TRUE;
+          if ( prre_rh_iRenderPath > 0 ) then
+            prre_rh_iRenderPath := prre_rh_iRenderPath-1
+           else
+            prre_rh_iRenderPath := 2;
+
+          tmcsSetRenderPath(prre_rh_iRenderPath);
+        end;
+    end
+   else key_f_stop := FALSE;
+
+  // next occlusion culling method
+  if ( inputiskeypressed(vkkeyscan('o')) ) then
+    begin
+      if ( not(key_o_stop) ) then
+        begin
+          key_o_stop := TRUE;
+          if ( prre_rh_iOCmethod < 1 ) then
+            prre_rh_iOCmethod := prre_rh_iOCmethod+1
+           else
+            prre_rh_iOCmethod := 0;
+
+          tmcsSetOcclusionCullingMethod(prre_rh_iOCmethod);
+        end;
+    end
+   else key_o_stop := FALSE;
+
+  // draw occlusion culling bounding boxes of occludees
+  if ( inputiskeypressed(vkkeyscan('b')) ) then
+    begin
+      if ( not(key_b_stop) ) then
+        begin
+          key_b_stop := TRUE;
+          prre_rh_bOCdrawBoundingBoxes := not(prre_rh_bOCdrawBoundingBoxes);
+          tmcsSetOcclusionCullingBoundingBoxes(prre_rh_bOCdrawBoundingBoxes);
+        end;
+    end
+   else key_b_stop := FALSE;
+
+  // draw occludees if their query is pending
+  if ( inputiskeypressed(vkkeyscan('p')) ) then
+    begin
+      if ( not(key_p_stop) ) then
+        begin
+          key_p_stop := TRUE;
+          prre_rh_bOCdrawIfQueryPending := not(prre_rh_bOCdrawIfQueryPending);
+          tmcsSetOcclusionCullingDrawIfPending(prre_rh_bOCdrawIfQueryPending);
+        end;
+    end
+   else key_p_stop := FALSE;
+
+  // order objects by distance to camera
+  if ( inputiskeypressed(vkkeyscan('c')) ) then
+    begin
+      if ( not(key_c_stop) ) then
+        begin
+          key_c_stop := TRUE;
+          prre_rh_bOrderByDistance := not(prre_rh_bOrderByDistance);
+          tmcsSetOrderingByDistance(prre_rh_bOrderByDistance);
+        end;
+    end
+   else key_c_stop := FALSE;
+
+  // engine dump to console
+  if ( inputiskeypressed(VK_SPACE) ) then
+    begin
+      if ( not(key_space_stop) ) then
+        begin
+          key_space_stop := TRUE;
+          tmcsEngineDump();
+        end;
+    end
+   else key_space_stop := FALSE;
 end;
 
 
@@ -290,6 +397,12 @@ end;
 
 
 begin
+  prre_rh_iRenderPath := 2; // PRRE_RH_RP_OCCLUSION_CULLED
+  prre_rh_iOCmethod := 1;   // async
+  prre_rh_bOCdrawBoundingBoxes := false;
+  prre_rh_bOCdrawIfQueryPending := true;
+  prre_rh_bOrderByDistance := true;
+
   done := FALSE;
   showwindow(gamewindow.hwindow,SW_SHOW);
   setforegroundwindow(gamewindow.hwindow);

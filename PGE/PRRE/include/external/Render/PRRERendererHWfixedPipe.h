@@ -69,7 +69,7 @@ class PRRERendererHWfixedPipe :
 public:
     /** Default render hints for PRRERendererHWfixedPipe. */
     static const TPRRE_RENDER_HINT DefaultHints =
-            BITF_PREP(PRRE_RH_RP_DISTANCE_ORDERED, PRRE_RH_RENDER_PATH_BITS, 3) |
+            BITF_PREP(PRRE_RH_RP_OCCLUSION_CULLED, PRRE_RH_RENDER_PATH_BITS, 3) |
             BITF_PREP(PRRE_RH_OQ_METHOD_ASYNC, PRRE_RH_OQ_METHOD_BITS, 2) |
             PRRE_RH_OQ_DRAW_BOUNDING_BOXES_OFF |
             PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_ON |

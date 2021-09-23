@@ -239,6 +239,13 @@ procedure tmcsSetTextBlendingState(state: boolean); stdcall; external 'gfxcore.d
 procedure tmcsSetTextBlendMode(sfactor, dfactor: TGLConst); stdcall; external 'gfxcore.dll';
 function tmcsGetTextWidth(text: tstr255; fontheight: word; scaling: word): integer; stdcall; external 'gfxcore.dll';
 
+procedure tmcsSetRenderPath(renderPath: word); stdcall; external 'gfxcore.dll';
+procedure tmcsSetOcclusionCullingMethod(ocMethod: word); stdcall; external 'gfxcore.dll';
+procedure tmcsSetOcclusionCullingBoundingBoxes(state: boolean); stdcall; external 'gfxcore.dll';
+procedure tmcsSetOcclusionCullingDrawIfPending(state: boolean); stdcall; external 'gfxcore.dll';
+procedure tmcsSetOrderingByDistance(state: boolean); stdcall; external 'gfxcore.dll';
+procedure tmcsEngineDump(); stdcall; external 'gfxcore.dll';
+
 implementation
 
 end.
