@@ -232,7 +232,7 @@ private:
 
         return assertEquals(
             vec1.getX() * vec2.getX() + vec1.getY() * vec2.getY() + vec1.getZ() * vec2.getZ(), dotProduct1, "dotProduct1") &
-               assertEquals(dotProduct1, dotProduct2, "dotProduct2");
+               assertEquals(dotProduct1, dotProduct2, "dotProduct2") /* dot product is commutative */;
     }
 
     bool testGetDotProduct2()

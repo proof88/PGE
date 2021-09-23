@@ -208,10 +208,15 @@ public:
 
     TPRREbool isInitialized() const;                  /**< Tells whether the manager is correctly initialized or not. */
 
+    std::deque<PRREObject3D*>& getOccluders();                       /**< Get a list of occluders. */
     const std::deque<PRREObject3D*>& getOccluders() const;           /**< Get a list of occluders. */
+    std::deque<PRREObject3D*>& get3dOpaqueOccludees();               /**< Get a list of 3D (non-sticked) opaque (non-blended) occludees. */
     const std::deque<PRREObject3D*>& get3dOpaqueOccludees() const;   /**< Get a list of 3D (non-sticked) opaque (non-blended) occludees. */
+    std::deque<PRREObject3D*>& get3dBlendedOccludees();              /**< Get a list of 3D (non-sticked) blended occludees. */
     const std::deque<PRREObject3D*>& get3dBlendedOccludees() const;  /**< Get a list of 3D (non-sticked) blended occludees. */
+    std::deque<PRREObject3D*>& get2dOpaqueOccludees();               /**< Get a list of 2D (sticked) opaque (non-blended) occludees. */
     const std::deque<PRREObject3D*>& get2dOpaqueOccludees() const;   /**< Get a list of 2D (sticked) opaque (non-blended) occludees. */
+    std::deque<PRREObject3D*>& get2dBlendedOccludees();              /**< Get a list of 2D (sticked) blended occludees. */
     const std::deque<PRREObject3D*>& get2dBlendedOccludees() const;  /**< Get a list of 2D (sticked) blended occludees. */
     
     PRREObject3D* createPlane(

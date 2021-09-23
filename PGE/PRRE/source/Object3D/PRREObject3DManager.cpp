@@ -35,10 +35,15 @@ public:
 
     TPRREbool isInitialized() const;
 
+    std::deque<PRREObject3D*>& getOccluders();
     const std::deque<PRREObject3D*>& getOccluders() const;
+    std::deque<PRREObject3D*>& get3dOpaqueOccludees();
     const std::deque<PRREObject3D*>& get3dOpaqueOccludees() const;
+    std::deque<PRREObject3D*>& get3dBlendedOccludees();
     const std::deque<PRREObject3D*>& get3dBlendedOccludees() const;
+    std::deque<PRREObject3D*>& get2dOpaqueOccludees();
     const std::deque<PRREObject3D*>& get2dOpaqueOccludees() const;
+    std::deque<PRREObject3D*>& get2dBlendedOccludees();
     const std::deque<PRREObject3D*>& get2dBlendedOccludees() const;
 
 protected:
@@ -90,10 +95,22 @@ TPRREbool PRREObject3DManager::PRREObject3DManagerImpl::isInitialized() const
 } // isInitialized()
 
 
+std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::getOccluders()
+{
+    return PRREObject3D::PRREObject3DImpl::occluders;
+} // getOccluders()
+
+
 const std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::getOccluders() const
 {
     return PRREObject3D::PRREObject3DImpl::occluders;
 } // getOccluders()
+
+
+std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get3dOpaqueOccludees()
+{
+    return PRREObject3D::PRREObject3DImpl::occludees_opaque;
+} // get3dOpaqueOccludees()
 
 
 const std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get3dOpaqueOccludees() const
@@ -102,16 +119,34 @@ const std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::g
 } // get3dOpaqueOccludees()
 
 
+std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get3dBlendedOccludees()
+{
+    return PRREObject3D::PRREObject3DImpl::occludees_blended;
+} // get3dBlendedOccludees()
+
+
 const std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get3dBlendedOccludees() const
 {
     return PRREObject3D::PRREObject3DImpl::occludees_blended;
 } // get3dBlendedOccludees()
 
 
+std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get2dOpaqueOccludees()
+{
+    return PRREObject3D::PRREObject3DImpl::occludees_2d_opaque;
+} // get2dOpaqueOccludees()
+
+
 const std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get2dOpaqueOccludees() const
 {
     return PRREObject3D::PRREObject3DImpl::occludees_2d_opaque;
 } // get2dOpaqueOccludees()
+
+
+std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get2dBlendedOccludees()
+{
+    return PRREObject3D::PRREObject3DImpl::occludees_2d_blended;
+} // get2dBlendedOccludees()
 
 
 const std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::get2dBlendedOccludees() const
@@ -318,10 +353,34 @@ TPRREbool PRREObject3DManager::isInitialized() const
 
     @return List of occluders.
 */
+std::deque<PRREObject3D*>& PRREObject3DManager::getOccluders()
+{
+    return pImpl->getOccluders();
+} // getOccluders()
+
+
+/**
+    Get a list of occluders.
+    If you want to get all the occluders, this way is faster than iterating over all objects and checking if they are occluders.
+
+    @return List of occluders.
+*/
 const std::deque<PRREObject3D*>& PRREObject3DManager::getOccluders() const
 {
     return pImpl->getOccluders();
 } // getOccluders()
+
+
+/**
+    Get a list of 3D (non-sticked) opaque (non-blended) occludees.
+    If you want to get all the 3D (non-sticked) opaque occludees, this way is faster than iterating over all objects and checking their properties.
+
+    @return List of 3D opaque occludees.
+*/
+std::deque<PRREObject3D*>& PRREObject3DManager::get3dOpaqueOccludees()
+{
+    return pImpl->get3dOpaqueOccludees();
+} // get3dOpaqueOccludees()
 
 
 /**
@@ -342,6 +401,18 @@ const std::deque<PRREObject3D*>& PRREObject3DManager::get3dOpaqueOccludees() con
 
     @return List of 3D blended occludees.
 */
+std::deque<PRREObject3D*>& PRREObject3DManager::get3dBlendedOccludees()
+{
+    return pImpl->get3dBlendedOccludees();
+} // get3dBlendedOccludees()
+
+
+/**
+    Get a list of 3D (non-sticked) blended occludees.
+    If you want to get all the 3D (non-sticked) blended occludees, this way is faster than iterating over all objects and checking their properties.
+
+    @return List of 3D blended occludees.
+*/
 const std::deque<PRREObject3D*>& PRREObject3DManager::get3dBlendedOccludees() const
 {
     return pImpl->get3dBlendedOccludees();
@@ -354,10 +425,34 @@ const std::deque<PRREObject3D*>& PRREObject3DManager::get3dBlendedOccludees() co
 
     @return List of 2D opaque occludees.
 */
+std::deque<PRREObject3D*>& PRREObject3DManager::get2dOpaqueOccludees()
+{
+    return pImpl->get2dOpaqueOccludees();
+} // get2dOpaqueOccludees()
+
+
+/**
+    Get a list of 2D (sticked) opaque (non-blended) occludees.
+    If you want to get all the 2D (sticked) opaque occludees, this way is faster than iterating over all objects and checking their properties.
+
+    @return List of 2D opaque occludees.
+*/
 const std::deque<PRREObject3D*>& PRREObject3DManager::get2dOpaqueOccludees() const
 {
     return pImpl->get2dOpaqueOccludees();
 } // get2dOpaqueOccludees()
+
+
+/**
+    Get a list of 2D (sticked) blended occludees.
+    If you want to get all the 2D (sticked) blended occludees, this way is faster than iterating over all objects and checking their properties.
+
+    @return List of 2D blended occludees.
+*/
+std::deque<PRREObject3D*>& PRREObject3DManager::get2dBlendedOccludees()
+{
+    return pImpl->get2dBlendedOccludees();
+} // get2dBlendedOccludees()
 
 
 /**

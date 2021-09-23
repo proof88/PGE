@@ -106,6 +106,7 @@ private:
     void BeginRendering();                                               /**< Sets viewport size and clears buffers. */
     void SwitchToPerspectiveProjection();                                /**< Sets perspective projection. */
     void SwitchToOrtographicProjection();                                /**< Sets orthographic projection. */
+    void OrderObjectContainersByZdistance();                             /**< Orders objects by Z-distance relative to camera view. */
     void Draw3DObjects_Legacy(PRREIRenderer& renderer);                  /**< Draws 3D objects, the legacy PR00FPS way. */
     void Draw3DObjects_OcclusionQuery(
         PRREIRenderer& renderer,
@@ -669,6 +670,56 @@ void PRRERendererHWfixedPipeImpl::SwitchToOrtographicProjection()
 } // SwitchToOrtographicProjection()
 
 
+struct CompareByZdistance
+{
+    enum Order
+    {
+        NEAREST_TO_FAREST,
+        FAREST_TO_NEAREST
+    };
+    
+    PRREVector vPosCam;
+    PRREVector vFwdCam;
+    Order order;
+
+    // std::sort() uses this to determine if a is less than b
+    bool operator()(PRREObject3D* a, PRREObject3D* b) const
+    {
+        const PRREVector vDistanceToCam_a = a->getPosVec() - vPosCam;
+        const PRREVector vDistanceToCam_b = b->getPosVec() - vPosCam;
+        const TPRREfloat fZdistanceToCam_a = vDistanceToCam_a.getDotProduct(vFwdCam);
+        const TPRREfloat fZdistanceToCam_b = vDistanceToCam_b.getDotProduct(vFwdCam);
+
+        return (order == NEAREST_TO_FAREST) ? (fZdistanceToCam_a < fZdistanceToCam_b) : (fZdistanceToCam_a > fZdistanceToCam_b);
+    }
+}; // struct CompareByZdistance
+
+
+/**
+    Orders objects by Z-distance relative to camera view.
+    No effect if PRRE_RH_ORDERING_BY_DISTANCE_BIT is not set.
+*/
+void PRRERendererHWfixedPipeImpl::OrderObjectContainersByZdistance()
+{
+    if ( BIT_READ(renderHints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u )
+    {
+        CompareByZdistance comparator;
+        comparator.vPosCam = pCamera->getPosVec();
+        comparator.vFwdCam = pCamera->getTargetVec();
+
+        // this would be less complicated with C++11 lambda ...
+        // std::sort() sorts in non-descending order, if comparator also returns true if element 'a' is less than element 'b',
+        // so in our case it is nearest to farest ordering
+        comparator.order = CompareByZdistance::Order::NEAREST_TO_FAREST;
+        std::sort(pObject3DMgr->getOccluders().begin(), pObject3DMgr->getOccluders().end(), comparator);
+        std::sort(pObject3DMgr->get3dOpaqueOccludees().begin(), pObject3DMgr->get3dOpaqueOccludees().end(), comparator);
+
+        comparator.order = CompareByZdistance::Order::FAREST_TO_NEAREST;
+        std::sort(pObject3DMgr->get3dBlendedOccludees().begin(), pObject3DMgr->get3dBlendedOccludees().end(), comparator);
+    }
+} // OrderObjectContainersByZdistance()
+
+
 /**
     Draws 3D objects, the legacy PR00FPS way.
 */
@@ -710,12 +761,9 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& re
 {
     static TPRREuint frameCntr = 0;
 
-    if ( BIT_READ(renderHints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u )
-    {
-        // TODO: order by distance ...
-    }
-
     const TPRREbool bRenderIfQueryPending = ( BIT_READ(renderHints, PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_BIT) == 1u );
+
+    OrderObjectContainersByZdistance();
 
     if ( OQ_ZPASS_FOR_OCCLUDERS )
     {
