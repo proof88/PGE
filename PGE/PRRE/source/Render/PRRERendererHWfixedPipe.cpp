@@ -108,6 +108,7 @@ private:
     void SwitchToOrtographicProjection();                                /**< Sets orthographic projection. */
     void OrderObjectContainersByZdistance();                             /**< Orders objects by Z-distance relative to camera view. */
     void Draw3DObjects_Legacy(PRREIRenderer& renderer);                  /**< Draws 3D objects, the legacy PR00FPS way. */
+    void Draw3DObjects_Ordered_Containers(PRREIRenderer& renderer);      /**< Draws 3D objects using separate Object3D containers. */
     void Draw3DObjects_OcclusionQuery(
         PRREIRenderer& renderer,
         TPRREbool bASyncQuery);                                          /**< Draws 3D objects with occlusion query. */
@@ -328,6 +329,9 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
     {
     case PRRE_RH_RP_LEGACY_PR00FPS:
         Draw3DObjects_Legacy(*this);
+        break;
+    case PRRE_RH_RP_DISTANCE_ORDERED:
+        Draw3DObjects_Ordered_Containers(*this);
         break;
     case PRRE_RH_RP_OCCLUSION_CULLED:
         {
@@ -703,7 +707,7 @@ void PRRERendererHWfixedPipeImpl::OrderObjectContainersByZdistance()
 {
     if ( BIT_READ(renderHints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u )
     {
-        CompareByZdistance comparator;
+        static CompareByZdistance comparator;
         comparator.vPosCam = pCamera->getPosVec();
         comparator.vFwdCam = pCamera->getTargetVec();
 
@@ -755,7 +759,58 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
 
 
 /**
+    Draws 3D objects using separate Object3D containers.
+    The difference compared to Draw3DObjects_Legacy():
+     - iterating separate Object3D containers instead of Object3DManager's base manageds container;
+     - these separate containers are ordered by Z-distance from camera, so hopefully it makes less overdraw.
+*/
+void PRRERendererHWfixedPipeImpl::Draw3DObjects_Ordered_Containers(PRREIRenderer& renderer)
+{    
+    static TPRREuint frameCntr = 0;
+
+    OrderObjectContainersByZdistance();
+
+    for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
+    {
+        glPushMatrix();
+        (*it)->Draw(PRRE_RPASS_NORMAL, false, false);
+        glPopMatrix();
+    }
+
+    for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
+    {
+        glPushMatrix();
+        (*it)->Draw(PRRE_RPASS_NORMAL, false, false);
+        glPopMatrix();
+    }
+
+    for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
+    {
+        glPushMatrix();
+        (*it)->Draw(PRRE_RPASS_NORMAL, false, false);
+        glPopMatrix();
+    }
+
+    frameCntr++;
+
+    if ( OQ_AUTO_UPDATE_OCCLUDER_STATES )
+    {
+        if ( (frameCntr % 100) == 0 )
+        {
+           pObject3DMgr->UpdateOccluderStates();
+        }
+    }   
+} // Draw3DObjects_Ordered_Containers
+
+
+/**
     Draws 3D objects with occlusion query.
+    The difference compared to Draw3DObjects_Ordered_Containers():
+     - occlusion query is started for occludees, to decide if they should be really rendered.
+
+    @param bASyncQuery If true, the result of occlusion queries are not waited for in the same frame, instead they will be
+                       evaulated in a future frame whenever they are available.
+                       If false, all occlusion queries must finish in the frame, to decide if we should really render the occludee.
 */
 void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& renderer, TPRREbool bASyncQuery)
 {

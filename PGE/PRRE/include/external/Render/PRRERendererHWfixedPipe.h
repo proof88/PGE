@@ -27,13 +27,13 @@
 
 /* 3 bits for selecting 1 rendering path, starting from PRRE_RH_RENDER_PATH_BITS */
 #define PRRE_RH_RP_LEGACY_PR00FPS   0u  /**< The legacy PR00FPS-style rendering path. */
-#define PRRE_RH_RP_OCCLUSION_CULLED 1u  /**< Rendering with occlusion culling, using different Object3D containers. */
-#define PRRE_RH_RP_RSRVD_1          2u
-#define PRRE_RH_RP_RSRVD_2          3u
-#define PRRE_RH_RP_RSRVD_3          4u
-#define PRRE_RH_RP_RSRVD_4          5u
-#define PRRE_RH_RP_RSRVD_5          6u
-#define PRRE_RH_RP_RSRVD_6          7u
+#define PRRE_RH_RP_DISTANCE_ORDERED 1u  /**< The legacy but using different Object3D containers, ordered by Z-distance to camera. */
+#define PRRE_RH_RP_OCCLUSION_CULLED 2u  /**< Rendering with occlusion culling, using different Object3D containers. */
+#define PRRE_RH_RP_RSRVD_1          3u
+#define PRRE_RH_RP_RSRVD_2          4u
+#define PRRE_RH_RP_RSRVD_3          5u
+#define PRRE_RH_RP_RSRVD_4          6u
+#define PRRE_RH_RP_RSRVD_5          7u
 
 /* 2 bits for selecting 1 occlusion query method, starting from PRRE_RH_OQ_METHOD_BITS */
 #define PRRE_RH_OQ_METHOD_SYNC    0u  /**< Sync: all occlusion queries must be finished within the same frame they are issued. */
@@ -69,7 +69,7 @@ class PRRERendererHWfixedPipe :
 public:
     /** Default render hints for PRRERendererHWfixedPipe. */
     static const TPRRE_RENDER_HINT DefaultHints =
-            BITF_PREP(PRRE_RH_RP_OCCLUSION_CULLED, PRRE_RH_RENDER_PATH_BITS, 3) |
+            BITF_PREP(PRRE_RH_RP_DISTANCE_ORDERED, PRRE_RH_RENDER_PATH_BITS, 3) |
             BITF_PREP(PRRE_RH_OQ_METHOD_ASYNC, PRRE_RH_OQ_METHOD_BITS, 2) |
             PRRE_RH_OQ_DRAW_BOUNDING_BOXES_OFF |
             PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_ON |
