@@ -57,6 +57,8 @@ public:
 
     const TPRRE_RENDER_HINT& getRenderHints();
     void  SetRenderHints(const TPRRE_RENDER_HINT& hints);
+
+    void ResetStatistics();
     
     void WriteStats() const;       
     void CheckConsistency() const;  
@@ -376,6 +378,13 @@ void PRRERendererHWfixedPipeImpl::SetRenderHints(const TPRRE_RENDER_HINT& hints)
 {
     renderHints = hints;
 } // SetRenderHints()
+
+
+void PRRERendererHWfixedPipeImpl::ResetStatistics()
+{
+    getConsole().OLn("PRRERendererHWfixedPipe::ResetStatistics()");
+    pObject3DMgr->ResetStatistics();    
+} // ResetStatistics()
 
 
 void PRRERendererHWfixedPipeImpl::WriteStats() const

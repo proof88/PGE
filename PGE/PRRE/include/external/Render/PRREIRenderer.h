@@ -141,6 +141,15 @@ public:
     */
     virtual void SetRenderHints(const TPRRE_RENDER_HINT& hints) = 0;
 
+
+    /**
+        Resets statistics.
+        The renderer might collect statistical data during its lifetime, that might be shown
+        in debug log by WriteStats().
+        In any circumstances you want to reset this data i.e. restart measurements, this function does the job.
+    */
+    virtual void ResetStatistics() = 0;
+
     /**
         Writes statistics to the console window.
     */

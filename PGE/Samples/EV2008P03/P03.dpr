@@ -179,6 +179,7 @@ var
   key_b_stop: boolean;
   key_p_stop: boolean;
   key_c_stop: boolean;
+  key_x_stop: boolean;
   key_space_stop: boolean;
   
   prre_rh_iRenderPath: word;
@@ -369,6 +370,17 @@ begin
         end;
     end
    else key_c_stop := FALSE;
+
+  // reset engine statistics
+  if ( inputiskeypressed(vkkeyscan('x')) ) then
+    begin
+      if ( not(key_x_stop) ) then
+        begin
+          key_x_stop := TRUE;
+          tmcsResetStatistics();
+        end;
+    end
+   else key_x_stop := FALSE;
 
   // engine dump to console
   if ( inputiskeypressed(VK_SPACE) ) then

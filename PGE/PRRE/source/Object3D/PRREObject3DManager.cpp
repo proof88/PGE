@@ -1058,6 +1058,47 @@ void PRREObject3DManager::HandleManagedPropertyChanged(PRREManaged& m)
 
 
 /**
+    Resets any kind of statistics collected during its lifetime.
+    Useful if you want to restart measurements.
+*/
+void PRREObject3DManager::ResetStatistics()
+{
+    getConsole().OLnOI("PRREObject3DManager::ResetStatistics()");
+    getConsole().OLn("Following statistics are being reset:");
+
+    getConsole().OLn("Sync: timeLongestGlobalWaitForSyncQueryFinish: %u s %u us",
+        PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish.tv_sec,
+        PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish.tv_usec);
+    getConsole().OLn("ASync: nFramesWaited4OcclTestResGlobal: min: %u, max: %u;",
+        PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMin,
+        PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMax); 
+
+    getConsole().OO();
+
+    // global sync occlusion query stats
+    PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish.tv_sec = 0;
+    PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish.tv_usec = 0;
+    // global async occlusion query stats
+    PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMin = UINT_MAX;
+    PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMax = 0;
+    
+    // object-local occlusion query stats
+    for (TPRREint i = 0; i < getSize(); i++)
+    {
+        const PRREObject3D* const pMngd = (PRREObject3D*) getAttachedAt(i);
+        if ( pMngd != PGENULL )
+        {
+            pMngd->pImpl->timeLongestWaitForSyncQueryFinish.tv_sec = 0;
+            pMngd->pImpl->timeLongestWaitForSyncQueryFinish.tv_usec = 0;
+            pMngd->pImpl->nFramesWaitedForOcclusionTestResultMin = UINT_MAX;
+            pMngd->pImpl->nFramesWaitedForOcclusionTestResultMax = 0;
+        }
+    }
+
+} // ResetStatistics()
+
+
+/**
     Gets the amount of allocated video memory for all objects owned by this manager.
 
     @return The summarized allocated video memory for all objects owned by this manager.
@@ -1086,7 +1127,9 @@ void PRREObject3DManager::WriteList() const
     TPRREuint nVRAMtotal = getUsedVideoMemory();
 
     getConsole().OI();
-    getConsole().OLn("Sync: fLongestGlobalWait4SyncQueryFinish: %f", PRREObject3D::PRREObject3DImpl::fLongestGlobalWaitForSyncQueryFinish);
+    getConsole().OLn("Sync: timeLongestGlobalWaitForSyncQueryFinish: %u s %u us",
+        PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish.tv_sec,
+        PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish.tv_usec);
     getConsole().OLn("ASync: nFramesWaited4OcclTestResGlobal: min: %u, max: %u;",
         PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMin,
         PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMax); 
@@ -1135,7 +1178,7 @@ void PRREObject3DManager::WriteListCallback(const PRREManaged& mngd) const
     getConsole().OIOLnOO("occlTest: %b, qId: %d, occludee: %b, occluded: %b;", obj.isOcclusionTested(), obj.pImpl->nOcclusionQuery, !(obj.isOccluder()), obj.isOccluded());
     if ( obj.isOcclusionTested() )
     {
-        getConsole().OIOLnOO("Sync: fLongestWaitForSyncQueryFinish: %f;", obj.pImpl->fLongestWaitForSyncQueryFinish); 
+        getConsole().OIOLnOO("Sync: timeLongestWaitForSyncQueryFinish: %u s %u us;", obj.pImpl->timeLongestWaitForSyncQueryFinish.tv_sec, obj.pImpl->timeLongestWaitForSyncQueryFinish.tv_usec); 
         getConsole().OIOLnOO("ASync: nFramesWaited4OcclTestRes: min: %u, max: %u;", obj.pImpl->nFramesWaitedForOcclusionTestResultMin, obj.pImpl->nFramesWaitedForOcclusionTestResultMax); 
     }
     

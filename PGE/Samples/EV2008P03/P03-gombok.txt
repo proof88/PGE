@@ -1,5 +1,12 @@
 kezdés: szürke középen, jobbra barna
 
+WASD - elore, hatra, jobbra, balra
+
+I - fel
+
+K - le
+
+
 1 - minden látszik
 
 2 - balra pajzs,
@@ -32,3 +39,22 @@ kezdés: szürke középen, jobbra barna
 9 - arena alatt,
     minden felettem van,
     barna éppen látszik balra
+
+
+Render Debugs:
+
+R - next rendering path
+
+F - prev rendering path
+
+O - next occlusion culling method
+
+B - draw bounding boxes of occludees: on/off
+
+P - draw occludees if their occlusion query is pending: on/off
+
+C - order objects by distance to camera: on/off
+
+X - reset engine statistics
+
+SPACE - engine dump to console

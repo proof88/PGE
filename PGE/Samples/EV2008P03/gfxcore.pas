@@ -244,6 +244,7 @@ procedure tmcsSetOcclusionCullingMethod(ocMethod: word); stdcall; external 'gfxc
 procedure tmcsSetOcclusionCullingBoundingBoxes(state: boolean); stdcall; external 'gfxcore.dll';
 procedure tmcsSetOcclusionCullingDrawIfPending(state: boolean); stdcall; external 'gfxcore.dll';
 procedure tmcsSetOrderingByDistance(state: boolean); stdcall; external 'gfxcore.dll';
+procedure tmcsResetStatistics(); stdcall; external 'gfxcore.dll';
 procedure tmcsEngineDump(); stdcall; external 'gfxcore.dll';
 
 implementation

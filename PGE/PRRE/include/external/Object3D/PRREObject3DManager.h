@@ -252,6 +252,8 @@ public:
     virtual void HandleManagedPropertyChanged(
                  PRREManaged& m);                                /**< Should be invoked when a managed's property got changed from a different kind of manager or managed. */
 
+    void         ResetStatistics();                              /**< Resets any kind of statistics collected during its lifetime. */
+
     TPRREuint    getUsedVideoMemory() const;                     /**< Gets the amount of allocated video memory for all objects owner by this manager. */
 
     virtual void WriteList() const;

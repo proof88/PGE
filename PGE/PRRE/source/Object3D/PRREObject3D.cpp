@@ -58,7 +58,7 @@ using namespace std;
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE  = 5;
 TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED = 0;
 
-TPRREfloat PRREObject3D::PRREObject3DImpl::fLongestGlobalWaitForSyncQueryFinish = 0.f;
+PFL::timeval PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish = {0,0};
 TPRREuint PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMin = UINT_MAX;
 TPRREuint PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMax = 0;
 
@@ -748,7 +748,8 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
     nOcclusionQuery = 0;
     bOccluded = false;
     bOcclusionQueryStarted = false;
-    fLongestWaitForSyncQueryFinish = 0.f;
+    timeLongestWaitForSyncQueryFinish.tv_sec = 0;
+    timeLongestWaitForSyncQueryFinish.tv_usec = 0;
     nFramesWithoutOcclusionTest = 0;
     nFramesWaitedForOcclusionTestResult = 0;
     nFramesWaitedForOcclusionTestResultMin = UINT_MAX;
@@ -1190,6 +1191,10 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool b
         
         if ( bASyncQuery )
         {
+            if ( OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED == 0 )
+            {
+                assert(false); // this just cannot happen
+            }
             return bOccluded; // let it be rendered if last result says not occluded
         }
         else
@@ -1201,7 +1206,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool b
     }
 
     // this should be done rather with chrono after we have C++11
-    struct PFL::timeval begin, end;
+    PFL::timeval begin, end;
     PFL::gettimeofday(&begin, 0);
 
     GLint queryResultAvailable;
@@ -1209,18 +1214,37 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool b
         glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_AVAILABLE_ARB, &queryResultAvailable);
     } while (!queryResultAvailable && !bASyncQuery);
 
-    PFL::gettimeofday(&end, 0);
-    long seconds = end.tv_sec - begin.tv_sec;
-    long microseconds = end.tv_usec - begin.tv_usec;
-    TPRREfloat elapsed = static_cast<TPRREfloat>(seconds + microseconds*1e-6);
-    if ( elapsed > fLongestWaitForSyncQueryFinish )
+    // update sync statistics related to wait time
+    if ( !bASyncQuery )
     {
-        fLongestWaitForSyncQueryFinish = elapsed;
-        if ( fLongestWaitForSyncQueryFinish > fLongestGlobalWaitForSyncQueryFinish )
+        PFL::gettimeofday(&end, 0);
+        long seconds = end.tv_sec - begin.tv_sec;
+        long microseconds = end.tv_usec - begin.tv_usec;
+        // TODO: this is a mess this way, we need to do something with it, e.g. extend the timeval struct so we dont have this logic hanging here!
+        if ( seconds > timeLongestWaitForSyncQueryFinish.tv_sec )
         {
-            fLongestGlobalWaitForSyncQueryFinish = fLongestWaitForSyncQueryFinish;
+            timeLongestWaitForSyncQueryFinish.tv_sec = seconds;
+            timeLongestWaitForSyncQueryFinish.tv_usec = 0;
+            if ( microseconds > timeLongestWaitForSyncQueryFinish.tv_usec )
+                timeLongestWaitForSyncQueryFinish.tv_usec = microseconds;
+
+            if ( timeLongestWaitForSyncQueryFinish.tv_sec > timeLongestGlobalWaitForSyncQueryFinish.tv_sec )
+            {
+                timeLongestGlobalWaitForSyncQueryFinish.tv_sec = timeLongestWaitForSyncQueryFinish.tv_sec;
+                timeLongestGlobalWaitForSyncQueryFinish.tv_usec = 0;
+                if ( timeLongestWaitForSyncQueryFinish.tv_usec > timeLongestGlobalWaitForSyncQueryFinish.tv_usec )
+                    timeLongestGlobalWaitForSyncQueryFinish.tv_usec = timeLongestWaitForSyncQueryFinish.tv_usec;
+            }
         }
-    }
+        else
+        {
+            if ( microseconds > timeLongestWaitForSyncQueryFinish.tv_usec )
+                timeLongestWaitForSyncQueryFinish.tv_usec = microseconds;
+
+            if ( timeLongestWaitForSyncQueryFinish.tv_usec > timeLongestGlobalWaitForSyncQueryFinish.tv_usec )
+                timeLongestGlobalWaitForSyncQueryFinish.tv_usec = timeLongestWaitForSyncQueryFinish.tv_usec;
+        }
+    } // sync stats update
 
     if ( queryResultAvailable == GL_FALSE )
     {

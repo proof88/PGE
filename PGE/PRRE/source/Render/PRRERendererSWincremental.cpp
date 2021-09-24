@@ -56,6 +56,8 @@ public:
 
     const TPRRE_RENDER_HINT& getRenderHints();
     void  SetRenderHints(const TPRRE_RENDER_HINT& hints);
+
+    void ResetStatistics();
     
     void WriteStats() const;       
     void CheckConsistency() const;  
@@ -393,6 +395,11 @@ void PRRERendererSWincrementalImpl::SetRenderHints(const TPRRE_RENDER_HINT& hint
 {
     renderHints = hints;
 } // SetRenderHints()
+
+
+void PRRERendererSWincrementalImpl::ResetStatistics()
+{
+} // ResetStatistics()
 
 
 void PRRERendererSWincrementalImpl::WriteStats() const
