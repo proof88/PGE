@@ -10,17 +10,17 @@ File_7=SourceModule,'D:\__PR00F__\___developing___\EngineVerseny\Enyém\Példák\P0
 File_8=SourceModule,'D:\__PR00F__\___developing___\projects\Delphi\PR00FPS\GfxCore.pas',0,1,13,39,35,0,0
 
 [Modules]
-Module0=D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\gfxcore.pas
-Module1=D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\P03.dpr
+Module0=D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\P03.dpr
+Module1=D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\gfxcore.pas
 Count=2
 EditWindowCount=1
 
-[D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\gfxcore.pas]
+[D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\P03.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
 
-[D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\P03.dpr]
+[D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\gfxcore.pas]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -31,7 +31,7 @@ FormOnTop=0
 
 [EditWindow0]
 ViewCount=2
-CurrentView=1
+CurrentView=0
 View0=0
 View1=1
 CodeExplorer=CodeExplorer@EditWindow0
@@ -59,9 +59,9 @@ BottomPanelData=0000040000000000000000000000000000000000000000000001000000000000
 
 [View0]
 Module=D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\P03.dpr
-CursorX=23
-CursorY=182
-TopLine=152
+CursorX=24
+CursorY=394
+TopLine=347
 LeftCol=1
 
 [View1]
@@ -106,8 +106,8 @@ Left=0
 Top=0
 Width=1920
 Height=122
-MaxLeft=-8
-MaxTop=-8
+MaxLeft=-1
+MaxTop=-1
 MaxWidth=1932
 MaxHeight=122
 ClientWidth=1916

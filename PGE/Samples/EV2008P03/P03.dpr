@@ -173,14 +173,14 @@ var
   snail: integer;
   isItemNow: boolean;
 
-  key_r_stop: boolean;
-  key_f_stop: boolean;
+  key_t_stop: boolean;
+  key_g_stop: boolean;
   key_o_stop: boolean;
   key_b_stop: boolean;
   key_p_stop: boolean;
   key_c_stop: boolean;
   key_x_stop: boolean;
-  key_space_stop: boolean;
+  key_return_stop: boolean;
   
   prre_rh_iRenderPath: word;
   prre_rh_iOCmethod: word;
@@ -289,11 +289,11 @@ begin
     end;
 
   // next render path
-  if ( inputiskeypressed(vkkeyscan('r')) ) then
+  if ( inputiskeypressed(vkkeyscan('t')) ) then
     begin
-      if ( not(key_r_stop) ) then
+      if ( not(key_t_stop) ) then
         begin
-          key_r_stop := TRUE;
+          key_t_stop := TRUE;
           prre_rh_iRenderPath := prre_rh_iRenderPath+1;
           if ( prre_rh_iRenderPath > 2 ) then
             prre_rh_iRenderPath := 0;
@@ -301,14 +301,14 @@ begin
           tmcsSetRenderPath(prre_rh_iRenderPath);
         end;
     end
-   else key_r_stop := FALSE;
+   else key_t_stop := FALSE;
 
   // prev render path
-  if ( inputiskeypressed(vkkeyscan('f')) ) then
+  if ( inputiskeypressed(vkkeyscan('g')) ) then
     begin
-      if ( not(key_f_stop) ) then
+      if ( not(key_g_stop) ) then
         begin
-          key_f_stop := TRUE;
+          key_g_stop := TRUE;
           if ( prre_rh_iRenderPath > 0 ) then
             prre_rh_iRenderPath := prre_rh_iRenderPath-1
            else
@@ -317,7 +317,7 @@ begin
           tmcsSetRenderPath(prre_rh_iRenderPath);
         end;
     end
-   else key_f_stop := FALSE;
+   else key_g_stop := FALSE;
 
   // next occlusion culling method
   if ( inputiskeypressed(vkkeyscan('o')) ) then
@@ -383,15 +383,15 @@ begin
    else key_x_stop := FALSE;
 
   // engine dump to console
-  if ( inputiskeypressed(VK_SPACE) ) then
+  if ( inputiskeypressed(VK_RETURN) ) then
     begin
-      if ( not(key_space_stop) ) then
+      if ( not(key_return_stop) ) then
         begin
-          key_space_stop := TRUE;
+          key_return_stop := TRUE;
           tmcsEngineDump();
         end;
     end
-   else key_space_stop := FALSE;
+   else key_return_stop := FALSE;
 end;
 
 

@@ -344,6 +344,25 @@ private:
             return assertNotNull(objFromFileCloned, "objFromFileCloned is NULL");
         }
 
+        PRREObject3D* const objFromFileOther = om->createFromFile("_res/models/snail_proofps/snail.obj");
+        if ( !assertNotNull(objFromFileOther, "objFromFileOther not null"))
+        {
+            return assertNotNull(objFromFileOther, "objFromFileOther is NULL");
+        }
+
+        // for this occludee, turn occlusion test off, so its cloned should create bounding box for its own!
+        objFromFileOther->SetOcclusionTested(false);
+
+        PRREObject3D* const objFromFileOtherCloned = om->createCloned(*objFromFileOther);
+        if ( !objFromFileOtherCloned )
+        {
+            return assertNotNull(objFromFileOtherCloned, "objFromFileOtherCloned is NULL");
+        }
+
+        // we need to set occlusion testing turned on explicitly since its referred is not tested for occlusion,
+        // we expect here an implicit bounding box creation too
+        objFromFileOtherCloned->SetOcclusionTested(true);
+
         const bool b = assertNotEquals(objPlane->getName(), objCloned->getName(), "name") &
             assertNotEquals(std::string::npos, objCloned->getName().find("clone of " + objPlane->getName()), "name substr");
 
@@ -363,7 +382,8 @@ private:
             assertTrue(objCloned->isWireframed(), "wireframed") &
             assertTrue(objCloned->isWireframedCulled(), "wireframeculled") &
             assertNull(objCloned->getBoundingBoxObject(), "objCloned bounding box") &
-            assertNotNull(objFromFileCloned->getBoundingBoxObject(), "objFromFileCloned bounding box") &
+            assertNull(objFromFileCloned->getBoundingBoxObject(), "objFromFileCloned bounding box, as it should use referred's box") &
+            assertNotNull(objFromFileOtherCloned->getBoundingBoxObject(), "objFromFileOtherCloned bounding box, as it should have its own") &
             assertNotEquals(objFromFile->getBoundingBoxObject(), objFromFileCloned->getBoundingBoxObject(), "different bounding boxes") &
             assertTrue(objFromFileCloned->getRelPosVec() == objFromFile->getRelPosVec(), "objFromFileCloned rel pos") &
             assertEquals(objCloned->getBiggestAreaScaled(), objPlane->getBiggestAreaScaled(), "objCloned biggest area scaled") &

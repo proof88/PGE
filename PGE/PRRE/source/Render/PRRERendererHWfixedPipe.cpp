@@ -376,6 +376,110 @@ const TPRRE_RENDER_HINT& PRRERendererHWfixedPipeImpl::getRenderHints()
 
 void PRRERendererHWfixedPipeImpl::SetRenderHints(const TPRRE_RENDER_HINT& hints)
 {
+    const TPRREuint prevRenderPath = BITF_READ(renderHints, PRRE_RH_RENDER_PATH_BITS, 3);
+    const TPRREuint newRenderPath = BITF_READ(hints, PRRE_RH_RENDER_PATH_BITS, 3);
+
+    const TPRREuint prevOcclusionQueryMethod = BITF_READ(renderHints, PRRE_RH_OQ_METHOD_BITS, 2);
+    const TPRREuint newOcclusionQueryMethod = BITF_READ(hints, PRRE_RH_OQ_METHOD_BITS, 2);
+
+    const TPRREbool bPrevOcclusionDrawBoundingBoxes = ( BIT_READ(renderHints, PRRE_RH_OQ_DRAW_BOUNDING_BOXES_BIT) == 1u );
+    const TPRREbool bNewOcclusionDrawBoundingBoxes = ( BIT_READ(hints, PRRE_RH_OQ_DRAW_BOUNDING_BOXES_BIT) == 1u );
+
+    const TPRREbool bPrevOcclusionDrawIfQueryPending = ( BIT_READ(renderHints, PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_BIT) == 1u );
+    const TPRREbool bNewOcclusionDrawIfQueryPending = ( BIT_READ(hints, PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_BIT) == 1u );
+
+    const TPRREbool bPrevOrderByDistance = ( BIT_READ(renderHints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u );
+    const TPRREbool bNewOrderByDistance = ( BIT_READ(hints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u );
+
+    getConsole().OLn("PRRERendererHWfixedPipe::SetRenderHints(%u)", hints);
+    getConsole().OLn("  prev renderHints: %u", renderHints);
+    if ( prevRenderPath != newRenderPath )
+    {
+        std::string sPrevRenderPath;
+        switch (prevRenderPath)
+        {
+        case 0: sPrevRenderPath = "Legacy PR00FPS";
+            break;
+        case 1: sPrevRenderPath = "Distance Ordered";
+            break;
+        default: sPrevRenderPath = "Occlusion Culled";
+        }
+
+        std::string sNewRenderPath;
+        switch (newRenderPath)
+        {
+        case 0: sNewRenderPath = "Legacy PR00FPS";
+            break;
+        case 1: sNewRenderPath = "Distance Ordered";
+            break;
+        default: sNewRenderPath = "Occlusion Culled";
+        }
+
+        getConsole().OLn("  prevRenderPath: %u - %s", prevRenderPath, sPrevRenderPath.c_str());
+        getConsole().OLn("  newRenderPath : %u - %s", newRenderPath, sNewRenderPath.c_str());
+    }
+
+    if ( prevOcclusionQueryMethod != newOcclusionQueryMethod )
+    {
+        std::string sPrevOcMethod;
+        switch (prevOcclusionQueryMethod)
+        {
+        case 0: sPrevOcMethod = "Sync";
+            break;
+        default: sPrevOcMethod = "ASync";
+        }
+
+        std::string sNewOcMethod;
+        switch (newOcclusionQueryMethod)
+        {
+        case 0: sNewOcMethod = "Sync";
+            break;
+        default: sNewOcMethod = "ASync";
+        }
+
+        getConsole().OLn("  prevOcclusionQueryMethod: %u - %s", prevOcclusionQueryMethod, sPrevOcMethod.c_str());
+        getConsole().OLn("  newOcclusionQueryMethod : %u - %s", newOcclusionQueryMethod, sNewOcMethod.c_str());
+    }
+
+    if ( bPrevOcclusionDrawBoundingBoxes != bNewOcclusionDrawBoundingBoxes )
+    {
+        getConsole().OLn("  bPrevOcclusionDrawBoundingBoxes: %b", bPrevOcclusionDrawBoundingBoxes);
+        getConsole().OLn("  bNewOcclusionDrawBoundingBoxes : %b", bNewOcclusionDrawBoundingBoxes);
+    }
+
+    if ( bPrevOcclusionDrawIfQueryPending != bNewOcclusionDrawIfQueryPending )
+    {
+        getConsole().OLn("  bPrevOcclusionDrawIfQueryPending: %b", bPrevOcclusionDrawIfQueryPending);
+        getConsole().OLn("  bNewOcclusionDrawIfQueryPending : %b", bNewOcclusionDrawIfQueryPending);
+    }
+
+    if ( bPrevOrderByDistance != bNewOrderByDistance )
+    {
+        getConsole().OLn("  bPrevOrderByDistance: %b", bPrevOrderByDistance);
+        getConsole().OLn("  bNewOrderByDistance : %b", bNewOrderByDistance);
+    }
+
+    if ( ( (prevRenderPath == PRRE_RH_RP_OCCLUSION_CULLED) && (newRenderPath != PRRE_RH_RP_OCCLUSION_CULLED) )
+        ||
+        ( (prevOcclusionQueryMethod == PRRE_RH_OQ_METHOD_ASYNC) && (newOcclusionQueryMethod != PRRE_RH_OQ_METHOD_ASYNC) ) )
+    {
+        // we are switching either render path or occlusion query method when there still might be pending queries,
+        // so let's wait them to finish, otherwise some assert() may fail and/or some states might be inconsistent at next rendering!
+        getConsole().OLn("");
+        getConsole().O("  Force-finishing ongoing occlusion queries ... ");
+        for (int i = 0; i < pObject3DMgr->getSize(); i++)
+        {
+            PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
+        
+            if ( obj == PGENULL )
+                continue;
+
+            obj->ForceFinishOcclusionTest();
+        }
+        getConsole().OLn("done!");
+    }
+    getConsole().OLn("");
+
     renderHints = hints;
 } // SetRenderHints()
 

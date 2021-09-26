@@ -562,6 +562,21 @@ void PRREObject3D::PRREObject3DImpl::SetOcclusionTested(TPRREbool state)
         
         _pOwner->getConsole().OLn("Occlusion query ID: %d", nOcclusionQuery);
 
+        if ( getReferredObject() )
+        {
+            if ( getReferredObject()->pImpl->pBoundingBox )
+            {
+                // if we are cloned object, we should NOT create bounding box object if referred already has since we can use the box of the referred object
+                // we can do this because in case of cloned object, we expect the same geometry, etc.
+                _pOwner->getConsole().OLn("We are cloned and referred already has bounding box, so will use that");
+                return;
+            }
+            else
+            {
+                _pOwner->getConsole().OLn("We are cloned but referred does not have bounding box, so creating it now for cloned ...");
+            }
+        }
+
         // here we specify forcing bounding box geometry in client memory because we alter vertex positions with rel pos vec, and then we upload it to host memory
         pBoundingBox = ((PRREObject3DManager*)_pOwner->getManager())->createBox(_pOwner->getSizeVec().getX(), _pOwner->getSizeVec().getY(), _pOwner->getSizeVec().getZ(), PRRE_VMOD_DYNAMIC, PRRE_VREF_INDEXED, true);
         if ( PGENULL == pBoundingBox )
@@ -604,6 +619,35 @@ const PRREObject3D* PRREObject3D::PRREObject3DImpl::getBoundingBoxObject() const
 {
     return pBoundingBox;
 } // getBoundingBoxObject()
+
+
+void PRREObject3D::PRREObject3DImpl::ForceFinishOcclusionTest()
+{
+    if ( !bOcclusionQueryStarted || (nOcclusionQuery == 0) )
+    {
+        return;
+    }
+
+    GLint queryResultAvailable;
+    do {
+        glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_AVAILABLE_ARB, &queryResultAvailable);
+    } while (!queryResultAvailable);
+
+    bOcclusionQueryStarted = false;
+
+    if ( PRREhwInfo::get().getVideo().isBooleanOcclusionQuerySupported() )
+    {
+        GLint sampleBoolean;
+        glGetQueryObjectivARB(nOcclusionQuery, GL_QUERY_RESULT_ARB, &sampleBoolean);
+        bOccluded = ( sampleBoolean == GL_FALSE );
+    }
+    else
+    {
+        GLuint sampleCount;
+        glGetQueryObjectuivARB(nOcclusionQuery, GL_QUERY_RESULT_ARB, &sampleCount);
+        bOccluded = ( sampleCount == 0 );
+    }
+} // ForceFinishOcclusionTest()
 
 
 TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
@@ -1099,8 +1143,10 @@ void PRREObject3D::PRREObject3DImpl::Draw_RenderBoundingBox() const
         return;
     }
 
-    assert(pBoundingBox != PGENULL);
-    assert(pBoundingBox->getCount() > 0);
+    PRREObject3D* const pWhichBoundingBox = pBoundingBox ? pBoundingBox : (getReferredObject() ? getReferredObject()->pImpl->pBoundingBox : PGENULL);
+
+    assert(pWhichBoundingBox != PGENULL);
+    assert(pWhichBoundingBox->getCount() > 0);
 
     if ( isOccluded() )
     {
@@ -1110,7 +1156,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_RenderBoundingBox() const
     {
         glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
     }
-    ((PRREVertexTransfer*)pBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
+    ((PRREVertexTransfer*)pWhichBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
 } // Draw_RenderBoundingBox()
 
 
@@ -1125,21 +1171,26 @@ void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
     if ( nOcclusionQuery == 0 )
     {
         return;
-    }
+    }   
 
-    assert(pBoundingBox != PGENULL);
-    assert(pBoundingBox->getCount() > 0);
+    PRREObject3D* const pWhichBoundingBox = pBoundingBox ? pBoundingBox : (getReferredObject() ? getReferredObject()->pImpl->pBoundingBox : PGENULL);
+
+    assert(pWhichBoundingBox != PGENULL);
+    assert(pWhichBoundingBox->getCount() > 0);
+
+    if ( bOcclusionQueryStarted )
+    {
+        // obviously we don't start it if it is already started, doesn't matter if it is sync or async,
+        // however since all sync occlusion queries must finish in the same frame, it cannot happen it is already started when we are just invoked to start it!
+        assert(async);
+        return;
+    }
 
     if ( async )
     {
-        if ( bOcclusionQueryStarted )
-        {
-            return;
-        }
-
         if ( bOccluded )
         {
-            if ( nFramesWithoutOcclusionTest <= OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED )
+            if ( nFramesWithoutOcclusionTest < OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED )
             {
                 nFramesWithoutOcclusionTest++;
                 return;
@@ -1147,7 +1198,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
         }
         else
         {
-            if ( nFramesWithoutOcclusionTest <= OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE )
+            if ( nFramesWithoutOcclusionTest < OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE )
             {
                 nFramesWithoutOcclusionTest++;
                 return;
@@ -1156,7 +1207,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
     } // async
 
     glBeginOcclusionQuery();
-    ((PRREVertexTransfer*)pBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
+    ((PRREVertexTransfer*)pWhichBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
     glEndOcclusionQuery();
 
     bOcclusionQueryStarted = true;
@@ -1191,9 +1242,13 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool b
         
         if ( bASyncQuery )
         {
-            if ( OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED == 0 )
-            {
-                assert(false); // this just cannot happen
+            if ( bOccluded && (OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED == 0) )
+            {   // if query is not started, but it should had been started if constant value says it should not wait for another frame,
+                // then this is a programmer error condition
+                if ( !isOccluder() )
+                {   // abort only if this is really an occludee: because renderer won't start occlusion query for occluders beforehand!
+                    assert(false); // this just cannot happen
+                }
             }
             return bOccluded; // let it be rendered if last result says not occluded
         }
@@ -2042,6 +2097,17 @@ const PRREObject3D* PRREObject3D::getBoundingBoxObject() const
 {
     return pImpl->getBoundingBoxObject();
 } // getBoundingBoxObject()
+
+
+/**
+    Waits for any pending occlusion test to be finished.
+    This is actually a helper function for a renderer in rare cases when rendering path change requires all pending queries to be finished.
+    This is called forced, so it waits for finish even when rendering path implements async occlusion query handling.
+*/
+void PRREObject3D::ForceFinishOcclusionTest()
+{
+    pImpl->ForceFinishOcclusionTest();
+} // ForceFinishOcclusionTest()
 
 
 /**
