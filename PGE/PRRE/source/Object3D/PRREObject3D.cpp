@@ -78,6 +78,17 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
     pVerticesTransf = PGENULL;
     pFbBuffer = PGENULL;
 
+    if ( pRefersto )
+    {
+        pRefersto->pImpl->referrers.erase(_pOwner);
+    } else if ( referrers.size() > 0 )
+    {
+        // referrers now become zombie objects: they do not refer but they dont have any subobjects either!
+        // user's responsibility to get rid of them if original object is removed!
+        for (auto& referrer : referrers)
+            referrer->pImpl->pRefersto = PGENULL;
+    }
+
     SetOcclusionTested(false);
 
     std::set< std::deque<PRREObject3D*>* > mapsEraseObjectFrom;
@@ -161,6 +172,12 @@ PRREObject3D* PRREObject3D::PRREObject3DImpl::getReferredObject() const
 {
     return pRefersto; 
 } // getReferredObject()
+
+
+const std::set<PRREObject3D*>& PRREObject3D::PRREObject3DImpl::getReferrerObjects() const
+{
+    return referrers;
+} // getReferrerObjects()
 
 
 TPRRE_TRANSFORMED_VERTEX* PRREObject3D::PRREObject3DImpl::getTransformedVertices(TPRREbool implicitAccessSubobject)
@@ -600,6 +617,12 @@ void PRREObject3D::PRREObject3DImpl::SetOcclusionTested(TPRREbool state)
     }
     else
     {
+        if ( referrers.size() > 0 )
+        {
+            _pOwner->getConsole().EOLn("%s() ERROR: at least 1 cloned object exists referring to this object, cannot turn off occlusion testing!", __FUNCTION__);
+            return;
+        }
+
         if ( nOcclusionQuery > 0 )
         {
             glDeleteQueriesARB(1, &nOcclusionQuery);
@@ -1516,6 +1539,16 @@ TPRREbool PRREObject3D::setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 PRREObject3D* PRREObject3D::getReferredObject() const
 {
     return pImpl->getReferredObject();
+}
+
+
+/**
+    Gets the cloned objects referring to this object.
+    @return Cloned objects referring to this object.
+*/
+const std::set<PRREObject3D*>& PRREObject3D::getReferrerObjects() const
+{
+    return pImpl->getReferrerObjects();
 }
 
 

@@ -849,6 +849,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(const char* filename)
     Creates a new object by cloning an already existing object.
     The clone will have its own properties such as position, visibility, etc. but the geometry will not be cloned, just referenced.
     Useful for saving memory on geometry data on both client and server side.
+    Note that it is the user's responsibility to delete all clones of an object before trying to delete the original object.
 
     @return A clone instance.
             PGENULL if Object3DManager is not yet initialized, or if memory allocation issue happens, or when vertex transfer mode cannot be set.
@@ -877,6 +878,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         obj->SetFilename( referredobj.getFilename() );
         
         obj->pImpl->pRefersto = &referredobj;
+        referredobj.pImpl->referrers.insert(obj);
 
         obj->getPosVec() = referredobj.getPosVec();
         // we dont need to copy vRelPos, since getRelPosVec() is overridden in Object3D to work for cloned objects too!

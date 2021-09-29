@@ -47,6 +47,7 @@ public:
     TPRREbool setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);
 
     PRREObject3D* getReferredObject() const;   
+    const std::set<PRREObject3D*>& getReferrerObjects() const;
 
     TPRRE_TRANSFORMED_VERTEX* getTransformedVertices(
         TPRREbool implicitAccessSubobject = true);
@@ -121,8 +122,9 @@ protected:
     PRREObject3DImpl& operator=(const PRREObject3DImpl&);
 
 private:
-    PRREObject3D* _pOwner;    /**< The owner public object who creates this pimpl object. */
-    PRREObject3D* pRefersto;  /**< Pointer to the original object when we are just a cloned object. */
+    PRREObject3D* _pOwner;              /**< The owner public object who creates this pimpl object. */
+    PRREObject3D* pRefersto;            /**< Pointer to the original object when we are just a cloned object. */
+    std::set<PRREObject3D*> referrers;  /**< Cloned objects currently referring to this object. */
 
     PRREVector vAngle;              /**< 3D Angle. */
     PRREVector vScaling;            /**< 3D Scaling. */

@@ -12,6 +12,7 @@
 */
 
 #include <deque>
+#include <set>
 
 #include "../PRREallHeaders.h"
 #include "../PRREFiledManager.h"
@@ -89,7 +90,8 @@ public:
     virtual TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;                /**< Gets vertex transfer mode. */
     virtual TPRREbool setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);      /**< Sets vertex transfer mode. */
 
-    PRREObject3D* getReferredObject() const;   /**< Gets the original object which was cloned to create this object. */
+    PRREObject3D* getReferredObject() const;                    /**< Gets the original object which was cloned to create this object. */
+    const std::set<PRREObject3D*>& getReferrerObjects() const;  /**< Gets the cloned objects referring to this object. */
 
     const TPRRE_TRANSFORMED_VERTEX* getTransformedVertices(
         TPRREbool implicitAccessSubobject = true) const;               /**< Gets the pointer to transformed vertices. */

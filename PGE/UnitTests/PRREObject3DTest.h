@@ -58,7 +58,7 @@ protected:
 
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PRREObject3DTest::testCtor);
         AddSubTest("testDtor", (PFNUNITSUBTEST) &PRREObject3DTest::testDtor);
-        AddSubTest("testGetReferredObject", (PFNUNITSUBTEST) &PRREObject3DTest::testGetReferredObject);
+        AddSubTest("testGetReferredObject", (PFNUNITSUBTEST) &PRREObject3DTest::testGetReferredObject_GetReferrerObjects);
 
         // Object3D contains some slight modifications in these functions compared to the original VertexTransfer functions
         AddSubTest("testGetVertexModifyingHabit", (PFNUNITSUBTEST) &PRREObject3DTest::testGetVertexModifyingHabit);
@@ -213,7 +213,7 @@ private:
         return assertEquals(objCount-2, om->getCount(), "getCount 2nd");
     }
 
-    bool testGetReferredObject()
+    bool testGetReferredObject_GetReferrerObjects()
     {
         PRREObject3D* const objCloned = om->createCloned(*obj);
         if ( !objCloned )
@@ -227,7 +227,26 @@ private:
             return assertNotNull(objFromFileCloned, "objFromFileCloned is NULL");
         }
 
-        bool b = assertNull(obj->getReferredObject(), "obj") &
+        bool b = true;
+        if ( obj->getReferrerObjects().empty() )
+        {
+            return assertTrue(false, "obj->getReferrerObjects().empty()");
+        }
+        else
+        {
+            b &= assertEquals(objCloned, *(obj->getReferrerObjects().begin()), "objCloned is on obj->getReferrerObjects()");
+        }
+
+        if ( objFromFile->getReferrerObjects().empty() )
+        {
+            return assertTrue(false, "objFromFile->getReferrerObjects().empty()");
+        }
+        else
+        {
+            b &= assertEquals(objFromFileCloned, *(objFromFile->getReferrerObjects().begin()), "objFromFileCloned is on objFromFile->getReferrerObjects()");
+        }
+
+        b &= assertNull(obj->getReferredObject(), "obj") &
             assertNull(objFromFile->getReferredObject(), "obj") &
             assertNull(objPlane->getReferredObject(), "plane") &
             assertNull(objBox->getReferredObject(), "box") &
@@ -236,8 +255,12 @@ private:
             assertEquals(objFromFile, objFromFileCloned->getReferredObject(), "refobjFromFileEquals");
 
         delete objCloned;
-        delete objFromFileCloned;
-        
+        b &= assertTrue(obj->getReferrerObjects().empty(), "obj->getReferrerObjects().empty() after deleting cloned");
+
+        delete objFromFile;
+        objFromFile = PGENULL;        
+        b &= assertEquals((PRREObject3D*)PGENULL, objFromFileCloned->getReferredObject(), "objFromFileCloned->getReferredObject() NULL after deleting referred");
+
         return b;
     }
 
