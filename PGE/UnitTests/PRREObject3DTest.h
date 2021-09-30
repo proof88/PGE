@@ -1201,19 +1201,35 @@ private:
 
     bool testSetOcclusionTested()
     {
-        obj->SetOcclusionTested(true);
+        obj->SetOcclusionTested(true);                      
         objFromFile->SetOcclusionTested(true);
 
-        bool b = assertTrue(obj->isOcclusionTested(), "obj is 1") &
-            assertTrue(objFromFile->isOcclusionTested(), "objFromFile is 1") &
+        PRREObject3D* const objCloned = om->createCloned(*obj);
+        if ( !objCloned )
+        {
+            return assertNotNull(objCloned, "objCloned is NULL");
+        }
+
+        bool b = assertTrue(obj->isOcclusionTested(), "obj is tested 1") &
+            assertTrue(objCloned->isOcclusionTested(), "objCloned is tested 1") &
+            assertTrue(objFromFile->isOcclusionTested(), "objFromFile is tested 1") &
             assertNotNull(obj->getBoundingBoxObject(), "obj bounding 1") &
+            assertNull(objCloned->getBoundingBoxObject(), "objCloned bounding 1") &
             assertNotNull(objFromFile->getBoundingBoxObject(), "objFromFile bounding 1");
+
+        // cannot set false due to obj has referrer to it!
+        obj->SetOcclusionTested(false);
+        b &= assertTrue(obj->isOcclusionTested(), "obj is tested 1") &
+            assertTrue(objCloned->isOcclusionTested(), "objCloned is tested 1") &
+            assertNotNull(obj->getBoundingBoxObject(), "obj bounding 1");
+
+        delete objCloned;
 
         obj->SetOcclusionTested(false);
         objFromFile->SetOcclusionTested(false);
 
-        b &= assertFalse(obj->isOcclusionTested(), "obj is 2") &
-            assertFalse(objFromFile->isOcclusionTested(), "objFromFile is 2") &
+        b &= assertFalse(obj->isOcclusionTested(), "obj is tested 2") &
+            assertFalse(objFromFile->isOcclusionTested(), "objFromFile is tested 2") &
             assertNull(obj->getBoundingBoxObject(), "obj bounding 2") &
             assertNull(objFromFile->getBoundingBoxObject(), "objFromFile bounding 2");
 
