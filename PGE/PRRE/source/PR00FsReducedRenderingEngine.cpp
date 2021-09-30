@@ -631,10 +631,10 @@ void PR00FsReducedRenderingEngineImpl::WriteList() const
 
 
 /**
-    Checks if invoke of WriteStats() would happen at the beginning of shutdown().
+    Checks if invoke of WriteList() would happen at the beginning of shutdown().
     Default false.
 
-    @return True if WriteStats() would be invoked automatically at the beginning of shutdown(), false otherwise.
+    @return True if WriteList() would be invoked automatically at the beginning of shutdown(), false otherwise.
 */
 TPRREbool PR00FsReducedRenderingEngineImpl::getAutoWriteStatsAtShutdown() const
 {
@@ -643,10 +643,10 @@ TPRREbool PR00FsReducedRenderingEngineImpl::getAutoWriteStatsAtShutdown() const
 
 
 /**
-    Sets if invoke of WriteStats() should happen at the beginning of shutdown().
+    Sets if invoke of WriteList() should happen at the beginning of shutdown().
     Default false.
 
-    @param state If true WriteStats() will be invoked automatically at the beginning of shutdown(), otherwise it won't be invoked.
+    @param state If true WriteList() will be invoked automatically at the beginning of shutdown(), otherwise it won't be invoked.
 */
 void PR00FsReducedRenderingEngineImpl::SetAutoWriteStatsAtShutdown(TPRREbool state)
 {

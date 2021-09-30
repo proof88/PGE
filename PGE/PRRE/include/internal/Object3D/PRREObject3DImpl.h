@@ -22,12 +22,19 @@ class PRREObject3D::PRREObject3DImpl
 
 public:
 
-    static TPRREuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE;
-    static TPRREuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED;
+    struct CurrentStats
+    {
+        PFL::timeval timeLongestGlobalWaitForSyncQueryFinish;       /**< Maximum measured per-object timeLongestWaitForSyncQueryFinish value. */
+        TPRREuint    nFramesWaitedForOcclusionTestResultGlobalMin;  /**< Async: Minimum counted per-object nFramesWaitedForOcclusionTestResultMin value. */
+        TPRREuint    nFramesWaitedForOcclusionTestResultGlobalMax;  /**< Async: Maximum counted per-object nFramesWaitedForOcclusionTestResultMax value. */
 
-    static PFL::timeval timeLongestGlobalWaitForSyncQueryFinish;       /**< Maximum measured per-object timeLongestWaitForSyncQueryFinish value. */
-    static TPRREuint    nFramesWaitedForOcclusionTestResultGlobalMin;  /**< Async: Minimum counted per-object nFramesWaitedForOcclusionTestResultMin value. */
-    static TPRREuint    nFramesWaitedForOcclusionTestResultGlobalMax;  /**< Async: Maximum counted per-object nFramesWaitedForOcclusionTestResultMax value. */
+        CurrentStats();
+    };
+
+    static const TPRREuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE;
+    static const TPRREuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED;
+
+    static std::vector<CurrentStats> stats;
 
     static std::deque<PRREObject3D*> occluders;              /**< List of 3D occluders, should be updated whenever a 3D object becomes an occluder. */
     static std::deque<PRREObject3D*> occludees_opaque;       /**< List of 3D opaque (non-blended) occludees, should be updated whenever a 3D (non-sticked) object becomes an opauqe occludee. */

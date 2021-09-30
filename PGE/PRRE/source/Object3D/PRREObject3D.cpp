@@ -55,18 +55,25 @@ using namespace std;
 // ############################### PUBLIC ################################
 
 
-TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE  = 5;
-TPRREuint PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED = 0;
+TPRREuint const PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE  = 5;
+TPRREuint const PRREObject3D::PRREObject3DImpl::OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED = 0;
 
-PFL::timeval PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish = {0,0};
-TPRREuint PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMin = UINT_MAX;
-TPRREuint PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMax = 0;
+std::vector<PRREObject3D::PRREObject3DImpl::CurrentStats> PRREObject3D::PRREObject3DImpl::stats;
 
 std::deque<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occluders;
 std::deque<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_opaque;
 std::deque<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_blended;
 std::deque<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_2d_opaque;
 std::deque<PRREObject3D*> PRREObject3D::PRREObject3DImpl::occludees_2d_blended;
+
+
+PRREObject3D::PRREObject3DImpl::CurrentStats::CurrentStats()
+{
+    timeLongestGlobalWaitForSyncQueryFinish.tv_sec = 0;
+    timeLongestGlobalWaitForSyncQueryFinish.tv_usec = 0;
+    nFramesWaitedForOcclusionTestResultGlobalMin = UINT_MAX;
+    nFramesWaitedForOcclusionTestResultGlobalMax = 0;
+}
 
 
 PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
@@ -1306,12 +1313,12 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool b
             if ( microseconds > timeLongestWaitForSyncQueryFinish.tv_usec )
                 timeLongestWaitForSyncQueryFinish.tv_usec = microseconds;
 
-            if ( timeLongestWaitForSyncQueryFinish.tv_sec > timeLongestGlobalWaitForSyncQueryFinish.tv_sec )
+            if ( timeLongestWaitForSyncQueryFinish.tv_sec > PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_sec )
             {
-                timeLongestGlobalWaitForSyncQueryFinish.tv_sec = timeLongestWaitForSyncQueryFinish.tv_sec;
-                timeLongestGlobalWaitForSyncQueryFinish.tv_usec = 0;
-                if ( timeLongestWaitForSyncQueryFinish.tv_usec > timeLongestGlobalWaitForSyncQueryFinish.tv_usec )
-                    timeLongestGlobalWaitForSyncQueryFinish.tv_usec = timeLongestWaitForSyncQueryFinish.tv_usec;
+                PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_sec = timeLongestWaitForSyncQueryFinish.tv_sec;
+                PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_usec = 0;
+                if ( timeLongestWaitForSyncQueryFinish.tv_usec > PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_usec )
+                    PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_usec = timeLongestWaitForSyncQueryFinish.tv_usec;
             }
         }
         else
@@ -1319,8 +1326,8 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool b
             if ( microseconds > timeLongestWaitForSyncQueryFinish.tv_usec )
                 timeLongestWaitForSyncQueryFinish.tv_usec = microseconds;
 
-            if ( timeLongestWaitForSyncQueryFinish.tv_usec > timeLongestGlobalWaitForSyncQueryFinish.tv_usec )
-                timeLongestGlobalWaitForSyncQueryFinish.tv_usec = timeLongestWaitForSyncQueryFinish.tv_usec;
+            if ( timeLongestWaitForSyncQueryFinish.tv_usec > PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_usec )
+                PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_usec = timeLongestWaitForSyncQueryFinish.tv_usec;
         }
     } // sync stats update
 
@@ -1352,17 +1359,17 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool b
         if ( nFramesWaitedForOcclusionTestResult < nFramesWaitedForOcclusionTestResultMin )
         {
             nFramesWaitedForOcclusionTestResultMin = nFramesWaitedForOcclusionTestResult;
-            if ( nFramesWaitedForOcclusionTestResultMin < nFramesWaitedForOcclusionTestResultGlobalMin )
+            if ( nFramesWaitedForOcclusionTestResultMin < PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].nFramesWaitedForOcclusionTestResultGlobalMin )
             {
-                nFramesWaitedForOcclusionTestResultGlobalMin = nFramesWaitedForOcclusionTestResultMin;
+                PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].nFramesWaitedForOcclusionTestResultGlobalMin = nFramesWaitedForOcclusionTestResultMin;
             }
         }
         if ( nFramesWaitedForOcclusionTestResult > nFramesWaitedForOcclusionTestResultMax )
         {
             nFramesWaitedForOcclusionTestResultMax = nFramesWaitedForOcclusionTestResult;
-            if ( nFramesWaitedForOcclusionTestResultMax > nFramesWaitedForOcclusionTestResultGlobalMax )
+            if ( nFramesWaitedForOcclusionTestResultMax > PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].nFramesWaitedForOcclusionTestResultGlobalMax )
             {
-                nFramesWaitedForOcclusionTestResultGlobalMax = nFramesWaitedForOcclusionTestResultMax; 
+                PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].nFramesWaitedForOcclusionTestResultGlobalMax = nFramesWaitedForOcclusionTestResultMax; 
             }
         }
         nFramesWaitedForOcclusionTestResult = 0;

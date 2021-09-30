@@ -195,6 +195,7 @@ PRREObject3DManager::PRREObject3DManagerImpl::PRREObject3DManagerImpl(PRREObject
     _pOwner->getConsole().OLnOI("PRREObject3DManagerImpl() ...");
     bInited = false;
     bMinimalIndexStorage = true;
+    PRREObject3D::PRREObject3DImpl::stats.push_back( PRREObject3D::PRREObject3DImpl::CurrentStats() );
     // we rely on texture manager initialized state since that also relies on initialized state of hwinfo
     bInited = texMgr.isInitialized();
     _pOwner->getConsole().SOLnOO("Done!");
@@ -1060,8 +1061,9 @@ void PRREObject3DManager::HandleManagedPropertyChanged(PRREManaged& m)
 
 
 /**
-    Resets any kind of statistics collected during its lifetime.
+    Saves and resets current statistics.
     Useful if you want to restart measurements.
+    The saved statistics are also logged by WriteList().
 */
 void PRREObject3DManager::ResetStatistics()
 {
@@ -1069,20 +1071,15 @@ void PRREObject3DManager::ResetStatistics()
     getConsole().OLn("Following statistics are being reset:");
 
     getConsole().OLn("Sync: timeLongestGlobalWaitForSyncQueryFinish: %u s %u us",
-        PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish.tv_sec,
-        PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish.tv_usec);
+        PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_sec,
+        PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_usec);
     getConsole().OLn("ASync: nFramesWaited4OcclTestResGlobal: min: %u, max: %u;",
-        PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMin,
-        PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMax); 
+        PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].nFramesWaitedForOcclusionTestResultGlobalMin,
+        PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].nFramesWaitedForOcclusionTestResultGlobalMax); 
 
     getConsole().OO();
 
-    // global sync occlusion query stats
-    PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish.tv_sec = 0;
-    PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish.tv_usec = 0;
-    // global async occlusion query stats
-    PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMin = UINT_MAX;
-    PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMax = 0;
+    PRREObject3D::PRREObject3DImpl::stats.push_back( PRREObject3D::PRREObject3DImpl::CurrentStats() );
     
     // object-local occlusion query stats
     for (TPRREint i = 0; i < getSize(); i++)
@@ -1129,12 +1126,20 @@ void PRREObject3DManager::WriteList() const
     TPRREuint nVRAMtotal = getUsedVideoMemory();
 
     getConsole().OI();
-    getConsole().OLn("Sync: timeLongestGlobalWaitForSyncQueryFinish: %u s %u us",
-        PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish.tv_sec,
-        PRREObject3D::PRREObject3DImpl::timeLongestGlobalWaitForSyncQueryFinish.tv_usec);
-    getConsole().OLn("ASync: nFramesWaited4OcclTestResGlobal: min: %u, max: %u;",
-        PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMin,
-        PRREObject3D::PRREObject3DImpl::nFramesWaitedForOcclusionTestResultGlobalMax); 
+
+    for (TPRREuint i = 0; i < PRREObject3D::PRREObject3DImpl::stats.size(); i++)
+    {
+        const PRREObject3D::PRREObject3DImpl::CurrentStats& iStat = PRREObject3D::PRREObject3DImpl::stats[i]; 
+        getConsole().OLn("Stats %u:", i+1);
+        getConsole().OLn("Sync: timeLongestGlobalWaitForSyncQueryFinish: %u s %u us",
+            iStat.timeLongestGlobalWaitForSyncQueryFinish.tv_sec,
+            iStat.timeLongestGlobalWaitForSyncQueryFinish.tv_usec);
+        getConsole().OLn("ASync: nFramesWaited4OcclTestResGlobal: min: %u, max: %u;",
+            iStat.nFramesWaitedForOcclusionTestResultGlobalMin,
+            iStat.nFramesWaitedForOcclusionTestResultGlobalMax); 
+        getConsole().OLn("");
+    }
+
     getConsole().OLn("> total used video memory = %d Bytes <= %d kBytes <= %d MBytes", nVRAMtotal, (int)(ceil(nVRAMtotal/1024.0f)), (int)(ceil(nVRAMtotal/1024.0f/1024.0f)));
     getConsole().OO();
     getConsole().OLn("");
