@@ -476,6 +476,13 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
             return;
         }
 
+        // At this point we are setting this object to be occluder, however due to rare issue we have to make sure we wait for
+        // its occlusion query to finish AND set its occluded state to false because occluders are always meant to be rendered.
+        // This fixes an issue that can be also seen in EV2008P03 sample, when the user moves the mouse changing camera angle
+        // within the 1st few frames, during when the renderer automatically decides which objects should be occluders by UpdateOccluderStates().
+        ForceFinishOcclusionTest();
+        bOccluded = false;
+
         auto occ_it = std::find(occluders.begin(), occluders.end(), _pOwner);
         if ( occ_it == occluders.end() )
         {
@@ -573,8 +580,7 @@ void PRREObject3D::PRREObject3DImpl::SetOcclusionTested(TPRREbool state)
     {
         if ( PGENULL == _pOwner->getManager() )
         {
-            const std::string sErrMsg = "no manager!";
-            throw std::runtime_error(sErrMsg);
+            throw std::runtime_error("no manager!");
         }
 
         if ( !pglGenQueries(1, &nOcclusionQuery) ) 
@@ -1212,6 +1218,10 @@ void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
     {
         // obviously we don't start it if it is already started, doesn't matter if it is sync or async,
         // however since all sync occlusion queries must finish in the same frame, it cannot happen it is already started when we are just invoked to start it!
+        if ( !async )
+        {
+            _pOwner->getConsole().EOLn("%s() ERROR: occlusion query is already started but we are in SYNC query mode!", __FUNCTION__);
+        }
         assert(async);
         return;
     }

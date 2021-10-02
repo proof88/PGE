@@ -348,12 +348,14 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
                 break;
             default:
                 // later more OQ methods will come ...
+                getConsole().EOLn("%s() ERROR: unhandled iOcclusionQueryMethod!", __FUNCTION__);
                 assert(false);
             } // switch iOcclusionQueryMethod
         }
         break;
     default:
         // later more renderpaths will come ...
+        getConsole().EOLn("%s() ERROR: unhandled iRenderPath!", __FUNCTION__);
         assert(false);
     } // switch iRenderPath
 
