@@ -1076,7 +1076,7 @@ void PRREObject3DManager::ResetStatistics()
     getConsole().OLn("ASync: nFramesWaited4OcclTestResGlobal: min: %u, max: %u;",
         PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].nFramesWaitedForOcclusionTestResultGlobalMin,
         PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].nFramesWaitedForOcclusionTestResultGlobalMax); 
-
+    getConsole().OLn("");
     getConsole().OO();
 
     PRREObject3D::PRREObject3DImpl::stats.push_back( PRREObject3D::PRREObject3DImpl::CurrentStats() );
@@ -1127,6 +1127,10 @@ void PRREObject3DManager::WriteList() const
 
     getConsole().OI();
 
+    getConsole().OLn("> total used video memory = %d Bytes <= %d kBytes <= %d MBytes", nVRAMtotal, (int)(ceil(nVRAMtotal/1024.0f)), (int)(ceil(nVRAMtotal/1024.0f/1024.0f)));
+    getConsole().OLn("");
+
+    getConsole().OLn("Collected statistics:");
     for (TPRREuint i = 0; i < PRREObject3D::PRREObject3DImpl::stats.size(); i++)
     {
         const PRREObject3D::PRREObject3DImpl::CurrentStats& iStat = PRREObject3D::PRREObject3DImpl::stats[i]; 
@@ -1140,7 +1144,6 @@ void PRREObject3DManager::WriteList() const
         getConsole().OLn("");
     }
 
-    getConsole().OLn("> total used video memory = %d Bytes <= %d kBytes <= %d MBytes", nVRAMtotal, (int)(ceil(nVRAMtotal/1024.0f)), (int)(ceil(nVRAMtotal/1024.0f/1024.0f)));
     getConsole().OO();
     getConsole().OLn("");
 } // WriteList()

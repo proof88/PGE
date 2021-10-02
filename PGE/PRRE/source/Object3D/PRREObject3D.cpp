@@ -118,12 +118,6 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
 
     _pOwner->DeleteAll();
 
-    // if we are just a cloned object, above code should have done essentially nothing
-    if ( getReferredObject() )
-    {
-        // TODO: probably we should decrement reference count in referred object ...
-    }
-
     _pOwner->getManagedConsole().SOLnOO("Done!");
 } // ~PRRETexture()
 

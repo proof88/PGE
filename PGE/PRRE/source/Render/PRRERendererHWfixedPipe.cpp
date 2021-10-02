@@ -31,8 +31,19 @@ class PRRERendererHWfixedPipeImpl :
     public PRRERendererHWfixedPipe
 {
 public:
+    struct CurrentStats
+    {
+        TPRRE_RENDER_HINT renderHints;  /**< Render hints. */
+
+        CurrentStats();
+    };
+
     static TPRREbool OQ_AUTO_UPDATE_OCCLUDER_STATES;
     static TPRREbool OQ_ZPASS_FOR_OCCLUDERS;
+
+    static std::map<TPRREuint, std::string> mapRenderPaths2String;
+    static std::map<TPRREuint, std::string> mapOcclusionQueryMethod2String;
+    static std::vector<CurrentStats> stats;
 
     // ---------------------------------------------------------------------------
 
@@ -64,7 +75,6 @@ public:
     void CheckConsistency() const;  
 
 private:
-    TPRRE_RENDER_HINT    renderHints;  /**< Render hints. */
     PRREWindow&          wnd;          /**< Our window, where we draw to, singleton. */
     PRREhwInfo&          hwInfo;       /**< Hardware infos, singleton. */
     PRREScreen&          screen;       /**< Our screen, singleton. */
@@ -92,12 +102,9 @@ private:
     PRRERendererHWfixedPipeImpl(const PRRERendererHWfixedPipeImpl&);
     PRRERendererHWfixedPipeImpl& operator=(const PRRERendererHWfixedPipeImpl&);
 
-    void myLookAt(const PRREVector& pos,
-        const PRREVector& target,
-        const PRREVector& up) const;
-
     void printOGLerrorBrief();           /**< Writes OpenGL error to console only if there is really an error. */
     void printOGLerrorFull();            /**< Writes OpenGL error to console even the error is no error. */
+    void LogFullRenderHints(const TPRRE_RENDER_HINT& hints) const;     /**< Logs given render hints with full descriptive text. */
 
     TPRREbool initializeOpenGL(HDC dc);  /**< Initializes OpenGL. */
     TPRREbool shutdownOpenGL();          /**< Shuts down OpenGL. */
@@ -127,6 +134,14 @@ private:
 TPRREbool PRRERendererHWfixedPipeImpl::OQ_AUTO_UPDATE_OCCLUDER_STATES = true;
 TPRREbool PRRERendererHWfixedPipeImpl::OQ_ZPASS_FOR_OCCLUDERS = false;
 
+std::map<TPRREuint, std::string> PRRERendererHWfixedPipeImpl::mapRenderPaths2String;
+std::map<TPRREuint, std::string> PRRERendererHWfixedPipeImpl::mapOcclusionQueryMethod2String;
+std::vector<PRRERendererHWfixedPipeImpl::CurrentStats> PRRERendererHWfixedPipeImpl::stats;
+
+PRRERendererHWfixedPipeImpl::CurrentStats::CurrentStats()
+{
+    renderHints = 0;    
+}
 
 /**
     Calls shutdown().
@@ -326,7 +341,7 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
     BeginRendering();
                                                                                                 
     SwitchToPerspectiveProjection();
-    const TPRREuint iRenderPath = BITF_READ(renderHints, PRRE_RH_RENDER_PATH_BITS, 3);
+    const TPRREuint iRenderPath = BITF_READ(stats[stats.size()-1].renderHints, PRRE_RH_RENDER_PATH_BITS, 3);
     switch (iRenderPath)
     {
     case PRRE_RH_RP_LEGACY_PR00FPS:
@@ -337,7 +352,7 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
         break;
     case PRRE_RH_RP_OCCLUSION_CULLED:
         {
-            const TPRREuint iOcclusionQueryMethod = BITF_READ(renderHints, PRRE_RH_OQ_METHOD_BITS, 2);
+            const TPRREuint iOcclusionQueryMethod = BITF_READ(stats[stats.size()-1].renderHints, PRRE_RH_OQ_METHOD_BITS, 2);
             switch (iOcclusionQueryMethod)
             {
             case PRRE_RH_OQ_METHOD_SYNC:
@@ -372,75 +387,39 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
 
 const TPRRE_RENDER_HINT& PRRERendererHWfixedPipeImpl::getRenderHints()
 {
-    return renderHints;
+    return stats[stats.size()-1].renderHints;
 } // getRenderHints()
 
 
 void PRRERendererHWfixedPipeImpl::SetRenderHints(const TPRRE_RENDER_HINT& hints)
 {
-    const TPRREuint prevRenderPath = BITF_READ(renderHints, PRRE_RH_RENDER_PATH_BITS, 3);
+    const TPRREuint prevRenderPath = BITF_READ(stats[stats.size()-1].renderHints, PRRE_RH_RENDER_PATH_BITS, 3);
     const TPRREuint newRenderPath = BITF_READ(hints, PRRE_RH_RENDER_PATH_BITS, 3);
 
-    const TPRREuint prevOcclusionQueryMethod = BITF_READ(renderHints, PRRE_RH_OQ_METHOD_BITS, 2);
+    const TPRREuint prevOcclusionQueryMethod = BITF_READ(stats[stats.size()-1].renderHints, PRRE_RH_OQ_METHOD_BITS, 2);
     const TPRREuint newOcclusionQueryMethod = BITF_READ(hints, PRRE_RH_OQ_METHOD_BITS, 2);
 
-    const TPRREbool bPrevOcclusionDrawBoundingBoxes = ( BIT_READ(renderHints, PRRE_RH_OQ_DRAW_BOUNDING_BOXES_BIT) == 1u );
+    const TPRREbool bPrevOcclusionDrawBoundingBoxes = ( BIT_READ(stats[stats.size()-1].renderHints, PRRE_RH_OQ_DRAW_BOUNDING_BOXES_BIT) == 1u );
     const TPRREbool bNewOcclusionDrawBoundingBoxes = ( BIT_READ(hints, PRRE_RH_OQ_DRAW_BOUNDING_BOXES_BIT) == 1u );
 
-    const TPRREbool bPrevOcclusionDrawIfQueryPending = ( BIT_READ(renderHints, PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_BIT) == 1u );
+    const TPRREbool bPrevOcclusionDrawIfQueryPending = ( BIT_READ(stats[stats.size()-1].renderHints, PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_BIT) == 1u );
     const TPRREbool bNewOcclusionDrawIfQueryPending = ( BIT_READ(hints, PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_BIT) == 1u );
 
-    const TPRREbool bPrevOrderByDistance = ( BIT_READ(renderHints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u );
+    const TPRREbool bPrevOrderByDistance = ( BIT_READ(stats[stats.size()-1].renderHints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u );
     const TPRREbool bNewOrderByDistance = ( BIT_READ(hints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u );
 
     getConsole().OLn("PRRERendererHWfixedPipe::SetRenderHints(%u)", hints);
-    getConsole().OLn("  prev renderHints: %u", renderHints);
+    getConsole().OLn("  prev renderHints: %u", stats[stats.size()-1].renderHints);
     if ( prevRenderPath != newRenderPath )
     {
-        std::string sPrevRenderPath;
-        switch (prevRenderPath)
-        {
-        case 0: sPrevRenderPath = "Legacy PR00FPS";
-            break;
-        case 1: sPrevRenderPath = "Distance Ordered";
-            break;
-        default: sPrevRenderPath = "Occlusion Culled";
-        }
-
-        std::string sNewRenderPath;
-        switch (newRenderPath)
-        {
-        case 0: sNewRenderPath = "Legacy PR00FPS";
-            break;
-        case 1: sNewRenderPath = "Distance Ordered";
-            break;
-        default: sNewRenderPath = "Occlusion Culled";
-        }
-
-        getConsole().OLn("  prevRenderPath: %u - %s", prevRenderPath, sPrevRenderPath.c_str());
-        getConsole().OLn("  newRenderPath : %u - %s", newRenderPath, sNewRenderPath.c_str());
+        getConsole().OLn("  prevRenderPath: %u - %s", prevRenderPath, mapRenderPaths2String[prevRenderPath].c_str());
+        getConsole().OLn("  newRenderPath : %u - %s", newRenderPath, mapRenderPaths2String[newRenderPath].c_str());
     }
 
     if ( prevOcclusionQueryMethod != newOcclusionQueryMethod )
     {
-        std::string sPrevOcMethod;
-        switch (prevOcclusionQueryMethod)
-        {
-        case 0: sPrevOcMethod = "Sync";
-            break;
-        default: sPrevOcMethod = "ASync";
-        }
-
-        std::string sNewOcMethod;
-        switch (newOcclusionQueryMethod)
-        {
-        case 0: sNewOcMethod = "Sync";
-            break;
-        default: sNewOcMethod = "ASync";
-        }
-
-        getConsole().OLn("  prevOcclusionQueryMethod: %u - %s", prevOcclusionQueryMethod, sPrevOcMethod.c_str());
-        getConsole().OLn("  newOcclusionQueryMethod : %u - %s", newOcclusionQueryMethod, sNewOcMethod.c_str());
+        getConsole().OLn("  prevOcclusionQueryMethod: %u - %s", prevOcclusionQueryMethod, mapOcclusionQueryMethod2String[prevOcclusionQueryMethod].c_str());
+        getConsole().OLn("  newOcclusionQueryMethod : %u - %s", newOcclusionQueryMethod, mapOcclusionQueryMethod2String[newOcclusionQueryMethod].c_str());
     }
 
     if ( bPrevOcclusionDrawBoundingBoxes != bNewOcclusionDrawBoundingBoxes )
@@ -482,13 +461,23 @@ void PRRERendererHWfixedPipeImpl::SetRenderHints(const TPRRE_RENDER_HINT& hints)
     }
     getConsole().OLn("");
 
-    renderHints = hints;
+    stats[stats.size()-1].renderHints = hints;
 } // SetRenderHints()
 
 
 void PRRERendererHWfixedPipeImpl::ResetStatistics()
 {
     getConsole().OLn("PRRERendererHWfixedPipe::ResetStatistics()");
+    getConsole().OLn("Following render hints are saved and stats are reset:");
+
+    getConsole().OI();
+    LogFullRenderHints(stats[stats.size()-1].renderHints);
+    getConsole().OO();
+
+    stats.push_back( CurrentStats() );
+    // current renderHints will be the latest
+    stats[stats.size()-1].renderHints = stats[stats.size()-2].renderHints;
+
     pObject3DMgr->ResetStatistics();    
 } // ResetStatistics()
 
@@ -498,22 +487,18 @@ void PRRERendererHWfixedPipeImpl::WriteStats() const
     getConsole().OLn("PRRERendererHWfixedPipe::WriteStats()");
     getConsole().L();
 
-    const TPRREuint iRenderPath = BITF_READ(renderHints, PRRE_RH_RENDER_PATH_BITS, 3);
-    const TPRREuint iOcclusionQueryMethod = BITF_READ(renderHints, PRRE_RH_OQ_METHOD_BITS, 2);
-    const TPRREbool bOcclusionDrawBoundingBoxes = ( BIT_READ(renderHints, PRRE_RH_OQ_DRAW_BOUNDING_BOXES_BIT) == 1u );
-    const TPRREbool bOcclusionDrawIfQueryPending = ( BIT_READ(renderHints, PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_BIT) == 1u );
-    const TPRREbool bOrderByDistance = ( BIT_READ(renderHints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u );
-
     getConsole().OI();
 
-    getConsole().OLn("iRenderPath: %u; iOcclusionQueryMethod: %u", iRenderPath, iOcclusionQueryMethod);
-    getConsole().OLn("bOcclusionDrawBoundingBoxes: %b", bOcclusionDrawBoundingBoxes);
-    getConsole().OLn("bOcclusionDrawIfQueryPending: %b", bOcclusionDrawIfQueryPending);
-    getConsole().OLn("bOrderByDistance: %b", bOrderByDistance);
-    getConsole().OLn("");
+    LogFullRenderHints(stats[stats.size()-1].renderHints);
+
+    getConsole().OLn("Collected statistics:");
+    for (TPRREuint i = 0; i < stats.size(); i++)
+    {
+        getConsole().OLn("Stats %u:", i+1);
+        LogFullRenderHints(stats[i].renderHints);
+    }
 
     getConsole().OO();
-    
 } // WriteStats()
 
 
@@ -538,7 +523,6 @@ void PRRERendererHWfixedPipeImpl::CheckConsistency() const
     NULLs members only.
 */                                                                         
 PRRERendererHWfixedPipeImpl::PRRERendererHWfixedPipeImpl() :
-    renderHints(DefaultHints),
     wnd( wnd ),
     hwInfo( hwInfo ),
     screen( screen ),
@@ -547,6 +531,23 @@ PRRERendererHWfixedPipeImpl::PRRERendererHWfixedPipeImpl() :
     pUImgr( NULL )
 {
     rc = NULL;
+    stats.push_back( PRRERendererHWfixedPipeImpl::CurrentStats() );
+    stats[0].renderHints = DefaultHints;
+
+    // CPP11 initializer list!!!
+    mapRenderPaths2String[PRRE_RH_RP_LEGACY_PR00FPS]   = std::string("Legacy PR00FPS");
+    mapRenderPaths2String[PRRE_RH_RP_DISTANCE_ORDERED] = std::string("Distance Ordered");
+    mapRenderPaths2String[PRRE_RH_RP_OCCLUSION_CULLED] = std::string("Occlusion Culled");
+    mapRenderPaths2String[PRRE_RH_RP_RSRVD_1]          = std::string("Reserved");
+    mapRenderPaths2String[PRRE_RH_RP_RSRVD_2]          = std::string("Reserved");
+    mapRenderPaths2String[PRRE_RH_RP_RSRVD_3]          = std::string("Reserved");
+    mapRenderPaths2String[PRRE_RH_RP_RSRVD_4]          = std::string("Reserved");
+    mapRenderPaths2String[PRRE_RH_RP_RSRVD_5]          = std::string("Reserved");
+
+    mapOcclusionQueryMethod2String[PRRE_RH_OQ_METHOD_SYNC] = std::string("Sync");
+    mapOcclusionQueryMethod2String[PRRE_RH_OQ_METHOD_ASYNC] = std::string("Async");
+    mapOcclusionQueryMethod2String[PRRE_RH_OQ_METHOD_RSRVD_1] = std::string("Reserved");
+    mapOcclusionQueryMethod2String[PRRE_RH_OQ_METHOD_RSRVD_2] = std::string("Reserved");
 } // PRRERendererHWfixedPipeImpl(...)
 
 
@@ -554,7 +555,6 @@ PRRERendererHWfixedPipeImpl::PRRERendererHWfixedPipeImpl(
     PRREWindow& _wnd,
     PRREScreen& _scr,
     PRREhwInfo& _hwinfo ) :
-    renderHints(DefaultHints),
     wnd( _wnd ),
     hwInfo( _hwinfo ),
     screen( _scr ),
@@ -563,11 +563,27 @@ PRRERendererHWfixedPipeImpl::PRRERendererHWfixedPipeImpl(
     pUImgr( NULL )
 {
     rc = NULL;
+    stats.push_back( PRRERendererHWfixedPipeImpl::CurrentStats() );
+    stats[0].renderHints = DefaultHints;
+
+    // CPP11 initializer list!!!
+    mapRenderPaths2String[PRRE_RH_RP_LEGACY_PR00FPS]   = std::string("Legacy PR00FPS");
+    mapRenderPaths2String[PRRE_RH_RP_DISTANCE_ORDERED] = std::string("Distance Ordered");
+    mapRenderPaths2String[PRRE_RH_RP_OCCLUSION_CULLED] = std::string("Occlusion Culled");
+    mapRenderPaths2String[PRRE_RH_RP_RSRVD_1]          = std::string("Reserved");
+    mapRenderPaths2String[PRRE_RH_RP_RSRVD_2]          = std::string("Reserved");
+    mapRenderPaths2String[PRRE_RH_RP_RSRVD_3]          = std::string("Reserved");
+    mapRenderPaths2String[PRRE_RH_RP_RSRVD_4]          = std::string("Reserved");
+    mapRenderPaths2String[PRRE_RH_RP_RSRVD_5]          = std::string("Reserved");
+
+    mapOcclusionQueryMethod2String[PRRE_RH_OQ_METHOD_SYNC] = std::string("Sync");
+    mapOcclusionQueryMethod2String[PRRE_RH_OQ_METHOD_ASYNC] = std::string("Async");
+    mapOcclusionQueryMethod2String[PRRE_RH_OQ_METHOD_RSRVD_1] = std::string("Reserved");
+    mapOcclusionQueryMethod2String[PRRE_RH_OQ_METHOD_RSRVD_2] = std::string("Reserved");
 } // PRRERendererHWfixedPipeImpl(...)
 
 
 PRRERendererHWfixedPipeImpl::PRRERendererHWfixedPipeImpl(const PRRERendererHWfixedPipeImpl&) :
-    renderHints(DefaultHints),
     wnd( PRREWindow::createAndGet() ),
     hwInfo( PRREhwInfo::get() ),
     screen( PRREScreen::createAndGet() ),
@@ -607,6 +623,29 @@ void PRRERendererHWfixedPipeImpl::printOGLerrorFull()
         getConsole().SOLn("Last error: %s",
                            PRREGLsnippets::getGLErrorTextFromEnum( PRREGLsnippets::getLastSavedGLError() ));
 } // printOGLerrorFull()
+
+
+/**
+    Logs given render hints with full descriptive text.
+*/
+void PRRERendererHWfixedPipeImpl::LogFullRenderHints(const TPRRE_RENDER_HINT& hints) const
+{
+    const TPRREuint iRenderPath = BITF_READ(hints, PRRE_RH_RENDER_PATH_BITS, 3);
+    const TPRREuint iOcclusionQueryMethod = BITF_READ(hints, PRRE_RH_OQ_METHOD_BITS, 2);
+    const TPRREbool bOcclusionDrawBoundingBoxes = ( BIT_READ(hints, PRRE_RH_OQ_DRAW_BOUNDING_BOXES_BIT) == 1u );
+    const TPRREbool bOcclusionDrawIfQueryPending = ( BIT_READ(hints, PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_BIT) == 1u );
+    const TPRREbool bOrderByDistance = ( BIT_READ(hints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u );
+
+    const std::string sRenderPath = mapRenderPaths2String[iRenderPath];
+    const std::string sOcclusionQueryMethod = mapOcclusionQueryMethod2String[iOcclusionQueryMethod];
+
+    getConsole().OLn("iRenderPath: %u - %s", iRenderPath, sRenderPath.c_str());
+    getConsole().OLn("iOcclusionQueryMethod: %u - %s", iOcclusionQueryMethod, sOcclusionQueryMethod.c_str());
+    getConsole().OLn("bOcclusionDrawBoundingBoxes: %b", bOcclusionDrawBoundingBoxes);
+    getConsole().OLn("bOcclusionDrawIfQueryPending: %b", bOcclusionDrawIfQueryPending);
+    getConsole().OLn("bOrderByDistance: %b", bOrderByDistance);
+    getConsole().OLn("");
+} // LogFullRenderHints()
 
 
 /**
@@ -820,7 +859,7 @@ struct CompareByZdistance
 */
 void PRRERendererHWfixedPipeImpl::OrderObjectContainersByZdistance()
 {
-    if ( BIT_READ(renderHints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u )
+    if ( BIT_READ(stats[stats.size()-1].renderHints, PRRE_RH_ORDERING_BY_DISTANCE_BIT) == 1u )
     {
         static CompareByZdistance comparator;
         comparator.vPosCam = pCamera->getPosVec();
@@ -931,7 +970,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& re
 {
     static TPRREuint frameCntr = 0;
 
-    const TPRREbool bRenderIfQueryPending = ( BIT_READ(renderHints, PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_BIT) == 1u );
+    const TPRREbool bRenderIfQueryPending = ( BIT_READ(stats[stats.size()-1].renderHints, PRRE_RH_OQ_DRAW_IF_QUERY_PENDING_BIT) == 1u );
 
     OrderObjectContainersByZdistance();
 
@@ -1048,7 +1087,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& re
         getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), false);
     } // frameCntr
 
-    if ( BIT_READ(renderHints, PRRE_RH_OQ_DRAW_BOUNDING_BOXES_BIT) == 1u )
+    if ( BIT_READ(stats[stats.size()-1].renderHints, PRRE_RH_OQ_DRAW_BOUNDING_BOXES_BIT) == 1u )
     {
         PRREGLsnippets::glPrepareBeforeDrawBoundingBox();
 
