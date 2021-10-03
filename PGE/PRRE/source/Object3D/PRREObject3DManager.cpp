@@ -1053,7 +1053,7 @@ void PRREObject3DManager::HandleManagedPropertyChanged(PRREManaged& m)
     }
     catch (const std::exception&)
     {
-        getConsole().OLn("WARNING: PRREObject3DManager::HandleManagedPropertyChanged() param is NOT Object3D ref!");
+        getConsole().EOLn("WARNING: PRREObject3DManager::HandleManagedPropertyChanged() param is NOT Object3D ref!");
     }
 
     PRREMesh3DManager::HandleManagedPropertyChanged(m);

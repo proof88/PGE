@@ -12,6 +12,9 @@
 
 #include "PRREbaseIncludes.h"  // PCH
 #include "../include/external/PRREuiManager.h"
+
+#include <cassert>
+
 #include "../include/external/Hardware/PRREhwInfo.h"
 #include "../include/internal/PRREpragmas.h"
 #include "../include/internal/PRREuiFontWin.h"
@@ -102,7 +105,7 @@ private:
     bool bInitialized;
     HDC hDC;
     std::map<unsigned long, PRREuiText> mTexts;
-    std::vector<PRREuiFontWin> vFonts;
+    std::vector<PRREuiFontWin*> vFonts;
 
     // dont define these as constants ... should be set at initialization based on system.
     std::string sDefaultFont;
@@ -201,6 +204,9 @@ void PRREuiManagerImpl::Deinitialize()
     bDefaultFontStrikeout = PRRE_UI_MGR_FONT_DEFAULT_STRIKEOUT;
 
     mTexts.clear();
+    for (auto pFont : vFonts)
+        delete pFont;
+    vFonts.clear();
 
     hDC = NULL;
     bInitialized = false;
@@ -225,23 +231,32 @@ PRREuiText* PRREuiManagerImpl::addText(const std::string& txt, int x, int y, con
 {
     // here we should search for the font, maybe we have already created it before
     PRREuiFontWin* pUIfontWin = NULL;
-    std::vector<PRREuiFontWin>::iterator itFont = vFonts.begin();
+    std::vector<PRREuiFontWin*>::iterator itFont = vFonts.begin();
     while ( itFont != vFonts.end() )
     {
-        if ( (itFont->getFontFaceName() == fontface) && (itFont->getHeight() == height) && (itFont->getBold() == bold) &&
-             (itFont->getItalic() == italic) && (itFont->getUnderline() == underline) && (itFont->getStrikeOut() == strikeout) )
+        PRREuiFontWin* piFont = *itFont;
+        
+        assert(piFont);
+        if (!piFont)
+        {
+            getConsole().EOLn("PRREuiManagerImpl::addText(...) nullptr within vFonts!");
+            continue;
+        }
+
+        if ( (piFont->getFontFaceName() == fontface) && (piFont->getHeight() == height) && (piFont->getBold() == bold) &&
+             (piFont->getItalic() == italic) && (piFont->getUnderline() == underline) && (piFont->getStrikeOut() == strikeout) )
             break;
         
         itFont++;
     }
     if ( itFont == vFonts.end() )
     {
-        vFonts.push_back( PRREuiFontWin(fontface, height, bold, italic, underline, strikeout, hDC) );
-        pUIfontWin = &(vFonts.back());
+        pUIfontWin = new PRREuiFontWin(fontface, height, bold, italic, underline, strikeout, hDC);
+        vFonts.push_back( pUIfontWin );
     }
     else
     {
-        pUIfontWin = &(*itFont);
+        pUIfontWin = *itFont;
     }
 
     const unsigned long nHash = PRREuiText::getHash(txt, x, y, height);

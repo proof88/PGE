@@ -138,11 +138,11 @@ PRREColor& PRREuiText::getColor()
 
 void PRREuiText::PrintText() const
 {
-    if ( uiFont->getListBase() == 0 )
-        return;
-
     /* SW rendering currently not supported here */
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
+        return;
+
+    if ( uiFont->getListBase() == 0 )
         return;
 
     glColor4f(clr.getRedAsFloat(), clr.getGreenAsFloat(), clr.getBlueAsFloat(), clr.getAlphaAsFloat());

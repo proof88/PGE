@@ -266,15 +266,6 @@ TPRREbool PR00FsReducedRenderingEngineImpl::shutdown()
     getConsole().OLn("");
     getConsole().OI();
 
-    bool success = true;
-    // first the renderer must be shut down, then the managers
-    if ( pRenderer )
-    {
-        if (!( success = pRenderer->shutdown() ))
-            getConsole().EOLnOO("ERROR: failed to shut down renderer!");
-        pRenderer = PGENULL;
-    }   
-
     uiMgr.Deinitialize();
 
     // managed objects like objects, textures, etc are implicitly deleted by calling dtor of their managers below
@@ -295,6 +286,17 @@ TPRREbool PR00FsReducedRenderingEngineImpl::shutdown()
 
     delete pImageMgr;
     pImageMgr = PGENULL;
+
+    bool success = true;
+
+    // since renderer owns GL context, it must be shut down last, so managers still have the chance above to properly
+    // delete any GL resources
+    if ( pRenderer )
+    {
+        if (!( success = pRenderer->shutdown() ))
+            getConsole().EOLnOO("ERROR: failed to shut down renderer!");
+        pRenderer = PGENULL;
+    }   
 
     // theoretically window, screen, and hwinfo are already deinitialized by renderer, however we need to take care of proper housekeeping
     wnd.Deinitialize();

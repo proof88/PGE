@@ -143,7 +143,6 @@ PRREuiFontWin& PRREuiFontWin::operator=(const PRREuiFontWin& uiFont)
 
 PRREuiFontWin::~PRREuiFontWin()
 {
-    // TODO: display lists should be deleted also, right?
     if ( hFont )
     {
         // should i release the font object this way?
@@ -158,6 +157,12 @@ PRREuiFontWin::~PRREuiFontWin()
             getConsole().EOLn(
                 "~PRREuiFontWin(%s, %d, %b, %b, %b, %b) FAILED to delete font, handle: %d!",
                 sFontFaceName.c_str(), nHeight, nWeight, bItalic, bUnderline, bStrikeOut, hFont );
+
+        if ( base != 0 )
+        {
+            glDeleteLists(base, 255);
+            base = 0;
+        }
             
     }
     else
