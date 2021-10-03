@@ -88,7 +88,8 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
     if ( pRefersto )
     {
         pRefersto->pImpl->referrers.erase(_pOwner);
-    } else if ( referrers.size() > 0 )
+    }
+    else if ( referrers.size() > 0 )
     {
         // referrers now become zombie objects: they do not refer but they dont have any subobjects either!
         // user's responsibility to get rid of them if original object is removed!
@@ -626,8 +627,9 @@ void PRREObject3D::PRREObject3DImpl::SetOcclusionTested(TPRREbool state)
     {
         if ( referrers.size() > 0 )
         {
-            _pOwner->getConsole().EOLn("%s() ERROR: at least 1 cloned object exists referring to this object, cannot turn off occlusion testing!", __FUNCTION__);
-            return;
+            _pOwner->getConsole().OLn("%s() WARNING: implicitly setting occlusion testing off for all referring cloned objects!", __FUNCTION__);
+            for (auto referrer : referrers)
+                referrer->SetOcclusionTested(false);
         }
 
         if ( nOcclusionQuery > 0 )
@@ -2047,6 +2049,7 @@ void PRREObject3D::SetStickedToScreen(TPRREbool value)
     Occluders are rendered before non-occluder objects.
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     By default this property is decided based on the size of the object compared to other objects.
+    More info about this can be read at the description of SetOccluder().
 
     @return True if considered as occluder, false otherwise (potential occludee).
 */
@@ -2083,7 +2086,9 @@ void PRREObject3D::SetOccluder(TPRREbool value)
     Gets whether this object was occluded or not based on the last finished occlusion test.
     This last state might be a few rendered frames behind the current occlusion status, as occlusion tests might not be finished in
     the same frame they are started.
-    By default this property is false after creating the object, but might be changed after the first rendering.
+    By default this property is false after creating the object, but might be changed after the first few rendered frames.
+
+    For more details on occlusion testing, read description of SetOcclusionTested().
 
     @return True if last occlusion test said it was occluded, false otherwise.
             Result is always false if the object is not tested for occlusion, see isOcclusionTested() member function for more info.
@@ -2096,13 +2101,7 @@ TPRREbool PRREObject3D::isOccluded() const
 
 /**
     Gets whether this object is being tested if it is occluded or not.
-    Objects tested for occlusion are continuously checked if they occluded or not by renderer, and that result can be obtained with isOccluded()
-    member function.
-    By default this property is decided based on the geometric complexity of the object.
-    Occlusion tests are curently based on hardware occlusion queries, so this is not available on all hardware.
-    Usually it is available since 2003 on desktop computers.
-    Mobile is not yet supported by PURE.
-    Occlusion tests are not supported when software rendering is active.
+    For more details on occlusion testing, read description of SetOcclusionTested().
 
     @return True if occlusion test is executed for this object, false otherwise.
 */
@@ -2116,16 +2115,23 @@ TPRREbool PRREObject3D::isOcclusionTested() const
     Sets whether this object should be tested for occlusion or not.
     Creates or deletes an occlusion query object and bounding box for the given object.
     If it failes to generate occlusion query id, the object won't be tested for occlusion later. Check state with isOcclusionTested() member function.
-    Objects tested for occlusion are continuously checked by renderer, so rendering is needed, and the result can be obtained with isOccluded()
-    member function.
-    By default this property is decided based on the geometric complexity of the object.
+    This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
+    
+    Important: if you turn occlusion testing off for an object referred by other cloned objects, the occlusion testing is also implicitly turned off
+    for those referring cloned objects.
+
+    Occlusion status of objects having occlusion test enabled are continuously checked by renderer, so rendering the scene is needed to have these test done.
+    The result can be obtained with isOccluded() member function after rendering at least a few frames.
+    The renderer can optimize scene rendering by not skipping occluded objects, however occlusion testing is needed to decide if an
+    object is occluded or not. Too many occlusion tests might also impact performance negatively, hence it is not recommended to turn occlusion testing on for every
+    single objects in the scene. By default this property is decided based on the geometric complexity of the object.
+    
     Occlusion tests are curently based on hardware occlusion queries, so this is not available on all hardware.
     Usually it is available since 2003 on desktop computers.
     Mobile is not yet supported by PURE.
     Occlusion tests are not supported when software rendering is active.
 
     @exception std::runtime_error - In case of inability of creating bounding box object or if this object instance doesn't have manager associated.
-    @return True if occlusion test is executed for this object, false otherwise.
 */
 void PRREObject3D::SetOcclusionTested(TPRREbool state)
 {
@@ -2135,6 +2141,8 @@ void PRREObject3D::SetOcclusionTested(TPRREbool state)
 
 /**
     Gets the bounding box object used for occlusion tests.
+    Level-2 objects never have bounding box, only their level-1 parent object might have one.
+
     @return The bounding box object used for occlusion tests. It might be PGENULL, if occlusion tests are not done for this object.
 */
 const PRREObject3D* PRREObject3D::getBoundingBoxObject() const

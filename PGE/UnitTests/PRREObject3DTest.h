@@ -1217,11 +1217,11 @@ private:
             assertNull(objCloned->getBoundingBoxObject(), "objCloned bounding 1") &
             assertNotNull(objFromFile->getBoundingBoxObject(), "objFromFile bounding 1");
 
-        // cannot set false due to obj has referrer to it!
+        // expecting cloned object to also have no occlusion test anymore
         obj->SetOcclusionTested(false);
-        b &= assertTrue(obj->isOcclusionTested(), "obj is tested 1") &
-            assertTrue(objCloned->isOcclusionTested(), "objCloned is tested 1") &
-            assertNotNull(obj->getBoundingBoxObject(), "obj bounding 1");
+        b &= assertFalse(obj->isOcclusionTested(), "obj is tested 1") &
+            assertFalse(objCloned->isOcclusionTested(), "objCloned is tested 1") &
+            assertNull(obj->getBoundingBoxObject(), "obj bounding 1");
 
         delete objCloned;
 
