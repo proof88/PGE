@@ -63,8 +63,8 @@ public:
 
     CConsole&   getManagedConsole() const;            /**< Returns access to console preset with logger module name as this class. */
 
-    TPRREbool isLevel1() const;   /**< Tells if the mesh is a level-1 parent mesh. */
-    TPRREbool isLevel2() const;   /**< Tells if the mesh is a level-2 submesh. */
+    virtual TPRREbool isLevel1() const;   /**< Tells if the mesh is a level-1 parent mesh. */
+    virtual TPRREbool isLevel2() const;   /**< Tells if the mesh is a level-2 submesh. */
     
     TPRRE_PRIMITIVE_FORMAT getPrimitiveFormat() const;   /**< Gets the primitives' format. */
 

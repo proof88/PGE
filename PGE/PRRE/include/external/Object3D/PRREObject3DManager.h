@@ -83,6 +83,9 @@ public:
 
     CConsole&   getManagedConsole() const;            /**< Returns access to console preset with logger module name as this class. */
 
+    virtual TPRREbool isLevel1() const;   /**< Tells if the mesh is a level-1 parent mesh. */
+    virtual TPRREbool isLevel2() const;   /**< Tells if the mesh is a level-2 submesh. */
+
     virtual TPRRE_VERTEX_MODIFYING_HABIT getVertexModifyingHabit() const;            /**< Gets vertex modifying habit. */
     virtual TPRREbool setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod);    /**< Sets vertex modifying habit. */
     virtual TPRRE_VERTEX_REFERENCING_MODE getVertexReferencingMode() const;          /**< Gets vertex referencing mode. */

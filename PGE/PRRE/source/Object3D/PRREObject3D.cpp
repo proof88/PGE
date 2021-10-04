@@ -85,6 +85,17 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
     pVerticesTransf = PGENULL;
     pFbBuffer = PGENULL;
 
+    // Remember: we cannot use isLevel1() or isLevel2() here because isLevel2() might return true for
+    // a level-1 object that was originally a cloned object but not referring to any object anymore after
+    // the original object has been deleted!
+    // We might check for actual vertex data because level-1 objects never have vertex data, but I think
+    // in the future even level-2 objects might also lose vertex data in their client memory if it is
+    // already uploaded to host memory.
+    // So, this dtor must execute operations keeping mind that the same code is executed for both level-1
+    // and level-2 objects!
+    // On the long run, maybe we change behavior and in case of deleting an object referred to by other
+    // objects, all referrers are also get deleted automatically.
+
     if ( pRefersto )
     {
         pRefersto->pImpl->referrers.erase(_pOwner);
@@ -99,6 +110,8 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
 
     SetOcclusionTested(false);
 
+    // these are way unnecessary things if we are a level-2 object, but as explained above, we have to live
+    // with it - at least these are all harmless code even when executed for a level-2.
     std::set< std::deque<PRREObject3D*>* > mapsEraseObjectFrom;
     // would be much nicer with Cpp11 initializer list
     mapsEraseObjectFrom.insert(&occluders);
@@ -117,7 +130,9 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
         }
     } // end for pMapEraseFrom
 
+    _pOwner->getManagedConsole().OI();
     _pOwner->DeleteAll();
+    _pOwner->getManagedConsole().OO();
 
     _pOwner->getManagedConsole().SOLnOO("Done!");
 } // ~PRRETexture()
@@ -220,6 +235,12 @@ const PRREVector& PRREObject3D::PRREObject3DImpl::getScaling() const
 
 void PRREObject3D::PRREObject3DImpl::SetScaling(TPRREfloat value)
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     vScaling.Set(value, value, value);
     recalculateBiggestAreaScaled();
     if ( pBoundingBox )
@@ -231,6 +252,12 @@ void PRREObject3D::PRREObject3DImpl::SetScaling(TPRREfloat value)
 
 void PRREObject3D::PRREObject3DImpl::SetScaling(const PRREVector& value)
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     vScaling = value;
     recalculateBiggestAreaScaled();
     if ( pBoundingBox )
@@ -242,6 +269,12 @@ void PRREObject3D::PRREObject3DImpl::SetScaling(const PRREVector& value)
 
 void PRREObject3D::PRREObject3DImpl::Scale(TPRREfloat value)
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     vScaling.Set( vScaling.getX() * value, vScaling.getY() * value, vScaling.getZ() * value );
     recalculateBiggestAreaScaled();
     if ( pBoundingBox )
@@ -253,6 +286,12 @@ void PRREObject3D::PRREObject3DImpl::Scale(TPRREfloat value)
 
 void PRREObject3D::PRREObject3DImpl::Scale(const PRREVector& value)
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     vScaling.Set( vScaling.getX() * value.getX(), vScaling.getY() * value.getY(), vScaling.getZ() * value.getZ() );
     recalculateBiggestAreaScaled();
     if ( pBoundingBox )
@@ -276,7 +315,7 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isVisible() const
 
 void PRREObject3D::PRREObject3DImpl::SetVisible(TPRREbool state)
 {
-    if ( isOccluder() )
+    if ( isOccluder() && !state )
     {
         _pOwner->getConsole().EOLn("%s() WARNING: occluder state is forced to false due to set hidden!", __FUNCTION__);
         SetOccluder(false);
@@ -318,6 +357,12 @@ TPRRE_ROTATION_ORDER PRREObject3D::PRREObject3DImpl::getRotationOrder() const
 
 void PRREObject3D::PRREObject3DImpl::SetRotationOrder(TPRRE_ROTATION_ORDER value)
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     rotation = value;
 } // SetRotationOrder()
 
@@ -330,6 +375,12 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isLit() const
 
 void PRREObject3D::PRREObject3DImpl::SetLit(TPRREbool value)
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     bAffectedByLights = value;
 } // SetLit()
 
@@ -342,6 +393,12 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isDoubleSided() const
 
 void PRREObject3D::PRREObject3DImpl::SetDoubleSided(TPRREbool value)
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     bDoubleSided = value;
 } // SetDoubleSided()
 
@@ -354,6 +411,12 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isWireframed() const
 
 void PRREObject3D::PRREObject3DImpl::SetWireframed(TPRREbool value)
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     if ( value )
     {
         if ( isOccluder() )
@@ -374,6 +437,12 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isWireframedCulled() const
 
 void PRREObject3D::PRREObject3DImpl::SetWireframedCulled(TPRREbool value)
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     bWireframedCull = value;
 } // SetWireframedCulled()
 
@@ -386,6 +455,12 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isAffectingZBuffer() const
 
 void PRREObject3D::PRREObject3DImpl::SetAffectingZBuffer(TPRREbool value)
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     if ( !value )
     {
         if ( isOccluder() )
@@ -406,6 +481,12 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isTestingAgainstZBuffer() const
 
 void PRREObject3D::PRREObject3DImpl::SetTestingAgainstZBuffer(TPRREbool value)
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     bAllowZTesting = value;
 } // SetTestingAgainstZBuffer()
 
@@ -418,6 +499,12 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isStickedToScreen() const
 
 void PRREObject3D::PRREObject3DImpl::SetStickedToScreen(TPRREbool value)
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     bStickedToScreen = value;
 
     if ( value )
@@ -448,6 +535,12 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isOccluder() const
 
 void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     if ( _pOwner->getManager() == PGENULL )
     {
         _pOwner->getConsole().EOLn("%s() ERROR: Object3D does not have manager associated!", __FUNCTION__);
@@ -568,6 +661,15 @@ TPRREbool PRREObject3D::PRREObject3DImpl::isOcclusionTested() const
 
 void PRREObject3D::PRREObject3DImpl::SetOcclusionTested(TPRREbool state)
 {
+    // It can happen at rare cases e.g. at engine shutdown that isLevel1() returns false due to we are cloned object NOT having the referred object anymore,
+    // because it has just been deleted prior to deleting us (SetOcclusionTested(false) is being invoked by our dtor).
+    // This case should be somehow identified to NOT log it since that is misleading to log this call as we were really a level-2 object!
+    // I could not find a way to detect at this point that isLevel1() returns false just because our referred object has been already deleted.
+    // So, instead of just checking isLevel1() right at the beginning of the function:
+    // - check for isLevel1() only when state is true, because that path we definitely don't want to be executed for level-2 objects, it must be logged as error;
+    //   - and it is definitely deleting objects case, since dtors set state to false, not true!
+    // - do not check for isLevel1() when given state is false because it that code path doesn't have any effect when invoked for a real level-2 object.
+
     if ( !PRREhwInfo::get().getVideo().isOcclusionQuerySupported() )
         return;
 
@@ -577,6 +679,12 @@ void PRREObject3D::PRREObject3DImpl::SetOcclusionTested(TPRREbool state)
         {
             throw std::runtime_error("no manager!");
         }
+
+        if ( !_pOwner->isLevel1() )
+        {
+            _pOwner->getManagedConsole().EOLn("PRREObject3D::%s(true) attempt for level-2 object is ignored!", __FUNCTION__);
+            return;
+        } 
 
         if ( !pglGenQueries(1, &nOcclusionQuery) ) 
         {
@@ -655,6 +763,12 @@ const PRREObject3D* PRREObject3D::PRREObject3DImpl::getBoundingBoxObject() const
 
 void PRREObject3D::PRREObject3DImpl::ForceFinishOcclusionTest()
 {
+    if ( !_pOwner->isLevel1() )
+    {
+        _pOwner->getManagedConsole().EOLn("PRREObject3D::%s() attempt for level-2 object is ignored!", __FUNCTION__);
+        return;
+    }
+
     if ( !bOcclusionQueryStarted || (nOcclusionQuery == 0) )
     {
         return;
@@ -707,7 +821,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass, T
     }
 
     // see if we are parent or referring to another object i.e. we are cloned object
-    if ( _pOwner->isLevel1() || getReferredObject() )
+    if ( _pOwner->isLevel1() )
     {
         // Currently 3D objects are 2-level entities:
         // first level (parent) has no geometry, owns subobjects, sets basic things,
@@ -1392,7 +1506,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_DrawSW()
         return;
 
     // see if we are parent or referring to another object i.e. we are cloned object
-    if ( _pOwner->isLevel1() || getReferredObject() )
+    if ( _pOwner->isLevel1() )
     {
         // Currently 3D objects are 2-level things: first level (parent) has no geometry, owns subobjects, sets basic things,
         // while second level (subobjects) own geometry, inherit basic things set by parent.
@@ -1477,8 +1591,29 @@ const char* PRREObject3D::getLoggerModuleName()
 
 
 /**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, it is definitely level-1 since only level-1 objects can be cloned, and
+    although they don't have their own level-2 subobject, they use the referred level-1 object's subobjects like they were their own.
+*/
+TPRREbool PRREObject3D::isLevel1() const
+{
+    return getReferredObject() ? true : PRREMesh3D::isLevel1();
+}
+
+/**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, it is definitely level-1 since only level-1 objects can be cloned, and
+    although they don't have their own level-2 subobject, they use the referred level-1 object's subobjects like they were their own.
+*/
+TPRREbool PRREObject3D::isLevel2() const
+{
+    return !isLevel1();
+}
+
+
+/**
     The details of this function are described in PRREVertexTransfer class.
-    If this is a cloned object, the returned value is the same as the referred object's value.
+    Addition to PRREVertexTransfer behavior: if this is a cloned object, the returned value is the same as the referred object's value.
 */
 TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::getVertexModifyingHabit() const
 {
@@ -1501,7 +1636,7 @@ TPRREbool PRREObject3D::setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmo
 
 /**
     The details of this function are described in PRREVertexTransfer class.
-    If this is a cloned object, the returned value is the same as the referred object's value.
+    Addition to PRREVertexTransfer behavior: if this is a cloned object, the returned value is the same as the referred object's value.
 */
 TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::getVertexReferencingMode() const
 {
@@ -1524,7 +1659,7 @@ TPRREbool PRREObject3D::setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE v
 
 /**
     The details of this function are described in PRREVertexTransfer class.
-    If this is a cloned object, the returned value is the same as the referred object's value.
+    Addition to PRREVertexTransfer behavior: if this is a cloned object, the returned value is the same as the referred object's value.
 */
 TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::getVertexTransferMode() const
 {
@@ -1625,8 +1760,10 @@ const PRREVector& PRREObject3D::getAngleVec() const
     Gets the mesh-local relative position.
     This position tells the offset of the vertex positions relative to the center of the mesh [0,0,0].
     For level-2 (sub)mesh, this vector is always expected to be [0,0,0] since the position of submeshes is calculated with vertex positions and size.
-    The Mesh3D part of a cloned object does not have its own geometry, thus even Mesh3D::RecalculateSize() would calculate it to 0.
+
+    Addition to PRREMesh3D behavior: the Mesh3D part of a cloned object does not have its own geometry, thus even Mesh3D::RecalculateSize() would calculate it to 0.
     Thus if we are a cloned object, we need to return the relative position vector of the object we are referring to.
+
     @return Mesh-local relative position vector.
 */
 const PRREVector& PRREObject3D::getRelPosVec() const
@@ -1637,8 +1774,10 @@ const PRREVector& PRREObject3D::getRelPosVec() const
 
 /**
     Gets the base sizes.
-    The Mesh3D part of a cloned object does not have its own geometry, thus even Mesh3D::RecalculateSize() would calculate it to 0.
+
+    Addition to PRREMesh3D behavior: the Mesh3D part of a cloned object does not have its own geometry, thus even Mesh3D::RecalculateSize() would calculate it to 0.
     Thus if we are a cloned object, we need to return the size of the object we are referring to.
+
     @return Base sizes vector.
 */
 const PRREVector& PRREObject3D::getSizeVec() const
@@ -1758,10 +1897,9 @@ TPRREfloat PRREObject3D::recalculateBiggestAreaScaled()
 /**
     Gets the visibility state.
     If an object is not visible, it is not rendered.
-    This property is manual user setting, not related to any visibility/occlusion calculations that might be done by renderer.
+    This property is manual user setting, not related to any visibility testing that might be done by renderer.
     This means that even if the object is seen by the camera, not occluded by other object, it won't be rendered if this property is manually set to false.
     Similarly, if the object is occluded by other objects and isOccluded() returns true, this manual visibility state can stay true, since it is user's preference.
-    Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
     By default this property is true.
 
     @return True if visibility is enabled, false otherwise.
@@ -1775,9 +1913,9 @@ TPRREbool PRREObject3D::isVisible() const
 /**
     Sets the visibility state.
     If an object is not visible, it is not rendered.
-    This property is manual user setting, not related to any visibility calculations that might be done by renderer.
+    This property is manual user setting, not related to any visibility testing that might be done by renderer.
     This means that even if the object is seen by the camera, not occluded by other object, it won't be rendered if this property is manually set to false.
-    Currently the visibility state is ignored for level-2 objects, the state of their level-1 parent object is applied.
+    Similarly, if the object is occluded by other objects and isOccluded() returns true, this manual visibility state can stay true, since it is user's preference.
     By default this property is true.
     If set to false, the object's occluder state will be also forced to false.
 
@@ -2118,7 +2256,8 @@ TPRREbool PRREObject3D::isOcclusionTested() const
     This property is currently ignored for level-2 objects, they inherit this property from their level-1 parent object.
     
     Important: if you turn occlusion testing off for an object referred by other cloned objects, the occlusion testing is also implicitly turned off
-    for those referring cloned objects.
+    for those referring cloned objects. However, later you can still turn occlusion testing on for the specific cloned objects if you want to, without
+    affecting the occlusion testing state of the original object referred by the cloned object.
 
     Occlusion status of objects having occlusion test enabled are continuously checked by renderer, so rendering the scene is needed to have these test done.
     The result can be obtained with isOccluded() member function after rendering at least a few frames.
@@ -2155,6 +2294,7 @@ const PRREObject3D* PRREObject3D::getBoundingBoxObject() const
     Waits for any pending occlusion test to be finished.
     This is actually a helper function for a renderer in rare cases when rendering path change requires all pending queries to be finished.
     This is called forced, so it waits for finish even when rendering path implements async occlusion query handling.
+    Ignored for level-2 objects, as only level-1 objects can have occlusion test.
 */
 void PRREObject3D::ForceFinishOcclusionTest()
 {
