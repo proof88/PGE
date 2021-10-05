@@ -639,6 +639,11 @@ private:
             b = false;
         }
 
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const PRREVector vOriginalSubobjectProperty = subObjFromFile->getScaling();
+        subObjFromFile->SetScaling(2.0f);
+        b &= assertTrue(vOriginalSubobjectProperty == subObjFromFile->getScaling(), "property unchanged for subobject");
+
         return assertEquals(3.0f, obj->getScaling().getX(), E, "X") &
             assertEquals(3.0f, obj->getScaling().getY(), E, "Y") &
             assertEquals(3.0f, obj->getScaling().getZ(), E, "Z") &
@@ -667,6 +672,11 @@ private:
         {
             b = false;
         }
+
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const PRREVector vOriginalSubobjectProperty = subObjFromFile->getScaling();
+        subObjFromFile->SetScaling(PRREVector(1.0f, 1.0f, 1.0f));
+        b &= assertTrue(vOriginalSubobjectProperty == subObjFromFile->getScaling(), "property unchanged for subobject");
 
         return assertEquals(2.0f, obj->getScaling().getX(), E, "X") &
             assertEquals(3.0f, obj->getScaling().getY(), E, "Y") &
@@ -721,6 +731,11 @@ private:
             b = false;
         }
 
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const PRREVector vOriginalSubobjectProperty = subObjFromFile->getScaling();
+        subObjFromFile->Scale(2.0f);
+        b &= assertTrue(vOriginalSubobjectProperty == subObjFromFile->getScaling(), "property unchanged for subobject");
+
         return b;
     }
 
@@ -762,6 +777,11 @@ private:
         {
             b = false;
         }
+
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const PRREVector vOriginalSubobjectProperty = subObjFromFile->getScaling();
+        subObjFromFile->Scale(vScaleBy);
+        b &= assertTrue(vOriginalSubobjectProperty == subObjFromFile->getScaling(), "property unchanged for subobject");
 
         return b;
     }
@@ -926,7 +946,12 @@ private:
         obj->SetRotationOrder(PRRE_XYZ);
         objFromFile->SetRotationOrder(PRRE_XYZ);
 
-        return assertEquals(PRRE_XYZ, obj->getRotationOrder(), "obj") & assertEquals(PRRE_XYZ, objFromFile->getRotationOrder(), "objFromFile");
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const TPRRE_ROTATION_ORDER vOriginalSubobjectProperty = subObjFromFile->getRotationOrder();
+        subObjFromFile->SetRotationOrder(PRRE_XYZ);
+        bool b = assertTrue(vOriginalSubobjectProperty == subObjFromFile->getRotationOrder(), "property unchanged for subobject");
+
+        return b & assertEquals(PRRE_XYZ, obj->getRotationOrder(), "obj") & assertEquals(PRRE_XYZ, objFromFile->getRotationOrder(), "objFromFile");
     }
 
     bool testIsLit()
@@ -943,7 +968,12 @@ private:
         obj->SetLit(false);
         objFromFile->SetLit(false);
 
-        return assertFalse(obj->isLit(), "obj") & assertFalse(objFromFile->isLit(), "objFromFile");
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const bool vOriginalSubobjectProperty = subObjFromFile->isLit();
+        subObjFromFile->SetLit(false);
+        bool b = assertTrue(vOriginalSubobjectProperty == subObjFromFile->isLit(), "property unchanged for subobject");
+
+        return b & assertFalse(obj->isLit(), "obj") & assertFalse(objFromFile->isLit(), "objFromFile");
     }
 
     bool testIsDoubleSided()
@@ -960,7 +990,12 @@ private:
         obj->SetDoubleSided(true);
         objFromFile->SetDoubleSided(true);
 
-        return assertTrue(obj->isDoubleSided(), "obj") & assertTrue(objFromFile->isDoubleSided(), "objFromFile");
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const bool vOriginalSubobjectProperty = subObjFromFile->isDoubleSided();
+        subObjFromFile->SetDoubleSided(true);
+        bool b = assertTrue(vOriginalSubobjectProperty == subObjFromFile->isDoubleSided(), "property unchanged for subobject");
+
+        return b & assertTrue(obj->isDoubleSided(), "obj") & assertTrue(objFromFile->isDoubleSided(), "objFromFile");
     }
 
     bool testIsWireframed()
@@ -994,6 +1029,11 @@ private:
             assertTrue(std::find(om->get2dOpaqueOccludees().begin(), om->get2dOpaqueOccludees().end(), objFromFile) == om->get2dOpaqueOccludees().end(), "objFromFile is NOT in get2dOpaqueOccludees 2") &
             assertTrue(std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), objFromFile) == om->get2dBlendedOccludees().end(), "objFromFile is NOT in get2dBlendedOccludees 2");
 
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const bool vOriginalSubobjectProperty = subObjFromFile->isWireframed();
+        subObjFromFile->SetWireframed(true);
+        b &= assertTrue(vOriginalSubobjectProperty == subObjFromFile->isWireframed(), "property unchanged for subobject");
+
         return b & assertTrue(obj->isWireframed(), "obj") & assertTrue(objFromFile->isWireframed(), "objFromFile");
     }
 
@@ -1011,7 +1051,12 @@ private:
         obj->SetWireframedCulled(true);
         objFromFile->SetWireframedCulled(true);
 
-        return assertTrue(obj->isWireframedCulled(), "obj") & assertTrue(objFromFile->isWireframedCulled(), "objFromFile");
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const bool vOriginalSubobjectProperty = subObjFromFile->isWireframedCulled();
+        subObjFromFile->SetWireframedCulled(true);
+        bool b = assertTrue(vOriginalSubobjectProperty == subObjFromFile->isWireframedCulled(), "property unchanged for subobject");
+
+        return b & assertTrue(obj->isWireframedCulled(), "obj") & assertTrue(objFromFile->isWireframedCulled(), "objFromFile");
     }
 
     bool testIsAffectingZBuffer()
@@ -1045,6 +1090,11 @@ private:
             assertTrue(std::find(om->get2dOpaqueOccludees().begin(), om->get2dOpaqueOccludees().end(), objFromFile) == om->get2dOpaqueOccludees().end(), "objFromFile is NOT in get2dOpaqueOccludees 2") &
             assertTrue(std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), objFromFile) == om->get2dBlendedOccludees().end(), "objFromFile is NOT in get2dBlendedOccludees 2");
 
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const bool vOriginalSubobjectProperty = subObjFromFile->isAffectingZBuffer();
+        subObjFromFile->SetAffectingZBuffer(false);
+        b &= assertTrue(vOriginalSubobjectProperty == subObjFromFile->isAffectingZBuffer(), "property unchanged for subobject");
+
         return b & assertFalse(obj->isAffectingZBuffer(), "obj") & assertFalse(objFromFile->isAffectingZBuffer(), "objFromFile");
     }
 
@@ -1062,7 +1112,12 @@ private:
         obj->SetTestingAgainstZBuffer(false);
         objFromFile->SetTestingAgainstZBuffer(false);
 
-        return assertFalse(obj->isTestingAgainstZBuffer(), "obj") & assertFalse(objFromFile->isTestingAgainstZBuffer(), "objFromFile");
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const bool vOriginalSubobjectProperty = subObjFromFile->isTestingAgainstZBuffer();
+        subObjFromFile->SetTestingAgainstZBuffer(false);
+        bool b = assertTrue(vOriginalSubobjectProperty == subObjFromFile->isTestingAgainstZBuffer(), "property unchanged for subobject");
+
+        return b & assertFalse(obj->isTestingAgainstZBuffer(), "obj") & assertFalse(objFromFile->isTestingAgainstZBuffer(), "objFromFile");
     }
 
     bool testIsStickedToScreen()
@@ -1095,6 +1150,11 @@ private:
             assertTrue(std::find(om->get3dBlendedOccludees().begin(), om->get3dBlendedOccludees().end(), objFromFile) == om->get3dBlendedOccludees().end(), "objFromFile is NOT in get3dBlendedOccludees 2") &
             assertTrue(std::find(om->get2dOpaqueOccludees().begin(), om->get2dOpaqueOccludees().end(), objFromFile) != om->get2dOpaqueOccludees().end(), "objFromFile is in get2dOpaqueOccludees 2") &
             assertTrue(std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), objFromFile) == om->get2dBlendedOccludees().end(), "objFromFile is NOT in get2dBlendedOccludees 2");
+
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const bool vOriginalSubobjectProperty = subObjFromFile->isStickedToScreen();
+        subObjFromFile->SetStickedToScreen(true);
+        b &= assertTrue(vOriginalSubobjectProperty == subObjFromFile->isStickedToScreen(), "property unchanged for subobject");
 
         return b & assertTrue(obj->isStickedToScreen(), "obj") & assertTrue(objFromFile->isStickedToScreen(), "objFromFile");
     }
@@ -1173,6 +1233,11 @@ private:
 
         objFromFile->SetOccluder(true);
 
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const bool vOriginalSubobjectProperty = subObjFromFile->isOccluder();
+        subObjFromFile->SetOccluder(true);
+        b &= assertTrue(vOriginalSubobjectProperty == subObjFromFile->isOccluder(), "property unchanged for subobject");
+
         return b & assertTrue(obj->isOccluder(), "obj is occluder") & assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 7") &
             assertFalse(std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is in getOccluders 7") &
             assertFalse(std::find(om->get3dOpaqueOccludees().begin(), om->get3dOpaqueOccludees().end(), objFromFile) != om->get3dOpaqueOccludees().end(), "objFromFile is NOT in getOpaqueOccludees 7") &
@@ -1227,6 +1292,11 @@ private:
 
         obj->SetOcclusionTested(false);
         objFromFile->SetOcclusionTested(false);
+
+        PRREObject3D* const subObjFromFile = (PRREObject3D*)(objFromFile->getAttachedAt(0));
+        const bool vOriginalSubobjectProperty = subObjFromFile->isOcclusionTested();
+        subObjFromFile->SetOcclusionTested(false);
+        b &= assertTrue(vOriginalSubobjectProperty == subObjFromFile->isOcclusionTested(), "property unchanged for subobject");
 
         b &= assertFalse(obj->isOcclusionTested(), "obj is tested 2") &
             assertFalse(objFromFile->isOcclusionTested(), "objFromFile is tested 2") &
