@@ -366,6 +366,8 @@ PRREVertexTransfer::PRREVertexTransferImpl& PRREVertexTransfer::PRREVertexTransf
 
 void PRREVertexTransfer::PRREVertexTransferImpl::TransferVertices()
 {
+    assert(_pOwner->isLevel2());
+
     // this function doesn't check for GL errors since this is also part of rendering,
     // renderer should check for errors after each frame
 
@@ -402,14 +404,14 @@ void PRREVertexTransfer::PRREVertexTransferImpl::TransferVertices()
         // Too bad we currently create redundant vertex geometry when loading OBJ mesh,
         // however we have backlog item for that ...
         if ( BIT_READ(getVertexTransferMode(), PRRE_VT_CVA_BIT) == 1u )
-            glLockArraysEXT(0, _pOwner->getVerticesCount(false));
+            glLockArraysEXT(0, _pOwner->getVerticesCount());
 
         // Static and dynamic vmods are not differentiated here but when creating the arrays.
         // That is why we don't check for vmod in this code.
 
         if ( PRREVertexTransfer::isVertexReferencingIndexed( getVertexTransferMode() ) )
         {
-            assert(_pOwner->getVertexIndicesCount(false) != 0);
+            assert(_pOwner->getVertexIndicesCount() != 0);
             if ( BIT_READ(getVertexTransferMode(), PRRE_VT_RNG_BIT) )
             {
                 // TODO: should call this in loop, do multiple batches based on the implementation-dependent values
@@ -417,19 +419,19 @@ void PRREVertexTransfer::PRREVertexTransferImpl::TransferVertices()
                 glDrawRangeElementsEXT(
                     getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()),
                     _pOwner->getMinVertexIndex(false), _pOwner->getMaxVertexIndex(false),
-                    _pOwner->getVertexIndicesCount(false), _pOwner->getVertexIndicesType(false), bServer ? NULL : _pOwner->getVertexIndices(false) );
+                    _pOwner->getVertexIndicesCount(), _pOwner->getVertexIndicesType(false), bServer ? NULL : _pOwner->getVertexIndices(false) );
             }
             else
             {
                 glDrawElements(
                     getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()), 
-                    _pOwner->getVertexIndicesCount(false), _pOwner->getVertexIndicesType(false), bServer ? NULL : _pOwner->getVertexIndices(false) );
+                    _pOwner->getVertexIndicesCount(), _pOwner->getVertexIndicesType(false), bServer ? NULL : _pOwner->getVertexIndices(false) );
             }
         }
         else
         {
-            assert(_pOwner->getVerticesCount(false) != 0);
-            glDrawArrays( getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()), 0, _pOwner->getVerticesCount(false) );
+            assert(_pOwner->getVerticesCount() != 0);
+            glDrawArrays( getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()), 0, _pOwner->getVerticesCount() );
         }
 
         if ( BIT_READ(getVertexTransferMode(), PRRE_VT_CVA_BIT) == 1u )
@@ -469,7 +471,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::isSwitchFromIndexedAllowed
         return true;
     }
     else
-        return (_pOwner->getVertexIndicesCount(false) == _pOwner->getVerticesCount(false)) && (_pOwner->getVerticesCount(false) > 0);
+        return (_pOwner->getVertexIndicesCount() == _pOwner->getVerticesCount()) && (_pOwner->getVerticesCount() > 0);
 }
 
 
@@ -485,6 +487,8 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::isSwitchFromIndexedAllowed
 */
 void PRREVertexTransfer::PRREVertexTransferImpl::ProcessGeometry(TPRREbool indexed) const  
 {
+    assert(_pOwner->isLevel2());
+
     /* Make sure we don't call GL functions when no accelerator is present */
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         return;
@@ -497,7 +501,7 @@ void PRREVertexTransfer::PRREVertexTransferImpl::ProcessGeometry(TPRREbool index
     //const void* const pTexcoordIndices2 = _pOwner->getMaterial(false).getTexcoordIndices(1);
 
     glBegin( getGLprimitiveFromPRREprimitive(_pOwner->getPrimitiveFormat()) );
-        for (TPRREuint i = 0; i < _pOwner->getVertexIndicesCount(false); i++)
+        for (TPRREuint i = 0; i < _pOwner->getVertexIndicesCount(); i++)
         {
             const TXYZ&       vertex = indexed ? _pOwner->getVertices(false)[ _pOwner->getVertexIndex(i) ]    : _pOwner->getVertices(false)[i];
             const TXYZ&       normal = indexed ? _pOwner->getNormals(false)[ _pOwner->getVertexIndex(i) ]     : _pOwner->getNormals(false)[i];
@@ -592,6 +596,8 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoDisplayList(TPR
  */
 TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects(TPRREbool indexed, TPRREbool dynamic)
 {
+    assert(_pOwner->isLevel2());
+
     /* Make sure we don't call GL functions when no accelerator is present */
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         return false;
@@ -627,7 +633,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObj
         if ( ( !pglGenBuffersARB(1, &nIndicesVBO) ) ||
              ( !pglBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, nIndicesVBO) ) ||
              /* Note: we always store indices in static buffer but could be in client memory, too. */
-             ( !pglBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, _pOwner->getVertexIndicesCount(false) * PRREGLsnippets::getSizeofIndexType(_pOwner->getVertexIndicesType()), _pOwner->getVertexIndices(false), GL_STATIC_DRAW_ARB) ) ||
+             ( !pglBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, _pOwner->getVertexIndicesCount() * PRREGLsnippets::getSizeofIndexType(_pOwner->getVertexIndicesType()), _pOwner->getVertexIndices(false), GL_STATIC_DRAW_ARB) ) ||
              ( !pglBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0) ) )
         {
             _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create element array buffer!");
@@ -639,7 +645,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObj
 
     if ( ( !pglGenBuffersARB(1, &nVerticesVBO) ) ||
          ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, nVerticesVBO) ) ||
-         ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB,  _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getVertices(false), usage) ) )
+         ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB,  _pOwner->getVerticesCount() * sizeof(TXYZ), _pOwner->getVertices(false), usage) ) )
     {
         _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create vertex VBO!");
         return false;
@@ -680,7 +686,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObj
 
     if ( ( !pglGenBuffersARB(1, &nNormalsVBO) ) ||
          ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, nNormalsVBO) ) ||
-         ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getVerticesCount(false) * sizeof(TXYZ), _pOwner->getNormals(false), usage) ) ||
+         ( !pglBufferDataARB(GL_ARRAY_BUFFER_ARB, _pOwner->getVerticesCount() * sizeof(TXYZ), _pOwner->getNormals(false), usage) ) ||
          ( !pglBindBufferARB(GL_ARRAY_BUFFER_ARB, 0) ) )
     {
         _pOwner->getManagedConsole().EOLnOO("ERROR: PRREVertexTransfer::PRREVertexTransferImpl::compileIntoVertexBufferObjects() failed to create normals VBO!");
@@ -1143,7 +1149,6 @@ TPRREuint PRREVertexTransfer::getUsedSystemMemory() const
         sumSubObjectMemoryUsage += getAttachedAt(i)->getUsedSystemMemory();
     }
     return sumSubObjectMemoryUsage +
-        PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) +
         PRREMesh3D::getUsedSystemMemory() - sizeof(PRREMesh3D) +
         sizeof(*this) + pImpl->getUsedSystemMemory();
 } // getUsedSystemMemory()
@@ -1169,37 +1174,43 @@ TPRREuint PRREVertexTransfer::getUsedVideoMemory() const
     if ( !PRREVertexTransfer::isVideoMemoryUsed(transferMode) )
         return 0;
 
-    TPRREuint sumSubObjectMemoryUsage = 0;
-    for (TPRREint i = 0; i < getSize(); i++)
+    TPRREuint sumSubMeshMemoryUsage = 0;
+
+    if ( isLevel1() )
     {
-        const PRREVertexTransfer* const subobj = (PRREVertexTransfer*) getAttachedAt(i);
-        if ( subobj == PGENULL )
-            continue;
-        sumSubObjectMemoryUsage += subobj->getUsedVideoMemory();
+        for (TPRREint i = 0; i < getSize(); i++)
+        {
+            const PRREVertexTransfer* const subobj = (PRREVertexTransfer*) getAttachedAt(i);
+            if ( subobj == PGENULL )
+                continue;
+            sumSubMeshMemoryUsage += subobj->getUsedVideoMemory();
+        }
+        return sumSubMeshMemoryUsage;
     }
 
+    // at this point this is a level-2, we keep using sumSubMeshMemoryUsage for its mem usage
+
     // VBO or display list, it doesn't matter, we always calculate with vertices, normals, colors, and 1 or 2 texture uvw arrays,
-    // since these are together always specified for both VBO and display lists.
-    // However, in case of VBO, we also add index (element) array if it is indexed rendering
-   
-    TPRREuint thisObjectVideoMemoryUsage = getVerticesCount(false) * sizeof(TXYZ) * 2 /* *2 because of we have normals too */ +
+    // since these are together always specified for both VBO and display lists. 
+    sumSubMeshMemoryUsage = getVerticesCount() * sizeof(TXYZ) * 2 /* *2 because of we have normals too */ +
         getMaterial(false).getColorsCount() * sizeof(TRGBAFLOAT) +
         getMaterial(false).getTexcoordsCount() * sizeof(TUVW);
 
     if ( getMaterial(false).getTexcoords(1) != PGENULL )
     {
-        thisObjectVideoMemoryUsage += getMaterial(false).getTexcoordsCount(1) * sizeof(TUVW);
+        sumSubMeshMemoryUsage += getMaterial(false).getTexcoordsCount(1) * sizeof(TUVW);
     }
     
+    // In case of VBO, we also add index (element) array if it is indexed rendering
     if ( (BIT_READ(transferMode, PRRE_VT_SVA_BIT) == 1u) )
     {
         if ( pImpl->nIndicesVBO != 0 )
         {
-            thisObjectVideoMemoryUsage += getVertexIndicesCount(false) * PRREGLsnippets::getSizeofIndexType(getVertexIndicesType());
+            sumSubMeshMemoryUsage += getVertexIndicesCount() * PRREGLsnippets::getSizeofIndexType(getVertexIndicesType());
         }
     }
 
-    return sumSubObjectMemoryUsage + thisObjectVideoMemoryUsage;
+    return sumSubMeshMemoryUsage;
 } // getUsedVideoMemory()
 
 

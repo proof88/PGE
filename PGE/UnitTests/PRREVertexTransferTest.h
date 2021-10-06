@@ -601,15 +601,33 @@ private:
 
     bool testGetUsedSystemMemory()
     {
-        return assertGreater(mesh->getUsedSystemMemory(),          sizeof(SampleDescendantFromVertexTransfer), "mesh") &
-               assertGreater(meshFromFile->getUsedSystemMemory(),  sizeof(SampleDescendantFromVertexTransfer), "meshFromFile");
+        return assertGreater(mesh->getUsedSystemMemory(),          sizeof(SampleDescendantFromVertexTransfer) + mesh->getVerticesCount() * 2 /* normals too */ * sizeof(TXYZ),         "mesh") &
+               assertGreater(meshFromFile->getUsedSystemMemory(),  sizeof(SampleDescendantFromVertexTransfer) + meshFromFile->getVerticesCount() * 2 /* normals too */ * sizeof(TXYZ), "meshFromFile");
     }
 
     bool testGetUsedVideoMemory()
     {
+        TPRREuint meshMinMemUsage = 0;
+        for (TPRREint i = 0; i < mesh->getCount(); i++)
+        {
+            const PRREVertexTransfer* const submesh = (PRREVertexTransfer*) mesh->getAttachedAt(i);
+            meshMinMemUsage += submesh->getVerticesCount() * sizeof(TXYZ) * 2 /* *2 because of we have normals too */ +
+                submesh->getMaterial(false).getColorsCount() * sizeof(TRGBAFLOAT) +
+                submesh->getMaterial(false).getTexcoordsCount() * sizeof(TUVW);
+        }
+
+        TPRREuint meshFromFileMinMemUsage = 0;
+        for (TPRREint i = 0; i < meshFromFile->getCount(); i++)
+        {
+            const PRREVertexTransfer* const submesh = (PRREVertexTransfer*) meshFromFile->getAttachedAt(i);
+            meshFromFileMinMemUsage += submesh->getVerticesCount() * sizeof(TXYZ) * 2 /* *2 because of we have normals too */ +
+                submesh->getMaterial(false).getColorsCount() * sizeof(TRGBAFLOAT) +
+                submesh->getMaterial(false).getTexcoordsCount() * sizeof(TUVW);
+        }
+
         // by default the created objects should eat video memory
-        bool l = assertGreater(mesh->getUsedVideoMemory(),    (TPRREuint) 0, "mesh") &
-            assertGreater(meshFromFile->getUsedVideoMemory(), (TPRREuint) 0, "meshFromFile");
+        bool l = assertGreater(mesh->getUsedVideoMemory(),    meshMinMemUsage, "mesh") &
+            assertGreater(meshFromFile->getUsedVideoMemory(), meshFromFileMinMemUsage, "meshFromFile");
         
         l &= assertTrue(mesh->setVertexTransferMode( PRRE_VMOD_DYNAMIC | PRRE_VREF_DIRECT ), "set mesh basic");
         l &= assertEquals(mesh->getUsedVideoMemory(), (TPRREuint) 0, "mesh after set");

@@ -179,7 +179,10 @@ TPRREbool PRREObject3D::PRREObject3DImpl::setVertexTransferMode(TPRRE_VERTEX_TRA
     }
 
     TPRREbool b = _pOwner->PRREVertexTransfer::setVertexTransferMode(vtrans);
-    recalculateBiggestAreaScaled();
+    if ( _pOwner->isLevel1() )
+    {
+        recalculateBiggestAreaScaled();
+    }
     _pOwner->getManagedConsole().OO();
     return b;
 } // setVertexTransferMode()
@@ -800,9 +803,9 @@ TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
 {
     return (
         sizeof(*this) +
-        nFbBuffer_h * sizeof(GLfloat) +
-        sizeof(TPRRE_TRANSFORMED_VERTEX) * _pOwner->getVertexIndicesCount(false) +
-        (pBoundingBox ? pBoundingBox->getUsedSystemMemory() : 0)
+        nFbBuffer_h /* 0 for level-1 */ * sizeof(GLfloat) +
+        sizeof(TPRRE_TRANSFORMED_VERTEX) /* 0 for level-1 */ * _pOwner->getVertexIndicesCount() +
+        (pBoundingBox /* NULL for level-2 */ ? pBoundingBox->getUsedSystemMemory() : 0)
     );
 } // getUsedSystemMemory()     
 
@@ -984,6 +987,8 @@ PRREObject3D::PRREObject3DImpl& PRREObject3D::PRREObject3DImpl::operator=(const 
 */
 void PRREObject3D::PRREObject3DImpl::Draw_FeedbackBuffer_Start()
 {
+    assert(_pOwner->isLevel2());
+
     /* We create this buffer only once at first run. */
     /* We intentionally switch to feedback mode only once since now  */
     if ( pFbBuffer != NULL )
@@ -998,7 +1003,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_FeedbackBuffer_Start()
         So the total num of values is: numOfTriangles * (2+3*12)
         Example with some real data is in later comment with debugbuffer[]. */
     
-    nFbBuffer_h = GLsizei(ceil((_pOwner->getVerticesCount(false) / 3.0f))) * (2+3*12);
+    nFbBuffer_h = GLsizei(ceil((_pOwner->getVerticesCount() / 3.0f))) * (2+3*12);
     try
     {
         /* TODO: probably in future we should rather use pVerticesTransf here as well since we already have it for that purpose, right? ;) */
@@ -1028,6 +1033,8 @@ void PRREObject3D::PRREObject3DImpl::Draw_FeedbackBuffer_Start()
 */
 void PRREObject3D::PRREObject3DImpl::Draw_FeedbackBuffer_Finish()
 {
+    assert(_pOwner->isLevel2());
+
     /* The number of values (not vertices) transferred to the feedback buffer. */
     const GLint nFbBufferWritten_h = glRenderMode(GL_RENDER);
 
@@ -1082,6 +1089,8 @@ void PRREObject3D::PRREObject3DImpl::Draw_FeedbackBuffer_Finish()
 */
 void PRREObject3D::PRREObject3DImpl::Draw_ApplyTransformations() const    
 {
+    assert(_pOwner->isLevel1());
+
     /* Make sure we don't call GL functions when no accelerator is present */
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         return;
@@ -1149,6 +1158,8 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLBeforeDrawNormal(bool bLighti
     AmbientLightPos[2] = -cam.getZ()-2.0f;
     AmbientLightPos[3] = 1.0f;
     glLightfv(GL_LIGHT0, GL_POSITION, AmbientLightPos);  */
+
+    assert(_pOwner->isLevel1());
 
     /* Make sure we don't call GL functions when no accelerator is present */
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
@@ -1250,6 +1261,8 @@ void PRREObject3D::PRREObject3DImpl::Draw_PrepareGLBeforeDrawNormal(bool bLighti
 
 void PRREObject3D::PRREObject3DImpl::glBeginOcclusionQuery() const
 {
+    assert(_pOwner->isLevel1());
+
     /* Make sure we don't call GL functions when no accelerator is present */
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         return;
@@ -1267,6 +1280,8 @@ void PRREObject3D::PRREObject3DImpl::glBeginOcclusionQuery() const
 
 void PRREObject3D::PRREObject3DImpl::glEndOcclusionQuery() const
 {
+    assert(_pOwner->isLevel1());
+
     /* Make sure we don't call GL functions when no accelerator is present */
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         return;
@@ -1284,6 +1299,8 @@ void PRREObject3D::PRREObject3DImpl::glEndOcclusionQuery() const
 
 void PRREObject3D::PRREObject3DImpl::Draw_RenderBoundingBox() const
 {
+    assert(_pOwner->isLevel1());
+
     if ( nOcclusionQuery == 0 )
     {
         return;
@@ -1314,6 +1331,8 @@ void PRREObject3D::PRREObject3DImpl::Draw_RenderBoundingBox() const
 */
 void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
 {
+    assert(_pOwner->isLevel1());
+
     if ( nOcclusionQuery == 0 )
     {
         return;
@@ -1380,6 +1399,8 @@ void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
 */
 TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool bASyncQuery, TPRREbool bRenderIfQueryPending)
 {
+    assert(_pOwner->isLevel1());
+
     if ( nOcclusionQuery == 0 )
     {
         return false; // let it be rendered
@@ -1531,6 +1552,8 @@ void PRREObject3D::PRREObject3DImpl::Draw_DrawSW()
 
 TPRREfloat PRREObject3D::PRREObject3DImpl::recalculateBiggestAreaScaled()
 {
+    assert(_pOwner->isLevel1());
+
     const PRREVector vScaledSizeVec = _pOwner->getScaledSizeVec();
     const TPRREfloat fAreaXY = vScaledSizeVec.getX() * vScaledSizeVec.getY();
     const TPRREfloat fAreaXZ = vScaledSizeVec.getX() * vScaledSizeVec.getZ();
@@ -2320,8 +2343,6 @@ TPRREuint PRREObject3D::getUsedSystemMemory() const
     }
 
     return sumSubObjectMemoryUsage +
-        PRREFiledManaged::getUsedSystemMemory() - sizeof(PRREFiledManaged) +
-        PRREMesh3D::getUsedSystemMemory() - sizeof(PRREMesh3D) +
         PRREVertexTransfer::getUsedSystemMemory() - sizeof(PRREVertexTransfer) + 
         sizeof(*this) + pImpl->getUsedSystemMemory();
 } // getUsedSystemMemory()
@@ -2329,7 +2350,7 @@ TPRREuint PRREObject3D::getUsedSystemMemory() const
 
 /**
     The details of this function are described in VertexTransfer class.
-    If this is a cloned object, the returned value is 0.
+    If this is a cloned object, the returned value is usually 0 since it just refers to the mesh- and bounding box geometries of the original object.
     Small amount of extra video memory might be also used for the bounding box object utilized by this object.
 
     @return Amount of allocated video memory in Bytes for storing geometry of the underlying mesh, including all subobjects.

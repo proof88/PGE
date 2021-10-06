@@ -63,10 +63,20 @@ TPRRE_PRIMITIVE_FORMAT PRREMesh3D::PRREMesh3DImpl::getPrimitiveFormat() const
 } // getPrimitiveFormat()
 
 
-TPRREuint PRREMesh3D::PRREMesh3DImpl::getVerticesCount(TPRREbool implicitAccessSubobject) const
+TPRREuint PRREMesh3D::PRREMesh3DImpl::getVerticesCount() const
 {
-    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
-        return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getVerticesCount();
+    if ( isLevel1() )
+    {
+        TPRREuint sum = 0;
+        for (TPRREint i = 0; i < _pOwner->getSize(); i++)
+        {
+            if ( _pOwner->getAttachedAt(i) == PGENULL )
+                continue;
+            
+            sum += ((PRREMesh3D*)(_pOwner->getAttachedAt(i)))->getVerticesCount();
+        }
+        return sum;
+    }
     else
         return nVertices_h;
 } // getVerticesCount()
@@ -90,10 +100,20 @@ TXYZ* PRREMesh3D::PRREMesh3DImpl::getVertices(TPRREbool implicitAccessSubobject)
 } // getVertices()
 
 
-TPRREuint PRREMesh3D::PRREMesh3DImpl::getVertexIndicesCount(TPRREbool implicitAccessSubobject) const
+TPRREuint PRREMesh3D::PRREMesh3DImpl::getVertexIndicesCount() const
 {
-    if ( implicitAccessSubobject && isLevel1() && (_pOwner->getCount() == 1) )
-        return ((PRREMesh3D*) (_pOwner->getAttachedAt(0)))->getVertexIndicesCount();
+    if ( isLevel1() )
+    {
+        TPRREuint sum = 0;
+        for (TPRREint i = 0; i < _pOwner->getSize(); i++)
+        {
+            if ( _pOwner->getAttachedAt(i) == PGENULL )
+                continue;
+            
+            sum += ((PRREMesh3D*)(_pOwner->getAttachedAt(i)))->getVertexIndicesCount();
+        }
+        return sum;
+    }
     else
         return nVertexIndices_h; 
 }
@@ -559,21 +579,14 @@ TPRRE_PRIMITIVE_FORMAT PRREMesh3D::getPrimitiveFormat() const
 
 
 /**
-    Gets the number of vertices.
-    Number of vertices is 0 for a level-1 mesh since the geometry is owned by its level-2 submeshes.
-    The total number of vertices within a mesh can be calculated by summing the number of vertices of its submeshes.
-    Note: in special case this returns positive value even for a level-1 mesh, see below.
+    Gets the number of total vertices.
+    Number of total vertices for a level-1 mesh is the sum of number of vertices of its level-2 submeshes.
 
-    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
-           will be that submesh's value. If false, the accessed value will be this mesh's value.
-
-    @return Number of vertices. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
-            count is the subobject's vertex count. This implicit behavior is for convenience for objects storing
-            only 1 subobject like internally created objects.
+    @return Number of total vertices.
 */
-TPRREuint PRREMesh3D::getVerticesCount(TPRREbool implicitAccessSubobject) const
+TPRREuint PRREMesh3D::getVerticesCount() const
 {
-    return pImpl->getVerticesCount(implicitAccessSubobject);
+    return pImpl->getVerticesCount();
 } // getVerticesCount()
 
 
@@ -614,21 +627,14 @@ TXYZ* PRREMesh3D::getVertices(TPRREbool implicitAccessSubobject)
 
 
 /**
-    Gets the number of vertex indices.
-    Number of vertex incides is 0 for a level-1 mesh since the geometry is owned by its level-2 submeshes.
-    The total number of vertex indices within a mesh can be calculated by summing the number of vertex indices of its submeshes.
-    Note: in special case this returns positive value even for a level-1 mesh, see below.
+    Gets the number of total vertex indices.
+    Number of total vertex indices for a level-1 mesh is the sum of number of vertex indices of its level-2 submeshes.
 
-    @param implicitAccessSubobject If true (default), and this mesh has exactly 1 submesh, the accessed value
-           will be that submesh's value. If false, the accessed value will be this mesh's value.
-
-    @return Number of vertex indices. If the object's own vertex count is 0 but it has exactly 1 subobject, the returned
-            count is the subobject's vertex index count. This implicit behavior is for convenience for objects storing
-            only 1 subobject like internally created objects.
+    @return Number of total vertex indices.
 */
-TPRREuint PRREMesh3D::getVertexIndicesCount(TPRREbool implicitAccessSubobject) const
+TPRREuint PRREMesh3D::getVertexIndicesCount() const
 {
-    return pImpl->getVertexIndicesCount(implicitAccessSubobject);
+    return pImpl->getVertexIndicesCount();
 }
 
 

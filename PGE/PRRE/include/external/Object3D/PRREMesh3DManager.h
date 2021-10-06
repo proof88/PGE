@@ -68,11 +68,11 @@ public:
     
     TPRRE_PRIMITIVE_FORMAT getPrimitiveFormat() const;   /**< Gets the primitives' format. */
 
-    TPRREuint   getVerticesCount(TPRREbool implicitAccessSubobject = true) const;      /**< Gets the number of vertices. */
+    TPRREuint   getVerticesCount() const;                                              /**< Gets the number of total vertices. */
     const TXYZ* getVertices(TPRREbool implicitAccessSubobject = true) const;           /**< Gets the pointer to vertices. */
           TXYZ* getVertices(TPRREbool implicitAccessSubobject = true);                 /**< Gets the pointer to vertices. */
 
-    TPRREuint   getVertexIndicesCount(TPRREbool implicitAccessSubobject = true) const; /**< Gets the number of vertex indices. */
+    TPRREuint   getVertexIndicesCount() const;                                         /**< Gets the number of total vertex indices. */
     const void* getVertexIndices(TPRREbool implicitAccessSubobject = true) const;      /**< Gets the pointer to vertex indices. */
     /* HACK: using unsigned int here instead of GLenum to avoid using GL header. */
     /* TODO: create own type for the index type. */

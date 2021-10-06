@@ -149,9 +149,9 @@ private:
 
     TPRREbool bColliding;           /**< Colliding state. DEPRECATED: to be removed ... */
 
-    TPRRE_TRANSFORMED_VERTEX* pVerticesTransf;    /**< Pointer to transformed vertices. */
-    GLfloat*                  pFbBuffer;          /**< Feedback buffer. */
-    GLsizei                   nFbBuffer_h;        /**< Size of feedback buffer. */
+    TPRRE_TRANSFORMED_VERTEX* pVerticesTransf;    /**< Pointer to transformed vertices. NULL for level 1. Only for level 2. */
+    GLfloat*                  pFbBuffer;          /**< Feedback buffer. NULL for level 1. Only for level 2. */
+    GLsizei                   nFbBuffer_h;        /**< Size of feedback buffer. 0 for level 1. Only for level 2. */
 
     TPRREbool     bOccluder;                                 /**< Should renderer treat this as occluder in occlusion culling tests? */   
     // following variables are for the sync occlusion query

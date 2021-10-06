@@ -29,11 +29,11 @@ public:
 
     TPRRE_PRIMITIVE_FORMAT getPrimitiveFormat() const;     
 
-    TPRREuint   getVerticesCount(TPRREbool implicitAccessSubobject = true) const;      
+    TPRREuint   getVerticesCount() const;      
     const TXYZ* getVertices(TPRREbool implicitAccessSubobject = true) const;  
           TXYZ* getVertices(TPRREbool implicitAccessSubobject = true);
 
-    TPRREuint   getVertexIndicesCount(TPRREbool implicitAccessSubobject = true) const;
+    TPRREuint   getVertexIndicesCount() const;
     const void* getVertexIndices(TPRREbool implicitAccessSubobject = true) const;
 
     unsigned int getVertexIndicesType(TPRREbool implicitAccessSubobject = true) const;

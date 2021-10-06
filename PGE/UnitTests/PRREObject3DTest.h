@@ -1324,11 +1324,11 @@ private:
 
     bool testGetUsedSystemMemory()
     {
-        return assertGreater(obj->getUsedSystemMemory(),          sizeof(PRREObject3D), "obj") &
-               assertGreater(objFromFile->getUsedSystemMemory(),  sizeof(PRREObject3D), "objFromFile") &
-               assertGreater(objPlane->getUsedSystemMemory(),     sizeof(PRREObject3D), "plane") &
-               assertGreater(objBox->getUsedSystemMemory(),       sizeof(PRREObject3D), "box") &
-               assertGreater(objCube->getUsedSystemMemory(),      sizeof(PRREObject3D), "cube");
+        return assertGreater(obj->getUsedSystemMemory(),          sizeof(PRREObject3D) + obj->getVerticesCount() * 2 /* normals too */ * sizeof(TXYZ),         "obj") &
+               assertGreater(objFromFile->getUsedSystemMemory(),  sizeof(PRREObject3D) + objFromFile->getVerticesCount() * 2 /* normals too */ * sizeof(TXYZ), "objFromFile") &
+               assertGreater(objPlane->getUsedSystemMemory(),     sizeof(PRREObject3D) + objPlane->getVerticesCount() * 2 /* normals too */ * sizeof(TXYZ),    "plane") &
+               assertGreater(objBox->getUsedSystemMemory(),       sizeof(PRREObject3D) + objBox->getVerticesCount() * 2 /* normals too */ * sizeof(TXYZ),      "box") &
+               assertGreater(objCube->getUsedSystemMemory(),      sizeof(PRREObject3D) + objCube->getVerticesCount() * 2 /* normals too */ * sizeof(TXYZ),     "cube");
     }
 
     bool testGetUsedVideoMemory()
@@ -1339,14 +1339,27 @@ private:
             return assertNotNull(objCloned, "objCloned is NULL");
         }
 
+        TPRREuint objFromFileMinMemUsage = 0;
+        for (TPRREint i = 0; i < objFromFile->getCount(); i++)
+        {
+            const PRREObject3D* const submesh = (PRREObject3D*) objFromFile->getAttachedAt(i);
+            objFromFileMinMemUsage += submesh->getVerticesCount() * sizeof(TXYZ) * 2 /* *2 because of we have normals too */ +
+                submesh->getMaterial(false).getColorsCount() * sizeof(TRGBAFLOAT) +
+                submesh->getMaterial(false).getTexcoordsCount() * sizeof(TUVW);
+        }
+        if ( objFromFile->getBoundingBoxObject() )
+        {
+            objFromFileMinMemUsage += objFromFile->getBoundingBoxObject()->getUsedVideoMemory();
+        }
+
         // by default the created objects should eat video memory, except the cloned object
         // since it doesn't have underlying geometry, or bounding box object in this case!
-        const bool b = assertEquals(objCloned->getUsedVideoMemory(), (TPRREuint) 0, "objCloned") &
-            assertGreater(obj->getUsedVideoMemory(),         (TPRREuint) 0, "obj") &
-            assertGreater(objFromFile->getUsedVideoMemory(), (TPRREuint) 0, "objFromFile") &
-            assertGreater(objPlane->getUsedVideoMemory(),    (TPRREuint) 0, "plane") &
-            assertGreater(objBox->getUsedVideoMemory(),      (TPRREuint) 0, "box") &
-            assertGreater(objCube->getUsedVideoMemory(),     (TPRREuint) 0, "cube");
+        const bool b = assertEquals(objCloned->getUsedVideoMemory(), (TPRREuint) 0,          "objCloned") &
+            assertGreater(obj->getUsedVideoMemory(),                 (TPRREuint) 0,          "obj") &
+            assertGreater(objFromFile->getUsedVideoMemory(),         objFromFileMinMemUsage, "objFromFile") &
+            assertGreater(objPlane->getUsedVideoMemory(),            (TPRREuint) 0,          "plane") &
+            assertGreater(objBox->getUsedVideoMemory(),              (TPRREuint) 0,          "box") &
+            assertGreater(objCube->getUsedVideoMemory(),             (TPRREuint) 0,          "cube");
 
         delete objCloned;
         

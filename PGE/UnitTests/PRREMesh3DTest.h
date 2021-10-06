@@ -75,6 +75,7 @@ protected:
         AddSubTest("testGetVertexIndicesType", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetVertexIndicesType);
         AddSubTest("testGetMinVertexIndex", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetMinVertexIndex);
         AddSubTest("testGetMaxVertexIndex", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetMaxVertexIndex);
+        AddSubTest("testGetVertexIndicesCount", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetVertexIndicesCount);
         AddSubTest("testGetVertexIndex", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetVertexIndex);
         AddSubTest("testGetNormals", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetNormals);
         AddSubTest("testGetPosVec", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetPosVec);
@@ -223,19 +224,20 @@ private:
 
     bool testGetVerticesCount()
     {
+        TPRREuint nVerticesCount = 0;
+        for (TPRREint i = 0; i < meshFromFile->getCount(); i++)
+        {
+            nVerticesCount += ((PRREMesh3D*)meshFromFile->getAttachedAt(i))->getVerticesCount();
+        }
+
         return assertEquals((TPRREuint) 4, meshPlane->getVerticesCount(), "plane") &
             assertEquals((TPRREuint) 24, meshBox->getVerticesCount(), "box") &
             assertEquals((TPRREuint) 24, meshCube->getVerticesCount(), "cube") &
-            assertEquals((TPRREuint) 0, meshFromFile->getVerticesCount(), "meshFromFile") &
+            assertEquals(nVerticesCount, meshFromFile->getVerticesCount(), "meshFromFile") &
             assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getVerticesCount(), meshPlane->getVerticesCount(), "plane 2") &
             assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getVerticesCount(), meshBox->getVerticesCount(), "box 2") &
             assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getVerticesCount(), meshCube->getVerticesCount(), "cube 2") &
-            assertNotEquals(((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getVerticesCount(), meshFromFile->getVerticesCount(), "meshFromFile 2") &
-            assertEquals((TPRREuint)144, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getVerticesCount(), "meshFromFile 3") &
-            assertEquals((TPRREuint) 0, meshPlane->getVerticesCount(false), "plane noimplicit") &
-            assertEquals((TPRREuint) 0, meshBox->getVerticesCount(false), "box noimplicit") &
-            assertEquals((TPRREuint) 0, meshCube->getVerticesCount(false), "cube noimplicit") &
-            assertEquals((TPRREuint) 0, meshFromFile->getVerticesCount(false), "meshFromFile noimplicit");
+            assertEquals((TPRREuint)144, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getVerticesCount(), "meshFromFile 3");
     }
 
     bool testGetVertices()
@@ -297,6 +299,24 @@ private:
             assertEquals((TPRREuint)23, ((PRREMesh3D*)meshBox->getAttachedAt(0))->getMaxVertexIndex(), "box sub") &
             assertEquals((TPRREuint)23, ((PRREMesh3D*)meshCube->getAttachedAt(0))->getMaxVertexIndex(), "cube sub") &
             assertEquals((TPRREuint)143, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getMaxVertexIndex(), "meshFromFile sub");
+    }
+
+     bool testGetVertexIndicesCount()
+    {
+        TPRREuint nVertexIndicesCount = 0;
+        for (TPRREint i = 0; i < meshFromFile->getCount(); i++)
+        {
+            nVertexIndicesCount += ((PRREMesh3D*)meshFromFile->getAttachedAt(i))->getVertexIndicesCount();
+        }
+
+        return assertEquals((TPRREuint) 4, meshPlane->getVertexIndicesCount(), "plane") &
+            assertEquals((TPRREuint) 24, meshBox->getVertexIndicesCount(), "box") &
+            assertEquals((TPRREuint) 24, meshCube->getVertexIndicesCount(), "cube") &
+            assertEquals(nVertexIndicesCount, meshFromFile->getVertexIndicesCount(), "meshFromFile") &
+            assertEquals(((PRREMesh3D*)meshPlane->getAttachedAt(0))->getVertexIndicesCount(), meshPlane->getVertexIndicesCount(), "plane 2") &
+            assertEquals(((PRREMesh3D*)meshBox->getAttachedAt(0))->getVertexIndicesCount(), meshBox->getVertexIndicesCount(), "box 2") &
+            assertEquals(((PRREMesh3D*)meshCube->getAttachedAt(0))->getVertexIndicesCount(), meshCube->getVertexIndicesCount(), "cube 2") &
+            assertEquals((TPRREuint)144, ((PRREMesh3D*)meshFromFile->getAttachedAt(0))->getVertexIndicesCount(), "meshFromFile 3");
     }
 
     bool testGetVertexIndex()
@@ -592,11 +612,11 @@ private:
 
     bool testGetUsedSystemMemory()
     {
-        return assertGreater(mesh->getUsedSystemMemory(),      sizeof(PRREMesh3D), "mesh") &
-            assertGreater(meshFromFile->getUsedSystemMemory(),      sizeof(PRREMesh3D), "meshFromFile") &
-            assertGreater(meshPlane->getUsedSystemMemory(), sizeof(PRREMesh3D), "plane") &
-            assertGreater(meshBox->getUsedSystemMemory(),   sizeof(PRREMesh3D), "box") &
-            assertGreater(meshCube->getUsedSystemMemory(),  sizeof(PRREMesh3D), "cube");
+        return assertGreater(mesh->getUsedSystemMemory(),       sizeof(PRREMesh3D) + mesh->getVerticesCount() * 2 /* normals too */ * sizeof(TXYZ),         "mesh") &
+            assertGreater(meshFromFile->getUsedSystemMemory(),  sizeof(PRREMesh3D) + meshFromFile->getVerticesCount() * 2 /* normals too */ * sizeof(TXYZ), "meshFromFile") &
+            assertGreater(meshPlane->getUsedSystemMemory(),     sizeof(PRREMesh3D) + meshPlane->getVerticesCount() * 2 /* normals too */ * sizeof(TXYZ),    "plane") &
+            assertGreater(meshBox->getUsedSystemMemory(),       sizeof(PRREMesh3D) + meshBox->getVerticesCount() * 2 /* normals too */ * sizeof(TXYZ),      "box") &
+            assertGreater(meshCube->getUsedSystemMemory(),      sizeof(PRREMesh3D) + meshCube->getVerticesCount() * 2 /* normals too */ * sizeof(TXYZ),     "cube");
     }
 
     bool testGetCount()
