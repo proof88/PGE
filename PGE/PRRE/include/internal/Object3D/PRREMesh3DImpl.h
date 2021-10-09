@@ -43,6 +43,9 @@ public:
      
     const TXYZ* getNormals(TPRREbool implicitAccessSubobject = true) const;  
 
+    TPRREuint getFaceCount() const;
+    TPRREuint getTriangleCount() const;
+
     PRREVector&       getPosVec();                  
     const PRREVector& getPosVec() const;
     const PRREVector& getRelPosVec() const;

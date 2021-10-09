@@ -44,11 +44,11 @@ Top=146
 Width=1720
 Height=682
 MaxLeft=-8
-MaxTop=106
+MaxTop=113
 MaxWidth=1932
-MaxHeight=920
+MaxHeight=913
 ClientWidth=1916
-ClientHeight=882
+ClientHeight=875
 LeftPanelSize=140
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=000004000000000000000000000000000000000000000000000100000000000000000C000000436F64654578706C6F726572FFFFFFFF
@@ -59,9 +59,9 @@ BottomPanelData=0000040000000000000000000000000000000000000000000001000000000000
 
 [View0]
 Module=D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\P03.dpr
-CursorX=24
-CursorY=394
-TopLine=347
+CursorX=48
+CursorY=156
+TopLine=133
 LeftCol=1
 
 [View1]

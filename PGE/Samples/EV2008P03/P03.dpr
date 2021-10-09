@@ -153,7 +153,7 @@ function WinMain(hInstance: HINST; hPrevInstance: HINST; lpCmdLine: PChar; nCmdS
 var
   windmsg: TMsg;                                        // lekérdezett window message
   done: boolean;                                        // a játék fõciklusának elhagyása, ha TRUE
-  fps_ms,fps_ms2,fps_ms3,fps_ms_old: integer;           // fps méréséhez kell
+  fps_ms,fps_ms2,fps_ms3,fps_ms_old: cardinal;          // fps méréséhez kell
   fps,fps_old: integer;                                 // detto
   texture: integer;
   obj: integer;

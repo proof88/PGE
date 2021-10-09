@@ -78,6 +78,8 @@ protected:
         AddSubTest("testGetVertexIndicesCount", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetVertexIndicesCount);
         AddSubTest("testGetVertexIndex", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetVertexIndex);
         AddSubTest("testGetNormals", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetNormals);
+        AddSubTest("testGetFaceCount", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetFaceCount);
+        AddSubTest("testGetTriangleCount", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetTriangleCount);
         AddSubTest("testGetPosVec", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetPosVec);
         AddSubTest("testGetRelPosVec", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetRelPosVec);
         AddSubTest("testGetSizeVec", (PFNUNITSUBTEST) &PRREMesh3DTest::testGetSizeVec);
@@ -389,6 +391,18 @@ private:
             assertNull(meshBox->getNormals(false), "box noimplicit") &
             assertNull(meshCube->getNormals(false), "cube noimplicit") &
             assertNull(meshFromFile->getNormals(false), "meshFromFile noimplicit");
+    }
+
+    bool testGetFaceCount()
+    {
+        return assertEquals((TPRREuint)6, mesh->getFaceCount(), "mesh") &
+            assertEquals((TPRREuint)728, meshFromFile->getFaceCount(), "meshFromFile");
+    }
+
+    bool testGetTriangleCount()
+    {
+        return assertEquals((TPRREuint)12, mesh->getTriangleCount(), "mesh") &
+            assertEquals((TPRREuint)728, meshFromFile->getTriangleCount(), "meshFromFile");
     }
 
     bool testGetPosVec()

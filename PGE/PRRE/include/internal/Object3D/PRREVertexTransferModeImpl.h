@@ -38,7 +38,10 @@ public:
     TPRRE_VERTEX_REFERENCING_MODE getVertexReferencingMode() const;    
     TPRREbool setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref); 
     TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;          
-    TPRREbool setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);    
+    TPRREbool setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);
+
+    TPRREuint getLastTransferredVertexCount() const;
+    TPRREuint getLastTransferredTriangleCount() const;
 
     TPRREuint getUsedSystemMemory() const; 
 
@@ -56,7 +59,8 @@ protected:
     PRREVertexTransferImpl(const PRREVertexTransferImpl&);
     PRREVertexTransferImpl& operator=(const PRREVertexTransferImpl&);
 
-    void TransferVertices();
+    TPRREuint transferVertices();
+    void ResetLastTransferredCounts();
 
 private:
 
@@ -72,6 +76,9 @@ private:
     std::vector<GLuint> nTexcoordsVBO;   /**< OpenGL VBO indices of texture mapping coordinates per layer. */
     GLuint nNormalsVBO;             /**< OpenGL VBO index of normals. */
     GLuint nIndicesVBO;             /**< OpenGL VBO index of indices. */
+
+    TPRREuint nLastTransferredVertices;   /**< Number of vertices transferred by last transferVertices(). */
+    TPRREuint nLastTransferredTriangles;  /**< Number of vertices transferred by last transferVertices(). */
 
     // ---------------------------------------------------------------------------
 

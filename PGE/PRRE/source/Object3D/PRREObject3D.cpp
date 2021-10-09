@@ -904,7 +904,7 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass, T
     }
 
     Draw_FeedbackBuffer_Start();
-    ((PRREVertexTransfer*)_pOwner)->pImpl->TransferVertices();
+    _pOwner->transferVertices();
     Draw_FeedbackBuffer_Finish(); 
 } // Draw()
 
@@ -1319,7 +1319,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_RenderBoundingBox() const
     {
         glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
     }
-    ((PRREVertexTransfer*)pWhichBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
+    ((PRREObject3D*)(pWhichBoundingBox->getAttachedAt(0)))->transferVertices();
 } // Draw_RenderBoundingBox()
 
 
@@ -1376,7 +1376,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
     } // async
 
     glBeginOcclusionQuery();
-    ((PRREVertexTransfer*)pWhichBoundingBox->getAttachedAt(0))->pImpl->TransferVertices();
+    ((PRREObject3D*)(pWhichBoundingBox->getAttachedAt(0)))->transferVertices();
     glEndOcclusionQuery();
 
     bOcclusionQueryStarted = true;

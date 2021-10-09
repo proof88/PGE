@@ -312,6 +312,18 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexTransferMode(TPRR
 } // setVertexTransferMode()
 
 
+TPRREuint PRREVertexTransfer::PRREVertexTransferImpl::getLastTransferredVertexCount() const
+{
+    return nLastTransferredVertices;
+}
+
+
+TPRREuint PRREVertexTransfer::PRREVertexTransferImpl::getLastTransferredTriangleCount() const
+{
+    return nLastTransferredTriangles;
+}
+
+
 TPRREuint PRREVertexTransfer::PRREVertexTransferImpl::getUsedSystemMemory() const
 {
     return sizeof(*this);
@@ -346,6 +358,9 @@ PRREVertexTransfer::PRREVertexTransferImpl::PRREVertexTransferImpl(
     nVerticesVBO = nColorsVBO = nNormalsVBO = nIndicesVBO = 0;
     nTexcoordsVBO.resize( materialMgr.getMaximumLayerCount() );
 
+    nLastTransferredVertices = 0;
+    nLastTransferredTriangles = 0;
+
     vertexTransferMode = PRREVertexTransfer::selectVertexTransferMode(vmod, vref, bForceUseClientMemory);
 
     _pOwner->getManagedConsole().SOLnOO("Done!");
@@ -364,9 +379,20 @@ PRREVertexTransfer::PRREVertexTransferImpl& PRREVertexTransfer::PRREVertexTransf
 }
 
 
-void PRREVertexTransfer::PRREVertexTransferImpl::TransferVertices()
+TPRREuint PRREVertexTransfer::PRREVertexTransferImpl::transferVertices()
 {
     assert(_pOwner->isLevel2());
+    if ( !_pOwner->isLevel2() )
+    {
+        _pOwner->getManagedConsole().EOLn("ERROR: PRREVertexTransfer::%s() invoked for level-1!", __FUNCTION__);
+        return 0;
+    }
+
+    nLastTransferredVertices = _pOwner->getVertexIndicesCount();
+    nLastTransferredTriangles = _pOwner->getTriangleCount();
+    // increasing the number in the parent too, however it must be parent's logic to zero it out before iterating over its children again
+    ((PRREVertexTransfer*)(_pOwner->getManager()))->pImpl->nLastTransferredVertices += nLastTransferredVertices;
+    ((PRREVertexTransfer*)(_pOwner->getManager()))->pImpl->nLastTransferredTriangles += nLastTransferredTriangles;
 
     // this function doesn't check for GL errors since this is also part of rendering,
     // renderer should check for errors after each frame
@@ -387,7 +413,7 @@ void PRREVertexTransfer::PRREVertexTransferImpl::TransferVertices()
             glCallList( nDispList );
         }
 
-        return;
+        return nLastTransferredVertices;
     } // PRRE_VT_VA_BIT == 0u
 
     /* vertex array either in client or server */
@@ -438,6 +464,15 @@ void PRREVertexTransfer::PRREVertexTransferImpl::TransferVertices()
             glUnlockArraysEXT();
 
     ResetArrayPointers( bServer );
+
+    return nLastTransferredVertices;
+}
+
+
+void PRREVertexTransfer::PRREVertexTransferImpl::ResetLastTransferredCounts()
+{
+    nLastTransferredVertices = 0;
+    nLastTransferredTriangles = 0;
 }
 
 
@@ -1124,13 +1159,33 @@ TPRRE_VERTEX_TRANSFER_MODE PRREVertexTransfer::getVertexTransferMode() const
     to 0 and HW resources are freed up.
     It applies to the entire geometry of the mesh, including all of its submeshes.
     The setting is ignored for level-2 meshes as it is applied to them by their level-1 parent mesh.
+
     @param  vtrans Vertex referencing mode to be set.
+
     @return        True on success, false otherwise.
 */
 TPRREbool PRREVertexTransfer::setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 {
     return pImpl->setVertexTransferMode(vtrans);
 } // setVertexTransferMode()
+
+
+/**
+    Gets the number of vertices sent to graphics pipeline by the last transferVertices() call.
+*/
+TPRREuint PRREVertexTransfer::getLastTransferredVertexCount() const
+{
+    return pImpl->getLastTransferredVertexCount();
+}
+
+
+/**
+    Gets the number of triangles sent to graphics pipeline by the last transferVertices() call.
+*/
+TPRREuint PRREVertexTransfer::getLastTransferredTriangleCount() const
+{
+    return pImpl->getLastTransferredTriangleCount();
+}
 
 
 /**
@@ -1260,6 +1315,28 @@ PRREVertexTransfer::PRREVertexTransfer(const PRREVertexTransfer& other)
 PRREVertexTransfer& PRREVertexTransfer::operator=(const PRREVertexTransfer&)
 {
     return *this;
+}
+
+
+/**
+    Sends vertices to the graphics pipeline.
+    Should be invoked for level-2 submesh, i.e. a PRREVertexTransfer instance having geometry, and having another PRREVertexTransfer as parent.
+
+    @return The number of vertices sent to the graphics pipeline.
+*/
+TPRREuint PRREVertexTransfer::transferVertices()
+{
+    return pImpl->transferVertices();
+} // transferVertices
+
+
+/**
+    Derived class can reset the counters when needed.
+    Useful before iterating over its level-2 managed PRREVertexTransfer derived instances, because they implicitly increase counters in their level-1 parent.
+*/
+void PRREVertexTransfer::ResetLastTransferredCounts()
+{
+    pImpl->ResetLastTransferredCounts();
 }
 
 

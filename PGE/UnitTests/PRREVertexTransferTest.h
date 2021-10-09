@@ -34,6 +34,23 @@ public:
     virtual ~SampleDescendantFromVertexTransfer()
     {};
 
+    /*
+        This is a sample draw logic for a drawable level-1 derived object, just for unit test.
+        A real implementation is obviously the PRREObject3D::draw() function.
+    */
+    TPRREuint dummyDraw()
+    {
+        assert(isLevel1());
+        ResetLastTransferredCounts();
+
+        TPRREuint nRetSum = 0;
+        for (TPRREint i = 0; i < getCount(); i++)
+        {
+            nRetSum += ((SampleDescendantFromVertexTransfer*)(getAttachedAt(i)))->transferVertices();
+        }
+        return nRetSum;
+    };
+
 protected:
 
     SampleDescendantFromVertexTransfer() : PRREVertexTransfer()
@@ -210,6 +227,9 @@ protected:
         AddSubTest("testSetVertexReferencingMode", (PFNUNITSUBTEST) &PRREVertexTransferTest::testSetVertexReferencingMode);
         AddSubTest("testGetVertexTransferMode", (PFNUNITSUBTEST) &PRREVertexTransferTest::testGetVertexTransferMode);
         AddSubTest("testSetVertexTransferMode", (PFNUNITSUBTEST) &PRREVertexTransferTest::testSetVertexTransferMode);
+        AddSubTest("testTransferVertices", (PFNUNITSUBTEST) &PRREVertexTransferTest::testTransferVertices);
+        AddSubTest("testGetLastTransferredVertexCount", (PFNUNITSUBTEST) &PRREVertexTransferTest::testGetLastTransferredVertexCount);
+        AddSubTest("testGetLastTransferredTriangleCount", (PFNUNITSUBTEST) &PRREVertexTransferTest::testGetLastTransferredTriangleCount);
         AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PRREVertexTransferTest::testGetUsedSystemMemory);
         AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PRREVertexTransferTest::testGetUsedVideoMemory);
     }
@@ -597,6 +617,35 @@ private:
         l &= assertEquals(vtExpectedStaIndDLobjFromFile, meshFromFile->getVertexTransferMode(), "ind meshFromFile DL");
 
         return l;
+    }
+
+    bool testTransferVertices()
+    {
+        // public dummyDraw() invokes protected transferVertices() straightforward for us to test it
+
+        TPRREuint nMeshLastTransferredVertices = mesh->dummyDraw();
+        TPRREuint nMeshFromFileLastTransferredVertices = meshFromFile->dummyDraw();
+
+        return assertEquals(mesh->getVertexIndicesCount(), mesh->getLastTransferredVertexCount(), "mesh 1") &
+            assertEquals(meshFromFile->getVertexIndicesCount(), meshFromFile->getLastTransferredVertexCount(), "meshFromFile 1") &
+            assertEquals(nMeshLastTransferredVertices, mesh->getLastTransferredVertexCount(), "mesh 2") &
+            assertEquals(nMeshFromFileLastTransferredVertices, meshFromFile->getLastTransferredVertexCount(), "meshFromFile 2") &
+            assertEquals(mesh->getTriangleCount(), mesh->getLastTransferredTriangleCount(), "mesh 3") &
+            assertEquals(meshFromFile->getTriangleCount(), meshFromFile->getLastTransferredTriangleCount(), "meshFromFile 3");
+    }
+
+    bool testGetLastTransferredVertexCount()
+    {
+        // non-initial values are checked in testTransferVertices()
+        return assertEquals((TPRREuint)0, mesh->getLastTransferredVertexCount(), "mesh") &
+            assertEquals((TPRREuint)0, meshFromFile->getLastTransferredVertexCount(), "meshFromFile");
+    }
+
+    bool testGetLastTransferredTriangleCount()
+    {
+        // non-initial values are checked in testTransferVertices()
+        return assertEquals((TPRREuint)0, mesh->getLastTransferredTriangleCount(), "mesh") &
+            assertEquals((TPRREuint)0, meshFromFile->getLastTransferredTriangleCount(), "meshFromFile");
     }
 
     bool testGetUsedSystemMemory()

@@ -189,6 +189,58 @@ const TXYZ* PRREMesh3D::PRREMesh3DImpl::getNormals(TPRREbool implicitAccessSubob
 } // getNormals()
 
 
+TPRREuint PRREMesh3D::PRREMesh3DImpl::getFaceCount() const
+{
+    if ( isLevel1() )
+    {
+        TPRREuint sum = 0;
+        for (TPRREint i = 0; i < _pOwner->getSize(); i++)
+        {
+            if ( _pOwner->getAttachedAt(i) == PGENULL )
+                continue;
+            
+            sum += ((PRREMesh3D*)(_pOwner->getAttachedAt(i)))->getFaceCount();
+        }
+        return sum;
+    }
+
+    switch ( _pOwner->getPrimitiveFormat() )
+    {
+    case PRRE_PM_TRIANGLES:
+        return nVertexIndices_h / 3;
+    default:
+        /* the other only choice is PRRE_PM_QUADS currently */
+        return nVertexIndices_h / 4;
+    }
+} // getFaceCount()
+
+
+TPRREuint PRREMesh3D::PRREMesh3DImpl::getTriangleCount() const
+{
+    if ( isLevel1() )
+    {
+        TPRREuint sum = 0;
+        for (TPRREint i = 0; i < _pOwner->getSize(); i++)
+        {
+            if ( _pOwner->getAttachedAt(i) == PGENULL )
+                continue;
+            
+            sum += ((PRREMesh3D*)(_pOwner->getAttachedAt(i)))->getTriangleCount();
+        }
+        return sum;
+    }
+
+    switch ( _pOwner->getPrimitiveFormat() )
+    {
+    case PRRE_PM_TRIANGLES:
+        return nVertexIndices_h / 3;
+    default:
+        /* the other only choice is PRRE_PM_QUADS currently */
+        return nVertexIndices_h / 4 * 2;
+    }
+} // getTriangleCount()
+
+
 PRREVector& PRREMesh3D::PRREMesh3DImpl::getPosVec()
 {
     return vPos;
@@ -747,6 +799,35 @@ const TXYZ* PRREMesh3D::getNormals(TPRREbool implicitAccessSubobject) const
 {
     return pImpl->getNormals(implicitAccessSubobject);
 } // getNormals()
+
+
+/**
+    Gets the number of faces/polygons/primitives formed by the vertices.
+    Face count doesn't only depend on vertex or vertex index count but also on the primitive format (see: getPrimitiveFormat()).
+    Note that face count is not necessarily equal to getTriangleCount() because e.q. if primitive format is quads/quadrilaterals, then obviously
+    face count will be smaller than triangle count. Even if primitive format indicates quads/quadrilaterals, they are split into triangles at some
+    point when transferred through the graphics pipeline.
+
+    @return Number of faces/polygons/primitives formed by the vertices.
+*/
+TPRREuint PRREMesh3D::getFaceCount() const
+{
+    return pImpl->getFaceCount();
+}
+
+/**
+    Gets the number of triangles formed by the vertices.
+    Triangle count doesn't only depend on vertex or vertex index count but also on the primitive format (see: getPrimitiveFormat()).
+    Note that triangle count is not necessarily equal to getFaceCount() because e.q. if primitive format is quads/quadrilaterals, then obviously
+    triangle count will be greater than face count. Even if primitive format indicates quads/quadrilaterals, they are split into triangles at some
+    point when transferred through the graphics pipeline.
+
+    @return Number of triangles formed by the vertices.
+*/
+TPRREuint PRREMesh3D::getTriangleCount() const
+{
+    return pImpl->getTriangleCount();
+}
 
 
 /**

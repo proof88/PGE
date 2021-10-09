@@ -84,6 +84,9 @@ public:
 
     const TXYZ* getNormals(TPRREbool implicitAccessSubobject = true) const;            /**< Gets the pointer to normals. */
 
+    TPRREuint getFaceCount() const;      /**< Gets the number of faces/polygons formed by the vertices. */
+    TPRREuint getTriangleCount() const;  /**< Gets the number of triangles formed by the vertices. */
+
           PRREVector& getPosVec();                  /**< Gets the position. */
     const PRREVector& getPosVec() const;            /**< Gets the position. */
     virtual const PRREVector& getRelPosVec() const; /**< Gets the mesh-local relative position. */
