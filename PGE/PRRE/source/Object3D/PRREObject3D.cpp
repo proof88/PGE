@@ -833,11 +833,6 @@ TPRREuint PRREObject3D::PRREObject3DImpl::draw(const TPRRE_RENDER_PASS& renderPa
         // Or by cloned objects which refer to another original objects but still have their own position, angle, etc.
 
         _pOwner->ResetLastTransferredCounts();
-        PRREObject3D* const pWhichBoundingBox = pBoundingBox ? pBoundingBox : (getReferredObject() ? getReferredObject()->pImpl->pBoundingBox : PGENULL);
-        if ( pWhichBoundingBox )
-        {
-            pWhichBoundingBox->ResetLastTransferredCounts();
-        }
         
         if ( renderPass == PRRE_RPASS_NORMAL )
         {
@@ -1665,6 +1660,148 @@ TPRREbool PRREObject3D::isLevel2() const
 
 
 /**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, the returned value is the referred object's relevant value.
+    This additional behavior is needed since a cloned object doesn't have its own geometry.
+*/
+TPRRE_PRIMITIVE_FORMAT PRREObject3D::getPrimitiveFormat() const
+{
+    return getReferredObject() ? getReferredObject()->getPrimitiveFormat() : PRREVertexTransfer::getPrimitiveFormat();
+} // getPrimitiveFormat()
+
+
+/**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, the returned value is the referred object's relevant value.
+    This additional behavior is needed since a cloned object doesn't have its own geometry, but it would be misleading to
+    report 0.
+*/
+TPRREuint PRREObject3D::getVerticesCount() const
+{
+    return getReferredObject() ? getReferredObject()->getVerticesCount() : PRREVertexTransfer::getVerticesCount();
+} // getVerticesCount()
+
+
+/**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, the returned value is the referred object's relevant value.
+    This additional behavior is needed since a cloned object doesn't have its own geometry.
+*/
+const TXYZ* PRREObject3D::getVertices(TPRREbool implicitAccessSubobject) const
+{
+    return getReferredObject() ? getReferredObject()->getVertices(implicitAccessSubobject) : PRREVertexTransfer::getVertices(implicitAccessSubobject);
+} // getVertices()
+
+
+/**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, the returned value is the referred object's relevant value.
+    This additional behavior is needed since a cloned object doesn't have its own geometry.
+*/
+TXYZ* PRREObject3D::getVertices(TPRREbool implicitAccessSubobject)
+{
+    return getReferredObject() ? getReferredObject()->getVertices(implicitAccessSubobject) : PRREVertexTransfer::getVertices(implicitAccessSubobject);
+} // getVertices()
+
+
+/**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, the returned value is the referred object's relevant value.
+    This additional behavior is needed since a cloned object doesn't have its own geometry, but it would be misleading to
+    report 0.
+*/
+TPRREuint PRREObject3D::getVertexIndicesCount() const
+{
+    return getReferredObject() ? getReferredObject()->getVertexIndicesCount() : PRREVertexTransfer::getVertexIndicesCount();
+}
+
+
+/**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, the returned value is the referred object's relevant value.
+    This additional behavior is needed since a cloned object doesn't have its own geometry.
+*/
+const void* PRREObject3D::getVertexIndices(TPRREbool implicitAccessSubobject) const
+{
+    return getReferredObject() ? getReferredObject()->getVertexIndices(implicitAccessSubobject) : PRREVertexTransfer::getVertexIndices(implicitAccessSubobject);
+}
+
+
+/**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, the returned value is the referred object's relevant value.
+    This additional behavior is needed since a cloned object doesn't have its own geometry.
+*/
+unsigned int PRREObject3D::getVertexIndicesType(TPRREbool implicitAccessSubobject) const
+{
+    return getReferredObject() ? getReferredObject()->getVertexIndicesType(implicitAccessSubobject) : PRREVertexTransfer::getVertexIndicesType(implicitAccessSubobject);
+}
+
+
+/**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, the returned value is the referred object's relevant value.
+    This additional behavior is needed since a cloned object doesn't have its own geometry.
+*/
+TPRREuint PRREObject3D::getMinVertexIndex(TPRREbool implicitAccessSubobject) const
+{
+    return getReferredObject() ? getReferredObject()->getMinVertexIndex(implicitAccessSubobject) : PRREVertexTransfer::getMinVertexIndex(implicitAccessSubobject);
+}
+
+/**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, the returned value is the referred object's relevant value.
+    This additional behavior is needed since a cloned object doesn't have its own geometry.
+*/
+TPRREuint PRREObject3D::getMaxVertexIndex(TPRREbool implicitAccessSubobject) const
+{
+    return getReferredObject() ? getReferredObject()->getMaxVertexIndex(implicitAccessSubobject) : PRREVertexTransfer::getMaxVertexIndex(implicitAccessSubobject);
+}
+
+/**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, the returned value is the referred object's relevant value.
+    This additional behavior is needed since a cloned object doesn't have its own geometry.
+*/
+TPRREuint PRREObject3D::getVertexIndex(TPRREuint index, TPRREbool implicitAccessSubobject) const
+{
+    return getReferredObject() ? getReferredObject()->getVertexIndex(index, implicitAccessSubobject) : PRREVertexTransfer::getVertexIndex(index, implicitAccessSubobject);
+}
+
+
+/**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, the returned value is the referred object's relevant value.
+    This additional behavior is needed since a cloned object doesn't have its own geometry.
+*/
+const TXYZ* PRREObject3D::getNormals(TPRREbool implicitAccessSubobject) const
+{
+    return getReferredObject() ? getReferredObject()->getNormals(implicitAccessSubobject) : PRREVertexTransfer::getNormals(implicitAccessSubobject);
+} // getNormals()
+
+
+/**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, the returned value is the referred object's relevant value.
+    This additional behavior is needed since a cloned object doesn't have its own geometry.
+*/
+TPRREuint PRREObject3D::getFaceCount() const
+{
+    return getReferredObject() ? getReferredObject()->getFaceCount() : PRREVertexTransfer::getFaceCount();
+}
+
+/**
+    The details of this function are described in PRREMesh3D class.
+    Addition to PRREMesh3D behavior: if this is a cloned object, the returned value is the referred object's relevant value.
+    This additional behavior is needed since a cloned object doesn't have its own geometry.
+*/
+TPRREuint PRREObject3D::getTriangleCount() const
+{
+    return getReferredObject() ? getReferredObject()->getTriangleCount() : PRREVertexTransfer::getTriangleCount();
+}
+
+
+/**
     The details of this function are described in PRREVertexTransfer class.
     Addition to PRREVertexTransfer behavior: if this is a cloned object, the returned value is the same as the referred object's value.
 */
@@ -1734,32 +1871,58 @@ TPRREbool PRREObject3D::setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 
 
 /**
-    Same functionality as defined originally in PRREVertexTransfer::getLastTransferredVertexCount() but extended with awareness of optional bounding box object.
+    Same functionality as defined originally in PRREVertexTransfer::getLastTransferredVertexCount() but extended with awareness of:
+     - optional bounding box object;
+     - referred object in case of cloned object.
     So depending on the render pass and occlusion testing, if the object's bounding box was sent to the graphics pipeline by draw(), its vertices will be also counted.
+    If this is a cloned object, this function returns the last transferred vertex count of the referred object since the transfer of vertices actually happens
+    by the referred object, so counting also happens there, so we should return that value, otherwise it would be misleading to return cloned object's value of 0.
 */
 TPRREuint PRREObject3D::getLastTransferredVertexCount() const
 {
-    const PRREObject3D* const pWhichBoundingBox = getBoundingBoxObject() ? getBoundingBoxObject() : (getReferredObject() ? getReferredObject()->getBoundingBoxObject() : PGENULL);
-    if ( pWhichBoundingBox )
+    TPRREuint nTransVertexCount = 0;
+    if ( getReferredObject() )
     {
-        return PRREVertexTransfer::getLastTransferredVertexCount() + pWhichBoundingBox->getLastTransferredVertexCount();
+        nTransVertexCount = getReferredObject()->getLastTransferredVertexCount();
     }
-    return PRREVertexTransfer::getLastTransferredVertexCount();
+    else
+    {
+        if ( getBoundingBoxObject() )
+        {
+            nTransVertexCount = getBoundingBoxObject()->getLastTransferredVertexCount();
+        }
+        nTransVertexCount += PRREVertexTransfer::getLastTransferredVertexCount();
+    }
+
+    return nTransVertexCount;
 } // getLastTransferredVertexCount()
 
 
 /**
-    Same functionality as defined originally in PRREVertexTransfer::getLastTransferredTriangleCount() but extended with awareness of optional bounding box object.
+    Same functionality as defined originally in PRREVertexTransfer::getLastTransferredTriangleCount() but extended with awareness of:
+     - optional bounding box object;
+     - referred object in case of cloned object.
     So depending on the render pass and occlusion testing, if the object's bounding box was sent to the graphics pipeline by draw(), its triangles will be also counted.
+    If this is a cloned object, this function returns the last transferred triangle count of the referred object since the transfer of triangles actually happens
+    by the referred object, so counting also happens there, so we should return that value, otherwise it would be misleading to return cloned object's value of 0.
 */
 TPRREuint PRREObject3D::getLastTransferredTriangleCount() const
 {
-    const PRREObject3D* const pWhichBoundingBox = getBoundingBoxObject() ? getBoundingBoxObject() : (getReferredObject() ? getReferredObject()->getBoundingBoxObject() : PGENULL);
-    if ( pWhichBoundingBox )
+    TPRREuint nTransTriangleCount = 0;
+    if ( getReferredObject() )
     {
-        return PRREVertexTransfer::getLastTransferredTriangleCount() + pWhichBoundingBox->getLastTransferredTriangleCount();
+        nTransTriangleCount = getReferredObject()->getLastTransferredTriangleCount();
     }
-    return PRREVertexTransfer::getLastTransferredTriangleCount();
+    else
+    {
+        if ( getBoundingBoxObject() )
+        {
+            nTransTriangleCount = getBoundingBoxObject()->getLastTransferredTriangleCount();
+        }
+        nTransTriangleCount += PRREVertexTransfer::getLastTransferredTriangleCount();
+    }
+
+    return nTransTriangleCount;
 } // getLastTransferredTriangleCount()
 
 
@@ -2492,6 +2655,28 @@ PRREObject3D::PRREObject3D(const PRREObject3D& other)
 PRREObject3D& PRREObject3D::operator=(const PRREObject3D&)
 {
     return *this;
+}
+
+
+/**
+    Same functionality as defined originally in PRREVertexTransfer::ResetLastTransferredCounts() but extended with awareness of:
+     - optional bounding box object;
+     - referred object in case of cloned object.
+    If there is a bounding box object, its counters should be reset.
+    If this is a cloned object, this function resets the last transferred counts of the referred object since the transfer actually happens
+    by the referred object, so counting also happens there, so we should reset those values.
+*/
+void PRREObject3D::ResetLastTransferredCounts()
+{
+    if ( pImpl->pBoundingBox )
+    {
+        pImpl->pBoundingBox->ResetLastTransferredCounts();
+    }
+    if ( getReferredObject() )
+    {
+        getReferredObject()->ResetLastTransferredCounts();
+    }
+    PRREVertexTransfer::ResetLastTransferredCounts();
 }
 
 

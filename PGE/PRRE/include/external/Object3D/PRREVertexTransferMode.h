@@ -161,7 +161,6 @@ const TPRRE_VERTEX_TRANSFER_MODE PRRE_VT_STA_IND_SVA_NV_EA_RNG      = PRRE_VT_ST
 const TPRRE_VERTEX_TRANSFER_MODE PRRE_VT_STA_IND_SVA_NV_EA_CVA      = PRRE_VT_STA_IND_SVA_NV_EA | BIT(PRRE_VT_CVA_BIT); /**< NV VAR,  static, drawElementsNV, compiled. */
 const TPRRE_VERTEX_TRANSFER_MODE PRRE_VT_STA_IND_SVA_NV_EA_CVA_RNG  = PRRE_VT_STA_IND_SVA_NV_EA | BIT(PRRE_VT_CVA_BIT) | BIT(PRRE_VT_RNG_BIT); /**< NV VAR,  static, drawRangeElementsNV, compiled. */
 
-class PRREObject3D;
 
 /**
     VertexTransfer class extends Mesh3D by providing ways to transfer vertices of the mesh over the vertex pipeline.
@@ -234,7 +233,7 @@ protected:
     PRREVertexTransfer& operator=(const PRREVertexTransfer&);
 
     TPRREuint transferVertices();                     /**< Sends vertices to the graphics pipeline. */
-    void ResetLastTransferredCounts();                /**< Derived class can reset the counters when needed. */
+    virtual void ResetLastTransferredCounts();        /**< Reset counters used for measuring number of vertices, triangles, etc. sent to the graphics pipeline by the last transferVertices(). */
 
 private:
     class PRREVertexTransferImpl;

@@ -86,6 +86,27 @@ public:
     virtual TPRREbool isLevel1() const;   /**< Tells if the mesh is a level-1 parent mesh. */
     virtual TPRREbool isLevel2() const;   /**< Tells if the mesh is a level-2 submesh. */
 
+    virtual TPRRE_PRIMITIVE_FORMAT getPrimitiveFormat() const;   /**< Gets the primitives' format. */
+
+    virtual TPRREuint   getVerticesCount() const;                                              /**< Gets the number of total vertices. */
+    virtual const TXYZ* getVertices(TPRREbool implicitAccessSubobject = true) const;           /**< Gets the pointer to vertices. */
+    virtual       TXYZ* getVertices(TPRREbool implicitAccessSubobject = true);                 /**< Gets the pointer to vertices. */
+
+    virtual TPRREuint   getVertexIndicesCount() const;                                         /**< Gets the number of total vertex indices. */
+    virtual const void* getVertexIndices(TPRREbool implicitAccessSubobject = true) const;      /**< Gets the pointer to vertex indices. */
+    /* HACK: using unsigned int here instead of GLenum to avoid using GL header. */
+    /* TODO: create own type for the index type. */
+    virtual unsigned int getVertexIndicesType(TPRREbool implicitAccessSubobject = true) const; /**< Gets the type of the indices. */
+    virtual TPRREuint    getMinVertexIndex(TPRREbool implicitAccessSubobject = true) const;    /**< Gets the smallest index in the vertex indices array. */
+    virtual TPRREuint    getMaxVertexIndex(TPRREbool implicitAccessSubobject = true) const;    /**< Gets the greatest index in the vertex indices array. */
+    virtual TPRREuint    getVertexIndex(
+        TPRREuint index, TPRREbool implicitAccessSubobject = true) const;              /**< Gets an index value from the vertex indices array. */
+
+    virtual const TXYZ* getNormals(TPRREbool implicitAccessSubobject = true) const;            /**< Gets the pointer to normals. */
+
+    virtual TPRREuint getFaceCount() const;      /**< Gets the number of faces/polygons formed by the vertices. */
+    virtual TPRREuint getTriangleCount() const;  /**< Gets the number of triangles formed by the vertices. */
+
     virtual TPRRE_VERTEX_MODIFYING_HABIT getVertexModifyingHabit() const;            /**< Gets vertex modifying habit. */
     virtual TPRREbool setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod);    /**< Sets vertex modifying habit. */
     virtual TPRRE_VERTEX_REFERENCING_MODE getVertexReferencingMode() const;          /**< Gets vertex referencing mode. */
@@ -181,6 +202,8 @@ protected:
     
     PRREObject3D(const PRREObject3D&);                                   
     PRREObject3D& operator=(const PRREObject3D&);
+
+    virtual void ResetLastTransferredCounts();        /**< Reset counters used for measuring number of vertices, triangles, etc. sent to the graphics pipeline by the last transferVertices(). */
 
 private:
     class PRREObject3DImpl;
