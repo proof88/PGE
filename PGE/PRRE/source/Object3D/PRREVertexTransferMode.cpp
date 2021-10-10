@@ -1331,8 +1331,9 @@ TPRREuint PRREVertexTransfer::transferVertices()
 
 
 /**
+    Reset counters used for measuring number of vertices, triangles, etc. sent to the graphics pipeline by the last transferVertices().
     Derived class can reset the counters when needed.
-    Useful before iterating over its level-2 managed PRREVertexTransfer derived instances, because they implicitly increase counters in their level-1 parent.
+    Useful before iterating over its level-2 managed PRREVertexTransfer-derived instances, because they implicitly increase counters in their level-1 parent.
 */
 void PRREVertexTransfer::ResetLastTransferredCounts()
 {

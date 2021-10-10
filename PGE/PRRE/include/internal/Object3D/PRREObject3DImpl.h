@@ -108,7 +108,7 @@ public:
 
     TPRREuint getUsedSystemMemory() const; 
 
-    void Draw(
+    TPRREuint draw(
         const TPRRE_RENDER_PASS& renderPass,
         TPRREbool bASyncQuery,
         TPRREbool bRenderIfQueryPending);
@@ -176,10 +176,10 @@ private:
     void      Draw_PrepareGLBeforeDrawNormal(bool bLighting) const;
     void      glBeginOcclusionQuery() const;
     void      glEndOcclusionQuery() const;
-    void      Draw_RenderBoundingBox() const;
-    void      Draw_OcclusionQuery_Start(TPRREbool async);
-    TPRREbool Draw_OcclusionQuery_Finish(TPRREbool async, TPRREbool bRenderIfQueryPending);
-    void      Draw_DrawSW();
+    TPRREuint draw_RenderBoundingBox() const;
+    TPRREuint draw_OcclusionQuery_Start(TPRREbool async);
+    TPRREbool draw_OcclusionQuery_Finish(TPRREbool async, TPRREbool bRenderIfQueryPending);
+    TPRREuint draw_DrawSW();
 
     friend class PRREObject3D;
     friend class PRREObject3DManager;

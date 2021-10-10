@@ -212,8 +212,8 @@ public:
     virtual TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;               /**< Gets vertex transfer mode. */
     virtual TPRREbool setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);     /**< Sets vertex transfer mode. */
 
-    TPRREuint getLastTransferredVertexCount() const;     /**< Gets the number of vertices sent to graphics pipeline by the last transferVertices() call. */
-    TPRREuint getLastTransferredTriangleCount() const;   /**< Gets the number of triangles sent to graphics pipeline by the last transferVertices() call. */
+    virtual TPRREuint getLastTransferredVertexCount() const;     /**< Gets the number of vertices sent to graphics pipeline by the last transferVertices() call. */
+    virtual TPRREuint getLastTransferredTriangleCount() const;   /**< Gets the number of triangles sent to graphics pipeline by the last transferVertices() call. */
 
     virtual TPRREuint getUsedSystemMemory() const;    /**< Gets the amount of allocated system memory. */
     virtual TPRREuint getUsedVideoMemory() const;     /**< Gets the amount of allocated video memory. */

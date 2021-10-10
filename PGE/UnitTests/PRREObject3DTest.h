@@ -106,6 +106,7 @@ protected:
         AddSubTest("testIsOcclusionTested", (PFNUNITSUBTEST) &PRREObject3DTest::testIsOcclusionTested);
         AddSubTest("testSetOcclusionTested", (PFNUNITSUBTEST) &PRREObject3DTest::testSetOcclusionTested);
         AddSubTest("testGetBoundingBoxObject", (PFNUNITSUBTEST) &PRREObject3DTest::testGetBoundingBoxObject);
+        AddSubTest("testDraw", (PFNUNITSUBTEST) &PRREObject3DTest::testDraw);
         AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PRREObject3DTest::testGetUsedSystemMemory);
         AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PRREObject3DTest::testGetUsedVideoMemory);
 
@@ -1318,6 +1319,63 @@ private:
         {
             b &= assertNull(objFromFile->getBoundingBoxObject()->getBoundingBoxObject(), "objFromFile no recursive bounding boxes");
         }
+
+        return b;
+    }
+
+    bool testDraw()
+    {
+        TPRREuint nObjLastTransferredVertices = obj->draw(PRRE_RPASS_NORMAL, false, false);
+        TPRREuint nObjFromFileLastTransferredVertices = objFromFile->draw(PRRE_RPASS_NORMAL, false, false);
+
+        bool b = assertEquals(obj->getVertexIndicesCount(), obj->getLastTransferredVertexCount(), "obj 1") &
+            assertEquals(objFromFile->getVertexIndicesCount(), objFromFile->getLastTransferredVertexCount(), "objFromFile 1") &
+            assertEquals(nObjLastTransferredVertices, obj->getLastTransferredVertexCount(), "obj 2") &
+            assertEquals(nObjFromFileLastTransferredVertices, objFromFile->getLastTransferredVertexCount(), "objFromFile 2") &
+            assertEquals(obj->getTriangleCount(), obj->getLastTransferredTriangleCount(), "obj 3") &
+            assertEquals(objFromFile->getTriangleCount(), objFromFile->getLastTransferredTriangleCount(), "objFromFile 3");
+
+        // make sure the objects are far behind the camera
+        obj->getPosVec().SetZ(-100.f);
+        objFromFile->getPosVec().SetZ(-100.f);
+
+        // just to be sure
+        obj->SetOcclusionTested(false);
+        objFromFile->SetOcclusionTested(true);
+
+        nObjLastTransferredVertices = obj->draw(PRRE_RPASS_START_OCCLUSION_QUERY, false, false);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PRRE_RPASS_START_OCCLUSION_QUERY, false, false);
+
+        b &= assertEquals((TPRREuint)0, obj->getLastTransferredVertexCount(), "obj 4") &
+            assertEquals((TPRREuint)24, objFromFile->getLastTransferredVertexCount(), "objFromFile 4") &
+            assertEquals(nObjLastTransferredVertices, obj->getLastTransferredVertexCount(), "obj 5") &
+            assertEquals(nObjFromFileLastTransferredVertices, objFromFile->getLastTransferredVertexCount(), "objFromFile 5") &
+            assertEquals((TPRREuint)0, obj->getLastTransferredTriangleCount(), "obj 6") &
+            assertEquals((TPRREuint)12, objFromFile->getLastTransferredTriangleCount(), "objFromFile 6");
+        
+        nObjLastTransferredVertices = obj->draw(PRRE_RPASS_NORMAL, false, false);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PRRE_RPASS_NORMAL, false, false);
+
+        // expecting all zeros for objFromFile due to behind the camera and occlusion test fail, but
+        // expecting same positive values as before for obj because it is not occlusion tested!
+        b &= assertEquals(obj->getVertexIndicesCount(), obj->getLastTransferredVertexCount(), "obj 7") &
+            assertEquals((TPRREuint)0, objFromFile->getLastTransferredVertexCount(), "objFromFile 7") &
+            assertEquals(nObjLastTransferredVertices, nObjLastTransferredVertices, "obj 8") &
+            assertEquals((TPRREuint)0, nObjFromFileLastTransferredVertices, "objFromFile 8") &
+            assertEquals(obj->getTriangleCount(), obj->getLastTransferredTriangleCount(), "obj 9") &
+            assertEquals((TPRREuint)0, objFromFile->getLastTransferredTriangleCount(), "objFromFile 9");
+
+        // debug bounding box must be rendered regardless of object occlusion state, but
+        // it must not be rendered for an object which is not occlusion tested
+        nObjLastTransferredVertices = obj->draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
+
+        b &= assertEquals((TPRREuint)0, obj->getLastTransferredVertexCount(), "obj 10") &
+            assertEquals((TPRREuint)24, objFromFile->getLastTransferredVertexCount(), "objFromFile 10") &
+            assertEquals(nObjLastTransferredVertices, obj->getLastTransferredVertexCount(), "obj 11") &
+            assertEquals(nObjFromFileLastTransferredVertices, objFromFile->getLastTransferredVertexCount(), "objFromFile 11") &
+            assertEquals((TPRREuint)0, obj->getLastTransferredTriangleCount(), "obj 12") &
+            assertEquals((TPRREuint)12, objFromFile->getLastTransferredTriangleCount(), "objFromFile 12");
 
         return b;
     }

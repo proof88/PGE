@@ -93,6 +93,9 @@ public:
     virtual TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;                /**< Gets vertex transfer mode. */
     virtual TPRREbool setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);      /**< Sets vertex transfer mode. */
 
+    virtual TPRREuint getLastTransferredVertexCount() const;     /**< Gets the number of vertices sent to graphics pipeline by the last transferVertices() call. */
+    virtual TPRREuint getLastTransferredTriangleCount() const;   /**< Gets the number of triangles sent to graphics pipeline by the last transferVertices() call. */
+
     PRREObject3D* getReferredObject() const;                    /**< Gets the original object which was cloned to create this object. */
     const std::set<PRREObject3D*>& getReferrerObjects() const;  /**< Gets the cloned objects referring to this object. */
 
@@ -161,7 +164,7 @@ public:
     virtual TPRREuint getUsedSystemMemory() const;        /**< Gets the amount of allocated system memory. */
     virtual TPRREuint getUsedVideoMemory() const;         /**< Gets the amount of allocated video memory. */
 
-    void Draw(
+    TPRREuint draw(
         const TPRRE_RENDER_PASS& renderPass,
         TPRREbool bASyncQuery,
         TPRREbool bRenderIfQueryPending);                 /**< Draws the object. */

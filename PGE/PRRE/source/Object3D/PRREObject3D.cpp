@@ -810,17 +810,16 @@ TPRREuint PRREObject3D::PRREObject3DImpl::getUsedSystemMemory() const
 } // getUsedSystemMemory()     
 
 
-void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass, TPRREbool bASyncQuery, TPRREbool bRenderIfQueryPending)
+TPRREuint PRREObject3D::PRREObject3DImpl::draw(const TPRRE_RENDER_PASS& renderPass, TPRREbool bASyncQuery, TPRREbool bRenderIfQueryPending)
 {
     // caller renderer is expected to check for GL errors, probably only once per frame, so we don't check them here
 
     if ( !bVisible )
-        return;
+        return 0;
 
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
     {
-        Draw_DrawSW();
-        return;
+        return draw_DrawSW();
     }
 
     // see if we are parent or referring to another object i.e. we are cloned object
@@ -832,12 +831,19 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass, T
 
         // So transformations and other basic things are set by parent objects having subobjects.
         // Or by cloned objects which refer to another original objects but still have their own position, angle, etc.
+
+        _pOwner->ResetLastTransferredCounts();
+        PRREObject3D* const pWhichBoundingBox = pBoundingBox ? pBoundingBox : (getReferredObject() ? getReferredObject()->pImpl->pBoundingBox : PGENULL);
+        if ( pWhichBoundingBox )
+        {
+            pWhichBoundingBox->ResetLastTransferredCounts();
+        }
         
         if ( renderPass == PRRE_RPASS_NORMAL )
         {
-            if ( (nOcclusionQuery != 0) && Draw_OcclusionQuery_Finish(bASyncQuery, bRenderIfQueryPending) )
+            if ( (nOcclusionQuery != 0) && draw_OcclusionQuery_Finish(bASyncQuery, bRenderIfQueryPending) )
             {
-                return;
+                return 0;
             }
             
             Draw_ApplyTransformations();
@@ -849,22 +855,20 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass, T
             if ( nOcclusionQuery == 0 )
             {
                 // there is nothing to do in this pass
-                return;
+                return 0;
             }
             Draw_ApplyTransformations();
-            Draw_OcclusionQuery_Start(bASyncQuery);
-            return;
+            return draw_OcclusionQuery_Start(bASyncQuery);
         }
         else if ( renderPass == PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY )
         {
             if ( nOcclusionQuery == 0 )
             {
                 // there is nothing to do in this pass
-                return;
+                return 0;
             }
             Draw_ApplyTransformations();
-            Draw_RenderBoundingBox();
-            return;
+            return draw_RenderBoundingBox();
         }
         else if ( renderPass == PRRE_RPASS_Z_ONLY )
         {
@@ -877,10 +881,11 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass, T
         PRREObject3D* pWhichParent = getReferredObject() ? getReferredObject() : _pOwner;
 
         pWhichParent->pImpl->bParentInitiatedOperation = true;
+        TPRREuint nRetSum = 0;
         for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
-            ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(renderPass, bASyncQuery, bRenderIfQueryPending);
+            nRetSum += ((PRREObject3D*)pWhichParent->getAttachedAt(i))->draw(renderPass, bASyncQuery, bRenderIfQueryPending);
         pWhichParent->pImpl->bParentInitiatedOperation = false;
-        return;
+        return nRetSum;
     }
 
     // if we reach this point then either our parent is drawing us as its subobject, or a cloned object is drawing us on behalf of our parent
@@ -891,12 +896,12 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass, T
     if ( !pObjLevel1->pImpl->bParentInitiatedOperation )
     {
         _pOwner->getManagedConsole().EOLn("Draw() of subobject called outside of its level-1 parent object, ignoring draw!");
-        return;
+        return 0;
     }
 
     /* currently not supporting any vendor-specific mode */
     if ( BITF_READ(_pOwner->getVertexTransferMode(),PRRE_VT_VENDOR_BITS,3) != 0 )
-        return;
+        return 0;
 
     if ( renderPass == PRRE_RPASS_NORMAL )
     {
@@ -904,8 +909,10 @@ void PRREObject3D::PRREObject3DImpl::Draw(const TPRRE_RENDER_PASS& renderPass, T
     }
 
     Draw_FeedbackBuffer_Start();
-    _pOwner->transferVertices();
+    const TPRREuint nTransferredVertexCount = _pOwner->transferVertices();
     Draw_FeedbackBuffer_Finish(); 
+
+    return nTransferredVertexCount;
 } // Draw()
 
 
@@ -1297,19 +1304,27 @@ void PRREObject3D::PRREObject3DImpl::glEndOcclusionQuery() const
 } // glEndOcclusionQuery()()
 
 
-void PRREObject3D::PRREObject3DImpl::Draw_RenderBoundingBox() const
+/**
+    Sends the bounding box geometry to the graphics pipeline to draw it in the framebuffer.
+    No effect if the object is not tested for occlusion.
+
+    @return Number of transferred vertices, which are the vertices of the bounding box.
+*/
+TPRREuint PRREObject3D::PRREObject3DImpl::draw_RenderBoundingBox() const
 {
     assert(_pOwner->isLevel1());
 
     if ( nOcclusionQuery == 0 )
     {
-        return;
+        return 0;
     }
 
     PRREObject3D* const pWhichBoundingBox = pBoundingBox ? pBoundingBox : (getReferredObject() ? getReferredObject()->pImpl->pBoundingBox : PGENULL);
 
     assert(pWhichBoundingBox != PGENULL);
     assert(pWhichBoundingBox->getCount() > 0);
+
+    pWhichBoundingBox->ResetLastTransferredCounts();
 
     if ( isOccluded() )
     {
@@ -1319,29 +1334,35 @@ void PRREObject3D::PRREObject3DImpl::Draw_RenderBoundingBox() const
     {
         glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
     }
-    ((PRREObject3D*)(pWhichBoundingBox->getAttachedAt(0)))->transferVertices();
-} // Draw_RenderBoundingBox()
+    return ((PRREObject3D*)(pWhichBoundingBox->getAttachedAt(0)))->transferVertices();
+} // draw_RenderBoundingBox()
 
 
 /**
     Starts occlusion query for this object if it has a query id and query should be started.
+    If the occlusion query is actually started, a bounding box geometry will be sent to the graphics pipeline to find out
+    if the bound geometry would be visible or not.
 
     @param async If true, it might delay query start for a next frame.
                  If false, it will start the query for sure.
+
+    @return Number of transferred vertices, in case of bounding box is transferred through the graphics pipeline, false otherwise.
 */
-void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
+TPRREuint PRREObject3D::PRREObject3DImpl::draw_OcclusionQuery_Start(TPRREbool async)
 {
     assert(_pOwner->isLevel1());
 
     if ( nOcclusionQuery == 0 )
     {
-        return;
+        return 0;
     }   
 
     PRREObject3D* const pWhichBoundingBox = pBoundingBox ? pBoundingBox : (getReferredObject() ? getReferredObject()->pImpl->pBoundingBox : PGENULL);
 
     assert(pWhichBoundingBox != PGENULL);
     assert(pWhichBoundingBox->getCount() > 0);
+
+    pWhichBoundingBox->ResetLastTransferredCounts();
 
     if ( bOcclusionQueryStarted )
     {
@@ -1352,7 +1373,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
             _pOwner->getConsole().EOLn("%s() ERROR: occlusion query is already started but we are in SYNC query mode!", __FUNCTION__);
         }
         assert(async);
-        return;
+        return 0;
     }
 
     if ( async )
@@ -1362,7 +1383,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
             if ( nFramesWithoutOcclusionTest < OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED )
             {
                 nFramesWithoutOcclusionTest++;
-                return;
+                return 0;
             }
         }
         else
@@ -1370,18 +1391,20 @@ void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
             if ( nFramesWithoutOcclusionTest < OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE )
             {
                 nFramesWithoutOcclusionTest++;
-                return;
+                return 0;
             }
         }
     } // async
 
     glBeginOcclusionQuery();
-    ((PRREObject3D*)(pWhichBoundingBox->getAttachedAt(0)))->transferVertices();
+    const TPRREuint nRet = ((PRREObject3D*)(pWhichBoundingBox->getAttachedAt(0)))->transferVertices();
     glEndOcclusionQuery();
 
     bOcclusionQueryStarted = true;
     nFramesWaitedForOcclusionTestResult = 0; // for async query
-} // Draw_OcclusionQuery_Start()
+
+    return nRet;
+} // draw_OcclusionQuery_Start()
 
 
 /**
@@ -1397,7 +1420,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Start(TPRREbool async)
 
     @return True if occluded, false if not occluded or cannot conclude.
 */
-TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool bASyncQuery, TPRREbool bRenderIfQueryPending)
+TPRREbool PRREObject3D::PRREObject3DImpl::draw_OcclusionQuery_Finish(TPRREbool bASyncQuery, TPRREbool bRenderIfQueryPending)
 {
     assert(_pOwner->isLevel1());
 
@@ -1518,13 +1541,16 @@ TPRREbool PRREObject3D::PRREObject3DImpl::Draw_OcclusionQuery_Finish(TPRREbool b
     }
 
     return bOccluded;
-} // Draw_OcclusionQuery_Finish()
+} // draw_OcclusionQuery_Finish()
 
 
-void PRREObject3D::PRREObject3DImpl::Draw_DrawSW()
+/**
+    @return Number of transferred vertices.
+*/
+TPRREuint PRREObject3D::PRREObject3DImpl::draw_DrawSW()
 {
     if ( !bVisible )
-        return;
+        return 0;
 
     // see if we are parent or referring to another object i.e. we are cloned object
     if ( _pOwner->isLevel1() )
@@ -1535,19 +1561,23 @@ void PRREObject3D::PRREObject3DImpl::Draw_DrawSW()
         // So transformations and other basic things are set by parent objects having subobjects.
         // Or by cloned objects which refer to another original objects but still have their own position, angle, etc.
 
+        _pOwner->ResetLastTransferredCounts();
         Draw_ApplyTransformations();
 
         // take care of attached objects (subobjects)
         // note that either we have our own subobjects, OR we are just a cloned object and we need to draw original object's subobjects
         PRREObject3D* pWhichParent = getReferredObject() ? getReferredObject() : _pOwner;
+        TPRREuint nRetSum = 0;
         for (TPRREint i = 0; i < pWhichParent->getCount(); i++)
-            ((PRREObject3D*)pWhichParent->getAttachedAt(i))->Draw(PRRE_RPASS_NORMAL, false, false);
-        return;
+            nRetSum += ((PRREObject3D*)pWhichParent->getAttachedAt(i))->draw(PRRE_RPASS_NORMAL, false, false);
+        return nRetSum;
     }
+
+    return 0;
 
     // actual draw here
     // todo: wtf, we should finally decide if it is renderer's responsibility to actually render an object or object's responsibility?
-} // Draw_DrawSW()
+} // draw_DrawSW()
 
 
 TPRREfloat PRREObject3D::PRREObject3DImpl::recalculateBiggestAreaScaled()
@@ -1701,6 +1731,36 @@ TPRREbool PRREObject3D::setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 {
     return pImpl->setVertexTransferMode(vtrans);
 } // setVertexTransferMode()
+
+
+/**
+    Same functionality as defined originally in PRREVertexTransfer::getLastTransferredVertexCount() but extended with awareness of optional bounding box object.
+    So depending on the render pass and occlusion testing, if the object's bounding box was sent to the graphics pipeline by draw(), its vertices will be also counted.
+*/
+TPRREuint PRREObject3D::getLastTransferredVertexCount() const
+{
+    const PRREObject3D* const pWhichBoundingBox = getBoundingBoxObject() ? getBoundingBoxObject() : (getReferredObject() ? getReferredObject()->getBoundingBoxObject() : PGENULL);
+    if ( pWhichBoundingBox )
+    {
+        return PRREVertexTransfer::getLastTransferredVertexCount() + pWhichBoundingBox->getLastTransferredVertexCount();
+    }
+    return PRREVertexTransfer::getLastTransferredVertexCount();
+} // getLastTransferredVertexCount()
+
+
+/**
+    Same functionality as defined originally in PRREVertexTransfer::getLastTransferredTriangleCount() but extended with awareness of optional bounding box object.
+    So depending on the render pass and occlusion testing, if the object's bounding box was sent to the graphics pipeline by draw(), its triangles will be also counted.
+*/
+TPRREuint PRREObject3D::getLastTransferredTriangleCount() const
+{
+    const PRREObject3D* const pWhichBoundingBox = getBoundingBoxObject() ? getBoundingBoxObject() : (getReferredObject() ? getReferredObject()->getBoundingBoxObject() : PGENULL);
+    if ( pWhichBoundingBox )
+    {
+        return PRREVertexTransfer::getLastTransferredTriangleCount() + pWhichBoundingBox->getLastTransferredTriangleCount();
+    }
+    return PRREVertexTransfer::getLastTransferredTriangleCount();
+} // getLastTransferredTriangleCount()
 
 
 /**
@@ -2384,10 +2444,12 @@ TPRREuint PRREObject3D::getUsedVideoMemory() const
                                  meaning that: if the last finished query said the object was occluded, the function will respond as the object was occluded,
                                  otherwise it will respond as the object was not occluded.
                                  This parameter is used only with async queries.
+
+    @return @return The number of vertices sent to the graphics pipeline.
 */
-void PRREObject3D::Draw(const TPRRE_RENDER_PASS& renderPass, TPRREbool bASyncQuery, TPRREbool bRenderIfQueryPending)
+TPRREuint PRREObject3D::draw(const TPRRE_RENDER_PASS& renderPass, TPRREbool bASyncQuery, TPRREbool bRenderIfQueryPending)
 {
-    pImpl->Draw(renderPass, bASyncQuery, bRenderIfQueryPending);
+    return pImpl->draw(renderPass, bASyncQuery, bRenderIfQueryPending);
 } // Draw()
 
 
