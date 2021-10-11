@@ -135,57 +135,7 @@ PRREObject3D::PRREObject3DImpl::~PRREObject3DImpl()
     _pOwner->getManagedConsole().OO();
 
     _pOwner->getManagedConsole().SOLnOO("Done!");
-} // ~PRRETexture()
-
-
-TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::PRREObject3DImpl::getVertexModifyingHabit() const
-{
-    return getReferredObject() ? getReferredObject()->getVertexModifyingHabit() : _pOwner->PRREVertexTransfer::getVertexModifyingHabit();
-} // getVertexModifyingHabit()
-
-
-TPRREbool PRREObject3D::PRREObject3DImpl::setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod)
-{
-    return setVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(vmod, _pOwner->getVertexReferencingMode(), false) );
-} // setVertexModifyingHabit()
-
-
-TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::PRREObject3DImpl::getVertexReferencingMode() const
-{
-    return getReferredObject() ? getReferredObject()->getVertexReferencingMode() : _pOwner->PRREVertexTransfer::getVertexReferencingMode();
-} // getVertexReferencingMode()
-
-
-TPRREbool PRREObject3D::PRREObject3DImpl::setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref)
-{
-    return setVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(_pOwner->getVertexModifyingHabit(), vref, false) );
-} // setVertexReferencingMode()
-
-
-TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::PRREObject3DImpl::getVertexTransferMode() const
-{
-    return getReferredObject() ? getReferredObject()->getVertexTransferMode() : _pOwner->PRREVertexTransfer::getVertexTransferMode();
-} // getVertexTransferMode()
-
-
-TPRREbool PRREObject3D::PRREObject3DImpl::setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
-{
-    _pOwner->getManagedConsole().OLnOI("PRREObject3D::setVertexTransferMode()");
-
-    if ( getReferredObject() )
-    {
-        _pOwner->getManagedConsole().EOLnOO("PRREObject3D::setVertexTransferMode() ignored because we are cloned object!");
-        return false;
-    }
-
-    TPRREbool b = _pOwner->PRREVertexTransfer::setVertexTransferMode(vtrans);
-    if ( _pOwner->isLevel1() )
-    {
-        recalculateBiggestAreaScaled();
-    }
-    _pOwner->getManagedConsole().OO();
-    return b;
-} // setVertexTransferMode()
+} // ~PRREObject3DImpl()
 
 
 PRREObject3D* PRREObject3D::PRREObject3DImpl::getReferredObject() const
@@ -1807,7 +1757,7 @@ TPRREuint PRREObject3D::getTriangleCount() const
 */
 TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::getVertexModifyingHabit() const
 {
-    return pImpl->getVertexModifyingHabit();
+    return getReferredObject() ? getReferredObject()->getVertexModifyingHabit() : PRREVertexTransfer::getVertexModifyingHabit();
 } // getVertexModifyingHabit()
 
 
@@ -1820,7 +1770,8 @@ TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::getVertexModifyingHabit() const
 */
 TPRREbool PRREObject3D::setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod)
 {
-    return pImpl->setVertexModifyingHabit(vmod);
+    // TODO: we are not caring about referredobj here?!
+    return setVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(vmod, getVertexReferencingMode(), false) );
 } // setVertexModifyingHabit()
 
 
@@ -1830,7 +1781,7 @@ TPRREbool PRREObject3D::setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmo
 */
 TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::getVertexReferencingMode() const
 {
-    return pImpl->getVertexReferencingMode();
+    return getReferredObject() ? getReferredObject()->getVertexReferencingMode() : PRREVertexTransfer::getVertexReferencingMode();
 } // getVertexReferencingMode()
 
  
@@ -1843,7 +1794,8 @@ TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::getVertexReferencingMode() const
 */
 TPRREbool PRREObject3D::setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref)
 {
-    return pImpl->setVertexReferencingMode(vref);
+    // TODO: we are not caring about referredobj here?!
+    return setVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(getVertexModifyingHabit(), vref, false) );
 } // setVertexReferencingMode()
 
 
@@ -1853,7 +1805,7 @@ TPRREbool PRREObject3D::setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE v
 */
 TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::getVertexTransferMode() const
 {
-    return pImpl->getVertexTransferMode();
+    return getReferredObject() ? getReferredObject()->getVertexTransferMode() : PRREVertexTransfer::getVertexTransferMode();
 } // getVertexTransferMode()
 
 
@@ -1866,7 +1818,22 @@ TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::getVertexTransferMode() const
 */
 TPRREbool PRREObject3D::setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 {
-    return pImpl->setVertexTransferMode(vtrans);
+    getManagedConsole().OLnOI("PRREObject3D::setVertexTransferMode()");
+
+    if ( getReferredObject() )
+    {
+        getManagedConsole().EOLnOO("PRREObject3D::setVertexTransferMode() ignored because we are cloned object!");
+        return false;
+    }
+
+    TPRREbool b = PRREVertexTransfer::setVertexTransferMode(vtrans);
+    if ( isLevel1() )
+    {
+        recalculateBiggestAreaScaled();
+    }
+    getManagedConsole().OO();
+
+    return b;
 } // setVertexTransferMode()
 
 
