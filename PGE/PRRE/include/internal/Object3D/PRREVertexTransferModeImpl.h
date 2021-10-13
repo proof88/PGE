@@ -34,9 +34,7 @@ public:
     virtual ~PRREVertexTransferImpl();
 
     TPRRE_VERTEX_MODIFYING_HABIT getVertexModifyingHabit() const;      
-    TPRREbool setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod);   
     TPRRE_VERTEX_REFERENCING_MODE getVertexReferencingMode() const;    
-    TPRREbool setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref); 
     TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;          
     TPRREbool setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);
 

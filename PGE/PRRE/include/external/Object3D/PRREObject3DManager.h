@@ -108,9 +108,7 @@ public:
     virtual TPRREuint getTriangleCount() const;  /**< Gets the number of triangles formed by the vertices. */
 
     virtual TPRRE_VERTEX_MODIFYING_HABIT getVertexModifyingHabit() const;            /**< Gets vertex modifying habit. */
-    virtual TPRREbool setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod);    /**< Sets vertex modifying habit. */
     virtual TPRRE_VERTEX_REFERENCING_MODE getVertexReferencingMode() const;          /**< Gets vertex referencing mode. */
-    virtual TPRREbool setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref);  /**< Sets vertex referencing mode. */
     virtual TPRRE_VERTEX_TRANSFER_MODE getVertexTransferMode() const;                /**< Gets vertex transfer mode. */
     virtual TPRREbool setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans);      /**< Sets vertex transfer mode. */
 

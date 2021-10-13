@@ -1763,40 +1763,12 @@ TPRRE_VERTEX_MODIFYING_HABIT PRREObject3D::getVertexModifyingHabit() const
 
 /**
     The details of this function are described in PRREVertexTransfer class.
-    Same functionality as defined originally in PRREVertexTransfer::setVertexModifyingHabit() but extended with a check for being a cloned object or not.
-    This function has no effect when called for a cloned object.
-    @param vmod Vertex modifying habit to be set.
-    @return     True on success, false otherwise, including if called for a cloned object.
-*/
-TPRREbool PRREObject3D::setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod)
-{
-    // TODO: we are not caring about referredobj here?!
-    return setVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(vmod, getVertexReferencingMode(), false) );
-} // setVertexModifyingHabit()
-
-
-/**
-    The details of this function are described in PRREVertexTransfer class.
     Addition to PRREVertexTransfer behavior: if this is a cloned object, the returned value is the same as the referred object's value.
 */
 TPRRE_VERTEX_REFERENCING_MODE PRREObject3D::getVertexReferencingMode() const
 {
     return getReferredObject() ? getReferredObject()->getVertexReferencingMode() : PRREVertexTransfer::getVertexReferencingMode();
 } // getVertexReferencingMode()
-
- 
-/**
-    The details of this function are described in PRREVertexTransfer class.
-    Same functionality as defined originally in PRREVertexTransfer::setVertexTransferMode() but extended with a check for being a cloned object or not.
-    This function has no effect when called for a cloned object.
-    @param  vref Vertex referencing mode to be set.
-    @return      True on success, false otherwise, including if called for a cloned object.
-*/
-TPRREbool PRREObject3D::setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref)
-{
-    // TODO: we are not caring about referredobj here?!
-    return setVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(getVertexModifyingHabit(), vref, false) );
-} // setVertexReferencingMode()
 
 
 /**
@@ -1818,11 +1790,11 @@ TPRRE_VERTEX_TRANSFER_MODE PRREObject3D::getVertexTransferMode() const
 */
 TPRREbool PRREObject3D::setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 {
-    getManagedConsole().OLnOI("PRREObject3D::setVertexTransferMode()");
+    getManagedConsole().OLnOI("PRREObject3D::setVertexTransferMode(%u)", vtrans);
 
     if ( getReferredObject() )
     {
-        getManagedConsole().EOLnOO("PRREObject3D::setVertexTransferMode() ignored because we are cloned object!");
+        getManagedConsole().EOLnOO("PRREObject3D::setVertexTransferMode(%u) ignored because we are cloned object!", vtrans);
         return false;
     }
 

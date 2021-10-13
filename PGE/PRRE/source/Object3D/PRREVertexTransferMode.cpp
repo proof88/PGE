@@ -182,24 +182,12 @@ TPRRE_VERTEX_MODIFYING_HABIT PRREVertexTransfer::PRREVertexTransferImpl::getVert
 } // getVertexModifyingHabit()
 
 
-TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod)
-{
-    return setVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(vmod, getVertexReferencingMode(), false) );
-} // setVertexModifyingHabit()
-
-
 TPRRE_VERTEX_REFERENCING_MODE PRREVertexTransfer::PRREVertexTransferImpl::getVertexReferencingMode() const
 {
     return BIT(PRRE_VT_VREF_BIT) & vertexTransferMode;
 } // getVertexReferencingMode()
 
  
-TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref)
-{
-    return setVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(getVertexModifyingHabit(), vref, false) );
-} // setVertexReferencingMode()
-
-
 TPRRE_VERTEX_TRANSFER_MODE PRREVertexTransfer::PRREVertexTransferImpl::getVertexTransferMode() const
 {
     return vertexTransferMode;
@@ -208,7 +196,7 @@ TPRRE_VERTEX_TRANSFER_MODE PRREVertexTransfer::PRREVertexTransferImpl::getVertex
 
 TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexTransferMode(TPRRE_VERTEX_TRANSFER_MODE vtrans)
 {
-    _pOwner->getManagedConsole().OLnOI("PRREVertexTransfer::setVertexTransferMode()");
+    _pOwner->getManagedConsole().OLnOI("PRREVertexTransfer::setVertexTransferMode(%u)", vtrans);
 
     if ( _pOwner->isLevel2() )
     {
@@ -218,7 +206,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexTransferMode(TPRR
             // either user invokes Detach() for a submesh of a complete level-1 mesh,
             // or when we are still creating a mesh and it is not yet attached or it does not have any children.
             // any case, we should IGNORE execution of this function.
-            _pOwner->getManagedConsole().EOLnOO("setVertexTransferMode() of submesh called WITHOUT existing level-1 parent mesh, rejecting!");
+            _pOwner->getManagedConsole().EOLnOO("setVertexTransferMode(%u) of submesh called WITHOUT existing level-1 parent mesh, rejecting!", vtrans);
             return false;
         }
         
@@ -226,7 +214,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexTransferMode(TPRR
         // note: our manager in this case is a level-1 VertexTransfer (Mesh3D) mesh
         if ( !((PRREVertexTransfer*)_pOwner->getManager())->pImpl->bParentInitiatedOperation )
         {
-            _pOwner->getManagedConsole().EOLnOO("setVertexTransferMode() of submesh called outside of its level-1 parent mesh, rejecting!");
+            _pOwner->getManagedConsole().EOLnOO("setVertexTransferMode(%u) of submesh called outside of its level-1 parent mesh, rejecting!", vtrans);
             return false;
         }
     }  
@@ -247,7 +235,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexTransferMode(TPRR
 
     if ( !PRREVertexTransfer::isVertexTransferModeSelectable(vtrans) )
     {
-        _pOwner->getManagedConsole().EOLnOO("ERROR: given mode %d is unavailable!", (int)vtrans);
+        _pOwner->getManagedConsole().EOLnOO("ERROR: given mode %u is unavailable!", vtrans);
         return false;
     }
 
@@ -294,7 +282,7 @@ TPRREbool PRREVertexTransfer::PRREVertexTransferImpl::setVertexTransferMode(TPRR
         {
             if ( !((PRREVertexTransfer*)(_pOwner->getAttachedAt)(i))->setVertexTransferMode( vtrans ) )
             {
-                _pOwner->getManagedConsole().EOLn("Failed a setVertexTransferMode() for subobject %d!", i);
+                _pOwner->getManagedConsole().EOLn("Failed a setVertexTransferMode(%u) for subobject %d!", vtrans, i);
                 FreeGLresources();   // we cannot know exactly what was allocated and what no, make sure we don't keep anything!
                 vertexTransferMode = 0;
                 bParentInitiatedOperation = false;
@@ -1109,7 +1097,7 @@ TPRRE_VERTEX_MODIFYING_HABIT PRREVertexTransfer::getVertexModifyingHabit() const
 */
 TPRREbool PRREVertexTransfer::setVertexModifyingHabit(TPRRE_VERTEX_MODIFYING_HABIT vmod)
 {
-    return pImpl->setVertexModifyingHabit(vmod);
+    return setVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(vmod, getVertexReferencingMode(), false) );
 } // setVertexModifyingHabit()
 
 
@@ -1133,7 +1121,7 @@ TPRRE_VERTEX_REFERENCING_MODE PRREVertexTransfer::getVertexReferencingMode() con
 */
 TPRREbool PRREVertexTransfer::setVertexReferencingMode(TPRRE_VERTEX_REFERENCING_MODE vref)
 {
-    return pImpl->setVertexReferencingMode(vref);
+    return setVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(getVertexModifyingHabit(), vref, false) );
 } // setVertexReferencingMode()
 
 
