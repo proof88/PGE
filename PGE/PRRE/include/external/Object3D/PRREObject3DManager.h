@@ -174,7 +174,7 @@ public:
     TPRREbool isOcclusionTested() const;                  /**< Gets whether this object is being tested if it is occluded or not. */
     void      SetOcclusionTested(TPRREbool state);        /**< Sets whether this object should be tested if it is occluded or not. */
     const PRREObject3D* getBoundingBoxObject() const;     /**< Gets the bounding box object used for occlusion tests. */
-    void      ForceFinishOcclusionTest();                 /**< Waits for any pending occlusion test to be finished. */
+    void      ForceFinishOcclusionTest();                 /**< Waits for any pending occlusion test to be finished and reset occluded state. */
 
     // remember: since Object3D is also a manager, it could also implement property change handler for changes in any of its subobjects made "outside" e.g. in their material!
     /*virtual void HandleManagedPropertyChanged(

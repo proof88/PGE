@@ -522,7 +522,6 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
         // This fixes an issue that can be also seen in EV2008P03 sample, when the user moves the mouse changing camera angle
         // within the 1st few frames, during when the renderer automatically decides which objects should be occluders by UpdateOccluderStates().
         ForceFinishOcclusionTest();
-        bOccluded = false;
 
         auto occ_it = std::find(occluders.begin(), occluders.end(), _pOwner);
         if ( occ_it == occluders.end() )
@@ -2478,7 +2477,7 @@ const PRREObject3D* PRREObject3D::getBoundingBoxObject() const
 
 
 /**
-    Waits for any pending occlusion test to be finished.
+    Waits for any pending occlusion test to be finished and reset occluded state.
     This is actually a helper function for a renderer in rare cases when rendering path change requires all pending queries to be finished.
     This is called forced, so it waits for finish even when rendering path implements async occlusion query handling.
     Ignored for level-2 objects, as only level-1 objects can have occlusion test.
