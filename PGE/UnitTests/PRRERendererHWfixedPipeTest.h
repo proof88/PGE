@@ -281,7 +281,7 @@ private:
             vCubes[0]->SetOccluder(true);
             vCubes[1]->SetOcclusionTested(true);
             vCubes[2]->SetOcclusionTested(true);
-            vCubes[2]->SetVisible(false);
+            vCubes[2]->SetRenderingAllowed(false);
 
             renderer->RenderScene();
             b &= assertEquals(4u /* vCubes[0,1,3,4] */, hwRenderer.getLastFrameObjectsVisible(), "getLastFrameObjectsVisible 3") &

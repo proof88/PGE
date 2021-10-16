@@ -260,13 +260,13 @@ TPRREfloat PRREObject3D::PRREObject3DImpl::getBiggestAreaScaled() const
 } // getBiggestAreaScaled()
 
 
-TPRREbool PRREObject3D::PRREObject3DImpl::isVisible() const
+TPRREbool PRREObject3D::PRREObject3DImpl::isRenderingAllowed() const
 {
     return bVisible;
-} // isVisible()
+} // isRenderingAllowed()
 
 
-void PRREObject3D::PRREObject3DImpl::SetVisible(TPRREbool state)
+void PRREObject3D::PRREObject3DImpl::SetRenderingAllowed(TPRREbool state)
 {
     if ( isOccluder() && !state )
     {
@@ -275,18 +275,18 @@ void PRREObject3D::PRREObject3DImpl::SetVisible(TPRREbool state)
     }
 
     bVisible = state;
-} // SetVisible()
+} // SetRenderingAllowed()
 
 
 void PRREObject3D::PRREObject3DImpl::Show()
 {
-    SetVisible(true);
+    SetRenderingAllowed(true);
 } // Show()
 
 
 void PRREObject3D::PRREObject3DImpl::Hide()
 {
-    SetVisible(false);
+    SetRenderingAllowed(false);
 } // Hide()
 
 
@@ -506,7 +506,7 @@ void PRREObject3D::PRREObject3DImpl::SetOccluder(TPRREbool value)
 
     if ( value )
     {
-        if ( !isVisible() || 
+        if ( !isRenderingAllowed() || 
             isStickedToScreen() ||
             !(isAffectingZBuffer()) ||
             isWireframed() ||
@@ -2081,24 +2081,24 @@ TPRREfloat PRREObject3D::recalculateBiggestAreaScaled()
 
 
 /**
-    Gets the visibility state.
-    If an object is not visible, it is not rendered.
+    Gets if rendering is allowed.
+    If rendering is not allowed, it is not rendered.
     This property is manual user setting, not related to any visibility testing that might be done by renderer.
     This means that even if the object is seen by the camera, not occluded by other object, it won't be rendered if this property is manually set to false.
-    Similarly, if the object is occluded by other objects and isOccluded() returns true, this manual visibility state can stay true, since it is user's preference.
+    Similarly, if the object is occluded by other objects and isOccluded() returns true, this manual visibility setting can stay true, since it is user's preference.
     By default this property is true.
 
-    @return True if visibility is enabled, false otherwise.
+    @return True if rendering is enabled, false otherwise.
 */
-TPRREbool PRREObject3D::isVisible() const
+TPRREbool PRREObject3D::isRenderingAllowed() const
 {
-    return pImpl->isVisible();
-} // isVisible()
+    return pImpl->isRenderingAllowed();
+} // isRenderingAllowed()
 
 
 /**
-    Sets the visibility state.
-    If an object is not visible, it is not rendered.
+    Sets if rendering is allowed.
+    If rendering is not allowed, it is not rendered.
     This property is manual user setting, not related to any visibility testing that might be done by renderer.
     This means that even if the object is seen by the camera, not occluded by other object, it won't be rendered if this property is manually set to false.
     Similarly, if the object is occluded by other objects and isOccluded() returns true, this manual visibility state can stay true, since it is user's preference.
@@ -2107,15 +2107,15 @@ TPRREbool PRREObject3D::isVisible() const
 
     @param value The desired state: true to let the object be rendered, false to hide (skip rendering) it.
 */
-void PRREObject3D::SetVisible(TPRREbool state)
+void PRREObject3D::SetRenderingAllowed(TPRREbool state)
 {
-    pImpl->SetVisible(state);
-} // SetVisible()
+    pImpl->SetRenderingAllowed(state);
+} // SetRenderingAllowed()
 
 
 /**
-    Sets the visibility state to true.
-    Equivalent to SetVisible(true). See the details there.
+    Enables rendering of this object.
+    Equivalent to SetRenderingAllowed(true). See the details there.
 */
 void PRREObject3D::Show()
 {
@@ -2124,8 +2124,8 @@ void PRREObject3D::Show()
 
 
 /**
-    Sets the visibility state to false.
-    Equivalent to SetVisible(false). See the details there.
+    Disables rendering of this object.
+    Equivalent to SetRenderingAllowed(false). See the details there.
 */
 void PRREObject3D::Hide()
 {

@@ -143,10 +143,10 @@ public:
     TPRREfloat getBiggestAreaScaled() const;        /**< Gets the biggest area of the object on either plane (XY, XZ or YZ), scaled by current scaling factor. */
     TPRREfloat recalculateBiggestAreaScaled();      /**< Recalculates biggest area of object on either plane (XY, XZ or YZ), scaled by current scaling factor. */
 
-    TPRREbool isVisible() const;                    /**< Gets the visibility state. */
-    void      SetVisible(TPRREbool state);          /**< Sets the visibility state. */
-    void      Show();                               /**< Sets the visibility state to true. */
-    void      Hide();                               /**< Sets the visibility state to false. */
+    TPRREbool isRenderingAllowed() const;           /**< Gets if rendering is allowed. */
+    void      SetRenderingAllowed(TPRREbool state); /**< Sets if rendering is allowed. */
+    void      Show();                               /**< Enables rendering of this object. */
+    void      Hide();                               /**< Disables rendering of this object. */
     TPRREbool isColliding_TO_BE_REMOVED() const;              /**< Gets whether colliding is enabled. */
     void      SetColliding_TO_BE_REMOVED(TPRREbool value);    /**< Sets whether colliding is enabled. */
 

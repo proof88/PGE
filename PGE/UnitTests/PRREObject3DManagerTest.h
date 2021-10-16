@@ -322,7 +322,7 @@ private:
         objPlane->SetRotationOrder(TPRRE_ROTATION_ORDER::PRRE_ZYX);
         objPlane->SetStickedToScreen(true);
         objPlane->setVertexTransferMode( PRREVertexTransfer::selectVertexTransferMode(PRRE_VMOD_STATIC, PRRE_VREF_DIRECT, false) );
-        objPlane->SetVisible(false);
+        objPlane->SetRenderingAllowed(false);
         objPlane->SetWireframed(true);
         objPlane->SetWireframedCulled(true);
 
@@ -378,7 +378,7 @@ private:
             assertFalse(objCloned->isAffectingZBuffer(), "affectingzbuffer") &
             assertFalse(objCloned->isLit(), "islit") &
             assertTrue(objCloned->isStickedToScreen(), "stickedtoscreen") &
-            assertFalse(objCloned->isVisible(), "visible") &
+            assertFalse(objCloned->isRenderingAllowed(), "visible") &
             assertTrue(objCloned->isWireframed(), "wireframed") &
             assertTrue(objCloned->isWireframedCulled(), "wireframeculled") &
             assertNull(objCloned->getBoundingBoxObject(), "objCloned bounding box") &

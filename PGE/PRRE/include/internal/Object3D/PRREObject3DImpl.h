@@ -66,8 +66,8 @@ public:
     TPRREfloat        getBiggestAreaScaled() const;
     TPRREfloat        recalculateBiggestAreaScaled();
 
-    TPRREbool isVisible() const;                    
-    void      SetVisible(TPRREbool state);          
+    TPRREbool isRenderingAllowed() const;                    
+    void      SetRenderingAllowed(TPRREbool state);          
     void      Show();                               
     void      Hide();                               
     TPRREbool isColliding_TO_BE_REMOVED() const;              

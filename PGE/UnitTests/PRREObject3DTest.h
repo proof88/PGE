@@ -1055,10 +1055,10 @@ private:
 
     bool testIsVisible()
     {
-        return assertTrue(objPlane->isVisible(), "plane") &
-            assertTrue(objFromFile->isVisible(), "objFromFile") &
-            assertTrue(objBox->isVisible(), "box") &
-            assertTrue(objCube->isVisible(), "cube");
+        return assertTrue(objPlane->isRenderingAllowed(), "plane") &
+            assertTrue(objFromFile->isRenderingAllowed(), "objFromFile") &
+            assertTrue(objBox->isRenderingAllowed(), "box") &
+            assertTrue(objCube->isRenderingAllowed(), "cube");
     }
 
     bool testSetVisible()
@@ -1072,8 +1072,8 @@ private:
             assertTrue(std::find(om->get2dOpaqueOccludees().begin(), om->get2dOpaqueOccludees().end(), objFromFile) == om->get2dOpaqueOccludees().end(), "objFromFile is NOT in get2dOpaqueOccludees 1") &
             assertTrue(std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), objFromFile) == om->get2dBlendedOccludees().end(), "objFromFile is NOT in get2dBlendedOccludees 1");
 
-        obj->SetVisible(false);
-        objFromFile->SetVisible(false);
+        obj->SetRenderingAllowed(false);
+        objFromFile->SetRenderingAllowed(false);
 
         b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder") &
             assertTrue(std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is NOT in getOccluders 2") &
@@ -1082,20 +1082,20 @@ private:
             assertTrue(std::find(om->get2dOpaqueOccludees().begin(), om->get2dOpaqueOccludees().end(), objFromFile) == om->get2dOpaqueOccludees().end(), "objFromFile is NOT in get2dOpaqueOccludees 2") &
             assertTrue(std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), objFromFile) == om->get2dBlendedOccludees().end(), "objFromFile is NOT in get2dBlendedOccludees 2");
 
-        return b & assertFalse(obj->isVisible(), "obj") & assertFalse(objFromFile->isVisible(), "objFromFile");
+        return b & assertFalse(obj->isRenderingAllowed(), "obj") & assertFalse(objFromFile->isRenderingAllowed(), "objFromFile");
     }
 
     bool testShow()
     {
         objFromFile->SetOccluder(true);
 
-        obj->SetVisible(false);
+        obj->SetRenderingAllowed(false);
         obj->Show();
 
-        objFromFile->SetVisible(false);
+        objFromFile->SetRenderingAllowed(false);
         objFromFile->Show();
 
-        return assertTrue(obj->isVisible(), "obj") & assertTrue(objFromFile->isVisible(), "objFromFile") &
+        return assertTrue(obj->isRenderingAllowed(), "obj") & assertTrue(objFromFile->isRenderingAllowed(), "objFromFile") &
             assertFalse(objFromFile->isOccluder(), "objFromFile is NOT occluder") &
             assertTrue(std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is NOT in getOccluders 1") &
             assertTrue(std::find(om->get3dOpaqueOccludees().begin(), om->get3dOpaqueOccludees().end(), objFromFile) != om->get3dOpaqueOccludees().end(), "objFromFile is in getOpaqueOccludees 1") &
@@ -1120,7 +1120,7 @@ private:
             assertTrue(std::find(om->get2dOpaqueOccludees().begin(), om->get2dOpaqueOccludees().end(), objFromFile) == om->get2dOpaqueOccludees().end(), "objFromFile is NOT in get2dOpaqueOccludees 1") &
             assertTrue(std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), objFromFile) == om->get2dBlendedOccludees().end(), "objFromFile is NOT in get2dBlendedOccludees 1");
 
-        return b & assertFalse(obj->isVisible(), "obj") & assertFalse(objFromFile->isVisible(), "objFromFile");
+        return b & assertFalse(obj->isRenderingAllowed(), "obj") & assertFalse(objFromFile->isRenderingAllowed(), "objFromFile");
     }
 
     bool testIsColliding_TO_BE_REMOVED()
@@ -1543,8 +1543,8 @@ private:
             assertEquals(objFromFile->getTriangleCount(), objFromFile->getLastTransferredTriangleCount(), "objFromFile 3");
 
         // hide the objects and expect their counters to be zero after draw (so they still reset their counters before deciding not drawing anything)
-        obj->SetVisible(false);
-        objFromFile->SetVisible(false);
+        obj->SetRenderingAllowed(false);
+        objFromFile->SetRenderingAllowed(false);
         nObjLastTransferredVertices = obj->draw(PRRE_RPASS_NORMAL, false, false);
         nObjFromFileLastTransferredVertices = objFromFile->draw(PRRE_RPASS_NORMAL, false, false);
 
@@ -1567,8 +1567,8 @@ private:
             assertEquals(0u, objFromFile->getLastTransferredTriangleCount(), "objFromFile 3 hidden 2");
 
         // let objects be rendered again
-        obj->SetVisible(true);
-        objFromFile->SetVisible(true);
+        obj->SetRenderingAllowed(true);
+        objFromFile->SetRenderingAllowed(true);
 
         // make sure the objects are far behind the camera
         obj->getPosVec().SetZ(-100.f);
@@ -1631,7 +1631,7 @@ private:
             assertEquals(objFromFileCloned->getLastTransferredTriangleCount(), objFromFile->getLastTransferredTriangleCount(), "objFromFile 2");
 
         // check if cloned object also properly resets counters to 0 when trying to draw it when it is not allowed to be drawn
-        objFromFileCloned->SetVisible(false);
+        objFromFileCloned->SetRenderingAllowed(false);
         objFromFileCloned->draw(PRRE_RPASS_NORMAL, false, false);
 
         b &= assertEquals(0u, objFromFile->getLastTransferredVertexCount(), "objFromFile 1 hidden 1") &
@@ -1642,7 +1642,7 @@ private:
             assertEquals(0u, objFromFileCloned->getLastTransferredTriangleCount(), "objFromFileCloned 3 hidden 1");
 
         // allow draw again
-        objFromFileCloned->SetVisible(true);
+        objFromFileCloned->SetRenderingAllowed(true);
 
         nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PRRE_RPASS_START_OCCLUSION_QUERY, false, false);
         objFromFileCloned->getLastTransferredVertexCount();

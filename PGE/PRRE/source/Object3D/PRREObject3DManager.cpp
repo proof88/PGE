@@ -891,7 +891,7 @@ PRREObject3D* PRREObject3DManager::createCloned(PRREObject3D& referredobj)
         obj->pImpl->bAffectZBuffer = referredobj.isAffectingZBuffer();
         obj->pImpl->vScaling = referredobj.getScaling();
         obj->pImpl->fBiggestAreaScaled = referredobj.getBiggestAreaScaled();
-        obj->pImpl->bVisible = referredobj.isVisible();
+        obj->pImpl->bVisible = referredobj.isRenderingAllowed();
         obj->pImpl->rotation = referredobj.getRotationOrder();
         obj->pImpl->bStickedToScreen = referredobj.isStickedToScreen();
 
@@ -965,7 +965,7 @@ void PRREObject3DManager::UpdateOccluderStates()
         const PRREObject3D* const pMngd = (PRREObject3D*) getAttachedAt(i);
         if ( pMngd != PGENULL )
         {
-            if ( !pMngd->isVisible() )
+            if ( !pMngd->isRenderingAllowed() )
                 continue;
 
             const TPRREbool bOpaque = !PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial(false).getSourceBlendFunc(), pMngd->getMaterial(false).getDestinationBlendFunc() );
@@ -995,7 +995,7 @@ void PRREObject3DManager::UpdateOccluderStates()
         PRREObject3D* const pMngd = (PRREObject3D*) getAttachedAt(i);
         if ( pMngd != PGENULL )
         {
-            if ( !pMngd->isVisible() )
+            if ( !pMngd->isRenderingAllowed() )
                 continue;
 
             const TPRREbool bOpaque = !PRREMaterial::isBlendFuncReallyBlending(pMngd->getMaterial(false).getSourceBlendFunc(), pMngd->getMaterial(false).getDestinationBlendFunc() );
@@ -1180,7 +1180,7 @@ void PRREObject3DManager::WriteListCallback(const PRREManaged& mngd) const
     getConsole().OIOLnOO("scaled size: [%f, %f, %f]", obj.getScaledSizeVec().getX(), obj.getScaledSizeVec().getY(), obj.getScaledSizeVec().getZ());
     getConsole().OIOLnOO("biggest area: %f", obj.getBiggestAreaScaled());
     getConsole().OIOLnOO("show: %b, xfer: %d, indexed: %b, vid mem: %d kB;",
-        obj.isVisible(),
+        obj.isRenderingAllowed(),
         obj.getVertexTransferMode(),
         PRREVertexTransfer::isVertexReferencingIndexed(obj.getVertexTransferMode()),
         (int)ceil(obj.getUsedVideoMemory()/1024.0f));

@@ -901,7 +901,7 @@ void PRRERendererSWincrementalImpl::Draw3DObjects()
         if ( obj == PGENULL )
             continue;
 
-        if ( obj->isVisible() && !obj->isStickedToScreen() )
+        if ( obj->isRenderingAllowed() && !obj->isStickedToScreen() )
         {
             
             TXYZ pos, rot, camPos, camRot, scaling;
@@ -936,7 +936,7 @@ void PRRERendererSWincrementalImpl::Draw3DObjects()
                 if ( subobj == PGENULL )
                     continue;
 
-                if ( !subobj->isVisible() )
+                if ( !subobj->isRenderingAllowed() )
                     continue;
 
                 GeometricStage(

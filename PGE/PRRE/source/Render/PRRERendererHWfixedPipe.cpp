@@ -219,7 +219,7 @@ void PRRERendererHWfixedPipeImpl::LastFrameStats::Update(const PRREObject3D& obj
     {
         case PRRE_RPASS_NORMAL:
         {
-            if ( obj.isVisible() )
+            if ( obj.isRenderingAllowed() )
             {
                 nLastFrameObjectsVisible++;
             }
@@ -240,7 +240,7 @@ void PRRERendererHWfixedPipeImpl::LastFrameStats::Update(const PRREObject3D& obj
                     else
                     {
                         nLastFrameObjectsNonOccluded++;
-                        if ( !obj.isVisible() )
+                        if ( !obj.isRenderingAllowed() )
                         {
                             nLastFrameObjectsNonOccludedButNotVisible++;
                         }
@@ -1157,7 +1157,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
         
             if ( (blended == PRREMaterial::isBlendFuncReallyBlending(obj->getMaterial(false).getSourceBlendFunc(), obj->getMaterial(false).getDestinationBlendFunc()))
                  &&
-                 ( obj->isVisible() )
+                 ( obj->isRenderingAllowed() )
                  &&
                  ( !obj->isStickedToScreen() )
                )
@@ -1350,7 +1350,7 @@ void PRRERendererHWfixedPipeImpl::Draw2DObjects(PRREIRenderer& renderer)
         if ( obj == PGENULL )
             continue;
 
-        if ( ( obj->isVisible() )
+        if ( ( obj->isRenderingAllowed() )
                 &&
              ( obj->isStickedToScreen() )
             )
