@@ -2486,6 +2486,7 @@ const PRREObject3D* PRREObject3D::getBoundingBoxObject() const
 void PRREObject3D::ForceFinishOcclusionTest()
 {
     pImpl->ForceFinishOcclusionTest();
+    pImpl->bOccluded = false;
 } // ForceFinishOcclusionTest()
 
 

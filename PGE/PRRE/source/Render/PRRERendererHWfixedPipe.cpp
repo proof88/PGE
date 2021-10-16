@@ -894,16 +894,16 @@ void PRRERendererHWfixedPipeImpl::LogFullRenderHints(const TPRRE_RENDER_HINT& hi
 void PRRERendererHWfixedPipeImpl::LogLastFrameStats() const
 {
     getConsole().OLnOI("Last Frame Statistics:");
-    getConsole().OLn("Number of total objects: %u", pObject3DMgr->getOccluders().size() + pObject3DMgr->get3dOpaqueOccludees().size() + pObject3DMgr->get3dBlendedOccludees().size());
-    getConsole().OLn(" - of which visibility enabled: %u", lastFrameStats.getObjectsVisible());
-    getConsole().OLn("Number of occluders: %u", lastFrameStats.getObjectsOccluders() );
-    getConsole().OLn("Number of occludees not occlusion-tested: %u", lastFrameStats.getOccludeesNonOcclusionTested());
-    getConsole().OLn("Number of occludees occlusion-tested: %u", lastFrameStats.getOccludeesOcclusionTested());
-    getConsole().OLn(" - of which occluded: %u", lastFrameStats.getOccludeesOcclusionTestedAndOccluded());
-    getConsole().OLn(" - of which not occluded: %u", lastFrameStats.getOccludeesOcclusionTestedAndNonOccluded());
-    getConsole().OLn("   - of which visibility disabled anyway: %u", lastFrameStats.getOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway());
-    getConsole().OLn("Number of transferred vertices: %u", lastFrameStats.getTransferredVertices());
-    getConsole().OLn("Number of transferred triangles: %u", lastFrameStats.getTransferredTriangles());
+    getConsole().OLn("Number of TOTAL objects: %u", pObject3DMgr->getOccluders().size() + pObject3DMgr->get3dOpaqueOccludees().size() + pObject3DMgr->get3dBlendedOccludees().size());
+    getConsole().OLn(" - visibility enabled  : %u", lastFrameStats.getObjectsVisible());
+    getConsole().OLn("Number of Occluders: %u", lastFrameStats.getObjectsOccluders() );
+    getConsole().OLn("Number of Occludees w occlusion-TEST disabled: %u", lastFrameStats.getOccludeesNonOcclusionTested());
+    getConsole().OLn("Number of Occludees w occlusion-TEST enabled : %u", lastFrameStats.getOccludeesOcclusionTested());
+    getConsole().OLn(" - occluded    : %u", lastFrameStats.getOccludeesOcclusionTestedAndOccluded());
+    getConsole().OLn(" - not occluded: %u", lastFrameStats.getOccludeesOcclusionTestedAndNonOccluded());
+    getConsole().OLn("   - but visibility disabled anyway: %u", lastFrameStats.getOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway());
+    getConsole().OLn("Number of transferred VERTICES : %u", lastFrameStats.getTransferredVertices());
+    getConsole().OLn("Number of transferred TRIANGLES: %u", lastFrameStats.getTransferredTriangles());
     getConsole().OLnOO("");
 } // LogLastFrameStats()
 
@@ -1165,6 +1165,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Legacy(PRREIRenderer& renderer)
                 glPushMatrix();
                 obj->draw(PRRE_RPASS_NORMAL, false, false);
                 glPopMatrix();
+                lastFrameStats.Update(*obj, PRRE_RPASS_NORMAL);
             }
         } // for i    
     } // for iBlend
@@ -1189,6 +1190,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Ordered_Containers(PRREIRenderer
         glPushMatrix();
         (*it)->draw(PRRE_RPASS_NORMAL, false, false);
         glPopMatrix();
+        lastFrameStats.Update(*(*it), PRRE_RPASS_NORMAL);
     }
 
     for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
@@ -1196,6 +1198,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Ordered_Containers(PRREIRenderer
         glPushMatrix();
         (*it)->draw(PRRE_RPASS_NORMAL, false, false);
         glPopMatrix();
+        lastFrameStats.Update(*(*it), PRRE_RPASS_NORMAL);
     }
 
     for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
@@ -1203,6 +1206,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_Ordered_Containers(PRREIRenderer
         glPushMatrix();
         (*it)->draw(PRRE_RPASS_NORMAL, false, false);
         glPopMatrix();
+        lastFrameStats.Update(*(*it), PRRE_RPASS_NORMAL);
     }
 
     frameCntr++;
