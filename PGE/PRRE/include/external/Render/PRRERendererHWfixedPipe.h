@@ -92,6 +92,15 @@ public:
     */
     virtual void RenderObject(PRREObject3D& object) = 0;
 
+    virtual TPRREuint getLastFrameObjectsVisible() const = 0;                         /**< Returns number of objects allowed to be visible in last frame. */
+    virtual TPRREuint getLastFrameOccluders() const = 0;                              /**< Returns number of objects that were occluders in last frame. */
+    virtual TPRREuint getLastFrameOccludeesNonOcclusionTested() const = 0;            /**< Returns number of occludees that had occlusion test disabled in last frame. */
+    virtual TPRREuint getLastFrameOccludeesOcclusionTested() const = 0;               /**< Returns number of occludees that had occlusion test enabled (not necessarily ongoing) in last frame. */
+    virtual TPRREuint getLastFrameOccludeesOcclusionTestedAndOccluded() const = 0;    /**< Returns number of occluded occludees in last frame (only counted if occlusion test was also enabled). */
+    virtual TPRREuint getLastFrameOccludeesOcclusionTestedAndNonOccluded() const = 0; /**< Returns number of non-occluded occludees in last frame (only counted if occlusion test was also enabled). */
+    virtual TPRREuint getLastFrameOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway() const = 0; /**< Returns number of non-occluded occludees in last frame (only counted if occlusion test was also enabled but visibility was not). */
+    virtual TPRREuint getLastFrameTransferredVertices() const = 0;                    /**< Returns number of transferred vertices in last frame. */
+    virtual TPRREuint getLastFrameTransferredTriangles() const = 0;                   /**< Returns number of transferred triangles in last frame. */
 
 }; // PRRERendererHWfixedPipe
 

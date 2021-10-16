@@ -50,6 +50,7 @@ protected:
         AddSubTest("testSetRenderHints", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testSetRenderHints);
         // RenderScene() has no dedicated unit test but we can test different aspects e.g. if it properly reorders the objects, etc.
         AddSubTest("testRenderByZdistanceOrder", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testRenderByZdistanceOrder);
+        AddSubTest("testLastFrameCounters", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testLastFrameCounters);
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testWriteStats);
     }
 
@@ -224,6 +225,108 @@ private:
         for (std::size_t i = 0; i < vCubes.size(); i++)
         {
             b &= assertEquals(om->getOccluders()[i], vCubes[vCubes.size()-i-1], ("4th cube order failed at " + std::to_string(i)).c_str());
+        }
+
+        return b;
+    }
+
+    bool testLastFrameCounters()
+    {
+        bool b = true;
+        try
+        {
+            PRRERendererHWfixedPipe& hwRenderer = dynamic_cast<PRRERendererHWfixedPipe&>(*renderer);
+            
+            // first check if they are all zeros right after initialization
+            b &= assertEquals(0u, hwRenderer.getLastFrameObjectsVisible(), "getLastFrameObjectsVisible 1") &
+                assertEquals(0u, hwRenderer.getLastFrameOccluders(), "getLastFrameOccluders 1") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesNonOcclusionTested(), "getLastFrameOccludeesNonOcclusionTested 1") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTested(), "getLastFrameOccludeesOcclusionTested 1") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTestedAndOccluded(), "getLastFrameOccludeesOcclusionTestedAndOccluded 1") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTestedAndNonOccluded(), "getLastFrameOccludeesOcclusionTestedAndNonOccluded 1") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway(), "getLastFrameOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway 1") &
+                assertEquals(0u, hwRenderer.getLastFrameTransferredVertices(), "getLastFrameTransferredVertices 1") &
+                assertEquals(0u, hwRenderer.getLastFrameTransferredTriangles(), "getLastFrameTransferredTriangles 1");
+
+            // check if they are all zeros when there is nothing to render
+            renderer->RenderScene();
+            // first check if they are all zeros right after initialization
+            b &= assertEquals(0u, hwRenderer.getLastFrameObjectsVisible(), "getLastFrameObjectsVisible 2") &
+                assertEquals(0u, hwRenderer.getLastFrameOccluders(), "getLastFrameOccluders 2") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesNonOcclusionTested(), "getLastFrameOccludeesNonOcclusionTested 2") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTested(), "getLastFrameOccludeesOcclusionTested 2") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTestedAndOccluded(), "getLastFrameOccludeesOcclusionTestedAndOccluded 2") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTestedAndNonOccluded(), "getLastFrameOccludeesOcclusionTestedAndNonOccluded 2") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway(), "getLastFrameOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway 2") &
+                assertEquals(0u, hwRenderer.getLastFrameTransferredVertices(), "getLastFrameTransferredVertices 2") &
+                assertEquals(0u, hwRenderer.getLastFrameTransferredTriangles(), "getLastFrameTransferredTriangles 2");
+
+            // now create some cubes and set different settings so we can have different expectations for the counters
+            const TPRRE_XYZ posStartFrom = {20.f, 0.f, 20.f};
+            std::vector<PRREObject3D*> vCubes;
+            for (int i = 0; i < 5; i++)
+            {
+                PRREObject3D* const cube = om->createCube(1.0f, PRRE_VMOD_DYNAMIC, PRRE_VREF_DIRECT, true);
+                if ( !assertNotNull(cube, (std::string("cube ") + std::to_string(i) + " null").c_str()) )
+                {
+                    return false;
+                }
+                vCubes.push_back( cube );
+                vCubes[i]->SetOccluder(false);
+                vCubes[i]->SetOcclusionTested(false);
+                // we spatially position the cubes in farest to nearest order in the scene
+                cube->getPosVec().Set(posStartFrom.x - i*2, posStartFrom.y, posStartFrom.z - i*2);
+            }
+
+            vCubes[0]->SetOccluder(true);
+            vCubes[1]->SetOcclusionTested(true);
+            vCubes[2]->SetOcclusionTested(true);
+            vCubes[2]->SetVisible(false);
+
+            renderer->RenderScene();
+            b &= assertEquals(4u /* vCubes[0,1,3,4] */, hwRenderer.getLastFrameObjectsVisible(), "getLastFrameObjectsVisible 3") &
+                assertEquals(1u /* vCubes[0] */, hwRenderer.getLastFrameOccluders(), "getLastFrameOccluders 3") &
+                assertEquals(2u /* vCubes[3,4] */, hwRenderer.getLastFrameOccludeesNonOcclusionTested(), "getLastFrameOccludeesNonOcclusionTested 3") &
+                assertEquals(2u /* vCubes[1,2] */, hwRenderer.getLastFrameOccludeesOcclusionTested(), "getLastFrameOccludeesOcclusionTested 3") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTestedAndOccluded(), "getLastFrameOccludeesOcclusionTestedAndOccluded 3") &
+                assertEquals(2u /* vCubes[1,2] */, hwRenderer.getLastFrameOccludeesOcclusionTestedAndNonOccluded(), "getLastFrameOccludeesOcclusionTestedAndNonOccluded 3") &
+                assertEquals(1u /* vCubes[2] */, hwRenderer.getLastFrameOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway(), "getLastFrameOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway 3") &
+                /* vertices and triangles should be transferred for the 4 visible cubes, with 1 bounding box of vCubes[1] due to occlusion test start
+                   (vCubes[2] visibility is disabled hence occlusion test won't be started either for it) */
+                assertEquals(hwRenderer.getLastFrameObjectsVisible()/*4*/ * 24 + 1 /* vCubes[1] */ * 24, hwRenderer.getLastFrameTransferredVertices(), "getLastFrameTransferredVertices 3") &
+                assertEquals(hwRenderer.getLastFrameObjectsVisible()/*4*/ * 12 + 1 /* vCubes[1] */ * 12, hwRenderer.getLastFrameTransferredTriangles(), "getLastFrameTransferredTriangles 3");
+
+            // deleting objects does not change renderer's last frame stats
+            for (int i = 0; i < 5; i++)
+                delete vCubes[i];
+
+            b &= assertEquals(4u /* vCubes[0,1,3,4] */, hwRenderer.getLastFrameObjectsVisible(), "getLastFrameObjectsVisible 4") &
+                assertEquals(1u /* vCubes[0] */, hwRenderer.getLastFrameOccluders(), "getLastFrameOccluders 4") &
+                assertEquals(2u /* vCubes[3,4] */, hwRenderer.getLastFrameOccludeesNonOcclusionTested(), "getLastFrameOccludeesNonOcclusionTested 4") &
+                assertEquals(2u /* vCubes[1,2] */, hwRenderer.getLastFrameOccludeesOcclusionTested(), "getLastFrameOccludeesOcclusionTested 4") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTestedAndOccluded(), "getLastFrameOccludeesOcclusionTestedAndOccluded 4") &
+                assertEquals(2u /* vCubes[1,2] */, hwRenderer.getLastFrameOccludeesOcclusionTestedAndNonOccluded(), "getLastFrameOccludeesOcclusionTestedAndNonOccluded 4") &
+                assertEquals(1u /* vCubes[2] */, hwRenderer.getLastFrameOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway(), "getLastFrameOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway 4") &
+                /* vertices and triangles should be transferred for the 4 visible cubes, with 1 bounding box of vCubes[1] due to occlusion test start
+                   (vCubes[2] visibility is disabled hence occlusion test won't be started either for it) */
+                assertEquals(hwRenderer.getLastFrameObjectsVisible()/*4*/ * 24 + 1 /* vCubes[1] */ * 24, hwRenderer.getLastFrameTransferredVertices(), "getLastFrameTransferredVertices 4") &
+                assertEquals(hwRenderer.getLastFrameObjectsVisible()/*4*/ * 12 + 1 /* vCubes[1] */ * 12, hwRenderer.getLastFrameTransferredTriangles(), "getLastFrameTransferredTriangles 4");
+
+            // but triggering a render again actually changes everything back to 0
+            renderer->RenderScene();
+            b &= assertEquals(0u, hwRenderer.getLastFrameObjectsVisible(), "getLastFrameObjectsVisible 5") &
+                assertEquals(0u, hwRenderer.getLastFrameOccluders(), "getLastFrameOccluders 5") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesNonOcclusionTested(), "getLastFrameOccludeesNonOcclusionTested 5") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTested(), "getLastFrameOccludeesOcclusionTested 5") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTestedAndOccluded(), "getLastFrameOccludeesOcclusionTestedAndOccluded 5") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTestedAndNonOccluded(), "getLastFrameOccludeesOcclusionTestedAndNonOccluded 5") &
+                assertEquals(0u, hwRenderer.getLastFrameOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway(), "getLastFrameOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway 5") &
+                assertEquals(0u, hwRenderer.getLastFrameTransferredVertices(), "getLastFrameTransferredVertices 5") &
+                assertEquals(0u, hwRenderer.getLastFrameTransferredTriangles(), "getLastFrameTransferredTriangles 5");                                                               
+        }
+        catch (const std::exception&)
+        {
+            b = assertTrue(false, "dynamic cast");
         }
 
         return b;

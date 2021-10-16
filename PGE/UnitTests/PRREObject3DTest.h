@@ -1525,6 +1525,10 @@ private:
 
     bool testDraw()
     {
+        // just to be sure
+        obj->SetOcclusionTested(false);
+        objFromFile->SetOcclusionTested(true);
+
         // intentionally drawing both twice, to check if draw() properly resets the counters before transferring vertices!
         obj->draw(PRRE_RPASS_NORMAL, false, false);
         objFromFile->draw(PRRE_RPASS_NORMAL, false, false);
@@ -1538,13 +1542,37 @@ private:
             assertEquals(obj->getTriangleCount(), obj->getLastTransferredTriangleCount(), "obj 3") &
             assertEquals(objFromFile->getTriangleCount(), objFromFile->getLastTransferredTriangleCount(), "objFromFile 3");
 
+        // hide the objects and expect their counters to be zero after draw (so they still reset their counters before deciding not drawing anything)
+        obj->SetVisible(false);
+        objFromFile->SetVisible(false);
+        nObjLastTransferredVertices = obj->draw(PRRE_RPASS_NORMAL, false, false);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PRRE_RPASS_NORMAL, false, false);
+
+        b &= assertEquals(0u, obj->getLastTransferredVertexCount(), "obj 1 hidden 1") &
+            assertEquals(0u, objFromFile->getLastTransferredVertexCount(), "objFromFile 1 hidden 1") &
+            assertEquals(nObjLastTransferredVertices, obj->getLastTransferredVertexCount(), "obj 2 hidden 1") &
+            assertEquals(nObjFromFileLastTransferredVertices, objFromFile->getLastTransferredVertexCount(), "objFromFile 2 hidden 1") &
+            assertEquals(0u, obj->getLastTransferredTriangleCount(), "obj 3 hidden 1") &
+            assertEquals(0u, objFromFile->getLastTransferredTriangleCount(), "objFromFile 3 hidden 1");
+        
+        // check the same with PRRE_RPASS_START_OCCLUSION_QUERY render pass
+        nObjLastTransferredVertices = obj->draw(PRRE_RPASS_NORMAL, false, false);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PRRE_RPASS_NORMAL, false, false);
+
+        b &= assertEquals(0u, obj->getLastTransferredVertexCount(), "obj 1 hidden 2") &
+            assertEquals(0u, objFromFile->getLastTransferredVertexCount(), "objFromFile 1 hidden 2") &
+            assertEquals(nObjLastTransferredVertices, obj->getLastTransferredVertexCount(), "obj 2 hidden 2") &
+            assertEquals(nObjFromFileLastTransferredVertices, objFromFile->getLastTransferredVertexCount(), "objFromFile 2 hidden 2") &
+            assertEquals(0u, obj->getLastTransferredTriangleCount(), "obj 3 hidden 2") &
+            assertEquals(0u, objFromFile->getLastTransferredTriangleCount(), "objFromFile 3 hidden 2");
+
+        // let objects be rendered again
+        obj->SetVisible(true);
+        objFromFile->SetVisible(true);
+
         // make sure the objects are far behind the camera
         obj->getPosVec().SetZ(-100.f);
         objFromFile->getPosVec().SetZ(-100.f);
-
-        // just to be sure
-        obj->SetOcclusionTested(false);
-        objFromFile->SetOcclusionTested(true);
 
         nObjLastTransferredVertices = obj->draw(PRRE_RPASS_START_OCCLUSION_QUERY, false, false);
         nObjFromFileLastTransferredVertices = objFromFile->draw(PRRE_RPASS_START_OCCLUSION_QUERY, false, false);
@@ -1601,6 +1629,20 @@ private:
             assertEquals(nObjFromFileClonedLastTransferredVertices, objFromFile->getLastTransferredVertexCount(), "objFromFile 1") &
             assertEquals(objFromFileCloned->getTriangleCount(), objFromFileCloned->getLastTransferredTriangleCount(), "objFromFileCloned 3") &
             assertEquals(objFromFileCloned->getLastTransferredTriangleCount(), objFromFile->getLastTransferredTriangleCount(), "objFromFile 2");
+
+        // check if cloned object also properly resets counters to 0 when trying to draw it when it is not allowed to be drawn
+        objFromFileCloned->SetVisible(false);
+        objFromFileCloned->draw(PRRE_RPASS_NORMAL, false, false);
+
+        b &= assertEquals(0u, objFromFile->getLastTransferredVertexCount(), "objFromFile 1 hidden 1") &
+            assertEquals(0u, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 1 hidden 1") &
+            assertEquals(0u, objFromFile->getLastTransferredVertexCount(), "objFromFile 2 hidden 1") &
+            assertEquals(0u, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 2 hidden 1") &
+            assertEquals(0u, objFromFile->getLastTransferredTriangleCount(), "objFromFile 3 hidden 1") &
+            assertEquals(0u, objFromFileCloned->getLastTransferredTriangleCount(), "objFromFileCloned 3 hidden 1");
+
+        // allow draw again
+        objFromFileCloned->SetVisible(true);
 
         nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PRRE_RPASS_START_OCCLUSION_QUERY, false, false);
         objFromFileCloned->getLastTransferredVertexCount();

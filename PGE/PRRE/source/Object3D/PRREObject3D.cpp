@@ -764,6 +764,11 @@ TPRREuint PRREObject3D::PRREObject3DImpl::draw(const TPRRE_RENDER_PASS& renderPa
 {
     // caller renderer is expected to check for GL errors, probably only once per frame, so we don't check them here
 
+    if ( _pOwner->isLevel1() )
+    {
+        _pOwner->ResetLastTransferredCounts();
+    }
+    
     if ( !bVisible )
         return 0;
 
@@ -780,10 +785,7 @@ TPRREuint PRREObject3D::PRREObject3DImpl::draw(const TPRRE_RENDER_PASS& renderPa
         // while second level (subobjects) own geometry, inherit basic things set by parent.
 
         // So transformations and other basic things are set by parent objects having subobjects.
-        // Or by cloned objects which refer to another original objects but still have their own position, angle, etc.
-
-        _pOwner->ResetLastTransferredCounts();
-        
+        // Or by cloned objects which refer to another original objects but still have their own position, angle, etc.        
         if ( renderPass == PRRE_RPASS_NORMAL )
         {
             if ( (nOcclusionQuery != 0) && draw_OcclusionQuery_Finish(bASyncQuery, bRenderIfQueryPending) )
@@ -895,7 +897,7 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
     bOcclusionQueryStarted = false;
     timeLongestWaitForSyncQueryFinish.tv_sec = 0;
     timeLongestWaitForSyncQueryFinish.tv_usec = 0;
-    nFramesWithoutOcclusionTest = 0;
+    nFramesWithoutOcclusionTest = OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE /* start queries right in 1st frame */;
     nFramesWaitedForOcclusionTestResult = 0;
     nFramesWaitedForOcclusionTestResultMin = UINT_MAX;
     nFramesWaitedForOcclusionTestResultMax = 0;

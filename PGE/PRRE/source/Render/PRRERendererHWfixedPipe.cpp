@@ -31,11 +31,44 @@ class PRRERendererHWfixedPipeImpl :
     public PRRERendererHWfixedPipe
 {
 public:
+    /**
+        Renderer statistics collected until next ResetStatistics().
+    */
     struct CurrentStats
     {
         TPRRE_RENDER_HINT renderHints;  /**< Render hints. */
 
         CurrentStats();
+    };
+
+    /**
+        Last frame statistics collected until end of frame, then reset at the beginning of next frame.
+    */
+    class LastFrameStats
+    {
+    public:
+        LastFrameStats();
+        void Reset();
+        void Update(const PRREObject3D& obj, const TPRRE_RENDER_PASS& iRenderPass);
+        TPRREuint getObjectsVisible() const;
+        TPRREuint getObjectsOccluders() const;
+        TPRREuint getOccludeesNonOcclusionTested() const;
+        TPRREuint getOccludeesOcclusionTested() const;
+        TPRREuint getOccludeesOcclusionTestedAndOccluded() const;
+        TPRREuint getOccludeesOcclusionTestedAndNonOccluded() const;
+        TPRREuint getOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway() const;
+        TPRREuint getTransferredVertices() const;
+        TPRREuint getTransferredTriangles() const;
+    private:
+        TPRREuint nLastFrameObjectsVisible;
+        TPRREuint nLastFrameObjectsOccluders;
+        TPRREuint nLastFrameObjectsNonOcclusionTested;
+        TPRREuint nLastFrameObjectsOcclusionTested;
+        TPRREuint nLastFrameObjectsOccluded;
+        TPRREuint nLastFrameObjectsNonOccluded;
+        TPRREuint nLastFrameObjectsNonOccludedButNotVisible;
+        TPRREuint nLastFrameVertices;
+        TPRREuint nLastFrameTriangles;
     };
 
     static TPRREbool OQ_AUTO_UPDATE_OCCLUDER_STATES;
@@ -44,6 +77,7 @@ public:
     static std::map<TPRREuint, std::string> mapRenderPaths2String;
     static std::map<TPRREuint, std::string> mapOcclusionQueryMethod2String;
     static std::vector<CurrentStats> stats;
+    static LastFrameStats lastFrameStats;
 
     // ---------------------------------------------------------------------------
 
@@ -74,6 +108,16 @@ public:
     void WriteStats() const;       
     void CheckConsistency() const;  
 
+    TPRREuint getLastFrameObjectsVisible() const;
+    TPRREuint getLastFrameOccluders() const;
+    TPRREuint getLastFrameOccludeesNonOcclusionTested() const;
+    TPRREuint getLastFrameOccludeesOcclusionTested() const;
+    TPRREuint getLastFrameOccludeesOcclusionTestedAndOccluded() const;
+    TPRREuint getLastFrameOccludeesOcclusionTestedAndNonOccluded() const;
+    TPRREuint getLastFrameOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway() const;
+    TPRREuint getLastFrameTransferredVertices() const;
+    TPRREuint getLastFrameTransferredTriangles() const;
+
 private:
     PRREWindow&          wnd;          /**< Our window, where we draw to, singleton. */
     PRREhwInfo&          hwInfo;       /**< Hardware infos, singleton. */
@@ -84,13 +128,6 @@ private:
 
     HGLRC                rc;           /**< Rendering context, initially NULL. Determines whether the renderer is initialized or not. */
     GLfloat mat4x4Identity[4][4];
-
-    TPRREuint nObjectsTotal;
-    TPRREuint nObjectVisible;
-    TPRREuint nObjectsOccluder;
-    TPRREuint nObjectsOcclusionTested;
-    TPRREuint nObjectsOccluded;
-    TPRREuint nObjectsNonOccluded;
 
     // ---------------------------------------------------------------------------
 
@@ -105,6 +142,7 @@ private:
     void printOGLerrorBrief();           /**< Writes OpenGL error to console only if there is really an error. */
     void printOGLerrorFull();            /**< Writes OpenGL error to console even the error is no error. */
     void LogFullRenderHints(const TPRRE_RENDER_HINT& hints) const;     /**< Logs given render hints with full descriptive text. */
+    void LogLastFrameStats() const;                                    /**< Logs last frame stats. */
 
     TPRREbool initializeOpenGL(HDC dc);  /**< Initializes OpenGL. */
     TPRREbool shutdownOpenGL();          /**< Shuts down OpenGL. */
@@ -137,11 +175,138 @@ TPRREbool PRRERendererHWfixedPipeImpl::OQ_ZPASS_FOR_OCCLUDERS = false;
 std::map<TPRREuint, std::string> PRRERendererHWfixedPipeImpl::mapRenderPaths2String;
 std::map<TPRREuint, std::string> PRRERendererHWfixedPipeImpl::mapOcclusionQueryMethod2String;
 std::vector<PRRERendererHWfixedPipeImpl::CurrentStats> PRRERendererHWfixedPipeImpl::stats;
+PRRERendererHWfixedPipeImpl::LastFrameStats PRRERendererHWfixedPipeImpl::lastFrameStats;
 
 PRRERendererHWfixedPipeImpl::CurrentStats::CurrentStats()
 {
     renderHints = 0;    
+} // CurrentStats()
+
+PRRERendererHWfixedPipeImpl::LastFrameStats::LastFrameStats()
+{
+    Reset();
+} // LastFrameStats()
+
+void PRRERendererHWfixedPipeImpl::LastFrameStats::Reset()
+{
+    nLastFrameObjectsVisible = 0;
+    nLastFrameObjectsOccluders = 0;
+    nLastFrameObjectsNonOcclusionTested = 0;
+    nLastFrameObjectsOcclusionTested = 0;
+    nLastFrameObjectsOccluded = 0;
+    nLastFrameObjectsNonOccluded = 0;
+    nLastFrameObjectsNonOccludedButNotVisible = 0;
+    nLastFrameVertices = 0;
+    nLastFrameTriangles = 0;
+} // Reset()
+
+/**
+    Updates the per-frame stats with data from the given object.
+    Only PRRE_RPASS_NORMAL renderpass changes the following counters:
+     - nLastFrameObjectsVisible;
+     - nLastFrameObjectsOcclusionTested;
+     - nLastFrameObjectsNonOccluded;
+     - nLastFrameObjectsOccluded.
+    
+    Vertex and triangle counters are updated by every renderpass by and kind of object.
+
+    Occluders do not update nLastFrameObjectsOcclusionTested even if occlusion testing is enabled for them because the renderer
+    just doesn't test occlusion for occluders. Thus they dont update nLastFrameObjectsNonOccluded and nLastFrameObjectsOccluded either.
+*/
+void PRRERendererHWfixedPipeImpl::LastFrameStats::Update(const PRREObject3D& obj, const TPRRE_RENDER_PASS& iRenderPass)
+{
+    switch (iRenderPass)
+    {
+        case PRRE_RPASS_NORMAL:
+        {
+            if ( obj.isVisible() )
+            {
+                nLastFrameObjectsVisible++;
+            }
+            
+            if ( obj.isOccluder() )
+            {
+                nLastFrameObjectsOccluders++;
+            }
+            else
+            {
+                if ( obj.isOcclusionTested() )
+                {
+                    nLastFrameObjectsOcclusionTested++;
+                    if ( obj.isOccluded() )
+                    {
+                        nLastFrameObjectsOccluded++;
+                    }
+                    else
+                    {
+                        nLastFrameObjectsNonOccluded++;
+                        if ( !obj.isVisible() )
+                        {
+                            nLastFrameObjectsNonOccludedButNotVisible++;
+                        }
+                    }
+                }
+                else
+                {
+                    nLastFrameObjectsNonOcclusionTested++;
+                }
+            }
+        } // case PRRE_RPASS_NORMAL
+        // fall-through
+        case PRRE_RPASS_START_OCCLUSION_QUERY:
+        case PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY:
+        case PRRE_RPASS_Z_ONLY:
+        default:
+            nLastFrameVertices += obj.getLastTransferredVertexCount();
+            nLastFrameTriangles += obj.getLastTransferredTriangleCount(); 
+    } // switch
+} // Update()
+
+TPRREuint PRRERendererHWfixedPipeImpl::LastFrameStats::getObjectsVisible() const
+{
+    return nLastFrameObjectsVisible;
+} // getObjectsVisible()
+
+TPRREuint PRRERendererHWfixedPipeImpl::LastFrameStats::getObjectsOccluders() const
+{
+    return nLastFrameObjectsOccluders;
+} // getObjectsOccluders()
+
+TPRREuint PRRERendererHWfixedPipeImpl::LastFrameStats::getOccludeesNonOcclusionTested() const
+{
+    return nLastFrameObjectsNonOcclusionTested;
+} // getOccludeesNonOcclusionTested()
+
+TPRREuint PRRERendererHWfixedPipeImpl::LastFrameStats::getOccludeesOcclusionTested() const
+{
+    return nLastFrameObjectsOcclusionTested;
+} // getOccludeesOcclusionTested()
+
+TPRREuint PRRERendererHWfixedPipeImpl::LastFrameStats::getOccludeesOcclusionTestedAndOccluded() const
+{
+    return nLastFrameObjectsOccluded;
+} // getOccludeesOcclusionTestedAndOccluded()
+
+TPRREuint PRRERendererHWfixedPipeImpl::LastFrameStats::getOccludeesOcclusionTestedAndNonOccluded() const
+{
+    return nLastFrameObjectsNonOccluded;
+} // getOccludeesOcclusionTestedAndNonOccluded()
+
+TPRREuint PRRERendererHWfixedPipeImpl::LastFrameStats::getOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway() const
+{
+    return nLastFrameObjectsNonOccludedButNotVisible;
+} // getOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway()
+
+TPRREuint PRRERendererHWfixedPipeImpl::LastFrameStats::getTransferredVertices() const
+{
+    return nLastFrameVertices;
 }
+
+TPRREuint PRRERendererHWfixedPipeImpl::LastFrameStats::getTransferredTriangles() const
+{
+    return nLastFrameTriangles;
+}
+
 
 /**
     Calls shutdown().
@@ -293,6 +458,7 @@ TPRREbool PRRERendererHWfixedPipeImpl::shutdown()
     {
         getConsole().EOLn("WARNING: shutdownOpenGL() failed!");
     }
+    lastFrameStats.Reset();
 
     // only window, scren, hwinfo needs to be deinitialized,
     // other managers set by SetManagers() are taken care by who specified it at the beginning.
@@ -337,6 +503,8 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
     {
         return;
     }
+
+    lastFrameStats.Reset();
 
     BeginRendering();
                                                                                                 
@@ -467,9 +635,11 @@ void PRRERendererHWfixedPipeImpl::SetRenderHints(const TPRRE_RENDER_HINT& hints)
 
 void PRRERendererHWfixedPipeImpl::ResetStatistics()
 {
-    getConsole().OLn("PRRERendererHWfixedPipe::ResetStatistics()");
-    getConsole().OLn("Following render hints are saved and stats are reset:");
+    getConsole().OLnOI("PRRERendererHWfixedPipe::ResetStatistics()");
 
+    LogLastFrameStats();
+
+    getConsole().OLn("Following render hints are saved and stats are reset:");
     getConsole().OI();
     LogFullRenderHints(stats[stats.size()-1].renderHints);
     getConsole().OO();
@@ -479,6 +649,7 @@ void PRRERendererHWfixedPipeImpl::ResetStatistics()
     stats[stats.size()-1].renderHints = stats[stats.size()-2].renderHints;
 
     pObject3DMgr->ResetStatistics();    
+    getConsole().OO();
 } // ResetStatistics()
 
 
@@ -490,8 +661,9 @@ void PRRERendererHWfixedPipeImpl::WriteStats() const
     getConsole().OI();
 
     LogFullRenderHints(stats[stats.size()-1].renderHints);
+    LogLastFrameStats();
 
-    getConsole().OLn("Collected statistics:");
+    getConsole().OLn("Collected Statistics:");
     for (TPRREuint i = 0; i < stats.size(); i++)
     {
         getConsole().OLn("Stats %u:", i+1);
@@ -511,6 +683,74 @@ void PRRERendererHWfixedPipeImpl::CheckConsistency() const
 
     getConsole().OLn("END of consistency check!");
 } // CheckConsistency()
+
+
+/**
+    Returns number of objects allowed to be visible in last frame.
+*/
+TPRREuint PRRERendererHWfixedPipeImpl::getLastFrameObjectsVisible() const
+{
+    return lastFrameStats.getObjectsVisible();
+}
+
+/**
+    Returns number of objects that were occluders in last frame.
+*/
+TPRREuint PRRERendererHWfixedPipeImpl::getLastFrameOccluders() const
+{
+    return lastFrameStats.getObjectsOccluders();
+}
+
+/**
+    Returns number of occludees that had occlusion test disabled in last frame.
+*/
+TPRREuint PRRERendererHWfixedPipeImpl::getLastFrameOccludeesNonOcclusionTested() const
+{
+    return lastFrameStats.getOccludeesNonOcclusionTested();
+}
+
+/**
+    Returns number of occludees that had occlusion test enabled (not necessarily ongoing) in last frame.
+*/
+TPRREuint PRRERendererHWfixedPipeImpl::getLastFrameOccludeesOcclusionTested() const
+{
+    return lastFrameStats.getOccludeesOcclusionTested();
+}
+
+/**
+    Returns number of occluded occludees in last frame (only counted if occlusion test was also enabled).
+*/
+TPRREuint PRRERendererHWfixedPipeImpl::getLastFrameOccludeesOcclusionTestedAndOccluded() const
+{
+    return lastFrameStats.getOccludeesOcclusionTestedAndOccluded();
+}
+
+/**
+    Returns number of non-occluded occludees in last frame (only counted if occlusion test was also enabled).
+*/
+TPRREuint PRRERendererHWfixedPipeImpl::getLastFrameOccludeesOcclusionTestedAndNonOccluded() const
+{
+    return lastFrameStats.getOccludeesOcclusionTestedAndNonOccluded();
+}
+
+/**
+    Returns number of non-occluded occludees in last frame (only counted if occlusion test was also enabled but visibility was not).
+*/
+TPRREuint PRRERendererHWfixedPipeImpl::getLastFrameOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway() const
+{
+    return lastFrameStats.getOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway();
+}
+
+
+TPRREuint PRRERendererHWfixedPipeImpl::getLastFrameTransferredVertices() const
+{
+    return lastFrameStats.getTransferredVertices();
+}
+
+TPRREuint PRRERendererHWfixedPipeImpl::getLastFrameTransferredTriangles() const
+{
+    return lastFrameStats.getTransferredTriangles();
+}
 
 
 // ############################## PROTECTED ##############################
@@ -646,6 +886,26 @@ void PRRERendererHWfixedPipeImpl::LogFullRenderHints(const TPRRE_RENDER_HINT& hi
     getConsole().OLn("bOrderByDistance: %b", bOrderByDistance);
     getConsole().OLn("");
 } // LogFullRenderHints()
+
+
+/**
+    Logs last frame stats.
+*/
+void PRRERendererHWfixedPipeImpl::LogLastFrameStats() const
+{
+    getConsole().OLnOI("Last Frame Statistics:");
+    getConsole().OLn("Number of total objects: %u", pObject3DMgr->getOccluders().size() + pObject3DMgr->get3dOpaqueOccludees().size() + pObject3DMgr->get3dBlendedOccludees().size());
+    getConsole().OLn(" - of which visibility enabled: %u", lastFrameStats.getObjectsVisible());
+    getConsole().OLn("Number of occluders: %u", lastFrameStats.getObjectsOccluders() );
+    getConsole().OLn("Number of occludees not occlusion-tested: %u", lastFrameStats.getOccludeesNonOcclusionTested());
+    getConsole().OLn("Number of occludees occlusion-tested: %u", lastFrameStats.getOccludeesOcclusionTested());
+    getConsole().OLn(" - of which occluded: %u", lastFrameStats.getOccludeesOcclusionTestedAndOccluded());
+    getConsole().OLn(" - of which not occluded: %u", lastFrameStats.getOccludeesOcclusionTestedAndNonOccluded());
+    getConsole().OLn("   - of which visibility disabled anyway: %u", lastFrameStats.getOccludeesOcclusionTestedAndNonOccludedButNonVisibleAnyway());
+    getConsole().OLn("Number of transferred vertices: %u", lastFrameStats.getTransferredVertices());
+    getConsole().OLn("Number of transferred triangles: %u", lastFrameStats.getTransferredTriangles());
+    getConsole().OLnOO("");
+} // LogLastFrameStats()
 
 
 /**
@@ -984,6 +1244,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& re
             glPushMatrix();
             (*it)->draw(PRRE_RPASS_Z_ONLY, bASyncQuery, bRenderIfQueryPending);
             glPopMatrix();
+            lastFrameStats.Update(*(*it), PRRE_RPASS_Z_ONLY);
         }
 
         PRREGLsnippets::SetZPassRendering(false);
@@ -995,6 +1256,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& re
         glPushMatrix();
         (*it)->draw(PRRE_RPASS_NORMAL, bASyncQuery, bRenderIfQueryPending);
         glPopMatrix();
+        lastFrameStats.Update(*(*it), PRRE_RPASS_NORMAL);
     }
 
     // then render the occludees with occlusion query
@@ -1007,6 +1269,7 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& re
             glPushMatrix();
             (*it)->draw((TPRRE_RENDER_PASS)iRenderPass, bASyncQuery, bRenderIfQueryPending);
             glPopMatrix();
+            lastFrameStats.Update(*(*it), (TPRRE_RENDER_PASS)iRenderPass);
         }
 
         for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
@@ -1014,9 +1277,39 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& re
             glPushMatrix();
             (*it)->draw((TPRRE_RENDER_PASS)iRenderPass, bASyncQuery, bRenderIfQueryPending);
             glPopMatrix();
+            lastFrameStats.Update(*(*it), (TPRRE_RENDER_PASS)iRenderPass);
         }
 
     } // occludess iRenderPass
+
+    if ( BIT_READ(stats[stats.size()-1].renderHints, PRRE_RH_OQ_DRAW_BOUNDING_BOXES_BIT) == 1u )
+    {
+        PRREGLsnippets::glPrepareBeforeDrawBoundingBox();
+
+        for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
+        {
+            glPushMatrix();
+            (*it)->draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending);
+            glPopMatrix();
+            lastFrameStats.Update(*(*it), PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
+        }
+
+        for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
+        {
+            glPushMatrix();
+            (*it)->draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending);
+            glPopMatrix();
+            lastFrameStats.Update(*(*it), PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
+        }
+
+        for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
+        {
+            glPushMatrix();
+            (*it)->draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending);
+            glPopMatrix();
+            lastFrameStats.Update(*(*it), PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
+        }
+    } // OQ_RENDER_BOUNDING_BOXES
 
     frameCntr++;
 
@@ -1031,87 +1324,11 @@ void PRRERendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PRREIRenderer& re
     if ( (frameCntr % 1000) == 0 )
     {
         frameCntr = 0;
-
-        nObjectsTotal = 0;
-        nObjectVisible = 0;
-        nObjectsOccluder = 0;
-        nObjectsOcclusionTested = 0;
-        nObjectsOccluded = 0;
-        nObjectsNonOccluded = 0;
-        // this separate statistics loop wont be needed after the above loop will be simpler: ordering of objects simplified!
-        for (int i = 0; i < pObject3DMgr->getSize(); i++)
-        {
-            PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
         
-            if ( obj == PGENULL )
-                continue;
-        
-            nObjectsTotal++;
-        
-            if ( !obj->isVisible() )
-                continue;
-        
-            nObjectVisible++;
-
-            if ( obj->isOccluder() )
-                nObjectsOccluder++;
-        
-            if ( obj->isOcclusionTested() )
-            {
-                nObjectsOcclusionTested++;
-                if ( obj->isOccluded() )
-                {
-                    nObjectsOccluded++;
-                }
-                else
-                {
-                    nObjectsNonOccluded++;
-                }
-            }
-        } // for i    
-        
-        //getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), true);
-        //getConsole().OLn("Number of total objects: %d", nObjectsTotal);
-        //getConsole().OLn(" - of which visible: %d", nObjectVisible);
-        //getConsole().OLn("Number of occluders: %d",nObjectsOccluder );
-        //getConsole().OLn("Number of occlusion-tested objects: %d", nObjectsOcclusionTested);
-        //getConsole().OLn(" - of which occluded: %d", nObjectsOccluded);
-        //getConsole().OLn(" - of which not occluded: %d", nObjectsNonOccluded);
-        //getConsole().OLn("");
-
-        //pObject3DMgr->getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), true);
-        //pObject3DMgr->WriteList();
-        //pObject3DMgr->getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), false);
-        
+        /*getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), true);
         getConsole().OLn("");
-        getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), false);
+        getConsole().SetLoggingState(PRRERendererHWfixedPipe::getLoggerModuleName(), false);*/
     } // frameCntr
-
-    if ( BIT_READ(stats[stats.size()-1].renderHints, PRRE_RH_OQ_DRAW_BOUNDING_BOXES_BIT) == 1u )
-    {
-        PRREGLsnippets::glPrepareBeforeDrawBoundingBox();
-
-        for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
-        {
-            glPushMatrix();
-            (*it)->draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending);
-            glPopMatrix();
-        }
-
-        for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
-        {
-            glPushMatrix();
-            (*it)->draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending);
-            glPopMatrix();
-        }
-
-        for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
-        {
-            glPushMatrix();
-            (*it)->draw(PRRE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending);
-            glPopMatrix();
-        }
-    } // OQ_RENDER_BOUNDING_BOXES
     
 } // Draw3DObjects_OcclusionQuery
 
