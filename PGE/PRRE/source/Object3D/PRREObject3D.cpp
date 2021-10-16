@@ -845,10 +845,6 @@ TPRREuint PRREObject3D::PRREObject3DImpl::draw(const TPRRE_RENDER_PASS& renderPa
         return 0;
     }
 
-    /* currently not supporting any vendor-specific mode */
-    if ( BITF_READ(_pOwner->getVertexTransferMode(),PRRE_VT_VENDOR_BITS,3) != 0 )
-        return 0;
-
     if ( renderPass == PRRE_RPASS_NORMAL )
     {
         PRREGLsnippets::glLoadTexturesAndSetBlendState(&(_pOwner->getMaterial(false)), pObjLevel1->isStickedToScreen(), bObjLevel1Blended);

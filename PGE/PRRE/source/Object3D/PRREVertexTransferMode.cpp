@@ -376,6 +376,13 @@ TPRREuint PRREVertexTransfer::PRREVertexTransferImpl::transferVertices()
         return 0;
     }
 
+    /* currently not supporting any vendor-specific mode */
+    if ( BITF_READ(getVertexTransferMode(),PRRE_VT_VENDOR_BITS,3) != 0 )
+    {
+        _pOwner->getManagedConsole().EOLn("ERROR: PRREVertexTransfer::%s() unsupported vendor-specific mode!", __FUNCTION__);
+        return 0;
+    }
+
     nLastTransferredVertices = _pOwner->getVertexIndicesCount();
     nLastTransferredTriangles = _pOwner->getTriangleCount();
     // increasing the number in the parent too, however it must be parent's logic to zero it out before iterating over its children again
