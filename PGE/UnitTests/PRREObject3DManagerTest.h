@@ -58,6 +58,10 @@ protected:
         AddSubTest("testCreateFromFile", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreateFromFile);
         AddSubTest("testCreateCloned", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testCreateCloned);
         AddSubTest("testUpdateOccluderStates", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testUpdateOccluderStates);
+        AddSubTest("testGetOccluderSelectionBias", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testGetOccluderSelectionBias);
+        AddSubTest("testSetOccluderSelectionBias", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testSetOccluderSelectionBias);
+        AddSubTest("testGetMaxOccluderCount", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testGetMaxOccluderCount);
+        AddSubTest("testSetMaxOccluderCount", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testSetMaxOccluderCount);
         AddSubTest("testHandleManagedPropertyChanged", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testHandleManagedPropertyChanged);
         AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testGetUsedVideoMemory);
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRREObject3DManagerTest::testWriteList);
@@ -492,7 +496,42 @@ private:
              assertTrue( std::find(om->get2dOpaqueOccludees().begin(), om->get2dOpaqueOccludees().end(), objFromFile) == om->get2dOpaqueOccludees().end(), "objFromFile is NOT in get2dOpaqueOccludees 5") &
              assertTrue( std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), objFromFile) == om->get2dBlendedOccludees().end(), "objFromFile is NOT in get2dBlendedOccludees 5");
 
+        // check if limiting max occluder count to 0 actually maked objFromFile as an occludee
+        om->SetMaxOccluderCount(0);
+        om->UpdateOccluderStates();
+
+        b &= assertFalse(objFromFile->isOccluder(), "objFromFile is occluder 4") &
+             assertTrue( std::find(om->get3dOpaqueOccludees().begin(), om->get3dOpaqueOccludees().end(), objFromFile) != om->get3dOpaqueOccludees().end(), "objFromFile is in getOpaqueOccludees 6") &
+             assertFalse( std::find(om->get3dBlendedOccludees().begin(), om->get3dBlendedOccludees().end(), objFromFile) != om->get3dBlendedOccludees().end(), "objFromFile is NOT in get3dBlendedOccludees 5") &
+             assertTrue( std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is NOT in getOccluders 6") &
+             assertEquals((std::size_t)0, om->get2dOpaqueOccludees().size(), "get2dOpaqueOccludees empty 7") &
+             assertEquals((std::size_t)0, om->get2dBlendedOccludees().size(), "get2dBlendedOccludees empty 7") &
+             assertTrue( std::find(om->get2dOpaqueOccludees().begin(), om->get2dOpaqueOccludees().end(), objFromFile) == om->get2dOpaqueOccludees().end(), "objFromFile is NOT in get2dOpaqueOccludees 6") &
+             assertTrue( std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), objFromFile) == om->get2dBlendedOccludees().end(), "objFromFile is NOT in get2dBlendedOccludees 6");
+
         return b;
+    }
+
+    bool testGetOccluderSelectionBias()
+    {
+        return assertEquals(1.0f, om->getOccluderSelectionBias(), E);
+    }
+
+    bool testSetOccluderSelectionBias()
+    {
+        om->SetOccluderSelectionBias(20.0f);
+        return assertEquals(20.0f, om->getOccluderSelectionBias(), E);
+    }
+
+    bool testGetMaxOccluderCount()
+    {
+        return assertEquals(4u, om->getMaxOccluderCount());
+    }
+
+    bool testSetMaxOccluderCount()
+    {
+        om->SetMaxOccluderCount(1);
+        return assertEquals(1u, om->getMaxOccluderCount());
     }
 
     bool testHandleManagedPropertyChanged()

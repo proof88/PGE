@@ -278,6 +278,10 @@ public:
     PRREObject3D* createCloned(PRREObject3D& referredobj);       /**< Creates a new object by cloning an already existing object. */
 
     void UpdateOccluderStates();                                 /**< Iterates over its manageds and updates their occluder states. */
+    TPRREfloat getOccluderSelectionBias() const;                 /**< Gets the occluder selection bias. */
+    void SetOccluderSelectionBias(TPRREfloat fBias);             /**< Sets the occluder selection bias. */
+    TPRREuint getMaxOccluderCount() const;                       /**< Gets the maximum number of occluders. */
+    void SetMaxOccluderCount(TPRREuint nMax);                    /**< Sets the maximum number of occluders. */
 
     virtual void HandleManagedPropertyChanged(
                  PRREManaged& m);                                /**< Should be invoked when a managed's property got changed from a different kind of manager or managed. */

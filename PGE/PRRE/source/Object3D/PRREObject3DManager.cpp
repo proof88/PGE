@@ -52,14 +52,16 @@ private:
 
     static TPRREuint nRunningCounter;    /**< Always increased when creating a new level-1 Object3D instance. */
 
-    static TPRREbool isEligibleForOcclusionQuery(TPRREuint nTotalVerticesCount);  /**< Decides if an object is eligible for automatically turn on occlusion query on it. */
+    static TPRREbool isEligibleForOcclusionQuery(TPRREuint nTotalVertexIndices);  /**< Decides if an object is eligible for automatically turn on occlusion query on it. */
 
     PRREObject3DManager* _pOwner;        /**< The owner public object who creates this pimpl object. */
 
-    TPRREbool            bInited;               /**< True if successfully inited, false if not functional. */
-    TPRREbool            bMinimalIndexStorage;  /**< True if storage of indices is minimalized. */
-    PRRETextureManager&  textureMgr;            /**< Used to auto-load textures for OBJ files. */
-    PRREMaterialManager& materialMgr;           /**< Used to auto-load/create materials for objects. */
+    TPRREbool            bInited;                /**< True if successfully inited, false if not functional. */
+    TPRREbool            bMinimalIndexStorage;   /**< True if storage of indices is minimalized. */
+    PRRETextureManager&  textureMgr;             /**< Used to auto-load textures for OBJ files. */
+    PRREMaterialManager& materialMgr;            /**< Used to auto-load/create materials for objects. */
+    TPRREfloat           fOccluderSelectionBias; /**< The biggest area of an object should be at least this times bigger than the average biggest area of all objects to be selected as an occluder. */
+    TPRREuint            nMaxOccluderCount;      /**< How many occluders are allowed to be selected by UpdateOccluderStates(). */
 
     // ---------------------------------------------------------------------------
 
@@ -168,9 +170,9 @@ TPRREuint PRREObject3DManager::PRREObject3DManagerImpl::nRunningCounter = 0;
     Decides if an object is eligible for automatically turn on occlusion query on it.
     @return True if object should be prepared for occlusion querying, false otherwise.
 */
-TPRREbool PRREObject3DManager::PRREObject3DManagerImpl::isEligibleForOcclusionQuery(TPRREuint nTotalVerticesCount)
+TPRREbool PRREObject3DManager::PRREObject3DManagerImpl::isEligibleForOcclusionQuery(TPRREuint nTotalVertexIndices)
 {
-    return nTotalVerticesCount >= 100;
+    return nTotalVertexIndices >= 100;
 } // isEligibleForOcclusionQuery()
 
 
@@ -195,6 +197,8 @@ PRREObject3DManager::PRREObject3DManagerImpl::PRREObject3DManagerImpl(PRREObject
     _pOwner->getConsole().OLnOI("PRREObject3DManagerImpl() ...");
     bInited = false;
     bMinimalIndexStorage = true;
+    fOccluderSelectionBias = 1.0f;
+    nMaxOccluderCount = 4;
     PRREObject3D::PRREObject3DImpl::stats.push_back( PRREObject3D::PRREObject3DImpl::CurrentStats() );
     // we rely on texture manager initialized state since that also relies on initialized state of hwinfo
     bInited = texMgr.isInitialized();
@@ -756,7 +760,7 @@ PRREObject3D* PRREObject3DManager::createFromFile(
                     throw std::runtime_error(sErrMsg);
                 }
                 subobject->pImpl->pVerticesTransf = new TPRRE_TRANSFORMED_VERTEX[subobject->getVerticesCount()];
-                nVerticesTotalTmpMesh += subobject->getVerticesCount();
+                nVerticesTotalTmpMesh += subobject->getVertexIndicesCount();
                 
                 // Legacy tmcsgfxlib behavior: auto-load textures for subobjects where pipe character is present in name
                 const std::string::size_type nPipePos = subobject->getName().find('|');
@@ -990,6 +994,7 @@ void PRREObject3DManager::UpdateOccluderStates()
 
     //getConsole().OLnOI("%s() START: avg area: %f", __FUNCTION__, fAverageBiggestAreaScaled);
     //getConsole().OLn("area, bAreaBiggerThanAvg, name, filename");
+    std::deque<PRREObject3D*> occluderCandidates;
     for (TPRREint i = 0; i < getSize(); i++)
     {
         PRREObject3D* const pMngd = (PRREObject3D*) getAttachedAt(i);
@@ -1012,16 +1017,111 @@ void PRREObject3DManager::UpdateOccluderStates()
             if ( pMngd->isWireframed() )
                 continue;
 
-            const TPRREbool bAreaBiggerThanAvg = (pMngd->getBiggestAreaScaled() > fAverageBiggestAreaScaled);
+            const TPRREbool bAreaBiggerThanAvg = (pMngd->getBiggestAreaScaled() > (fAverageBiggestAreaScaled * pImpl->fOccluderSelectionBias));
 
             //getConsole().OLn("%f, %b, %s, %s", pMngd->getBiggestAreaScaled(), bAreaBiggerThanAvg, pMngd->getName().c_str(), pMngd->getFilename().c_str());            
-            pMngd->SetOccluder(bAreaBiggerThanAvg);
+            
+            if ( bAreaBiggerThanAvg )
+            {
+                // dont let it be occluder yet at this point, just put in the candidates list, order by biggest scaled area, from bigger to smaller
+                auto it = occluderCandidates.begin();
+                while ( it != occluderCandidates.end() )
+                {
+                    if ( (*it)->getBiggestAreaScaled() > pMngd->getBiggestAreaScaled() )
+                    {
+                        it++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                occluderCandidates.insert(it, pMngd);
+            }
+            else
+            {
+                pMngd->SetOccluder(false);
+            }
         }
     }
     //getConsole().OOOLn("%s() END", __FUNCTION__);
 
+    // now we really set occluder state for the first nMaxOccluderCount element of the candidates list
+    TPRREuint occCntr = 0;
+    auto it = occluderCandidates.begin();
+    while ( it != occluderCandidates.end() )
+    {
+        if ( occCntr < pImpl->nMaxOccluderCount )
+        {
+            //getConsole().OLn("%f, %s, %s", (*it)->getBiggestAreaScaled(), (*it)->getName().c_str(), (*it)->getFilename().c_str());
+            (*it)->SetOccluder(true);
+        }
+        else
+        {
+            (*it)->SetOccluder(false);
+        }
+        occCntr++;
+        it++;
+    }
+
     //getConsole().SetLoggingState(PRREObject3DManager::getLoggerModuleName(), false);
 } // UpdateOccluderStates()
+
+
+/**
+    Gets the occluder selection bias.
+    See details at SetOccluderSelectionBias().
+*/
+TPRREfloat PRREObject3DManager::getOccluderSelectionBias() const
+{
+    return pImpl->fOccluderSelectionBias;
+} // getOccluderSelectionBias()
+
+
+/**
+    Sets the occluder selection bias.
+    By default objects are selected as occluders if their biggest scaled area size is bigger than the average scaled area size of all objects.
+    If for any reason this is not suitable for your scene, you can set a bias value with this function.
+    This bias will be multiplied by the average scaled area size of all objects when comparison will happen.
+    So, if you want fewer objects to be selected as occluder, set a bigger bias value.
+    If you want more objects to be selected as occluder, set a lower bias value.
+    The default value is 1.0f.
+
+    @param fBias The new occluder selection bias.
+*/
+void PRREObject3DManager::SetOccluderSelectionBias(TPRREfloat fBias)
+{
+    if ( fBias < 0.f )
+        return;
+
+    pImpl->fOccluderSelectionBias = fBias;
+} // SetOccluderSelectionBias()
+
+
+/**
+    Gets the maximum number of occluders.
+    See details at SetMaxOccluderCount().
+*/
+TPRREuint PRREObject3DManager::getMaxOccluderCount() const
+{
+    return pImpl->nMaxOccluderCount;
+} // getMaxOccluderCount()
+
+
+/**
+    Sets the maximum number of occluders.
+    In some circumstances you might change the maximum number of occluders because for different scenes you might need different number of occluders
+    to achieve higher rendering performance. Without this limit, UpdateOccluderStates() might choose too many objects as occluder based on their sizes,
+    however those objects won't be checked for occlusion, but you might want them to act as occludees instead of occluders.
+    Objects with biggest scaled area will be set for occluders. This means that if you set this maximum number to 2, then the 2 objects having the 2 biggest
+    scaled area will be selected as occluder.
+    Setting this value to 0 means there won't be any occluder selected.
+    Default value is 4.
+*/
+void PRREObject3DManager::SetMaxOccluderCount(TPRREuint nMax)
+{
+    pImpl->nMaxOccluderCount = nMax;
+} // SetMaxOccluderCount()
 
 
 /**
@@ -1063,7 +1163,7 @@ void PRREObject3DManager::HandleManagedPropertyChanged(PRREManaged& m)
 /**
     Saves and resets current statistics.
     Useful if you want to restart measurements.
-    The saved statistics are also logged by WriteList().
+    The saved statistics can be logged logged by WriteList() anytime later.
 */
 void PRREObject3DManager::ResetStatistics()
 {

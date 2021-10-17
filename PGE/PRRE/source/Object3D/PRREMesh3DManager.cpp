@@ -1758,21 +1758,14 @@ PRREMesh3DManager& PRREMesh3DManager::operator=(const PRREMesh3DManager&)
 void PRREMesh3DManager::WriteListCallback(const PRREManaged& mngd) const
 {
     PRREFiledManager::WriteListCallback(mngd);
-    TPRREuint sumVertices = 0;
     const PRREMesh3D& mesh = (PRREMesh3D&) mngd;
-    for (TPRREint i = 0; i < mesh.getCount(); i++)
-    {
-        PRREMesh3D* const currSubObj = (PRREMesh3D*) (mesh.getAttachedAt(i));
-        if ( !currSubObj )
-            continue;
-        sumVertices += currSubObj->getVerticesCount();
-    }
 
     getConsole().OIOLnOO("pos: [%f,%f,%f], rel pos: [%f,%f,%f], size: [%f,%f,%f]",
                           mesh.getPosVec().getX(), mesh.getPosVec().getY(), mesh.getPosVec().getZ(),
                           mesh.getRelPosVec().getX(), mesh.getRelPosVec().getY(), mesh.getRelPosVec().getZ(),
                           mesh.getSizeVec().getX(), mesh.getSizeVec().getY(), mesh.getSizeVec().getZ());
-    getConsole().OIOLnOO("%d subobjects, %d vertices", mesh.getCount(), sumVertices);
+    getConsole().OIOLnOO("%d subobjects, %u vertices, %u vertex indices", mesh.getCount(), mesh.getVerticesCount(), mesh.getVertexIndicesCount());
+    getConsole().OIOLnOO("primitive format: %d, %u faces, %u triangles", (int)(mesh.getPrimitiveFormat()), mesh.getFaceCount(), mesh.getTriangleCount());
 } // WriteListCallback()
 
 
