@@ -190,13 +190,13 @@ void PRRETextureManager::PRRETextureManagerImpl::SetNativeDIBFormatSupportEnable
 
 TPRREbool PRRETextureManager::PRRETextureManagerImpl::isLazyInstancingEnabled() const
 {
-    return bAlwaysCreateNewFromFile;
+    return !bAlwaysCreateNewFromFile;
 } // isLazyInstancingEnabled()
 
 
 void PRRETextureManager::PRRETextureManagerImpl::SetLazyInstancingEnabled(TPRREbool state)
 {
-    bAlwaysCreateNewFromFile = state;
+    bAlwaysCreateNewFromFile = !state;
 } // SetLazyInstancingEnabled()
 
 
@@ -730,8 +730,8 @@ void PRRETextureManager::SetNativeDIBFormatSupportEnabled(TPRREbool state)
 
 
 /**
-    Gets whether always creating new texture instances from the same file is enabled or not.
-    Off by default.
+    Lazy instancing means we don't create new texture instance for the same file that has been already loaded as a texture.
+    On by default.
 */
 TPRREbool PRRETextureManager::isLazyInstancingEnabled() const
 {
@@ -740,9 +740,9 @@ TPRREbool PRRETextureManager::isLazyInstancingEnabled() const
 
 
 /**
-    Sets whether always create new texture instances from the same file or not.
+    Lazy instancing means we don't create new texture instance for the same file that has been already loaded as a texture.
     If enabled, creating texture multiple times from the same image will result in creating only 1 PRRETexture and keep referring to the same later.
-    Off by default.
+    On by default.
 */
 void PRRETextureManager::SetLazyInstancingEnabled(TPRREbool state)
 {

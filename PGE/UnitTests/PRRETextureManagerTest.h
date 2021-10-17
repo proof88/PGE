@@ -325,6 +325,7 @@ private:
 
     bool testCreateTextureFromImage()
     {
+        // lazy instancing is enabled by default
         const PRREImage& img = *(im->createFromFile(BMP128x128x24));
         const PRRETexture* const tex = tm->createTextureFromImage(img);
 
@@ -337,10 +338,10 @@ private:
             return false;
         }
 
-        const bool b1 = assertNotEquals(tex, tex2, "tex == tex2");
-        const bool b2 = assertGreater(tm->getCount(), nTextures, "b2 count");
+        const bool b1 = assertEquals(tex, tex2, "tex == tex2");
+        const bool b2 = assertEquals(tm->getCount(), nTextures, "b2 count");
 
-        tm->SetLazyInstancingEnabled(true);
+        tm->SetLazyInstancingEnabled(false);
         nTextures = tm->getCount();
         const PRRETexture* const tex3 = tm->createTextureFromImage(img);
         if ( !assertNotNull(tex3, "tex3") )
@@ -348,9 +349,8 @@ private:
             return false;
         }
 
-        const bool b3 = assertEquals(tex3, tex, "tex3 == tex");
-        const bool b4 = assertEquals(tm->getCount(), nTextures, "b4 count");
-        tm->SetLazyInstancingEnabled(false);
+        const bool b3 = assertNotEquals(tex3, tex, "tex3 == tex");
+        const bool b4 = assertGreater(tm->getCount(), nTextures, "b4 count");
 
         tm->SetNativeDIBFormatSupportEnabled(false);
         const PRRETexture* const texNativeDIBoff = tm->createTextureFromImage(img);
@@ -382,6 +382,7 @@ private:
 
     bool testCreateTextureFromFile()
     {
+        // lazy instancing is enabled by default
         const PRRETexture* const tex = tm->createFromFile(BMP128x128x24);
 
         TPRREint nTextures = tm->getCount();
@@ -391,10 +392,10 @@ private:
             return false;
         }
 
-        const bool b1 = assertNotEquals(tex, tex2, "tex == tex2");
-        const bool b2 = assertGreater(tm->getCount(), nTextures, "b2 count");
+        const bool b1 = assertEquals(tex, tex2, "tex == tex2");
+        const bool b2 = assertEquals(tm->getCount(), nTextures, "b2 count");
 
-        tm->SetLazyInstancingEnabled(true);
+        tm->SetLazyInstancingEnabled(false);
         nTextures = tm->getCount();
         const PRRETexture* const tex3 = tm->createFromFile(BMP128x128x24);
         if ( !assertNotNull(tex3, "tex3") )
@@ -402,9 +403,8 @@ private:
             return false;
         }
 
-        const bool b3 = assertEquals(tex3, tex, "tex3 == tex");
-        const bool b4 = assertEquals(tm->getCount(), nTextures, "b4 count");
-        tm->SetLazyInstancingEnabled(false);
+        const bool b3 = assertNotEquals(tex3, tex, "tex3 == tex");
+        const bool b4 = assertGreater(tm->getCount(), nTextures, "b4 count");
 
         tm->SetNativeDIBFormatSupportEnabled(false);
         const PRRETexture* const texNativeDIBoff = tm->createFromFile(BMP128x128x24);
@@ -430,6 +430,7 @@ private:
 
     bool testCreateTextureFromFileMIP()
     {
+        // lazy instancing is enabled by default
         bool b = assertTrue(tm->setDefaultIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR), "set 1");
         const PRRETexture* const tex = tm->createFromFile(BMP128x128x24);
 
@@ -440,10 +441,10 @@ private:
             return false;
         }
 
-        const bool b1 = assertNotEquals(tex, tex2, "tex == tex2");
-        const bool b2 = assertGreater(tm->getCount(), nTextures, "b2 count");
+        const bool b1 = assertEquals(tex, tex2, "tex == tex2");
+        const bool b2 = assertEquals(tm->getCount(), nTextures, "b2 count");
 
-        tm->SetLazyInstancingEnabled(true);
+        tm->SetLazyInstancingEnabled(false);
         nTextures = tm->getCount();
         const PRRETexture* const tex3 = tm->createFromFile(BMP128x128x24);
         if ( !assertNotNull(tex3, "tex3") )
@@ -451,9 +452,8 @@ private:
             return false;
         }
 
-        const bool b3 = assertEquals(tex3, tex, "tex3 == tex");
-        const bool b4 = assertEquals(tm->getCount(), nTextures, "b4 count");
-        tm->SetLazyInstancingEnabled(false);
+        const bool b3 = assertNotEquals(tex3, tex, "tex3 == tex");
+        const bool b4 = assertGreater(tm->getCount(), nTextures, "b4 count");
 
         tm->SetNativeDIBFormatSupportEnabled(false);
         const PRRETexture* const texNativeDIBoff = tm->createFromFile(BMP128x128x24);
@@ -488,6 +488,7 @@ private:
 
     bool testCreateTextureFromFileComp()
     {
+        // lazy instancing is enabled by default
         bool b = assertTrue(tm->setDefaultCompressionMode(PRRE_TC_S3TC_RGB_DXT1), "set 1");
         const PRRETexture* const tex = tm->createFromFile(BMP128x128x24);
 
@@ -498,10 +499,10 @@ private:
             return false;
         }
 
-        const bool b1 = assertNotEquals(tex, tex2, "tex == tex2");
-        const bool b2 = assertGreater(tm->getCount(), nTextures, "b2 count");
+        const bool b1 = assertEquals(tex, tex2, "tex == tex2");
+        const bool b2 = assertEquals(tm->getCount(), nTextures, "b2 count");
 
-        tm->SetLazyInstancingEnabled(true);
+        tm->SetLazyInstancingEnabled(false);
         nTextures = tm->getCount();
         const PRRETexture* const tex3 = tm->createFromFile(BMP128x128x24);
         if ( !assertNotNull(tex3, "tex3") )
@@ -509,9 +510,8 @@ private:
             return false;
         }
 
-        const bool b3 = assertEquals(tex3, tex, "tex3 == tex");
-        const bool b4 = assertEquals(tm->getCount(), nTextures, "b4 count");
-        tm->SetLazyInstancingEnabled(false);
+        const bool b3 = assertNotEquals(tex3, tex, "tex3 == tex");
+        const bool b4 = assertGreater(tm->getCount(), nTextures, "b4 count");
 
         tm->SetNativeDIBFormatSupportEnabled(false);
         const PRRETexture* const texNativeDIBoff = tm->createFromFile(BMP128x128x24);
@@ -551,6 +551,7 @@ private:
 
     bool testCreateTextureFromFileCompMIP()
     {
+        // lazy instancing is enabled by default
         bool b = assertTrue(tm->setDefaultIsoFilteringMode(PRRE_ISO_LINEAR_MIPMAP_LINEAR, PRRE_ISO_LINEAR), "set 1");
         b &= assertTrue(tm->setDefaultCompressionMode(PRRE_TC_S3TC_RGB_DXT1), "set 2");
         const PRRETexture* const tex = tm->createFromFile(BMP128x128x24);
@@ -562,19 +563,19 @@ private:
             return false;
         }
 
-        const bool b1 = assertNotEquals(tex, tex2, "tex == tex2");
-        const bool b2 = assertGreater(tm->getCount(), nTextures, "b2 count");
+        const bool b1 = assertEquals(tex, tex2, "tex == tex2");
+        const bool b2 = assertEquals(tm->getCount(), nTextures, "b2 count");
 
-        tm->SetLazyInstancingEnabled(true);
+        tm->SetLazyInstancingEnabled(false);
         nTextures = tm->getCount();
         const PRRETexture* const tex3 = tm->createFromFile(BMP128x128x24);
-        const bool b3 = assertEquals(tex3, tex, "tex3 == tex");
+        const bool b3 = assertNotEquals(tex3, tex, "tex3 == tex");
         if ( !assertNotNull(tex3, "tex3") )
         {
             return false;
         }
 
-        const bool b4 = assertEquals(tm->getCount(), nTextures, "b4 count");
+        const bool b4 = assertGreater(tm->getCount(), nTextures, "b4 count");
         tm->SetLazyInstancingEnabled(false);
 
         tm->SetNativeDIBFormatSupportEnabled(false);
@@ -624,6 +625,7 @@ private:
 
     bool testCreateTextureFromFileBorder()
     {
+        // lazy instancing is enabled by default
         bool b = assertTrue(tm->setDefaultBorder(true), "set 1");
         PRREColor expColor(255,255,255,255);
         tm->getDefaultBorderColor() = expColor;
@@ -637,10 +639,10 @@ private:
             return false;
         }
 
-        const bool b1 = assertNotEquals(tex, tex2, "tex == tex2");
-        const bool b2 = assertGreater(tm->getCount(), nTextures, "b2 count");
+        const bool b1 = assertEquals(tex, tex2, "tex == tex2");
+        const bool b2 = assertEquals(tm->getCount(), nTextures, "b2 count");
 
-        tm->SetLazyInstancingEnabled(true);
+        tm->SetLazyInstancingEnabled(false);
         nTextures = tm->getCount();
         const PRRETexture* const tex3 = tm->createFromFile(BMP128x128x24);
         if ( !assertNotNull(tex3, "tex3") )
@@ -648,9 +650,8 @@ private:
             return false;
         }
 
-        const bool b3 = assertEquals(tex3, tex, "tex3 == tex");
-        const bool b4 = assertEquals(tm->getCount(), nTextures, "b4 count");
-        tm->SetLazyInstancingEnabled(false);
+        const bool b3 = assertNotEquals(tex3, tex, "tex3 == tex");
+        const bool b4 = assertGreater(tm->getCount(), nTextures, "b4 count");
 
         tm->SetNativeDIBFormatSupportEnabled(false);
         const PRRETexture* const texNativeDIBoff = tm->createFromFile(BMP128x128x24);
