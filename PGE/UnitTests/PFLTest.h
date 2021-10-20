@@ -34,7 +34,11 @@ protected:
 
     virtual void Initialize()
     {
-        AddSubTest("testFileExists", (PFNUNITSUBTEST) &PFLTest::testFileExists);
+        AddSubTest("testGetTimeDiffInUs", (PFNUNITSUBTEST) &PFLTest::testGetTimeDiffInUs);    
+        AddSubTest("testUpdateForMinDuration_1", (PFNUNITSUBTEST) &PFLTest::testUpdateForMinDuration_1);
+        AddSubTest("testUpdateForMinDuration_2", (PFNUNITSUBTEST) &PFLTest::testUpdateForMinDuration_2);    
+        AddSubTest("testUpdateForMaxDuration_1", (PFNUNITSUBTEST) &PFLTest::testUpdateForMaxDuration_1);
+        AddSubTest("testUpdateForMaxDuration_2", (PFNUNITSUBTEST) &PFLTest::testUpdateForMaxDuration_2);    
         AddSubTest("testGetExtension", (PFNUNITSUBTEST) &PFLTest::testGetExtension);
         AddSubTest("testGetDirectory", (PFNUNITSUBTEST) &PFLTest::testGetDirectory);
         AddSubTest("testGetFilename", (PFNUNITSUBTEST) &PFLTest::testGetFilename);
@@ -78,6 +82,131 @@ private:
     {
         return *this;
     };
+
+    bool testGetTimeDiffInUs()
+    {
+        PFL::timeval time1;
+        PFL::timeval time2;
+
+        time1.tv_sec = time1.tv_usec = 0;
+        time2.tv_sec = time2.tv_usec = 0;
+
+        bool l = assertEquals(0, PFL::getTimeDiffInUs(time2, time1), "1");
+
+        time2.tv_sec = 2;
+        l &= assertEquals(2000000, PFL::getTimeDiffInUs(time2, time1), "2");
+
+        time1.tv_usec = 500000;
+        l &= assertEquals(1500000, PFL::getTimeDiffInUs(time2, time1), "3");
+
+        return l;
+    }
+
+    bool testUpdateForMinDuration_1()
+    {
+        PFL::timeval time1;
+        time1.tv_sec = 10;
+        time1.tv_usec = 0;
+
+        bool l = assertFalse(PFL::updateForMinDuration(time1, 20000000), "1") &
+            assertEquals(10, time1.tv_sec, "sec 1") &
+            assertEquals(0, time1.tv_usec, "usec 1");
+        
+        l &= assertTrue(PFL::updateForMinDuration(time1, 6500000), "2") &
+            assertEquals(6, time1.tv_sec, "sec 2") &
+            assertEquals(500000, time1.tv_usec, "usec 2");
+
+        l &= assertTrue(PFL::updateForMinDuration(time1, 400000), "3") &
+            assertEquals(0, time1.tv_sec, "sec 3") &
+            assertEquals(400000, time1.tv_usec, "usec 3");
+
+        return l;
+    }
+
+    bool testUpdateForMinDuration_2()
+    {
+        PFL::timeval time;
+        PFL::timeval timeStart, timeEnd;
+
+        time.tv_sec = 999;
+        time.tv_usec = 999999;
+
+        timeStart.tv_sec = 10;
+        timeStart.tv_usec = 0;
+        timeEnd.tv_sec = 20;
+        timeEnd.tv_usec = 500000;
+
+        bool l = assertTrue(PFL::updateForMinDuration(time, timeStart, timeEnd), "1") &
+            assertEquals(10, time.tv_sec, "sec 1") &
+            assertEquals(500000, time.tv_usec, "usec 1");
+
+        timeStart.tv_sec = 10;
+        timeStart.tv_usec = 700000;
+
+        l = assertTrue(PFL::updateForMinDuration(time, timeStart, timeEnd), "2") &
+            assertEquals(9, time.tv_sec, "sec 2") &
+            assertEquals(800000, time.tv_usec, "usec 2");
+
+        timeStart.tv_sec = 0;
+        timeStart.tv_usec = 0;
+
+        l = assertFalse(PFL::updateForMinDuration(time, timeStart, timeEnd), "3") &
+            assertEquals(9, time.tv_sec, "sec 3") &
+            assertEquals(800000, time.tv_usec, "usec 3");
+
+        return l;
+    }
+
+    bool testUpdateForMaxDuration_1()
+    {
+        PFL::timeval time1;
+        time1.tv_sec = 10;
+        time1.tv_usec = 0;
+
+        bool l = assertFalse(PFL::updateForMaxDuration(time1, 5000000), "1") &
+            assertEquals(10, time1.tv_sec, "sec 1") &
+            assertEquals(0, time1.tv_usec, "usec 1");
+        
+        l &= assertTrue(PFL::updateForMaxDuration(time1, 25300000), "2") &
+            assertEquals(25, time1.tv_sec, "sec 2") &
+            assertEquals(300000, time1.tv_usec, "usec 2");
+
+        return l;
+    }
+
+    bool testUpdateForMaxDuration_2()
+    {
+        PFL::timeval time;
+        PFL::timeval timeStart, timeEnd;
+
+        time.tv_sec = 0;
+        time.tv_usec = 0;
+
+        timeStart.tv_sec = 10;
+        timeStart.tv_usec = 0;
+        timeEnd.tv_sec = 20;
+        timeEnd.tv_usec = 500000;
+
+        bool l = assertTrue(PFL::updateForMaxDuration(time, timeStart, timeEnd), "1") &
+            assertEquals(10, time.tv_sec, "sec 1") &
+            assertEquals(500000, time.tv_usec, "usec 1");
+
+        timeEnd.tv_sec = 30;
+        timeEnd.tv_usec = 700000;
+
+        l = assertTrue(PFL::updateForMaxDuration(time, timeStart, timeEnd), "2") &
+            assertEquals(20, time.tv_sec, "sec 2") &
+            assertEquals(700000, time.tv_usec, "usec 2");
+
+        timeStart.tv_sec = 20;
+        timeStart.tv_usec = 0;
+
+        l = assertFalse(PFL::updateForMaxDuration(time, timeStart, timeEnd), "3") &
+            assertEquals(20, time.tv_sec, "sec 3") &
+            assertEquals(700000, time.tv_usec, "usec 3");
+
+        return l;
+    }
 
     bool testFileExists()
     {

@@ -51,6 +51,7 @@ protected:
         // RenderScene() has no dedicated unit test but we can test different aspects e.g. if it properly reorders the objects, etc.
         AddSubTest("testRenderByZdistanceOrder", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testRenderByZdistanceOrder);
         AddSubTest("testLastFrameCounters", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testLastFrameCounters);
+        AddSubTest("testResetStatistics", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testResetStatistics);
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testWriteStats);
     }
 
@@ -330,6 +331,12 @@ private:
         }
 
         return b;
+    }
+
+    bool testResetStatistics()
+    {
+        renderer->ResetStatistics();
+        return true;
     }
 
     bool testWriteStats()

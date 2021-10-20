@@ -37,7 +37,12 @@ public:
     struct CurrentStats
     {
         TPRRE_RENDER_HINT renderHints;  /**< Render hints. */
-
+        TPRREuint         nRenderedFrames;
+        TPRREfloat        fAvgFrameTime;
+        TPRREfloat        fAvgFps;
+        TPRREfloat        fDurationSecs;
+        PFL::timeval      timeMinFrameTime;
+        PFL::timeval      timeMaxFrameTime;
         CurrentStats();
     };
 
@@ -127,7 +132,8 @@ private:
     PRREuiManager*       pUImgr;       /**< UI manager, singleton. */
 
     HGLRC                rc;           /**< Rendering context, initially NULL. Determines whether the renderer is initialized or not. */
-    GLfloat mat4x4Identity[4][4];
+    GLfloat              mat4x4Identity[4][4];
+    PFL::timeval         timeDurationStart;
 
     // ---------------------------------------------------------------------------
 
@@ -143,6 +149,8 @@ private:
     void printOGLerrorFull();            /**< Writes OpenGL error to console even the error is no error. */
     void LogFullRenderHints(const TPRRE_RENDER_HINT& hints) const;     /**< Logs given render hints with full descriptive text. */
     void LogLastFrameStats() const;                                    /**< Logs last frame stats. */
+    void LogCollectedStats(TPRREuint i) const;
+    void LogLastCollectedStats() const;
 
     TPRREbool initializeOpenGL(HDC dc);  /**< Initializes OpenGL. */
     TPRREbool shutdownOpenGL();          /**< Shuts down OpenGL. */
@@ -179,7 +187,15 @@ PRRERendererHWfixedPipeImpl::LastFrameStats PRRERendererHWfixedPipeImpl::lastFra
 
 PRRERendererHWfixedPipeImpl::CurrentStats::CurrentStats()
 {
-    renderHints = 0;    
+    renderHints = 0;   
+    nRenderedFrames = 0;
+    fAvgFrameTime = 0.f;
+    fAvgFps = 0.f;
+    fDurationSecs = 0.f;
+    timeMinFrameTime.tv_sec  = LONG_MAX;
+    timeMinFrameTime.tv_usec = LONG_MAX;
+    timeMaxFrameTime.tv_sec  = LONG_MIN;
+    timeMaxFrameTime.tv_usec = LONG_MIN;
 } // CurrentStats()
 
 PRRERendererHWfixedPipeImpl::LastFrameStats::LastFrameStats()
@@ -435,6 +451,9 @@ TPRREuint PRRERendererHWfixedPipeImpl::initialize(
         SetBasicThingsInOpenGL();
         printOGLerrorFull();
 
+        timeDurationStart.tv_sec = 0;
+        timeDurationStart.tv_usec = 0;
+
         // GFX card drivers' default setting in 2015: off (if undefined by application), so we also set it to false initially
         screen.SetVSyncEnabled(false);
 
@@ -504,6 +523,14 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
         return;
     }
 
+    PFL::timeval timeFrameStart, timeFrameEnd;
+    PFL::gettimeofday(&timeFrameStart, 0);
+
+    if ( (timeDurationStart.tv_sec == 0) && (timeDurationStart.tv_usec == 0) )
+    { // mark beginning of new stats duration
+        PFL::gettimeofday(&timeDurationStart, 0);
+    }
+
     lastFrameStats.Reset();
 
     BeginRendering();
@@ -549,6 +576,11 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
 
     // we don't really check for GL errors in above functions, so check them here
     printOGLerrorBrief();
+
+    stats[stats.size()-1].nRenderedFrames++;
+    PFL::gettimeofday(&timeFrameEnd, 0);
+    PFL::updateForMinDuration(stats[stats.size()-1].timeMinFrameTime, timeFrameStart, timeFrameEnd); 
+    PFL::updateForMaxDuration(stats[stats.size()-1].timeMaxFrameTime, timeFrameStart, timeFrameEnd);
 
 } // RenderScene()
 
@@ -635,20 +667,34 @@ void PRRERendererHWfixedPipeImpl::SetRenderHints(const TPRRE_RENDER_HINT& hints)
 
 void PRRERendererHWfixedPipeImpl::ResetStatistics()
 {
+    PFL::timeval timeReset;
+    PFL::gettimeofday(&timeReset, 0);
+
+    stats[stats.size()-1].fDurationSecs = PFL::getTimeDiffInUs(timeReset, timeDurationStart) / 1000000.f;
+    // RenderScene will mark beginning of new stats duration
+    timeDurationStart.tv_sec = 0;
+    timeDurationStart.tv_usec = 0;
+
+    stats[stats.size()-1].fAvgFrameTime = stats[stats.size()-1].fDurationSecs / stats[stats.size()-1].nRenderedFrames;
+    stats[stats.size()-1].fAvgFps = 1 / stats[stats.size()-1].fAvgFrameTime;
+
     getConsole().OLnOI("PRRERendererHWfixedPipe::ResetStatistics()");
 
     LogLastFrameStats();
 
     getConsole().OLn("Following render hints are saved and stats are reset:");
     getConsole().OI();
-    LogFullRenderHints(stats[stats.size()-1].renderHints);
+    LogLastCollectedStats();
     getConsole().OO();
 
     stats.push_back( CurrentStats() );
     // current renderHints will be the latest
     stats[stats.size()-1].renderHints = stats[stats.size()-2].renderHints;
 
-    pObject3DMgr->ResetStatistics();    
+    getConsole().OI();
+    pObject3DMgr->ResetStatistics(); 
+    getConsole().OO();
+
     getConsole().OO();
 } // ResetStatistics()
 
@@ -667,7 +713,10 @@ void PRRERendererHWfixedPipeImpl::WriteStats() const
     for (TPRREuint i = 0; i < stats.size(); i++)
     {
         getConsole().OLn("Stats %u:", i+1);
+        getConsole().OI();
         LogFullRenderHints(stats[i].renderHints);
+        LogCollectedStats(i);
+        getConsole().OO();
     }
 
     getConsole().OO();
@@ -773,6 +822,8 @@ PRRERendererHWfixedPipeImpl::PRRERendererHWfixedPipeImpl() :
     rc = NULL;
     stats.push_back( PRRERendererHWfixedPipeImpl::CurrentStats() );
     stats[0].renderHints = DefaultHints;
+    timeDurationStart.tv_sec = 0;
+    timeDurationStart.tv_usec = 0;
 
     // CPP11 initializer list!!!
     mapRenderPaths2String[PRRE_RH_RP_LEGACY_PR00FPS]   = std::string("Legacy PR00FPS");
@@ -805,6 +856,8 @@ PRRERendererHWfixedPipeImpl::PRRERendererHWfixedPipeImpl(
     rc = NULL;
     stats.push_back( PRRERendererHWfixedPipeImpl::CurrentStats() );
     stats[0].renderHints = DefaultHints;
+    timeDurationStart.tv_sec = 0;
+    timeDurationStart.tv_usec = 0;
 
     // CPP11 initializer list!!!
     mapRenderPaths2String[PRRE_RH_RP_LEGACY_PR00FPS]   = std::string("Legacy PR00FPS");
@@ -906,6 +959,32 @@ void PRRERendererHWfixedPipeImpl::LogLastFrameStats() const
     getConsole().OLn("Number of transferred TRIANGLES: %u", lastFrameStats.getTransferredTriangles());
     getConsole().OLnOO("");
 } // LogLastFrameStats()
+
+
+void PRRERendererHWfixedPipeImpl::LogCollectedStats(TPRREuint i) const
+{
+    if ( i >= stats.size() )
+    {
+        getConsole().EOLn("%s(%u) invalid i", __FUNCTION__, i);
+        assert(false);
+        return;
+    }
+
+    getConsole().OLn("Total Frames Rendered: %u",   stats[i].nRenderedFrames);
+    getConsole().OLn("Duration             : %f s", stats[i].fDurationSecs);
+    getConsole().OLn("Average FPS          : %f",   stats[i].fAvgFps);
+    getConsole().OLn("Average Frame Time   : %f s", stats[i].fAvgFrameTime);
+    getConsole().OLn("Min Frame Time       : %u s %u us", stats[i].timeMinFrameTime.tv_sec, stats[i].timeMinFrameTime.tv_usec);
+    getConsole().OLn("Max Frame Time       : %u s %u us", stats[i].timeMaxFrameTime.tv_sec, stats[i].timeMaxFrameTime.tv_usec);
+    getConsole().OLn("");
+} // LogCollectedStats()
+
+
+void PRRERendererHWfixedPipeImpl::LogLastCollectedStats() const
+{
+    LogFullRenderHints(stats[stats.size()-1].renderHints);
+    LogCollectedStats(stats.size()-1);
+} // LogLastCollectedStats()
 
 
 /**

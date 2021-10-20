@@ -1187,8 +1187,8 @@ void PRREObject3DManager::ResetStatistics()
         const PRREObject3D* const pMngd = (PRREObject3D*) getAttachedAt(i);
         if ( pMngd != PGENULL )
         {
-            pMngd->pImpl->timeLongestWaitForSyncQueryFinish.tv_sec = 0;
-            pMngd->pImpl->timeLongestWaitForSyncQueryFinish.tv_usec = 0;
+            pMngd->pImpl->timeLongestWaitForSyncQueryFinish.tv_sec = LONG_MIN;
+            pMngd->pImpl->timeLongestWaitForSyncQueryFinish.tv_usec = LONG_MIN;
             pMngd->pImpl->nFramesWaitedForOcclusionTestResultMin = UINT_MAX;
             pMngd->pImpl->nFramesWaitedForOcclusionTestResultMax = 0;
         }

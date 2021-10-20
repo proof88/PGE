@@ -890,8 +890,8 @@ PRREObject3D::PRREObject3DImpl::PRREObject3DImpl(
     nOcclusionQuery = 0;
     bOccluded = false;
     bOcclusionQueryStarted = false;
-    timeLongestWaitForSyncQueryFinish.tv_sec = 0;
-    timeLongestWaitForSyncQueryFinish.tv_usec = 0;
+    timeLongestWaitForSyncQueryFinish.tv_sec = LONG_MIN;
+    timeLongestWaitForSyncQueryFinish.tv_usec = LONG_MIN;
     nFramesWithoutOcclusionTest = OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE /* start queries right in 1st frame */;
     nFramesWaitedForOcclusionTestResult = 0;
     nFramesWaitedForOcclusionTestResultMin = UINT_MAX;
@@ -1409,31 +1409,9 @@ TPRREbool PRREObject3D::PRREObject3DImpl::draw_OcclusionQuery_Finish(TPRREbool b
     if ( !bASyncQuery )
     {
         PFL::gettimeofday(&end, 0);
-        long seconds = end.tv_sec - begin.tv_sec;
-        long microseconds = end.tv_usec - begin.tv_usec;
-        // TODO: this is a mess this way, we need to do something with it, e.g. extend the timeval struct so we dont have this logic hanging here!
-        if ( seconds > timeLongestWaitForSyncQueryFinish.tv_sec )
+        if ( PFL::updateForMaxDuration(timeLongestWaitForSyncQueryFinish, begin, end) )
         {
-            timeLongestWaitForSyncQueryFinish.tv_sec = seconds;
-            timeLongestWaitForSyncQueryFinish.tv_usec = 0;
-            if ( microseconds > timeLongestWaitForSyncQueryFinish.tv_usec )
-                timeLongestWaitForSyncQueryFinish.tv_usec = microseconds;
-
-            if ( timeLongestWaitForSyncQueryFinish.tv_sec > PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_sec )
-            {
-                PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_sec = timeLongestWaitForSyncQueryFinish.tv_sec;
-                PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_usec = 0;
-                if ( timeLongestWaitForSyncQueryFinish.tv_usec > PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_usec )
-                    PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_usec = timeLongestWaitForSyncQueryFinish.tv_usec;
-            }
-        }
-        else
-        {
-            if ( microseconds > timeLongestWaitForSyncQueryFinish.tv_usec )
-                timeLongestWaitForSyncQueryFinish.tv_usec = microseconds;
-
-            if ( timeLongestWaitForSyncQueryFinish.tv_usec > PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_usec )
-                PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish.tv_usec = timeLongestWaitForSyncQueryFinish.tv_usec;
+            PFL::updateForMaxDuration(PRREObject3D::PRREObject3DImpl::stats[PRREObject3D::PRREObject3DImpl::stats.size()-1].timeLongestGlobalWaitForSyncQueryFinish, begin, end);
         }
     } // sync stats update
 
