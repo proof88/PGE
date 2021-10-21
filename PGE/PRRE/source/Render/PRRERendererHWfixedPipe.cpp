@@ -44,6 +44,8 @@ public:
         PFL::timeval      timeMinFrameTime;
         PFL::timeval      timeMaxFrameTime;
         CurrentStats();
+        void ResetStatistics();
+        void Conclude(const PFL::timeval& timeDurationStart);
     };
 
     /**
@@ -187,6 +189,11 @@ PRRERendererHWfixedPipeImpl::LastFrameStats PRRERendererHWfixedPipeImpl::lastFra
 
 PRRERendererHWfixedPipeImpl::CurrentStats::CurrentStats()
 {
+    ResetStatistics();
+} // CurrentStats()
+
+void PRRERendererHWfixedPipeImpl::CurrentStats::ResetStatistics()
+{
     renderHints = 0;   
     nRenderedFrames = 0;
     fAvgFrameTime = 0.f;
@@ -196,7 +203,18 @@ PRRERendererHWfixedPipeImpl::CurrentStats::CurrentStats()
     timeMinFrameTime.tv_usec = LONG_MAX;
     timeMaxFrameTime.tv_sec  = LONG_MIN;
     timeMaxFrameTime.tv_usec = LONG_MIN;
-} // CurrentStats()
+}  // ResetStatistics()
+
+void PRRERendererHWfixedPipeImpl::CurrentStats::Conclude(const PFL::timeval& timeDurationStart)
+{
+    PFL::timeval timeReset;
+    PFL::gettimeofday(&timeReset, 0);
+    
+    fDurationSecs = PFL::getTimeDiffInUs(timeReset, timeDurationStart) / 1000000.f;
+    fAvgFrameTime = fDurationSecs / nRenderedFrames;
+    fAvgFps = 1 / fAvgFrameTime;
+} // Conclude()
+
 
 PRRERendererHWfixedPipeImpl::LastFrameStats::LastFrameStats()
 {
@@ -450,6 +468,7 @@ TPRREuint PRRERendererHWfixedPipeImpl::initialize(
         printOGLerrorFull();
         SetBasicThingsInOpenGL();
         printOGLerrorFull();
+        PRREGLsnippets::Init();
 
         timeDurationStart.tv_sec = 0;
         timeDurationStart.tv_usec = 0;
@@ -667,16 +686,10 @@ void PRRERendererHWfixedPipeImpl::SetRenderHints(const TPRRE_RENDER_HINT& hints)
 
 void PRRERendererHWfixedPipeImpl::ResetStatistics()
 {
-    PFL::timeval timeReset;
-    PFL::gettimeofday(&timeReset, 0);
-
-    stats[stats.size()-1].fDurationSecs = PFL::getTimeDiffInUs(timeReset, timeDurationStart) / 1000000.f;
+    stats[stats.size()-1].Conclude(timeDurationStart);
     // RenderScene will mark beginning of new stats duration
     timeDurationStart.tv_sec = 0;
     timeDurationStart.tv_usec = 0;
-
-    stats[stats.size()-1].fAvgFrameTime = stats[stats.size()-1].fDurationSecs / stats[stats.size()-1].nRenderedFrames;
-    stats[stats.size()-1].fAvgFps = 1 / stats[stats.size()-1].fAvgFrameTime;
 
     getConsole().OLnOI("PRRERendererHWfixedPipe::ResetStatistics()");
 
@@ -709,6 +722,7 @@ void PRRERendererHWfixedPipeImpl::WriteStats() const
     LogFullRenderHints(stats[stats.size()-1].renderHints);
     LogLastFrameStats();
 
+    stats[stats.size()-1].Conclude(timeDurationStart);
     getConsole().OLn("Collected Statistics:");
     for (TPRREuint i = 0; i < stats.size(); i++)
     {

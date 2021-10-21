@@ -608,6 +608,8 @@ void PR00FsReducedRenderingEngineImpl::WriteList() const
     getConsole().OLnOI("");
     if ( isInitialized() )
     {
+        // renderer is 1st so the Conclude() inside will calculate with valid time
+        getRenderer()->WriteStats();
         // getScreen() doesnt have such ...
         getWindow().WriteSettings();
         getHardwareInfo().WriteStats();
@@ -621,7 +623,6 @@ void PR00FsReducedRenderingEngineImpl::WriteList() const
         getObject3DManager().WriteList();
         // getCamera() doesnt have such ...
         // getUImanager() doesnt have such ...
-        getRenderer()->WriteStats();
     }
     else
     {

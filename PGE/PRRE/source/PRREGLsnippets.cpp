@@ -24,6 +24,18 @@ static const char* const sLoggerModuleName = "PRREGLsnippets";
 
 
 /**
+    Initialize static class instance.
+*/
+void PRREGLsnippets::Init()
+{
+    assert(PRREhwInfo::get().getVideo().getTextureUnitsCount() > 0);
+    iLastTex.resize(PRREhwInfo::get().getVideo().getTextureUnitsCount());
+    for (std::size_t i = 0; i < iLastTex.size(); i++)
+        iLastTex[i] = 0;
+}
+
+
+/**
     Gets the string representation of the given GL error.
 
     @param err OpenGL error code. These are defined in GL.h.
@@ -275,9 +287,6 @@ void PRREGLsnippets::glLoadTextureIntoTMU(const PRRETexture* tex, TPRREuint iTMU
     if ( !PRREhwInfo::get().getVideo().isAcceleratorDetected() )
         return;
 
-    // TODO: the PR00FPS-style lasttex method is not present here currently ... later it should be implemented.
-    // A general TMU manager should record which TMU holds which texture, so that can avoid unnecessary glBindTexture() calls.
-
     // currently we support only 2 textured layers ...
     if ( iTMU > 1 )
     {
@@ -291,7 +300,11 @@ void PRREGLsnippets::glLoadTextureIntoTMU(const PRRETexture* tex, TPRREuint iTMU
         if ( tex != PGENULL )
         {
             glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, tex->getInternalNum());
+            if ( tex->getInternalNum() != iLastTex[iTMU] )
+            {
+                glBindTexture(GL_TEXTURE_2D, tex->getInternalNum());
+                iLastTex[iTMU] = tex->getInternalNum();
+            }
             glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
         }
         else
@@ -302,7 +315,11 @@ void PRREGLsnippets::glLoadTextureIntoTMU(const PRRETexture* tex, TPRREuint iTMU
         if ( tex != PGENULL )
         {
             glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, tex->getInternalNum());
+            if ( tex->getInternalNum() != iLastTex[iTMU] )
+            {
+                glBindTexture(GL_TEXTURE_2D, tex->getInternalNum());
+                iLastTex[iTMU] = tex->getInternalNum();
+            }
             if ( bSticked )
                 glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
             else
@@ -386,3 +403,5 @@ const char* const PRREGLsnippets::GL_ERR_STR_STACK_UNDERFLOW   = "Stack Underflo
 const char* const PRREGLsnippets::GL_ERR_STR_OUT_OF_MEMORY     = "Out of Memory";
 
 GLenum PRREGLsnippets::errLast = GL_NO_ERROR;
+
+std::vector<GLuint> PRREGLsnippets::iLastTex;

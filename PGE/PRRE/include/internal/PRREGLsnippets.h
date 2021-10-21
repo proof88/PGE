@@ -11,8 +11,10 @@
     ###################################################################################
 */
 
+#include <vector>
 
 #include "../external/PRREallHeaders.h"
+#include "../external/PRREtypes.h"
 #include "../external/Material/PRREMaterialManager.h"
 
 /**
@@ -26,6 +28,7 @@ class PRREGLsnippets
 
 public:
 
+    static void        Init();                              /**< Initialize static class instance. */
     static const char* getGLErrorTextFromEnum(GLenum err);  /**< Gets the string representation of the given GL error. */
     static TPRREbool   isGLErrorPresent();                  /**< Gets whether there is an error in OpenGL or not. */
     static GLenum      getLastSavedGLError();               /**< Gets the last saved GL error. */
@@ -55,6 +58,8 @@ private:
     static const char* const GL_ERR_STR_OUT_OF_MEMORY;
 
     static GLenum errLast;
+
+    static std::vector<GLuint> iLastTex;  /**< Last loaded texture in TMU, where vector elem 0 is for TMU0, elem 1 is for TMU1 and so on ... */
 
 }; // class PRREGLsnippets
 
