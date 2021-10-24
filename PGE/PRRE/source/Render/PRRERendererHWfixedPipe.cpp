@@ -1185,13 +1185,14 @@ struct CompareByZdistance
 {
     enum Order
     {
-        NEAREST_TO_FAREST,
-        FAREST_TO_NEAREST
+        NEAREST_TO_FAREST, /* front-to-back */
+        FAREST_TO_NEAREST  /* back-to-front */
     };
     
     PRREVector vPosCam;
     PRREVector vFwdCam;
     Order order;
+    bool log;
 
     // std::sort() uses this to determine if a is less than b
     bool operator()(PRREObject3D* a, PRREObject3D* b) const
@@ -1200,7 +1201,16 @@ struct CompareByZdistance
         const PRREVector vDistanceToCam_b = b->getPosVec() - vPosCam;
         const TPRREfloat fZdistanceToCam_a = vDistanceToCam_a.getDotProduct(vFwdCam);
         const TPRREfloat fZdistanceToCam_b = vDistanceToCam_b.getDotProduct(vFwdCam);
-
+        if ( log )
+        {
+            CConsole::getConsoleInstance().OLn("Comparator(%s, %s)", a->getName().c_str(), b->getName().c_str());
+            CConsole::getConsoleInstance().OLn("  pos a: [%f, %f, %f], pos b: [%f, %f, %f], zdist a: %f, zdist b: %f",
+                a->getPosVec().getX(), a->getPosVec().getY(), a->getPosVec().getZ(),
+                b->getPosVec().getX(), b->getPosVec().getY(), b->getPosVec().getZ(),
+                fZdistanceToCam_a, fZdistanceToCam_b);
+        }
+        // std::sort() sorts in non-descending order, if comparator also returns true if element 'a' is less than element 'b',
+        // so in our case it is nearest to farest ordering
         return (order == NEAREST_TO_FAREST) ? (fZdistanceToCam_a < fZdistanceToCam_b) : (fZdistanceToCam_a > fZdistanceToCam_b);
     }
 }; // struct CompareByZdistance
@@ -1209,6 +1219,20 @@ struct CompareByZdistance
 /**
     Orders objects by Z-distance relative to camera view.
     No effect if PRRE_RH_ORDERING_BY_DISTANCE_BIT is not set.
+
+    This approach is based on a comment on this page:
+    https://community.khronos.org/t/sorting-objects-by-distance-for-correct-blending/49579/3
+    From: k_szczech - Senior Member - May 2007
+    "Few words about sorting:
+     - Do not compute distance - compute dot product along camera’s Z axis - not only faster but also more accurate (z-buffer is not “spherical”).
+     - After you have sorted by Z component you can perform additional sort. Instead of comparing Z coordinates of polygon’s center, compare two polygons by testing
+       if one is on the clock wise or counter clock wise side of another. You can even use bubble sort this time since most polyons are in proper order anyway.
+     - Some polygons can be merged into groups that never occlude each other. Imagine car windows - if you first draw all windows from the inside and then all windows
+       from the outside then you get corret result. So instead of sorting all polygons you only have 2 groups which additionally are in constant relation with each other."
+
+    For more about transparent object rendering:
+     - https://stackoverflow.com/questions/37780345/opengl-how-to-create-order-independent-transparency/37783085#37783085
+     - https://github.com/PixelClear/Order-Independent-Trasparency
 */
 void PRRERendererHWfixedPipeImpl::OrderObjectContainersByZdistance()
 {
@@ -1216,17 +1240,42 @@ void PRRERendererHWfixedPipeImpl::OrderObjectContainersByZdistance()
     {
         static CompareByZdistance comparator;
         comparator.vPosCam = pCamera->getPosVec();
-        comparator.vFwdCam = pCamera->getTargetVec();
+        // cam forward calculation could be actually added as method to camera class!
+        PRREVector vForwardFromTargetAndPos = pCamera->getTargetVec() - pCamera->getPosVec();
+        vForwardFromTargetAndPos.Normalize();
+        comparator.vFwdCam = vForwardFromTargetAndPos;
+        comparator.log = false;
 
         // this would be less complicated with C++11 lambda ...
-        // std::sort() sorts in non-descending order, if comparator also returns true if element 'a' is less than element 'b',
-        // so in our case it is nearest to farest ordering
         comparator.order = CompareByZdistance::Order::NEAREST_TO_FAREST;
         std::sort(pObject3DMgr->getOccluders().begin(), pObject3DMgr->getOccluders().end(), comparator);
         std::sort(pObject3DMgr->get3dOpaqueOccludees().begin(), pObject3DMgr->get3dOpaqueOccludees().end(), comparator);
-
+        
         comparator.order = CompareByZdistance::Order::FAREST_TO_NEAREST;
+            // following logging are useful to debug unit test: PRRERendererHWfixedPipeTest::testRenderByZdistanceOrder
+            // can be tied to a counter so it is logging only in every nth frame to avoid flooding
+            /*CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
+            getConsole().OLn("%s", __FUNCTION__);
+            getConsole().OLn("Before sort:");
+            for (auto obj : pObject3DMgr->get3dBlendedOccludees())
+            {
+                getConsole().OLn(" %s, pos: [%f, %f, %f]", obj->getName().c_str(), obj->getPosVec().getX(), obj->getPosVec().getY(), obj->getPosVec().getZ());
+            }
+            getConsole().OI();
+            getConsole().OLn("Camera pos: [%f, %f, %f]", comparator.vPosCam.getX(), comparator.vPosCam.getY(), comparator.vPosCam.getZ());
+            getConsole().OLn("Camera fwd: [%f, %f, %f]", comparator.vFwdCam.getX(), comparator.vFwdCam.getY(), comparator.vFwdCam.getZ());*/
+
         std::sort(pObject3DMgr->get3dBlendedOccludees().begin(), pObject3DMgr->get3dBlendedOccludees().end(), comparator);
+
+            /*getConsole().OO();
+            getConsole().OLn("After sort:");
+            for (auto obj : pObject3DMgr->get3dBlendedOccludees())
+            {
+                getConsole().OLn(" %s, pos: [%f, %f, %f]", obj->getName().c_str(), obj->getPosVec().getX(), obj->getPosVec().getY(), obj->getPosVec().getZ());
+            }
+            getConsole().OLn("");
+            CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", false);*/
+
     }
 } // OrderObjectContainersByZdistance()
 

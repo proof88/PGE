@@ -35,27 +35,26 @@ public:
 
     TPRREbool isInitialized() const;
 
-    std::deque<PRREObject3D*>& getOccluders();
+          std::deque<PRREObject3D*>& getOccluders();
     const std::deque<PRREObject3D*>& getOccluders() const;
-    std::deque<PRREObject3D*>& get3dOpaqueOccludees();
+          std::deque<PRREObject3D*>& get3dOpaqueOccludees();
     const std::deque<PRREObject3D*>& get3dOpaqueOccludees() const;
-    std::deque<PRREObject3D*>& get3dBlendedOccludees();
+          std::deque<PRREObject3D*>& get3dBlendedOccludees();
     const std::deque<PRREObject3D*>& get3dBlendedOccludees() const;
-    std::deque<PRREObject3D*>& get2dOpaqueOccludees();
+          std::deque<PRREObject3D*>& get2dOpaqueOccludees();
     const std::deque<PRREObject3D*>& get2dOpaqueOccludees() const;
-    std::deque<PRREObject3D*>& get2dBlendedOccludees();
+          std::deque<PRREObject3D*>& get2dBlendedOccludees();
     const std::deque<PRREObject3D*>& get2dBlendedOccludees() const;
 
 protected:
 
 private:
 
-    static TPRREuint nRunningCounter;    /**< Always increased when creating a new level-1 Object3D instance. */
-
     static TPRREbool isEligibleForOcclusionQuery(TPRREuint nTotalVertexIndices);  /**< Decides if an object is eligible for automatically turn on occlusion query on it. */
 
     PRREObject3DManager* _pOwner;        /**< The owner public object who creates this pimpl object. */
 
+    TPRREuint            nRunningCounter;        /**< Always increased when creating a new level-1 Object3D instance. */
     TPRREbool            bInited;                /**< True if successfully inited, false if not functional. */
     TPRREbool            bMinimalIndexStorage;   /**< True if storage of indices is minimalized. */
     PRRETextureManager&  textureMgr;             /**< Used to auto-load textures for OBJ files. */
@@ -163,9 +162,6 @@ const std::deque<PRREObject3D*>& PRREObject3DManager::PRREObject3DManagerImpl::g
 // ############################### PRIVATE ###############################
 
 
-TPRREuint PRREObject3DManager::PRREObject3DManagerImpl::nRunningCounter = 0;
-
-
 /**
     Decides if an object is eligible for automatically turn on occlusion query on it.
     @return True if object should be prepared for occlusion querying, false otherwise.
@@ -196,6 +192,7 @@ PRREObject3DManager::PRREObject3DManagerImpl::PRREObject3DManagerImpl(PRREObject
     _pOwner = owner;
     _pOwner->getConsole().OLnOI("PRREObject3DManagerImpl() ...");
     bInited = false;
+    nRunningCounter = 0;
     bMinimalIndexStorage = true;
     fOccluderSelectionBias = 1.0f;
     nMaxOccluderCount = 4;

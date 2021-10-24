@@ -88,15 +88,14 @@ protected:
     // ---------------------------------------------------------------------------
 
 private:
-
-    static TPRREuint nRunningCounter;    /**< Always increased when creating a new level-1 Object3D instance. */
-    static PRREhwInfo& pHWInfo;          /**< We need some info on HW. */
+    static PRREhwInfo& pHWInfo;               /**< We need some info on HW. */
 
     // ---------------------------------------------------------------------------
 
-    PRRETextureManager* _pOwner;     /**< The owner public object who creates this pimpl object. */
+    PRRETextureManager* _pOwner;              /**< The owner public object who creates this pimpl object. */
 
-    TPRREbool bInited;             /**< True if successfully inited, false if not functional. */
+    TPRREbool bInited;                        /**< True if successfully inited, false if not functional. */
+    TPRREuint nRunningCounter;                /**< Always increased when creating a new Texture instance. */
     TPRRE_ISO_TEX_FILTERING   filtDefIsoMin,
                               filtDefIsoMag;  /**< Default isotropic filtering modes. */
     TPRRE_ANISO_TEX_FILTERING filtDefAniso;   /**< Default anisotropic filtering modes. */
@@ -341,9 +340,6 @@ PRREhwInfo& PRRETextureManager::PRRETextureManagerImpl::pHWInfo = PRREhwInfo::ge
 // ############################### PRIVATE ###############################
 
 
-TPRREuint PRRETextureManager::PRRETextureManagerImpl::nRunningCounter = 0;
-
-
 /**
     Sets default values.
     Requires a valid initialized PRREhwInfo instance to be functional.
@@ -355,6 +351,7 @@ PRRETextureManager::PRRETextureManagerImpl::PRRETextureManagerImpl(PRRETextureMa
     _pOwner = owner;
     _pOwner->getConsole().OLnOI("PRRETextureManager() ...");
     bInited = false;
+    nRunningCounter = 0;
     filtDefIsoMin = PRRE_ISO_LINEAR;
     filtDefIsoMag = PRRE_ISO_LINEAR;
     filtDefAniso  = PRRE_ANISO_1X;

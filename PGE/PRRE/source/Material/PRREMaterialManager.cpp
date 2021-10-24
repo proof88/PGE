@@ -35,13 +35,11 @@ public:
 protected:
 
 private:
+    PRREMaterialManager* _pOwner;         /**< The owner public object who creates this pimpl object. */
 
-    static TPRREuint nRunningCounter;  /**< Always increased when creating a new Material instance. */
-
-    PRREMaterialManager* _pOwner;      /**< The owner public object who creates this pimpl object. */
-
-    TPRREbool           bInited;       /**< True if successfully inited, false if not functional. */
-    TPRREuint           nMaxLayers;    /**< Max number of layers per material based on number of TMUs. */
+    TPRREbool           bInited;          /**< True if successfully inited, false if not functional. */
+    TPRREuint           nRunningCounter;  /**< Always increased when creating a new Material instance. */
+    TPRREuint           nMaxLayers;       /**< Max number of layers per material based on number of TMUs. */
 
     // ---------------------------------------------------------------------------
 
@@ -87,9 +85,6 @@ TPRREuint PRREMaterialManager::PRREMaterialManagerImpl::getMaximumLayerCount() c
 // ############################### PRIVATE ###############################
 
 
-TPRREuint PRREMaterialManager::PRREMaterialManagerImpl::nRunningCounter = 0;
-
-
 PRREMaterialManager::PRREMaterialManagerImpl::PRREMaterialManagerImpl()
 {
     bInited = false;
@@ -105,6 +100,7 @@ PRREMaterialManager::PRREMaterialManagerImpl::PRREMaterialManagerImpl(PRREMateri
     _pOwner->getConsole().OLnOI("PRREMaterialManager() ...");
     bInited = false;
     // we always assume at least 1 TMU for the SW renderer case
+    nRunningCounter = 0;
     nMaxLayers = max(PRREhwInfo::get().getVideo().getTextureUnitsCount(), 1);
     bInited = PRREhwInfo::get().getVideo().isInitialized();
     _pOwner->getConsole().SOLnOO("Done!");

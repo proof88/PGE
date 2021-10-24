@@ -49,7 +49,10 @@ protected:
         AddSubTest("testGetRenderHints", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testGetRenderHints);
         AddSubTest("testSetRenderHints", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testSetRenderHints);
         // RenderScene() has no dedicated unit test but we can test different aspects e.g. if it properly reorders the objects, etc.
-        AddSubTest("testRenderByZdistanceOrder", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testRenderByZdistanceOrder);
+        AddSubTest("testRenderByZdistanceOrder_1", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testRenderByZdistanceOrder_1);
+        AddSubTest("testRenderByZdistanceOrder_2", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testRenderByZdistanceOrder_2);
+        AddSubTest("testRenderByZdistanceOrder_3", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testRenderByZdistanceOrder_3);
+        AddSubTest("testRenderByZdistanceOrder_4", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testRenderByZdistanceOrder_4);
         AddSubTest("testLastFrameCounters", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testLastFrameCounters);
         AddSubTest("testResetStatistics", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testResetStatistics);
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PRRERendererHWfixedPipeTest::testWriteStats);
@@ -136,9 +139,21 @@ private:
         return b;
     }
 
-    bool testRenderByZdistanceOrder()
+    /*
+        @param posCam            Camera will be placed at this position.
+        @param fCamYAngle        Camera Y-angle will be set to this value.
+        @param posCubesStartFrom Position of first created cube.
+        @param posCubesDisplace  Every consecutive created cube will be this amount of displaced compared to previously created cube.
+                                 E.g.: the 2nd created cube will be placed at:
+                                 [posCubesStartFrom.x + 1*posCubesDisplace.x, posCubesStartFrom.y + 1*posCubesDisplace.y, posCubesStartFrom.z + 1*posCubesDisplace.z].
+                                 The 3rd created cube will be placed at:
+                                 [posCubesStartFrom.x + 2*posCubesDisplace.x, posCubesStartFrom.y + 2*posCubesDisplace.y, posCubesStartFrom.z + 2*posCubesDisplace.z].
+    */
+    bool testRenderByZdistanceOrder(const TPRRE_XYZ& posCam, TPRREfloat fCamYAngle, const TPRRE_XYZ& posCubesStartFrom, const TPRRE_XYZ& posCubesDisplace)
     {
-        const TPRRE_XYZ posStartFrom = {20.f, 0.f, 20.f};
+        engine->getCamera().getPosVec().Set(posCam.x, posCam.y, posCam.z);
+        engine->getCamera().SetRotation(0.f, fCamYAngle, 0.f);
+
         std::vector<PRREObject3D*> vCubes;
         for (int i = 0; i < 5; i++)
         {
@@ -150,7 +165,10 @@ private:
             vCubes.push_back( cube );
             cube->SetOccluder(false);  // we want them to be occludees now
             // initially we spatially position the cubes in farest to nearest order in the scene
-            cube->getPosVec().Set(posStartFrom.x - i*2, posStartFrom.y, posStartFrom.z - i*2);
+            cube->getPosVec().Set(
+                posCubesStartFrom.x + i*posCubesDisplace.x,
+                posCubesStartFrom.y + i*posCubesDisplace.y,
+                posCubesStartFrom.z + i*posCubesDisplace.z);
         }
 
         if ( !assertEquals(vCubes.size(), om->get3dOpaqueOccludees().size(), "vCubes vs get3dOpaqueOccludees size") )
@@ -178,7 +196,7 @@ private:
         }
 
         // now we set the cubes blended, so we will expect the initial order again: from farest to nearest!
-        // I intentionally do this 1 by 1 unordered so they are being put in another container unordered!
+        // I intentionally do this 1 by 1 unordered so they are being put in the get3dBlendedOccludees() container unordered!
         vCubes[2]->getMaterial(false).setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
         vCubes[0]->getMaterial(false).setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
         vCubes[4]->getMaterial(false).setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
@@ -201,7 +219,7 @@ private:
         }
 
         // now we set the cubes opaqua again but they will be occluders too, so we will expect the same order as with opaqueOccludees again: nearest to farest!
-        // I intentionally do this 1 by 1 unordered so they are being put in another container unordered!
+        // I intentionally do this 1 by 1 unordered so they are being put in the getOccluders() container unordered!
         vCubes[2]->getMaterial(false).setBlendMode(PRRE_BM_NONE);
         vCubes[0]->getMaterial(false).setBlendMode(PRRE_BM_NONE);
         vCubes[4]->getMaterial(false).setBlendMode(PRRE_BM_NONE);
@@ -227,6 +245,175 @@ private:
         {
             b &= assertEquals(om->getOccluders()[i], vCubes[vCubes.size()-i-1], ("4th cube order failed at " + std::to_string(i)).c_str());
         }
+
+        return b;
+    }
+
+    bool testRenderByZdistanceOrder_1()
+    {
+        const TPRRE_XYZ posCam = {0.f, 0.f, 0.f};
+        const TPRREfloat fCamYAngle = 0.f;
+        const TPRRE_XYZ posCubesStartFrom = {20.f, 0.f, 20.f};
+        const TPRRE_XYZ posCubesDisplace = {-2.f, 0.f, -2.f}; /* consecutive cubes created in far-to-close order (back-to-front) */
+
+        return testRenderByZdistanceOrder(posCam, fCamYAngle, posCubesStartFrom, posCubesDisplace);
+    }
+
+    bool testRenderByZdistanceOrder_2()
+    {
+        const TPRRE_XYZ posCam = {0.f, 0.f, 40.f};
+        const TPRREfloat fCamYAngle = 180.f;
+        const TPRRE_XYZ posCubesStartFrom = {20.f, 0.f, 20.f};
+        const TPRRE_XYZ posCubesDisplace = {-2.f, 0.f, 2.f}; /* consecutive cubes created in far-to-close order (back-to-front) */
+
+        return testRenderByZdistanceOrder(posCam, fCamYAngle, posCubesStartFrom, posCubesDisplace);
+    }
+
+    bool testRenderByZdistanceOrder_3()
+    {
+        /*
+            Specific coordinates from TransparentPlanes.
+            I made this test to debug the situation because with these 2 objects and with these camera coords
+            ordering worked fine, but with a slight forward move by camera the order misbehaved.
+            The misbehaving coords are actually in testRenderByZdistanceOrder_4().
+
+            PRRERendererHWfixedPipeImpl::OrderObjectContainersByZdistance
+              Before sort:
+              Object3D 2, pos: [246.028, -166.431, 98.101]
+              Object3D 3, pos: [234.314, -166.431, 24.209]
+                Camera pos: [218.109, -153, -82.5]
+                Camera fwd: [218.109, -153.041, -81.580]
+                Comparator(Object3D 3, Object3D 2)
+                 pos a: [234.314, -166.431, 24.209], pos b: [246.028, -166.431, 98.101], zdist a: 3121.874, zdist b: 6595.224
+                Comparator(Object3D 3, Object3D 2)
+                 pos a: [234.314, -166.431, 24.209], pos b: [246.028, -166.431, 98.101], zdist a: 3121.874, zdist b: 6595.224
+              After sort:
+              Object3D 2, pos: [246.028, -166.431, 98.101]
+              Object3D 3, pos: [234.314, -166.431, 24.209]
+        */
+        engine->getCamera().getPosVec().Set(218.109f, -153.f, -82.5f);
+        engine->getCamera().getTargetVec().Set(218.109f, -153.041f, -81.580f); // looking forward because both cubes are in front the camera
+
+        // cube1 is in the back, as it has biggest Z-coord and camera is facing in Z+ direction
+        PRREObject3D* const cube1 = om->createCube(1.0f, PRRE_VMOD_DYNAMIC, PRRE_VREF_DIRECT, true);
+        if ( !assertNotNull(cube1, (std::string("cube1 null").c_str()) ) )
+        {
+            return false;
+        }
+        cube1->SetOccluder(false);
+        cube1->getMaterial(false).setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
+        cube1->getPosVec().Set(246.028f, -166.431f, 98.101f);
+
+        // cube2 is in the front
+        PRREObject3D* const cube2 = om->createCube(1.0f, PRRE_VMOD_DYNAMIC, PRRE_VREF_DIRECT, true);
+        if ( !assertNotNull(cube2, (std::string("cube2 null").c_str()) ) )
+        {
+            return false;
+        }
+        cube2->SetOccluder(false);
+        cube2->getMaterial(false).setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
+        cube2->getPosVec().Set(234.314f, -166.431f, 24.209f);
+
+        if ( !assertEquals(2u, om->get3dBlendedOccludees().size(), "vCubes vs get3dBlendedOccludees size") )
+        {
+            return false;
+        }
+
+        std::vector<PRREObject3D*> vCubes;
+        vCubes.push_back(cube1);
+        vCubes.push_back(cube2);
+        // expecting the initial order to be same
+        for (std::size_t i = 0; i < vCubes.size(); i++)
+        {
+            if ( !assertEquals(om->get3dBlendedOccludees()[i], vCubes[i], ("initial cube order failed at " + std::to_string(i)).c_str()) )
+            {
+                return false;
+            }
+        }
+
+        // now we trigger a reordering by a render call
+        renderer->RenderScene();
+
+        // expecting the order to be same as before since they are in back to front order and this is what we need for blended objects
+        TPRREbool b = true;
+        for (std::size_t i = 0; i < vCubes.size(); i++)
+        {
+            b &= assertEquals(om->get3dBlendedOccludees()[i], vCubes[i], ("2nd cube order failed at " + std::to_string(i)).c_str());
+        }    
+
+        return b;
+    }
+
+    bool testRenderByZdistanceOrder_4()
+    {
+        /*
+            Specific coordinates from TransparentPlanes.
+            I made this test to debug the situation because with these 2 objects and with these camera coords
+            ordering misbehaved. Some more comments in previous test testRenderByZdistanceOrder_3().
+
+            PRRERendererHWfixedPipeImpl::OrderObjectContainersByZdistance
+              Before sort:
+              Object3D 3, pos: [234.314, -166.431, 24.209]
+              Object3D 2, pos: [246.028, -166.431, 98.101]
+                Camera pos: [218.109, -153, -40.5]
+                Camera fwd: [218.109, -153.041, -39.580]
+                Comparator(Object3D 2, Object3D 3)
+                 pos a: [246.028, -166.431, 98.101], pos b: [234.314, -166.431, 24.209], zdist a: 2655.789, zdist b: 3025.687
+                Comparator(Object3D 2, Object3D 3)
+                 pos a: [246.028, -166.431, 98.101], pos b: [234.314, -166.431, 24.209], zdist a: 2655.789, zdist b: 3025.687
+              After sort:
+              Object3D 3, pos: [234.314, -166.431, 24.209]
+              Object3D 2, pos: [246.028, -166.431, 98.101]
+        */
+        engine->getCamera().getPosVec().Set(218.109f, -153.f, -40.5f);
+        engine->getCamera().getTargetVec().Set(218.109f, -153.041f, -39.580f); // looking forward because both cubes are in front the camera
+
+        // cube1 is in the back, as it has biggest Z-coord and camera is facing in Z+ direction
+        PRREObject3D* const cube1 = om->createCube(1.0f, PRRE_VMOD_DYNAMIC, PRRE_VREF_DIRECT, true);
+        if ( !assertNotNull(cube1, (std::string("cube1 null").c_str()) ) )
+        {
+            return false;
+        }
+        cube1->SetOccluder(false);
+        cube1->getMaterial(false).setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
+        cube1->getPosVec().Set(246.028f, -166.431f, 98.101f);
+
+        // cube2 is in the front
+        PRREObject3D* const cube2 = om->createCube(1.0f, PRRE_VMOD_DYNAMIC, PRRE_VREF_DIRECT, true);
+        if ( !assertNotNull(cube2, (std::string("cube2 null").c_str()) ) )
+        {
+            return false;
+        }
+        cube2->SetOccluder(false);
+        cube2->getMaterial(false).setBlendMode(PRRE_BM_STANDARD_TRANSPARENCY);
+        cube2->getPosVec().Set(234.314f, -166.431f, 24.209f);
+
+        if ( !assertEquals(2u, om->get3dBlendedOccludees().size(), "vCubes vs get3dBlendedOccludees size") )
+        {
+            return false;
+        }
+
+        std::vector<PRREObject3D*> vCubes;
+        vCubes.push_back(cube1);
+        vCubes.push_back(cube2);
+        // expecting the initial order to be same
+        for (std::size_t i = 0; i < vCubes.size(); i++)
+        {
+            if ( !assertEquals(om->get3dBlendedOccludees()[i], vCubes[i], ("initial cube order failed at " + std::to_string(i)).c_str()) )
+            {
+                return false;
+            }
+        }
+
+        // now we trigger a reordering by a render call
+        renderer->RenderScene();
+
+        // expecting the order to be same as before since they are in back to front order and this is what we need for blended objects
+        TPRREbool b = true;
+        for (std::size_t i = 0; i < vCubes.size(); i++)
+        {
+            b &= assertEquals(om->get3dBlendedOccludees()[i], vCubes[i], ("2nd cube order failed at " + std::to_string(i)).c_str());
+        }    
 
         return b;
     }

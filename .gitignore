@@ -352,3 +352,5 @@ PGE/Samples/EV2008P03/gfxcore.dll
 
 PGE/Samples/EV2008P03/P03.exe
 *.~pas
+PGE/Samples/TransparentPlanes/gfxcore.dll
+*.exe

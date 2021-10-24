@@ -1389,9 +1389,6 @@ PRREMesh3D* PRREMesh3DManager::PRREMesh3DManagerImpl::loadOBJ(const char* filena
 // ############################### PRIVATE ###############################
 
 
-TPRREuint PRREMesh3DManager::PRREMesh3DManagerImpl::nRunningCounter = 0;
-
-
 PRREMesh3DManager::PRREMesh3DManagerImpl::PRREMesh3DManagerImpl() :
     materialMgr(materialMgr)
 {
@@ -1409,6 +1406,7 @@ PRREMesh3DManager::PRREMesh3DManagerImpl::PRREMesh3DManagerImpl(PRREMesh3DManage
     _pOwner = owner;
     _pOwner->getConsole().OLnOI("PRREMesh3DManager() ...");
     bMinimalIndexStorage = true;
+    nRunningCounter = 0;
     bInited = true;
     _pOwner->getConsole().SOLnOO("Done!");
 } // PRREMesh3DManager(...)

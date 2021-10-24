@@ -39,13 +39,12 @@ protected:
 
 private:
 
-    static TPRREuint nRunningCounter;    /**< Always increased when creating a new level-1 Mesh3D instance. */
-
     PRREMesh3DManager* _pOwner;      /**< The owner public object who creates this pimpl object. */
 
     PRREMaterialManager& materialMgr;           /**< Used to auto-load/create materials for objects. */
 
     TPRREbool            bInited;               /**< True if successfully inited, false if not functional. */
+    TPRREuint            nRunningCounter;       /**< Always increased when creating a new level-1 Mesh3D instance. */
     TPRREbool            bMinimalIndexStorage;  /**< True if storage of indices is minimalized. */
 
     // ---------------------------------------------------------------------------

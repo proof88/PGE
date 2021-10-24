@@ -40,11 +40,8 @@ protected:
     // ---------------------------------------------------------------------------
     
 private:
-
-    static TPRREuint nRunningCounter;
-
-    PRREImageManager* _pOwner;       /**< The owner public object who creates this pimpl object. */
-
+    PRREImageManager* _pOwner;          /**< The owner public object who creates this pimpl object. */
+    TPRREuint         nRunningCounter;  /**< Always increased when creating a new Image instance. */
 
     PRREImageManagerImpl(PRREImageManager* parent);
 
@@ -164,16 +161,14 @@ PRREhwInfo& PRREImageManager::PRREImageManagerImpl::pHWInfo = PRREhwInfo::get();
 // ############################### PRIVATE ###############################
 
 
-TPRREuint PRREImageManager::PRREImageManagerImpl::nRunningCounter = 0;
-
-
 /**
     @param parent Public class instance owning this pimpl object.
 */
 PRREImageManager::PRREImageManagerImpl::PRREImageManagerImpl(PRREImageManager* parent)
 {
     _pOwner = parent;
-    _pOwner->getConsole().OLn("PRREImageManager(console, hwinfo) ...");
+    _pOwner->getConsole().OLn("PRREImageManager() ...");
+    nRunningCounter = 0;
     _pOwner->getConsole().OISOLnOO("Done!");
 } // PRREImageManager(...)
 
