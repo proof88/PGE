@@ -795,6 +795,9 @@ void PRREManager::HandleManagedPropertyChanged(PRREManaged& m)
 } // HandleManagedPropertyChanged()
 
 
+/**
+    Gets the amount of allocated system memory for all manageds owner by this manager.
+*/
 TPRREuint PRREManager::getUsedSystemMemory() const
 {
     return pImpl->getUsedSystemMemory();

@@ -623,11 +623,39 @@ void PR00FsReducedRenderingEngineImpl::WriteList() const
         getObject3DManager().WriteList();
         // getCamera() doesnt have such ...
         // getUImanager() doesnt have such ...
+
+        const TPRREuint nSumSysMemUsed =
+            sizeof(wnd) + 
+            sizeof(hwInfo) + 
+            sizeof(*pCamera) + 
+            sizeof(uiMgr) +
+            sizeof(*pRenderer) +
+            sizeof(getImageManager()) + 
+            getImageManager().getUsedSystemMemory() +
+            sizeof(getTextureManager()) + 
+            getTextureManager().getUsedSystemMemory() +
+            sizeof(getMaterialManager()) + 
+            getMaterialManager().getUsedSystemMemory() +
+            sizeof(getMesh3DManager()) + 
+            getMesh3DManager().getUsedSystemMemory() +
+            sizeof(getObject3DManager()) + 
+            getObject3DManager().getUsedSystemMemory();
+    
+        const TPRREuint nSumVidMemUsed =
+            getTextureManager().getUsedTextureMemory() +
+            getObject3DManager().getUsedVideoMemory();
+            /* todo: add screen vram usage i.e. framebuffer */
+
+        getConsole().OLn("Engine-Summarized Memory Usage:");
+        getConsole().OLn("> total used system memory = %d kBytes <= %d MBytes", (int)(ceil(nSumSysMemUsed/1024.0f)), (int)(ceil(nSumSysMemUsed/1024.0f/1024.0f)));
+        getConsole().OLn("> total used video  memory = %d kBytes <= %d MBytes", (int)(ceil(nSumVidMemUsed/1024.0f)), (int)(ceil(nSumVidMemUsed/1024.0f/1024.0f)));
+        getConsole().OLn("");
     }
     else
     {
         getConsole().OLn("PR00FsReducedRenderingEngine is NOT initialized!");
     }
+
     getConsole().OLnOO("PR00FsReducedRenderingEngine::WriteList() end");
     getConsole().OLn("");
 } // WriteList()
