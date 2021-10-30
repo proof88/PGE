@@ -53,9 +53,9 @@ BottomPanelData=0000040000000000000000000000000000000000000000000001000000000000
 
 [View0]
 Module=D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\TransparentPlanes\TransparentPlanes.dpr
-CursorX=92
-CursorY=443
-TopLine=432
+CursorX=110
+CursorY=589
+TopLine=556
 LeftCol=1
 
 [Watches]

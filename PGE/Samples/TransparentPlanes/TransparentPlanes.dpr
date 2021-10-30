@@ -52,7 +52,7 @@ const
   { ************************************************************************************************************* }
 
   GAME_FPS_INTERVAL = 200;                                       // az fps-statisztikák frissítési intervalluma ms-ben
-  GAME_MAXFPS = -1;                                              // max. fps (-1, ha a lehetõ legnagyobb fps-t akarjuk elérni)
+  GAME_MAXFPS = 100;                                             // max. fps (-1, ha a lehetõ legnagyobb fps-t akarjuk elérni)
   GAME_INACTIVE_SLEEP = 30;                                      // hány ms-et várjon ciklusonként a progi, ha inaktív az ablak
   GAME_ASPECTRATIO = 4/3;                                        // renderelt kép szélességének és magasságának aránya
   GAME_FULLSCREEN = false;
@@ -584,9 +584,9 @@ begin
             tmcsEnableDebugging();
             
           if ( MessageBox(gamewindow.hwindow, 'HW render ?', 'HW render ?', MB_YESNO) = IDYES ) then
-            tmcsstatus := tmcsInitGraphix(gamewindow.hwindow,GAME_FULLSCREEN,255,GAME_CDEPTH,GAME_ZDEPTH,FALSE,GL_SMOOTH)
+            tmcsstatus := tmcsInitGraphix(gamewindow.hwindow,GAME_FULLSCREEN,255,GAME_CDEPTH,GAME_ZDEPTH,TRUE,GL_SMOOTH)
           else
-            tmcsstatus := tmcsInitGraphix(gamewindow.hwindow,GAME_FULLSCREEN,255,GAME_CDEPTH,GAME_ZDEPTH,FALSE,GL_FLAT);
+            tmcsstatus := tmcsInitGraphix(gamewindow.hwindow,GAME_FULLSCREEN,255,GAME_CDEPTH,GAME_ZDEPTH,TRUE,GL_FLAT);
             
           if ( tmcsstatus = 0 ) then
             begin
