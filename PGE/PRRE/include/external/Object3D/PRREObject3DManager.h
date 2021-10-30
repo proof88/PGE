@@ -214,6 +214,12 @@ private:
 
 /**
     3D object manager class.
+    Besides the usual PRREManager way of iterating over its managed instances, a few more functions are available for iterating:
+     - getOccluders()
+     - get3dOpaqueOccludees()
+     - get3dBlendedOccludees()
+     - get2dOpaqueOccludees()
+     - get2dBlendedOccludees()
 */
 class PRREObject3DManager :
     public PRREMesh3DManager

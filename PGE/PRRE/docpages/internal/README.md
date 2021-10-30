@@ -12,7 +12,7 @@ Since my mid-childhood (~13 years old), I have always wanted to create not only 
 
 ## Copy & Paste
 I quote extensively from ExtremeTech’s 3D Pipeline Tutorial article and other sources. I am not marking such copy-pasted sentences or paragraphs one-by-one with citation marks, but at the same time I am NOT declaring the content of this documentation to be 100% my own intellectual product.  
-The text was formed by putting together parts of different articles and my additions into logical order so that it gives a good structured knowledge base in this area, especially for me if I happen to forget some of it a few months later. :)
+The text was formed by putting together parts of different articles and my personal additions into logical order so that it gives a good structured knowledge base in this area, especially for me if I happen to forget some of it a few months later. :)
 
 ## Sources
 This documentation contains intellectual properties of various sources, listed below:

@@ -47,14 +47,12 @@ Note that BSPs are still used nowadays for different purposes such as helping ge
 
 \subsubsection quadtree Quadtree
 
-TODO  
 PURE engine does not use Quadtree.  
 We insert scene objects into a tree structure, where each node can have exactly 4 children nodes. Quadtree is the two-dimensional analog of \ref octree and is most often used to partition a
 two-dimensional space by recursively subdividing it into four quadrants or regions. 
 
 \subsubsection octree Octree
 
-TODO  
 PURE engine does not use Octree.  
 We insert scene objects into a tree structure, where each node can have exactly 8 children nodes. A node is considered as a cubic volume. Its 8 children equally partition it.  
 When we insert a new object in the tree, we do it in a top-down fashion, so we start from the root node and progress down to the leaves. If the current node is a leaf and doesn't contain any object yet,
@@ -63,7 +61,6 @@ Note that an object can be placed into multiple cells at the same time if it ove
 
 ##### Loose Octree
 
-TODO  
 PURE engine does not use Loose Octree.  
 
 https://sakura7.blog.hu/2010/07/05/loose_octree  
@@ -71,7 +68,7 @@ http://www.tulrich.com/geekstuff/partitioning.html
 
 \subsubsection bvh BVH: Bounding Volume Hierarchy
 
-TODO PURE engine does not support this.  
+PURE engine does not support this.  
 The bounding volumes of objects are put in a hierarchical tree.  
 With the help of an octree, we can easily build the hierarchy.  
 First insert the objects into the octree as described earlier.  
@@ -114,7 +111,7 @@ There are other methods such as dynamic level of detail for terrain, where no pr
 
 \subsection rendering_distances Minimum and Maximum Rendering Distance
 
-TODO PURE engine does not support this.  
+PURE engine does not support this.  
 Sometimes it is reasonable to define minimum and/or maximum rendering distance for specific objects, e.g. tiny pickupable items, that are not needed to be rendered if they are too far from
 the viewer. Note that this is not related to camera's near and far clipping plane settings!
 
@@ -122,6 +119,7 @@ the viewer. Note that this is not related to camera's near and far clipping plan
 
 \subsection vfc VFC: View Frustum Culling
 
+PURE engine does not support this.  
 This is done in Clip Space of the \ref geometry_stage of the graphics pipeline.  
 Although low-level HW rendering APIs such as OpenGL implement clipping planes and automatically do the primitive clipping or culling for us in Clip Space, there are still disadvantages
 of just relying on this simple way of culling:
@@ -143,37 +141,57 @@ https://www.researchgate.net/publication/2803988_Optimized_View_Frustum_Culling_
 
 \subsubsection hvfc Hierarchical View Frustum Culling
 
-TODO PURE uses this technique.  
+PURE engine does not support this.  
 Same as VFC but 3D objects are organized into some kind of \ref structures such as \ref bvh. This way we check if bigger bounding volumes are in the view frustum - if not then
 all objects within that bounding volume can be easily culled without further testing. This reduces the number of bounding box tests even with many objects. Less testing leads to more speed.
 
 \subsection occlusion Occlusion Culling
 
+PURE engine supports HW occlusion culling.  
+Summary: we can decide if an object is occluded by another object or not. If so, we can skip rendering it.  
 Although I put this method after VFC since this needs later stage of the rendering pipeline as well to operate (i.e. depth-testing of an object bounding box), it is not necessarily worse
 than VFC. It can actually replace VFC, and if implemented in a sophisticated way such as CHC, it can also outperform it. For CHC, and details of Occlusion Culling, a specific page is
 maintained: \subpage occlusion_culling.
 
-Summary: somehow we can decide if an object is occluded by another object or not. If so, we can skip it.  
+\subsubsection occlusion_pure_related Related PURE API
+
+By default occlusion culling is enabled by PURE.  
+Occluders and occludees are automatically selected, the user doesn't have to add any extra code to client application.  
+Some values affecting occluder and occludee selection can be changed by some of the functions below:
+ - PRREObject3D::isOccluder()
+ - PRREObject3D::SetOccluder()
+ - PRREObject3D::isOccluded()
+ - PRREObject3D::isOcclusionTested()
+ - PRREObject3D::SetOcclusionTested()
+ - PRREObject3D::getBoundingBoxObject()
+ - PRREObject3D::ForceFinishOcclusionTest()
+ - PRREObject3DManager::UpdateOccluderStates()
+ - PRREObject3DManager::getOccluderSelectionBias()
+ - PRREObject3DManager::SetOccluderSelectionBias()
+ - PRREObject3DManager::getMaxOccluderCount()
+ - PRREObject3DManager::SetMaxOccluderCount()
 
 \subsubsection h_occlusion Hierarchical Occlusion Culling
 
-TODO PURE uses hierarchical HW occlusion culling.  
+PURE does not support hierarchical HW occlusion culling.  
 Same as occlusion culling but as like as \ref hvfc, we take advantage of organizing 3D objects into \ref structures, so we might be able to do less occlusion testing by starting initial
 occlusion queries for the bigger spatial groups such as bounding volumes first.  
 Note that details are not described here but on the own page of \ref occlusion_culling.
 
 \subsection backface Backface Culling
 
-PURE does HW Backface Culling.  
+PURE relies on HW Backface Culling.  
 A primitive can be discarded based on its facing. More on this in \ref architecture.  
 This is done in the \ref raster_stage which is pretty late in the pipeline, so culling an object at this point can save fill rate only.
 
 \subsection depth_buffering Depth Buffering
 
-PURE does HW Depth Buffering.  
+PURE relies on HW Depth Buffering.  
 This is not specifically for optimizing rendering speed but to decide if a pixel should be written to the frame buffer or not.  
 Happens at the very end of the rendering pipeline thus not much speed can be gained with it.  
-More on this in Architecture.
-
+More on this in \ref architecture.  
+Note that PURE renders opaque objects front-to-back which brings rendering speedup by 2 ways:
+ - reduce overdraw: try to write only those colors to frame buffer that actually end up visible in the final image;
+ - effectively utilising Early Depth Testing since it leads to far more rejected fragments with front-to-back rendering.
 
 

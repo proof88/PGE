@@ -17,7 +17,7 @@ box itself.
 "For the cost of rendering a bounding box, you can potentially save rendering a normal object. A bounding box consists of only 12 triangles, whereas the original object might have contained
 thousands or even millions of triangles." (https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_occlusion_query.txt)  
 
-\subsection occlusion_stalling What Should Not Be an Occludee
+\subsection should_not_be_occludee What Should Not Be an Occludee
 
 "Because we can see through translucent objects (and they cannot be written to the depth buffer!), these can act only as occludees and not occluders.  
 On the other hand, opaque objects can be both occluders and occludees, which means that they should be sorted from front to back and rendered before
@@ -81,9 +81,6 @@ Pseudo-code for an async (non-stop-and-wait) way of querying:
       - nFramesWithoutOcclusionTest = MAX_FRAMES_WO_OCCLUSION_TESTING;
 	  - bOccluded = false;
       - bOcclusionQueryStarted = false;
-      - nFramesWaitedForOcclusionTestResult = 0;  // just for statistics
-      - nFramesWaitedForOcclusionTestResultMin = MAX_UINT;  // just for statistics
-      - nFramesWaitedForOcclusionTestResultMax = 0;  // just for statistics
     
     The bOcclusionQueryStarted member is needed because although theoretically we could get GL_GET_QUERY_AVAILABLE
     for queries never yet started, I did not find any requirement on implementing the result for GL_GET_QUERY_AVAILABLE
@@ -94,14 +91,13 @@ Pseudo-code for an async (non-stop-and-wait) way of querying:
     Sort remaining objects opaque coarsely from front to back
     Render a z-pre-pass (no fragment shading, color masking turned on), maybe just large occluders here, like terrain, large buildings and stuff
     For each of N occludees:
-      - if ( framesWithoutOcclusionTest >= MAX_FRAMES_WO_OCCLUSION_TESTING ):
+      - if ( nFramesWithoutOcclusionTest >= MAX_FRAMES_WO_OCCLUSION_TESTING ):
         - yes: either this has been declared as visible object for the previous few frames or this was declared as occluded in last frame or this is the first rendered frame;
           - bOcclusionQueryStarted ?
             - yes: nothing
             - no:
               - start query;
               - bOcclusionQueryStarted = true;
-              - nFramesWaitedForOcclusionTestResult = 0;
               - Disable color- and depth-writes (you’ll use the depth buffer written by rendering occluders):
                 - glColorMask(false, false, false, false);
                 - glDepthMask(false);
@@ -111,7 +107,7 @@ Pseudo-code for an async (non-stop-and-wait) way of querying:
                 - glColorMask(true, true, true, true); 
                 - glDepthMask(true);
         - no:
-          - framesWithoutOcclusionTest++;
+          - nFramesWithoutOcclusionTest++;
           - render the occludee if bOccluded is false, or always render it regardless bOccluded;
 
       // this is intentionally not in else branch, so we check if query already finished in the same frame
@@ -119,26 +115,20 @@ Pseudo-code for an async (non-stop-and-wait) way of querying:
       // on the long run maybe we can move this into the yes-branch of the above "bOcclusionQueryStarted ?" condition
       - bOcclusionQueryStarted ?
         - yes:
-          - nFramesWaitedForOcclusionTestResult++;
           - get(GL_GET_QUERY_AVAILABLE) ?
             - no:
               - render the occludee if bOccluded is false, or always render it regardless bOccluded;
             - yes:
-              - if ( nFramesWaitedForOcclusionTestResult < nFramesWaitedForOcclusionTestResultMin )
-                - nFramesWaitedForOcclusionTestResultMin = nFramesWaitedForOcclusionTestResult;
-              - if ( nFramesWaitedForOcclusionTestResult > nFramesWaitedForOcclusionTestResultMax )
-                - nFramesWaitedForOcclusionTestResultMax = nFramesWaitedForOcclusionTestResult;
-              - nFramesWaitedForOcclusionTestResult = 0;
               - bOcclusionQueryStarted = false;
               - get query result;
               - number of visible fragments is greater than 0 ?:
                 - yes:
 				  - bOccluded = false;
                   - render the occludee object;
-                  - framesWithoutOcclusionTest = 0;  // we can wait for a few frames before testing again
+                  - nFramesWithoutOcclusionTest = 0;  // we can wait for a few frames before testing again
                 - no:
 				  - bOccluded = true;
-                  - framesWithoutOcclusionTest = MAX_FRAMES_WO_OCCLUSION_TESTING;   // this is occluded now, skip draw, but re-test is needed immediately!
+                  - nFramesWithoutOcclusionTest = MAX_FRAMES_WO_OCCLUSION_TESTING;   // this is occluded now, skip draw, but re-test is needed immediately!
         - no: nothing.
 
     Render translucent object from back to front

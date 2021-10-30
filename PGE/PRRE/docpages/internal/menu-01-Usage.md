@@ -2,9 +2,16 @@
 
 [TOC]
 
-Main class of the engine is PR00FsReducedRenderingEngine. Initialization, shutdown, and access to other engine classes is done through this main class.
+Main class of the engine is PR00FsReducedRenderingEngine. Initialization, shutdown, and access to other engine classes are done through this main class.
 
 This page gives you a brief hint on the usage, but you can always check the UnitTests as well for different cases.  
+
+\section coordsystem Coordinate System
+
+PURE uses the left-handed Cartesian coordinate system. This means the XZ plane is horizontal, the XY and and YZ planes are vertical, a positive X value means right, a positive Y value means up, and a positive Z value means forward.
+
+![](img_common/Right-and-Left-Handed-Coordinate-systems.png)
+image source: [https://www.researchgate.net/figure/Right-and-Left-Handed-Coordinate-systems_fig1_2457107)
 
 \section initialization Initialization
 
@@ -81,7 +88,7 @@ The initialized renderer object can be accessed with PR00FsReducedRenderingEngin
 
 Rendering can be executed with the PRREIRenderer::RenderScene() implementation of the initialized renderer object.
 
-Example code snippet for rendering (since default position of PRRECamera object equals to default position of any created PRREObject3D instance, changing there position is likely needed to become actually visible):
+Example code snippet for rendering:
 
 ```.cpp
   engine.getRenderer().RenderScene(); 
@@ -91,11 +98,13 @@ Related PURE API: PR00FsReducedRenderingEngine::getRenderer(), PRREIRenderer::Re
 
 \section shutdown Shutdown
 
-Graceful termination of the application can be a reason for shutting down the graphics engine.  
+Graceful termination of the client application can be a reason for shutting down the graphics engine.  
 Another reason could be the need for changing some basic renderer setting that can be specified only in PR00FsReducedRenderingEngine::initialize().  
-In any case, PR00FsReducedRenderingEngine::shutdown() should be called that invokes the PRREIRenderer::shutdown() implementation of the current renderer.
+In any case, PR00FsReducedRenderingEngine::shutdown() should be called that also invokes the PRREIRenderer::shutdown() implementation of the current renderer.  
+You don't need to take care of any previously loaded resources since the engine makes sure that all managers do their cleanup routine as well.
 
-Note that an uninitialized engine cannot be shut down. First you need to initialize the engine to shut it down.
+Note that an uninitialized engine cannot be shut down. First you need to initialize the engine to shut it down.  
+I know this sounds weird, but [sometimes it is not straightforward](https://i.imgur.com/CWfyFbB.jpg). :)
 
 Example code snippet for shutdown:
 

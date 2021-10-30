@@ -4,7 +4,7 @@
 
 In this section, I go through the well-known 3D-rendering pipeline in general while providing PURE-specific information as well.
 
-PURE currently supports fixed function pipeline (i.e. neither vertex- nor fragment shaders) only.
+PURE currently supports fixed function pipeline only (i.e. neither vertex- nor fragment shaders).
 
 It is useful to note that operations in the early geometry stage of the pipeline are done **per vertex**, the rest is done **per primitive (triangle)**, and rendering operations are done **per pixel**.
 
@@ -77,13 +77,14 @@ More about projection:
  - [https://www.opengl.org/wiki/GluPerspective_code](https://www.opengl.org/wiki/GluPerspective_code)
  - [https://www.opengl.org/sdk/docs/man2/xhtml/gluPerspective.xml](https://www.opengl.org/sdk/docs/man2/xhtml/gluPerspective.xml)
 
-In the past I managed to understood [Song Ho Ahn's explanation about how to define the projection matrix](http://www.songho.ca/opengl/gl_projectionmatrix.html). Based on that I also defined it on paper (in case I ever need this again), how to define it with (f,n,l,r,b,t) parameters:  
+In the past I managed to understood [Song Ho Ahn's explanation about how to define the projection matrix](http://www.songho.ca/opengl/gl_projectionmatrix.html).  
+Based on that I also defined it on paper (in case I ever need this again), how to define it with (f,n,l,r,b,t) parameters:  
 [![alt text](img/projmatrix-how/thumb/projmatrix-how-thumb-01.jpg)](projmatrix-how-01.jpg)
 [![alt text](img/projmatrix-how/thumb/projmatrix-how-thumb-02.jpg)](projmatrix-how-02.jpg)
 [![alt text](img/projmatrix-how/thumb/projmatrix-how-thumb-03.jpg)](projmatrix-how-03.jpg)
 [![alt text](img/projmatrix-how/thumb/projmatrix-how-thumb-04.jpg)](projmatrix-how-04.jpg)
 [![alt text](img/projmatrix-how/thumb/projmatrix-how-thumb-05.jpg)](projmatrix-how-05.jpg)  
-In the last picture it is also explained how to define (l,r,b,t) parameters from input aspectRation and fovX or fovY parameters.
+In the last picture it is also explained how to define (l,r,b,t) parameters from input aspectRatio and fovX or fovY parameters.
 
 Note: using OpenGL either right- or left-handed viewing system can be used. PURE uses left-handed coordinate system by avoiding gluPerspective().  
 See more at [https://anteru.net/2011/12/27/1830/](https://anteru.net/2011/12/27/1830/) .  
@@ -187,11 +188,13 @@ Related PURE API: TODO.
 
 \subsection fragment_processing Fragment Processing
 
-A *texel* is generated from texture memory and it is applied to each *fragment*. Then fog calculations are applied.
+#### Early Depth/Stencil Testing
 
+As an optimization, modern GPUs do the *depth- and stencil-testing* before doing any fragment processing. This way fragment processing can be rejected if depth- or stencil test fails, skipping the whole *fragment shading* process.  
+PURE renders opaque object in front-to-back order that leads to more rejected fragments, in order to achieve higher rendering speeds.
+
+If neither tests fail, a *texel* is generated from texture memory and it is applied to each *fragment*. Then fog calculations are applied.  
 In case of a programmable pipeline, *fragment shaders* are processing the *fragments* generated in the previous step.
-
-Note that if **early depth-testing** is enabled, depth test can occur before this stage. **Early stencil-testing** also exists. So it may happen that *fragment shading* won’t be even done.
 
 Related OpenGL API: TODO.
 

@@ -222,7 +222,11 @@ There is some other vertex cache optimization: [http://home.comcast.net/~tom_for
 
 ## Culling
 
-Removing hidden objects from rendering. This means we can determine hidden objects somehow and skip rendering them since they wouldn't make any change to the final rendered image anyway.
+Removing hidden objects from rendering. This means we can determine hidden objects somehow and skip rendering them since they wouldn't make any change to the final rendered image anyway. Examples: Occlusion Culling, View Frustum Culling. More on this in \ref visibility.
+
+## Hidden Surface Removal
+
+Same as [Culling](#Culling).
 
 ## AGP Fast Writes
 
