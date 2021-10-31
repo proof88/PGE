@@ -249,6 +249,14 @@ void PRREVector::Normalize()
     Dot product.
     The dot product between two unit vectors is the cosine of the angle between those two vectors.
     So it is useful to tell if 2 vectors are looking into same or similar direction, or opposite direction, etc.
+    
+    It is also useful when we need to sort objects in front-to-back or back-to-front order relative to camera position, because
+    we can calculate the scalar projection of vector 'a' on vector 'b' if we have the dot product of vector 'a' and
+    a unit vector in the direction of vector 'b':
+     - vector 'a' can be calculated by subtracting camera position vector from object position vector;
+     - vector 'b' can be calculated by subtracting camera position vector from camera target vector, its normalized form then
+       will be a unit vector in the direction of where camera is looking at.
+    Then the only task to do is to sort based on the calculated scalar projections.
 
     @param vec The other vector used for the calculation with this vector.
 

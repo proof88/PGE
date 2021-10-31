@@ -1267,7 +1267,11 @@ HTML_EXTRA_FILES       = ../PRRE/docpages/internal/PR00FPSvsPRRE-Transformations
                          ../PRRE/docpages/internal/img/projmatrix-how/projmatrix-how-02.jpg \
                          ../PRRE/docpages/internal/img/projmatrix-how/projmatrix-how-03.jpg \
                          ../PRRE/docpages/internal/img/projmatrix-how/projmatrix-how-04.jpg \
-                         ../PRRE/docpages/internal/img/projmatrix-how/projmatrix-how-05.jpg
+                         ../PRRE/docpages/internal/img/projmatrix-how/projmatrix-how-05.jpg \
+                         ../PRRE/docpages/internal/PURE-Object-Distance-Sorting.xlsx \
+                         ../PRRE/docpages/internal/PR00FPSvsPRRE-Transformations.xlsx \
+                         ../PRRE/docpages/internal/PURE-occluder-selection.xlsx \
+                         ../PRRE/docpages/internal/PR00FPSvsPRRE-Transformations.xlsx
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output. Doxygen
 # will adjust the colors in the style sheet and background images according to

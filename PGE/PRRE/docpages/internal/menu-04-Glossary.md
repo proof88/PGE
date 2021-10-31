@@ -1,4 +1,4 @@
-# Glossary
+\page glossary Glossary
 
 [TOC]
 
@@ -227,6 +227,19 @@ Removing hidden objects from rendering. This means we can determine hidden objec
 ## Hidden Surface Removal
 
 Same as [Culling](#Culling).
+
+## Depth Sorting
+
+PURE renders **opaque objects front-to-back** and **transparent objects back-to-front**.  
+This sorting brings multiple advantages:
+ - transparent objects overlapping in the rendered image will be shown correctly even when they write the depth buffer;
+ - rendering speed is expected to increase when opaque objects closer to camera are rendered first than opaque objects far from the camera. This is explained at \ref depth_buffering.
+ 
+PURE sorts only objects, and not their polygons. This means the order won't be correct at polygon level but the aim of the sort is to have a **rough** order relative to camera.  
+The sort is NOT based on the world-space distances of objects relative to camera, but rather the distances on the Z-axis of the camera. This brings 2 advantages:
+ - faster than world-space distance sorting since it would include sqrt() calculations with every object, whereas with the Z-axis distance we have just dotproduct calculations with every object;
+ - more accurate since we actually want to do depth sorting: ordering with world-space distances would order the objects "spherically" relative to camera, but since the Z values in the Z-buffer are also NOT "spherical" compared to camera Z, we end up with the proper order of objects relative to camera view.
+**Some sample calculations with both methods can be checked in [PURE-Object-Distance-Sorting.xlsx.](PURE-Object-Distance-Sorting.xlsx)**
 
 ## AGP Fast Writes
 

@@ -153,11 +153,14 @@ Although I put this method after VFC since this needs later stage of the renderi
 than VFC. It can actually replace VFC, and if implemented in a sophisticated way such as CHC, it can also outperform it. For CHC, and details of Occlusion Culling, a specific page is
 maintained: \subpage occlusion_culling.
 
-\subsubsection occlusion_pure_related Related PURE API
+\subsubsection occlusion_pure_related PURE Specific Info
 
 By default occlusion culling is enabled by PURE.  
 Occluders and occludees are automatically selected, the user doesn't have to add any extra code to client application.  
-Some values affecting occluder and occludee selection can be changed by some of the functions below:
+Currently the most important factor in deciding if an object is an occluder or occludee is its PRREObject3D::getBiggestAreaScaled(), compared to the average biggest area of all objects. **Some sample calculations with different methods can be checked in [PURE-occluder-selection.xlsx.](PURE-occluder-selection.xlsx)**
+
+Not all occludees are tested for occlusion. There is a hidden function PRREObject3DManager::PRREObject3DManagerImpl::isEligibleForOcclusionQuery() that decides if occlusion query will be generated for an object or not.  
+Public functions related to this occluder-occludee-occlusion topic are below, some can control the automatic occluder/occludee selection:
  - PRREObject3D::isOccluder()
  - PRREObject3D::SetOccluder()
  - PRREObject3D::isOccluded()
@@ -189,9 +192,9 @@ This is done in the \ref raster_stage which is pretty late in the pipeline, so c
 PURE relies on HW Depth Buffering.  
 This is not specifically for optimizing rendering speed but to decide if a pixel should be written to the frame buffer or not.  
 Happens at the very end of the rendering pipeline thus not much speed can be gained with it.  
-More on this in \ref architecture.  
-Note that PURE renders opaque objects front-to-back which brings rendering speedup by 2 ways:
- - reduce overdraw: try to write only those colors to frame buffer that actually end up visible in the final image;
- - effectively utilising Early Depth Testing since it leads to far more rejected fragments with front-to-back rendering.
+More on this in \ref architecture.
 
-
+Note that PURE renders **opaque objects front-to-back** which brings rendering speedup by 2 ways:
+ - **reduce overdraw**: try to write only those colors to frame buffer that actually end up visible in the final image, since rendering objects closer to camera first leads to far more depth test fails during rendering objects farther to camera;
+ - effectively utilising **Early Depth Testing** since rendering objects closer to camera first leads to far more fragment processing skip due to more depth test fails during rendering objects farther to camera.
+You can read about this ordering as **Depth Sorting** in the \ref glossary.
