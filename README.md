@@ -3,9 +3,9 @@ PR00F's Game Engine
 
 This game engine is being developed to make my games with it.
 
-**v0.2 Requires:**
- - [PFL v1.0](https://github.com/proof88/PFL);
- - [CConsole v1.0](https://github.com/proof88/Console).
+**v0.3 Requires:**
+ - [PFL v1.1](https://github.com/proof88/PFL);
+ - [CConsole v1.1](https://github.com/proof88/Console).
 
 This game engine contains the PURE graphics engine that has its own documentation:  
 https://proof88.github.io/pure-doc/
