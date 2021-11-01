@@ -90,7 +90,7 @@ public:
     virtual PRREFiledManaged*
         createFromFile( const char* filename);      /**< Should create a new managed from the given file. */
 
-    void WriteList() const;
+    void WriteList() const;                         /**< From PRREManager, adding logging file names. */
 
 protected:
     PRREFiledManager(const PRREFiledManager&);

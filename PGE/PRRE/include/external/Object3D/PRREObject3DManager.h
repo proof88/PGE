@@ -296,7 +296,7 @@ public:
 
     TPRREuint    getUsedVideoMemory() const;                     /**< Gets the amount of allocated video memory for all objects owner by this manager. */
 
-    virtual void WriteList() const;
+    virtual void WriteList() const;                              /**< From PRREMesh3DManager, adding logging vertex transfer and object data, including some occlusion query stats. */
 
 protected:
 

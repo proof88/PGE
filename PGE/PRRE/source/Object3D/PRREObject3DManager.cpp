@@ -1212,6 +1212,9 @@ TPRREuint PRREObject3DManager::getUsedVideoMemory() const
 } // getUsedVideoMemory()
 
 
+/**
+    From PRREMesh3DManager, adding logging vertex transfer and object data, including some occlusion query stats.
+*/
 void PRREObject3DManager::WriteList() const
 {
     getConsole().OLn("PRREObject3DManager::WriteList()");

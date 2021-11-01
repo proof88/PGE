@@ -380,6 +380,9 @@ PRREFiledManaged* PRREFiledManager::createFromFile(const char* filename)
 } // createFromFile()
 
 
+/**
+    From PRREManager, adding logging file names.
+*/
 void PRREFiledManager::WriteList() const
 {
     getConsole().OLn("PRREFiledManager::WriteList()");

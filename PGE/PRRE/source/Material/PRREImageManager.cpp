@@ -434,6 +434,9 @@ void PRREImageManager::WriteListCallback(const PRREManaged& mngd) const
 } // WriteListCallback()
 
 
+/**
+    From PRREFiledManager, adding logging image size data.
+*/
 void PRREImageManager::WriteList() const
 {
     getConsole().OLn("PRREImageManager::WriteList()");

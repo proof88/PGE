@@ -226,6 +226,9 @@ PRREMaterial* PRREMaterialManager::createMaterial()
 } // createMaterial()
 
 
+/**
+    From PRREFiledManager, adding logging material data.
+*/
 void PRREMaterialManager::WriteList() const
 {
     getConsole().OLn("PRREMaterialManager::WriteList()");

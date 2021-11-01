@@ -268,7 +268,7 @@ public:
     
     /*PRREObject3D* createFromFile(const char* filename);*/   
 
-    virtual void WriteList() const;
+    virtual void WriteList() const;   /**< From PRREFiledManager, adding logging material data. */
 
 protected:
 

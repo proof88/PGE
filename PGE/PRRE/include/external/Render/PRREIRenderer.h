@@ -143,15 +143,17 @@ public:
 
 
     /**
-        Resets statistics.
-        The renderer might collect statistical data during its lifetime, that might be shown
+        Resets "Current Statistics".
+        The renderer might collect statistical data during its lifetime or for a shorter period, that might be shown
         in debug log by WriteStats().
         In any circumstances you want to reset this data i.e. restart measurements, this function does the job.
+        If logging is enabled, it also logs statistics.
     */
     virtual void ResetStatistics() = 0;
 
     /**
-        Writes statistics to the console window.
+        Writes "Current Statistics" and "Last Frame Statistics" to the console window.
+        These are explained at \ref debugging.
     */
     virtual void WriteStats() const = 0;
 

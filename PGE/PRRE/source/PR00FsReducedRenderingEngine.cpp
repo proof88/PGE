@@ -601,6 +601,7 @@ void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByObjects() const
 
 /**
     Invoke WriteList() of all children instances.
+    This will give you a verbose list of all created/loaded managed and manager instances with information about resource usage.
 */
 void PR00FsReducedRenderingEngineImpl::WriteList() const
 {
@@ -644,7 +645,7 @@ void PR00FsReducedRenderingEngineImpl::WriteList() const
         const TPRREuint nSumVidMemUsed =
             getTextureManager().getUsedTextureMemory() +
             getObject3DManager().getUsedVideoMemory();
-            /* todo: add screen vram usage i.e. framebuffer */
+            /* todo: add screen vram usage i.e. framebuffer, copy this from old JointFuture engine */
 
         getConsole().OLn("Engine-Summarized Memory Usage:");
         getConsole().OLn("> total used system memory = %d kBytes <= %d MBytes", (int)(ceil(nSumSysMemUsed/1024.0f)), (int)(ceil(nSumSysMemUsed/1024.0f/1024.0f)));

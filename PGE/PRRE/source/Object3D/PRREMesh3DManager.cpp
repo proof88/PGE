@@ -1722,6 +1722,9 @@ PRREMesh3D* PRREMesh3DManager::createFromFile(const char* filename)
 } // createFromFile()
 
 
+/**
+    From PRREFiledManager, adding logging mesh data.
+*/
 void PRREMesh3DManager::WriteList() const
 {
     getConsole().OLn("PRREMesh3DManager::WriteList()");

@@ -17,6 +17,10 @@ box itself.
 "For the cost of rendering a bounding box, you can potentially save rendering a normal object. A bounding box consists of only 12 triangles, whereas the original object might have contained
 thousands or even millions of triangles." (https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_occlusion_query.txt)  
 
+**Example scene from PR00FPS with enabled occlusion culling where red bounding boxes represent occluded state of snails and other items above the player:**  
+the ground level of the map occludes the objects represented by their red bounding boxes, so rendering of these objects can be skipped. In this particular example, **only 5664 triangles** were needed to be rendered in the frame when this picture was taken, compared to the **9076 triangles** that otherwise would had been needed to be rendered without the use of occlusion culling method.
+![](img/PR00FPS_occlusion_culling.jpg)
+
 \subsection should_not_be_occludee What Should Not Be an Occludee
 
 "Because we can see through translucent objects (and they cannot be written to the depth buffer!), these can act only as occludees and not occluders.  

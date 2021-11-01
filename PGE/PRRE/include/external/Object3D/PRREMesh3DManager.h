@@ -156,7 +156,7 @@ public:
 
     PRREMesh3D* createFromFile(const char* filename);            /**< Creates object from the given file. */
 
-    virtual void WriteList() const;
+    virtual void WriteList() const;                              /**< From PRREFiledManager, adding logging mesh data. */
 
 protected:
 

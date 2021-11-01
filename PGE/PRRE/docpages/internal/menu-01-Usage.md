@@ -11,7 +11,7 @@ This page gives you a brief hint on the usage, but you can always check the Unit
 PURE uses the left-handed Cartesian coordinate system. This means the XZ plane is horizontal, the XY and and YZ planes are vertical, a positive X value means right, a positive Y value means up, and a positive Z value means forward.
 
 ![](img_common/Right-and-Left-Handed-Coordinate-systems.png)
-image source: [https://www.researchgate.net/figure/Right-and-Left-Handed-Coordinate-systems_fig1_2457107)
+image source: https://www.researchgate.net/figure/Right-and-Left-Handed-Coordinate-systems_fig1_2457107
 
 \section initialization Initialization
 
@@ -42,7 +42,7 @@ Related PURE API: PR00FsReducedRenderingEngine::initialize(), PRREIRenderer::ini
 \section loading Loading Resources
 
 Resources such as textures, 3D models, etc. can be created or loaded by Managers.  
-Any class descending from PRREManager class is a manager.
+Any class derived from PRREManager is a manager.
 
 Following resource-specific Managers are available:  
  - PRREImageManager : parsing image files and creating PRREImage objects of them;
