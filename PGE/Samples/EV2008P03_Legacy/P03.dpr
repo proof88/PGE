@@ -153,7 +153,7 @@ function WinMain(hInstance: HINST; hPrevInstance: HINST; lpCmdLine: PChar; nCmdS
 var
   windmsg: TMsg;                                        // lekérdezett window message
   done: boolean;                                        // a játék fõciklusának elhagyása, ha TRUE
-  fps_ms,fps_ms2,fps_ms3,fps_ms_old: cardinal;          // fps méréséhez kell
+  fps_ms,fps_ms2,fps_ms3,fps_ms_old: integer;           // fps méréséhez kell
   fps,fps_old: integer;                                 // detto
   texture: integer;
   obj: integer;
@@ -172,21 +172,6 @@ var
   tmpobj: integer;
   snail: integer;
   isItemNow: boolean;
-
-  key_t_stop: boolean;
-  key_g_stop: boolean;
-  key_o_stop: boolean;
-  key_b_stop: boolean;
-  key_p_stop: boolean;
-  key_c_stop: boolean;
-  key_x_stop: boolean;
-  key_return_stop: boolean;
-  
-  prre_rh_iRenderPath: word;
-  prre_rh_iOCmethod: word;
-  prre_rh_bOCdrawBoundingBoxes: boolean;
-  prre_rh_bOCdrawIfQueryPending: boolean;
-  prre_rh_bOrderByDistance: boolean;
 
 
 function messageProcessing: boolean;
@@ -288,110 +273,6 @@ begin
       tmcsSetCameraAngle(0, 0, 0);
     end;
 
-  // next render path
-  if ( inputiskeypressed(vkkeyscan('t')) ) then
-    begin
-      if ( not(key_t_stop) ) then
-        begin
-          key_t_stop := TRUE;
-          prre_rh_iRenderPath := prre_rh_iRenderPath+1;
-          if ( prre_rh_iRenderPath > 2 ) then
-            prre_rh_iRenderPath := 0;
-
-          tmcsSetRenderPath(prre_rh_iRenderPath);
-        end;
-    end
-   else key_t_stop := FALSE;
-
-  // prev render path
-  if ( inputiskeypressed(vkkeyscan('g')) ) then
-    begin
-      if ( not(key_g_stop) ) then
-        begin
-          key_g_stop := TRUE;
-          if ( prre_rh_iRenderPath > 0 ) then
-            prre_rh_iRenderPath := prre_rh_iRenderPath-1
-           else
-            prre_rh_iRenderPath := 2;
-
-          tmcsSetRenderPath(prre_rh_iRenderPath);
-        end;
-    end
-   else key_g_stop := FALSE;
-
-  // next occlusion culling method
-  if ( inputiskeypressed(vkkeyscan('o')) ) then
-    begin
-      if ( not(key_o_stop) ) then
-        begin
-          key_o_stop := TRUE;
-          if ( prre_rh_iOCmethod < 1 ) then
-            prre_rh_iOCmethod := prre_rh_iOCmethod+1
-           else
-            prre_rh_iOCmethod := 0;
-
-          tmcsSetOcclusionCullingMethod(prre_rh_iOCmethod);
-        end;
-    end
-   else key_o_stop := FALSE;
-
-  // draw occlusion culling bounding boxes of occludees
-  if ( inputiskeypressed(vkkeyscan('b')) ) then
-    begin
-      if ( not(key_b_stop) ) then
-        begin
-          key_b_stop := TRUE;
-          prre_rh_bOCdrawBoundingBoxes := not(prre_rh_bOCdrawBoundingBoxes);
-          tmcsSetOcclusionCullingBoundingBoxes(prre_rh_bOCdrawBoundingBoxes);
-        end;
-    end
-   else key_b_stop := FALSE;
-
-  // draw occludees if their query is pending
-  if ( inputiskeypressed(vkkeyscan('p')) ) then
-    begin
-      if ( not(key_p_stop) ) then
-        begin
-          key_p_stop := TRUE;
-          prre_rh_bOCdrawIfQueryPending := not(prre_rh_bOCdrawIfQueryPending);
-          tmcsSetOcclusionCullingDrawIfPending(prre_rh_bOCdrawIfQueryPending);
-        end;
-    end
-   else key_p_stop := FALSE;
-
-  // order objects by distance to camera
-  if ( inputiskeypressed(vkkeyscan('c')) ) then
-    begin
-      if ( not(key_c_stop) ) then
-        begin
-          key_c_stop := TRUE;
-          prre_rh_bOrderByDistance := not(prre_rh_bOrderByDistance);
-          tmcsSetOrderingByDistance(prre_rh_bOrderByDistance);
-        end;
-    end
-   else key_c_stop := FALSE;
-
-  // reset engine statistics
-  if ( inputiskeypressed(vkkeyscan('x')) ) then
-    begin
-      if ( not(key_x_stop) ) then
-        begin
-          key_x_stop := TRUE;
-          tmcsResetStatistics();
-        end;
-    end
-   else key_x_stop := FALSE;
-
-  // engine dump to console
-  if ( inputiskeypressed(VK_RETURN) ) then
-    begin
-      if ( not(key_return_stop) ) then
-        begin
-          key_return_stop := TRUE;
-          tmcsEngineDump();
-        end;
-    end
-   else key_return_stop := FALSE;
 end;
 
 
@@ -409,12 +290,6 @@ end;
 
 
 begin
-  prre_rh_iRenderPath := 2; // PRRE_RH_RP_OCCLUSION_CULLED
-  prre_rh_iOCmethod := 1;   // async
-  prre_rh_bOCdrawBoundingBoxes := false;
-  prre_rh_bOCdrawIfQueryPending := true;
-  prre_rh_bOrderByDistance := true;
-
   done := FALSE;
   showwindow(gamewindow.hwindow,SW_SHOW);
   setforegroundwindow(gamewindow.hwindow);
@@ -429,11 +304,10 @@ begin
   tmcsSetExtObjectsTextureMode(true, GL_LINEAR_MIPMAP_NEAREST, GL_DECAL, false, true, GL_REPEAT, GL_REPEAT);
   obj := tmcsCreateObjectFromFile('..\_res\bigstuff\bigstuff2.obj',true);
   //tmcsScaleObject(obj, GAME_MAP_SCALE);
-
   if ( obj > -1 ) then
     begin
       tmcsSetObjectLit(obj, FALSE);
-      
+
       obj_healthitem := tmcsCreateObjectFromFile(GAME_PATH_ITEMS+'health.obj',FALSE);
       if ( obj_healthitem > -1 ) then
         begin
@@ -509,7 +383,6 @@ begin
           tmcscompileobject(snail);
         end
        else MessageBox(0,'snail = -1',ERRORDLG_BASE_TITLE,MB_OK or MB_ICONSTOP or MB_APPLMODAL);
-
 
       arena1 := tmcsCreateObjectFromFile('..\_res\bigstuff\arena1\arena1.obj', true);
       if ( arena1 > -1 ) then
@@ -587,7 +460,7 @@ begin
         begin
           MessageBox(0,'rooms3 = -1',ERRORDLG_BASE_TITLE,MB_OK or MB_ICONSTOP or MB_APPLMODAL);
         end;
-      
+
 
 
       maps[1] := arena1;
@@ -664,7 +537,7 @@ begin
             end;
         end;
       end;
-       
+
       fps_ms := 0;
       if ( GAME_MAXFPS > -1 ) then fps := GAME_MAXFPS
         else fps := 85;
@@ -767,14 +640,7 @@ begin
        end;
       if ( gamewindow.hwindow <> 0 ) then
         begin
-          if ( MessageBox(gamewindow.hwindow, 'Logging ?', 'Logging ?', MB_YESNO) = IDYES ) then
-            tmcsEnableDebugging();
-            
-          if ( MessageBox(gamewindow.hwindow, 'HW render ?', 'HW render ?', MB_YESNO) = IDYES ) then
-            tmcsstatus := tmcsInitGraphix(gamewindow.hwindow,GAME_FULLSCREEN,255,GAME_CDEPTH,GAME_ZDEPTH,FALSE,GL_SMOOTH)
-          else
-            tmcsstatus := tmcsInitGraphix(gamewindow.hwindow,GAME_FULLSCREEN,255,GAME_CDEPTH,GAME_ZDEPTH,FALSE,GL_FLAT);
-            
+          tmcsstatus := tmcsInitGraphix(gamewindow.hwindow,GAME_FULLSCREEN,255,GAME_CDEPTH,GAME_ZDEPTH,FALSE,GL_FLAT);
           if ( tmcsstatus = 0 ) then
             begin
               WinMain(hInstance,hPrevInst,CmdLine,CmdShow);

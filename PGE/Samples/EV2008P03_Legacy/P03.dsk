@@ -1,26 +1,21 @@
 [Closed Files]
-File_0=SourceModule,'D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\u_input.pas',0,1,1,235,10,0,0
-File_1=SourceModule,'D:\__PR00F__\___developing___\EngineVerseny\Enyém\Példák\P03\P03.dpr',0,1,623,11,645,0,0
-File_2=SourceModule,'D:\__PR00F__\___developing___\EngineVerseny\Enyém\Példák\P03\gfxcore.pas',0,1,163,35,35,0,0
-File_3=SourceModule,'D:\__PR00F__\___developing___\EngineVerseny\Enyém\EngineVerseny\Példák\P02\gfxcore.pas',0,1,91,69,26,0,0
-File_4=SourceModule,'D:\__PR00F__\___developing___\projects\ELTE - FAIL\C++\VS2012\gfxcore2\gfxcore2wrapper_test\Unit1.pas',0,1,85,60,44,0,0
-File_5=SourceModule,'D:\__PR00F__\___developing___\projects\Delphi\PR00FPS\u_frm_newgame.pas',0,1,126,14,135,1,0
-File_6=SourceModule,'D:\__PR00F__\___developing___\projects\Delphi\PR00FPS\u_frm_showmapinfo.pas',0,1,19,5,47,1,0
-File_7=SourceModule,'D:\__PR00F__\___developing___\EngineVerseny\Enyém\Példák\P02\gfxcore.pas',0,1,123,35,35,0,0
-File_8=SourceModule,'D:\__PR00F__\___developing___\projects\Delphi\PR00FPS\GfxCore.pas',0,1,13,39,35,0,0
+File_0=SourceModule,'D:\__PR00F__\___developing___\EngineVerseny\Enyém\_verseny_nevezések\xxenyém\P03\gfxcore.pas',0,1,16,81,29,0,0
+File_1=SourceModule,'D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\u_input.pas',0,1,1,235,10,0,0
+File_2=SourceModule,'D:\__PR00F__\___developing___\EngineVerseny\Enyém\Példák\P03\P03.dpr',0,1,623,11,645,0,0
+File_3=SourceModule,'D:\__PR00F__\___developing___\EngineVerseny\Enyém\Példák\P03\gfxcore.pas',0,1,163,35,35,0,0
+File_4=SourceModule,'D:\__PR00F__\___developing___\EngineVerseny\Enyém\EngineVerseny\Példák\P02\gfxcore.pas',0,1,91,69,26,0,0
+File_5=SourceModule,'D:\__PR00F__\___developing___\projects\ELTE - FAIL\C++\VS2012\gfxcore2\gfxcore2wrapper_test\Unit1.pas',0,1,85,60,44,0,0
+File_6=SourceModule,'D:\__PR00F__\___developing___\projects\Delphi\PR00FPS\u_frm_newgame.pas',0,1,126,14,135,1,0
+File_7=SourceModule,'D:\__PR00F__\___developing___\projects\Delphi\PR00FPS\u_frm_showmapinfo.pas',0,1,19,5,47,1,0
+File_8=SourceModule,'D:\__PR00F__\___developing___\EngineVerseny\Enyém\Példák\P02\gfxcore.pas',0,1,123,35,35,0,0
+File_9=SourceModule,'D:\__PR00F__\___developing___\projects\Delphi\PR00FPS\GfxCore.pas',0,1,13,39,35,0,0
 
 [Modules]
-Module0=D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\P03.dpr
-Module1=D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\gfxcore.pas
-Count=2
+Module0=D:\__PR00F__\___developing___\EngineVerseny\Enyém\_verseny_nevezések\xxenyém\P03\P03.dpr
+Count=1
 EditWindowCount=1
 
-[D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\P03.dpr]
-ModuleType=SourceModule
-FormState=0
-FormOnTop=0
-
-[D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\gfxcore.pas]
+[D:\__PR00F__\___developing___\EngineVerseny\Enyém\_verseny_nevezések\xxenyém\P03\P03.dpr]
 ModuleType=SourceModule
 FormState=0
 FormOnTop=0
@@ -30,25 +25,22 @@ FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=2
+ViewCount=1
 CurrentView=0
 View0=0
-View1=1
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
-State=2
+State=0
 Left=200
 Top=146
-Width=1720
+Width=1302
 Height=682
-MaxLeft=-8
-MaxTop=113
-MaxWidth=1932
-MaxHeight=913
-ClientWidth=1916
-ClientHeight=875
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1286
+ClientHeight=644
 LeftPanelSize=140
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=000004000000000000000000000000000000000000000000000100000000000000000C000000436F64654578706C6F726572FFFFFFFF
@@ -58,17 +50,10 @@ BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=000004000000000000000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
 
 [View0]
-Module=D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\P03.dpr
-CursorX=62
-CursorY=429
-TopLine=418
-LeftCol=1
-
-[View1]
-Module=D:\__PR00F__\___developing___\projects\PGE\PGE\Samples\EV2008P03\gfxcore.pas
-CursorX=30
-CursorY=247
-TopLine=221
+Module=D:\__PR00F__\___developing___\EngineVerseny\Enyém\_verseny_nevezések\xxenyém\P03\P03.dpr
+CursorX=26
+CursorY=58
+TopLine=53
 LeftCol=1
 
 [Watches]
@@ -101,24 +86,22 @@ Count=0
 [Main Window]
 Create=1
 Visible=1
-State=2
+State=0
 Left=0
 Top=0
 Width=1920
 Height=122
 MaxLeft=-1
 MaxTop=-1
-MaxWidth=1932
-MaxHeight=122
-ClientWidth=1916
+ClientWidth=1904
 ClientHeight=84
 
 [ProjectManager]
 Create=1
 Visible=0
 State=0
-Left=737
-Top=383
+Left=369
+Top=372
 Width=446
 Height=313
 MaxLeft=-1
@@ -203,11 +186,11 @@ State=0
 Left=0
 Top=12
 Width=140
-Height=782
+Height=544
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=140
-ClientHeight=782
+ClientHeight=544
 TBDockHeight=305
 LRDockWidth=140
 Dockable=1
@@ -218,11 +201,11 @@ Visible=1
 State=0
 Left=12
 Top=0
-Width=1904
+Width=1274
 Height=85
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=1904
+ClientWidth=1274
 ClientHeight=85
 TBDockHeight=85
 LRDockWidth=443
