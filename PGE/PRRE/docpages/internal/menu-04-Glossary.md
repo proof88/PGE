@@ -29,6 +29,10 @@ Smallest element of an image. Color and position, usually in screen-space. An im
 
 Smallest element of a 2D or 3D object. A vertex has many attributes such as color, position, texture coordinates, etc.
 
+## Vertex Cache
+
+This is the [Post-Transform (post-T&L) Cache](#_Post-Transform_(post-T&L)_Cache).
+
 ## Primitive / Face
 
 2D or 3D shape made of very limited number of vertices. The most common primitive is a triangle, made of 3 vertices.  
@@ -206,15 +210,43 @@ image source: [http://www.anandtech.com/show/391/5](http://www.anandtech.com/sho
 
 ### Pre-Transform (pre-T&L) Cache
 
-Stores the untransformed [vertices](#_Vertex). Optimizations regarding this part of the cache are simply sorting the [vertices](#_Vertex) in order of appearance. Typically extremely large, being able to hold ~64k [vertices](#_Vertex) on a Geforce 3 and up.
+Stores the untransformed [vertices](#_Vertex). Typically extremely large, being able to hold ~64k [vertices](#_Vertex) on a Geforce 3 and up.  
+To utilize this cache more effectively, the indices of vertices should be sorted in the order of their appearance so that the same vertex referenced multiple times will be likely present in this cache when needed.  
+Obviously non-indexed rendering cannot use this cache effectively since even repeated vertices will be treated as unique vertices.
 
 ### Post-Transform (post-T&L) Cache
 
-This is a GPU FIFO buffer containing data of [vertices](#_Vertex) that have passed through this stage but not yet converted into [primitive](#_Primitive). Can be used with indexed rendering only (element arrays). 2 [vertices](#_Vertex) are considered equal if their index is the same within the same drawing command. If so, the processing of the current [vertex](#_Vertex) is skipped in this stage and the output of the appropriate previously-processed [vertex](#_Vertex) data is added to the output stream. Varies in size from effectively 10 (actual 16) [vertices](#_Vertex) on GeForce 256, GeForce 2, and GeForce 4 MX chipsets to effectively 18 (actual 24) on GeForce 3 and GeForce 4 Ti chipsets.
+We also refer to it as Vertex Cache.  
+This is a GPU FIFO buffer containing data of [vertices](#_Vertex) that have passed through \ref vertex_proc stage but not yet converted into [primitive](#_Primitive). Can be used with indexed rendering only (element arrays). 2 [vertices](#_Vertex) are considered equal if their index is the same within the same drawing command. If so, the processing of the current [vertex](#_Vertex) is skipped in this stage and the output of the appropriate previously-processed [vertex](#_Vertex) data is added to the output stream. Varies in size from effectively 10 (actual 16) [vertices](#_Vertex) on GeForce 256, GeForce 2, and GeForce 4 MX chipsets to effectively 18 (actual 24) on GeForce 3 and GeForce 4 Ti chipsets.
 
 AMD Tootle is recommended for optimizing 3D-models: [http://developer.amd.com/tools-and-sdks/archive/legacy-cpu-gpu-tools/amd-tootle/](http://developer.amd.com/tools-and-sdks/archive/legacy-cpu-gpu-tools/amd-tootle/)
 
-There is some other vertex cache optimization: [http://home.comcast.net/~tom_forsyth/papers/fast_vert_cache_opt.html](http://home.comcast.net/~tom_forsyth/papers/fast_vert_cache_opt.html)
+There is some other vertex cache optimization: [http://home.comcast.net/~tom_forsyth/papers/fast_vert_cache_opt.html](http://home.comcast.net/~tom_forsyth/papers/fast_vert_cache_opt.html)  
+Linear-Speed Vertex Cache Optimisation  
+http://eelpi.gotdns.org/papers/fast_vert_cache_opt.html  
+by Tom Forsyth
+
+Schmalstieg_351  
+Revisiting The Vertex Cache: Understanding and Optimizing  
+Vertex Processing on the modern GPU  
+https://arbook.icg.tugraz.at/schmalstieg/Schmalstieg_351.pdf  
+
+TL;DR of the paper 'Revisiting The Vertex Cache: Understanding and Optimizing Vertex Processing on the modern GPU'  
+https://erkaman.github.io/posts/kerbl2018_tldr.html
+
+Revisiting The Vertex Cache  
+https://www.highperformancegraphics.org/wp-content/uploads/2018/Papers-Session2/HPG2018_RevisitingVertexCache.pdf
+
+Caching Architectures and Graphics Processing  
+https://en.ppt-online.org/207844
+
+Workload Characterization of 3 D Games by Jordi Roca  
+https://slidetodoc.com/workload-characterization-of-3-d-games-jordi-roca/
+
+GPUs a closer look  
+https://dl.acm.org/doi/fullHtml/10.1145/1365490.1365498
+
+https://www.dreamincode.net/forums/topic/390969-gl-triangle-strip-vs-gl-triangles-and-gl-element-buffer-object/
 
 [https://www.opengl.org/wiki/Post_Transform_Cache](https://www.opengl.org/wiki/Post_Transform_Cache)
 
