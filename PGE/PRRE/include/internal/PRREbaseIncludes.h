@@ -53,8 +53,8 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>
-#include <WinUser.h>
-#include <windowsx.h>
+//#include <WinUser.h>
+//#include <windowsx.h>
 
 // GL headers, never changed
 #include "gl/gl.h"

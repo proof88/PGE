@@ -13,20 +13,20 @@
 
 // standard headers
 // ---------------------------------------------------------------------------
-#include <stdlib.h>
-#include <stdio.h>
-#include <direct.h>
 #include <conio.h>
-#include <string.h>
-#include <algorithm>
+#include <direct.h>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <string>
-#include <sstream>
-#include <iostream>
+#include <algorithm>
 #include <fstream>
-#include <vector>
+#include <iostream>
 #include <map>
+#include <sstream>
+#include <string>
+#include <vector>
 
 
 // Windows header

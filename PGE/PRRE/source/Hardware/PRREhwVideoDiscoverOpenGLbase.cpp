@@ -117,6 +117,9 @@ TPRREbool PRREhwVideoDiscoverOpenGLbase::isExtensionSupported(const char* extnam
          - https://opengl.gpuinfo.org/listextensions.php
          - https://opengles.gpuinfo.org/
         https://feedback.wildfiregames.com/report/opengl/
+
+        Some other good DBs for getting HW info:
+        https://www.techpowerup.com/gpu-specs/
     */
 
     return isExtensionSupported(extname, sVidFeaturesOGL, sVidFeaturesWGL);

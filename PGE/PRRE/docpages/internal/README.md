@@ -21,7 +21,7 @@ This documentation contains intellectual properties of various sources, listed b
  - [https://www.extremetech.com/computing/49076-extremetech-3d-pipeline-tutorial](https://www.extremetech.com/computing/49076-extremetech-3d-pipeline-tutorial)
  - [https://fgiesen.wordpress.com/2011/07/09/a-trip-through-the-graphics-pipeline-2011-index/](https://fgiesen.wordpress.com/2011/07/09/a-trip-through-the-graphics-pipeline-2011-index/)
  - [http://www.songho.ca/opengl/index.html](http://www.songho.ca/opengl/index.html)
- - [http://www.techpowerup.com/gpudb/](http://www.techpowerup.com/gpudb/)
+ - [https://www.techpowerup.com/gpu-specs/](https://www.techpowerup.com/gpu-specs/)
  - [Sammy Rogmans: A Generic Framework for Implementing Real-Time Stereo Matching Algorithms on the Graphics Processing Unit](https://www.researchgate.net/publication/265310715_A_Generic_Framework_for_Implementing_Real-Time_Stereo_Matching_Algorithms_on_the_Graphics_Processing_Unit)
  - [http://developer.amd.com/wordpress/media/2012/10/Depth_in-depth.pdf](http://developer.amd.com/wordpress/media/2012/10/Depth_in-depth.pdf)
  - [https://www3.ntu.edu.sg/home/ehchua/programming/opengl/CG_BasicsTheory.html](https://www3.ntu.edu.sg/home/ehchua/programming/opengl/CG_BasicsTheory.html)

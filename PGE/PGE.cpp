@@ -597,9 +597,9 @@ int PGE::initializeGame()
     getConsole().L();
     getConsole().OLnOI("Initializing SysGFX ...");
     bool bGFXinit;
-    if ( MessageBox(0, "Teljes képernyõ?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES )
+    /*if ( MessageBox(0, "Teljes képernyõ?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES )
         bGFXinit = p->SysGFX.initSysGFX(0, 0, PRRE_FULLSCREEN, 0, 32, 24, 0, 0);
-    else
+    else*/
         bGFXinit = p->SysGFX.initSysGFX(800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0);
 
     if ( !bGFXinit )
