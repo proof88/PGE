@@ -94,6 +94,12 @@
     <Filter Include="Source Files\PRRE\SpatialStructures">
       <UniqueIdentifier>{c499ee64-64c6-41fd-82b7-993a6606462a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\OWS">
+      <UniqueIdentifier>{7858cb9e-1a65-4f9b-bcb4-30b68fc5ad91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OWS">
+      <UniqueIdentifier>{1553b81c-38d5-40de-9926-647db2afbaf6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGE.h">
@@ -369,6 +375,9 @@
     <ClInclude Include="PRRE\include\internal\SpatialStructures\PRREBoundingVolumeHierarchy.h">
       <Filter>Header Files\PRRE\include\internal\SpatialStructures</Filter>
     </ClInclude>
+    <ClInclude Include="OWS\OWS.h">
+      <Filter>Header Files\OWS</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -529,6 +538,9 @@
     </ClCompile>
     <ClCompile Include="PRRE\source\SpatialStructures\PRREBoundingVolumeHierarchy.cpp">
       <Filter>Source Files\PRRE\SpatialStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="OWS\OWS.cpp">
+      <Filter>Source Files\OWS</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
