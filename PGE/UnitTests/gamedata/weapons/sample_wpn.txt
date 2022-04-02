@@ -1,0 +1,9 @@
+# Lines starting with hashtag are comments and ignored by loader
+
+# Blank lines are also ignored by loader
+
+# Name of the weapon is that will be displayed in GUI
+Name = Sample Weapon 1
+
+# Preview Image is not needed to be explicitly defined here, as
+# image file with same name is to be used implicitly as preview.

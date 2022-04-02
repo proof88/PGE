@@ -28,6 +28,7 @@
 // standard C++ headers, never changed
 #include <algorithm>
 #include <iostream>
+#include <fstream>
 #include <map>
 #include <sstream>
 #include <string>

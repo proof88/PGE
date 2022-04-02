@@ -21,6 +21,7 @@
 #include "PFLTest.h"
 #include "PGEcfgVariableTest.h"
 #include "PGESysCFGTest.h"
+#include "OWSTest.h"
 #include "PR00FsReducedRenderingEngineTest.h"
 #include "PR00FsReducedRenderingEngineTest2.h"
 #include "PRREAxisAlignedBoundingBoxTest.h"
@@ -87,6 +88,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PFLTest                    testPFL;
     PGEcfgVariableTest         testPGEcfgVariable;
     PGESysCFGTest              testPGESysCFG; 
+    OWSTest                    testOWS;
     
     PRREScreenTest                  testScreen;
     PRRESharedSettingsTest          testSharedSettings;
@@ -132,15 +134,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     vector<UnitTest*> tests;
     
-    tests.push_back(&testPFL);
-    tests.push_back(&testPGEcfgVariable);
-    tests.push_back(&testPGESysCFG);
+    //tests.push_back(&testPFL);
+    //tests.push_back(&testPGEcfgVariable);
+    //tests.push_back(&testPGESysCFG);
+    tests.push_back(&testOWS);
    
     /*
     tests.push_back(&testScreen);
     tests.push_back(&testSharedSettings);
     */
 
+    /*
     tests.push_back(&testPosUpTarget);
     tests.push_back(&testPRREVector);  
     tests.push_back(&testPRREMatrix);  
@@ -178,13 +182,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     tests.push_back(&testPRREObject3DManager);
     tests.push_back(&testPRREObject3D);   
-
+    */
     /* 
     tests.push_back(&testPRREWindow);
     tests.push_back(&testPRREWindow2);
     */
 
-    tests.push_back(&testPRRERendererHWfixedPipe);
+    //tests.push_back(&testPRRERendererHWfixedPipe);
 
     /*
     tests.push_back(&testPRRE);

@@ -1,0 +1,5 @@
+
+var1 = floor.bmp
+= floor.bmp
+var3 = floor.bmp
+

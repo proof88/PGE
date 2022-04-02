@@ -328,6 +328,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\CConsole\CConsole\src\CConsole.h" />
     <ClInclude Include="..\..\..\PFL\PFL\PFL.h" />
+    <ClInclude Include="..\OWS\OWS.h" />
     <ClInclude Include="..\PGE.h" />
     <ClInclude Include="..\PGEallHeaders.h" />
     <ClInclude Include="..\PGEcfgVariable.h" />
@@ -367,6 +368,7 @@
     <ClInclude Include="..\PRRE\include\external\Render\PRREIRenderer.h" />
     <ClInclude Include="..\PRRE\include\external\Render\PRRERendererHWfixedPipe.h" />
     <ClInclude Include="..\PRRE\include\external\Render\PRRERendererSWincremental.h" />
+    <ClInclude Include="OWSTest.h" />
     <ClInclude Include="PFLTest.h" />
     <ClInclude Include="PGEcfgVariableTest.h" />
     <ClInclude Include="PGESysCFGTest.h" />

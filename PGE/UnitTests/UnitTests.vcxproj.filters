@@ -43,6 +43,9 @@
     <Filter Include="Header Files\PGE\PRRE\Render">
       <UniqueIdentifier>{dd6585fd-c4c9-4d27-8666-250ac9293910}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PGE\OWS">
+      <UniqueIdentifier>{1b8475c7-69fb-45c1-9f41-4e9f84933aad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PR00FsReducedRenderingEngineTest.h">
@@ -290,6 +293,12 @@
     </ClInclude>
     <ClInclude Include="PRRERendererHWfixedPipeTest.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OWSTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\OWS\OWS.h">
+      <Filter>Header Files\PGE\OWS</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
