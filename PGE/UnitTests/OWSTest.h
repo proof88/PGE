@@ -39,12 +39,14 @@ protected:
         AddSubTest("test_wpn_load_weapon_bad_assignment", (PFNUNITSUBTEST) &OWSTest::test_wpn_load_weapon_bad_assignment);
         AddSubTest("test_wpn_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &OWSTest::test_wpn_load_weapon_unaccepted_var);
         AddSubTest("test_wpn_load_weapon_missing_var", (PFNUNITSUBTEST) &OWSTest::test_wpn_load_weapon_missing_var);
+        AddSubTest("test_wpn_load_weapon_double_defined_var", (PFNUNITSUBTEST) &OWSTest::test_wpn_load_weapon_double_defined_var);
         AddSubTest("test_wpn_load_weapon_good", (PFNUNITSUBTEST) &OWSTest::test_wpn_load_weapon_good);
         AddSubTest("test_ows_initially_empty", (PFNUNITSUBTEST) &OWSTest::test_ows_initially_empty);
         AddSubTest("test_ows_clear_weapons", (PFNUNITSUBTEST) &OWSTest::test_ows_clear_weapons);
         AddSubTest("test_ows_load_weapon_bad_assignment", (PFNUNITSUBTEST) &OWSTest::test_ows_load_weapon_bad_assignment);
         AddSubTest("test_ows_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &OWSTest::test_ows_load_weapon_unaccepted_var);
         AddSubTest("test_ows_load_weapon_missing_var", (PFNUNITSUBTEST) &OWSTest::test_ows_load_weapon_missing_var);
+        AddSubTest("test_ows_load_weapon_double_defined_var", (PFNUNITSUBTEST) &OWSTest::test_ows_load_weapon_double_defined_var);
         AddSubTest("test_ows_load_weapon_good", (PFNUNITSUBTEST) &OWSTest::test_ows_load_weapon_good);
     }
 
@@ -130,6 +132,21 @@ private:
         return b;
     }
 
+    bool test_wpn_load_weapon_double_defined_var()
+    {
+        bool b = false;
+        try
+        {
+            Weapon wpn("gamedata/weapons/wpn_test_wpn_load_weapon_double_defined_var.txt");
+        }
+        catch (const std::exception)
+        {
+            b = true;
+        }
+
+        return b;
+    }
+
     bool test_wpn_load_weapon_good()
     {
         bool b = false;
@@ -182,6 +199,15 @@ private:
     {
         OWS ows(*engine);
         bool b = assertFalse(ows.load("gamedata/weapons/wpn_test_wpn_load_weapon_missing_var.txt"), "load");
+        b &= assertTrue(ows.getWeapons().empty(), "empty");
+
+        return b;
+    }
+
+    bool test_ows_load_weapon_double_defined_var()
+    {
+        OWS ows(*engine);
+        bool b = assertFalse(ows.load("gamedata/weapons/wpn_test_wpn_load_weapon_double_defined_var.txt"), "load");
         b &= assertTrue(ows.getWeapons().empty(), "empty");
 
         return b;
