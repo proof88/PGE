@@ -1,5 +1,5 @@
 
-var1 = floor.bmp
+name = alma
 = floor.bmp
-var3 = floor.bmp
+cap_max = 10
 

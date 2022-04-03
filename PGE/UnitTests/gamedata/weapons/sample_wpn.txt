@@ -2,6 +2,8 @@
 
 # Blank lines are also ignored by loader
 
+# Variable name are case-insensitive, so "Name =" is same as "name =" or "NAME ="
+
 # Name of the weapon is that will be displayed in GUI
 Name = Sample Weapon 1
 

@@ -33,7 +33,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    Weapon();
+    explicit Weapon(const char* fname);
     virtual ~Weapon();
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
@@ -45,9 +45,18 @@ protected:
 
 private:
 
+    static std::set<std::string> m_acceptedVars; // TODO CPP11 initializer list!
+
     std::map<std::string, PGEcfgVariable> m_vars;
 
     // ---------------------------------------------------------------------------
+
+    static bool lineShouldBeIgnored(const std::string& sLine);
+    static bool lineIsValueAssignment(const std::string& sLine, std::string& sVar, std::string& sValue, bool& bParseError);
+
+    Weapon();
+
+    void lineHandleAssignment(std::string& sVar, std::string& sValue, const char* fname, std::set<std::string>& m_missingVars, bool& bParseError);
 
 }; // class Weapon
 
@@ -92,11 +101,6 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    static bool lineShouldBeIgnored(const std::string& sLine);
-    static bool lineIsValueAssignment(const std::string& sLine, std::string& sVar, std::string& sValue, bool& bParseError);
-
     OWS();
-
-    void lineHandleAssignment(std::string& sVar, std::string& sValue);
 
 }; // class OWS
