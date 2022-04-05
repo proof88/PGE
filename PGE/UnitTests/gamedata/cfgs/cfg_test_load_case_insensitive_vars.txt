@@ -1,0 +1,2 @@
+Name = Sample Weapon 1
+name = Sample Weapon 2

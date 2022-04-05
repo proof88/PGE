@@ -20,6 +20,7 @@
 
 #include "PFLTest.h"
 #include "PGEcfgVariableTest.h"
+#include "PGEcfgFileTest.h"
 #include "PGESysCFGTest.h"
 #include "OWSTest.h"
 #include "PR00FsReducedRenderingEngineTest.h"
@@ -87,6 +88,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     PFLTest                    testPFL;
     PGEcfgVariableTest         testPGEcfgVariable;
+    PGEcfgFileTest             testPGEcfgFile;
     PGESysCFGTest              testPGESysCFG; 
     OWSTest                    testOWS;
     
@@ -136,6 +138,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     //tests.push_back(&testPFL);
     //tests.push_back(&testPGEcfgVariable);
+    tests.push_back(&testPGEcfgFile);
     //tests.push_back(&testPGESysCFG);
     tests.push_back(&testOWS);
    

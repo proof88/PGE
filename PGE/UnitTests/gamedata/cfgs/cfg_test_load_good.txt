@@ -1,0 +1,12 @@
+# Lines starting with hashtag are comments and ignored by loader
+
+# Blank lines are also ignored by loader
+
+Name = Sample Weapon 1
+
+cap_max = 999
+cap_reload = 30
+
+reload_per_mag = true
+reload_whole_mag = true
+reload_time = 3000

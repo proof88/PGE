@@ -1,0 +1,5 @@
+
+name = alma
+= floor.bmp
+cap_max = 10
+

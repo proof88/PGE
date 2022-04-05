@@ -1,0 +1,2 @@
+almafa = 5
+Name = Sample Weapon 1

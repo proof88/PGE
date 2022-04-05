@@ -378,6 +378,9 @@
     <ClInclude Include="OWS\OWS.h">
       <Filter>Header Files\OWS</Filter>
     </ClInclude>
+    <ClInclude Include="PGEcfgFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -541,6 +544,9 @@
     </ClCompile>
     <ClCompile Include="OWS\OWS.cpp">
       <Filter>Source Files\OWS</Filter>
+    </ClCompile>
+    <ClCompile Include="PGEcfgFile.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

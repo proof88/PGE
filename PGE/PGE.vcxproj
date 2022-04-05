@@ -330,6 +330,7 @@
     <ClInclude Include="OWS\OWS.h" />
     <ClInclude Include="PGE.h" />
     <ClInclude Include="PGEallHeaders.h" />
+    <ClInclude Include="PGEcfgFile.h" />
     <ClInclude Include="PGEcfgVariable.h" />
     <ClInclude Include="PGEconsts.h" />
     <ClInclude Include="PGEincludes.h" />
@@ -421,6 +422,7 @@
   <ItemGroup>
     <ClCompile Include="OWS\OWS.cpp" />
     <ClCompile Include="PGE.cpp" />
+    <ClCompile Include="PGEcfgFile.cpp" />
     <ClCompile Include="PGEcfgVariable.cpp" />
     <ClCompile Include="PGEInputHandler.cpp" />
     <ClCompile Include="PGESysCFG.cpp" />

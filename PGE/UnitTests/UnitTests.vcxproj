@@ -370,6 +370,7 @@
     <ClInclude Include="..\PRRE\include\external\Render\PRRERendererSWincremental.h" />
     <ClInclude Include="OWSTest.h" />
     <ClInclude Include="PFLTest.h" />
+    <ClInclude Include="PGEcfgFileTest.h" />
     <ClInclude Include="PGEcfgVariableTest.h" />
     <ClInclude Include="PGESysCFGTest.h" />
     <ClInclude Include="PR00FsReducedRenderingEngineTest.h" />
