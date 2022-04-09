@@ -57,7 +57,7 @@ public:
 
 protected:
 
-    std::set<std::string> m_acceptedVars; // TODO CPP11 initializer list!
+    std::set<std::string> m_acceptedVars;
     std::map<std::string, PGEcfgVariable> m_vars;
 
 private:

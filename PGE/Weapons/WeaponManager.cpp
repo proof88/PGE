@@ -24,38 +24,38 @@ Weapon::Weapon(const char* fname)
 {
     getConsole().OLnOI("Weapon::Weapon(%s) ...", fname);
 
-    if ( m_acceptedVars.empty() )
+    if ( m_WpnAcceptedVars.empty() )
     {
-        m_acceptedVars.insert("name");
-        m_acceptedVars.insert("cap_max");
-        m_acceptedVars.insert("cap_reload");
-        m_acceptedVars.insert("reload_per_mag");
-        m_acceptedVars.insert("reload_whole_mag");
-        m_acceptedVars.insert("reload_time");
-        m_acceptedVars.insert("firing_mode_def");
-        m_acceptedVars.insert("firing_mode_max");
-        m_acceptedVars.insert("acc_angle");
-        m_acceptedVars.insert("acc_m_walk");
-        m_acceptedVars.insert("acc_m_run");
-        m_acceptedVars.insert("acc_m_duck");
-        m_acceptedVars.insert("recoil_m");
-        m_acceptedVars.insert("recoil_cooldown");
-        m_acceptedVars.insert("recoil_control");
-        m_acceptedVars.insert("bullet_size_x");
-        m_acceptedVars.insert("bullet_size_y");
-        m_acceptedVars.insert("bullet_size_z");
-        m_acceptedVars.insert("bullet_speed");
-        m_acceptedVars.insert("bullet_gravity");
-        m_acceptedVars.insert("bullet_drag");
-        m_acceptedVars.insert("bullet_fragile");
-        m_acceptedVars.insert("damage_hp");
-        m_acceptedVars.insert("damage_ap");
-        m_acceptedVars.insert("damage_area_size");
-        m_acceptedVars.insert("damage_area_effect");
-        m_acceptedVars.insert("damage_area_pulse");
+        m_WpnAcceptedVars.insert("name");
+        m_WpnAcceptedVars.insert("cap_max");
+        m_WpnAcceptedVars.insert("cap_reload");
+        m_WpnAcceptedVars.insert("reload_per_mag");
+        m_WpnAcceptedVars.insert("reload_whole_mag");
+        m_WpnAcceptedVars.insert("reload_time");
+        m_WpnAcceptedVars.insert("firing_mode_def");
+        m_WpnAcceptedVars.insert("firing_mode_max");
+        m_WpnAcceptedVars.insert("acc_angle");
+        m_WpnAcceptedVars.insert("acc_m_walk");
+        m_WpnAcceptedVars.insert("acc_m_run");
+        m_WpnAcceptedVars.insert("acc_m_duck");
+        m_WpnAcceptedVars.insert("recoil_m");
+        m_WpnAcceptedVars.insert("recoil_cooldown");
+        m_WpnAcceptedVars.insert("recoil_control");
+        m_WpnAcceptedVars.insert("bullet_size_x");
+        m_WpnAcceptedVars.insert("bullet_size_y");
+        m_WpnAcceptedVars.insert("bullet_size_z");
+        m_WpnAcceptedVars.insert("bullet_speed");
+        m_WpnAcceptedVars.insert("bullet_gravity");
+        m_WpnAcceptedVars.insert("bullet_drag");
+        m_WpnAcceptedVars.insert("bullet_fragile");
+        m_WpnAcceptedVars.insert("damage_hp");
+        m_WpnAcceptedVars.insert("damage_ap");
+        m_WpnAcceptedVars.insert("damage_area_size");
+        m_WpnAcceptedVars.insert("damage_area_effect");
+        m_WpnAcceptedVars.insert("damage_area_pulse");
     }
 
-    setAcceptedVars(m_acceptedVars);
+    setAcceptedVars(m_WpnAcceptedVars);
     SetAllAcceptedVarsDefineRequirement(true);
 
     if ( !load(fname) )
@@ -87,6 +87,9 @@ const char* Weapon::getLoggerModuleName()
 
 
 // ############################### PRIVATE ###############################
+
+
+std::set<std::string> Weapon::m_WpnAcceptedVars;
 
 
 Weapon::Weapon()

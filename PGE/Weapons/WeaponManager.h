@@ -43,6 +43,8 @@ protected:
 
 private:
 
+    static std::set<std::string> m_WpnAcceptedVars;
+
     // ---------------------------------------------------------------------------
 
     Weapon();
