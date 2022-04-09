@@ -29,7 +29,7 @@ protected:
     {
         CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), true);
         
-        AddSubTest("test_ows_initially_empty_and_defaults_set", (PFNUNITSUBTEST) &PGEcfgFileTest::test_ows_initially_empty_and_defaults_set);
+        AddSubTest("test_wm_initially_empty_and_defaults_set", (PFNUNITSUBTEST) &PGEcfgFileTest::test_wm_initially_empty_and_defaults_set);
         AddSubTest("test_load_bad_assignment", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_bad_assignment);
         AddSubTest("test_load_fail_unaccepted_var", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_fail_unaccepted_var);
         AddSubTest("test_load_accept_missing_var", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_accept_missing_var);
@@ -58,7 +58,7 @@ private:
         return *this;
     };
 
-    bool test_ows_initially_empty_and_defaults_set()
+    bool test_wm_initially_empty_and_defaults_set()
     {
         PGEcfgFile cfgFile;
         return assertTrue(cfgFile.getVars().empty(), "empty") &

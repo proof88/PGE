@@ -17,13 +17,13 @@
 #include <vector>
 
 #include "../PGEallHeaders.h"
-#include "../PGEcfgVariable.h"
+#include "../PGEcfgFile.h"
 #include "../PRRE/include/external/PR00FsReducedRenderingEngine.h"
 
 /**
     Weapon class for PR00F's Game Engine Weapon Manager
 */
-class Weapon
+class Weapon : public PGEcfgFile
 {
 #ifdef PGE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  Weapon is included")   
@@ -39,25 +39,13 @@ public:
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
-    std::map<std::string, PGEcfgVariable>& getVars();
-    const std::map<std::string, PGEcfgVariable>& getVars() const;
-
 protected:
 
 private:
 
-    static std::set<std::string> m_acceptedVars; // TODO CPP11 initializer list!
-
-    std::map<std::string, PGEcfgVariable> m_vars;
-
     // ---------------------------------------------------------------------------
 
-    static bool lineShouldBeIgnored(const std::string& sLine);
-    static bool lineIsValueAssignment(const std::string& sLine, std::string& sVar, std::string& sValue, bool& bParseError);
-
     Weapon();
-
-    void lineHandleAssignment(std::string& sVar, std::string& sValue, const char* fname, std::set<std::string>& m_missingVars, bool& bParseError);
 
 }; // class Weapon
 
