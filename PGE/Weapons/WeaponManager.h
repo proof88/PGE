@@ -2,10 +2,10 @@
 
 /*
     ###################################################################################
-    OWS.h
+    WeaponManager.h
     This file is part of PGE.
     External header.
-    PR00F's Game Engine Open Weapon Subsystem
+    PR00F's Game Engine Weapon Manager
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
@@ -21,7 +21,7 @@
 #include "../PRRE/include/external/PR00FsReducedRenderingEngine.h"
 
 /**
-    Weapon class for PR00F's Game Engine Open Weapon Subsystem
+    Weapon class for PR00F's Game Engine Weapon Manager
 */
 class Weapon
 {
@@ -62,12 +62,12 @@ private:
 }; // class Weapon
 
 /**
-    PR00F's Game Engine Open Weapon Subsystem
+    PR00F's Game Engine Weapon Manager
 */
-class OWS
+class WeaponManager
 {
 #ifdef PGE_CLASS_IS_INCLUDED_NOTIFICATION
-#pragma message("  Open Weapon Subsystem is included")   
+#pragma message("  Weapon Manager is included")   
 #endif
 
 public:
@@ -75,8 +75,8 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    OWS(PR00FsReducedRenderingEngine& gfx);
-    virtual ~OWS();
+    WeaponManager(PR00FsReducedRenderingEngine& gfx);
+    virtual ~WeaponManager();
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
@@ -86,11 +86,11 @@ public:
 
 protected:
 
-    OWS(const OWS&) :
+    WeaponManager(const WeaponManager&) :
         m_gfx(m_gfx)
     {}
 
-    OWS& operator=(const OWS&)
+    WeaponManager& operator=(const WeaponManager&)
     {
         return *this;
     }
@@ -102,6 +102,6 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    OWS();
+    WeaponManager();
 
-}; // class OWS
+}; // class WeaponManager

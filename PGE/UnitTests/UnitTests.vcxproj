@@ -368,7 +368,7 @@
     <ClInclude Include="..\PRRE\include\external\Render\PRREIRenderer.h" />
     <ClInclude Include="..\PRRE\include\external\Render\PRRERendererHWfixedPipe.h" />
     <ClInclude Include="..\PRRE\include\external\Render\PRRERendererSWincremental.h" />
-    <ClInclude Include="OWSTest.h" />
+    <ClInclude Include="WeaponsTest.h" />
     <ClInclude Include="PFLTest.h" />
     <ClInclude Include="PGEcfgFileTest.h" />
     <ClInclude Include="PGEcfgVariableTest.h" />

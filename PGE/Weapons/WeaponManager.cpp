@@ -1,15 +1,15 @@
 /*
     ###################################################################################
-    OWS.cpp
+    WeaponManager.cpp
     This file is part of PGE.
-    PR00F's Game Engine Open Weapon Subsystem
+    PR00F's Game Engine Weapon Manager
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 
 #include "PRREbaseIncludes.h"  // PCH
-#include "OWS.h"
+#include "WeaponManager.h"
 
 /*
    Weapon
@@ -248,7 +248,7 @@ void Weapon::lineHandleAssignment(std::string& sVar, std::string& sValue, const 
 
 
 /*
-   OWS
+   WeaponManager
    ###########################################################################
 */
 
@@ -256,28 +256,28 @@ void Weapon::lineHandleAssignment(std::string& sVar, std::string& sValue, const 
 // ############################### PUBLIC ################################
 
 
-OWS::OWS(PR00FsReducedRenderingEngine& gfx) :
+WeaponManager::WeaponManager(PR00FsReducedRenderingEngine& gfx) :
     m_gfx(gfx)
 {
 
 }
 
-OWS::~OWS()
+WeaponManager::~WeaponManager()
 {
 
 }
 
-CConsole& OWS::getConsole() const
+CConsole& WeaponManager::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
 }
 
-const char* OWS::getLoggerModuleName()
+const char* WeaponManager::getLoggerModuleName()
 {
-    return "OWS";
+    return "WeaponManager";
 }
 
-bool OWS::load(const char* fname)
+bool WeaponManager::load(const char* fname)
 {
     try
     {
@@ -291,12 +291,12 @@ bool OWS::load(const char* fname)
     }
 }
 
-const std::vector<Weapon>& OWS::getWeapons() const
+const std::vector<Weapon>& WeaponManager::getWeapons() const
 {
     return m_weapons;
 }
 
-void OWS::Clear()
+void WeaponManager::Clear()
 {
     m_weapons.clear();
 }

@@ -22,7 +22,7 @@
 #include "PGEcfgVariableTest.h"
 #include "PGEcfgFileTest.h"
 #include "PGESysCFGTest.h"
-#include "OWSTest.h"
+#include "WeaponsTest.h"
 #include "PR00FsReducedRenderingEngineTest.h"
 #include "PR00FsReducedRenderingEngineTest2.h"
 #include "PRREAxisAlignedBoundingBoxTest.h"
@@ -90,7 +90,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PGEcfgVariableTest         testPGEcfgVariable;
     PGEcfgFileTest             testPGEcfgFile;
     PGESysCFGTest              testPGESysCFG; 
-    OWSTest                    testOWS;
+    WeaponsTest                    testOWS;
     
     PRREScreenTest                  testScreen;
     PRRESharedSettingsTest          testSharedSettings;

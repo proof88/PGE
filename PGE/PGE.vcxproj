@@ -327,7 +327,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\CConsole\CConsole\src\CConsole.h" />
     <ClInclude Include="..\..\PFL\PFL\PFL.h" />
-    <ClInclude Include="OWS\OWS.h" />
     <ClInclude Include="PGE.h" />
     <ClInclude Include="PGEallHeaders.h" />
     <ClInclude Include="PGEcfgFile.h" />
@@ -418,9 +417,9 @@
     <ClInclude Include="PRRE\include\internal\SpatialStructures\PRREBoundingVolumeHierarchy.h" />
     <ClInclude Include="PRRE\include\internal\SpatialStructures\PRREOctree.h" />
     <ClInclude Include="PRRE\include\internal\SpatialStructures\PRREAxisAlignedBoundingBox.h" />
+    <ClInclude Include="Weapons\WeaponManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OWS\OWS.cpp" />
     <ClCompile Include="PGE.cpp" />
     <ClCompile Include="PGEcfgFile.cpp" />
     <ClCompile Include="PGEcfgVariable.cpp" />
@@ -490,6 +489,7 @@
     <ClCompile Include="PRRE\source\SpatialStructures\PRREAxisAlignedBoundingBox.cpp" />
     <ClCompile Include="PRRE\source\SpatialStructures\PRREBoundingVolumeHierarchy.cpp" />
     <ClCompile Include="PRRE\source\SpatialStructures\PRREOctree.cpp" />
+    <ClCompile Include="Weapons\WeaponManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

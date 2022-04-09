@@ -294,13 +294,13 @@
     <ClInclude Include="PRRERendererHWfixedPipeTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OWSTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\OWS\OWS.h">
       <Filter>Header Files\PGE\OWS</Filter>
     </ClInclude>
     <ClInclude Include="PGEcfgFileTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponsTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

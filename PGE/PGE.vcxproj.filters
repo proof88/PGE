@@ -94,10 +94,10 @@
     <Filter Include="Source Files\PRRE\SpatialStructures">
       <UniqueIdentifier>{c499ee64-64c6-41fd-82b7-993a6606462a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\OWS">
+    <Filter Include="Header Files\Weapons">
       <UniqueIdentifier>{7858cb9e-1a65-4f9b-bcb4-30b68fc5ad91}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\OWS">
+    <Filter Include="Source Files\Weapons">
       <UniqueIdentifier>{1553b81c-38d5-40de-9926-647db2afbaf6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -375,11 +375,11 @@
     <ClInclude Include="PRRE\include\internal\SpatialStructures\PRREBoundingVolumeHierarchy.h">
       <Filter>Header Files\PRRE\include\internal\SpatialStructures</Filter>
     </ClInclude>
-    <ClInclude Include="OWS\OWS.h">
-      <Filter>Header Files\OWS</Filter>
-    </ClInclude>
     <ClInclude Include="PGEcfgFile.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapons\WeaponManager.h">
+      <Filter>Header Files\Weapons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -542,11 +542,11 @@
     <ClCompile Include="PRRE\source\SpatialStructures\PRREBoundingVolumeHierarchy.cpp">
       <Filter>Source Files\PRRE\SpatialStructures</Filter>
     </ClCompile>
-    <ClCompile Include="OWS\OWS.cpp">
-      <Filter>Source Files\OWS</Filter>
-    </ClCompile>
     <ClCompile Include="PGEcfgFile.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapons\WeaponManager.cpp">
+      <Filter>Source Files\Weapons</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
