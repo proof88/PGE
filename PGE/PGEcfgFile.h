@@ -35,7 +35,9 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    PGEcfgFile();
+    PGEcfgFile(
+        bool bRequireAllAcceptedVarsDefineRequirement,
+        bool bCaseSensitiveVars);
     virtual ~PGEcfgFile();
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
@@ -46,10 +48,7 @@ public:
     bool load(const char* fname);
 
     bool getAllAcceptedVarsDefineRequirement() const;
-    void SetAllAcceptedVarsDefineRequirement(bool state);
-
     bool getCaseSensitiveVars() const;
-    void SetCaseSensitiveVars(bool state);
 
     std::set<std::string>& getAcceptedVars();
     const std::set<std::string>& getAcceptedVars() const;

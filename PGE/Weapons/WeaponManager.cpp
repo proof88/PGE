@@ -20,7 +20,8 @@
 // ############################### PUBLIC ################################
 
 
-Weapon::Weapon(const char* fname)
+Weapon::Weapon(const char* fname) :
+    PGEcfgFile(true, false)
 {
     getConsole().OLnOI("Weapon::Weapon(%s) ...", fname);
 
@@ -62,7 +63,6 @@ Weapon::Weapon(const char* fname)
     // of the static set defined here in the derived part, however that might have some issues,
     // e.g. when the set is freed up by anyhow, then all weapons reference illegal memory area ...
     setAcceptedVars(m_WpnAcceptedVars);
-    SetAllAcceptedVarsDefineRequirement(true);
 
     if ( !load(fname) )
     {
@@ -98,7 +98,8 @@ const char* Weapon::getLoggerModuleName()
 std::set<std::string> Weapon::m_WpnAcceptedVars;
 
 
-Weapon::Weapon()
+Weapon::Weapon() :
+    PGEcfgFile(true, false)
 {
 }
 

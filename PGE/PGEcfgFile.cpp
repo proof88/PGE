@@ -20,10 +20,16 @@
 // ############################### PUBLIC ################################
 
 
-PGEcfgFile::PGEcfgFile()
+/**
+    @param bCaseSensitiveVars If true, all variables will be treated case sensitive, e.g. "Name =" will be different to "name =" or "NAME =".
+    Note: it is your responsibility to define all accepted variables in their lowercafe form if you set case sensitivity to false!
+*/
+PGEcfgFile::PGEcfgFile(
+    bool bRequireAllAcceptedVarsDefineRequirement,
+    bool bCaseSensitiveVars)
 {
-    m_bRequireAllAcceptedVarsDefineRequirement = false;
-    m_bCaseSensitiveVars = false;
+    m_bRequireAllAcceptedVarsDefineRequirement = bRequireAllAcceptedVarsDefineRequirement;
+    m_bCaseSensitiveVars = bCaseSensitiveVars;
 }
 
 PGEcfgFile::~PGEcfgFile()
@@ -73,7 +79,6 @@ bool PGEcfgFile::load(const char* fname)
     bool bParseError = false;
     const std::streamsize nBuffSize = 1024;
     char cLine[nBuffSize];
-    PGEcfgFile wpn;
     while ( !bParseError && !f.eof() )
     {
         f.getline(cLine, nBuffSize);
@@ -125,24 +130,9 @@ bool PGEcfgFile::getAllAcceptedVarsDefineRequirement() const
     return m_bRequireAllAcceptedVarsDefineRequirement;
 }
 
-void PGEcfgFile::SetAllAcceptedVarsDefineRequirement(bool state)
-{
-    m_bRequireAllAcceptedVarsDefineRequirement = state;
-}
-
 bool PGEcfgFile::getCaseSensitiveVars() const
 {
     return m_bCaseSensitiveVars;
-}
-
-/**
-    Variable name case sensitivity setting.
-    @param state If true, all variables will be treated case sensitive, e.g. "Name =" will be different to "name =" or "NAME =".
-    Note: it is your responsibility to define all accepted variables in their lowercafe form if you set case sensitivity to false!
-*/
-void PGEcfgFile::SetCaseSensitiveVars(bool state)
-{
-    m_bCaseSensitiveVars = state;
 }
 
 std::set<std::string>& PGEcfgFile::getAcceptedVars()
