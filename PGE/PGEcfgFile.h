@@ -50,7 +50,6 @@ public:
     bool getAllAcceptedVarsDefineRequirement() const;
     bool getCaseSensitiveVars() const;
 
-    std::set<std::string>& getAcceptedVars();
     const std::set<std::string>& getAcceptedVars() const;
     void setAcceptedVars(const std::set<std::string>& newAcceptedVars);
 

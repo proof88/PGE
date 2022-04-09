@@ -135,11 +135,6 @@ bool PGEcfgFile::getCaseSensitiveVars() const
     return m_bCaseSensitiveVars;
 }
 
-std::set<std::string>& PGEcfgFile::getAcceptedVars()
-{
-    return m_acceptedVars;
-}
-
 const std::set<std::string>& PGEcfgFile::getAcceptedVars() const
 {
     return m_acceptedVars;
@@ -147,6 +142,12 @@ const std::set<std::string>& PGEcfgFile::getAcceptedVars() const
 
 void PGEcfgFile::setAcceptedVars(const std::set<std::string>& newAcceptedVars)
 {
+    if ( !m_acceptedVars.empty() || !m_vars.empty() )
+    {
+        getConsole().EOLn("setAcceptedVars() ERROR: accepted vars or vars are already defined!");
+        return;
+    }
+
     m_acceptedVars = newAcceptedVars;
 }
 
