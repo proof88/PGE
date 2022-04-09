@@ -55,6 +55,12 @@ Weapon::Weapon(const char* fname)
         m_WpnAcceptedVars.insert("damage_area_pulse");
     }
 
+    // Need to think about better design ...
+    // The problem in this design is that the derived part always makes a copy of the set,
+    // so if we have 100 weapons in a game, then the set will have 100 copies, with exactly
+    // the same content. A solution would be if derived part would just update a reference
+    // of the static set defined here in the derived part, however that might have some issues,
+    // e.g. when the set is freed up by anyhow, then all weapons reference illegal memory area ...
     setAcceptedVars(m_WpnAcceptedVars);
     SetAllAcceptedVarsDefineRequirement(true);
 
