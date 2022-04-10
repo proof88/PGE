@@ -39,6 +39,8 @@ protected:
         AddSubTest("test_load_fail_case_sensitive_vars_with_case_sensivity", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_fail_case_sensitive_vars_with_case_sensivity);
         AddSubTest("test_load_good_case_sensitive_vars_with_case_sensivity", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_good_case_sensitive_vars_with_case_sensivity);
         AddSubTest("test_load_good", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_good);
+        AddSubTest("test_load_not_allowed_when_already_loaded", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_not_allowed_when_already_loaded);
+        AddSubTest("test_set_accepted_vars_not_allowed_when_already_loaded", (PFNUNITSUBTEST) &PGEcfgFileTest::test_set_accepted_vars_not_allowed_when_already_loaded);
     }
 
     virtual void Finalize()
@@ -81,10 +83,11 @@ private:
         PGEcfgFile cfgFile(false, false);
         std::set<std::string> acceptedVars;
         acceptedVars.insert("name");
-        cfgFile.setAcceptedVars(acceptedVars);
+        bool b = assertTrue(cfgFile.setAcceptedVars(acceptedVars), "setAccepted");
+        b &= assertFalse(cfgFile.getAcceptedVars().empty(), "accepted empty");
 
         // since acceptedVars is not empty, load should fail on unknown var "almafa"
-        bool b = assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_unaccepted_var.txt"), "load");
+        b &= assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_unaccepted_var.txt"), "load");
         
         return b & assertTrue(cfgFile.getVars().empty(), "empty");
     }
@@ -95,10 +98,11 @@ private:
         std::set<std::string> acceptedVars;
         acceptedVars.insert("name");
         acceptedVars.insert("almafa");
-        cfgFile.setAcceptedVars(acceptedVars);
+        bool b = assertTrue(cfgFile.setAcceptedVars(acceptedVars), "setAccepted");
+        b &= assertFalse(cfgFile.getAcceptedVars().empty(), "accepted empty");
 
         // since acceptedVars is not empty, but we accept missing vars by default, we dont fail on missing "almafa"
-        bool b = assertTrue(cfgFile.load("gamedata/cfgs/cfg_test_load_missing_var.txt"), "load");
+        b &= assertTrue(cfgFile.load("gamedata/cfgs/cfg_test_load_missing_var.txt"), "load");
 
         return b & assertFalse(cfgFile.getVars().empty(), "empty") &
             assertTrue(cfgFile.getVars().find("name") != cfgFile.getVars().end(), "name");
@@ -107,13 +111,16 @@ private:
     bool test_load_fail_missing_var()
     {
         PGEcfgFile cfgFile(true, false);
+        bool b = assertTrue(cfgFile.getAllAcceptedVarsDefineRequirement(), "req");
+
         std::set<std::string> acceptedVars;
         acceptedVars.insert("name");
         acceptedVars.insert("almafa");
-        cfgFile.setAcceptedVars(acceptedVars);
+        b &= assertTrue(cfgFile.setAcceptedVars(acceptedVars), "setAccepted");
+        b &= assertFalse(cfgFile.getAcceptedVars().empty(), "accepted empty");
 
         // since acceptedVars is not empty, and we dont accept missing vars, we should fail on missing "almafa"
-        bool b = assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_missing_var.txt"), "load");
+        b &= assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_missing_var.txt"), "load");
 
         return b & assertTrue(cfgFile.getVars().empty(), "empty");
     }
@@ -132,11 +139,12 @@ private:
         PGEcfgFile cfgFile(false, false);
         std::set<std::string> acceptedVars;
         acceptedVars.insert("name");
-        cfgFile.setAcceptedVars(acceptedVars);
+        bool b = assertTrue(cfgFile.setAcceptedVars(acceptedVars), "setAccepted");
+        b &= assertFalse(cfgFile.getAcceptedVars().empty(), "accepted empty");
 
         // "Name" and "name" vars are both accepted from case insensitivity perspective but now
         // they are multiple defined vars so we should fail now
-        bool b = assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_case_insensitive_vars.txt"), "load");
+        b &= assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_case_insensitive_vars.txt"), "load");
 
         return b & assertTrue(cfgFile.getVars().empty(), "empty");
     }
@@ -144,12 +152,15 @@ private:
     bool test_load_fail_case_sensitive_vars_with_case_sensivity()
     {
         PGEcfgFile cfgFile(false, true);
+        bool b = assertTrue(cfgFile.getCaseSensitiveVars(), "case");
+
         std::set<std::string> acceptedVars;
         acceptedVars.insert("Name");
-        cfgFile.setAcceptedVars(acceptedVars);
+        b &= assertTrue(cfgFile.setAcceptedVars(acceptedVars), "setAccepted");
+        b &= assertFalse(cfgFile.getAcceptedVars().empty(), "accepted empty");
 
         // "Name" is accepted but "name" is not, since we are case sensitive now and that is unknown var
-        bool b = assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_case_insensitive_vars.txt"), "load");
+        b &= assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_case_insensitive_vars.txt"), "load");
 
         return b & assertTrue(cfgFile.getVars().empty(), "empty");
     }
@@ -157,9 +168,10 @@ private:
     bool test_load_good_case_sensitive_vars_with_case_sensivity()
     {
         PGEcfgFile cfgFile(false, true);
-
+        bool b = assertTrue(cfgFile.getCaseSensitiveVars(), "case");
+        
         // "Name" is accepted and "name" is also accepted because we are case sensitive now and neither of them is unknown var since we did not define accepted vars!
-        bool b = assertTrue(cfgFile.load("gamedata/cfgs/cfg_test_load_case_insensitive_vars.txt"), "load");
+        b &= assertTrue(cfgFile.load("gamedata/cfgs/cfg_test_load_case_insensitive_vars.txt"), "load");
 
         return b & assertFalse(cfgFile.getVars().empty(), "empty") &
             assertTrue(cfgFile.getVars().find("Name") != cfgFile.getVars().end(), "Name") &
@@ -176,7 +188,7 @@ private:
         return b;
     }
 
-    bool test_load_fail_when_already_loaded()
+    bool test_load_not_allowed_when_already_loaded()
     {
         PGEcfgFile cfgFile(false, false);
 
@@ -185,6 +197,22 @@ private:
         
         b &= assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load");
         b &= assertFalse(cfgFile.getVars().empty(), "not empty");
+
+        return b;
+    }
+
+    bool test_set_accepted_vars_not_allowed_when_already_loaded()
+    {
+        PGEcfgFile cfgFile(false, false);
+
+        bool b = assertTrue(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load");
+        b &= assertFalse(cfgFile.getVars().empty(), "not empty");
+
+        std::set<std::string> acceptedVars;
+        acceptedVars.insert("Name");
+        
+        b &= assertFalse(cfgFile.setAcceptedVars(acceptedVars), "setAccepted");
+        b &= assertTrue(cfgFile.getAcceptedVars().empty(), "accepted empty");
 
         return b;
     }

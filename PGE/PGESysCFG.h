@@ -14,7 +14,7 @@
 #include "PGEallHeaders.h"
 #include <map>
 #include <shlobj.h>
-#include "PGEcfgVariable.h"
+#include "PGEcfgFile.h"
 
 
 /**

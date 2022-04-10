@@ -140,15 +140,16 @@ const std::set<std::string>& PGEcfgFile::getAcceptedVars() const
     return m_acceptedVars;
 }
 
-void PGEcfgFile::setAcceptedVars(const std::set<std::string>& newAcceptedVars)
+bool PGEcfgFile::setAcceptedVars(const std::set<std::string>& newAcceptedVars)
 {
     if ( !m_acceptedVars.empty() || !m_vars.empty() )
     {
         getConsole().EOLn("setAcceptedVars() ERROR: accepted vars or vars are already defined!");
-        return;
+        return false;
     }
 
     m_acceptedVars = newAcceptedVars;
+    return true;
 }
 
 

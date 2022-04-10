@@ -51,7 +51,7 @@ public:
     bool getCaseSensitiveVars() const;
 
     const std::set<std::string>& getAcceptedVars() const;
-    void setAcceptedVars(const std::set<std::string>& newAcceptedVars);
+    bool setAcceptedVars(const std::set<std::string>& newAcceptedVars);
 
 protected:
 
