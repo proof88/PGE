@@ -19,7 +19,8 @@ using namespace std;
 // ############################### PUBLIC ################################
 
 
-PGESysCFG::PGESysCFG(const char* gameTitle)
+PGESysCFG::PGESysCFG(const char* gameTitle) :
+    PGEcfgFile(false, false)
 {
     getConsole().OLnOI("PGESysCFG::PGESysCFG(%s)", gameTitle);
     
@@ -79,6 +80,7 @@ PGESysCFG::PGESysCFG(const char* gameTitle)
 PGESysCFG::~PGESysCFG()
 {
     getConsole().OLn("PGESysCFG::~PGESysCFG()");
+    sPathToMyDocs.clear();
     for (int i = 0; i < nProfilesCount; i++)
     {
         delete sFoundProfiles[i];
@@ -118,7 +120,7 @@ const char* PGESysCFG::getLoggerModuleName()
     Returns the path to user documents.
     @return The absolute path to user documents directory. There is always a delimiter character at the end.
 */
-string PGESysCFG::getMyDocsFolder() const
+string PGESysCFG::getMyDocsFolder()
 {
     return sPathToMyDocs;
 } // getMyDocsFolder()
@@ -618,13 +620,18 @@ bool PGESysCFG::writeConfiguration()
 // ############################### PRIVATE ###############################
 
 
-PGESysCFG::PGESysCFG()
+std::string PGESysCFG::sPathToMyDocs;
+
+
+PGESysCFG::PGESysCFG() :
+    PGEcfgFile(false, false)
 {
 
 }
 
 
-PGESysCFG::PGESysCFG(const PGESysCFG&)
+PGESysCFG::PGESysCFG(const PGESysCFG& other) :
+    PGEcfgFile(other.getAllAcceptedVarsDefineRequirement(), other.getCaseSensitiveVars())
 {
 
 } 
@@ -642,6 +649,12 @@ PGESysCFG& PGESysCFG::operator=(const PGESysCFG&)
 */
 bool PGESysCFG::findMyDocsFolder()
 {
+    if ( !sPathToMyDocs.empty() )
+    {
+        CConsole::getConsoleInstance("PGESysCFG").OLn("findMyDocsFolder(): already set folder: %s", sPathToMyDocs.c_str());
+        return true;
+    }
+
     char pPath[MAX_PATH];
     LPITEMIDLIST pIDL = PGENULL;
 

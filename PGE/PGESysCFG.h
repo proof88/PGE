@@ -20,7 +20,7 @@
 /**
     PR00F's Game Engine cfg file handler class.
 */
-class PGESysCFG
+class PGESysCFG : public PGEcfgFile
 {
 #ifdef PGE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PGESysCFG is included")   
@@ -38,7 +38,7 @@ public:
 
     // Profile-independent
     // ---------------------------------------------------------------------------
-    std::string         getMyDocsFolder() const;               /**< Returns the path to user documents. */
+    static std::string  getMyDocsFolder();                     /**< Returns the path to user documents. */
     std::string         getLangFileName() const;               /**< Returns the file name of the selected language file. */
     int                 readLanguageData(std::string** &langTable) const; /**< Reads the language file into the given table. */
     bool                areProfilesInMyDocs() const;           /**< Returns whether player profiles are stored in user documents folder. */
@@ -65,7 +65,8 @@ private:
     #define PGE_SYS_CFG_FILE_MAGIC_START "!PNGGECFG"
     #define PGE_SYS_CFG_PLAYER_NAME_CVAR "cl_name"
 
-    std::string   sPathToMyDocs;     /**< Path to user documents. */
+    static std::string   sPathToMyDocs;     /**< Path to user documents. */
+
     std::string   sLangFileName;     /**< Filename of language file. */
     bool          bMainCFGinMyDocs;  /**< Do we store cfg file in user documents folder? */
     std::string   sPathToProfiles;   /**< Search path for profiles based on bMainCFGinMyDocs and pPathToMyDocs. */
@@ -78,12 +79,13 @@ private:
 
     // ---------------------------------------------------------------------------
 
+    static bool findMyDocsFolder();         /**< Stores user docs folder path in sPathToMyDocs. */
+    
     PGESysCFG();
 
     PGESysCFG(const PGESysCFG&);  
     PGESysCFG& operator=(const PGESysCFG&);
 
-    bool findMyDocsFolder();         /**< Stores user docs folder path in sPathToMyDocs. */
     bool getPlayerNameFromFile(
         const char* cFilename,
         std::string& sPlayerName );  /**< Gets player name from given cfg file. */

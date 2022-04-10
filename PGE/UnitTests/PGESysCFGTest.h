@@ -148,7 +148,7 @@ private:
     bool testGetPathToProfiles()
     {
         const PGESysCFG cfg("game title");
-        return assertFalse( cfg.getPathToProfiles().empty() );
+        return assertNotEquals(std::string::npos, cfg.getPathToProfiles().find("\\profiles\\") );
     }
 
     bool testGetProfilesCount()
