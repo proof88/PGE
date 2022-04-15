@@ -444,7 +444,7 @@ PGEcfgVariable& PGESysCFG::getVar(const char* varName)
 {
     if ( getProfile() > -1 )
     {
-        PGEcfgVariable& cvar = mCVarList[varName];
+        PGEcfgVariable& cvar = m_vars[varName];
         return cvar;
     }
     else
@@ -459,8 +459,8 @@ PGEcfgVariable& PGESysCFG::getVar(const char* varName)
 */
 const PGEcfgVariable& PGESysCFG::getVar(const char* varName) const
 {
-    map<string, PGEcfgVariable>::const_iterator it = mCVarList.find(varName);
-    if ( (mCVarList.end() == it) || (getProfile() == -1) )
+    map<string, PGEcfgVariable>::const_iterator it = m_vars.find(varName);
+    if ( (m_vars.end() == it) || (getProfile() == -1) )
         return cvarWrong;
     else
         return it->second;
@@ -481,7 +481,7 @@ void PGESysCFG::DeleteVar(const char* varName)
     if ( strcmp(PGE_SYS_CFG_PLAYER_NAME_CVAR, varName) == 0 )
         return;
 
-    mCVarList.erase(varName);
+    m_vars.erase(varName);
 } // DeleteVar()
 
 
@@ -491,7 +491,7 @@ void PGESysCFG::DeleteVar(const char* varName)
 */
 int PGESysCFG::getVarsCount() const
 {
-    return mCVarList.size();
+    return m_vars.size();
 } // getVarsCount()
 
 
@@ -510,73 +510,11 @@ bool PGESysCFG::readConfiguration()
     }
 
     const string sFile = getPathToProfiles() + *sFoundProfiles[getProfile()] + '\\' + (*sFoundProfiles[getProfile()] + ".cfg");
-    ifstream f_cfg( sFile );
-
-    if ( f_cfg.fail() )
+    if ( !load(sFile.c_str()) )
     {
-        getConsole().EOLnOO("ERROR: couldn't open file: %s", sFile.c_str());
+        getConsole().EOLnOO("ERROR: failed to load file: %s! ", sFile.c_str());
         return false;
     }
-
-    string tmp;
-    f_cfg >> tmp;
-    if ( tmp != PGE_SYS_CFG_FILE_MAGIC_START )
-    {
-        f_cfg.close();
-        getConsole().EOLnOO("ERROR: no magic start!");
-        return false;
-    }    
-
-    mCVarList.clear();
-    const std::streamsize nBuffSize = 1024;
-    char cLine[nBuffSize];
-    bool bInMultilineCommentSection = false;
-    while ( !f_cfg.eof() )
-    {
-        f_cfg.getline(cLine, nBuffSize);
-        PFL::strClr( cLine );
-        if ( cLine[0] == '[' )
-            continue;  // we are at the beginning of a section
-        if ( (cLine[0] == '/') && (cLine[1] == cLine[0]) )
-            continue;  // we are at a comment line
-        if ( strlen(cLine) == 0 )
-            continue;  // blank line
-        if ( (cLine[0] == '/') && (cLine[1] == '*') )
-            bInMultilineCommentSection = true;
-        if ( (cLine[0] == '*') && (cLine[1] == '/') )
-            bInMultilineCommentSection = false;
-        if ( !bInMultilineCommentSection )
-        {
-            const char* const cUnderscore = strchr(cLine, '_');
-            const char* const cAssignment = cUnderscore ? strchr(cUnderscore+1, '=') : NULL;
-            const char* const cDoubleQuote1st = cAssignment ? strchr(cAssignment+1, '"') : NULL;
-            const char* const cDoubleQuote2nd = cDoubleQuote1st ? strchr(cDoubleQuote1st+1, '"') : NULL;
-            if ( (cUnderscore != NULL) && (cAssignment != NULL) &&
-                 (cDoubleQuote1st != NULL) && (cDoubleQuote2nd != NULL) )
-            {
-                // actually we found a cvar so lets parse it
-                /*
-                    example:
-                    cLine -       cAssignment -
-                          |                   |
-                          ¡                   ¡        
-                          gfx_smoke_complexity="4"
-                                               ^ ^
-                                               | |
-                                               | |
-                              cDoubleQuote1st <- -> cDoubleQuote2nd
-                */
-                string sCVarName;
-                sCVarName.assign(cLine, 0, (string::size_type)(cAssignment-cLine));
-                string sCVarValue;
-                sCVarValue.assign(cDoubleQuote1st, 1, (string::size_type)(cDoubleQuote2nd-cDoubleQuote1st)-1);
-                PGEcfgVariable cvar( sCVarValue.c_str() );
-                mCVarList[sCVarName] = cvar;
-            } // cvar parse
-        } // !bInMultilineCommentSection
-    } // !f_cfg.eof()
-    f_cfg.close();
-    // log number of parsed cvars
 
     getConsole().SOLnOO("> done!");
     return true;
@@ -685,13 +623,13 @@ bool PGESysCFG::getPlayerNameFromFile(const char* cFilename, std::string& sPlaye
         return false;
     }
 
-    string tmp;
-    f_cfg >> tmp;
-    if ( tmp != PGE_SYS_CFG_FILE_MAGIC_START )
-    {
-        f_cfg.close();
-        return false;
-    }    
+    //string tmp;
+    //f_cfg >> tmp;
+    //if ( tmp != PGE_SYS_CFG_FILE_MAGIC_START )
+    //{
+    //    f_cfg.close();
+    //    return false;
+    //}    
 
     const std::streamsize nBuffSize = 1024;
     char cLine[nBuffSize];
@@ -706,18 +644,12 @@ bool PGESysCFG::getPlayerNameFromFile(const char* cFilename, std::string& sPlaye
         return false;
 
     // found line containing PGE_SYS_CFG_PLAYER_NAME_CVAR
-    char* const n1stDoubleQuote = strstr(cLine, "\"");
-    if ( n1stDoubleQuote != NULL )
-    {
-        char* const n2ndDoubleQuote = strstr(n1stDoubleQuote+1, "\"");
-        if ( n2ndDoubleQuote != NULL )
-        {   // we have 2 dblquotes now, in between them will be the player's name, ie.: cl_name="PR00F88"
-            *n2ndDoubleQuote = '\0';
-            sPlayerName = n1stDoubleQuote+1;
-            return true;
-        } // n2ndDoubleQuote != PGENULL
-    } // n1stDoubleQuote != PGENULL
-    return false;
+    PFL::strClr(cLine);
+    const std::string sTrimmedLine = cLine;
+    std::string sVar;
+    bool bParseError = false;
+
+    return lineIsValueAssignment(sTrimmedLine, false, sVar, sPlayerName, bParseError);
 } // getPlayerNameFromFile()
 
 
@@ -861,7 +793,7 @@ void PGESysCFG::LoadProfilesList()
 */
 void PGESysCFG::ClearVars()
 {
-    mCVarList.clear();
+    m_vars.clear();
 } // ClearVars()
 
 
@@ -889,7 +821,7 @@ void PGESysCFG::WriteConfiguration(ofstream& f_cfg, const string& sUser, const s
     if ( sNick.empty() )
     {
         std::map<std::string, PGEcfgVariable>::const_iterator it;
-        for (it = mCVarList.begin(); it != mCVarList.end(); it++)
+        for (it = m_vars.begin(); it != m_vars.end(); it++)
             f_cfg << it->first << "=\"" << it->second.getAsString() << "\"" << endl;
     }
     else

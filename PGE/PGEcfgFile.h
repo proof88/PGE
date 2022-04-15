@@ -58,6 +58,9 @@ protected:
     std::set<std::string> m_acceptedVars;
     std::map<std::string, PGEcfgVariable> m_vars;
 
+    // this is not private so PGESysCFG::getPlayerNameFromFile() can access it, otherwise this should be private
+    static bool lineIsValueAssignment(const std::string& sTrimmedLine, bool bCaseSensitiveVars, std::string& sVar, std::string& sValue, bool& bParseError);
+
 private:
 
     bool m_bRequireAllAcceptedVarsDefineRequirement;
@@ -66,7 +69,6 @@ private:
     // ---------------------------------------------------------------------------
 
     static bool lineShouldBeIgnored(const std::string& sTrimmedLine);
-    static bool lineIsValueAssignment(const std::string& sTrimmedLine, bool bCaseSensitiveVars, std::string& sVar, std::string& sValue, bool& bParseError);
 
     void lineHandleAssignment(const std::string& sVar, const std::string& sValue, const char* fname, std::set<std::string>& m_missingVars, bool& bParseError);
 

@@ -83,7 +83,7 @@ bool PGEcfgFile::load(const char* fname)
     {
         f.getline(cLine, nBuffSize);
         // TODO: we should finally have a strClr() version for std::string or FINALLY UPGRADE TO NEWER CPP THAT MAYBE HAS THIS FUNCTIONALITY!!!
-        PFL::strClr( cLine );
+        PFL::strClrLeads( cLine );
         const std::string sTrimmedLine(cLine);
         if ( lineShouldBeIgnored(sTrimmedLine) )
         {
@@ -172,7 +172,7 @@ bool PGEcfgFile::lineIsValueAssignment(const std::string& sTrimmedLine, bool bCa
         return false;
     }
 
-    if ( (nAssignmentPos == (sTrimmedLine.length() - 1)) || (nAssignmentPos == 0 ) )
+    if ( nAssignmentPos == 0 )
     {
         CConsole::getConsoleInstance("PGEcfgFile").EOLn("ERROR: erroneous assignment: %s!", sTrimmedLine.c_str());
         bParseError = true;
@@ -184,23 +184,13 @@ bool PGEcfgFile::lineIsValueAssignment(const std::string& sTrimmedLine, bool bCa
     // get rid of trailing spaces from the variable name itself, standing before the '=' char
     // TODO: should rather use std::string compatible PFL::strClr()
     std::string::size_type nSpPos = sTrimmedLine.find(' ');
-    if ( nSpPos != std::string::npos )
+    if ( nSpPos < nAssignmentPos )
     {
-        if ( nSpPos < nAssignmentPos )
+        sVar = sTrimmedLine.substr(0, nSpPos);
+        if ( sVar.find(' ') != std::string::npos )
         {
-            sVar = sTrimmedLine.substr(0, nSpPos);
-            if ( sVar.find(' ') != std::string::npos )
-            {
-                // we should not have more space before '=' char
-                CConsole::getConsoleInstance("PGEcfgFile").EOLn("ERROR: erroneous assignment, failed to parse variable in line: %s!", sTrimmedLine.c_str());
-                bParseError = true;
-                return false;
-            }
-        }
-        else
-        {
-            // should never reach this point based on above 2 conditions
-            CConsole::getConsoleInstance("PGEcfgFile").EOLn("ERROR: erroneous assignment: %s!", sTrimmedLine.c_str());
+            // we should not have more space before '=' char
+            CConsole::getConsoleInstance("PGEcfgFile").EOLn("ERROR: erroneous assignment, failed to parse variable in line: %s!", sTrimmedLine.c_str());
             bParseError = true;
             return false;
         }
@@ -228,9 +218,12 @@ bool PGEcfgFile::lineIsValueAssignment(const std::string& sTrimmedLine, bool bCa
     }
     else
     {
-        CConsole::getConsoleInstance("PGEcfgFile").EOLn("ERROR: erroneous assignment, failed to parse value in line: %s!", sTrimmedLine.c_str());
-        bParseError = true;
-        return false;
+        // we reached EOL while trying to trim the value, this means that:
+        // - either value is full of spaces, which is a valid case,
+        // - or value is empty, which is also a valid case.
+        // We can simply get substr from (pos of '=')+1, since that SHOULD NOT throw exception:
+        // exception is thrown if pos > size(), but our case is: pos == size().
+        sValue = sTrimmedLine.substr(nAssignmentPos+1);
     }
 
     return true;

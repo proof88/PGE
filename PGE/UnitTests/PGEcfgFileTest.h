@@ -185,6 +185,29 @@ private:
         bool b = assertTrue(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load");
         b &= assertFalse(cfgFile.getVars().empty(), "not empty");
 
+        b &= assertTrue(cfgFile.getVars().find("name") != cfgFile.getVars().end(), "name var") &
+            assertTrue(cfgFile.getVars().find("cap_max") != cfgFile.getVars().end(), "reload_per_mag var") &
+            assertTrue(cfgFile.getVars().find("reload_per_mag") != cfgFile.getVars().end(), "reload_per_mag var") &
+            assertTrue(cfgFile.getVars().find("reload_time") != cfgFile.getVars().end(), "reload_time var") &
+            assertTrue(cfgFile.getVars().find("testvar") != cfgFile.getVars().end(), "testVar var") &
+            assertTrue(cfgFile.getVars().find("testvar2") != cfgFile.getVars().end(), "testVar2 var") &
+            assertTrue(cfgFile.getVars().find("testvar3") != cfgFile.getVars().end(), "testVar3 var") &
+            assertTrue(cfgFile.getVars().find("testvar4") != cfgFile.getVars().end(), "testVar4 var") &
+            assertTrue(cfgFile.getVars().find("testvar5") != cfgFile.getVars().end(), "testVar5 var");
+
+        if ( b )
+        {
+            b &= assertEquals("Sample Weapon 1", cfgFile.getVars()["name"].getAsString(), "name value") &
+                assertEquals("999", cfgFile.getVars()["cap_max"].getAsString(), "cap_max value") &
+                assertEquals("true", cfgFile.getVars()["reload_per_mag"].getAsString(), "reload_per_mag value") &
+                assertEquals("3000", cfgFile.getVars()["reload_time"].getAsString(), "reload_time value") &
+                assertEquals("Values can have spaces, since they last until end of line!", cfgFile.getVars()["testvar"].getAsString(), "testVar value") &
+                assertEquals("Values can have spaces, since they last until end of line!", cfgFile.getVars()["testvar2"].getAsString(), "testVar2 value") &
+                assertEquals("", cfgFile.getVars()["testvar3"].getAsString(), "testVar3 value") &
+                assertEquals("   ", cfgFile.getVars()["testvar4"].getAsString(), "testVar4 value") &
+                assertEquals("alma    ", cfgFile.getVars()["testvar5"].getAsString(), "testVar5 value");
+        }
+
         return b;
     }
 

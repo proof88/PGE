@@ -5,8 +5,21 @@
 Name = Sample Weapon 1
 
 cap_max = 999
-cap_reload = 30
 
 reload_per_mag = true
-reload_whole_mag = true
 reload_time = 3000
+
+testVar = Values can have spaces, since they last until end of line!
+
+testVar2=Values can have spaces, since they last until end of line!
+
+# Setting a var to empty string is easy, just write nothing after '=':
+testVar3=
+
+# You can also place space chars, they will be preserved:
+testVar4=   
+
+# However, values having non-space chars as well, are left-trimmed, so following
+# variable will have "alma    " stored. I might change this behavior,
+# but currently I leave it as it is.
+testVar5 =     alma    

@@ -74,7 +74,6 @@ private:
     std::string** sFoundProfiles;    /**< Directory names of found profiles (just add ".cfg" for profile file). */
     std::string** sFoundProfilePlayerNames;  /**< Found profile names (player names). */
     int           nActiveProfile;    /**< Filename of active profile. */
-    std::map<std::string, PGEcfgVariable> mCVarList;  /**< Loaded cvars for active profile. */
     PGEcfgVariable cvarWrong;        /**< This is returned when trying to access an invalid cvar. */
 
     // ---------------------------------------------------------------------------
