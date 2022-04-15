@@ -555,6 +555,14 @@ bool PGESysCFG::writeConfiguration()
 // ############################## PROTECTED ##############################
 
 
+bool PGESysCFG::validateOnLoad(std::ifstream& f) const
+{
+    string tmp;
+    f >> tmp;
+    return tmp == PGE_SYS_CFG_FILE_MAGIC_START;
+}
+
+
 // ############################### PRIVATE ###############################
 
 
@@ -623,13 +631,10 @@ bool PGESysCFG::getPlayerNameFromFile(const char* cFilename, std::string& sPlaye
         return false;
     }
 
-    //string tmp;
-    //f_cfg >> tmp;
-    //if ( tmp != PGE_SYS_CFG_FILE_MAGIC_START )
-    //{
-    //    f_cfg.close();
-    //    return false;
-    //}    
+    if ( !validateOnLoad(f_cfg) )
+    {
+        return false;
+    }
 
     const std::streamsize nBuffSize = 1024;
     char cLine[nBuffSize];

@@ -11,6 +11,7 @@
     ###################################################################################
 */
 
+#include <fstream>
 #include <map>
 #include <set>
 #include <string>
@@ -60,6 +61,8 @@ protected:
 
     // this is not private so PGESysCFG::getPlayerNameFromFile() can access it, otherwise this should be private
     static bool lineIsValueAssignment(const std::string& sTrimmedLine, bool bCaseSensitiveVars, std::string& sVar, std::string& sValue, bool& bParseError);
+
+    virtual bool validateOnLoad(std::ifstream&) const; /**< Validate the file being processed by load(). */
 
 private:
 

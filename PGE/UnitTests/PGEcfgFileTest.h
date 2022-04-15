@@ -13,6 +13,21 @@
 #include "UnitTest.h"  // PCH
 #include "../PGEcfgFile.h"
 
+class PGEcfgFileDerived : public PGEcfgFile
+{
+public:
+    PGEcfgFileDerived(
+        bool bRequireAllAcceptedVarsDefineRequirement,
+        bool bCaseSensitiveVars) : PGEcfgFile(bRequireAllAcceptedVarsDefineRequirement, bCaseSensitiveVars)
+    {} 
+
+protected:
+    virtual bool validateOnLoad(std::ifstream&) const /* override */
+    {
+        return false;
+    }
+};
+
 class PGEcfgFileTest :
     public UnitTest
 {
@@ -41,6 +56,7 @@ protected:
         AddSubTest("test_load_good", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_good);
         AddSubTest("test_load_not_allowed_when_already_loaded", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_not_allowed_when_already_loaded);
         AddSubTest("test_set_accepted_vars_not_allowed_when_already_loaded", (PFNUNITSUBTEST) &PGEcfgFileTest::test_set_accepted_vars_not_allowed_when_already_loaded);
+        AddSubTest("test_override_validateOnLoad", (PFNUNITSUBTEST) &PGEcfgFileTest::test_override_validateOnLoad);
     }
 
     virtual void Finalize()
@@ -237,6 +253,14 @@ private:
         b &= assertFalse(cfgFile.setAcceptedVars(acceptedVars), "setAccepted");
         b &= assertTrue(cfgFile.getAcceptedVars().empty(), "accepted empty");
 
+        return b;
+    }
+
+    bool test_override_validateOnLoad()
+    {
+        PGEcfgFileDerived cfgFile(false, false);
+        bool b = assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load");
+        
         return b;
     }
 

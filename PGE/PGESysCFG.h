@@ -61,6 +61,9 @@ public:
     bool readConfiguration();       /**< Loads configuration for current profile from file. */
     bool writeConfiguration();      /**< Saves configuration for current profile to file. */
     
+protected:
+    virtual bool validateOnLoad(std::ifstream& f) const /* override */;
+
 private:
     #define PGE_SYS_CFG_FILE_MAGIC_START "!PNGGECFG"
     #define PGE_SYS_CFG_PLAYER_NAME_CVAR "cl_name"

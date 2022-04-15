@@ -37,7 +37,7 @@ protected:
     virtual void Initialize()
     {
         //CConsole::getConsoleInstance().SetLoggingState(PGESysCFG::getLoggerModuleName(), true);
-        CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), true);
         AddSubTest("testCtor1", (PFNUNITSUBTEST) &PGESysCFGTest::testCtor1);
         AddSubTest("testGetMyDocsFolder", (PFNUNITSUBTEST) &PGESysCFGTest::testGetMyDocsFolder);
         AddSubTest("testGetLangFileName", (PFNUNITSUBTEST) &PGESysCFGTest::testGetLangFileName);

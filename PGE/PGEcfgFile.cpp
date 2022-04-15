@@ -75,6 +75,13 @@ bool PGEcfgFile::load(const char* fname)
         return false;
     }
 
+    if ( !validateOnLoad(f) )
+    {
+        getConsole().EOLnOO("ERROR: validateOnLoad() failed for file: %s!", fname);
+        f.close();
+        return false;
+    }
+
     std::set<std::string> m_missingVars = m_acceptedVars;
     bool bParseError = false;
     const std::streamsize nBuffSize = 1024;
@@ -156,14 +163,6 @@ bool PGEcfgFile::setAcceptedVars(const std::set<std::string>& newAcceptedVars)
 // ############################## PROTECTED ##############################
 
 
-// ############################### PRIVATE ###############################
-
-
-bool PGEcfgFile::lineShouldBeIgnored(const std::string& sTrimmedLine)
-{
-    return sTrimmedLine.empty() || (sTrimmedLine[0] == '#');
-}
-
 bool PGEcfgFile::lineIsValueAssignment(const std::string& sTrimmedLine, bool bCaseSensitiveVars, std::string& sVar, std::string& sValue, bool& bParseError)
 {
     const std::string::size_type nAssignmentPos = sTrimmedLine.find('=');
@@ -227,6 +226,28 @@ bool PGEcfgFile::lineIsValueAssignment(const std::string& sTrimmedLine, bool bCa
     }
 
     return true;
+}
+
+/**
+    Validate the file being processed by load().
+    Derived class can override this to provide a validating function, e.g. special way to decide if the file being loaded actually has valid format.
+    This is invoked by load() before trying to parse the file.
+    This function should not open/close the given file stream.
+    Upon success, load() will continue reading the file from the point until this function has read the file.
+    @return False to indicate that load() should not process the file and fail. True if load() should continue processing the file.
+*/
+bool PGEcfgFile::validateOnLoad(std::ifstream&) const
+{
+    return true;
+}
+
+
+// ############################### PRIVATE ###############################
+
+
+bool PGEcfgFile::lineShouldBeIgnored(const std::string& sTrimmedLine)
+{
+    return sTrimmedLine.empty() || (sTrimmedLine[0] == '#');
 }
 
 void PGEcfgFile::lineHandleAssignment(const std::string& sVar, const std::string& sValue, const char* fname, std::set<std::string>& m_missingVars, bool& bParseError)
