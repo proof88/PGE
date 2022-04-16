@@ -41,6 +41,18 @@ protected:
         AddSubTest("test_wpn_load_weapon_missing_var", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_missing_var);
         AddSubTest("test_wpn_load_weapon_double_defined_var", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_double_defined_var);
         AddSubTest("test_wpn_load_weapon_good", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_good);
+        
+        AddSubTest("test_wpn_reload_when_empty_does_not_reload", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_when_empty_does_not_reload);
+        AddSubTest("test_wpn_reload_when_full_does_not_reload", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_when_full_does_not_reload);
+        AddSubTest("test_wpn_reload_when_not_reloadable_does_not_reload", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_when_not_reloadable_does_not_reload);
+        AddSubTest("test_wpn_reload_per_mag_does_not_change_total_bullet_count", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_per_mag_does_not_change_total_bullet_count);
+        AddSubTest("test_wpn_reload_per_mag_whole_mag_changes_total_bullet_count", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_per_mag_whole_mag_changes_total_bullet_count);
+        AddSubTest("test_wpn_reload_per_bullet_is_one_by_one", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_per_bullet_is_one_by_one);
+
+        AddSubTest("test_wpn_shoot_when_empty_does_not_shoot", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_when_empty_does_not_shoot);
+        AddSubTest("test_wpn_shoot_during_reloading_per_mag_does_not_shoot", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_during_reloading_per_mag_does_not_shoot);
+        AddSubTest("test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading);
+        
         AddSubTest("test_wm_initially_empty", (PFNUNITSUBTEST) &WeaponsTest::test_wm_initially_empty);
         AddSubTest("test_wm_clear_weapons", (PFNUNITSUBTEST) &WeaponsTest::test_wm_clear_weapons);
         AddSubTest("test_wm_load_weapon_bad_assignment", (PFNUNITSUBTEST) &WeaponsTest::test_wm_load_weapon_bad_assignment);
@@ -154,10 +166,135 @@ private:
         {
             Weapon wpn("gamedata/weapons/sample_wpn.txt");
             b = true;
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
         }
-        catch (const std::exception)
+        catch (const std::exception) {}
+
+        return b;
+    }
+
+    bool test_wpn_reload_when_empty_does_not_reload()
+    {
+        bool b = false;
+        try
         {
+            Weapon wpn("gamedata/weapons/sample_wpn.txt");
+            b = true;
+            b &= false; /* TODO */
         }
+        catch (const std::exception) {}
+
+        return b;
+    }
+
+    bool test_wpn_reload_when_full_does_not_reload()
+    {
+        bool b = false;
+        try
+        {
+            Weapon wpn("gamedata/weapons/sample_wpn.txt");
+            b = true;
+            b &= false; /* TODO */
+        }
+        catch (const std::exception) {}
+
+        return b;
+    }
+
+    bool test_wpn_reload_when_not_reloadable_does_not_reload()
+    {
+        bool b = false;
+        try
+        {
+            Weapon wpn("gamedata/weapons/sample_wpn.txt");
+            b = true;
+            b &= false; /* TODO */
+        }
+        catch (const std::exception) {}
+
+        return b;
+    }
+
+    bool test_wpn_reload_per_mag_does_not_change_total_bullet_count()
+    {
+        bool b = false;
+        try
+        {
+            Weapon wpn("gamedata/weapons/sample_wpn.txt");
+            b = true;
+            b &= false; /* TODO */
+        }
+        catch (const std::exception) {}
+
+        return b;
+    }
+
+    bool test_wpn_reload_per_mag_whole_mag_changes_total_bullet_count()
+    {
+        bool b = false;
+        try
+        {
+            Weapon wpn("gamedata/weapons/sample_wpn.txt");
+            b = true;
+            b &= false; /* TODO */
+        }
+        catch (const std::exception) {}
+
+        return b;
+    }
+
+    bool test_wpn_reload_per_bullet_is_one_by_one()
+    {
+        bool b = false;
+        try
+        {
+            Weapon wpn("gamedata/weapons/sample_wpn.txt");
+            b = true;
+            b &= false; /* TODO */
+        }
+        catch (const std::exception) {}
+
+        return b;
+    }
+
+    bool test_wpn_shoot_when_empty_does_not_shoot()
+    {
+        bool b = false;
+        try
+        {
+            Weapon wpn("gamedata/weapons/sample_wpn.txt");
+            b = true;
+            b &= false; /* TODO */
+        }
+        catch (const std::exception) {}
+
+        return b;
+    }
+
+    bool test_wpn_shoot_during_reloading_per_mag_does_not_shoot()
+    {
+        bool b = false;
+        try
+        {
+            Weapon wpn("gamedata/weapons/sample_wpn.txt");
+            b = true;
+            b &= false; /* TODO */
+        }
+        catch (const std::exception) {}
+
+        return b;
+    }
+
+    bool test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading()
+    {
+        bool b = false;
+        try
+        {
+            Weapon wpn("gamedata/weapons/sample_wpn.txt");
+            b = true;
+            b &= false; /* TODO */
+        }
+        catch (const std::exception) {}
 
         return b;
     }

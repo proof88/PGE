@@ -30,6 +30,11 @@ class Weapon : public PGEcfgFile
 #endif
 
 public:
+    enum State
+    {
+        WPN_READY,
+        WPN_RELOADING
+    };
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
     // ---------------------------------------------------------------------------
@@ -39,11 +44,21 @@ public:
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
+    void Update(int msecs);
+    State getState() const;
+    void Reload();
+    void Shoot();
+
+
 protected:
 
 private:
 
     static std::set<std::string> m_WpnAcceptedVars;
+
+    State m_state;
+    int m_nTotalBulletCount;
+    int m_nMagBulletCount;
 
     // ---------------------------------------------------------------------------
 

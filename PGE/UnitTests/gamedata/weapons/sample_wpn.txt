@@ -24,7 +24,7 @@ cap_max = 999
 cap_reload = 30
 
 # If true, reload is per-magazine, not per-bullet.
-# No effect if bullets_reload is 0.
+# No effect if cap_reload is 0.
 # Per-magazine examples are usual rifles, most pistols.
 # Per-bullet examples are some shotguns or legacy PR00FPS bazooka.
 # Note that per-bullet weapons can be fired also during the reload process,

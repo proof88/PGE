@@ -21,7 +21,8 @@
 
 
 Weapon::Weapon(const char* fname) :
-    PGEcfgFile(true, false)
+    PGEcfgFile(true, false),
+    m_state(WPN_READY)
 {
     getConsole().OLnOI("Weapon::Weapon(%s) ...", fname);
 
@@ -88,6 +89,46 @@ const char* Weapon::getLoggerModuleName()
     return "Weapon";
 }
 
+void Weapon::Update(int msecs)
+{
+    if ( m_state == WPN_READY )
+    {
+        return;
+    }
+
+    msecs;
+}
+
+Weapon::State Weapon::getState() const
+{
+    return m_state;
+}
+
+void Weapon::Reload()
+{
+    if ( m_state != WPN_READY )
+    {
+        return;
+    }
+
+    if ( getVars()["cap_reload"].getAsInt() == 0 )
+    {
+        return;
+    }
+
+
+}
+
+void Weapon::Shoot()
+{
+    if ( m_state != WPN_READY )
+    {
+        return;
+    }
+
+
+}
+
 
 // ############################## PROTECTED ##############################
 
@@ -99,7 +140,8 @@ std::set<std::string> Weapon::m_WpnAcceptedVars;
 
 
 Weapon::Weapon() :
-    PGEcfgFile(true, false)
+    PGEcfgFile(true, false),
+    m_state(WPN_READY)
 {
 }
 
