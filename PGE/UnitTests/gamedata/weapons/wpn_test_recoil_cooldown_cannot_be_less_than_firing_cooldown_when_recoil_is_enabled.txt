@@ -22,7 +22,7 @@ cap_max = 999
 # Max number of bullets the weapon can hold at a time.
 # This can be also understood as magazine capacity.
 # If 0, it is not reloadable (e.g. rail gun).
-reloadable = 0
+reloadable = 30
 
 # By default we have this amount of bullets with this weapon
 bullets_default = 30
@@ -103,7 +103,7 @@ recoil_m = 1.1
 
 # Time needed for recoil to disappear after 1 shot, in millisecs.
 # No effect when recoil_m is 1.0.
-recoil_cooldown = 500
+recoil_cooldown = 200
 
 # If available, recoil control can improve the accuracy degradation
 # caused by accumulating recoil across multiple shots.

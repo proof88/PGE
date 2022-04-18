@@ -3,7 +3,7 @@
 /*
     ###################################################################################
     WeaponsTest.h
-    Unit test for WeaponManager.
+    Unit test for Weapon and WeaponManager.
     Made by PR00F88, West Whiskhyll Entertainment
     2022
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
@@ -44,6 +44,7 @@ protected:
         AddSubTest("test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag);
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown);
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control);
+        AddSubTest("wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled", (PFNUNITSUBTEST) &WeaponsTest::wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled);
         AddSubTest("test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
         AddSubTest("test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse);
         AddSubTest("test_wpn_load_weapon_good", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_good);
@@ -66,6 +67,8 @@ protected:
         AddSubTest("test_wpn_shoot_during_reloading_per_mag_does_not_shoot", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_during_reloading_per_mag_does_not_shoot);
         AddSubTest("test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading);
         AddSubTest("test_wpn_shoot_doesnt_shoot_when_already_shooting", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_doesnt_shoot_when_already_shooting);
+        AddSubTest("test_wpn_shoot_continuously_in_loop_respects_cooldown_time", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_continuously_in_loop_respects_cooldown_time);
+        AddSubTest("test_wpn_reload_doesnt_reload_during_shooting", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_doesnt_reload_during_shooting);
         
         AddSubTest("test_wm_initially_empty", (PFNUNITSUBTEST) &WeaponsTest::test_wm_initially_empty);
         AddSubTest("test_wm_clear_weapons", (PFNUNITSUBTEST) &WeaponsTest::test_wm_clear_weapons);
@@ -233,6 +236,21 @@ private:
         return b;
     }
 
+    bool wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled()
+    {
+        bool b = false;
+        try
+        {
+            Weapon wpn("gamedata/weapons/wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled.txt");
+        }
+        catch (const std::exception)
+        {
+            b = true;
+        }
+
+        return b;
+    }
+
     bool test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag()
     {
         bool b = false;
@@ -282,6 +300,7 @@ private:
                 assertEquals(1500,    wpn.getVars()["reload_time"].getAsInt(), "reload_time") &
                 assertEquals("semi",  wpn.getVars()["firing_mode_def"].getAsString(), "firing_mode_def") &
                 assertEquals("burst", wpn.getVars()["firing_mode_max"].getAsString(), "firing_mode_max") &
+                assertEquals(300,    wpn.getVars()["firing_cooldown"].getAsInt(), "firing_cooldown") &
                 assertEquals(5.f,  wpn.getVars()["acc_angle"].getAsFloat(), "acc_angle") &
                 assertEquals(1.2f, wpn.getVars()["acc_m_walk"].getAsFloat(), "acc_m_walk") &
                 assertEquals(3.0f, wpn.getVars()["acc_m_run"].getAsFloat(), "acc_m_run") &
@@ -315,7 +334,7 @@ private:
             Weapon wpn("gamedata/weapons/sample_good_wpn.txt");
             b = true;
 
-            // by default no unmag bullets are available
+            // by default no unmag bullets are available, and we set mag to 0 as well
             wpn.SetMagBulletCount(0);
             b &= assertFalse(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
@@ -541,7 +560,7 @@ private:
             // reload time is 1500 msecs by sample wpn file
             wpn.getVars()["reload_time"].Set("200");
 
-            // so the idea is that we frequently checking the mag and unmag
+            // so the idea is that we are frequently checking the mag and unmag
             // bullets count and we remove the observed values from the sets,
             // so after the loop we expect both sets to be empty, proving that
             // bullet counts were changing continuously by 1
@@ -632,7 +651,22 @@ private:
         {
             Weapon wpn("gamedata/weapons/sample_good_wpn.txt");
             b = true;
-            b &= false; /* TODO: copy the per mag reload test case here and try shoot within the loop! */
+
+            wpn.getVars()["reload_whole_mag"].Set(false); // reload does not waste bullets
+            wpn.SetUnmagBulletCount(100); // make sure we could reload
+            wpn.SetMagBulletCount(14); // full would be 30
+
+            const TPRREuint nOriginalMagBulletCount = wpn.getMagBulletCount();
+            const TPRREuint nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
+
+            b &= assertTrue(wpn.reload(), "reload");
+            b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
+
+            b &= assertFalse(wpn.shoot(), "shoot");
+            b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 2");
+            b &= assertEquals(nOriginalMagBulletCount, wpn.getMagBulletCount(), "mag bullet count");
+            b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count");
+
         }
         catch (const std::exception) {}
 
@@ -646,7 +680,23 @@ private:
         {
             Weapon wpn("gamedata/weapons/sample_good_wpn.txt");
             b = true;
-            b &= false; /* TODO */
+
+            wpn.getVars()["reload_per_mag"].Set(false);   // reload per bullet
+            wpn.getVars()["reload_whole_mag"].Set(false); // reload does not waste bullets
+            wpn.SetUnmagBulletCount(100); // make sure we could reload
+            wpn.SetMagBulletCount(14); // full would be 30
+
+            const TPRREuint nOriginalMagBulletCount = wpn.getMagBulletCount();
+            const TPRREuint nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
+
+            b &= assertTrue(wpn.reload(), "reload");
+            b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
+
+            b &= assertTrue(wpn.shoot(), "shoot");
+            b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 2");
+            b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count");
+            b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count");
+
         }
         catch (const std::exception) {}
 
@@ -655,7 +705,107 @@ private:
 
     bool test_wpn_shoot_doesnt_shoot_when_already_shooting()
     {
-        return false;
+        bool b = false;
+
+        try
+        {
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt");
+            b = true;
+
+            const TPRREuint nOriginalMagBulletCount = wpn.getMagBulletCount();
+            const TPRREuint nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
+
+            // first shot allowed
+            b &= assertTrue(wpn.shoot(), "shoot 1");
+            b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 1");
+            b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 1");
+            b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 1");
+
+            // second shot now allowed
+            b &= assertFalse(wpn.shoot(), "shoot 2");
+            b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 2");
+            b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 2");
+            b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 2");
+        }
+        catch (const std::exception) {}
+
+        return b;
+    }
+
+    bool test_wpn_shoot_continuously_in_loop_respects_cooldown_time()
+    {
+        bool b = false;
+        try
+        {
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt");
+            b = true;
+
+            wpn.SetUnmagBulletCount(100); // make sure we could reload
+            wpn.SetMagBulletCount(7);     // full would be 30
+
+            // so the idea is that we are frequently checking the mag
+            // bullets count and we remove the observed values from the set,
+            // so after the loop we expect the set to be empty, proving that
+            // bullet counts were changing decreasing by 1
+            std::set<TPRREuint> expectedMagBulletCounts;
+            // TODO: cpp11 initializer list!
+            expectedMagBulletCounts.insert(6);
+            expectedMagBulletCounts.insert(5);
+            expectedMagBulletCounts.insert(4);
+            expectedMagBulletCounts.insert(3);
+            expectedMagBulletCounts.insert(2);
+            expectedMagBulletCounts.insert(1);
+            expectedMagBulletCounts.insert(0);
+
+            int iWait = 0;
+            // firing cooldown is 300 msecs by the file
+            do
+            {
+                iWait++;
+                wpn.shoot(); // even if we call shoot(), it must not shoot when conditions dont meet
+                wpn.Update();
+                expectedMagBulletCounts.erase( wpn.getMagBulletCount() );
+                Sleep(20);
+            } while ( (wpn.getMagBulletCount() > 0) && (iWait < 150) );
+            // let the cooldown after last shot elapse so state can also go back to READY
+            Sleep( wpn.getVars()["firing_cooldown"].getAsInt() );
+            wpn.Update();
+
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 2");
+            b &= assertEquals(0u, wpn.getMagBulletCount(), "mag");
+            b &= assertEquals(100u, wpn.getUnmagBulletCount(), "unmag");
+            b &= assertTrue(expectedMagBulletCounts.empty(), "exp mag empty");
+        }
+        catch (const std::exception) {}
+
+        return b;
+    }
+
+    bool test_wpn_reload_doesnt_reload_during_shooting()
+    {
+        bool b = false;
+
+        try
+        {
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt");
+            b = true;
+
+            const TPRREuint nOriginalMagBulletCount = wpn.getMagBulletCount();
+            const TPRREuint nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
+
+            b &= assertTrue(wpn.shoot(), "shoot");
+            b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 1");
+            b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 1");
+            b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 1");
+
+            b &= assertFalse(wpn.reload(), "reload");
+            b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 2");
+            b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 2");
+            b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 2");
+        }
+        catch (const std::exception) {}
+
+        return b;
     }
 
     bool test_wm_initially_empty()

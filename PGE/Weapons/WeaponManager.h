@@ -33,7 +33,8 @@ public:
     enum State
     {
         WPN_READY,
-        WPN_RELOADING
+        WPN_RELOADING,
+        WPN_SHOOTING
     };
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
@@ -55,7 +56,6 @@ public:
     TPRREbool reload();
     TPRREbool shoot();
 
-
 protected:
 
 private:
@@ -63,10 +63,11 @@ private:
     static std::set<std::string> m_WpnAcceptedVars;
 
     State m_state;
-    TPRREuint m_nUnmagBulletCount;
-    TPRREuint m_nMagBulletCount;
-    TPRREuint m_nBulletsToReload;
-    PFL::timeval m_timeReloadStarted;
+    TPRREuint m_nUnmagBulletCount;                     /**< Spare bullets not loaded into weapon. */
+    TPRREuint m_nMagBulletCount;                       /**< Bullets loaded into weapon. Even if weapon is not reloadable. */
+    TPRREuint m_nBulletsToReload;                      /**< Only updated during reload() / Update(). */
+    PFL::timeval m_timeReloadStarted;                  /**< Only updated during reload() / Update(). */
+    PFL::timeval m_timeLastShot;                       /**< Only updated during shoot() / Update(). */
 
     // ---------------------------------------------------------------------------
 

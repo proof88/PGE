@@ -73,6 +73,10 @@ firing_mode_def = semi
 # Max cannot be less than the default.
 firing_mode_max = burst
 
+# Time needed to elapse between 2 shots, in millisecs.
+# Cannot be 0.
+firing_cooldown = 300
+
 #####################
 #                   #
 #  FIRING ACCURACY  #

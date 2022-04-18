@@ -39,6 +39,7 @@ Weapon::Weapon(const char* fname) :
         m_WpnAcceptedVars.insert("reload_time");
         m_WpnAcceptedVars.insert("firing_mode_def");
         m_WpnAcceptedVars.insert("firing_mode_max");
+        m_WpnAcceptedVars.insert("firing_cooldown");
         m_WpnAcceptedVars.insert("acc_angle");
         m_WpnAcceptedVars.insert("acc_m_walk");
         m_WpnAcceptedVars.insert("acc_m_run");
@@ -86,6 +87,15 @@ Weapon::Weapon(const char* fname) :
         throw std::runtime_error("reload_whole_mag is true but reload_per_mag is false in " + std::string(fname));
     }
 
+    if ( getVars()["recoil_m"].getAsFloat() > 1.f )
+    {
+        if ( getVars()["recoil_cooldown"].getAsInt() < getVars()["firing_cooldown"].getAsInt() )
+        {
+            getConsole().EOLnOO("recoil enabled, but recoil_cooldown is less than firing_cooldown in %s! ", fname);
+            throw std::runtime_error("recoil enabled, but recoil_cooldown is less than firing_cooldown in " + std::string(fname));
+        }
+    }
+
     if ( (getVars()["recoil_m"].getAsFloat() == 1.f) && (getVars()["recoil_cooldown"].getAsInt() > 0) )
     {
         getConsole().EOLnOO("recoil_m is 1 but recoil_cooldown is non-zero in %s! ", fname);
@@ -110,14 +120,8 @@ Weapon::Weapon(const char* fname) :
         throw std::runtime_error("damage_area_size is 0 but damage_area_pulse is non-zero in " + std::string(fname));
     }
 
-    if ( getVars()["reloadable"].getAsInt() == 0 )
-    {
-        m_nUnmagBulletCount = getVars()["bullets_default"].getAsInt();
-    }
-    else
-    {
-        m_nMagBulletCount = getVars()["bullets_default"].getAsInt();
-    }
+    // it doesnt matter if weapon is reloadable or not, the loaded bullet count is in nMagBulletCount
+    m_nMagBulletCount = getVars()["bullets_default"].getAsInt();
 
     getConsole().SOLnOO("Weapon loaded!");
 }
@@ -164,10 +168,20 @@ void Weapon::Update()
         return;
     }
 
-    // WPN_RELOADING
     PFL::timeval timeNow;
     PFL::gettimeofday(&timeNow, 0);
 
+    if ( m_state == WPN_SHOOTING )
+    {      
+        const TPRREfloat fMillisecsSinceLastShot = PFL::getTimeDiffInUs(timeNow, m_timeLastShot) / 1000.f;
+        if ( getVars()["firing_cooldown"].getAsInt() <= fMillisecsSinceLastShot )
+        {
+            m_state = WPN_READY;
+        }
+        return;
+    }
+
+    // WPN_RELOADING
     if ( getVars()["reload_per_mag"].getAsBool() )
     {
         const TPRREfloat fMillisecsSinceReloadStarted = PFL::getTimeDiffInUs(timeNow, m_timeReloadStarted) / 1000.f;
@@ -253,10 +267,20 @@ TPRREbool Weapon::reload()
 
 TPRREbool Weapon::shoot()
 {
-    if ( m_state != WPN_READY )
+    if ( (m_state != WPN_READY) && /* reloading can be stopped if it is per-bullet */
+         !( (m_state == WPN_RELOADING) && (!getVars()["reload_per_mag"].getAsBool()) ) )
     {
         return false;
     }
+
+    if ( m_nMagBulletCount == 0 )
+    {
+        return false;
+    }
+
+    m_state = WPN_SHOOTING;
+    m_nMagBulletCount--;
+    PFL::gettimeofday(&m_timeLastShot, 0);
 
     return true;
 }
