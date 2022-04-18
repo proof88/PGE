@@ -44,10 +44,16 @@ public:
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
-    void Update(int msecs);
+    TPRREuint getUnmagBulletCount() const;
+    void SetUnmagBulletCount(TPRREuint count);
+
+    TPRREuint getMagBulletCount() const;
+    void SetMagBulletCount(TPRREuint count);
+
+    void Update();
     State getState() const;
-    void Reload();
-    void Shoot();
+    TPRREbool reload();
+    TPRREbool shoot();
 
 
 protected:
@@ -57,8 +63,10 @@ private:
     static std::set<std::string> m_WpnAcceptedVars;
 
     State m_state;
-    int m_nTotalBulletCount;
-    int m_nMagBulletCount;
+    TPRREuint m_nUnmagBulletCount;
+    TPRREuint m_nMagBulletCount;
+    TPRREuint m_nBulletsToReload;
+    PFL::timeval m_timeReloadStarted;
 
     // ---------------------------------------------------------------------------
 

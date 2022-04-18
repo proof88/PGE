@@ -22,7 +22,9 @@
 
 Weapon::Weapon(const char* fname) :
     PGEcfgFile(true, false),
-    m_state(WPN_READY)
+    m_state(WPN_READY),
+    m_nUnmagBulletCount(0),
+    m_nMagBulletCount(0)
 {
     getConsole().OLnOI("Weapon::Weapon(%s) ...", fname);
 
@@ -30,7 +32,8 @@ Weapon::Weapon(const char* fname) :
     {
         m_WpnAcceptedVars.insert("name");
         m_WpnAcceptedVars.insert("cap_max");
-        m_WpnAcceptedVars.insert("cap_reload");
+        m_WpnAcceptedVars.insert("reloadable");
+        m_WpnAcceptedVars.insert("bullets_default");
         m_WpnAcceptedVars.insert("reload_per_mag");
         m_WpnAcceptedVars.insert("reload_whole_mag");
         m_WpnAcceptedVars.insert("reload_time");
@@ -71,6 +74,51 @@ Weapon::Weapon(const char* fname) :
         throw std::runtime_error("failed to load file: " + std::string(fname));
     }
 
+    if ( (getVars()["reloadable"].getAsInt() == 0) && getVars()["reload_per_mag"].getAsBool() )
+    {
+        getConsole().EOLnOO("reloadable is 0 but reload_per_mag is true in %s! ", fname);
+        throw std::runtime_error("reloadable is 0 but reload_per_mag is true in " + std::string(fname));
+    }
+
+    if ( getVars()["reload_whole_mag"].getAsBool() && !getVars()["reload_per_mag"].getAsBool() )
+    {
+        getConsole().EOLnOO("reload_whole_mag is true but reload_per_mag is false in %s! ", fname);
+        throw std::runtime_error("reload_whole_mag is true but reload_per_mag is false in " + std::string(fname));
+    }
+
+    if ( (getVars()["recoil_m"].getAsFloat() == 1.f) && (getVars()["recoil_cooldown"].getAsInt() > 0) )
+    {
+        getConsole().EOLnOO("recoil_m is 1 but recoil_cooldown is non-zero in %s! ", fname);
+        throw std::runtime_error("recoil_m is 1 but recoil_cooldown is non-zero in " + std::string(fname));
+    }
+
+    if ( (getVars()["recoil_m"].getAsFloat() == 1.f) && (getVars()["recoil_control"].getAsString() != "off") )
+    {
+        getConsole().EOLnOO("recoil_m is 1 but recoil_control is not off in %s! ", fname);
+        throw std::runtime_error("recoil_m is 1 but recoil_control is not off in " + std::string(fname));
+    }
+
+    if ( (getVars()["bullet_speed"].getAsFloat() == 1000.f) && (getVars()["bullet_drag"].getAsFloat() > 0.f) )
+    {
+        getConsole().EOLnOO("bullet_speed is 1000 but bullet_drag is non-zero in %s! ", fname);
+        throw std::runtime_error("bullet_speed is 1000 but bullet_drag is non-zero in " + std::string(fname));
+    }
+
+    if ( (getVars()["damage_area_size"].getAsFloat() == 0.f) && (getVars()["damage_area_pulse"].getAsFloat() > 0.f) )
+    {
+        getConsole().EOLnOO("damage_area_size is 0 but damage_area_pulse is non-zero in %s! ", fname);
+        throw std::runtime_error("damage_area_size is 0 but damage_area_pulse is non-zero in " + std::string(fname));
+    }
+
+    if ( getVars()["reloadable"].getAsInt() == 0 )
+    {
+        m_nUnmagBulletCount = getVars()["bullets_default"].getAsInt();
+    }
+    else
+    {
+        m_nMagBulletCount = getVars()["bullets_default"].getAsInt();
+    }
+
     getConsole().SOLnOO("Weapon loaded!");
 }
 
@@ -89,14 +137,72 @@ const char* Weapon::getLoggerModuleName()
     return "Weapon";
 }
 
-void Weapon::Update(int msecs)
+TPRREuint Weapon::getUnmagBulletCount() const
+{
+    return m_nUnmagBulletCount;
+}
+
+void Weapon::SetUnmagBulletCount(TPRREuint count)
+{
+    m_nUnmagBulletCount = count;
+}
+
+TPRREuint Weapon::getMagBulletCount() const
+{
+    return m_nMagBulletCount;
+}
+
+void Weapon::SetMagBulletCount(TPRREuint count)
+{
+    m_nMagBulletCount = count;
+}
+
+void Weapon::Update()
 {
     if ( m_state == WPN_READY )
     {
         return;
     }
 
-    msecs;
+    // WPN_RELOADING
+    PFL::timeval timeNow;
+    PFL::gettimeofday(&timeNow, 0);
+
+    if ( getVars()["reload_per_mag"].getAsBool() )
+    {
+        const TPRREfloat fMillisecsSinceReloadStarted = PFL::getTimeDiffInUs(timeNow, m_timeReloadStarted) / 1000.f;
+        if ( getVars()["reload_time"].getAsInt() <= fMillisecsSinceReloadStarted )
+        {
+            if ( getVars()["reload_whole_mag"].getAsBool() )
+            {
+                m_nMagBulletCount = m_nBulletsToReload;
+            }
+            else
+            {
+                m_nMagBulletCount += m_nBulletsToReload;
+            }
+            m_nUnmagBulletCount -= m_nBulletsToReload;
+            m_state = WPN_READY;
+        }
+    }
+    else
+    {
+        const TPRREfloat fMillisecsSinceLastBulletReload = PFL::getTimeDiffInUs(timeNow, m_timeReloadStarted) / 1000.f;
+        if ( getVars()["reload_time"].getAsInt() <= fMillisecsSinceLastBulletReload )
+        {
+            m_nMagBulletCount++;
+            m_nUnmagBulletCount--;
+            m_nBulletsToReload--;
+            if ( m_nBulletsToReload == 0 )
+            {
+                m_state = WPN_READY;
+            }
+            else
+            {
+                m_timeReloadStarted = timeNow;
+            }
+        }
+    }
 }
 
 Weapon::State Weapon::getState() const
@@ -104,29 +210,55 @@ Weapon::State Weapon::getState() const
     return m_state;
 }
 
-void Weapon::Reload()
+TPRREbool Weapon::reload()
 {
     if ( m_state != WPN_READY )
     {
-        return;
+        return false;
     }
 
-    if ( getVars()["cap_reload"].getAsInt() == 0 )
+    const TPRREuint nCapMagazine = getVars()["reloadable"].getAsInt();
+    if ( nCapMagazine == 0 )
     {
-        return;
+        // not reloadable
+        return false;
     }
 
+    if ( m_nMagBulletCount == nCapMagazine )
+    {
+        // magazine is already full
+        return false;
+    }
 
+    if ( m_nUnmagBulletCount == 0 )
+    {
+        // we do not have spare bullets
+        return false;
+    }
+
+    m_state = WPN_RELOADING;
+    if ( getVars()["reload_whole_mag"].getAsBool() )
+    {
+        m_nBulletsToReload = min(nCapMagazine, m_nUnmagBulletCount);
+    }
+    else
+    {
+        m_nBulletsToReload = min(nCapMagazine - m_nMagBulletCount, m_nUnmagBulletCount);
+    }
+    
+    PFL::gettimeofday(&m_timeReloadStarted, 0);
+
+    return true;
 }
 
-void Weapon::Shoot()
+TPRREbool Weapon::shoot()
 {
     if ( m_state != WPN_READY )
     {
-        return;
+        return false;
     }
 
-
+    return true;
 }
 
 
