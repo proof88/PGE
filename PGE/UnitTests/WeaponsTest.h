@@ -30,6 +30,7 @@ protected:
     {
         //CConsole::getConsoleInstance().SetLoggingState(PRRETexture::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PRRETextureManager::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(WeaponManager::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(Weapon::getLoggerModuleName(), true);
         
@@ -41,6 +42,7 @@ protected:
         AddSubTest("test_wpn_load_weapon_missing_var", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_missing_var);
         AddSubTest("test_wpn_load_weapon_double_defined_var", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_double_defined_var);
         AddSubTest("test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag);
+        AddSubTest("test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable);
         AddSubTest("test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag);
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown);
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control);
@@ -98,6 +100,7 @@ protected:
 
         CConsole::getConsoleInstance().SetLoggingState(PRRETexture::getLoggerModuleName(), false);
         CConsole::getConsoleInstance().SetLoggingState(PRRETextureManager::getLoggerModuleName(), false);
+        CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), false);
         CConsole::getConsoleInstance().SetLoggingState(WeaponManager::getLoggerModuleName(), false);
         CConsole::getConsoleInstance().SetLoggingState(Weapon::getLoggerModuleName(), false);
     }
@@ -136,7 +139,7 @@ private:
         bool b = false;
         try
         {
-            Weapon wpn("gamedata/weapons/wpn_test_wpn_load_weapon_unaccepted_var.txt");
+            Weapon wpn("gamedata/weapons/wpn_test_unaccepted_var.txt");
         }
         catch (const std::exception)
         {
@@ -151,7 +154,7 @@ private:
         bool b = false;
         try
         {
-            Weapon wpn("gamedata/weapons/wpn_test_wpn_load_weapon_missing_var.txt");
+            Weapon wpn("gamedata/weapons/wpn_test_missing_var.txt");
         }
         catch (const std::exception)
         {
@@ -166,7 +169,7 @@ private:
         bool b = false;
         try
         {
-            Weapon wpn("gamedata/weapons/wpn_test_wpn_load_weapon_double_defined_var.txt");
+            Weapon wpn("gamedata/weapons/wpn_test_double_defined_var.txt");
         }
         catch (const std::exception)
         {
@@ -182,6 +185,21 @@ private:
         try
         {
             Weapon wpn("gamedata/weapons/wpn_test_not_reloadable_incompatible_with_reload_per_mag.txt");
+        }
+        catch (const std::exception)
+        {
+            b = true;
+        }
+
+        return b;
+    }
+
+    bool test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable()
+    {
+        bool b = false;
+        try
+        {
+            Weapon wpn("gamedata/weapons/wpn_test_bullets_default_cannot_be_greater_than_non_zero_reloadable.txt");
         }
         catch (const std::exception)
         {
@@ -835,7 +853,7 @@ private:
     bool test_wm_load_weapon_unaccepted_var()
     {
         WeaponManager wm(*engine);
-        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_wpn_load_weapon_unaccepted_var.txt"), "load");
+        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_unaccepted_var.txt"), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty");
 
         return b;
@@ -844,7 +862,7 @@ private:
     bool test_wm_load_weapon_missing_var()
     {
         WeaponManager wm(*engine);
-        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_wpn_load_weapon_missing_var.txt"), "load");
+        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_missing_var.txt"), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty");
 
         return b;
@@ -853,7 +871,7 @@ private:
     bool test_wm_load_weapon_double_defined_var()
     {
         WeaponManager wm(*engine);
-        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_wpn_load_weapon_double_defined_var.txt"), "load");
+        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_double_defined_var.txt"), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty");
 
         return b;

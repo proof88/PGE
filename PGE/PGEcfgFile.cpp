@@ -256,7 +256,7 @@ void PGEcfgFile::lineHandleAssignment(const std::string& sVar, const std::string
     
     if ( !m_acceptedVars.empty() && (m_acceptedVars.end() == m_acceptedVars.find(sVar)) )
     {
-        getConsole().EOLnOO("ERROR: setting unknown/unaccepted variable %s in file %s!", sVar.c_str(), fname);
+        getConsole().EOLn("ERROR: setting unknown/unaccepted variable %s in file %s!", sVar.c_str(), fname);
         bParseError = true;
         return;
     }
@@ -264,7 +264,7 @@ void PGEcfgFile::lineHandleAssignment(const std::string& sVar, const std::string
     const auto it_vars = getVars().find(sVar);
     if ( it_vars != getVars().end() )
     {
-        getConsole().EOLnOO("ERROR: variable %s in file %s has been already set previously (defined multiple times)!", sVar.c_str(), fname);
+        getConsole().EOLn("ERROR: variable %s in file %s has been already set previously (defined multiple times)!", sVar.c_str(), fname);
         bParseError = true;
         return;
     } 

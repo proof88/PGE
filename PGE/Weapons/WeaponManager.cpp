@@ -67,6 +67,7 @@ Weapon::Weapon(const char* fname) :
     // the same content. A solution would be if derived part would just update a reference
     // of the static set defined here in the derived part, however that might have some issues,
     // e.g. when the set is freed up by anyhow, then all weapons reference illegal memory area ...
+    // So let's re-think this after we have Cpp11 with shared ptrs or something ...
     setAcceptedVars(m_WpnAcceptedVars);
 
     if ( !load(fname) )
@@ -79,6 +80,12 @@ Weapon::Weapon(const char* fname) :
     {
         getConsole().EOLnOO("reloadable is 0 but reload_per_mag is true in %s! ", fname);
         throw std::runtime_error("reloadable is 0 but reload_per_mag is true in " + std::string(fname));
+    }
+
+    if ( (getVars()["reloadable"].getAsInt() > 0) && (getVars()["bullets_default"].getAsInt() > getVars()["reloadable"].getAsInt()) )
+    {
+        getConsole().EOLnOO("bullets_default cannot be greater than reloadable when the latter is non-zero %s! ", fname);
+        throw std::runtime_error("bullets_default cannot be greater than reloadable when the latter is non-zero in " + std::string(fname));
     }
 
     if ( getVars()["reload_whole_mag"].getAsBool() && !getVars()["reload_per_mag"].getAsBool() )
