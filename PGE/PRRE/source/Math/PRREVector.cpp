@@ -482,6 +482,60 @@ const TPRREfloat& PRREVector::operator[](const TPRREbyte& index) const
 
 
 /**
+    Comparison operator "less than".
+*/
+TPRREbool PRREVector::operator<(const PRREVector& r) const
+{
+    if ( getX() < r.getX() )
+    {
+        return true;
+    }
+    else if ( getX() == r.getX() )
+    {
+        if ( getY() < r.getY() )
+        {
+            return true;
+        }
+        else if ( getY() == r.getY() )
+        {
+            if ( getZ() < r.getZ() ) 
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+/**
+    Comparison operator "greater than".
+*/
+TPRREbool PRREVector::operator>(const PRREVector& r) const
+{
+    return r < *this;
+}
+
+
+/**
+    Comparison operator "less than or equal".
+*/
+TPRREbool PRREVector::operator<=(const PRREVector& r) const
+{
+    return !(*this > r);
+}
+
+
+/**
+    Comparison operator "greater than or equal".
+*/
+TPRREbool PRREVector::operator>=(const PRREVector& r) const
+{
+    return !(*this < r);
+}
+
+
+/**
     Negative operator.
 */
 PRREVector operator-(const PRREVector& vec)

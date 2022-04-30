@@ -74,6 +74,10 @@ public:
     const TPRREfloat& operator()(const TPRREbyte& index) const;  /**< Access element operator. */
     TPRREfloat&       operator[](const TPRREbyte& index);        /**< Access element operator. */
     const TPRREfloat& operator[](const TPRREbyte& index) const;  /**< Access element operator. */
+    TPRREbool operator<(const PRREVector& r) const;              /**< Comparison operator "less than". */
+    TPRREbool operator>(const PRREVector& r) const;              /**< Comparison operator "greater than". */
+    TPRREbool operator<=(const PRREVector& r) const;             /**< Comparison operator "less than or equal". */
+    TPRREbool operator>=(const PRREVector& r) const;             /**< Comparison operator "greater than or equal". */
 
 protected:
 

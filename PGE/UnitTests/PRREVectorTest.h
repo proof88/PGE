@@ -11,6 +11,7 @@
 
 #include "UnitTest.h"  // PCH
 #include "../PRRE/include/external/Math/PRREVector.h"
+#include <set>
 #include <sstream>
 
 #ifndef E
@@ -65,6 +66,10 @@ public:
         AddSubTest("testOperatorAccessElement2", (PFNUNITSUBTEST) &PRREVectorTest::testOperatorAccessElement2);
         AddSubTest("testOperatorNegative", (PFNUNITSUBTEST) &PRREVectorTest::testOperatorNegative);
         AddSubTest("testOperatorCrossProductAssignment1", (PFNUNITSUBTEST) &PRREVectorTest::testOperatorCrossProductAssignment1);
+        AddSubTest("testOperatorCompareLess", (PFNUNITSUBTEST) &PRREVectorTest::testOperatorCompareLess);
+        AddSubTest("testOperatorCompareLessOrEqual", (PFNUNITSUBTEST) &PRREVectorTest::testOperatorCompareLessOrEqual);
+        AddSubTest("testOperatorCompareGreater", (PFNUNITSUBTEST) &PRREVectorTest::testOperatorCompareGreater);
+        AddSubTest("testOperatorCompareGreaterOrEqual", (PFNUNITSUBTEST) &PRREVectorTest::testOperatorCompareGreaterOrEqual);
         AddSubTest("testOperatorWriteToStream", (PFNUNITSUBTEST) &PRREVectorTest::testOperatorWriteToStream);
     } // PRREVectorTest()
 
@@ -708,6 +713,192 @@ private:
         return assertEquals(0, vec1.getX(), E, "x") &
             assertEquals(0, vec1.getY(), E, "y") &
             assertEquals(1, vec1.getZ(), E, "z");
+    }
+
+    bool testOperatorCompareLess()
+    {
+        const PRREVector nullvec1;
+        const PRREVector nullvec2;
+
+        bool b = assertFalse(nullvec1 < nullvec1, "nullvec self");
+        b &= assertFalse(nullvec1 < nullvec2, "nullvec 1") & assertFalse(nullvec2 < nullvec1, "nullvec 2");
+
+        const PRREVector vecX(1, 0, 0);
+        const PRREVector vecY(0, 1, 0);
+        const PRREVector vecZ(0, 0, 1);
+
+        b &= assertFalse(vecX < vecX, "vecX self");
+        b &= assertFalse(vecY < vecY, "vecY self");
+        b &= assertFalse(vecZ < vecZ, "vecZ self");
+
+        b &= assertFalse(vecX < vecY, "vecX < vecY") & assertTrue(vecY < vecX, "vecY < vecX");
+        b &= assertFalse(vecX < vecZ, "vecX < vecZ") & assertTrue(vecZ < vecX, "vecZ < vecX");
+        b &= assertFalse(vecY < vecZ, "vecY < vecZ") & assertTrue(vecZ < vecY, "vecZ < vecY");
+
+        const PRREVector vecXY(1, 1, 0);
+        const PRREVector vecXZ(1, 0, 1);
+        const PRREVector vecYZ(0, 1, 1);
+
+        b &= assertFalse(vecXY < vecXY, "vecXY self");
+        b &= assertFalse(vecXZ < vecXZ, "vecXZ self");
+        b &= assertFalse(vecYZ < vecYZ, "vecYZ self");
+
+        b &= assertFalse(vecXY < vecXZ, "vecXY < vecXZ") & assertTrue(vecXZ < vecXY, "vecXZ < vecXY");
+        b &= assertFalse(vecXY < vecYZ, "vecXY < vecYZ") & assertTrue(vecYZ < vecXY, "vecYZ < vecXY");
+        b &= assertFalse(vecXZ < vecYZ, "vecXZ < vecYZ") & assertTrue(vecYZ < vecXZ, "vecYZ < vecXZ");
+
+        const PRREVector vecX2YZ(1, 2, 1);
+        const PRREVector vecX3YZ(1, 3, 1);
+        const PRREVector vecX4YZ(1, 4, 1);
+
+        b &= assertTrue(vecX2YZ < vecX3YZ, "vecX2YZ < vecX3YZ") & assertFalse(vecX3YZ < vecX2YZ, "vecX3YZ < vecX2YZ");
+        b &= assertTrue(vecX3YZ < vecX4YZ, "vecX3YZ < vecX4YZ") & assertFalse(vecX4YZ < vecX3YZ, "vecX4YZ < vecX3YZ");
+        b &= assertTrue(vecX2YZ < vecX4YZ, "vecX2YZ < vecX4YZ") & assertFalse(vecX4YZ < vecX2YZ, "vecX4YZ < vecX2YZ");
+
+        // std container ordering uses operator< of object, so let's see if auto ordering by set works as we expect
+
+        // TODO: with cpp11 initializer list, this vector can be const
+        std::vector<PRREVector> expectedOrder;
+        expectedOrder.push_back(vecZ);
+        expectedOrder.push_back(vecY);
+        expectedOrder.push_back(vecYZ);
+        expectedOrder.push_back(vecX);
+        expectedOrder.push_back(vecXZ);
+        expectedOrder.push_back(vecXY);
+        expectedOrder.push_back(vecX2YZ);
+        expectedOrder.push_back(vecX3YZ);
+        expectedOrder.push_back(vecX4YZ);
+        
+        std::set<PRREVector> actualOrder;
+        actualOrder.insert(vecX);
+        actualOrder.insert(vecY);
+        actualOrder.insert(vecZ);
+        actualOrder.insert(vecXY);
+        actualOrder.insert(vecXZ);
+        actualOrder.insert(vecYZ);
+        actualOrder.insert(vecX2YZ);
+        actualOrder.insert(vecX3YZ);
+        actualOrder.insert(vecX4YZ);
+
+        b &= assertEquals(expectedOrder.size(), actualOrder.size(), "container sizes");
+        if ( b )
+        {
+            auto expIt = expectedOrder.begin();
+            auto actualIt = actualOrder.begin();
+            while ( b && (expIt != expectedOrder.end()) )
+            {
+                b &= assertEquals(*expIt, *actualIt, "elem order");
+                expIt++;
+                actualIt++;
+            }
+        }
+
+        return b;
+    }
+
+    bool testOperatorCompareLessOrEqual()
+    {
+        const PRREVector nullvec1;
+        const PRREVector nullvec2;
+
+        bool b = assertTrue(nullvec1 <= nullvec1, "nullvec self");
+        b &= assertTrue(nullvec1 <= nullvec2, "nullvec 1") & assertTrue(nullvec2 <= nullvec1, "nullvec 2");
+
+        const PRREVector vecX(1, 0, 0);
+        const PRREVector vecY(0, 1, 0);
+        const PRREVector vecZ(0, 0, 1);
+
+        b &= assertTrue(vecX <= vecX, "vecX self");
+        b &= assertTrue(vecY <= vecY, "vecY self");
+        b &= assertTrue(vecZ <= vecZ, "vecZ self");
+
+        b &= assertFalse(vecX <= vecY, "vecX < vecY") & assertTrue(vecY <= vecX, "vecY < vecX");
+        b &= assertFalse(vecX <= vecZ, "vecX < vecZ") & assertTrue(vecZ <= vecX, "vecZ < vecX");
+        b &= assertFalse(vecY <= vecZ, "vecY < vecZ") & assertTrue(vecZ <= vecY, "vecZ < vecY");
+
+        const PRREVector vecXY(1, 1, 0);
+        const PRREVector vecXZ(1, 0, 1);
+        const PRREVector vecYZ(0, 1, 1);
+
+        b &= assertTrue(vecXY <= vecXY, "vecXY self");
+        b &= assertTrue(vecXZ <= vecXZ, "vecXZ self");
+        b &= assertTrue(vecYZ <= vecYZ, "vecYZ self");
+
+        b &= assertFalse(vecXY <= vecXZ, "vecXY < vecXZ") & assertTrue(vecXZ <= vecXY, "vecXZ < vecXY");
+        b &= assertFalse(vecXY <= vecYZ, "vecXY < vecYZ") & assertTrue(vecYZ <= vecXY, "vecYZ < vecXY");
+        b &= assertFalse(vecXZ <= vecYZ, "vecXZ < vecYZ") & assertTrue(vecYZ <= vecXZ, "vecYZ < vecXZ");
+
+        return b;
+    }
+
+    bool testOperatorCompareGreater()
+    {
+        const PRREVector nullvec1;
+        const PRREVector nullvec2;
+
+        bool b = assertFalse(nullvec1 > nullvec1, "nullvec self");
+        b &= assertFalse(nullvec1 > nullvec2, "nullvec 1") & assertFalse(nullvec2 > nullvec1, "nullvec 2");
+
+        const PRREVector vecX(1, 0, 0);
+        const PRREVector vecY(0, 1, 0);
+        const PRREVector vecZ(0, 0, 1);
+
+        b &= assertFalse(vecX > vecX, "vecX self");
+        b &= assertFalse(vecY > vecY, "vecY self");
+        b &= assertFalse(vecZ > vecZ, "vecZ self");
+
+        b &= assertTrue(vecX > vecY, "vecX > vecY") & assertFalse(vecY > vecX, "vecY > vecX");
+        b &= assertTrue(vecX > vecZ, "vecX > vecZ") & assertFalse(vecZ > vecX, "vecZ > vecX");
+        b &= assertTrue(vecY > vecZ, "vecY > vecZ") & assertFalse(vecZ > vecY, "vecZ > vecY");
+
+        const PRREVector vecXY(1, 1, 0);
+        const PRREVector vecXZ(1, 0, 1);
+        const PRREVector vecYZ(0, 1, 1);
+
+        b &= assertFalse(vecXY > vecXY, "vecXY self");
+        b &= assertFalse(vecXZ > vecXZ, "vecXZ self");
+        b &= assertFalse(vecYZ > vecYZ, "vecYZ self");
+
+        b &= assertTrue(vecXY > vecXZ, "vecXY > vecXZ") & assertFalse(vecXZ > vecXY, "vecXZ > vecXY");
+        b &= assertTrue(vecXY > vecYZ, "vecXY > vecYZ") & assertFalse(vecYZ > vecXY, "vecYZ > vecXY");
+        b &= assertTrue(vecXZ > vecYZ, "vecXZ > vecYZ") & assertFalse(vecYZ > vecXZ, "vecYZ > vecXZ");
+
+        return b;
+    }
+
+    bool testOperatorCompareGreaterOrEqual()
+    {
+        const PRREVector nullvec1;
+        const PRREVector nullvec2;
+
+        bool b = assertTrue(nullvec1 >= nullvec1, "nullvec self");
+        b &= assertTrue(nullvec1 >= nullvec2, "nullvec 1") & assertTrue(nullvec2 >= nullvec1, "nullvec 2");
+
+        const PRREVector vecX(1, 0, 0);
+        const PRREVector vecY(0, 1, 0);
+        const PRREVector vecZ(0, 0, 1);
+
+        b &= assertTrue(vecX >= vecX, "vecX self");
+        b &= assertTrue(vecY >= vecY, "vecY self");
+        b &= assertTrue(vecZ >= vecZ, "vecZ self");
+
+        b &= assertTrue(vecX >= vecY, "vecX > vecY") & assertFalse(vecY >= vecX, "vecY > vecX");
+        b &= assertTrue(vecX >= vecZ, "vecX > vecZ") & assertFalse(vecZ >= vecX, "vecZ > vecX");
+        b &= assertTrue(vecY >= vecZ, "vecY > vecZ") & assertFalse(vecZ >= vecY, "vecZ > vecY");
+
+        const PRREVector vecXY(1, 1, 0);
+        const PRREVector vecXZ(1, 0, 1);
+        const PRREVector vecYZ(0, 1, 1);
+
+        b &= assertTrue(vecXY >= vecXY, "vecXY self");
+        b &= assertTrue(vecXZ >= vecXZ, "vecXZ self");
+        b &= assertTrue(vecYZ >= vecYZ, "vecYZ self");
+
+        b &= assertTrue(vecXY >= vecXZ, "vecXY > vecXZ") & assertFalse(vecXZ >= vecXY, "vecXZ > vecXY");
+        b &= assertTrue(vecXY >= vecYZ, "vecXY > vecYZ") & assertFalse(vecYZ >= vecXY, "vecYZ > vecXY");
+        b &= assertTrue(vecXZ >= vecYZ, "vecXZ > vecYZ") & assertFalse(vecYZ >= vecXZ, "vecYZ > vecXZ");
+
+        return b;
     }
 
     bool testOperatorWriteToStream()
