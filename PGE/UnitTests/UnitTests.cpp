@@ -136,21 +136,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     vector<UnitTest*> tests;
     
-    //tests.push_back(&testPFL);
+    tests.push_back(&testPFL);
     //tests.push_back(&testPGEcfgVariable);
     //tests.push_back(&testPGEcfgFile);
     //tests.push_back(&testPGESysCFG);
-    tests.push_back(&testWeapons);
+    //tests.push_back(&testWeapons);
    
     /*
     tests.push_back(&testScreen);
     tests.push_back(&testSharedSettings);
     */
 
-    
-    //tests.push_back(&testPosUpTarget);
+    /*
+    tests.push_back(&testPosUpTarget);
     tests.push_back(&testPRREVector);  
-    /*tests.push_back(&testPRREMatrix);  
+    tests.push_back(&testPRREMatrix);  
     tests.push_back(&testPRRETransformMatrix);
     tests.push_back(&testAABB);
     tests.push_back(&testOctree);

@@ -11,6 +11,8 @@
 
 #include "UnitTest.h"  // PCH
 #include "../../../PFL/PFL/PFL.h"
+#include <set>
+
 
 #ifndef E
 #define E 0.0001f
@@ -53,6 +55,7 @@ protected:
         AddSubTest("testConstrain", (PFNUNITSUBTEST) &PFLTest::testConstrain);
         AddSubTest("testDegToRad", (PFNUNITSUBTEST) &PFLTest::testDegToRad);
         AddSubTest("testRadToDeg", (PFNUNITSUBTEST) &PFLTest::testRadToDeg);
+        AddSubTest("testRandom", (PFNUNITSUBTEST) &PFLTest::testRandom);
     }
 
     virtual bool setUp()
@@ -360,5 +363,21 @@ private:
             assertEquals(1.0f, PFL::radToDeg(PFL::pi()/180.0f), 0.001f, "pi/180") &
             assertEquals(180.0f, PFL::radToDeg(PFL::pi()), 0.001f, "pi");
     }   
+
+    bool testRandom()
+    {
+        std::set<int> stdset;
+        for (int i = 1; i <= 20; i++)
+            stdset.insert(i);
+
+        int i = 0;
+        while ( !stdset.empty() && (i < 500) )
+        {
+            stdset.erase( PFL::random(1, 20) );
+            i++;
+        }
+
+        return assertTrue(stdset.empty(), "empty");
+    }  
 
 }; // class PFLTest
