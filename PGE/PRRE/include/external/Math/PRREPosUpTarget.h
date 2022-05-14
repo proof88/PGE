@@ -59,7 +59,7 @@ public:
 
     TPRREbool operator==(const PRREPosUpTarget& clr) const;  /**< Equals to operator. */
     TPRREbool operator!=(const PRREPosUpTarget& clr) const;  /**< Not equals to operator. */
-    PRREPosUpTarget& operator=(const PRREPosUpTarget& vec);        /**< Assignment operator. */
+    PRREPosUpTarget& operator=(const PRREPosUpTarget& vec);  /**< Assignment operator. */
 
 private:
 

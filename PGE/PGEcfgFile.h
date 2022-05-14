@@ -54,6 +54,22 @@ public:
     const std::set<std::string>& getAcceptedVars() const;
     bool setAcceptedVars(const std::set<std::string>& newAcceptedVars);
 
+    PGEcfgFile(const PGEcfgFile& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
+        m_acceptedVars(other.m_acceptedVars),
+        m_vars(other.m_vars),
+        m_bRequireAllAcceptedVarsDefineRequirement(other.m_bRequireAllAcceptedVarsDefineRequirement),
+        m_bCaseSensitiveVars(other.m_bCaseSensitiveVars)
+    {}
+
+    PGEcfgFile& operator=(const PGEcfgFile& other) // TODO check if we really cannot live with just compiler generated operator=?
+    {
+        m_acceptedVars = other.m_acceptedVars;
+        m_vars = other.m_vars;
+        m_bRequireAllAcceptedVarsDefineRequirement = other.m_bRequireAllAcceptedVarsDefineRequirement;
+        m_bCaseSensitiveVars = other.m_bCaseSensitiveVars;
+        return *this;
+    }
+
 protected:
 
     std::set<std::string> m_acceptedVars;

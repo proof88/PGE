@@ -191,8 +191,8 @@ private:
     LRESULT onKeyDown(TPRREint key);
     LRESULT onMouseMove(TPRREint x, TPRREint y);
     LRESULT onMouseWheel(TPRREshort nWheel);
-    LRESULT onMouseUp();
-    LRESULT onMouseDown();
+    LRESULT onMouseUp(PGEInputMouse::MouseButton btn, WPARAM wParam, TPRREint x, TPRREint y);
+    LRESULT onMouseDown(PGEInputMouse::MouseButton btn, WPARAM wParam, TPRREint x, TPRREint y);
     LRESULT onRedrawRequired();
     LRESULT onPosChanged(const LPWINDOWPOS newPos);
     LRESULT onG3tCommand(UINT wmsg, WPARAM wParam, LPARAM lParam);
@@ -232,12 +232,12 @@ LRESULT __stdcall PRREdefaultWindowProc(HWND hWindow, UINT wndMsg, WPARAM wParam
     case WM_MOUSEMOVE  : return wnd->onMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
     case WM_MOUSEWHEEL : return wnd->onMouseWheel( HIWORD(wParam) );
     // Note: Quake3::win_wndproc.c states that Win32 may accumulate multiple events into wParam ... I havent experienced this yet though ...
-    case WM_LBUTTONDOWN: return wnd->onMouseDown();
-    case WM_LBUTTONUP  : return wnd->onMouseUp();
-    case WM_MBUTTONDOWN: return wnd->onMouseDown();
-    case WM_MBUTTONUP  : return wnd->onMouseUp();
-    case WM_RBUTTONDOWN: return wnd->onMouseDown();
-    case WM_RBUTTONUP  : return wnd->onMouseUp();
+    case WM_LBUTTONDOWN: return wnd->onMouseDown(PGEInputMouse::MouseButton::MBTN_LEFT, wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+    case WM_LBUTTONUP  : return wnd->onMouseUp(PGEInputMouse::MouseButton::MBTN_LEFT, wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+    case WM_MBUTTONDOWN: return wnd->onMouseDown(PGEInputMouse::MouseButton::MBTN_MIDDLE, wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+    case WM_MBUTTONUP  : return wnd->onMouseUp(PGEInputMouse::MouseButton::MBTN_MIDDLE, wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+    case WM_RBUTTONDOWN: return wnd->onMouseDown(PGEInputMouse::MouseButton::MBTN_RIGHT, wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+    case WM_RBUTTONUP  : return wnd->onMouseUp(PGEInputMouse::MouseButton::MBTN_RIGHT, wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
     case WM_REDRAW_REQUIRED:  return wnd->onRedrawRequired();
     case WM_WINDOWPOSCHANGED: return wnd->onPosChanged( (LPWINDOWPOS) lParam );
     case WM_G3T_PING: return wnd->onG3tCommand(wndMsg, wParam, lParam);
@@ -1649,18 +1649,21 @@ LRESULT PRREWindowImpl::onMouseMove(TPRREint x, TPRREint y)
 
 LRESULT PRREWindowImpl::onMouseWheel(TPRREshort nWheel)
 {   // it's IMPORTANT to be signed although a WORD will be stored in it
+    input.getMouse().ReceiveWheel(nWheel);
     return 0;
 } // onMouseWheel()
 
 
-LRESULT PRREWindowImpl::onMouseUp()
+LRESULT PRREWindowImpl::onMouseUp(PGEInputMouse::MouseButton btn, WPARAM wParam, TPRREint x, TPRREint y)
 {
+    input.getMouse().SetButtonPressed(btn, false);
     return 0;
 } // onMouseUp()
 
 
-LRESULT PRREWindowImpl::onMouseDown()
+LRESULT PRREWindowImpl::onMouseDown(PGEInputMouse::MouseButton btn, WPARAM wParam, TPRREint x, TPRREint y)
 {
+    input.getMouse().SetButtonPressed(btn, true);
     return 0;
 } // onMouseDown()
 

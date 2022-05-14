@@ -17,6 +17,7 @@
 #include "PRRE/include/external/PR00FsReducedRenderingEngine.h"
 #include "PGEInputHandler.h"
 #include "PGEWorld.h"
+#include "Weapons/WeaponManager.h"
 
 
 /**
@@ -73,6 +74,7 @@ public:
     PGEInputHandler& getInput() const;         /**< Returns the input handler object. */
     PGEWorld& getWorld() const;                /**< Returns the world object. */
     PR00FsReducedRenderingEngine& getPRRE() const;   /**< Returns the graphics engine. */
+    WeaponManager& getWeaponManager();         /**< Returns the weapon manager object. */
 
     int  initializeGame();                     /**< Initializes the game engine. */
     int  runGame();                            /**< Runs the game. */

@@ -148,6 +148,7 @@ void PRREPosUpTarget::SetRotation(TPRREfloat x, TPRREfloat y, TPRREfloat z)
     vTarget = vPos + tmpView;
 }
 
+
 /**
     Equals to operator.
 */

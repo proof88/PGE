@@ -63,17 +63,25 @@ public:
 
     void ApplyRelativeInput();
 
+    short int getWheel() const;
+    void ReceiveWheel(short int amount);
+
+    bool isButtonPressed(MouseButton mbtn) const;
+    void SetButtonPressed(MouseButton mbtn, bool pressed);
+
 protected:
 
 private:
 
     // ---------------------------------------------------------------------------
 
+    std::map<MouseButton, bool> mapButtonsPressed;
     RAWINPUTDEVICE Rid[1];
     int  mx, my;
     int  tempMovementX, tempMovementY;
     bool bPreciseMovementAvailable;
     bool bPreciseMovementActive;
+    short int mWheel;
 
     // ---------------------------------------------------------------------------
 
@@ -134,6 +142,11 @@ const char* PGEInputMouseImpl::getLoggerModuleName()
 bool PGEInputMouseImpl::initialize(HWND hWindow)
 {
     getConsole().OLn("PGEInputMouse::initialize()");
+
+    mapButtonsPressed[MBTN_LEFT] = false;
+    mapButtonsPressed[MBTN_MIDDLE] = false;
+    mapButtonsPressed[MBTN_RIGHT] = false;
+
     if ( hWindow != PGENULL )
     {
         Rid[0].hwndTarget = hWindow;
@@ -228,6 +241,30 @@ void PGEInputMouseImpl::ApplyRelativeInput()
 }
 
 
+short int PGEInputMouseImpl::getWheel() const
+{
+    return mWheel;
+}
+
+
+void PGEInputMouseImpl::ReceiveWheel(short int amount)
+{
+    mWheel = amount;
+}
+
+
+bool PGEInputMouseImpl::isButtonPressed(MouseButton mbtn) const
+{
+    return mapButtonsPressed.at(mbtn);
+}
+
+
+void PGEInputMouseImpl::SetButtonPressed(MouseButton mbtn, bool pressed)
+{
+    mapButtonsPressed[mbtn] = pressed;
+}
+
+
 // ############################## PROTECTED ##############################
 
 
@@ -236,6 +273,10 @@ void PGEInputMouseImpl::ApplyRelativeInput()
 
 PGEInputMouseImpl::PGEInputMouseImpl()
 {
+    mapButtonsPressed[MBTN_LEFT] = false;
+    mapButtonsPressed[MBTN_MIDDLE] = false;
+    mapButtonsPressed[MBTN_RIGHT] = false;
+
     bPreciseMovementActive = bPreciseMovementAvailable = false;
     Rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC; 
     Rid[0].usUsage = HID_USAGE_GENERIC_MOUSE; 

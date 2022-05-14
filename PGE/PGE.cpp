@@ -18,6 +18,7 @@
 #include "PGESysSFX.h"
 #include "PGESysNET.h"
 #include "PGESysCFG.h"
+#include "Weapons/WeaponManager.h"
 
 #include "PRRE/include/external/Display/PRREScreen.h"
 #include "PRRE/include/external/Display/PRREWindow.h"
@@ -56,6 +57,7 @@ public:
     PGEInputHandler& getInput() const;       
     PGEWorld& getWorld() const;             
     PR00FsReducedRenderingEngine& getPRRE() const;
+    WeaponManager& getWeaponManager();
                     
     bool isGameRunning() const;               
     int  destroyGame();                        
@@ -89,6 +91,7 @@ private:
     void* pNET;
     PGEInputHandler& inputHandler;
     PGEWorld& world;
+    WeaponManager wpnMgr;
 
     bool        bIsGameRunning;        /**< Is the game running (true after successful init and before initiating shutdown)? */
     std::string sGameTitle;            /**< Simplified name of the game, used in paths too, so can't contain joker chars. */
@@ -190,6 +193,12 @@ PR00FsReducedRenderingEngine& PGE::PGEimpl::getPRRE() const
 }
 
 
+WeaponManager& PGE::PGEimpl::getWeaponManager()
+{
+    return wpnMgr;
+}
+
+
 bool PGE::PGEimpl::isGameRunning() const
 {
     return bIsGameRunning;
@@ -261,7 +270,8 @@ PGE::PGEimpl::PGEimpl() :
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
-    SysCFG("")
+    SysCFG("") ,
+    wpnMgr(GFX)
 {
     _pOwner = NULL;  // currently not used
 }
@@ -271,7 +281,8 @@ PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
-    SysCFG("")
+    SysCFG(""),
+    wpnMgr(GFX)
 {
     _pOwner = NULL;  // currently not used
 }  
@@ -291,7 +302,8 @@ PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
-    SysCFG(gameTitle)
+    SysCFG(gameTitle),
+    wpnMgr(GFX)
 {
     _pOwner = NULL;  // currently not used
     sGameTitle = gameTitle;
@@ -521,6 +533,15 @@ PR00FsReducedRenderingEngine& PGE::getPRRE() const
 
 
 /**
+    Returns the weapon manager object.
+*/
+WeaponManager& PGE::getWeaponManager()
+{
+    return p->getWeaponManager();
+}
+
+
+/**
     Initializes the game engine.
 
     @return 0 on success, 1 on failure.
@@ -677,6 +698,7 @@ int PGE::runGame()
         {
             PGEInputHandler::createAndGet().getMouse().ApplyRelativeInput();
 
+            // TODO: on the long run, bullet movement and collision handling could be put here ...
             onGameRunning();
             p->GFX.getRenderer()->RenderScene();
         }

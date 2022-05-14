@@ -24,6 +24,13 @@ class PGEInputMouse
 #endif
 
 public:
+    enum MouseButton
+    {
+        MBTN_LEFT,
+        MBTN_MIDDLE,
+        MBTN_RIGHT
+    };
+
     /** Creates and gets the singleton instance. */
     static PGEInputMouse& createAndGet();
 
@@ -67,6 +74,18 @@ public:
         Applies the previously received total relative input to mouse cursor position.
     */
     virtual void ApplyRelativeInput() = 0;
+
+    /**
+        Mouse wheel interaction.
+    */
+    virtual short int getWheel() const = 0;
+    virtual void ReceiveWheel(short int amount) = 0;
+
+    /**
+        Mouse button interaction.
+    */
+    virtual bool isButtonPressed(MouseButton mbtn) const = 0;
+    virtual void SetButtonPressed(MouseButton mbtn, bool pressed) = 0;
 
 }; // class PGEInputMouse
 
