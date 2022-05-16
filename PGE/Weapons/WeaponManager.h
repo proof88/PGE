@@ -37,8 +37,8 @@ public:
 
     Bullet(
         PR00FsReducedRenderingEngine& gfx,
-        TPRREfloat px, TPRREfloat py, TPRREfloat pz,
-        TPRREfloat ax, TPRREfloat ay, TPRREfloat az,
+        TPRREfloat wpn_px, TPRREfloat wpn_py, TPRREfloat wpn_pz,
+        TPRREfloat wpn_ax, TPRREfloat wpn_ay, TPRREfloat wpn_az,
         TPRREfloat sx, TPRREfloat sy, TPRREfloat sz,
         TPRREfloat speed, TPRREfloat gravity, TPRREfloat drag, TPRREbool fragile);
     virtual ~Bullet();

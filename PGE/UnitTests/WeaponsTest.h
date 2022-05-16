@@ -65,6 +65,9 @@ protected:
         AddSubTest("test_wpn_reload_per_bullet_is_one_by_one", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_per_bullet_is_one_by_one);
         AddSubTest("test_wpn_reload_doesnt_reload_when_already_reloading", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_doesnt_reload_when_already_reloading);
 
+        AddSubTest("test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon);
+        AddSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle);
+
         AddSubTest("test_wpn_shoot_when_empty_does_not_shoot", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_when_empty_does_not_shoot);
         AddSubTest("test_wpn_shoot_during_reloading_per_mag_does_not_shoot", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_during_reloading_per_mag_does_not_shoot);
         AddSubTest("test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading);
@@ -350,9 +353,10 @@ private:
                 assertEquals(10,  wpn.getVars()["damage_ap"].getAsInt(), "damage_ap") &
                 assertEquals(5.f, wpn.getVars()["damage_area_size"].getAsFloat(), "damage_area_size") &
                 assertEquals("linear", wpn.getVars()["damage_area_effect"].getAsString(), "damage_area_effect") &
-                assertEquals(20.f, wpn.getVars()["damage_area_pulse"].getAsFloat(), "damage_area_pulse");
+                assertEquals(20.f, wpn.getVars()["damage_area_pulse"].getAsFloat(), "damage_area_pulse") &
+                assertTrue(bullets.empty(), "bullets");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -371,7 +375,7 @@ private:
             b &= assertFalse(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -390,7 +394,7 @@ private:
             b &= assertFalse(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -410,7 +414,7 @@ private:
             b &= assertFalse(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -452,7 +456,7 @@ private:
             b &= assertEquals(84u, wpn.getUnmagBulletCount(), "unmag");
             b &= assertGequals(fMillisecsReloadTook, wpn.getVars()["reload_time"].getAsFloat(), "time");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -494,7 +498,7 @@ private:
             b &= assertEquals(0u, wpn.getUnmagBulletCount(), "unmag");
             b &= assertGequals(fMillisecsReloadTook, wpn.getVars()["reload_time"].getAsFloat(), "time");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -536,7 +540,7 @@ private:
             b &= assertEquals(70u, wpn.getUnmagBulletCount(), "unmag");
             b &= assertGequals(fMillisecsReloadTook, wpn.getVars()["reload_time"].getAsFloat(), "time");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -578,7 +582,7 @@ private:
             b &= assertEquals(0u, wpn.getUnmagBulletCount(), "unmag");
             b &= assertGequals(fMillisecsReloadTook, wpn.getVars()["reload_time"].getAsFloat(), "time");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -639,7 +643,7 @@ private:
             b &= assertTrue(expectedMagBulletCounts.empty(), "exp mag empty");
             b &= assertTrue(expectedUnmagBulletCounts.empty(), "exp unmag empty");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -661,7 +665,7 @@ private:
             b &= assertFalse(wpn.reload(), "reload 2");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 2");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -679,9 +683,9 @@ private:
             wpn.SetMagBulletCount(0);
             b &= assertFalse(wpn.shoot(), "shoot");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
-            b &= assertTrue(bullets.empty(), "empty");
+            b &= assertTrue(bullets.empty(), "bullets");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -707,12 +711,12 @@ private:
 
             b &= assertFalse(wpn.shoot(), "shoot");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 2");
-            b &= assertTrue(bullets.empty(), "empty");
+            b &= assertTrue(bullets.empty(), "bullets");
             b &= assertEquals(nOriginalMagBulletCount, wpn.getMagBulletCount(), "mag bullet count");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count");
 
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -739,12 +743,12 @@ private:
 
             b &= assertTrue(wpn.shoot(), "shoot");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 2");
-            b &= assertFalse(bullets.empty(), "empty");
+            b &= assertFalse(bullets.empty(), "bullets");
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count");
 
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -776,7 +780,7 @@ private:
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 2");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 2");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -827,7 +831,7 @@ private:
             b &= assertEquals(100u, wpn.getUnmagBulletCount(), "unmag");
             b &= assertTrue(expectedMagBulletCounts.empty(), "exp mag empty");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
 
         return b;
     }
@@ -855,7 +859,96 @@ private:
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 2");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 2");
         }
-        catch (const std::exception) {}
+        catch (const std::exception&) {}
+
+        return b;
+    }
+
+    bool test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon()
+    {
+        bool b = false;
+
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            b = true;
+
+            wpn.getObject3D().getPosVec().Set(1.f, 2.f, 3.f);
+            wpn.getObject3D().getAngleVec().Set(30.f, 40.f, 50.f);
+            b &= assertTrue(wpn.shoot(), "shoot");
+            b &= assertEquals(1u, bullets.size(), "size");
+            
+            if ( b )
+            {
+                Bullet& bullet = *bullets.begin();
+                b &= assertEquals(bullet.getObject3D().getPosVec(), wpn.getObject3D().getPosVec(), "pos");
+                b &= assertEquals(bullet.getObject3D().getAngleVec(), wpn.getObject3D().getAngleVec(), "angle");
+            }
+
+        }
+        catch (const std::exception&) {}
+
+        return b;
+    }
+
+    bool test_wpn_update_positions_updates_weapon_object_position_and_angle()
+    {
+        bool b = false;
+
+        /*
+          By default with AngleY 0° and AngleZ 0°, weapon looks to <- direction.
+          
+           When AngleY is 0, and:
+            - AngleZ is 0, it means weapon looks to <- direction.
+                                                      ^
+            - AngleZ is -45, it means weapon looks to  \  direction.
+                                                     
+            - AngleZ is 45, it means weapon looks to  /  direction.
+                                                     ¡
+          
+           When AngleY is 180, and:
+            - AngleZ is 0, it means weapon looks to -> direction.
+                                                       ^
+            - AngleZ is -45, it means weapon looks to /  direction.
+          
+            - AngleZ is 45, it means weapon looks to \  direction.
+                                                      ¡
+          
+           This means that when targetX is less than posX, then angleY should be 0°, otherwise it needs to be 180°, and angleX always needs to be between 90° and -90°.
+          
+           Y
+           ^
+           |
+           |  (x)          (x) is the xhair, (w) is the weapon, and ß is angleZ of wpn we need to set.
+           |   |\           Length of A and B are obviously known. Thus tanß can be calculated by B/A, so ß in radians will be arctan(B/A).
+           |  B|  \
+           |   |___ß\(w)
+           |     A
+          -|------------------------->X
+           |
+        */
+
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            b = true;
+
+            wpn.UpdatePositions(PRREVector(0.f, 0.f, 0.f), PRREVector(1.f, 1.f, 0.f));
+            b &= assertEquals(PRREVector(0.f, 180.f, -45.f), wpn.getObject3D().getAngleVec(), "angle right up");
+
+            wpn.UpdatePositions(PRREVector(0.f, 0.f, 0.f), PRREVector(-1.f, 1.f, 0.f));
+            b &= assertEquals(PRREVector(0.f, 0.f, -45.f), wpn.getObject3D().getAngleVec(), "angle left up");
+
+            wpn.UpdatePositions(PRREVector(0.f, 0.f, 0.f), PRREVector(-1.f, -1.f, 0.f));
+            b &= assertEquals(PRREVector(0.f, 0.f, 45.f), wpn.getObject3D().getAngleVec(), "angle left bottom");
+
+            wpn.UpdatePositions(PRREVector(0.f, 0.f, 0.f), PRREVector(-1.f, -1.f, 0.f));
+            b &= assertEquals(PRREVector(0.f, 0.f, 45.f), wpn.getObject3D().getAngleVec(), "angle right bottom");
+
+        }
+        catch (const std::exception&) {}
 
         return b;
     }

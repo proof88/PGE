@@ -22,8 +22,8 @@
 
 
 Bullet::Bullet(PR00FsReducedRenderingEngine& gfx,
-        TPRREfloat px, TPRREfloat py, TPRREfloat pz,
-        TPRREfloat ax, TPRREfloat ay, TPRREfloat az,
+        TPRREfloat wpn_px, TPRREfloat wpn_py, TPRREfloat wpn_pz,
+        TPRREfloat wpn_ax, TPRREfloat wpn_ay, TPRREfloat wpn_az,
         TPRREfloat sx, TPRREfloat sy, TPRREfloat /*sz*/,
         TPRREfloat speed, TPRREfloat gravity, TPRREfloat drag, TPRREbool fragile) :
     m_gfx(gfx),
@@ -33,13 +33,14 @@ Bullet::Bullet(PR00FsReducedRenderingEngine& gfx,
     m_fragile(fragile),
     m_obj(NULL)
 {
-    m_put.getPosVec().Set(px, py, pz);
-    m_put.SetRotation(ax, ay, az);
+    m_put.getPosVec().Set(wpn_px, wpn_py, wpn_pz);
+    m_put.SetRotation(wpn_ax, (wpn_ay > 0.0f) ? 90.f : -90.f, (wpn_ay > 0.0f) ? wpn_az : -wpn_az);
+
     m_obj = m_gfx.getObject3DManager().createPlane(sx, sy);
     // TODO throw exception if cant create!
     m_obj->SetDoubleSided(true);
-    m_obj->getPosVec().Set(px, py, pz);
-    m_obj->getAngleVec().Set(0.f, 0.f, az); // since this is just a plane, we should not rotate it on neither X and Y axes so it always looks 2D
+    m_obj->getPosVec().Set(wpn_px, wpn_py, wpn_pz);
+    m_obj->getAngleVec().Set(wpn_ax, wpn_ay, wpn_az);
 }
 
 Bullet::~Bullet()
@@ -244,8 +245,41 @@ void Weapon::UpdatePositions(const PRREVector& playerPos, const PRREVector& targ
 {
     getObject3D().getPosVec().Set( playerPos.getX(), playerPos.getY(), playerPos.getZ() );
 
-    //distY = _root.mc_mouseTarget._y - (_y + 30);
-    const float distYXratio = (targetPos2D.getX() == 0.f) ? 3.0f : targetPos2D.getY()/targetPos2D.getX();
+    /*
+         By default with AngleY 0° and AngleZ 0°, weapon looks to <- direction.
+
+         When AngleY is 0, and:
+          - AngleZ is 0, it means weapon looks to <- direction.
+                                                    ^
+          - AngleZ is -45, it means weapon looks to  \  direction.
+                                                   
+          - AngleZ is 45, it means weapon looks to  /  direction.
+                                                   ¡
+
+         When AngleY is 180, and:
+          - AngleZ is 0, it means weapon looks to -> direction.
+                                                     ^
+          - AngleZ is -45, it means weapon looks to /  direction.
+
+          - AngleZ is 45, it means weapon looks to \  direction.
+                                                    ¡
+
+         This means that when targetX is less than posX, then angleY should be 0°, otherwise it needs to be 180°, and angleX always needs to be between 90° and -90°.
+
+         Y
+         ^
+         |
+         |  (x)          (x) is the xhair, (w) is the weapon, and ß is angleZ of wpn we need to set.
+         |   |\           Length of A and B are obviously known. Thus tanß can be calculated by B/A, so ß in radians will be arctan(B/A).
+         |  B|  \
+         |   |___ß\(w)
+         |     A
+        -|------------------------->X
+         |
+
+    */
+
+    const float distYXratio = (targetPos2D.getX() == 0.f) ? targetPos2D.getY() : targetPos2D.getY()/targetPos2D.getX();
     if ( targetPos2D.getX() < 0.f )
     {
         getObject3D().getAngleVec().SetY( 0.f );
@@ -399,21 +433,12 @@ TPRREbool Weapon::shoot()
 
     m_state = WPN_SHOOTING;
     m_nMagBulletCount--;
-    TPRREfloat angley = m_obj->getAngleVec().getY() > 0.0f ? 90.f : -90.f;
-    TPRREfloat anglez;
-    if ( angley == 90.f )
-    {
-        anglez = m_obj->getAngleVec().getZ();
-    }
-    else
-    {
-        anglez = -m_obj->getAngleVec().getZ();
-    }
+    
     m_bullets.push_back(
         Bullet(
             m_gfx,
             m_obj->getPosVec().getX(), m_obj->getPosVec().getY(), m_obj->getPosVec().getZ(),
-            m_obj->getAngleVec().getX(), angley, anglez,
+            m_obj->getAngleVec().getX(), m_obj->getAngleVec().getY(), m_obj->getAngleVec().getZ(),
             getVars()["bullet_size_x"].getAsFloat(),
             getVars()["bullet_size_y"].getAsFloat(),
             getVars()["bullet_size_z"].getAsFloat(),
