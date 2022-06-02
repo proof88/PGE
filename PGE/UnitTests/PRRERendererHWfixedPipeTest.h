@@ -449,8 +449,12 @@ private:
                 assertEquals(0u, hwRenderer.getLastFrameTransferredVertices(), "getLastFrameTransferredVertices 2") &
                 assertEquals(0u, hwRenderer.getLastFrameTransferredTriangles(), "getLastFrameTransferredTriangles 2");
 
+            // default far plane value 10.f would obviously clip farest cube(s)
+            engine->getCamera().SetNearPlane(1.f);
+            engine->getCamera().SetFarPlane(20.0f);
+
             // now create some cubes and set different settings so we can have different expectations for the counters
-            const TPRRE_XYZ posStartFrom = {20.f, 0.f, 20.f};
+            const TPRRE_XYZ posStartFrom = {4.f, 0.f, 14.f};
             std::vector<PRREObject3D*> vCubes;
             for (int i = 0; i < 5; i++)
             {
@@ -472,6 +476,14 @@ private:
             vCubes[2]->SetRenderingAllowed(false);
 
             renderer->RenderScene();
+
+            // if we want to actually rasterize the scene for debugging, we need to invoke RenderScene() one more time, since
+            // the first call will transform geometry into feedback buffer, rasterization won't happen!
+            //PRREWindow& window = engine->getWindow();
+            //window.ShowFull();
+            //renderer->RenderScene();
+            //Sleep(3000);
+
             b &= assertEquals(4u /* vCubes[0,1,3,4] */, hwRenderer.getLastFrameObjectsVisible(), "getLastFrameObjectsVisible 3") &
                 assertEquals(1u /* vCubes[0] */, hwRenderer.getLastFrameOccluders(), "getLastFrameOccluders 3") &
                 assertEquals(2u /* vCubes[3,4] */, hwRenderer.getLastFrameOccludeesNonOcclusionTested(), "getLastFrameOccludeesNonOcclusionTested 3") &

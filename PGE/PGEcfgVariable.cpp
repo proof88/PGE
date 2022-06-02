@@ -106,7 +106,9 @@ float PGEcfgVariable::getAsFloat() const
 bool PGEcfgVariable::getAsBool() const
 {
     string tmpValue = sValue;
+#pragma warning(disable:4244)  /* int-char conversion in std::transform */
     transform(tmpValue.begin(), tmpValue.end(), tmpValue.begin(), ::toupper);
+#pragma warning(default:4244)
 
     if ( tmpValue == "TRUE" )
         return true;

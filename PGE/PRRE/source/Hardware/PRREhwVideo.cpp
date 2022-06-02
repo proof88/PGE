@@ -121,11 +121,11 @@ private:
     static const GLint   GL_STANDARD_MIN_CUBE_MAP_TEXTURE_SIZE;
 
     static PRREhwVideoImpl hwVideoInstance;
-    static HGLRC hGLRC;                          /**< OpenGL rendering context handle. */
-    static HDC   hWndDC;                         /**< Our main window's device context. */
-    static TPRREuint nResX, nResY;               /**< Display resolution. */      
-    static TPRREint  nColorBits, nDepthBits;     /**< Display color depth, ZBuffer-depth. */
-    static TPRREint  nStencilBits, nFSAAlevel;   /**< Stencil Buffer depth, FSAA-level. */
+    static HGLRC hGLRC;                            /**< OpenGL rendering context handle. */
+    static HDC   hWndDC;                           /**< Our main window's device context. */
+    static TPRREuint m_nResX, m_nResY;             /**< Display resolution. */      
+    static TPRREint  m_nColorBits, m_nDepthBits;   /**< Display color depth, ZBuffer-depth. */
+    static TPRREint  m_nStencilBits, m_nFSAAlevel; /**< Stencil Buffer depth, FSAA-level. */
 
     static bool      bAlreadyInitializedOnceOGL; /**< True if OGL-initialization has been done once already.
                                                       This is to speed up consecutive stop-start initializations with same OGL renderer. */
@@ -325,7 +325,7 @@ TPRREuint PRREhwVideoImpl::getUsedTextureMemory() const
 */
 TPRREuint PRREhwVideoImpl::getColorBufferPixelCount() const
 {
-    return ( nResX * nResY );
+    return ( m_nResX * m_nResY );
 } // getColorBufferPixelCount()
 
 
@@ -335,7 +335,7 @@ TPRREuint PRREhwVideoImpl::getColorBufferPixelCount() const
 */
 TPRREuint PRREhwVideoImpl::getColorBufferSize() const
 {
-    return ( getColorBufferPixelCount()*2 * nColorBits/8 );
+    return ( getColorBufferPixelCount()*2 * m_nColorBits/8 );
 } // getColorBufferSize()
 
 
@@ -345,7 +345,7 @@ TPRREuint PRREhwVideoImpl::getColorBufferSize() const
 */
 TPRREuint PRREhwVideoImpl::getDepthBufferSize() const
 {
-    return ( nDepthBits/8 * getColorBufferPixelCount() );
+    return ( m_nDepthBits/8 * getColorBufferPixelCount() );
 } // getDepthBufferSize()
 
 
@@ -355,7 +355,7 @@ TPRREuint PRREhwVideoImpl::getDepthBufferSize() const
 */
 TPRREuint PRREhwVideoImpl::getStencilBufferSize() const
 {
-    return ( nStencilBits/8 * getColorBufferPixelCount() );
+    return ( m_nStencilBits/8 * getColorBufferPixelCount() );
 } // getStencilBufferSize()
 
 
@@ -365,7 +365,7 @@ TPRREuint PRREhwVideoImpl::getStencilBufferSize() const
 */
 TPRREuint PRREhwVideoImpl::getSampleBufferSize() const
 {
-    return ( nFSAAlevel * (getColorBufferSize()/2 + getDepthBufferSize() + getStencilBufferSize()) );
+    return ( m_nFSAAlevel * (getColorBufferSize()/2 + getDepthBufferSize() + getStencilBufferSize()) );
 } // getSampleBufferSize()
 
 
@@ -753,12 +753,12 @@ void PRREhwVideoImpl::PreInitialize(HGLRC rc, HDC dc, TPRREuint resx, TPRREuint 
 {
     hGLRC = rc;
     hWndDC = dc;
-    nResX = resx;
-    nResY = resy;
-    nColorBits = cbits;
-    nDepthBits = dbits;
-    nStencilBits = sbits;
-    nFSAAlevel   = fsaa;
+    m_nResX = resx;
+    m_nResY = resy;
+    m_nColorBits = cbits;
+    m_nDepthBits = dbits;
+    m_nStencilBits = sbits;
+    m_nFSAAlevel   = fsaa;
 
     memset(&dispdev, 0, sizeof(dispdev));
     dispdev.cb = sizeof(dispdev);
@@ -771,7 +771,7 @@ void PRREhwVideoImpl::PreInitialize(HGLRC rc, HDC dc, TPRREuint resx, TPRREuint 
 */
 void PRREhwVideoImpl::PreInitialize()
 {
-    PreInitialize(hGLRC, hWndDC, nResX, nResY, nColorBits, nDepthBits, nStencilBits, nFSAAlevel);
+    PreInitialize(hGLRC, hWndDC, m_nResX, m_nResY, m_nColorBits, m_nDepthBits, m_nStencilBits, m_nFSAAlevel);
     sharedSettings.Set(PRRE_SSET_VSYNC_SUPPORTED, false);
 } // deinitializeBase()
 
@@ -899,12 +899,12 @@ void PRREhwVideoImpl::DeinitializeBase()
 {
     hGLRC = NULL;
     hWndDC = NULL;
-    nResX = 0;
-    nResY = 0;
-    nColorBits = 0;
-    nDepthBits = 0;
-    nStencilBits = 0;
-    nFSAAlevel   = 0;
+    m_nResX = 0;
+    m_nResY = 0;
+    m_nColorBits = 0;
+    m_nDepthBits = 0;
+    m_nStencilBits = 0;
+    m_nFSAAlevel   = 0;
 } // deinitializeBase()
 
 
@@ -932,12 +932,12 @@ const GLint   PRREhwVideoImpl::GL_STANDARD_MIN_CUBE_MAP_TEXTURE_SIZE = 1024;
 
 HGLRC     PRREhwVideoImpl::hGLRC = NULL;
 HDC       PRREhwVideoImpl::hWndDC = NULL;
-TPRREuint PRREhwVideoImpl::nResX = 0;
-TPRREuint PRREhwVideoImpl::nResY = 0;
-TPRREint  PRREhwVideoImpl::nColorBits = 0;
-TPRREint  PRREhwVideoImpl::nDepthBits = 0;
-TPRREint  PRREhwVideoImpl::nStencilBits = 0;
-TPRREint  PRREhwVideoImpl::nFSAAlevel = 0;
+TPRREuint PRREhwVideoImpl::m_nResX = 0;
+TPRREuint PRREhwVideoImpl::m_nResY = 0;
+TPRREint  PRREhwVideoImpl::m_nColorBits = 0;
+TPRREint  PRREhwVideoImpl::m_nDepthBits = 0;
+TPRREint  PRREhwVideoImpl::m_nStencilBits = 0;
+TPRREint  PRREhwVideoImpl::m_nFSAAlevel = 0;
 
 bool      PRREhwVideoImpl::bAlreadyInitializedOnceOGL = false; 
 bool      PRREhwVideoImpl::bSuppAnisoFiltering       = false;
@@ -969,7 +969,7 @@ PRREhwVideoImpl::PRREhwVideoImpl() :
     sharedSettings( PRRESharedSettings::createAndGet() ),
     discoverGL_1_1(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin),
     discoverGL_1_2(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin),
-    discoverGL_1_3(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin, nColorBits, nDepthBits, nStencilBits),
+    discoverGL_1_3(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin, m_nColorBits, m_nDepthBits, m_nStencilBits),
     discoverGL_1_4(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin),
     discoverGL_1_5(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin),
     discoverGL_2_0(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin),
@@ -991,7 +991,7 @@ PRREhwVideoImpl::PRREhwVideoImpl(const PRREhwVideoImpl&) :
     sharedSettings( PRRESharedSettings::createAndGet() ),
     discoverGL_1_1(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin),
     discoverGL_1_2(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin),
-    discoverGL_1_3(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin, nColorBits, nDepthBits, nStencilBits),
+    discoverGL_1_3(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin, m_nColorBits, m_nDepthBits, m_nStencilBits),
     discoverGL_1_4(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin),
     discoverGL_1_5(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin),
     discoverGL_2_0(sVidFeaturesOGL, sVidFeaturesWGL, sVidVersionOGL, nVidVersionGLSLmaj, nVidVersionGLSLmin),

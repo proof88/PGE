@@ -124,6 +124,10 @@ public:
     /**
         Renders the scene.
         No effect if the engine is not initialized.
+        Note that the first call to this function might not result in actually producing picture of the scene, because the
+        implementing renderer might use "feedback mode" which means that the geometry is transformed into feedback buffer
+        for debugging purposes, and rasterization is not happening. This is true only for newly created objects though,
+        which are rendered for the first time.
     */
     virtual void RenderScene() = 0;
 

@@ -83,12 +83,12 @@ private:
 
     PRRESharedSettings& sharedSettings;  /**< Pointer to shared settings. */
 
-    PIXELFORMATDESCRIPTOR pfd;           /**< Pixelformat descriptor. */
+    PIXELFORMATDESCRIPTOR m_pfd;         /**< Pixelformat descriptor. */
     TPRREbool bDisplaySettingsApplied;   /**< Are the set display settings applied? */
     TPRREbool bFullScreen;               /**< Are we in fullscreen mode? */
     int       iSimplePixelFormat;        /**< Best pixel format found by Win32. */
-    int       iAdvancedPixelFormat;      /**< Best pixel format found by OpenGL. */
-    int       iAppliedPixelFormat;       /**< Currently applied pixel format, iSimple or iAdvanced. */
+    int       m_iAdvancedPixelFormat;    /**< Best pixel format found by OpenGL. */
+    int       m_iAppliedPixelFormat;     /**< Currently applied pixel format, iSimple or iAdvanced. */
     TPRREuint nResX;                     /**< Horizontal screen resolution. */
     TPRREuint nResY;                     /**< Vertical screen resolution. */
     TPRREuint nRefreshRate;              /**< Screen refresh rate. */
@@ -123,7 +123,7 @@ private:
         Finds a pixel format for the given HDC based on the previously set values like color bits.
         Advanced means the pfd will be selected by OpenGL so this method requires OpenGL to be initialized.
         This method can be used if an FSAA-ready pfd is needed.
-        Updates iAdvancedPixelFormat.
+        Updates m_iAdvancedPixelFormat.
     */
     void FindAdvancedPixelFormat(HDC dc);
 
@@ -136,7 +136,7 @@ private:
 
     /**
         Sets the given pixel format for the given HDC.
-        Updates iAppliedPixelFormat.
+        Updates m_iAppliedPixelFormat.
     */
     TPRREbool applyPixelFormat(HDC dc, int iPixelFormat, PIXELFORMATDESCRIPTOR* pfd);
 
@@ -259,10 +259,10 @@ TPRREbool PRREScreenImpl::applyDisplaySettings(HDC dc, TPRRE_SCREEN_PF pixelForm
         switch (pixelFormat)
         {
         case PRRE_SCREEN_PF_SIMPLE:
-            bDisplaySettingsApplied = applyPixelFormat(dc, iSimplePixelFormat, &pfd);
+            bDisplaySettingsApplied = applyPixelFormat(dc, iSimplePixelFormat, &m_pfd);
             break;
         case PRRE_SCREEN_PF_ADVANCED:
-            bDisplaySettingsApplied = applyPixelFormat(dc, iAdvancedPixelFormat, &pfd);
+            bDisplaySettingsApplied = applyPixelFormat(dc, m_iAdvancedPixelFormat, &m_pfd);
             break;
         case PRRE_SCREEN_PF_NONE:
             // TODO: create DIB in RAM to render to as in CSWRenderer ctor!
@@ -273,7 +273,7 @@ TPRREbool PRREScreenImpl::applyDisplaySettings(HDC dc, TPRRE_SCREEN_PF pixelForm
             getConsole().EOLn("ERROR: invalid pixelFormat specified!");
         }
                                                         
-        bFSAA_ready = (iAdvancedPixelFormat == iAppliedPixelFormat);
+        bFSAA_ready = (m_iAdvancedPixelFormat == m_iAppliedPixelFormat);
 
         return bDisplaySettingsApplied;
     } // canproceed
@@ -356,7 +356,7 @@ void PRREScreenImpl::SetResolution(TPRREuint w, TPRREuint h)
     if ( bDisplaySettingsApplied )
         return;
 
-    if ( w == 0 || h == 0 )
+    if ( (w == 0) && (h == 0) )
     {
         DEVMODE dm;
         memset(&dm, 0, sizeof(DEVMODE));
@@ -673,10 +673,10 @@ PRREScreenImpl::PRREScreenImpl() :
     iFSAA_req = 0;
     bFSAA_ready = false;
     bVSyncState = false;
-    memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
+    memset(&m_pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
     iSimplePixelFormat = 0;
-    iAdvancedPixelFormat = 0;
-    iAppliedPixelFormat = 0;
+    m_iAdvancedPixelFormat = 0;
+    m_iAppliedPixelFormat = 0;
 } // PRREScreenImpl(...)
 
 
@@ -706,22 +706,22 @@ void PRREScreenImpl::FindSimplePixelFormat(HDC dc)
         return;
     }
 
-    memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
-    pfd.nSize        = sizeof(PIXELFORMATDESCRIPTOR);
-    pfd.nVersion     = (WORD) 1;
-    pfd.dwFlags      = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER | PFD_GENERIC_ACCELERATED;
-    pfd.iPixelType   = PFD_TYPE_RGBA;        
-    pfd.iLayerType   = PFD_MAIN_PLANE;
-    pfd.cColorBits   = (BYTE) nBitsColor;
-    pfd.cDepthBits   = (BYTE) nBitsDepth;
-    pfd.cStencilBits = (BYTE) nBitsStencil;
+    memset(&m_pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
+    m_pfd.nSize        = sizeof(PIXELFORMATDESCRIPTOR);
+    m_pfd.nVersion     = (WORD) 1;
+    m_pfd.dwFlags      = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER | PFD_GENERIC_ACCELERATED;
+    m_pfd.iPixelType   = PFD_TYPE_RGBA;        
+    m_pfd.iLayerType   = PFD_MAIN_PLANE;
+    m_pfd.cColorBits   = (BYTE) nBitsColor;
+    m_pfd.cDepthBits   = (BYTE) nBitsDepth;
+    m_pfd.cStencilBits = (BYTE) nBitsStencil;
 
-    int iformat = ChoosePixelFormat(dc, &pfd);
-    while ( iformat == 0 && (pfd.cDepthBits > 16) )
+    int iformat = ChoosePixelFormat(dc, &m_pfd);
+    while ( iformat == 0 && (m_pfd.cDepthBits > 16) )
     {
-        getConsole().EOLn("  WARNING: %d-bit Z-Buffer failed", pfd.cDepthBits);
-        pfd.cDepthBits -= 8;
-        iformat = ChoosePixelFormat(dc, &pfd);
+        getConsole().EOLn("  WARNING: %d-bit Z-Buffer failed", m_pfd.cDepthBits);
+        m_pfd.cDepthBits -= 8;
+        iformat = ChoosePixelFormat(dc, &m_pfd);
     }
 
     if ( iformat == 0 )
@@ -730,7 +730,7 @@ void PRREScreenImpl::FindSimplePixelFormat(HDC dc)
         return;
     }
 
-    nBitsDepth = (TPRREuint) pfd.cDepthBits;
+    nBitsDepth = (TPRREuint) m_pfd.cDepthBits;
     iSimplePixelFormat = iformat;
     getConsole().SOLn("  > Simple pixel format collected!");
 } // FindSimplePixelFormat()
@@ -740,12 +740,12 @@ void PRREScreenImpl::FindSimplePixelFormat(HDC dc)
     Finds a pixel format for the given HDC based on the previously set values like color bits.
     Advanced means the pfd will be selected by OpenGL so this method requires OpenGL to be initialized.
     This method can be used if an FSAA-ready pfd is needed.
-    Updates iAdvancedPixelFormat.
+    Updates m_iAdvancedPixelFormat.
 */
 void PRREScreenImpl::FindAdvancedPixelFormat(HDC dc)
 {
     getConsole().OLn("  FindAdvancedPixelFormat() ...");
-    if ( iAdvancedPixelFormat > 0 )
+    if ( m_iAdvancedPixelFormat > 0 )
     {
         getConsole().OLn("    already found!");
         return;
@@ -781,7 +781,7 @@ void PRREScreenImpl::FindAdvancedPixelFormat(HDC dc)
         getConsole().EOLn("  ERROR: wglChoosePixelFormatARB() failed!");
         return;
     }
-    iAdvancedPixelFormat = pixelformat;
+    m_iAdvancedPixelFormat = pixelformat;
     getConsole().SOLn("  > Advanced pixel format collected!");
 } // FindAdvancedPixelFormat()
 
@@ -854,7 +854,7 @@ void PRREScreenImpl::ReadAdvancedPixelFormatInfo(HDC dc, int iAppliedPixelFormat
 
 /**
     Sets the given pixel format for the given HDC.
-    Updates iAppliedPixelFormat.
+    Updates m_iAppliedPixelFormat.
 
     @return True on success, false otherwise.
 */
@@ -863,14 +863,14 @@ TPRREbool PRREScreenImpl::applyPixelFormat(HDC dc, int iPixelFormat, PIXELFORMAT
     if ( SetPixelFormat(dc, iPixelFormat, pfd) )
     {
         getConsole().SOLn("  SetPixelFormat() passed");
-        iAppliedPixelFormat = GetPixelFormat(dc);
-        if ( iAppliedPixelFormat != iPixelFormat )
+        m_iAppliedPixelFormat = GetPixelFormat(dc);
+        if ( m_iAppliedPixelFormat != iPixelFormat )
             getConsole().EOLn("  WARNING: GetPixelFormat() did not return the expected pixel format!");
-        DescribePixelFormat(dc, iAppliedPixelFormat, sizeof(PIXELFORMATDESCRIPTOR), pfd);
+        DescribePixelFormat(dc, m_iAppliedPixelFormat, sizeof(PIXELFORMATDESCRIPTOR), pfd);
         getConsole().OLn("  clr: %d R%dG%dB%dA%d Z%d S%d ver: %d",
                             pfd->cColorBits, pfd->cRedBits, pfd->cGreenBits, pfd->cBlueBits,
                             pfd->cAlphaBits, pfd->cDepthBits, pfd->cStencilBits, pfd->nVersion);
-        ReadAdvancedPixelFormatInfo(dc, iAppliedPixelFormat);
+        ReadAdvancedPixelFormatInfo(dc, m_iAppliedPixelFormat);
         return true;
     } // SetPixelFormat()
 

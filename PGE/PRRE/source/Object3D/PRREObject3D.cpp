@@ -939,7 +939,7 @@ void PRREObject3D::PRREObject3DImpl::Draw_FeedbackBuffer_Start()
     assert(_pOwner->isLevel2());
 
     /* We create this buffer only once at first run. */
-    /* We intentionally switch to feedback mode only once since now  */
+    /* We intentionally switch to feedback mode only once since now we just use it for debugging. */
     if ( pFbBuffer != NULL )
         return;
 

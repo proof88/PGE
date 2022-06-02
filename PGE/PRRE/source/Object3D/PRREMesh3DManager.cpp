@@ -236,8 +236,8 @@ TPRREbool PRREMesh3DManager::PRREMesh3DManagerImpl::convertToPlane(
             submesh->pImpl->nMinVertexIndex = i;
         if ( submesh->pImpl->nMaxVertexIndex < i )
             submesh->pImpl->nMaxVertexIndex = i;
-        bool b = submesh->pImpl->setVertexIndex(i, i);
-        assert( b );
+        bool res = submesh->pImpl->setVertexIndex(i, i);
+        assert( res );
     }
     return true;
 } // convertToPlane
@@ -739,8 +739,8 @@ TPRREbool PRREMesh3DManager::PRREMesh3DManagerImpl::convertToBox(
             submesh->pImpl->nMinVertexIndex = i;
         if ( submesh->pImpl->nMaxVertexIndex < i )
             submesh->pImpl->nMaxVertexIndex = i;
-        bool b = submesh->pImpl->setVertexIndex(i, i);
-        assert( b );
+        bool res = submesh->pImpl->setVertexIndex(i, i);
+        assert( res );
     }
     return true;
 } // convertToBox()
@@ -1689,8 +1689,11 @@ PRREMesh3D* PRREMesh3DManager::createFromFile(const char* filename)
         getConsole().OLn("");
         return PGENULL;
     }
-
+    
+    #pragma warning(disable:4244)  /* int-char conversion in std::transform */
     transform(sFileExt.begin(), sFileExt.end(), sFileExt.begin(), ::toupper);
+    #pragma warning(default:4244)
+
     getConsole().OLn("ext: .%s", sFileExt.c_str());
     if ( sFileExt == "OBJ" )
     {

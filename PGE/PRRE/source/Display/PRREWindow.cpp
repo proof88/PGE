@@ -149,7 +149,7 @@ private:
     TPRREuint   nBottomFrameHeight;      /**< Bottom frame height. */
     TPRREuint   nCaptionHeight;          /**< Caption area height. */
     TPRREuint   nTitleBarHeight;         /**< Title bar height. */
-    TPRREbool   bFullscreen;             /**< Is it a fullscreen window or not. */
+    TPRREbool   m_bFullscreen;           /**< Is it a fullscreen window or not. */
     std::string sCaption;                /**< Window title. */
     TPRREbool   enabled;                 /**< Is the window enabled or not. */
     TPRREbool   bVisibleCursor;          /**< Is the mouse cursor visible or not. */
@@ -446,7 +446,7 @@ void PRREWindowImpl::SetWidth(TPRREuint newwidth)
     if ( bExternalOwner )
         return;
 
-    if ( !bFullscreen && (hWindow != NULL) )
+    if ( !m_bFullscreen && (hWindow != NULL) )
     {
         rectWindowFull.right = rectWindowFull.left + newwidth;
         SetWindowPos(hWindow, PGENULL, 0,0,
@@ -483,7 +483,7 @@ void PRREWindowImpl::SetClientWidth(TPRREuint newwidth)
     if ( bExternalOwner )
         return;
 
-    if ( !bFullscreen && (hWindow != NULL) )
+    if ( !m_bFullscreen && (hWindow != NULL) )
     {
         rectWindowFull.right = rectWindowFull.left + newwidth;
         const RECT old = rectWindowFull;
@@ -524,7 +524,7 @@ void PRREWindowImpl::SetHeight(TPRREuint newheight)
     if ( bExternalOwner )
         return;
 
-    if ( !bFullscreen && (hWindow != NULL) )
+    if ( !m_bFullscreen && (hWindow != NULL) )
     {
         rectWindowFull.bottom = rectWindowFull.top + newheight;
         SetWindowPos(hWindow, PGENULL, 0,0, 
@@ -561,7 +561,7 @@ void PRREWindowImpl::SetClientHeight(TPRREuint newheight)
     if ( bExternalOwner )
         return;
 
-    if ( !bFullscreen && (hWindow != NULL) )
+    if ( !m_bFullscreen && (hWindow != NULL) )
     {
         rectWindowFull.bottom = rectWindowFull.top + newheight;
         const RECT old = rectWindowFull;
@@ -652,7 +652,7 @@ void PRREWindowImpl::SetX(TPRREuint newx)
     if ( bExternalOwner )
         return;
 
-    if ( !bFullscreen && (hWindow != NULL) )
+    if ( !m_bFullscreen && (hWindow != NULL) )
     {
         rectWindowFull.left = newx;
         rectWindowFull.right = newx + (rectWindowFull.right-rectWindowFull.left);
@@ -683,7 +683,7 @@ void PRREWindowImpl::SetY(TPRREuint newy)
     if ( bExternalOwner )
         return;
 
-    if ( !bFullscreen && (hWindow != NULL) )
+    if ( !m_bFullscreen && (hWindow != NULL) )
     {
         rectWindowFull.top = newy;
         rectWindowFull.bottom = newy + (rectWindowFull.bottom-rectWindowFull.top);
@@ -1401,7 +1401,7 @@ void PRREWindowImpl::WriteSettings()
     getConsole().OLn("  nClientWidth = %d, nClientHeight = %d",
                       getClientWidth(), getClientHeight());
     getConsole().OLn("  caption = %s", sCaption.c_str());
-    getConsole().OLn("  fs = %b, autoclup = %b", bFullscreen, bAutoCleanupOnQuit);
+    getConsole().OLn("  fs = %b, autoclup = %b", m_bFullscreen, bAutoCleanupOnQuit);
     getConsole().OLn("  minbtn = %b, maxbtn = %b", bBtnMin, bBtnMax);
     getConsole().OLn("  res_h = %b, res_v = %b", bResizingH, bResizingV);
     getConsole().OLn("  camwarn = %b, closereq = %b, bTopMost = %b",
@@ -1454,7 +1454,7 @@ void PRREWindowImpl::SetPropertiesBeforeInitialize()
     nClientWidthOrig = nClientHeightOrig = 0;
     nSideFrameWidth = nBottomFrameHeight = 0;
     nCaptionHeight = nTitleBarHeight = 0;
-    bFullscreen = enabled = bVisibleCursor = false;
+    m_bFullscreen = enabled = bVisibleCursor = false;
     bBtnMin = bBtnMax = bBorder = bSysMenu = false;
     bResizingH = bResizingV = false;
     bCloseRequested = bActive = bTopMost = false;
@@ -1512,6 +1512,7 @@ TPRREbool PRREWindowImpl::setupWindowClass(WNDCLASS& clWnd)
 TPRREbool PRREWindowImpl::actualCreateWindow(TPRREuint width, TPRREuint height, TPRREbool bFullscreen, const char* caption, const WNDCLASS& clWnd)
 {
     sCaption = caption;
+    m_bFullscreen = bFullscreen;
     bBtnMin = !bFullscreen;   
     bBorder = bSysMenu = bVisibleCursor = enabled = true;
     /*
@@ -1694,7 +1695,7 @@ LRESULT PRREWindowImpl::onPosChanged(const LPWINDOWPOS newPos)
     TPRREuint prevclientwidth = 0;
     TPRREuint prevclientheight = 0;*/
 
-    if ( !bFullscreen )
+    if ( !m_bFullscreen)
     {
         if ( bAutoCameraWarn )
         {
@@ -1713,7 +1714,7 @@ LRESULT PRREWindowImpl::onPosChanged(const LPWINDOWPOS newPos)
                     }*/  
             }
         } // bAutoCameraWarn
-    } // !bFullscreen
+    } // !m_bFullscreen
     rectWindowFull.left = newX;
     rectWindowFull.top  = newY;
     rectWindowFull.right  = newX + newWidth;

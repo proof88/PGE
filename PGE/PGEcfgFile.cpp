@@ -201,7 +201,9 @@ bool PGEcfgFile::lineIsValueAssignment(const std::string& sTrimmedLine, bool bCa
 
     if ( !bCaseSensitiveVars )
     {
+#pragma warning(disable:4244)  /* int-char conversion in std::transform */
         std::transform(sVar.begin(), sVar.end(), sVar.begin(), ::tolower);
+#pragma warning(default:4244)
     }
 
     // get rid of leading spaces from the value itself, standing after the '=' char

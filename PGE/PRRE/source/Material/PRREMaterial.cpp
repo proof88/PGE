@@ -58,7 +58,7 @@ PRREMaterial::PRREMaterialImpl::~PRREMaterialImpl()
         layers[i].pTexcoords = PGENULL;
     }
     nIndices = 0;
-    nIndexSize = 0;
+    m_nIndexSize = 0;
 
     _pOwner->getManagedConsole().SOLnOO("Done!");
 } // ~PRRETexture()
@@ -79,7 +79,7 @@ TPRREbool PRREMaterial::PRREMaterialImpl::allocateArrays(TPRREuint nColorCount, 
     }
 
     nIndices   = nIndexCount;
-    nIndexSize = nIndexSize;
+    m_nIndexSize = nIndexSize;
 
     try
     {
@@ -406,7 +406,7 @@ TPRREbool PRREMaterial::PRREMaterialImpl::copyFromMaterial(PRREMaterial& srcMat,
         if ( (layers[dstLevel].nTexcoords_h == srcMat.pImpl->layers[srcLevel].nTexcoords_h) &&
              (layers[dstLevel].nColors_h == srcMat.pImpl->layers[srcLevel].nColors_h) &&
              (nIndices == srcMat.getIndicesCount()) &&
-             (nIndexSize == srcMat.pImpl->nIndexSize) )
+             (m_nIndexSize == srcMat.pImpl->m_nIndexSize) )
         {
             if ( srcMat.getTexture(srcLevel) != NULL )
             {

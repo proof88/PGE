@@ -115,7 +115,7 @@ private:
     PRREMaterial* _pOwner;            /**< The owner public object who creates this pimpl object. */
 
     TPRREuint   nIndices;             /**< Number of indices. */
-    TPRREuint   nIndexSize;           /**< Size of an index. */
+    TPRREuint   m_nIndexSize;         /**< Size of an index. */
     PRREColor   clrAmbientFrontFace;
     PRREColor   clrAmbientBackFace;
     PRREColor   clrDiffuseFrontFace;

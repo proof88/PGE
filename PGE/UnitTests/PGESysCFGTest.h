@@ -47,8 +47,8 @@ protected:
         AddSubTest("testGetProfilesCount", (PFNUNITSUBTEST) &PGESysCFGTest::testGetProfilesCount);
         AddSubTest("testGetProfilesList", (PFNUNITSUBTEST) &PGESysCFGTest::testGetProfilesList);
         AddSubTest("testGetProfilePlayersList", (PFNUNITSUBTEST) &PGESysCFGTest::testGetProfilePlayersList);
-        //AddSubTest("testAddProfile", (PFNUNITSUBTEST) &PGESysCFGTest::testAddProfile);
-        //AddSubTest("testDeleteProfile", (PFNUNITSUBTEST) &PGESysCFGTest::testDeleteProfile);
+        AddSubTest("testAddProfile", (PFNUNITSUBTEST) &PGESysCFGTest::testAddProfile);
+        AddSubTest("testDeleteProfile", (PFNUNITSUBTEST) &PGESysCFGTest::testDeleteProfile);
         AddSubTest("testGetProfile", (PFNUNITSUBTEST) &PGESysCFGTest::testGetProfile);
         AddSubTest("testSetProfile", (PFNUNITSUBTEST) &PGESysCFGTest::testSetProfile);
         AddSubTest("testGetVar1", (PFNUNITSUBTEST) &PGESysCFGTest::testGetVar1);
@@ -56,7 +56,7 @@ protected:
         AddSubTest("testDeleteVar", (PFNUNITSUBTEST) &PGESysCFGTest::testDeleteVar);
         AddSubTest("testGetVarsCount", (PFNUNITSUBTEST) &PGESysCFGTest::testGetVarsCount);
         AddSubTest("testReadConfiguration", (PFNUNITSUBTEST) &PGESysCFGTest::testReadConfiguration);
-        //AddSubTest("testWriteConfiguration", (PFNUNITSUBTEST) &PGESysCFGTest::testWriteConfiguration);
+        AddSubTest("testWriteConfiguration", (PFNUNITSUBTEST) &PGESysCFGTest::testWriteConfiguration);
     }
 
     virtual bool setUp()
@@ -95,7 +95,8 @@ private:
         const PGESysCFG cfg("game title");
 
         return assertTrue( (cfg.getMyDocsFolder() == "C:\\Users\\PR00F\\Documents\\") ||
-            (cfg.getMyDocsFolder() == "C:\\Users\\eszabdm\\Documents\\") );
+            (cfg.getMyDocsFolder() == "C:\\Users\\eszabdm\\Documents\\") ||
+            (cfg.getMyDocsFolder() == "C:\\Users\\pr0o0\\Documents\\") );
     }
 
     bool testGetLangFileName()

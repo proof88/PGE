@@ -723,7 +723,9 @@ PRREObject3D* PRREObject3DManager::createFromFile(
     PRREObject3D* obj = PGENULL;
     PRREObject3D* subobject = PGENULL;
     PRREMesh3D* tmpMesh = PGENULL;
+    #pragma warning(disable:4244)  /* int-char conversion in std::transform */
     transform(sFileExt.begin(), sFileExt.end(), sFileExt.begin(), ::toupper);
+    #pragma warning(default:4244)
     getConsole().OLn("ext: .%s", sFileExt.c_str());
     if ( sFileExt == "OBJ" )
     {

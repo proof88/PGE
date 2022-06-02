@@ -135,24 +135,25 @@ private:
 
     bool testCtor()
     {
-        return assertEquals(0, scr.getColorBits(), "colorBits") &
-            assertEquals(0, scr.getDepthBits(), "depthBits") &
-            assertEquals((TPRREuint) 0, scr.getFreq(), "freq") &
-            assertEquals(0, scr.getFSAAlevel(), "FSAAcurrent") &
-            assertFalse(scr.isFullScreened(), "fullscreen") &
-            assertEquals((TPRREuint) 0, scr.getResWidth(), "resWidth") &
-            assertEquals((TPRREuint) 0, scr.getResHeight(), "resHeight") &
-            assertEquals(0, scr.getStencilBits(), "stencilBits") &
-            assertFalse(scr.isVSyncEnabled(), "vsync") &
-            assertFalse(scr.isFSAAready(), "FSAAready") &
-            assertTrue(scr.isMonitorPowersaveEnabled(), "monitorpwrsave") &
-            assertFalse(scr.isScreensaverEnabled(), "screensvr") &
-            assertFalse(scr.isStandbyEnabled(), "standby");
+        // settings like colorbits, depthbits, etc might have stayed as there were set previously in another test case,
+        // and that is an expected behavior that ResetDisplaySettings() is not resetting them, so the only thing we
+        // can expect is the initialized state
+        return assertFalse(scr.isInitialized(), "initialized");
     }
 
     bool testApplyDisplaySettings()
     {
         wnd.initialize(800, 600, false, "alma");
+
+        // ctor is not assuring us about default values of these, and some other unit test might have changed these before,
+        // so lets reset these manually
+        scr.SetFullScreened(false);
+        scr.SetColorBits(0);
+        scr.SetDepthBits(0);
+        // cannot use SetResolution(0, 0) as it has special behavior, so we set 0 separately
+        scr.SetResolution(0, 1);
+        scr.SetResolution(1, 0);
+        scr.SetDepthBits(0);
 
         const bool b1 = scr.applyDisplaySettings(wnd.getWndDC());
         scr.SetColorBits(32);
