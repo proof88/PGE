@@ -23,6 +23,7 @@
 #include "PGEcfgFileTest.h"
 #include "PGESysCFGTest.h"
 #include "WeaponsTest.h"
+#include "PGEBulletTest.h"
 #include "PR00FsReducedRenderingEngineTest.h"
 #include "PR00FsReducedRenderingEngineTest2.h"
 #include "PRREAxisAlignedBoundingBoxTest.h"
@@ -91,6 +92,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PGEcfgFileTest             testPGEcfgFile;
     PGESysCFGTest              testPGESysCFG; 
     WeaponsTest                testWeapons;
+    PGEBulletTest              testPGEBullet;
     
     PRREScreenTest                  testScreen;
     PRRESharedSettingsTest          testSharedSettings;
@@ -141,6 +143,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPGEcfgFile);
     tests.push_back(&testPGESysCFG);
     tests.push_back(&testWeapons);
+    tests.push_back(&testPGEBullet);
     
     /*
     tests.push_back(&testScreen);

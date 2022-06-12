@@ -881,7 +881,7 @@ private:
             
             if ( b )
             {
-                Bullet& bullet = *bullets.begin();
+                const Bullet& bullet = *bullets.begin();
                 b &= assertEquals(bullet.getObject3D().getPosVec(), wpn.getObject3D().getPosVec(), "pos");
                 b &= assertEquals(bullet.getObject3D().getAngleVec(), wpn.getObject3D().getAngleVec(), "angle");
             }

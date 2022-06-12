@@ -20,6 +20,10 @@
 
 // ############################### PUBLIC ################################
 
+const char* Bullet::getLoggerModuleName()
+{
+    return "Bullet";
+}
 
 Bullet::Bullet(PR00FsReducedRenderingEngine& gfx,
         TPRREfloat wpn_px, TPRREfloat wpn_py, TPRREfloat wpn_pz,
@@ -33,6 +37,12 @@ Bullet::Bullet(PR00FsReducedRenderingEngine& gfx,
     m_fragile(fragile),
     m_obj(NULL)
 {
+    if ( (m_speed == 1000.f) && (m_drag > 0.f))
+    {
+        getConsole().EOLnOO("Bullet ctor: m_speed is 1000 but m_drag is non-zero!");
+        throw std::runtime_error("Bullet ctor: m_speed is 1000 but m_drag is non-zero");
+    }
+
     m_put.getPosVec().Set(wpn_px, wpn_py, wpn_pz);
     m_put.SetRotation(wpn_ax, (wpn_ay > 0.0f) ? 90.f : -90.f, (wpn_ay > 0.0f) ? wpn_az : -wpn_az);
 
@@ -56,9 +66,24 @@ CConsole& Bullet::getConsole() const
     return CConsole::getConsoleInstance(getLoggerModuleName());
 }
 
-const char* Bullet::getLoggerModuleName()
+TPRREfloat Bullet::getSpeed() const
 {
-    return "Bullet";
+    return m_speed;
+}
+
+TPRREfloat Bullet::getGravity() const
+{
+    return m_gravity;
+}
+
+TPRREfloat Bullet::getDrag() const
+{
+    return m_drag;
+}
+
+TPRREbool Bullet::isFragile() const
+{
+    return m_fragile;
 }
 
 void Bullet::Update()
@@ -69,6 +94,11 @@ void Bullet::Update()
 
 
 PRREObject3D& Bullet::getObject3D()
+{
+    return *m_obj;
+}
+
+const PRREObject3D& Bullet::getObject3D() const
 {
     return *m_obj;
 }

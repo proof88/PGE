@@ -45,9 +45,15 @@ public:
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
+    TPRREfloat getSpeed() const;
+    TPRREfloat getGravity() const;
+    TPRREfloat getDrag() const;
+    TPRREbool isFragile() const;
+
     void Update();
 
     PRREObject3D& getObject3D();
+    const PRREObject3D& getObject3D() const;
 
     Bullet(const Bullet& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
         m_gfx(other.m_gfx),
