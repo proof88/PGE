@@ -357,3 +357,4 @@ PGE/Samples/EV2008P03/P03.exe
 PGE/Samples/TransparentPlanes/gfxcore.dll
 *.exe
 PGE/Samples/EV2008P03_Legacy/tmcslog.txt
+*.bak
