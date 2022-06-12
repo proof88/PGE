@@ -207,12 +207,17 @@ bool PGE::PGEimpl::isGameRunning() const
 
 int PGE::PGEimpl::destroyGame()
 {
+    // make sure that everything is destructed in REVERSE order compared to initializeGame()
+    // first things to shutdown are instances that are NOT even initialized by initializeGame(), such as wpnMgr
+    wpnMgr.Clear();
     world.Shutdown();
+    // inputHandler doesnt have any shutdown
     SysGFX.destroySysGFX();
     SysSFX.destroySysSFX();
     SysNET.destroySysNET();
+    // SysCFG doesnt have any shutdown
+
     getConsole().Deinitialize();
-    
 
     return 0;
 } // destroyGameEngine()

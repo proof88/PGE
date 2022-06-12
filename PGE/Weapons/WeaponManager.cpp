@@ -496,7 +496,7 @@ WeaponManager::WeaponManager(PR00FsReducedRenderingEngine& gfx) :
 
 WeaponManager::~WeaponManager()
 {
-
+    Clear();
 }
 
 CConsole& WeaponManager::getConsole() const
@@ -531,6 +531,7 @@ std::vector<Weapon>& WeaponManager::getWeapons()
 void WeaponManager::Clear()
 {
     m_weapons.clear();
+    m_bullets.clear();
 }
 
 std::list<Bullet>& WeaponManager::getBullets()
