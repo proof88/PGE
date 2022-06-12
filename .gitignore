@@ -13,6 +13,9 @@
 *.userprefs
 
 # Build results
+Network/GameNetworkingSockets-1.4.0/build
+Network/GameNetworkingSockets-1.4.0/vcpkg
+Network/GameNetworkingSockets-1.4.0/vcpkg_installed
 [Dd]ebug/
 [Dd]ebugPR00FPS/
 [Dd]ebugPublic/
