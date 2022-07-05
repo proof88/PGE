@@ -13,6 +13,11 @@
 
 #include "PGEallHeaders.h"
 
+// backends for SoLoud: https://sol.gfxile.net/soloud/backends.html
+// in case of problem with MiniAudio, try PortAudio!
+#define WITH_MINIAUDIO
+#include "Audio/soloud-RELEASE_20200207/include/soloud.h"
+
 /**
     PR00F's Game Engine sound subsystem.
 */
@@ -26,10 +31,11 @@ public:
     PGESysSFX();
     virtual ~PGESysSFX();
 
-    void* initSysSFX(void);
-    bool  destroySysSFX(void);
+    bool initSysSFX(void);
+    bool destroySysSFX(void);
 
 private:
+    SoLoud::Soloud gSoloud;
 
     // ---------------------------------------------------------------------------
 

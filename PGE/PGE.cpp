@@ -607,7 +607,7 @@ int PGE::initializeGame()
         
     getConsole().L();
     getConsole().OLnOI("Initializing SysSFX ...");
-    if ( (p->pSFX = p->SysSFX.initSysSFX()) == PGENULL )
+    if ( !(p->SysSFX.initSysSFX()) )
     {
         getConsole().EOLnOO("Failed!");
         getConsole().OLn("");

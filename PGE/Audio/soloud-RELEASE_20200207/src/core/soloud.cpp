@@ -40,6 +40,7 @@ freely, subject to the following restrictions:
 
 //#define FLOATING_POINT_DEBUG
 
+// Note that WITH_MINIAUDIO is defined at C/C++ Preprocessor Definitions under Project Settings! 
 
 #if !defined(WITH_SDL2) && !defined(WITH_SDL1) && !defined(WITH_PORTAUDIO) && \
    !defined(WITH_OPENAL) && !defined(WITH_XAUDIO2) && !defined(WITH_WINMM) && \

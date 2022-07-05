@@ -5,7 +5,8 @@ _UpgradeReport_Files/
 *.sdf
 *.old
 *.filters
-build/
+build/vs2017/debug
+build/vs2017/release
 *.aux
 *.out
 *.gz

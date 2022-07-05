@@ -146,9 +146,8 @@
       <AdditionalOptions>opengl32.lib glu32.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>soloud_static_x86_d.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -175,9 +174,8 @@
       <AdditionalOptions>opengl32.lib glu32.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>soloud_static_x86_d.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -204,7 +202,8 @@
       <AdditionalOptions>opengl32.lib glu32.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>soloud_static_x86_d.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -231,7 +230,8 @@
       <AdditionalOptions>opengl32.lib glu32.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>soloud_static_x86_d.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -263,8 +263,9 @@
       <AdditionalOptions>opengl32.lib glu32.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+      <AdditionalDependencies>soloud_static_x86.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -296,8 +297,9 @@
       <AdditionalOptions>opengl32.lib glu32.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+      <AdditionalDependencies>soloud_static_x86.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -325,12 +327,48 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>soloud_static_x86.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\CConsole\CConsole\src\CConsole.h" />
     <ClInclude Include="..\..\PFL\PFL\PFL.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_audiosource.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_bassboostfilter.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_biquadresonantfilter.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_bus.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_c.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_dcremovalfilter.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_echofilter.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_error.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_fader.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_fft.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_fftfilter.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_file.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_file_hack_off.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_file_hack_on.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_filter.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_flangerfilter.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_freeverbfilter.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_internal.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_lofifilter.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_misc.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_monotone.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_noise.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_openmpt.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_queue.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_robotizefilter.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_sfxr.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_speech.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_tedsid.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_thread.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_vic.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_vizsn.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_wav.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_waveshaperfilter.h" />
+    <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_wavstream.h" />
     <ClInclude Include="PGE.h" />
     <ClInclude Include="PGEallHeaders.h" />
     <ClInclude Include="PGEcfgFile.h" />
