@@ -43,11 +43,11 @@ bool PGESysSFX::initSysSFX(void)
     {
         CConsole::getConsoleInstance("PGESysSFX").SOLn("Initialized SoLoud version %d!", SOLOUD_VERSION);
         CConsole::getConsoleInstance("PGESysSFX").OLn(
-            "Backend ID: %d, Name: %s!",
+            "Backend ID: %d, Name: %s",
             gSoloud.getBackendId(),
             gSoloud.getBackendString());
         CConsole::getConsoleInstance("PGESysSFX").OLn(
-            "Channels: %d, Sample Rate: %d Hz, Buffer Size: %d!",
+            "Channels: %d, Sample Rate: %d Hz, Buffer Size: %d",
             gSoloud.getBackendChannels(),
             gSoloud.getBackendSamplerate(),
             gSoloud.getBackendBufferSize());

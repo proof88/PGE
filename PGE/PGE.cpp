@@ -592,7 +592,7 @@ int PGE::initializeGame()
 
     getConsole().L();
     getConsole().OLnOI("Initializing SysNET ...");
-    if ( (p->pNET = p->SysNET.initSysNET()) == PGENULL )
+    if (!(p->SysNET.initSysNET()))
     {
         getConsole().EOLnOO("Failed!");
         getConsole().OLn("");

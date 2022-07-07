@@ -35,14 +35,26 @@ PGESysNET::~PGESysNET()
 } // ~PGESysNET()
 
 
-void* PGESysNET::initSysNET(void)
+bool PGESysNET::initSysNET(void)
 {
-    return PGENULL;
+    SteamDatagramErrMsg errMsg;
+    const bool bRet = GameNetworkingSockets_Init(nullptr, errMsg);
+    if (bRet)
+    {
+        CConsole::getConsoleInstance("PGESysNET").SOLn("Initialized GameNetworkingSockets %s!", GAMENETWORKINGSOCKETS_VER_STR);
+    }
+    else
+    {
+        CConsole::getConsoleInstance("PGESysNET").EOLn("Failed to initialize GameNetworkingSockets %s: %s!", GAMENETWORKINGSOCKETS_VER_STR, errMsg);
+    }
+
+    return bRet;
 } // initSysNET()
 
 
 bool PGESysNET::destroySysNET(void)
 {
+    GameNetworkingSockets_Kill();
     return true;
 } // destroySysNET()
 

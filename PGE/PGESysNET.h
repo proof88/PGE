@@ -13,6 +13,20 @@
 
 #include "PGEallHeaders.h"
 
+// this idea of building include paths is coming from:
+// https://stackoverflow.com/questions/32066204/construct-path-for-include-directive-with-macro
+#define IDENT(x) x
+#define XSTR(x) #x
+#define STR(x) XSTR(x)
+#define PATH2(x,y) STR(IDENT(x)IDENT(y))
+#define PATH3(x,y,z) STR(IDENT(x)IDENT(y)IDENT(z))
+
+#define GAMENETWORKINGSOCKETS_VER 1.4.0
+#define GAMENETWORKINGSOCKETS_VER_STR STR(GAMENETWORKINGSOCKETS_VER)
+
+#include PATH3(Network/GameNetworkingSockets-,GAMENETWORKINGSOCKETS_VER,/include/steam/steamnetworkingsockets.h)
+#include PATH3(Network/GameNetworkingSockets-,GAMENETWORKINGSOCKETS_VER,/include/steam/isteamnetworkingutils.h)
+
 /**
     PR00F's Game Engine networking subsystem.
 */
@@ -26,8 +40,8 @@ public:
     PGESysNET();
     virtual ~PGESysNET();
 
-    void* initSysNET(void);
-    bool  destroySysNET(void);
+    bool initSysNET(void);
+    bool destroySysNET(void);
 
 private:
 
