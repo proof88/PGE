@@ -112,6 +112,18 @@
     <Filter Include="Source Files\Audio\SoLoud">
       <UniqueIdentifier>{642c5372-5f81-4892-95c3-efa92f373aa0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PRRE\include\internal\GUI">
+      <UniqueIdentifier>{89784676-9136-4c28-b0ff-d23fde578769}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PRRE\GUI">
+      <UniqueIdentifier>{b90a41f1-e94b-4aa4-8835-516133e27a0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PRRE\GUI\Backends">
+      <UniqueIdentifier>{06260298-3e8f-4e27-8899-b935a99ff684}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PRRE\include\internal\GUI\Backends">
+      <UniqueIdentifier>{d54ccf5c-b4ca-4ceb-9c71-7484a237497e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGE.h">
@@ -498,6 +510,30 @@
     <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_wavstream.h">
       <Filter>Header Files\Audio\SoLoud</Filter>
     </ClInclude>
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imconfig.h">
+      <Filter>Header Files\PRRE\include\internal\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imgui.h">
+      <Filter>Header Files\PRRE\include\internal\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imgui_internal.h">
+      <Filter>Header Files\PRRE\include\internal\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imstb_rectpack.h">
+      <Filter>Header Files\PRRE\include\internal\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imstb_textedit.h">
+      <Filter>Header Files\PRRE\include\internal\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imstb_truetype.h">
+      <Filter>Header Files\PRRE\include\internal\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_opengl2.h">
+      <Filter>Header Files\PRRE\include\internal\GUI\Backends</Filter>
+    </ClInclude>
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.h">
+      <Filter>Header Files\PRRE\include\internal\GUI\Backends</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -664,6 +700,27 @@
     </ClCompile>
     <ClCompile Include="Weapons\WeaponManager.cpp">
       <Filter>Source Files\Weapons</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui.cpp">
+      <Filter>Source Files\PRRE\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_demo.cpp">
+      <Filter>Source Files\PRRE\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_draw.cpp">
+      <Filter>Source Files\PRRE\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_tables.cpp">
+      <Filter>Source Files\PRRE\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_widgets.cpp">
+      <Filter>Source Files\PRRE\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_opengl2.cpp">
+      <Filter>Source Files\PRRE\GUI\Backends</Filter>
+    </ClCompile>
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.cpp">
+      <Filter>Source Files\PRRE\GUI\Backends</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

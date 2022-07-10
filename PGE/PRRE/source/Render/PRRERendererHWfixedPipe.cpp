@@ -9,6 +9,11 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
+
+#include "../../include/internal/GUI/imgui-1.88/imgui.h"
+#include "../../include/internal/GUI/imgui-1.88/backends/imgui_impl_opengl2.h"
+#include "../../include/internal/GUI/imgui-1.88/backends/imgui_impl_win32.h"
+
 #include "../../include/external/Render/PRRERendererHWfixedPipe.h"
 #include <cassert>
 #include "../../include/external/Math/PRREVector.h"
@@ -476,6 +481,33 @@ TPRREuint PRRERendererHWfixedPipeImpl::initialize(
         // GFX card drivers' default setting in 2015: off (if undefined by application), so we also set it to false initially
         screen.SetVSyncEnabled(false);
 
+        IMGUI_CHECKVERSION();
+        if (!ImGui::CreateContext())
+        {
+            getConsole().EOLnOO("ERROR: ImGui::CreateContext() failed!");
+            shutdown();
+            return 1;
+        }
+
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+        ImGui::StyleColorsDark();
+        //ImGui::StyleColorsClassic();
+
+        if (!ImGui_ImplWin32_Init(wnd.getWndHandle()))
+        {
+            getConsole().EOLnOO("ERROR: ImGui::ImGui_ImplWin32_Init() failed!");
+            shutdown();
+            return 1;
+        }
+
+        if (!ImGui_ImplOpenGL2_Init())
+        {
+            getConsole().EOLnOO("ERROR: ImGui::ImGui_ImplOpenGL2_Init() failed!");
+            shutdown();
+            return 1;
+        }
+
     getConsole().OLn("");
     getConsole().SOLn("> Fixed Pipeline HW Renderer initialized");
     getConsole().OLnOO("");
@@ -488,9 +520,19 @@ TPRREuint PRRERendererHWfixedPipeImpl::initialize(
 TPRREbool PRRERendererHWfixedPipeImpl::shutdown()
 {
     getConsole().OLn("PRRERendererHWfixedPipe::shutdown()");
+
+    if (!isInitialized())
+    {
+        getConsole().SOLn("  > already shut down!");
+        return true;
+    }
     
     getConsole().OIOLn("Shutting down renderer ...");
     getConsole().OI();
+
+    ImGui_ImplOpenGL2_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
 
     if ( !shutdownOpenGL() )
     {

@@ -591,7 +591,7 @@ int PGE::initializeGame()
     getConsole().OO();
 
     getConsole().L();
-    getConsole().OLnOI("Initializing SysNET ...");
+    getConsole().OLnOI("Initializing Networking ...");
     if (!(p->SysNET.initSysNET()))
     {
         getConsole().EOLnOO("Failed!");
@@ -606,7 +606,7 @@ int PGE::initializeGame()
     getConsole().L();
         
     getConsole().L();
-    getConsole().OLnOI("Initializing SysSFX ...");
+    getConsole().OLnOI("Initializing Audio ...");
     if ( !(p->SysSFX.initSysSFX()) )
     {
         getConsole().EOLnOO("Failed!");
@@ -621,7 +621,7 @@ int PGE::initializeGame()
     getConsole().L();
 
     getConsole().L();
-    getConsole().OLnOI("Initializing SysGFX ...");
+    getConsole().OLnOI("Initializing Graphics ...");
     bool bGFXinit;
     /*if ( MessageBox(0, "Teljes képernyõ?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES )
         bGFXinit = p->SysGFX.initSysGFX(0, 0, PRRE_FULLSCREEN, 0, 32, 24, 0, 0);
@@ -650,7 +650,7 @@ int PGE::initializeGame()
     p->GFX.getScreen().SetVSyncEnabled(true);
 
     getConsole().L();
-    getConsole().OLnOI("Initializing InputHandler ...");
+    getConsole().OLnOI("Initializing Input ...");
     if ( p->inputHandler.initialize( window.getWndHandle() ) )
     {
         getConsole().SOLnOO("Done!");

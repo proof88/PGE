@@ -139,6 +139,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -167,6 +168,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -195,6 +197,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -223,6 +226,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
+      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -256,6 +260,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -290,6 +295,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -319,6 +325,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -423,6 +430,14 @@
     <ClInclude Include="PRRE\include\internal\gl\glut.h" />
     <ClInclude Include="PRRE\include\internal\gl\glxext.h" />
     <ClInclude Include="PRRE\include\internal\gl\wglext.h" />
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_opengl2.h" />
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.h" />
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imconfig.h" />
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imgui.h" />
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imgui_internal.h" />
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imstb_rectpack.h" />
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imstb_textedit.h" />
+    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imstb_truetype.h" />
     <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGLbase.h" />
     <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_1.h" />
     <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_2.h" />
@@ -473,6 +488,13 @@
     <ClCompile Include="PGEWorld.cpp" />
     <ClCompile Include="PGEWorldTime.cpp" />
     <ClCompile Include="PGEWorldWeather.cpp" />
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_opengl2.cpp" />
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui.cpp" />
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_demo.cpp" />
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_draw.cpp" />
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_tables.cpp" />
+    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_widgets.cpp" />
     <ClCompile Include="PRRE\source\Display\PRREScreen.cpp" />
     <ClCompile Include="PRRE\source\Display\PRRESharedSettings.cpp" />
     <ClCompile Include="PRRE\source\Display\PRREWindow.cpp" />

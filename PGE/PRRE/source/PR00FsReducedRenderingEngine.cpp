@@ -10,6 +10,9 @@
 
 
 #include "PRREbaseIncludes.h"  // PCH
+
+#include "../include/internal/GUI/imgui-1.88/imgui.h"
+
 #include "../include/external/PR00FsReducedRenderingEngine.h"
 #include "../include/external/Render/PRRERendererHWfixedPipe.h"
 #include "../include/external/Render/PRRERendererSWincremental.h"
@@ -142,6 +145,7 @@ TPRREuint PR00FsReducedRenderingEngineImpl::initialize(
 
     getConsole().OIOLn( PRRE_NAME );
     getConsole().OLn( PRRE_VERSION );
+    getConsole().OLn( "  with Dear ImGui %s", IMGUI_VERSION);
 
     switch (rndr)
     {
