@@ -145,12 +145,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testWeapons);
     tests.push_back(&testPGEBullet);
     
-    /*
+    
+    /* */
     tests.push_back(&testScreen);
     tests.push_back(&testSharedSettings);
-    */
     
-    /*
+    /*  */
     tests.push_back(&testPosUpTarget);
     tests.push_back(&testPRREVector);  
     tests.push_back(&testPRREMatrix);  
@@ -188,19 +188,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     tests.push_back(&testPRREObject3DManager);
     tests.push_back(&testPRREObject3D);  
-    */
     
-    /* 
+    
+    /*  */
     tests.push_back(&testPRREWindow);
     tests.push_back(&testPRREWindow2);
-    */
     
-    //tests.push_back(&testPRRERendererHWfixedPipe);
     
-    /*
+    tests.push_back(&testPRRERendererHWfixedPipe);
+    
+    /* */
     tests.push_back(&testPRRE);
     tests.push_back(&testPRRE2);
-    */
+    
     
     vector<UnitTest*>::size_type nSucceededTests = 0;
     vector<UnitTest*>::size_type nTotalSubTests = 0;

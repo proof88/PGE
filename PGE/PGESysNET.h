@@ -24,6 +24,8 @@
 #define GAMENETWORKINGSOCKETS_VER 1.4.0
 #define GAMENETWORKINGSOCKETS_VER_STR STR(GAMENETWORKINGSOCKETS_VER)
 
+// TODO: add "Network/GameNetworkingSockets-1.4.0/include" to project include dirs, do not use that path here!
+// TODO: to log lib version, extract version from %AdditionalIncludeDirectories
 #include PATH3(Network/GameNetworkingSockets-,GAMENETWORKINGSOCKETS_VER,/include/steam/steamnetworkingsockets.h)
 #include PATH3(Network/GameNetworkingSockets-,GAMENETWORKINGSOCKETS_VER,/include/steam/isteamnetworkingutils.h)
 
