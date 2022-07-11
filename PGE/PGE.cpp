@@ -572,8 +572,8 @@ int PGE::initializeGame()
     }
     getConsole().OI();
     onGameInitializing();
-    getConsole().OLn("pGameTitle: %s", p->sGameTitle.c_str());
-    getConsole().OLn("MyDocs: %s", p->SysCFG.getMyDocsFolder().c_str());
+    getConsole().OLn("Game Title: %s", p->sGameTitle.c_str());
+    getConsole().OLn("Documents Folder: %s", p->SysCFG.getMyDocsFolder().c_str());
     p->nLangTable = p->SysCFG.readLanguageData( p->pLangTable );
     getConsole().OLn("Lang Table with %d rows from %s.", p->nLangTable, p->SysCFG.getLangFileName().c_str());
     if ( p->nLangTable == 0 )

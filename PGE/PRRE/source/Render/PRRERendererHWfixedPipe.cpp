@@ -530,9 +530,18 @@ TPRREbool PRRERendererHWfixedPipeImpl::shutdown()
     getConsole().OIOLn("Shutting down renderer ...");
     getConsole().OI();
 
-    ImGui_ImplOpenGL2_Shutdown();
-    ImGui_ImplWin32_Shutdown();
-    ImGui::DestroyContext();
+    if (ImGui_ImplOpenGL2_Initialized())
+    {
+        ImGui_ImplOpenGL2_Shutdown();
+    }
+    if (ImGui_ImplWin32_Initialized())
+    {
+        ImGui_ImplWin32_Shutdown();
+    }
+    if (ImGui::GetCurrentContext())
+    {
+        ImGui::DestroyContext();
+    }
 
     if ( !shutdownOpenGL() )
     {

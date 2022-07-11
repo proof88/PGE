@@ -108,6 +108,11 @@ static ImGui_ImplWin32_Data* ImGui_ImplWin32_GetBackendData()
     return ImGui::GetCurrentContext() ? (ImGui_ImplWin32_Data*)ImGui::GetIO().BackendPlatformUserData : NULL;
 }
 
+bool    ImGui_ImplWin32_Initialized()
+{
+    return NULL != ImGui_ImplWin32_GetBackendData();
+}
+
 // Functions
 bool    ImGui_ImplWin32_Init(void* hwnd)
 {

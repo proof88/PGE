@@ -73,6 +73,11 @@ static ImGui_ImplOpenGL2_Data* ImGui_ImplOpenGL2_GetBackendData()
     return ImGui::GetCurrentContext() ? (ImGui_ImplOpenGL2_Data*)ImGui::GetIO().BackendRendererUserData : NULL;
 }
 
+bool ImGui_ImplOpenGL2_Initialized()
+{
+    return NULL != ImGui_ImplOpenGL2_GetBackendData();
+}
+
 // Functions
 bool    ImGui_ImplOpenGL2_Init()
 {
