@@ -27,6 +27,8 @@
 #define PGE_CCONSOLE_IS_ENABLED
 #endif
 
+#define PGE_NAME    "PR00F's Game Engine (PGE)"
+#define PGE_VERSION "0.3 private alpha built on "__DATE__" @ "__TIME__
 
 #define PGE_ERRORMSG_BASETITLE   "Error"
 #define PGE_WARNINGMSG_BASETITLE "Warning"

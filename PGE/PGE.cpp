@@ -571,6 +571,8 @@ int PGE::initializeGame()
         return 0;
     }
     getConsole().OI();
+    getConsole().OLn(PGE_NAME);
+    getConsole().OLn(PGE_VERSION);
     onGameInitializing();
     getConsole().OLn("Game Title: %s", p->sGameTitle.c_str());
     getConsole().OLn("Documents Folder: %s", p->SysCFG.getMyDocsFolder().c_str());
