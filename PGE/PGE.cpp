@@ -581,7 +581,7 @@ int PGE::initializeGame()
         getConsole().EOLnOO("ERROR: Failed to read language data, exiting!");
         return 99;
     }
-    getConsole().OLn("Profiles stored in MyDocs: %b", p->SysCFG.areProfilesInMyDocs());
+    getConsole().OLn("Profiles stored in Documents: %b", p->SysCFG.areProfilesInMyDocs());
     getConsole().OLn("Profiles: %s", p->SysCFG.getPathToProfiles().c_str());
     getConsole().OIOLn("Count: %d", p->SysCFG.getProfilesCount());
     for (int i = 0; i < p->SysCFG.getProfilesCount(); i++)
