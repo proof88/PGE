@@ -376,6 +376,17 @@
     <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_wav.h" />
     <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_waveshaperfilter.h" />
     <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_wavstream.h" />
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingmessages.h" />
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingsockets.h" />
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingutils.h" />
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamclientpublic.h" />
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamnetworkingcustomsignaling.h" />
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamnetworkingsockets.h" />
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamnetworkingsockets_flat.h" />
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamnetworkingtypes.h" />
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamtypes.h" />
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamuniverse.h" />
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steam_api_common.h" />
     <ClInclude Include="PGE.h" />
     <ClInclude Include="PGEallHeaders.h" />
     <ClInclude Include="PGEcfgFile.h" />

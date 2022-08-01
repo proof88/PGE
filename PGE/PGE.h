@@ -74,6 +74,8 @@ public:
     PGEInputHandler& getInput() const;         /**< Returns the input handler object. */
     PGEWorld& getWorld() const;                /**< Returns the world object. */
     PR00FsReducedRenderingEngine& getPRRE() const;   /**< Returns the graphics engine. */
+    bool isServer() const; /* temporal, on the long run we will need a public network class (PGESysNET is internal header, NOT public) */
+    //TODO PGESysNET& getNetwork() const;             /**< Returns the network handler object. */
     WeaponManager& getWeaponManager();         /**< Returns the weapon manager object. */
 
     int  initializeGame();                     /**< Initializes the game engine. */

@@ -124,6 +124,9 @@
     <Filter Include="Header Files\PRRE\include\internal\GUI\Backends">
       <UniqueIdentifier>{d54ccf5c-b4ca-4ceb-9c71-7484a237497e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Network">
+      <UniqueIdentifier>{969fa030-e6e8-45a8-9026-db21d200a22b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGE.h">
@@ -533,6 +536,39 @@
     </ClInclude>
     <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.h">
       <Filter>Header Files\PRRE\include\internal\GUI\Backends</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingmessages.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingsockets.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingutils.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steam_api_common.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamclientpublic.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamnetworkingcustomsignaling.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamnetworkingsockets.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamnetworkingsockets_flat.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamnetworkingtypes.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamtypes.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamuniverse.h">
+      <Filter>Header Files\Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

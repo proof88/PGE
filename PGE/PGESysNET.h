@@ -13,6 +13,9 @@
 
 #include "PGEallHeaders.h"
 
+#include <map>
+#include <string>
+
 // this idea of building include paths is coming from:
 // https://stackoverflow.com/questions/32066204/construct-path-for-include-directive-with-macro
 #define IDENT(x) x
@@ -39,17 +42,50 @@ class PGESysNET
 #endif
 
 public:
+    static const uint16 DEFAULT_SERVER_PORT = 27020;
+
+    static bool isServer();
+
+    // ---------------------------------------------------------------------------
+
     PGESysNET();
     virtual ~PGESysNET();
 
     bool initSysNET(void);
     bool destroySysNET(void);
+    
+    void PollIncomingMessages();
+    void PollConnectionStateChanges();
 
 private:
+
+    static PGESysNET* s_pCallbackInstance;
+    static bool bServer;
+
+    uint16 nPort;
+    SteamNetworkingIPAddr addrServer;  // used by client only
+    ISteamNetworkingSockets* m_pInterface;
+    HSteamListenSocket m_hListenSock;  // used by server only
+    HSteamNetPollGroup m_hPollGroup;   // used by server only
+    HSteamNetConnection m_hConnection; // used by client only
+
+    struct Client_t
+    {
+        std::string m_sNick;
+    };
+
+    std::map< HSteamNetConnection, Client_t > m_mapClients;
+
+    static void SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
 
     // ---------------------------------------------------------------------------
 
     PGESysNET(const PGESysNET&); 
     PGESysNET& operator=(const PGESysNET&);
+
+    void SetClientNick(HSteamNetConnection hConn, const char* nick);
+    void SendStringToClient(HSteamNetConnection conn, const char* str);
+    void SendStringToAllClients(const char* str, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
+    void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo);
 
 }; // class PGESysNET

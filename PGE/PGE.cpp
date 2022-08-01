@@ -57,6 +57,7 @@ public:
     PGEInputHandler& getInput() const;       
     PGEWorld& getWorld() const;             
     PR00FsReducedRenderingEngine& getPRRE() const;
+    //TODO later some other class needs to be returned here PGESysNET& getNetwork() const;
     WeaponManager& getWeaponManager();
                     
     bool isGameRunning() const;               
@@ -191,6 +192,12 @@ PR00FsReducedRenderingEngine& PGE::PGEimpl::getPRRE() const
 {
     return GFX;
 }
+
+
+//PGESysNET& PGE::PGEimpl::getNetwork()
+//{
+//    return SysNET;
+//}
 
 
 WeaponManager& PGE::PGEimpl::getWeaponManager()
@@ -536,6 +543,17 @@ PR00FsReducedRenderingEngine& PGE::getPRRE() const
     return p->getPRRE();
 }
 
+bool PGE::isServer() const
+{
+    return p->SysNET.isServer();
+}
+
+
+//PGESysNET& PGE::getNetwork() const
+//{
+//    return p->getNetwork();
+//}
+
 
 /**
     Returns the weapon manager object.
@@ -700,6 +718,9 @@ int PGE::runGame()
         PRREWindow& window = p->GFX.getWindow();
         window.ProcessMessages();
         p->bIsGameRunning = !window.hasCloseRequest();
+
+        p->SysNET.PollIncomingMessages();
+        p->SysNET.PollConnectionStateChanges();
         
         if ( window.isActive() || p->bInactiveLikeActive )
         {
