@@ -2,6 +2,18 @@
 
 Note that anytime you want to use any of the tools mentioned on this page, it is highly recommended to make a **debug build** of your application you want to check.
 
+Summary of why we need mutexes or atomic variables to serialize access to shared variables:  
+Variables accessed from different threads concurrently can lead to undefined behavior.  
+Due to possible compiler optimization, CPU out-of-order execution, or caching, the behavior of the program might be different than expected.  
+Example:  
+thread A executed by 1 CPU core changes such variable, but thread B executed by another CPU core will never see the change because it has its cached version of that variable (even thread A might just update the variable in cache, not even in operational memory, or even if it updates in operational memory, thread B might just don't update its cache from the operational memory).  
+Solution:  
+C++11 has atomic variables which get rid of this problem by using memory fences/barriers. The effect is similar to using mutex to protect such variables.  
+And lastly: using "volatile" keyword is simple not enough.  
+See URLs for more info:  
+https://stackoverflow.com/questions/8819095/concurrency-atomic-and-volatile-in-c11-memory-model  
+https://stackoverflow.com/questions/28738028/can-mutex-replace-memory-barriers
+
 [TOC]
 
 \section multithreading_windows Tools for Windows
