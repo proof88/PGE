@@ -12,6 +12,7 @@
 */
 
 #include "../../external/PRREallHeaders.h"
+#include "../../internal/PRREGLextensionFuncs.h"
 #include "PRREhwVideoDiscoverOpenGLbase.h"
 
 /**
@@ -130,15 +131,14 @@ public:
         functions.push_back(glBlendFuncSeparateiARB);
         result &= printExtensionSupported("Indi blend equ for each clr output are ", "GL_ARB_draw_buffers_blend", functions);
 
-        getConsole().O("Expected GLSL version is ");
         if ( (nVidVersionGLSLmaj > 4) || ( (nVidVersionGLSLmaj == 4) && (nVidVersionGLSLmin >= 0) ) )
         {
-            getConsole().SOLn("supported!");
+            getConsole().SOLn("Expected GLSL version is supported!");
         }
         else
         {
             result &= false;
-            getConsole().EOLn("NOT supported!");
+            getConsole().EOLn("Expected GLSL version is NOT supported!");
         }
 
         getConsole().OO();

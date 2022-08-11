@@ -717,7 +717,7 @@ void PRRERendererHWfixedPipeImpl::SetRenderHints(const TPRRE_RENDER_HINT& hints)
         // we are switching either render path or occlusion query method when there still might be pending queries,
         // so let's wait them to finish, otherwise some assert() may fail and/or some states might be inconsistent at next rendering!
         getConsole().OLn("");
-        getConsole().O("  Force-finishing ongoing occlusion queries ... ");
+        getConsole().OLn("  Force-finishing ongoing occlusion queries");
         for (int i = 0; i < pObject3DMgr->getSize(); i++)
         {
             PRREObject3D* const obj = (PRREObject3D*) pObject3DMgr->getAttachedAt(i);
@@ -727,7 +727,6 @@ void PRRERendererHWfixedPipeImpl::SetRenderHints(const TPRRE_RENDER_HINT& hints)
 
             obj->ForceFinishOcclusionTest();
         }
-        getConsole().OLn("done!");
     }
     getConsole().OLn("");
 

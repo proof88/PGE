@@ -62,15 +62,14 @@ public:
 
         result &= printExtensionSupported("sRGB textures are ", "GL_EXT_texture_sRGB", functions);
 
-        getConsole().O("Expected GLSL version is ");
         if ( (nVidVersionGLSLmaj > 2) || ( (nVidVersionGLSLmaj == 2) && (nVidVersionGLSLmin >= 1) ) )
         {
-            getConsole().SOLn("supported!");
+            getConsole().SOLn("Expected GLSL version is supported!");
         }
         else
         {
             result &= false;
-            getConsole().EOLn("NOT supported!");
+            getConsole().EOLn("Expected GLSL version is NOT supported!");
         }
 
         getConsole().OO();

@@ -12,6 +12,7 @@
 */
 
 #include "../../external/PRREallHeaders.h"
+#include "../../internal/PRREGLextensionFuncs.h"
 #include "PRREhwVideoDiscoverOpenGLbase.h"
 
 /**

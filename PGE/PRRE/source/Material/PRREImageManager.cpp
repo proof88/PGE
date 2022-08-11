@@ -340,7 +340,7 @@ PRREImage* PRREImageManager::createFromFile(const char* filename)
 #pragma warning(disable:4244)  /* int-char conversion in std::transform */
     transform(sFileExt.begin(), sFileExt.end(), sFileExt.begin(), ::toupper);
 #pragma warning(default:4244)
-    getConsole().O("ext: .%s, ", sFileExt.c_str());
+    getConsole().OLn("ext: .%s, ", sFileExt.c_str());
     PRREImage* pNewImage;
 
     if ( sFileExt == "BMP" )

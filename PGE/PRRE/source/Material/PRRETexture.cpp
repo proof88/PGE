@@ -624,10 +624,9 @@ TPRREbool PRRETexture::PRRETextureImpl::actualUploadProc(GLint internalfmt, GLen
     if ( nMIPmapCount > 1 )
     {
         _pOwner->getManagedConsole().OLn("mipmapping on");
-        _pOwner->getManagedConsole().O("auto-generating mipmaps with ");
         if ( hwInfo.getVideo().isHardwareMipMapGenerationSupported() && parent.isHardwareMipMapGenerationEnabled() )
         {        
-            _pOwner->getManagedConsole().OLn("HW-support.");
+            _pOwner->getManagedConsole().OLn("auto-generating mipmaps with HW-support.");
             if (!pglTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP_SGIS, GL_TRUE) )
             {
                 return false;
@@ -641,7 +640,7 @@ TPRREbool PRRETexture::PRRETextureImpl::actualUploadProc(GLint internalfmt, GLen
         }
         else
         {
-            _pOwner->getManagedConsole().OLn("SW-only.");
+            _pOwner->getManagedConsole().OLn("auto-generating mipmaps with SW-only.");
             const GLint errCode = gluBuild2DMipmaps(GL_TEXTURE_2D, internalfmt, _pOwner->getWidth(), _pOwner->getHeight(), glTexFormat, GL_UNSIGNED_BYTE, _pOwner->getPixels());
             if ( errCode != GL_NO_ERROR )
             {
@@ -686,47 +685,46 @@ void PRRETexture::PRRETextureImpl::DescribeTexFormatAndSize(GLint internalfmt)
         if ( tmpret == GL_TRUE )
         {
             glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &tmpret);
-            _pOwner->getManagedConsole().O("final internal texFormat is ");
             switch ( tmpret )
             {
             case GL_RGBA:
-                _pOwner->getManagedConsole().OLn("GL_RGBA");
+                _pOwner->getManagedConsole().OLn("final internal texFormat is GL_RGBA");
                 break;
             case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
                 texFormat = PRRE_TF_DXT1;
-                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGB_S3TC_DXT1_EXT");
+                _pOwner->getManagedConsole().OLn("final internal texFormat is GL_COMPRESSED_RGB_S3TC_DXT1_EXT");
                 break;
             case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
                 texFormat = PRRE_TF_DXT1A;
-                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGBA_S3TC_DXT1_EXT");
+                _pOwner->getManagedConsole().OLn("final internal texFormat is GL_COMPRESSED_RGBA_S3TC_DXT1_EXT");
                 break;
             case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
                 texFormat = PRRE_TF_DXT3A;
-                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGBA_S3TC_DXT3_EXT");
+                _pOwner->getManagedConsole().OLn("final internal texFormat is GL_COMPRESSED_RGBA_S3TC_DXT3_EXT");
                 break;
             case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
                 texFormat = PRRE_TF_DXT5A;
-                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGBA_S3TC_DXT5_EXT");
+                _pOwner->getManagedConsole().OLn("final internal texFormat is GL_COMPRESSED_RGBA_S3TC_DXT5_EXT");
                 break;
             case GL_COMPRESSED_RGB_FXT1_3DFX:
                 texFormat = PRRE_TF_FXT1;
-                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGB_FXT1_3DFX");
+                _pOwner->getManagedConsole().OLn("final internal texFormat is GL_COMPRESSED_RGB_FXT1_3DFX");
                 break;
             case GL_COMPRESSED_RGBA_FXT1_3DFX:
                 texFormat = PRRE_TF_FXT1A;
-                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGBA_FXT1_3DFX");
+                _pOwner->getManagedConsole().OLn("final internal texFormat is GL_COMPRESSED_RGBA_FXT1_3DFX");
                 break;
             /* In 14.12 AMD Catalyst Omega Software, requesting auto-compression at glTexImage2D() returns general compression here instead of any if the specific values above. */
             case GL_COMPRESSED_RGB_ARB:
                 texFormat = PRRE_TF_UNSURE;
-                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGB_ARB");
+                _pOwner->getManagedConsole().OLn("final internal texFormat is GL_COMPRESSED_RGB_ARB");
                 break;
             case GL_COMPRESSED_RGBA_ARB:
                 texFormat = PRRE_TF_UNSURE;
-                _pOwner->getManagedConsole().OLn("GL_COMPRESSED_RGBA_ARB");
+                _pOwner->getManagedConsole().OLn("final internal texFormat is GL_COMPRESSED_RGBA_ARB");
                 break;
             default:
-                _pOwner->getManagedConsole().EOLn("ERROR: glGetTexLevelParameteriv() returned %d for GL_TEXTURE_INTERNAL_FORMAT", tmpret);
+                _pOwner->getManagedConsole().EOLn("final internal texFormat ERROR: glGetTexLevelParameteriv() returned %d for GL_TEXTURE_INTERNAL_FORMAT", tmpret);
                 break;
             }
             glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &tmpret);

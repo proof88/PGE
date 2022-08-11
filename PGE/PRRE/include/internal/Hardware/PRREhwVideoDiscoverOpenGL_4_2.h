@@ -12,6 +12,7 @@
 */
 
 #include "../../external/PRREallHeaders.h"
+#include "../../internal/PRREGLextensionFuncs.h"
 #include "PRREhwVideoDiscoverOpenGLbase.h"
 
 /**
@@ -97,15 +98,14 @@ public:
 
         result &= printExtensionSupported("BPTC and BPTC_FLOAT are ", "GL_ARB_texture_compression_bptc", functions);
 
-        getConsole().O("Expected GLSL version is ");
         if ( (nVidVersionGLSLmaj > 4) || ( (nVidVersionGLSLmaj == 4) && (nVidVersionGLSLmin >= 2) ) )
         {
-            getConsole().SOLn("supported!");
+            getConsole().SOLn("Expected GLSL version is supported!");
         }
         else
         {
             result &= false;
-            getConsole().EOLn("NOT supported!");
+            getConsole().EOLn("Expected GLSL version is NOT supported!");
         }
 
         getConsole().OO();

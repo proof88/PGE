@@ -11,7 +11,10 @@
     ###################################################################################
 */
 
+#include <map>
 #include "../../external/PRREallHeaders.h"
+#include "../../internal/PRREGLextensionFuncs.h"
+#include "../../internal/PRREGLsnippets.h"
 #include "PRREhwVideoDiscoverOpenGLbase.h"
 
 /**
@@ -394,10 +397,15 @@ public:
             }
         }
         getConsole().OLn("Supported MSAA levels:");
+        std::string sMsaaLevels;
         for (TPRREint i = 0; i < MSAA_SUPP_LEVELS_ARRAY_SIZE; i++)
-            if ( bMSAAlevels[i] )
-                getConsole().O(" %d", i);
-        getConsole().OLn("");
+        {
+            if (bMSAAlevels[i])
+            {
+                sMsaaLevels += " " + std::to_string(i);
+            }
+        }
+        getConsole().OLn("%s", sMsaaLevels.c_str());
 
         getConsole().OLnOO("");
     } // DiscoverFSAAavailability()

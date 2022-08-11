@@ -511,11 +511,10 @@ TPRREuint PRREManager::PRREManagerImpl::getUsedSystemMemory() const
 PRREManager::PRREManagerImpl::PRREManagerImpl(PRREManager* pOwner)
 {
     _pOwner = pOwner;
-    _pOwner->getConsole().O("PRREManager(console) ... ");
     nManagedCount = 0;
     nManagedAllocated = 0;
     pManageds = PGENULL;
-    _pOwner->getConsole().SOLn("done!");
+    _pOwner->getConsole().SOLn("PRREManager(owner) done!");
 } // PRREManagerImpl(...)
 
 
@@ -859,16 +858,17 @@ PRREManager& PRREManager::operator=(const PRREManager& other)
 void PRREManager::WriteListCallback(const PRREManaged& mngd) const
 {
     getConsole().OI();
-    getConsole().O("%s, ", mngd.getName().c_str());
 
-    if ( mngd.getManager() == (PRREManager*)this )
-        getConsole().SOLn("parent is OK!");
+    if (mngd.getManager() == (PRREManager*)this)
+    {
+        getConsole().SOLn("%s parent is OK!", mngd.getName().c_str());
+    }
     else
     {
         if ( mngd.getManager() == PGENULL )
-            getConsole().EOLn("parent is PGENULL!");
+            getConsole().EOLn("%s parent is PGENULL!", mngd.getName().c_str());
         else
-            getConsole().EOLn("parent is VERY BAD (cannot happen)!");
+            getConsole().EOLn("%s parent is VERY BAD (cannot happen)!", mngd.getName().c_str());
     }
     
     getConsole().OO();

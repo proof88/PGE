@@ -140,19 +140,20 @@ bool PRREhwVideoDiscoverOpenGLbase::printExtensionSupported(const char* title, c
 {
     bool result;
 
-    getConsole().O(title);
     if ( result = isExtensionSupported(name) )
     {
         for (std::size_t i = 0; (i < functions.size()) && result; i++)
             result &= (functions[i] != PGENULL);
 
         if ( result )
-            getConsole().SOLn("OK!");
+            getConsole().SOLn("%sOK!", title);
         else
-            getConsole().EOLn("NOK (func)!");
+            getConsole().EOLn("%sNOK (func)!", title);
     }
     else
-        getConsole().EOLn("NOK (ext)!");
+    {
+        getConsole().EOLn("%sNOK (ext)!", title);
+    }
 
     functions.clear();
     return result;

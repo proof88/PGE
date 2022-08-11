@@ -11,15 +11,18 @@
     ###################################################################################
 */
 
-#include "../../../../../../CConsole/CConsole/src/CConsole.h"
+#include <string>
+#include <vector>
 
 #include "../gl/gl.h"
 #include "../gl/glu.h"
 #include "../gl/glext.h"
 #include "../gl/wglext.h"
 
+#include "../../../../../../CConsole/CConsole/src/CConsole.h"
+
 #include "../../external/PRREallHeaders.h"
-#include <vector>
+#include "../../external/PRREtypes.h"
 
 /**
     PRRE OpenGL capabilities base class.
