@@ -12,6 +12,7 @@
 #include "PRREbaseIncludes.h"  // PCH
 #include "../../include/external/Hardware/PRREhwCentralProcessor.h"
 #include <climits>
+#include <cstdint>
 #include "../../include/internal/PRREpragmas.h"
 
 using namespace std;
@@ -29,7 +30,9 @@ class PRREhwCentralProcessorImpl :
 public:
     static PRREhwCentralProcessorImpl& get();
 
-    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+    static const char* getLoggerModuleName();         /**< Returns the logger module name of this class. */
+
+    static bool isMachineBigEndian();                 /**< Returns if the current machine is big endian. */
 
     // ---------------------------------------------------------------------------
 
@@ -98,6 +101,23 @@ const char* PRREhwCentralProcessorImpl::getLoggerModuleName()
 
 
 /**
+    Returns if the current machine is big endian.
+
+    @return True if machine is big endian, false otherwise.
+*/
+bool PRREhwCentralProcessorImpl::isMachineBigEndian()
+{
+    union
+    {
+        uint32_t i;
+        char c[4];
+    } bint = { 0x01020304 };
+
+    return bint.c[0] == 1;
+}
+
+
+/**
     Writes statistics to the console.
 */
 void PRREhwCentralProcessorImpl::WriteStats()
@@ -158,12 +178,31 @@ void PRREhwCentralProcessorImpl::PreInitialize()
 TPRREbool PRREhwCentralProcessorImpl::initializeBase()
 {
     getConsole().OLn("Number of bits in:");
-    getConsole().OLn(" - TPRRE(u)byte: %d",  sizeof(TPRREbyte) * CHAR_BIT);
-    getConsole().OLn(" - TPRRE(u)short: %d", sizeof(TPRREshort) * CHAR_BIT);
-    getConsole().OLn(" - TPRRE(u)int: %d",   sizeof(TPRREint) * CHAR_BIT);
-    getConsole().OLn(" - TPRRE(u)long: %d",  sizeof(TPRRElong) * CHAR_BIT);
-    getConsole().OLn(" - TPRREfloat: %d",    sizeof(TPRREfloat) * CHAR_BIT);
-    getConsole().OLn(" - TPRREbool: %d",     sizeof(TPRREbool) * CHAR_BIT);
+    getConsole().OLn(" - TPRRE(u)byte : %d", CHAR_BIT * sizeof(TPRREbyte));
+    getConsole().OLn(" - TPRRE(u)short: %d", CHAR_BIT * sizeof(TPRREshort));
+    getConsole().OLn(" - TPRRE(u)int  : %d", CHAR_BIT * sizeof(TPRREint));
+    getConsole().OLn(" - TPRRE(u)long : %d", CHAR_BIT * sizeof(TPRRElong));
+    getConsole().OLn(" - TPRREfloat   : %d", CHAR_BIT * sizeof(TPRREfloat));
+    getConsole().OLn(" - TPRREbool    : %d", CHAR_BIT * sizeof(TPRREbool));
+    getConsole().OLn("");
+    getConsole().OLn(" - bool     : %d", CHAR_BIT * sizeof(bool));
+    getConsole().OLn(" - char     : %d", CHAR_BIT * sizeof(char));
+    getConsole().OLn(" - short    : %d", CHAR_BIT * sizeof(short));
+    getConsole().OLn(" - int      : %d", CHAR_BIT * sizeof(int));
+    getConsole().OLn(" - long     : %d", CHAR_BIT * sizeof(long));
+    getConsole().OLn(" - long long: %d", CHAR_BIT * sizeof(long long));
+    getConsole().OLn(" - float    : %d", CHAR_BIT * sizeof(float));
+    getConsole().OLn(" - double   : %d", CHAR_BIT * sizeof(double));
+    getConsole().OLn("");
+    getConsole().OLn(" - int8_t   : %d", CHAR_BIT * sizeof(int8_t));
+    getConsole().OLn(" - int16_t  : %d", CHAR_BIT * sizeof(int16_t));
+    getConsole().OLn(" - int32_t  : %d", CHAR_BIT * sizeof(int32_t));
+    getConsole().OLn(" - int64_t  : %d", CHAR_BIT * sizeof(int64_t));
+    getConsole().OLn(" - char16_t : %d", CHAR_BIT * sizeof(char16_t));
+    getConsole().OLn(" - char32_t : %d", CHAR_BIT * sizeof(char32_t));
+    getConsole().OLn("");
+    getConsole().OLn("This machine is %s-endian.", isMachineBigEndian() ? "big" : "little");
+
     getConsole().OLn("");
 
     return true;

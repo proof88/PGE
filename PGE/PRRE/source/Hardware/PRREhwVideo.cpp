@@ -1064,12 +1064,10 @@ void PRREhwVideoImpl::printExtensionList(const std::string& features, const char
                 tmpSpacesString = "";
                 for (int j = 0; j < numspaces; j++)
                     tmpSpacesString += ' ';
-                // although usage of O() is not recommended when multiple threads are allowed to log, due to
+                // although usage of O() is not recommended when multiple threads are allowed to log due to
                 // CConsole known issue B), I still leave this here ... because it is complicated to refactor
-                // this part, because when you want to put this multiple places into a string and then the
-                // string is written by OLn(), then in the html it will appear as only 1 space, because
-                // CConsoleImpl::WriteText() doesn't put the nbsp chars into the html when no line break is
-                // being put ... strange, this needs improvement from CConsole I guess.
+                // this part, because of another known issue D) which is about problem with how nbsp chars are
+                // put into output html log file.
                 getConsole().O(tmpSpacesString.c_str());
             }
             else
