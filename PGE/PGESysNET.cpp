@@ -27,6 +27,9 @@
 
 const uint16 PGESysNET::DEFAULT_SERVER_PORT;
 
+const uint32_t PgePktUserConnected::id;
+const uint32_t PgePktUserCmdMove::id;
+
 bool PGESysNET::isServer()
 {
     return bServer;
@@ -136,21 +139,7 @@ bool PGESysNET::initSysNET(void)
     }
     else
     {
-        // Start connecting
-        char szAddr[SteamNetworkingIPAddr::k_cchMaxString];
-        addrServer.ToString(szAddr, sizeof(szAddr), true);
-        CConsole::getConsoleInstance("PGESysNET").OLn("Connecting to server at %s", szAddr);
-
-        SteamNetworkingConfigValue_t opt;
-        opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)SteamNetConnectionStatusChangedCallback);
-
-        m_hConnection = m_pInterface->ConnectByIPAddress(addrServer, 1, &opt);
-        if (m_hConnection == k_HSteamNetConnection_Invalid)
-        {
-            CConsole::getConsoleInstance("PGESysNET").EOLn("Client Failed to create connection");
-            destroySysNET();
-            return false;
-        }
+        // ConnectClient() can be invoked later, now temporarily by public PGE::ConnectClient()    
     }
 
     // now main engine loop can invoke PollIncomingMessages() and PollConnectionStateChanges()
@@ -192,7 +181,7 @@ bool PGESysNET::destroySysNET(void)
     return true;
 } // destroySysNET()
 
-void PGESysNET::PollIncomingMessages()
+bool PGESysNET::PollIncomingMessages(PgePacket& pkt)
 {
     ISteamNetworkingMessage* pIncomingMsg = nullptr;
     if (isServer())
@@ -200,32 +189,32 @@ void PGESysNET::PollIncomingMessages()
         int numMsgs = m_pInterface->ReceiveMessagesOnPollGroup(m_hPollGroup, &pIncomingMsg, 1);
         if (numMsgs == 0)
         {
-            return;
+            return false;
         }
 
         if (numMsgs < 0)
         {
             CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER Error checking for messages!", __func__);
-            return;
+            return false;
         }
 
         if (numMsgs != 1)
         {
             CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER numMsgs == %d!", __func__, numMsgs);
-            return;
+            return false;
         }
 
         if (!pIncomingMsg)
         {
             CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER pIncomingMsg null!", __func__);
-            return;
+            return false;
         }
         
         auto itClient = m_mapClients.find(pIncomingMsg->m_conn);
         if (itClient == m_mapClients.end())
         {
             CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER failed to find in m_mapClients!", __func__);
-            return;
+            return false;
         }
 
         // '\0'-terminate it to make it easier to parse
@@ -237,40 +226,45 @@ void PGESysNET::PollIncomingMessages()
         pIncomingMsg->Release();
 
         // TODO: process message: cmd
+
+        return false; // TODO: change this to true when we are finally copying stuff to pkt!
     }
     else
     {   // client
-        //if (m_hConnection == k_HSteamNetConnection_Invalid)
-        //{
-        //    return;
-        //}
+        if (m_hConnection == k_HSteamNetConnection_Invalid)
+        {
+            return false;
+        }
 
         const int numMsgs = m_pInterface->ReceiveMessagesOnConnection(m_hConnection, &pIncomingMsg, 1);
         
         // ### from here same as server code above
         if (numMsgs == 0)
         {
-            return;
+            return false;
         }
 
         if (numMsgs < 0)
         {
             CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT Error checking for messages!", __func__);
-            return;
+            return false;
         }
 
         if (numMsgs != 1)
         {
             CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT numMsgs == %d!", __func__, numMsgs);
-            return;
+            return false;
         }
 
         if (!pIncomingMsg)
         {
             CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT pIncomingMsg null!", __func__);
-            return;
+            return false;
         }
         // ### until here
+
+        assert(pIncomingMsg->m_cbSize == sizeof(pkt));
+        memcpy(&pkt, pIncomingMsg->m_pData, pIncomingMsg->m_cbSize);
 
         // Just echo anything we get from the server
         //fwrite(pIncomingMsg->m_pData, 1, pIncomingMsg->m_cbSize, stdout);
@@ -278,6 +272,8 @@ void PGESysNET::PollIncomingMessages()
 
         // We don't need this anymore.
         pIncomingMsg->Release();
+
+        return true;
     }
 }
 
@@ -287,20 +283,15 @@ void PGESysNET::PollConnectionStateChanges()
     m_pInterface->RunCallbacks();
 }
 
-
-// ############################## PROTECTED ##############################
-
-
-// ############################### PRIVATE ###############################
-
-
-PGESysNET* PGESysNET::s_pCallbackInstance = nullptr;
-bool PGESysNET::bServer = false;
-
 // ### from here server only
 void PGESysNET::SendStringToClient(HSteamNetConnection conn, const char* str)
 {
     m_pInterface->SendMessageToConnection(conn, str, (uint32)strlen(str), k_nSteamNetworkingSend_Reliable, nullptr);
+}
+
+void PGESysNET::SendPacketToClient(HSteamNetConnection conn, const PgePacket& pkt)
+{
+    m_pInterface->SendMessageToConnection(conn, &pkt, (uint32)sizeof(pkt), k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
 void PGESysNET::SendStringToAllClients(const char* str, HSteamNetConnection except)
@@ -311,7 +302,50 @@ void PGESysNET::SendStringToAllClients(const char* str, HSteamNetConnection exce
             SendStringToClient(c.first, str);
     }
 }
+
+void PGESysNET::SendPacketToAllClients(const PgePacket& pkt, HSteamNetConnection except)
+{
+    for (auto& c : m_mapClients)
+    {
+        if (c.first != except)
+            SendPacketToClient(c.first, pkt);
+    }
+}
 // ### server only until here
+
+
+// ### from here client only
+bool PGESysNET::ConnectClient()
+{
+    // Start connecting
+    char szAddr[SteamNetworkingIPAddr::k_cchMaxString];
+    addrServer.ToString(szAddr, sizeof(szAddr), true);
+    CConsole::getConsoleInstance("PGESysNET").OLn("Connecting to server at %s", szAddr);
+
+    SteamNetworkingConfigValue_t opt;
+    opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)SteamNetConnectionStatusChangedCallback);
+
+    m_hConnection = m_pInterface->ConnectByIPAddress(addrServer, 1, &opt);
+    if (m_hConnection == k_HSteamNetConnection_Invalid)
+    {
+        CConsole::getConsoleInstance("PGESysNET").EOLn("Client Failed to create connection");
+        destroySysNET();
+        return false;
+    }
+
+    return true;
+}
+// ### client only until here
+
+
+// ############################## PROTECTED ##############################
+
+
+// ############################### PRIVATE ###############################
+
+
+PGESysNET* PGESysNET::s_pCallbackInstance = nullptr;
+bool PGESysNET::bServer = false;
 
 void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
 {
@@ -345,14 +379,14 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 if (pInfo->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
                 {
                     pszDebugLogAction = "problem detected locally";
-                    sprintf(temp, "Alas, %s hath fallen into shadow.  (%s)", itClient->second.m_sNick.c_str(), pInfo->m_info.m_szEndDebug);
+                    sprintf(temp, "%s disappeared (%s)", itClient->second.m_sNick.c_str(), pInfo->m_info.m_szEndDebug);
                 }
                 else
                 {
                     // Note that here we could check the reason code to see if
                     // it was a "usual" connection or an "unusual" one.
                     pszDebugLogAction = "closed by peer";
-                    sprintf(temp, "%s hath departed", itClient->second.m_sNick.c_str());
+                    sprintf(temp, "%s closed connection", itClient->second.m_sNick.c_str());
                 }
 
                 // Spew something to our own log.  Note that because we put their nick
@@ -401,7 +435,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 // disconnected, the connection may already be half closed.  Just
                 // destroy whatever we have on our side.
                 m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
-                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER Can't accept connection.  (It was already closed?)", __func__);
+                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER Can't accept connection. (It was already closed?)", __func__);
                 break;
             }
 
@@ -419,12 +453,17 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             // and you would keep their client in a state of limbo (connected,
             // but not logged on) until them.  I'm trying to keep this example
             // code really simple.
-            char nick[64];
-            sprintf(nick, "BraveWarrior%d", 10000 + (rand() % 100000));
+            PgePacket pkt;
+            memset(&pkt, 0, sizeof(pkt));
+            pkt.pktId = PgePktUserConnected::id;
+            pkt.msg.userConnected.bCurrentClient = true;
+            sprintf(pkt.msg.userConnected.sUserName, "User%d", 10000 + (rand() % 100000));
 
             // Send them a welcome message
-            sprintf(temp, "Welcome, stranger.  Thou art known to us for now as '%s'; upon thine command '/nick' we shall know thee otherwise.", nick);
+            //sprintf(temp, "Welcome, stranger.  Thou art known to us for now as '%s'; upon thine command '/nick' we shall know thee otherwise.", nick);
             //SendStringToClient(pInfo->m_hConn, temp);
+
+            
 
             // Also send them a list of everybody who is already connected
             //if (m_mapClients.empty())
@@ -441,11 +480,15 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             // Let everybody else know who they are for now
             //sprintf(temp, "Hark!  A stranger hath joined this merry host.  For now we shall call them '%s'", nick);
             //SendStringToAllClients(temp, pInfo->m_hConn);
+            
 
             // Add them to the client list, using std::map wacky syntax
             m_mapClients[pInfo->m_hConn];
-            SetClientNick(pInfo->m_hConn, nick);
-            CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client with name %s is connecting ...", __func__, nick);
+            SetClientNick(pInfo->m_hConn, pkt.msg.userConnected.sUserName);
+
+            SendPacketToAllClients(pkt);
+
+            CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client with name %s is connecting ...", __func__, pkt.msg.userConnected.sUserName);
             break;
         }
 
@@ -479,18 +522,18 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             {
                 // Note: we could distinguish between a timeout, a rejected connection,
                 // or some other transport problem.
-                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT We sought the remote host, yet our efforts were met with defeat.  (%s)",
+                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT problem 1 (rejected I guess) (%s)",
                     __func__, pInfo->m_info.m_szEndDebug);
             }
             else if (pInfo->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
             {
-                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT Alas, troubles beset us; we have lost contact with the host.  (%s)",
+                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT problem 2 (guess our machine has lost network connection) (%s)",
                     __func__, pInfo->m_info.m_szEndDebug);
             }
             else
             {
                 // NOTE: We could check the reason code for a normal disconnection
-                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT The host hath bidden us farewell.  (%s)",
+                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT problem 3 (closed by peer) (%s)",
                     __func__, pInfo->m_info.m_szEndDebug);
             }
 

@@ -394,6 +394,7 @@
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamtypes.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamuniverse.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steam_api_common.h" />
+    <ClInclude Include="Network\PgePacket.h" />
     <ClInclude Include="PGE.h" />
     <ClInclude Include="PGEallHeaders.h" />
     <ClInclude Include="PGEcfgFile.h" />

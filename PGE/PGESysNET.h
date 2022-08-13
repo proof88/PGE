@@ -13,8 +13,11 @@
 
 #include "PGEallHeaders.h"
 
+#include <cstdint>
 #include <map>
 #include <string>
+
+#include "Network/PgePacket.h"
 
 // this idea of building include paths is coming from:
 // https://stackoverflow.com/questions/32066204/construct-path-for-include-directive-with-macro
@@ -48,14 +51,24 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    // TODO: this needs to be private, temporarily here!
+    HSteamNetConnection m_hConnection; // used by client only
+
     PGESysNET();
     virtual ~PGESysNET();
 
     bool initSysNET(void);
     bool destroySysNET(void);
     
-    void PollIncomingMessages();
+    bool PollIncomingMessages(PgePacket& pkt);
     void PollConnectionStateChanges();
+
+    void SendStringToClient(HSteamNetConnection conn, const char* str);
+    void SendPacketToClient(HSteamNetConnection conn, const PgePacket& pkt);
+    void SendStringToAllClients(const char* str, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
+    void SendPacketToAllClients(const PgePacket& pkt, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
+
+    bool ConnectClient(); /* temporal, now I dont have better idea in this time */
 
 private:
 
@@ -67,14 +80,13 @@ private:
     ISteamNetworkingSockets* m_pInterface;
     HSteamListenSocket m_hListenSock;  // used by server only
     HSteamNetPollGroup m_hPollGroup;   // used by server only
-    HSteamNetConnection m_hConnection; // used by client only
 
     struct Client_t
     {
         std::string m_sNick;
     };
 
-    std::map< HSteamNetConnection, Client_t > m_mapClients;
+    std::map< HSteamNetConnection, Client_t > m_mapClients;  // used by server only
 
     static void SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
 
@@ -84,8 +96,6 @@ private:
     PGESysNET& operator=(const PGESysNET&);
 
     void SetClientNick(HSteamNetConnection hConn, const char* nick);
-    void SendStringToClient(HSteamNetConnection conn, const char* str);
-    void SendStringToAllClients(const char* str, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
     void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo);
 
 }; // class PGESysNET

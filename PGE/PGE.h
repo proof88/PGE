@@ -17,6 +17,7 @@
 #include "PRRE/include/external/PR00FsReducedRenderingEngine.h"
 #include "PGEInputHandler.h"
 #include "PGEWorld.h"
+#include "Network/PgePacket.h"
 #include "Weapons/WeaponManager.h"
 
 
@@ -74,8 +75,23 @@ public:
     PGEInputHandler& getInput() const;         /**< Returns the input handler object. */
     PGEWorld& getWorld() const;                /**< Returns the world object. */
     PR00FsReducedRenderingEngine& getPRRE() const;   /**< Returns the graphics engine. */
-    bool isServer() const; /* temporal, on the long run we will need a public network class (PGESysNET is internal header, NOT public) */
+
+    //
+    // TEMPORAL SECTION START
+    // on the long run we will need a public network class (PGESysNET is internal header, NOT public)
+    //
     //TODO PGESysNET& getNetwork() const;             /**< Returns the network handler object. */
+    bool isServer() const;
+    bool ConnectClient(); /* temporal */
+    void SendStringToClient(const char* str);
+    void SendPacketToClient( const PgePacket& pkt);
+    void SendStringToAllClients(const char* str);
+    void SendPacketToAllClients(const PgePacket& pkt);
+    std::deque<PgePacket>& getPacketQueue();  // TODO: TEMPORAL: obviously we should not allow this kind of access
+    //
+    // TEMPORAL SECTION END
+    //
+    
     WeaponManager& getWeaponManager();         /**< Returns the weapon manager object. */
 
     int  initializeGame();                     /**< Initializes the game engine. */

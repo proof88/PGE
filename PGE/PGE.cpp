@@ -25,13 +25,10 @@
 
 using namespace std;
 
-
-
 /*
    PGE::PGEimpl
    ###########################################################################
 */
-
 
 class PGE::PGEimpl
 {
@@ -89,10 +86,11 @@ private:
     
     PR00FsReducedRenderingEngine& GFX; 
     void* pSFX;
-    void* pNET;
     PGEInputHandler& inputHandler;
     PGEWorld& world;
     WeaponManager wpnMgr;
+
+    std::deque<PgePacket> queuePackets;
 
     bool        bIsGameRunning;        /**< Is the game running (true after successful init and before initiating shutdown)? */
     std::string sGameTitle;            /**< Simplified name of the game, used in paths too, so can't contain joker chars. */
@@ -555,6 +553,36 @@ bool PGE::isServer() const
 //}
 
 
+bool PGE::ConnectClient()
+{
+    return p->SysNET.ConnectClient();
+}
+
+void PGE::SendStringToClient(const char* str)
+{
+    p->SysNET.SendStringToClient(p->SysNET.m_hConnection, str);
+}
+
+void PGE::SendPacketToClient(const PgePacket& pkt)
+{
+    p->SysNET.SendPacketToClient(p->SysNET.m_hConnection, pkt);
+}
+
+void PGE::SendStringToAllClients(const char* str)
+{
+    p->SysNET.SendStringToAllClients(str);
+}
+
+void PGE::SendPacketToAllClients(const PgePacket& pkt)
+{
+    p->SysNET.SendPacketToAllClients(pkt);
+}
+
+std::deque<PgePacket>& PGE::getPacketQueue()
+{
+    return p->queuePackets;
+}
+
 /**
     Returns the weapon manager object.
 */
@@ -719,7 +747,12 @@ int PGE::runGame()
         window.ProcessMessages();
         p->bIsGameRunning = !window.hasCloseRequest();
 
-        p->SysNET.PollIncomingMessages();
+        PgePacket pkt;
+        if (p->SysNET.PollIncomingMessages(pkt))
+        {
+            // TODO: PollIncomingMessages() could simply put this pkt into the queue by itself ... 
+            p->queuePackets.push_back(pkt);
+        };
         p->SysNET.PollConnectionStateChanges();
         
         if ( window.isActive() || p->bInactiveLikeActive )
