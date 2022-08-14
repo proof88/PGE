@@ -14,6 +14,7 @@
 #include "PGEallHeaders.h"
 
 #include <cstdint>
+#include <deque>
 #include <map>
 #include <string>
 
@@ -51,8 +52,9 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    // TODO: this needs to be private, temporarily here!
+    // TODO: these needs to be private, temporarily here!
     HSteamNetConnection m_hConnection; // used by client only
+    std::deque<PgePacket> queuePackets;  // used by both client and server
 
     PGESysNET();
     virtual ~PGESysNET();
@@ -80,6 +82,7 @@ private:
     ISteamNetworkingSockets* m_pInterface;
     HSteamListenSocket m_hListenSock;  // used by server only
     HSteamNetPollGroup m_hPollGroup;   // used by server only
+    
 
     struct Client_t
     {
@@ -87,6 +90,8 @@ private:
     };
 
     std::map< HSteamNetConnection, Client_t > m_mapClients;  // used by server only
+
+    
 
     static void SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
 

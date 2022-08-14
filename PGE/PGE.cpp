@@ -90,7 +90,7 @@ private:
     PGEWorld& world;
     WeaponManager wpnMgr;
 
-    std::deque<PgePacket> queuePackets;
+    std::map<std::string, Player_t> m_mapPlayers;  // used by both server and clients
 
     bool        bIsGameRunning;        /**< Is the game running (true after successful init and before initiating shutdown)? */
     std::string sGameTitle;            /**< Simplified name of the game, used in paths too, so can't contain joker chars. */
@@ -580,7 +580,12 @@ void PGE::SendPacketToAllClients(const PgePacket& pkt)
 
 std::deque<PgePacket>& PGE::getPacketQueue()
 {
-    return p->queuePackets;
+    return p->SysNET.queuePackets;
+}
+
+std::map<std::string, Player_t>& PGE::getPlayers()
+{
+    return p->m_mapPlayers;
 }
 
 /**
@@ -751,9 +756,15 @@ int PGE::runGame()
         if (p->SysNET.PollIncomingMessages(pkt))
         {
             // TODO: PollIncomingMessages() could simply put this pkt into the queue by itself ... 
-            p->queuePackets.push_back(pkt);
+            p->SysNET.queuePackets.push_back(pkt);
         };
-        p->SysNET.PollConnectionStateChanges();
+        p->SysNET.PollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
+        while (getPacketQueue().size() > 0)
+        {
+            pkt = getPacketQueue().front();
+            getPacketQueue().pop_front();
+            onPacketReceived(pkt);
+        }
         
         if ( window.isActive() || p->bInactiveLikeActive )
         {

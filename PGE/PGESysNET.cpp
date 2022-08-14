@@ -349,6 +349,14 @@ bool PGESysNET::bServer = false;
 
 void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
 {
+    // This function is also invoked on main thread when I call PGESysNET.PollConnectionStateChanges() from PGE::runGame()
+    // so no need to utilize mutexes around here.
+    // And the other function PollIncomingMessages() is also invoked by PGE::runGame().
+    // So it is safe to do operations on queuePackets.
+    // The problem related to CConsole not being threadsafe was not due to the logs within this function
+    // but to the callback function I've set with SteamNetworkingUtils()->SetDebugOutputFunction(), as it can be called
+    // in parallel by SteamNetworking thread.
+
     if (isServer())
     {
         char temp[1024];
@@ -457,7 +465,22 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             memset(&pkt, 0, sizeof(pkt));
             pkt.pktId = PgePktUserConnected::id;
             pkt.msg.userConnected.bCurrentClient = true;
-            sprintf(pkt.msg.userConnected.sUserName, "User%d", 10000 + (rand() % 100000));
+            
+            // generate unique user name
+            bool found = false;
+            do
+            {
+                sprintf(pkt.msg.userConnected.sUserName, "User%d", 10000 + (rand() % 100000));
+                for (const auto& client : m_mapClients)
+                {
+                    found = (client.second.m_sNick == pkt.msg.userConnected.sUserName);
+                    if (found)
+                    {
+                        break;
+                    }
+                }
+            } while ( found );
+
 
             // Send them a welcome message
             //sprintf(temp, "Welcome, stranger.  Thou art known to us for now as '%s'; upon thine command '/nick' we shall know thee otherwise.", nick);
@@ -485,6 +508,9 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             // Add them to the client list, using std::map wacky syntax
             m_mapClients[pInfo->m_hConn];
             SetClientNick(pInfo->m_hConn, pkt.msg.userConnected.sUserName);
+
+            // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
+            queuePackets.push_back(pkt);
 
             SendPacketToAllClients(pkt);
 

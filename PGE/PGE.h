@@ -38,6 +38,12 @@ enum PGE_MSG_ID
 }; // enum PGE_MSG_ID
 
 
+struct Player_t
+{
+    PRREObject3D* pObject3D;
+};
+
+
 /**
     PR00F's Game Engine main class.
 */
@@ -88,6 +94,7 @@ public:
     void SendStringToAllClients(const char* str);
     void SendPacketToAllClients(const PgePacket& pkt);
     std::deque<PgePacket>& getPacketQueue();  // TODO: TEMPORAL: obviously we should not allow this kind of access
+    std::map<std::string, Player_t>& getPlayers();
     //
     // TEMPORAL SECTION END
     //
@@ -115,6 +122,8 @@ protected:
     virtual void onGameInitializing() {}  /**< Called before initializing the engine. */
     virtual void onGameInitialized() {}   /**< Called after initializing the engine. */
     virtual void onGameRunning() {}       /**< Called while running the engine. */
+    virtual void onPacketReceived(
+        const PgePacket&) {}              /**< Called when a new network packet is received. */
     virtual void onGameDestroying() {}    /**< Called before stopping the engine. */
     virtual void onGameDestroyed() {}     /**< Called after stopping the engine. */
 
