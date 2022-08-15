@@ -69,6 +69,7 @@ public:
     void SendPacketToClient(HSteamNetConnection conn, const PgePacket& pkt);
     void SendStringToAllClients(const char* str, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
     void SendPacketToAllClients(const PgePacket& pkt, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
+    void SendPacketToServer(const PgePacket& pkt);
 
     bool ConnectClient(); /* temporal, now I dont have better idea in this time */
 

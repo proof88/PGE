@@ -93,6 +93,7 @@ public:
     void SendPacketToClient( const PgePacket& pkt);
     void SendStringToAllClients(const char* str);
     void SendPacketToAllClients(const PgePacket& pkt);
+    void SendPacketToServer(const PgePacket& pkt);
     std::deque<PgePacket>& getPacketQueue();  // TODO: TEMPORAL: obviously we should not allow this kind of access
     std::map<std::string, Player_t>& getPlayers();
     //

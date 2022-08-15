@@ -29,6 +29,7 @@ const uint16 PGESysNET::DEFAULT_SERVER_PORT;
 
 const uint32_t PgePktUserConnected::id;
 const uint32_t PgePktUserCmdMove::id;
+const uint32_t PgePktUserUpdate::id;
 
 bool PGESysNET::isServer()
 {
@@ -209,12 +210,20 @@ bool PGESysNET::PollIncomingMessages(PgePacket& pkt)
             CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER pIncomingMsg null!", __func__);
             return false;
         }
-        
+
         auto itClient = m_mapClients.find(pIncomingMsg->m_conn);
         if (itClient == m_mapClients.end())
         {
             CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER failed to find in m_mapClients!", __func__);
             return false;
+        }
+
+        assert(pIncomingMsg->m_cbSize == sizeof(pkt));
+        memcpy(&pkt, pIncomingMsg->m_pData, pIncomingMsg->m_cbSize);
+
+        if (pkt.pktId == PgePktUserCmdMove::id)
+        {
+            strncpy(pkt.msg.userCmdMove.sUserName, itClient->second.m_sNick.c_str(), 64);
         }
 
         // '\0'-terminate it to make it easier to parse
@@ -225,9 +234,7 @@ bool PGESysNET::PollIncomingMessages(PgePacket& pkt)
         // We don't need this anymore.
         pIncomingMsg->Release();
 
-        // TODO: process message: cmd
-
-        return false; // TODO: change this to true when we are finally copying stuff to pkt!
+        return true; // TODO: change this to true when we are finally copying stuff to pkt!
     }
     else
     {   // client
@@ -315,6 +322,17 @@ void PGESysNET::SendPacketToAllClients(const PgePacket& pkt, HSteamNetConnection
 
 
 // ### from here client only
+void PGESysNET::SendPacketToServer(const PgePacket& pkt)
+{
+    if (m_hConnection == k_HSteamNetConnection_Invalid)
+    {
+        CConsole::getConsoleInstance("PGESysNET").EOLn("%s(): Client Invalid connection handle to server!", __func__);
+        return;
+    }
+
+    m_pInterface->SendMessageToConnection(m_hConnection, &pkt, (uint32)sizeof(pkt), k_nSteamNetworkingSend_Reliable, nullptr);
+}
+
 bool PGESysNET::ConnectClient()
 {
     // Start connecting

@@ -578,6 +578,11 @@ void PGE::SendPacketToAllClients(const PgePacket& pkt)
     p->SysNET.SendPacketToAllClients(pkt);
 }
 
+void PGE::SendPacketToServer(const PgePacket& pkt)
+{
+    p->SysNET.SendPacketToServer(pkt);
+}
+
 std::deque<PgePacket>& PGE::getPacketQueue()
 {
     return p->SysNET.queuePackets;
