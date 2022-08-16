@@ -182,26 +182,23 @@ bool PGESysNET::destroySysNET(void)
     return true;
 } // destroySysNET()
 
-bool PGESysNET::PollIncomingMessages(PgePacket& pkt)
+bool PGESysNET::PollIncomingMessages()
 {
-    ISteamNetworkingMessage* pIncomingMsg = nullptr;
+    static const int nIncomingMsgArraySize = 100;
+    ISteamNetworkingMessage* pIncomingMsg[nIncomingMsgArraySize];
     if (isServer())
     {
-        int numMsgs = m_pInterface->ReceiveMessagesOnPollGroup(m_hPollGroup, &pIncomingMsg, 1);
+        // ReceiveMessagesOnPollGroup() basically copies the pointers to messages from GNS's internal linked list,
+        // and unlinks these from the linked list
+        int numMsgs = m_pInterface->ReceiveMessagesOnPollGroup(m_hPollGroup, pIncomingMsg, nIncomingMsgArraySize);
         if (numMsgs == 0)
         {
-            return false;
+            return false;                              
         }
 
         if (numMsgs < 0)
         {
             CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER Error checking for messages!", __func__);
-            return false;
-        }
-
-        if (numMsgs != 1)
-        {
-            CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER numMsgs == %d!", __func__, numMsgs);
             return false;
         }
 
@@ -211,30 +208,33 @@ bool PGESysNET::PollIncomingMessages(PgePacket& pkt)
             return false;
         }
 
-        auto itClient = m_mapClients.find(pIncomingMsg->m_conn);
-        if (itClient == m_mapClients.end())
+        for (int i = 0; i < numMsgs; i++)
         {
-            CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER failed to find in m_mapClients!", __func__);
-            return false;
+            auto itClient = m_mapClients.find(pIncomingMsg[i]->m_conn);
+            if (itClient == m_mapClients.end())
+            {
+                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER failed to find connection in m_mapClients!", __func__);
+                continue;
+            }
+
+            PgePacket pkt;
+            assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
+            memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
+
+            if (pkt.pktId == PgePktUserCmdMove::id)
+            {
+                strncpy(pkt.msg.userCmdMove.sUserName, itClient->second.m_sNick.c_str(), 64);
+            }
+
+            queuePackets.push_back(pkt);
+
+            // We don't need this anymore.
+            // Note that we could even push pIncomingMsg to a queue, and process it later, and
+            // release it later, that could be a good speed optimization.
+            (pIncomingMsg[i])->Release();
         }
 
-        assert(pIncomingMsg->m_cbSize == sizeof(pkt));
-        memcpy(&pkt, pIncomingMsg->m_pData, pIncomingMsg->m_cbSize);
-
-        if (pkt.pktId == PgePktUserCmdMove::id)
-        {
-            strncpy(pkt.msg.userCmdMove.sUserName, itClient->second.m_sNick.c_str(), 64);
-        }
-
-        // '\0'-terminate it to make it easier to parse
-        //std::string sCmd;
-        //sCmd.assign((const char*)pIncomingMsg->m_pData, pIncomingMsg->m_cbSize);
-        //const char* cmd = sCmd.c_str();
-
-        // We don't need this anymore.
-        pIncomingMsg->Release();
-
-        return true; // TODO: change this to true when we are finally copying stuff to pkt!
+        return true;
     }
     else
     {   // client
@@ -243,7 +243,9 @@ bool PGESysNET::PollIncomingMessages(PgePacket& pkt)
             return false;
         }
 
-        const int numMsgs = m_pInterface->ReceiveMessagesOnConnection(m_hConnection, &pIncomingMsg, 1);
+        // ReceiveMessagesOnConnection() basically copies the pointers to messages from GNS's internal linked list,
+        // and unlinks these from the linked list
+        const int numMsgs = m_pInterface->ReceiveMessagesOnConnection(m_hConnection, pIncomingMsg, nIncomingMsgArraySize);
         
         // ### from here same as server code above
         if (numMsgs == 0)
@@ -257,12 +259,6 @@ bool PGESysNET::PollIncomingMessages(PgePacket& pkt)
             return false;
         }
 
-        if (numMsgs != 1)
-        {
-            CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT numMsgs == %d!", __func__, numMsgs);
-            return false;
-        }
-
         if (!pIncomingMsg)
         {
             CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT pIncomingMsg null!", __func__);
@@ -270,15 +266,19 @@ bool PGESysNET::PollIncomingMessages(PgePacket& pkt)
         }
         // ### until here
 
-        assert(pIncomingMsg->m_cbSize == sizeof(pkt));
-        memcpy(&pkt, pIncomingMsg->m_pData, pIncomingMsg->m_cbSize);
+        for (int i = 0; i < numMsgs; i++)
+        {
+            PgePacket pkt;
+            assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
+            memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
 
-        // Just echo anything we get from the server
-        //fwrite(pIncomingMsg->m_pData, 1, pIncomingMsg->m_cbSize, stdout);
-        //fputc('\n', stdout);
+            queuePackets.push_back(pkt);
 
-        // We don't need this anymore.
-        pIncomingMsg->Release();
+            // We don't need this anymore.
+            // Note that we could even push pIncomingMsg to a queue, and process it later, and
+            // release it later, that could be a good speed optimization.
+            (pIncomingMsg[i])->Release();
+        }
 
         return true;
     }

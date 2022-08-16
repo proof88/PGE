@@ -62,7 +62,7 @@ public:
     bool initSysNET(void);
     bool destroySysNET(void);
     
-    bool PollIncomingMessages(PgePacket& pkt);
+    bool PollIncomingMessages();
     void PollConnectionStateChanges();
 
     void SendStringToClient(HSteamNetConnection conn, const char* str);

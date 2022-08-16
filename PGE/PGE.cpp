@@ -757,16 +757,11 @@ int PGE::runGame()
         window.ProcessMessages();
         p->bIsGameRunning = !window.hasCloseRequest();
 
-        PgePacket pkt;
-        if (p->SysNET.PollIncomingMessages(pkt))
-        {
-            // TODO: PollIncomingMessages() could simply put this pkt into the queue by itself ... 
-            p->SysNET.queuePackets.push_back(pkt);
-        };
+        p->SysNET.PollIncomingMessages();
         p->SysNET.PollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
         while (getPacketQueue().size() > 0)
         {
-            pkt = getPacketQueue().front();
+            PgePacket pkt = getPacketQueue().front();
             getPacketQueue().pop_front();
             onPacketReceived(pkt);
         }
