@@ -184,7 +184,7 @@ bool PGESysNET::destroySysNET(void)
 
 bool PGESysNET::PollIncomingMessages()
 {
-    static const int nIncomingMsgArraySize = 100;
+    static const int nIncomingMsgArraySize = 1;
     ISteamNetworkingMessage* pIncomingMsg[nIncomingMsgArraySize];
     if (isServer())
     {
