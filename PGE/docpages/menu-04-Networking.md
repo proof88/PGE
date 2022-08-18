@@ -19,29 +19,30 @@ During my research, I checked the following 3 popular libraries from a closer pe
  - **yojimbo**: https://github.com/networkprotocol/yojimbo
    - https://github.com/networkprotocol/yojimbo/issues/25
    - https://www.gamedev.net/forums/topic/697635-is-anyone-using-yojimbo-for-networking/
- - **GameNetworkingSockets**: https://github.com/ValveSoftware/GameNetworkingSockets
- - **SLikeNet**: https://github.com/SLikeSoft/SLikeNet
+ - **GNS (GameNetworkingSockets)**: https://github.com/ValveSoftware/GameNetworkingSockets
+ - **SLN (SLikeNet)**: https://github.com/SLikeSoft/SLikeNet
 
 All 3 libs offer features like **message encryption between players, packet fragmentation and reassembly, cross-platform support, traffic statistics**.
 
 Unfortunately, **yojimbo** doesn't have **NAT punch-through** support, for which I decided not to use it, because I don't want to implement / or use additional library for this purpose.  
-Both **GameNetworkingSockets** and **SLikeNet** offer sophisticated connection establish between computers NOT connected directly to the internet, this is not in **yojimbo**.  
+Both **GNS** and **SLN** offer sophisticated connection establish between computers NOT connected directly to the internet, this is not in **yojimbo**.  
 
-Although the codebase of **SLikeNet** hasn't changed since 2019, it has a solid base: it is a fork of **RakNet** which was developed for more than a decade, and it was also used by Unity engine (maybe it is still used under the hood).  
-In theory, **SLikeNet** fixes some IPv6-related bugs of **RakNet** but I don't know if it has become really bug-free.  
+Although the codebase of **SLN** hasn't changed since 2019, it has a solid base: it is a fork of **RakNet** which was developed for more than a decade, and it was also used by Unity engine (maybe it is still used under the hood).  
+In theory, **SLN** fixes some IPv6-related bugs of **RakNet** but I don't know if it has become really bug-free.  
 
-Comparing **GameNetworkingSockets** and **SLikeNet** today is more difficult than it used to be in ~2019 because since then **GameNetworkingSockets** added some missing features already available in **SLikeNet**.  
+Comparing **GNS** and **SLN** today is more difficult than it used to be in ~2019 because since then **GNS** added some missing features already available in **SLN**.  
 Both libs provide:
  - experience by others used in actual games;
  - not only client-server model but also P2P;
  - IPv6 support.
  
-**SLikeNet** offers support for game object serialization and data compression, I don't see much support for these in **GameNetworkingSockets** as of June 2022 with version 1.4.0.  
+**SLN** offers support for game object serialization and data compression, I don't see much support for these in **GNS** as of June 2022 with version 1.4.0.  
 It also has some other fancy stuff like game lobby, autopatcher, etc.  
 It also has much less dependencies and easier to build.
 
-**GameNetworkingSockets** on the other hand, is still actively maintained by Valve, used by Dota and CSGO.  
-Because of this, I opted for **GameNetworkingSockets**.
+**GNS** on the other hand, is still actively maintained by Valve, used by Dota and CSGO.  
+Because of this, I opted for **GNS**.  
+Here is a **small game project** utilizing **GSN**: https://github.com/David-Elle-Jack-Oisin/TeamProject/tree/main/src/network
 
 I'm implementing the **client-server** networking model in the engine because it sounds suitable for my future projects and hopefully easier to implement than P2P.
  
@@ -49,6 +50,7 @@ I'm implementing the **client-server** networking model in the engine because it
 
 Client-server vs P2P model:
  - https://gafferongames.com/post/what_every_programmer_needs_to_know_about_game_networking/
+ - https://docs.unrealengine.com/4.27/en-US/InteractiveExperiences/Networking/Overview/
  - https://gamedev.stackexchange.com/questions/67738/limitations-of-p2p-multiplayer-games-vs-client-server
 
 Importance of backend services:
@@ -64,8 +66,10 @@ Floating Point Determinism:
  - https://gafferongames.com/post/floating_point_determinism/
 
 Serialization, compression, encryption, client-side prediction, latency mitigation, etc:
+ - https://gafferongames.com/post/reading_and_writing_packets/
  - https://pvigier.github.io/2019/09/08/beginner-guide-game-networking.html
  - https://www.gabrielgambetta.com/client-server-game-architecture.html
+ - https://gafferongames.com/post/serialization_strategies/
  - https://isetta.io/blogs/week-9/
  - https://developer.valvesoftware.com/wiki/Latency_Compensating_Methods_in_Client/Server_In-game_Protocol_Design_and_Optimization
  - https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking
