@@ -440,10 +440,16 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                     pInfo->m_info.m_szEndDebug
                 );
 
-                m_mapClients.erase(itClient);
+                PgePacket pkt;
+                memset(&pkt, 0, sizeof(pkt));
+                pkt.pktId = PgePktUserDisconnected::id;
+                strncpy(pkt.msg.userDisconnected.sUserName, itClient->second.m_sNick.c_str(), 64);;
 
-                // Send a message so everybody else knows what happened
-                //SendStringToAllClients(temp);
+                m_mapClients.erase(itClient);  // dont try to send anything to the disconnected client :)
+
+                // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
+                queuePackets.push_back(pkt);
+                SendPacketToAllClients(pkt);  
             }
             else
             {
@@ -487,12 +493,6 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 break;
             }
 
-            // Generate a random nick.  A random temporary nick
-            // is really dumb and not how you would write a real chat server.
-            // You would want them to have some sort of signon message,
-            // and you would keep their client in a state of limbo (connected,
-            // but not logged on) until them.  I'm trying to keep this example
-            // code really simple.
             PgePacket pkt;
             memset(&pkt, 0, sizeof(pkt));
             pkt.pktId = PgePktUserConnected::id;
@@ -516,6 +516,8 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             // Add them to the client list, using std::map wacky syntax
             m_mapClients[pInfo->m_hConn];
             SetClientNick(pInfo->m_hConn, pkt.msg.userConnected.sUserName);
+            // TODO: trollface should be assinged be the app level
+            // if applevel assigns trollface, applevel server will be able to give back trollface texture into trollfaces std::set!
             if (trollFaces.size() > 0)
             {
                 strncpy(pkt.msg.userConnected.sTrollfaceTex, trollFaces.begin()->c_str(), 64);
@@ -528,7 +530,6 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
 
             // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
             queuePackets.push_back(pkt);
-
             SendPacketToAllClients(pkt);
 
             CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client with name %s is connecting, trollface: %s ...",
