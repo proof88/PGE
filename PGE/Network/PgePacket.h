@@ -23,6 +23,7 @@ struct PgePktUserConnected
     static const uint32_t id = 0;
     bool bCurrentClient;
     char sUserName[64];
+    char sTrollfaceTex[64];
 };
 
 enum class VerticalDirection : std::uint8_t

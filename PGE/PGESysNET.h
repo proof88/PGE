@@ -78,6 +78,8 @@ private:
     static PGESysNET* s_pCallbackInstance;
     static bool bServer;
 
+    std::set<std::string> trollFaces;  // used by server only
+
     uint16 nPort;
     SteamNetworkingIPAddr addrServer;  // used by client only
     ISteamNetworkingSockets* m_pInterface;

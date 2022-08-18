@@ -11,6 +11,8 @@
 #include "PRREbaseIncludes.h"  // PCH
 
 #include <cassert>
+#include <filesystem>  // requires cpp17
+#include <set>
 
 #include "PGESysNET.h"
 #include "PGEincludes.h"
@@ -137,6 +139,18 @@ bool PGESysNET::initSysNET(void)
             return false;
         }
         CConsole::getConsoleInstance("PGESysNET").OLn("Server listening on port %d", nPort);
+
+        // Gather some trollface pictures for the players
+        // Building this set up initially, each face is removed from the set when assigned to a player, so
+        // all players will have unique face texture assigned.
+        for (const auto& entry : std::filesystem::directory_iterator("gamedata/trollfaces/"))
+        {
+            if ((entry.path().extension().string() == ".bmp"))
+            {
+                trollFaces.insert(entry.path().string());
+            }
+        }
+        CConsole::getConsoleInstance("PGESysNET").OLn("Server parsed %d trollfaces", trollFaces.size());
     }
     else
     {
@@ -499,40 +513,26 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 }
             } while ( found );
 
-
-            // Send them a welcome message
-            //sprintf(temp, "Welcome, stranger.  Thou art known to us for now as '%s'; upon thine command '/nick' we shall know thee otherwise.", nick);
-            //SendStringToClient(pInfo->m_hConn, temp);
-
-            
-
-            // Also send them a list of everybody who is already connected
-            //if (m_mapClients.empty())
-            //{
-            //    SendStringToClient(pInfo->m_hConn, "Thou art utterly alone.");
-            //}
-            //else
-            //{
-            //    sprintf(temp, "%d companions greet you:", (int)m_mapClients.size());
-            //    for (auto& c : m_mapClients)
-            //        SendStringToClient(pInfo->m_hConn, c.second.m_sNick.c_str());
-            //}
-
-            // Let everybody else know who they are for now
-            //sprintf(temp, "Hark!  A stranger hath joined this merry host.  For now we shall call them '%s'", nick);
-            //SendStringToAllClients(temp, pInfo->m_hConn);
-            
-
             // Add them to the client list, using std::map wacky syntax
             m_mapClients[pInfo->m_hConn];
             SetClientNick(pInfo->m_hConn, pkt.msg.userConnected.sUserName);
+            if (trollFaces.size() > 0)
+            {
+                strncpy(pkt.msg.userConnected.sTrollfaceTex, trollFaces.begin()->c_str(), 64);
+                trollFaces.erase(trollFaces.begin());
+            }
+            else
+            {
+                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER No more trollfaces left for user %s", __func__, pkt.msg.userConnected.sUserName);
+            }
 
             // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
             queuePackets.push_back(pkt);
 
             SendPacketToAllClients(pkt);
 
-            CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client with name %s is connecting ...", __func__, pkt.msg.userConnected.sUserName);
+            CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client with name %s is connecting, trollface: %s ...",
+                __func__, pkt.msg.userConnected.sUserName, pkt.msg.userConnected.sTrollfaceTex);
             break;
         }
 
