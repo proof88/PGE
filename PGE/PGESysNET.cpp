@@ -151,6 +151,11 @@ bool PGESysNET::initSysNET(void)
             }
         }
         CConsole::getConsoleInstance("PGESysNET").OLn("Server parsed %d trollfaces", trollFaces.size());
+
+        // TODO: COMMIT_SERVER_1_SELFCREATE here, generate a unique name for ourselves, etc.
+        // basically the client connect code should be extracted into a function and that should be called here as well,
+        // so the unique name, and unique trollface stuff is needed, and similarly a pkt should be injected
+        // into the server's app level message queue so whatever can be executed by the server for itself at app level, e.g. create player object
     }
     else
     {
@@ -307,11 +312,13 @@ void PGESysNET::PollConnectionStateChanges()
 // ### from here server only
 void PGESysNET::SendStringToClient(HSteamNetConnection conn, const char* str)
 {
+    // TODO: COMMIT_SERVER_1_SELFCREATE: do not send anything to invalid conn
     m_pInterface->SendMessageToConnection(conn, str, (uint32)strlen(str), k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
 void PGESysNET::SendPacketToClient(HSteamNetConnection conn, const PgePacket& pkt)
 {
+    // TODO: COMMIT_SERVER_1_SELFCREATE: do not send anything to invalid conn
     m_pInterface->SendMessageToConnection(conn, &pkt, (uint32)sizeof(pkt), k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
@@ -319,6 +326,7 @@ void PGESysNET::SendStringToAllClients(const char* str, HSteamNetConnection exce
 {
     for (auto& c : m_mapClients)
     {
+        // TODO: COMMIT_SERVER_1_SELFCREATE: do not send anything to invalid conn
         if (c.first != except)
             SendStringToClient(c.first, str);
     }
@@ -328,6 +336,7 @@ void PGESysNET::SendPacketToAllClients(const PgePacket& pkt, HSteamNetConnection
 {
     for (auto& c : m_mapClients)
     {
+        // TODO: COMMIT_SERVER_1_SELFCREATE: do not send anything to invalid conn
         if (c.first != except)
             SendPacketToClient(c.first, pkt);
     }
@@ -498,6 +507,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             pkt.pktId = PgePktUserConnected::id;
             pkt.msg.userConnected.bCurrentClient = true;
             
+            // TODO: COMMIT_SERVER_1_SELFCREATE extract to function from here
             // generate unique user name
             bool found = false;
             do
@@ -528,9 +538,15 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER No more trollfaces left for user %s", __func__, pkt.msg.userConnected.sUserName);
             }
 
+            // TODO: COMMIT_SERVER_1_SELFCREATE extract to function until here
+
             // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
             queuePackets.push_back(pkt);
             SendPacketToAllClients(pkt);
+
+            // TODO: COMMIT_2_SEND_SERVER_PLAYER_AS_A_CLIENT_TO_NEW_CLIENT
+            // another pkt should be constructed with same type, but with server data, and sent only to the newly connected client,
+            // so it will register the server player with server's name and trollface as it was a regular client
 
             CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client with name %s is connecting, trollface: %s ...",
                 __func__, pkt.msg.userConnected.sUserName, pkt.msg.userConnected.sTrollfaceTex);
