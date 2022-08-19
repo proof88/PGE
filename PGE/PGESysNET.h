@@ -93,8 +93,8 @@ private:
     };
 
     std::map< HSteamNetConnection, Client_t > m_mapClients;  // used by server only
-
-    
+    // note that the first connection is this map is an invalid connection (k_HSteamNetConnection_Invalid), which
+    // is the server itself, this is how this layer stores nickname for the server (self)
 
     static void SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
 
@@ -103,6 +103,7 @@ private:
     PGESysNET(const PGESysNET&); 
     PGESysNET& operator=(const PGESysNET&);
 
+    void SetupUserConnectedPkt(PgePktUserConnected& pktUserConnected);
     void SetClientNick(HSteamNetConnection hConn, const char* nick);
     void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo);
 

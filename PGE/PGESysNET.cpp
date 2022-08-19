@@ -152,10 +152,19 @@ bool PGESysNET::initSysNET(void)
         }
         CConsole::getConsoleInstance("PGESysNET").OLn("Server parsed %d trollfaces", trollFaces.size());
 
-        // TODO: COMMIT_SERVER_1_SELFCREATE here, generate a unique name for ourselves, etc.
-        // basically the client connect code should be extracted into a function and that should be called here as well,
-        // so the unique name, and unique trollface stuff is needed, and similarly a pkt should be injected
-        // into the server's app level message queue so whatever can be executed by the server for itself at app level, e.g. create player object
+        // here we create a client connect pkt that will inject to our queue so app level will process it and create
+        // player object for the server itself, as it was a real client
+        PgePacket pkt;
+        memset(&pkt, 0, sizeof(pkt));
+        pkt.pktId = PgePktUserConnected::id;
+        pkt.msg.userConnected.bCurrentClient = true;
+        SetupUserConnectedPkt(pkt.msg.userConnected);
+        // Add ourselves to the client list, using std::map wacky syntax
+        // k_HSteamNetConnection_Invalid will mean the server itself
+        m_mapClients[k_HSteamNetConnection_Invalid];
+        SetClientNick(k_HSteamNetConnection_Invalid, pkt.msg.userConnected.sUserName);
+        // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
+        queuePackets.push_back(pkt);
     }
     else
     {
@@ -312,33 +321,57 @@ void PGESysNET::PollConnectionStateChanges()
 // ### from here server only
 void PGESysNET::SendStringToClient(HSteamNetConnection conn, const char* str)
 {
-    // TODO: COMMIT_SERVER_1_SELFCREATE: do not send anything to invalid conn
+    if (conn == k_HSteamNetConnection_Invalid)
+    {
+        // silent ignore, in the future maybe we will simply inject a message to ourselves' message queue
+        // that is how server can handle itself as a client similar to any other client
+        return;
+    }
     m_pInterface->SendMessageToConnection(conn, str, (uint32)strlen(str), k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
 void PGESysNET::SendPacketToClient(HSteamNetConnection conn, const PgePacket& pkt)
 {
-    // TODO: COMMIT_SERVER_1_SELFCREATE: do not send anything to invalid conn
+    if (conn == k_HSteamNetConnection_Invalid)
+    {
+        // silent ignore, in the future maybe we will simply inject a message to ourselves' message queue
+        // that is how server can handle itself as a client similar to any other client
+        return;
+    }
     m_pInterface->SendMessageToConnection(conn, &pkt, (uint32)sizeof(pkt), k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
 void PGESysNET::SendStringToAllClients(const char* str, HSteamNetConnection except)
 {
-    for (auto& c : m_mapClients)
+    for (auto& client : m_mapClients)
     {
-        // TODO: COMMIT_SERVER_1_SELFCREATE: do not send anything to invalid conn
-        if (c.first != except)
-            SendStringToClient(c.first, str);
+        if (client.first == k_HSteamNetConnection_Invalid)
+        {
+            // silent ignore, in the future maybe we will simply inject a message to ourselves' message queue
+            // that is how server can handle itself as a client similar to any other client
+            continue;
+        }
+        if (client.first != except)
+        {
+            SendStringToClient(client.first, str);
+        }
     }
 }
 
 void PGESysNET::SendPacketToAllClients(const PgePacket& pkt, HSteamNetConnection except)
 {
-    for (auto& c : m_mapClients)
+    for (auto& client : m_mapClients)
     {
-        // TODO: COMMIT_SERVER_1_SELFCREATE: do not send anything to invalid conn
-        if (c.first != except)
-            SendPacketToClient(c.first, pkt);
+        if (client.first == k_HSteamNetConnection_Invalid)
+        {
+            // silent ignore, in the future maybe we will simply inject a message to ourselves' message queue
+            // that is how server can handle itself as a client similar to any other client
+            continue;
+        }
+        if (client.first != except)
+        {
+            SendPacketToClient(client.first, pkt);
+        }
     }
 }
 // ### server only until here
@@ -387,6 +420,37 @@ bool PGESysNET::ConnectClient()
 
 PGESysNET* PGESysNET::s_pCallbackInstance = nullptr;
 bool PGESysNET::bServer = false;
+
+void PGESysNET::SetupUserConnectedPkt(PgePktUserConnected& pktUserConnected)
+{
+    // generate unique user name
+    bool found = false;
+    do
+    {
+        sprintf(pktUserConnected.sUserName, "User%d", 10000 + (rand() % 100000));
+        for (const auto& client : m_mapClients)
+        {
+            found = (client.second.m_sNick == pktUserConnected.sUserName);
+            if (found)
+            {
+                break;
+            }
+        }
+    } while (found);
+
+
+    // TODO: trollface should be assinged be the app level
+    // if applevel assigns trollface, applevel server will be able to give back trollface texture into trollfaces std::set!
+    if (trollFaces.size() > 0)
+    {
+        strncpy(pktUserConnected.sTrollfaceTex, trollFaces.begin()->c_str(), 64);
+        trollFaces.erase(trollFaces.begin());
+    }
+    else
+    {
+        CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER No more trollfaces left for user %s", __func__, pktUserConnected.sUserName);
+    }
+}
 
 void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
 {
@@ -505,44 +569,18 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             PgePacket pkt;
             memset(&pkt, 0, sizeof(pkt));
             pkt.pktId = PgePktUserConnected::id;
-            pkt.msg.userConnected.bCurrentClient = true;
-            
-            // TODO: COMMIT_SERVER_1_SELFCREATE extract to function from here
-            // generate unique user name
-            bool found = false;
-            do
-            {
-                sprintf(pkt.msg.userConnected.sUserName, "User%d", 10000 + (rand() % 100000));
-                for (const auto& client : m_mapClients)
-                {
-                    found = (client.second.m_sNick == pkt.msg.userConnected.sUserName);
-                    if (found)
-                    {
-                        break;
-                    }
-                }
-            } while ( found );
-
+            pkt.msg.userConnected.bCurrentClient = false;
+            SetupUserConnectedPkt(pkt.msg.userConnected);
             // Add them to the client list, using std::map wacky syntax
             m_mapClients[pInfo->m_hConn];
             SetClientNick(pInfo->m_hConn, pkt.msg.userConnected.sUserName);
-            // TODO: trollface should be assinged be the app level
-            // if applevel assigns trollface, applevel server will be able to give back trollface texture into trollfaces std::set!
-            if (trollFaces.size() > 0)
-            {
-                strncpy(pkt.msg.userConnected.sTrollfaceTex, trollFaces.begin()->c_str(), 64);
-                trollFaces.erase(trollFaces.begin());
-            }
-            else
-            {
-                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER No more trollfaces left for user %s", __func__, pkt.msg.userConnected.sUserName);
-            }
-
-            // TODO: COMMIT_SERVER_1_SELFCREATE extract to function until here
 
             // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
             queuePackets.push_back(pkt);
-            SendPacketToAllClients(pkt);
+            SendPacketToAllClients(pkt, pInfo->m_hConn); // do not send this pkt to that new client yet
+
+            pkt.msg.userConnected.bCurrentClient = true; // now we send this pkt to the client with this bool flag set
+            SendPacketToClient(pInfo->m_hConn, pkt);
 
             // TODO: COMMIT_2_SEND_SERVER_PLAYER_AS_A_CLIENT_TO_NEW_CLIENT
             // another pkt should be constructed with same type, but with server data, and sent only to the newly connected client,
