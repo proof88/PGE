@@ -158,11 +158,12 @@ bool PGESysNET::initSysNET(void)
         memset(&pkt, 0, sizeof(pkt));
         pkt.pktId = PgePktUserConnected::id;
         pkt.msg.userConnected.bCurrentClient = true;
-        SetupUserConnectedPkt(pkt.msg.userConnected);
+        SetupUserConnectedPkt(pkt.msg.userConnected, false); // 2nd argument is false, although we are server but we need to generate the data!
         // Add ourselves to the client list, using std::map wacky syntax
         // k_HSteamNetConnection_Invalid will mean the server itself
         m_mapClients[k_HSteamNetConnection_Invalid];
         SetClientNick(k_HSteamNetConnection_Invalid, pkt.msg.userConnected.sUserName);
+        m_mapClients[k_HSteamNetConnection_Invalid].m_sTrollface = pkt.msg.userConnected.sTrollfaceTex;
         // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
         queuePackets.push_back(pkt);
     }
@@ -421,34 +422,60 @@ bool PGESysNET::ConnectClient()
 PGESysNET* PGESysNET::s_pCallbackInstance = nullptr;
 bool PGESysNET::bServer = false;
 
-void PGESysNET::SetupUserConnectedPkt(PgePktUserConnected& pktUserConnected)
+void PGESysNET::SetupUserConnectedPkt(PgePktUserConnected& pktUserConnected, const bool bUseServerUserData)
 {
-    // generate unique user name
-    bool found = false;
-    do
+    if (!bUseServerUserData)
     {
-        sprintf(pktUserConnected.sUserName, "User%d", 10000 + (rand() % 100000));
-        for (const auto& client : m_mapClients)
+        // generate unique user name into pkt
+        bool found = false;
+        do
         {
-            found = (client.second.m_sNick == pktUserConnected.sUserName);
-            if (found)
+            sprintf(pktUserConnected.sUserName, "User%d", 10000 + (rand() % 100000));
+            for (const auto& client : m_mapClients)
             {
-                break;
+                found = (client.second.m_sNick == pktUserConnected.sUserName);
+                if (found)
+                {
+                    break;
+                }
             }
+        } while (found);
+
+        // TODO: trollface should be assigned be the app level
+        // if applevel assigns trollface, applevel server will be able to give back trollface texture into trollfaces std::set when user is deleted!
+        if (trollFaces.size() > 0)
+        {
+            strncpy(pktUserConnected.sTrollfaceTex, trollFaces.begin()->c_str(), 64);
+            trollFaces.erase(trollFaces.begin());
         }
-    } while (found);
-
-
-    // TODO: trollface should be assinged be the app level
-    // if applevel assigns trollface, applevel server will be able to give back trollface texture into trollfaces std::set!
-    if (trollFaces.size() > 0)
-    {
-        strncpy(pktUserConnected.sTrollfaceTex, trollFaces.begin()->c_str(), 64);
-        trollFaces.erase(trollFaces.begin());
+        else
+        {
+            CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER No more trollfaces left for user %s", __func__, pktUserConnected.sUserName);
+        }
     }
     else
     {
-        CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER No more trollfaces left for user %s", __func__, pktUserConnected.sUserName);
+        // this case can happen only when we are server and server is sending its own user data to a new client, in this case
+        // we set server's already existing data, so client can get to know server's user data. This is case of listen server, since
+        // a dedicated server doesn't have own user data.
+        
+        // Sanity check: require bCurrentClient already set to false so we know the caller knows what they are doing!
+        if (pktUserConnected.bCurrentClient)
+        {
+            CConsole::getConsoleInstance("PGESysNET").EOLn("%s: cannot happen: bServerUser is true, then bCurrentClient should not be true!", __func__);
+            assert(false);
+        }
+
+        if (isServer())
+        {
+            strncpy(pktUserConnected.sUserName, m_mapClients[k_HSteamNetConnection_Invalid].m_sNick.c_str(), 64);
+            strncpy(pktUserConnected.sTrollfaceTex, m_mapClients[k_HSteamNetConnection_Invalid].m_sTrollface.c_str(), 64);
+        }
+        else
+        {
+            CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT cannot happen: bServerUser is true!", __func__);
+            assert(false);
+        }
     }
 }
 
@@ -570,32 +597,52 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             memset(&pkt, 0, sizeof(pkt));
             pkt.pktId = PgePktUserConnected::id;
             pkt.msg.userConnected.bCurrentClient = false;
-            SetupUserConnectedPkt(pkt.msg.userConnected);
+            SetupUserConnectedPkt(pkt.msg.userConnected, false);
             // Add them to the client list, using std::map wacky syntax
             m_mapClients[pInfo->m_hConn];
             SetClientNick(pInfo->m_hConn, pkt.msg.userConnected.sUserName);
-
-            // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
-            queuePackets.push_back(pkt);
-            SendPacketToAllClients(pkt, pInfo->m_hConn); // do not send this pkt to that new client yet
-
-            pkt.msg.userConnected.bCurrentClient = true; // now we send this pkt to the client with this bool flag set
-            SendPacketToClient(pInfo->m_hConn, pkt);
-
-            // TODO: COMMIT_2_SEND_SERVER_PLAYER_AS_A_CLIENT_TO_NEW_CLIENT
-            // another pkt should be constructed with same type, but with server data, and sent only to the newly connected client,
-            // so it will register the server player with server's name and trollface as it was a regular client
+            m_mapClients[pInfo->m_hConn].m_sTrollface = pkt.msg.userConnected.sTrollfaceTex;
 
             CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client with name %s is connecting, trollface: %s ...",
                 __func__, pkt.msg.userConnected.sUserName, pkt.msg.userConnected.sTrollfaceTex);
+
+            // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
+            queuePackets.push_back(pkt);
+            
+            // inform all other clients about this new user
+            SendPacketToAllClients(pkt, pInfo->m_hConn);
+
+            // now we send this pkt to the client with this bool flag set so client will know it is their connect
+            pkt.msg.userConnected.bCurrentClient = true;
+            SendPacketToClient(pInfo->m_hConn, pkt);
+            
+            // we also send a pkt to the client about the server user, otherwise client won't create the server user
+            // this is useful because in the future in case of dedicated server, there is no user on server side!
+            // so only listen server should create this pkt to the client.
+            pkt.msg.userConnected.bCurrentClient = false;
+            SetupUserConnectedPkt(pkt.msg.userConnected, true);
+            SendPacketToClient(pInfo->m_hConn, pkt);
             break;
         }
 
         case k_ESteamNetworkingConnectionState_Connected:
+        {
             // We will get a callback immediately after accepting the connection.
             // Since we are the server, we can ignore this, it's not news to us.
-            CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client has connected!", __func__);
+
+            const auto itClient = m_mapClients.find(pInfo->m_hConn);
+            if (itClient == m_mapClients.end())
+            {
+                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER Cannot happen: a client has reached state Connected but not present in clients map!",
+                    __func__);
+                assert(false);
+            }
+            else
+            {
+                CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER Client %s has reached state Connected!", __func__, itClient->second.m_sNick.c_str());
+            }
             break;
+        }
 
         default:
             // Silences -Wswitch

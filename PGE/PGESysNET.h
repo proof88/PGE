@@ -90,6 +90,7 @@ private:
     struct Client_t
     {
         std::string m_sNick;
+        std::string m_sTrollface;
     };
 
     std::map< HSteamNetConnection, Client_t > m_mapClients;  // used by server only
@@ -103,7 +104,7 @@ private:
     PGESysNET(const PGESysNET&); 
     PGESysNET& operator=(const PGESysNET&);
 
-    void SetupUserConnectedPkt(PgePktUserConnected& pktUserConnected);
+    void SetupUserConnectedPkt(PgePktUserConnected& pktUserConnected, const bool bUseServerUserData);
     void SetClientNick(HSteamNetConnection hConn, const char* nick);
     void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo);
 
