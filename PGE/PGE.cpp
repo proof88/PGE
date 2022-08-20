@@ -781,10 +781,12 @@ int PGE::runGame()
             // time of this main thread ...
             // For now, I think it is enough if we do sleep only if we are clients ... server must not sleep.
             // But at the same time, even server should also stick to some update rate in the future ...
-            if ( !isServer() && (p->nInactiveSleep > 0) )
-            {
-                Sleep( p->nInactiveSleep );
-            }
+            // 
+            // TODO: change this condition: in case of multiplayer, do not sleep.
+            //if ( !isServer() && (p->nInactiveSleep > 0) )
+            //{
+            //    Sleep( p->nInactiveSleep );
+            //}
             // in inactive state, even though RenderScene() doesn't get called from here,
             // the scene may be re-rendered from WndProc(), if wnd repaint is needed ...
         }
