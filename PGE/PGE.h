@@ -17,7 +17,7 @@
 #include "PRRE/include/external/PR00FsReducedRenderingEngine.h"
 #include "PGEInputHandler.h"
 #include "PGEWorld.h"
-#include "Network/PgePacket.h"
+#include "Network/PgeNetwork.h"
 #include "Weapons/WeaponManager.h"
 
 
@@ -36,12 +36,6 @@ enum PGE_MSG_ID
     PGE_MSG_TITLE_WARN,
     PGE_MSG_TITLE_INFO
 }; // enum PGE_MSG_ID
-
-
-struct Player_t
-{
-    PRREObject3D* pObject3D;
-};
 
 
 /**
@@ -81,24 +75,7 @@ public:
     PGEInputHandler& getInput() const;         /**< Returns the input handler object. */
     PGEWorld& getWorld() const;                /**< Returns the world object. */
     PR00FsReducedRenderingEngine& getPRRE() const;   /**< Returns the graphics engine. */
-
-    //
-    // TEMPORAL SECTION START
-    // on the long run we will need a public network class (PGESysNET is internal header, NOT public)
-    //
-    //TODO PGESysNET& getNetwork() const;             /**< Returns the network handler object. */
-    bool isServer() const;
-    bool ConnectClient(); /* temporal */
-    void SendStringToClient(const char* str);
-    void SendPacketToClient( const PgePacket& pkt);
-    void SendStringToAllClients(const char* str);
-    void SendPacketToAllClients(const PgePacket& pkt);
-    void SendPacketToServer(const PgePacket& pkt);
-    std::deque<PgePacket>& getPacketQueue();  // TODO: TEMPORAL: obviously we should not allow this kind of access
-    std::map<std::string, Player_t>& getPlayers();
-    //
-    // TEMPORAL SECTION END
-    //
+    PgeNetwork& getNetwork() const;            /**< Returns the network functionality interface. */
     
     WeaponManager& getWeaponManager();         /**< Returns the weapon manager object. */
 

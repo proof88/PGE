@@ -396,7 +396,9 @@
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamtypes.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamuniverse.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steam_api_common.h" />
+    <ClInclude Include="Network\PgeNetwork.h" />
     <ClInclude Include="Network\PgePacket.h" />
+    <ClInclude Include="Network\PGESysNET.h" />
     <ClInclude Include="PGE.h" />
     <ClInclude Include="PGEallHeaders.h" />
     <ClInclude Include="PGEcfgFile.h" />
@@ -407,7 +409,6 @@
     <ClInclude Include="PGEpragmas.h" />
     <ClInclude Include="PGESysCFG.h" />
     <ClInclude Include="PGESysGFX.h" />
-    <ClInclude Include="PGESysNET.h" />
     <ClInclude Include="PGESysSFX.h" />
     <ClInclude Include="PGEWorld.h" />
     <ClInclude Include="PGEWorldTime.h" />
@@ -498,13 +499,14 @@
     <ClInclude Include="Weapons\WeaponManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Network\PgeNetwork.cpp" />
+    <ClCompile Include="Network\PGESysNET.cpp" />
     <ClCompile Include="PGE.cpp" />
     <ClCompile Include="PGEcfgFile.cpp" />
     <ClCompile Include="PGEcfgVariable.cpp" />
     <ClCompile Include="PGEInputHandler.cpp" />
     <ClCompile Include="PGESysCFG.cpp" />
     <ClCompile Include="PGESysGFX.cpp" />
-    <ClCompile Include="PGESysNET.cpp" />
     <ClCompile Include="PGESysSFX.cpp" />
     <ClCompile Include="PGEWorld.cpp" />
     <ClCompile Include="PGEWorldTime.cpp" />

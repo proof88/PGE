@@ -127,6 +127,12 @@
     <Filter Include="Header Files\Network">
       <UniqueIdentifier>{969fa030-e6e8-45a8-9026-db21d200a22b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Network">
+      <UniqueIdentifier>{43e59651-7f45-4662-9bcf-431c1c14424f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Network\GameNetworkingSockets-1.4.0">
+      <UniqueIdentifier>{4ef90c79-aa18-40e6-a1d8-5699952cfdd2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGE.h">
@@ -145,9 +151,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PGESysGFX.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PGESysNET.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PGESysSFX.h">
@@ -537,40 +540,46 @@
     <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.h">
       <Filter>Header Files\PRRE\include\internal\GUI\Backends</Filter>
     </ClInclude>
-    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingmessages.h">
+    <ClInclude Include="Network\PgePacket.h">
       <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\PGESysNET.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingmessages.h">
+      <Filter>Header Files\Network\GameNetworkingSockets-1.4.0</Filter>
     </ClInclude>
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingsockets.h">
-      <Filter>Header Files\Network</Filter>
+      <Filter>Header Files\Network\GameNetworkingSockets-1.4.0</Filter>
     </ClInclude>
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingutils.h">
-      <Filter>Header Files\Network</Filter>
+      <Filter>Header Files\Network\GameNetworkingSockets-1.4.0</Filter>
     </ClInclude>
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steam_api_common.h">
-      <Filter>Header Files\Network</Filter>
+      <Filter>Header Files\Network\GameNetworkingSockets-1.4.0</Filter>
     </ClInclude>
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamclientpublic.h">
-      <Filter>Header Files\Network</Filter>
+      <Filter>Header Files\Network\GameNetworkingSockets-1.4.0</Filter>
     </ClInclude>
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamnetworkingcustomsignaling.h">
-      <Filter>Header Files\Network</Filter>
+      <Filter>Header Files\Network\GameNetworkingSockets-1.4.0</Filter>
     </ClInclude>
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamnetworkingsockets.h">
-      <Filter>Header Files\Network</Filter>
+      <Filter>Header Files\Network\GameNetworkingSockets-1.4.0</Filter>
     </ClInclude>
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamnetworkingsockets_flat.h">
-      <Filter>Header Files\Network</Filter>
+      <Filter>Header Files\Network\GameNetworkingSockets-1.4.0</Filter>
     </ClInclude>
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamnetworkingtypes.h">
-      <Filter>Header Files\Network</Filter>
+      <Filter>Header Files\Network\GameNetworkingSockets-1.4.0</Filter>
     </ClInclude>
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamtypes.h">
-      <Filter>Header Files\Network</Filter>
+      <Filter>Header Files\Network\GameNetworkingSockets-1.4.0</Filter>
     </ClInclude>
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamuniverse.h">
-      <Filter>Header Files\Network</Filter>
+      <Filter>Header Files\Network\GameNetworkingSockets-1.4.0</Filter>
     </ClInclude>
-    <ClInclude Include="Network\PgePacket.h">
+    <ClInclude Include="Network\PgeNetwork.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
   </ItemGroup>
@@ -582,9 +591,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PGESysGFX.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PGESysNET.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PGESysSFX.cpp">
@@ -760,6 +766,12 @@
     </ClCompile>
     <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.cpp">
       <Filter>Source Files\PRRE\GUI\Backends</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\PGESysNET.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\PgeNetwork.cpp">
+      <Filter>Source Files\Network</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

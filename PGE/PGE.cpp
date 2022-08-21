@@ -16,7 +16,6 @@
 // Subsystems
 #include "PGESysGFX.h"
 #include "PGESysSFX.h"
-#include "PGESysNET.h"
 #include "PGESysCFG.h"
 #include "Weapons/WeaponManager.h"
 
@@ -54,7 +53,7 @@ public:
     PGEInputHandler& getInput() const;       
     PGEWorld& getWorld() const;             
     PR00FsReducedRenderingEngine& getPRRE() const;
-    //TODO later some other class needs to be returned here PGESysNET& getNetwork() const;
+    PgeNetwork& getNetwork() const;
     WeaponManager& getWeaponManager();
                     
     bool isGameRunning() const;               
@@ -81,7 +80,7 @@ private:
 
     PGESysCFG  SysCFG;
     PGESysGFX  SysGFX;
-    PGESysNET  SysNET;
+    PgeNetwork& m_PgeNetwork;
     PGESysSFX  SysSFX;
     
     PR00FsReducedRenderingEngine& GFX; 
@@ -89,8 +88,6 @@ private:
     PGEInputHandler& inputHandler;
     PGEWorld& world;
     WeaponManager wpnMgr;
-
-    std::map<std::string, Player_t> m_mapPlayers;  // used by both server and clients
 
     bool        bIsGameRunning;        /**< Is the game running (true after successful init and before initiating shutdown)? */
     std::string sGameTitle;            /**< Simplified name of the game, used in paths too, so can't contain joker chars. */
@@ -191,11 +188,10 @@ PR00FsReducedRenderingEngine& PGE::PGEimpl::getPRRE() const
     return GFX;
 }
 
-
-//PGESysNET& PGE::PGEimpl::getNetwork()
-//{
-//    return SysNET;
-//}
+PgeNetwork& PGE::PGEimpl::getNetwork() const
+{
+    return m_PgeNetwork;
+}
 
 
 WeaponManager& PGE::PGEimpl::getWeaponManager()
@@ -219,7 +215,7 @@ int PGE::PGEimpl::destroyGame()
     // inputHandler doesnt have any shutdown
     SysGFX.destroySysGFX();
     SysSFX.destroySysSFX();
-    SysNET.destroySysNET();
+    getNetwork().shutdown();
     // SysCFG doesnt have any shutdown
 
     getConsole().Deinitialize();
@@ -280,6 +276,7 @@ PGE::PGEimpl::PGEimpl() :
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
+    m_PgeNetwork(PgeNetwork::createAndGet()),
     SysCFG("") ,
     wpnMgr(GFX)
 {
@@ -291,6 +288,7 @@ PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
+    m_PgeNetwork( PgeNetwork::createAndGet() ),
     SysCFG(""),
     wpnMgr(GFX)
 {
@@ -312,6 +310,7 @@ PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
+    m_PgeNetwork(PgeNetwork::createAndGet()),
     SysCFG(gameTitle),
     wpnMgr(GFX)
 {
@@ -541,57 +540,17 @@ PR00FsReducedRenderingEngine& PGE::getPRRE() const
     return p->getPRRE();
 }
 
-bool PGE::isServer() const
+
+/**
+    Returns the network functionality interface.
+
+    @return The network functionality interface.
+*/
+PgeNetwork& PGE::getNetwork() const
 {
-    return p->SysNET.isServer();
+    return p->getNetwork();
 }
 
-
-//PGESysNET& PGE::getNetwork() const
-//{
-//    return p->getNetwork();
-//}
-
-
-bool PGE::ConnectClient()
-{
-    return p->SysNET.ConnectClient();
-}
-
-void PGE::SendStringToClient(const char* str)
-{
-    p->SysNET.SendStringToClient(p->SysNET.m_hConnection, str);
-}
-
-void PGE::SendPacketToClient(const PgePacket& pkt)
-{
-    p->SysNET.SendPacketToClient(p->SysNET.m_hConnection, pkt);
-}
-
-void PGE::SendStringToAllClients(const char* str)
-{
-    p->SysNET.SendStringToAllClients(str);
-}
-
-void PGE::SendPacketToAllClients(const PgePacket& pkt)
-{
-    p->SysNET.SendPacketToAllClients(pkt);
-}
-
-void PGE::SendPacketToServer(const PgePacket& pkt)
-{
-    p->SysNET.SendPacketToServer(pkt);
-}
-
-std::deque<PgePacket>& PGE::getPacketQueue()
-{
-    return p->SysNET.queuePackets;
-}
-
-std::map<std::string, Player_t>& PGE::getPlayers()
-{
-    return p->m_mapPlayers;
-}
 
 /**
     Returns the weapon manager object.
@@ -650,7 +609,7 @@ int PGE::initializeGame()
 
     getConsole().L();
     getConsole().OLnOI("Initializing Networking ...");
-    if (!(p->SysNET.initSysNET()))
+    if (!(p->m_PgeNetwork.initialize()))
     {
         getConsole().EOLnOO("Failed!");
         getConsole().OLn("");
@@ -757,12 +716,11 @@ int PGE::runGame()
         window.ProcessMessages();
         p->bIsGameRunning = !window.hasCloseRequest();
 
-        p->SysNET.PollIncomingMessages();
-        p->SysNET.PollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
-        while (getPacketQueue().size() > 0)
+        getNetwork().Update();  // this may also add packet(s) to SysNET.queuePackets
+        while (getNetwork().getPacketQueue().size() > 0)
         {
-            PgePacket pkt = getPacketQueue().front();
-            getPacketQueue().pop_front();
+            PgePacket pkt = getNetwork().getPacketQueue().front();
+            getNetwork().getPacketQueue().pop_front();
             onPacketReceived(pkt);
         }
         
