@@ -46,6 +46,7 @@ PGESysNET::PGESysNET() :
     m_hConnection(k_HSteamNetConnection_Invalid)
 {
     addrServer.Clear();
+    memset(&connRtStatus, 0, sizeof(connRtStatus));
 } // PGESysNET()
 
 
@@ -123,6 +124,8 @@ bool PGESysNET::initSysNET(void)
         serverLocalAddr.m_port = nPort;
         SteamNetworkingConfigValue_t opt;
         opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)SteamNetConnectionStatusChangedCallback);
+
+        // GameNetworkingSockets - 1.4.0\tests\test_connection.cpp :: Test_Connection() contains example how to initiate connection to ourselves!
         m_hListenSock = m_pInterface->CreateListenSocketIP(serverLocalAddr, 1, &opt);
         if (m_hListenSock == k_HSteamListenSocket_Invalid)
         {
@@ -223,6 +226,7 @@ bool PGESysNET::destroySysNET(void)
             m_hConnection = k_HSteamNetConnection_Invalid;
         }
         addrServer.Clear();
+        memset(&connRtStatus, 0, sizeof(connRtStatus));
     }
     m_pInterface = nullptr;
     
@@ -422,6 +426,29 @@ void PGESysNET::SendPacketToServer(const PgePacket& pkt)
     m_pInterface->SendMessageToConnection(m_hConnection, &pkt, (uint32)sizeof(pkt), k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
+const SteamNetConnectionRealTimeStatus_t& PGESysNET::getRealTimeStatus(bool bForceUpdate)
+{
+    if (isServer())
+    {
+        // I cannot retrieve such info for server
+        return connRtStatus;
+    }
+
+    if (m_hConnection == k_HSteamNetConnection_Invalid)
+    {
+        CConsole::getConsoleInstance("PGESysNET").EOLn("%s invalid connection handle!", __func__);
+        assert(false);
+        return connRtStatus;
+    }
+
+    if (bForceUpdate)
+    {
+        m_pInterface->GetConnectionRealTimeStatus(m_hConnection, &connRtStatus, 0, NULL);
+    }
+
+    return connRtStatus;
+}
+
 bool PGESysNET::ConnectClient()
 {
     // Start connecting
@@ -439,6 +466,9 @@ bool PGESysNET::ConnectClient()
         destroySysNET();
         return false;
     }
+
+    //SteamNetConnectionInfo_t connInfo;
+    //m_pInterface->GetConnectionInfo(m_hConnection, &connInfo);
 
     return true;
 }

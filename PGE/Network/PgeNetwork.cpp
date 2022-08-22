@@ -39,6 +39,13 @@ public:
     std::deque<PgePacket>& getPacketQueue();  // TODO: TEMPORAL: obviously we should not allow this kind of access
     std::map<std::string, Player_t>& getPlayers();
 
+    int getPing(bool bForceUpdate);
+    float getQualityLocal(bool bForceUpdate);
+    float getQualityRemote(bool bForceUpdate);
+    float getRxByteRate(bool bForceUpdate);
+    float getTxByteRate(bool bForceUpdate);
+    int64_t getInternalQueueTimeUSecs(bool bForceUpdate);
+
     void WriteList() const;
 
 private:
@@ -150,6 +157,36 @@ std::map<std::string, Player_t>& PgeNetworkImpl::getPlayers()
     return m_mapPlayers;
 }
 
+int PgeNetworkImpl::getPing(bool bForceUpdate)
+{
+    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_nPing;
+}
+
+float PgeNetworkImpl::getQualityLocal(bool bForceUpdate)
+{
+    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_flConnectionQualityLocal;
+}
+
+float PgeNetworkImpl::getQualityRemote(bool bForceUpdate)
+{
+    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_flConnectionQualityRemote;
+}
+
+float PgeNetworkImpl::getRxByteRate(bool bForceUpdate)
+{
+    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_flInBytesPerSec;
+}
+
+float PgeNetworkImpl::getTxByteRate(bool bForceUpdate)
+{
+    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_flOutBytesPerSec;
+}
+
+int64_t PgeNetworkImpl::getInternalQueueTimeUSecs(bool bForceUpdate)
+{
+    return static_cast<int64_t>(m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_usecQueueTime);
+}
+
 
 /**
     Writes statistics to console.
@@ -248,3 +285,5 @@ CConsole& PgeNetwork::getConsole() const
 
 
 // ############################### PRIVATE ###############################
+
+

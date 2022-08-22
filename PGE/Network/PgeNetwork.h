@@ -11,6 +11,7 @@
     ###################################################################################
 */
 
+#include <cstdint>
 #include <map>
 
 #include "../PGEallHeaders.h"
@@ -57,6 +58,13 @@ public:
     virtual void SendPacketToServer(const PgePacket& pkt) = 0;
     virtual std::deque<PgePacket>& getPacketQueue() = 0;  // TODO: TEMPORAL: obviously we should not allow this kind of access
     virtual std::map<std::string, Player_t>& getPlayers() = 0;
+
+    virtual int getPing(bool bForceUpdate) = 0;
+    virtual float getQualityLocal(bool bForceUpdate) = 0;
+    virtual float getQualityRemote(bool bForceUpdate) = 0;
+    virtual float getRxByteRate(bool bForceUpdate) = 0;
+    virtual float getTxByteRate(bool bForceUpdate) = 0;
+    virtual int64_t getInternalQueueTimeUSecs(bool bForceUpdate) = 0;
 
     virtual void WriteList() const = 0;    /**< Writes statistics to console. */
 }; // class PgeNetwork

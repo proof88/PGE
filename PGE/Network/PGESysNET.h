@@ -71,6 +71,7 @@ public:
     void SendStringToAllClients(const char* str, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
     void SendPacketToAllClients(const PgePacket& pkt, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
     void SendPacketToServer(const PgePacket& pkt);
+    const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
 
     bool ConnectClient(); /* temporal, now I dont have better idea in this time */
 
@@ -86,6 +87,7 @@ private:
     ISteamNetworkingSockets* m_pInterface;
     HSteamListenSocket m_hListenSock;  // used by server only
     HSteamNetPollGroup m_hPollGroup;   // used by server only
+    SteamNetConnectionRealTimeStatus_t connRtStatus;  // used by client only
     
 
     struct Client_t
