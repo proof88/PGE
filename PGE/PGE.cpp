@@ -716,6 +716,7 @@ int PGE::runGame()
         window.ProcessMessages();
         p->bIsGameRunning = !window.hasCloseRequest();
 
+        // TODO: do not invoke network functionality if it is not yet initialized by CustomPGE!!!
         getNetwork().Update();  // this may also add packet(s) to SysNET.queuePackets
         while (getNetwork().getPacketQueue().size() > 0)
         {

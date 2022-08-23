@@ -31,6 +31,7 @@ public:
     bool isServer() const override;
     void Update() override;
     bool ConnectClient(const std::string& sServerAddress) override; /* temporal */
+    bool StartListening();
     void SendStringToClient(const char* str) override;
     void SendPacketToClient(const PgePacket& pkt) override;
     void SendStringToAllClients(const char* str) override;
@@ -120,6 +121,11 @@ void PgeNetworkImpl::Update()
 bool PgeNetworkImpl::ConnectClient(const std::string& sServerAddress)
 {
     return m_PgeSysNET.ConnectClient(sServerAddress);
+}
+
+bool PgeNetworkImpl::StartListening()
+{
+    return m_PgeSysNET.StartListening();
 }
 
 void PgeNetworkImpl::SendStringToClient(const char* str)

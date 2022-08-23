@@ -74,6 +74,7 @@ public:
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
 
     bool ConnectClient(const std::string& sServerAddress); /* temporal, now I dont have better idea in this time */
+    bool StartListening();
 
 private:
 

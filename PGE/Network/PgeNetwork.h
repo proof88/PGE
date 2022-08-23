@@ -50,6 +50,7 @@ public:
 
     virtual bool isServer() const = 0;
     virtual void Update() = 0;
+    virtual bool StartListening() = 0;
     virtual bool ConnectClient(const std::string& sServerAddress) = 0; /* temporal */
     virtual void SendStringToClient(const char* str) = 0;
     virtual void SendPacketToClient(const PgePacket& pkt) = 0;

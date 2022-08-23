@@ -84,79 +84,13 @@ bool PGESysNET::initSysNET(void)
         return false;
     }
 
-    if (MessageBox(0, "Szerver?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES)
-    {
-        bServer = true;
-    }
-    else
-    {
-        bServer = false;
-    }
+    bServer = (IDYES == MessageBox(0, "Szerver?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND));
 
     SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Msg, NetworkDbg);
 
     // Select instance to use. For now we'll always use the default.
     // But we could use SteamGameServerNetworkingSockets() on Steam.
     m_pInterface = SteamNetworkingSockets();
-
-    if (isServer())
-    {
-        // Start listening
-        SteamNetworkingIPAddr serverLocalAddr;
-        serverLocalAddr.Clear();
-        serverLocalAddr.m_port = nPort;
-        SteamNetworkingConfigValue_t opt;
-        opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)SteamNetConnectionStatusChangedCallback);
-
-        // GameNetworkingSockets - 1.4.0\tests\test_connection.cpp :: Test_Connection() contains example how to initiate connection to ourselves!
-        m_hListenSock = m_pInterface->CreateListenSocketIP(serverLocalAddr, 1, &opt);
-        if (m_hListenSock == k_HSteamListenSocket_Invalid)
-        {
-            CConsole::getConsoleInstance("PGESysNET").EOLn("Failed to listen on port %d", nPort);
-            destroySysNET();
-            return false;
-        }
-
-        m_hPollGroup = m_pInterface->CreatePollGroup();
-        if (m_hPollGroup == k_HSteamNetPollGroup_Invalid)
-        {
-            CConsole::getConsoleInstance("PGESysNET").EOLn("Failed to listen on port %d", nPort);
-            destroySysNET();
-            return false;
-        }
-        CConsole::getConsoleInstance("PGESysNET").OLn("Server listening on port %d", nPort);
-
-        // Gather some trollface pictures for the players
-        // Building this set up initially, each face is removed from the set when assigned to a player, so
-        // all players will have unique face texture assigned.
-        for (const auto& entry : std::filesystem::directory_iterator("gamedata/trollfaces/"))
-        {
-            if ((entry.path().extension().string() == ".bmp"))
-            {
-                trollFaces.insert(entry.path().string());
-            }
-        }
-        CConsole::getConsoleInstance("PGESysNET").OLn("Server parsed %d trollfaces", trollFaces.size());
-
-        // here we create a client connect pkt that will inject to our queue so app level will process it and create
-        // player object for the server itself, as it was a real client
-        PgePacket pkt;
-        memset(&pkt, 0, sizeof(pkt));
-        pkt.pktId = PgePktUserConnected::id;
-        pkt.msg.userConnected.bCurrentClient = true;
-        SetupUserConnectedPkt(pkt.msg.userConnected, false); // 2nd argument is false, although we are server but we need to generate the data!
-        // Add ourselves to the client list, using std::map wacky syntax
-        // k_HSteamNetConnection_Invalid will mean the server itself
-        m_mapClients[k_HSteamNetConnection_Invalid];
-        SetClientNick(k_HSteamNetConnection_Invalid, pkt.msg.userConnected.sUserName);
-        m_mapClients[k_HSteamNetConnection_Invalid].m_sTrollface = pkt.msg.userConnected.sTrollfaceTex;
-        // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
-        queuePackets.push_back(pkt);
-    }
-    else
-    {
-        // ConnectClient() can be invoked later, now temporarily by public PGE::ConnectClient()    
-    }
 
     // now main engine loop can invoke PollIncomingMessages() and PollConnectionStateChanges()
 
@@ -468,6 +402,60 @@ bool PGESysNET::ConnectClient(const std::string& sServerAddress)
 
     //SteamNetConnectionInfo_t connInfo;
     //m_pInterface->GetConnectionInfo(m_hConnection, &connInfo);
+
+    return true;
+}
+bool PGESysNET::StartListening()
+{
+    SteamNetworkingIPAddr serverLocalAddr;
+    serverLocalAddr.Clear();
+    serverLocalAddr.m_port = nPort;
+    SteamNetworkingConfigValue_t opt;
+    opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)SteamNetConnectionStatusChangedCallback);
+
+    // GameNetworkingSockets - 1.4.0\tests\test_connection.cpp :: Test_Connection() contains example how to initiate connection to ourselves!
+    m_hListenSock = m_pInterface->CreateListenSocketIP(serverLocalAddr, 1, &opt);
+    if (m_hListenSock == k_HSteamListenSocket_Invalid)
+    {
+        CConsole::getConsoleInstance("PGESysNET").EOLn("%s() Failed to listen on port %d!", __func__, nPort);
+        return false;
+    }
+
+    m_hPollGroup = m_pInterface->CreatePollGroup();
+    if (m_hPollGroup == k_HSteamNetPollGroup_Invalid)
+    {
+        CConsole::getConsoleInstance("PGESysNET").EOLn("%s() Failed to create poll group!", __func__);
+        destroySysNET();
+        return false;
+    }
+    CConsole::getConsoleInstance("PGESysNET").OLn("%s() Server listening on port %d", __func__, nPort);
+
+    // Gather some trollface pictures for the players
+    // Building this set up initially, each face is removed from the set when assigned to a player, so
+    // all players will have unique face texture assigned.
+    for (const auto& entry : std::filesystem::directory_iterator("gamedata/trollfaces/"))
+    {
+        if ((entry.path().extension().string() == ".bmp"))
+        {
+            trollFaces.insert(entry.path().string());
+        }
+    }
+    CConsole::getConsoleInstance("PGESysNET").OLn("%s() Server parsed %d trollfaces", __func__, trollFaces.size());
+
+    // here we create a client connect pkt that will inject to our queue so app level will process it and create
+    // player object for the server itself, as it was a real client
+    PgePacket pkt;
+    memset(&pkt, 0, sizeof(pkt));
+    pkt.pktId = PgePktUserConnected::id;
+    pkt.msg.userConnected.bCurrentClient = true;
+    SetupUserConnectedPkt(pkt.msg.userConnected, false); // 2nd argument is false, although we are server but we need to generate the data!
+    // Add ourselves to the client list, using std::map wacky syntax
+    // k_HSteamNetConnection_Invalid will mean the server itself
+    m_mapClients[k_HSteamNetConnection_Invalid];
+    SetClientNick(k_HSteamNetConnection_Invalid, pkt.msg.userConnected.sUserName);
+    m_mapClients[k_HSteamNetConnection_Invalid].m_sTrollface = pkt.msg.userConnected.sTrollfaceTex;
+    // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
+    queuePackets.push_back(pkt);
 
     return true;
 }
