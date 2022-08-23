@@ -24,29 +24,29 @@ class PgeNetworkImpl :
 public:
     virtual ~PgeNetworkImpl();       /**< Calls shutdown(). */
 
-    bool initialize();
-    bool shutdown();
-    bool isInitialized() const;
+    bool initialize() override;
+    bool shutdown() override;
+    bool isInitialized() const override;
 
-    bool isServer() const;
-    void Update();
-    bool ConnectClient(); /* temporal */
-    void SendStringToClient(const char* str);
-    void SendPacketToClient(const PgePacket& pkt);
-    void SendStringToAllClients(const char* str);
-    void SendPacketToAllClients(const PgePacket& pkt);
-    void SendPacketToServer(const PgePacket& pkt);
-    std::deque<PgePacket>& getPacketQueue();  // TODO: TEMPORAL: obviously we should not allow this kind of access
-    std::map<std::string, Player_t>& getPlayers();
+    bool isServer() const override;
+    void Update() override;
+    bool ConnectClient() override; /* temporal */
+    void SendStringToClient(const char* str) override;
+    void SendPacketToClient(const PgePacket& pkt) override;
+    void SendStringToAllClients(const char* str) override;
+    void SendPacketToAllClients(const PgePacket& pkt) override;
+    void SendPacketToServer(const PgePacket& pkt) override;
+    std::deque<PgePacket>& getPacketQueue() override;  // TODO: TEMPORAL: obviously we should not allow this kind of access
+    std::map<std::string, Player_t>& getPlayers() override;
 
-    int getPing(bool bForceUpdate);
-    float getQualityLocal(bool bForceUpdate);
-    float getQualityRemote(bool bForceUpdate);
-    float getRxByteRate(bool bForceUpdate);
-    float getTxByteRate(bool bForceUpdate);
-    int64_t getInternalQueueTimeUSecs(bool bForceUpdate);
+    int getPing(bool bForceUpdate) override;
+    float getQualityLocal(bool bForceUpdate) override;
+    float getQualityRemote(bool bForceUpdate) override;
+    float getRxByteRate(bool bForceUpdate) override;
+    float getTxByteRate(bool bForceUpdate) override;
+    int64_t getInternalQueueTimeUSecs(bool bForceUpdate) override;
 
-    void WriteList() const;
+    void WriteList() const override;
 
 private:
 

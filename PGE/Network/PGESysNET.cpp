@@ -665,8 +665,11 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             SetClientNick(pInfo->m_hConn, pkt.msg.userConnected.sUserName);
             m_mapClients[pInfo->m_hConn].m_sTrollface = pkt.msg.userConnected.sTrollfaceTex;
 
-            CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client with name %s is connecting, trollface: %s ...",
-                __func__, pkt.msg.userConnected.sUserName, pkt.msg.userConnected.sTrollfaceTex);
+            char szAddr[SteamNetworkingIPAddr::k_cchMaxString];
+            pInfo->m_info.m_addrRemote.ToString(szAddr, sizeof(szAddr), true);
+
+            CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client with name %s is connecting from %s, trollface: %s ...",
+                __func__, pkt.msg.userConnected.sUserName, szAddr, pkt.msg.userConnected.sTrollfaceTex);
 
             // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
             queuePackets.push_back(pkt);
