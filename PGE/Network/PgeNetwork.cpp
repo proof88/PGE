@@ -30,7 +30,7 @@ public:
 
     bool isServer() const override;
     void Update() override;
-    bool ConnectClient() override; /* temporal */
+    bool ConnectClient(const std::string& sServerAddress) override; /* temporal */
     void SendStringToClient(const char* str) override;
     void SendPacketToClient(const PgePacket& pkt) override;
     void SendStringToAllClients(const char* str) override;
@@ -117,9 +117,9 @@ void PgeNetworkImpl::Update()
     m_PgeSysNET.PollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
 }
 
-bool PgeNetworkImpl::ConnectClient()
+bool PgeNetworkImpl::ConnectClient(const std::string& sServerAddress)
 {
-    return m_PgeSysNET.ConnectClient();
+    return m_PgeSysNET.ConnectClient(sServerAddress);
 }
 
 void PgeNetworkImpl::SendStringToClient(const char* str)

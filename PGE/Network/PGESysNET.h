@@ -73,7 +73,7 @@ public:
     void SendPacketToServer(const PgePacket& pkt);
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
 
-    bool ConnectClient(); /* temporal, now I dont have better idea in this time */
+    bool ConnectClient(const std::string& sServerAddress); /* temporal, now I dont have better idea in this time */
 
 private:
 

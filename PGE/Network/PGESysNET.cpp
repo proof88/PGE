@@ -52,7 +52,7 @@ PGESysNET::PGESysNET() :
 
 PGESysNET::~PGESysNET()
 {
-    // TODO: add shutdown()
+    destroySysNET();
 } // ~PGESysNET()
 
 
@@ -84,7 +84,6 @@ bool PGESysNET::initSysNET(void)
         return false;
     }
 
-    addrServer.Clear();
     if (MessageBox(0, "Szerver?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES)
     {
         bServer = true;
@@ -92,22 +91,6 @@ bool PGESysNET::initSysNET(void)
     else
     {
         bServer = false;
-        const std::string sServerAddr = "127.0.0.1";
-        if ( !addrServer.ParseString(sServerAddr.c_str()) )
-        {
-            CConsole::getConsoleInstance("PGESysNET").EOLn("Failed to parse addrServer: %s!", sServerAddr.c_str());
-            destroySysNET();
-            return false;
-        }
-        if (addrServer.m_port == 0)
-        {
-            addrServer.m_port = DEFAULT_SERVER_PORT;
-            CConsole::getConsoleInstance("PGESysNET").OLn("Using default port: %d", addrServer.m_port);
-        }
-        else
-        {
-            CConsole::getConsoleInstance("PGESysNET").OLn("Using custom port: %d", addrServer.m_port);
-        }
     }
 
     SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Msg, NetworkDbg);
@@ -449,12 +432,29 @@ const SteamNetConnectionRealTimeStatus_t& PGESysNET::getRealTimeStatus(bool bFor
     return connRtStatus;
 }
 
-bool PGESysNET::ConnectClient()
+bool PGESysNET::ConnectClient(const std::string& sServerAddress)
 {
-    // Start connecting
+    addrServer.Clear();
+    if (!addrServer.ParseString(sServerAddress.c_str()))
+    {
+        CConsole::getConsoleInstance("PGESysNET").EOLn("%s() Failed to parse address: %s!", __func__, sServerAddress.c_str());
+        return false;
+    }
+
+    if (addrServer.m_port == 0)
+    {
+        addrServer.m_port = DEFAULT_SERVER_PORT;
+        CConsole::getConsoleInstance("PGESysNET").OLn("%s() Using default port: %d", __func__, addrServer.m_port);
+    }
+    else
+    {
+        CConsole::getConsoleInstance("PGESysNET").OLn("%s() Using custom port: %d", __func__, addrServer.m_port);
+    }
+
+    // Parse back to string just to make sure we are logging and connecting to proper address
     char szAddr[SteamNetworkingIPAddr::k_cchMaxString];
     addrServer.ToString(szAddr, sizeof(szAddr), true);
-    CConsole::getConsoleInstance("PGESysNET").OLn("Connecting to server at %s", szAddr);
+    CConsole::getConsoleInstance("PGESysNET").OLn("%s Connecting to server at %s", __func__, szAddr);
 
     SteamNetworkingConfigValue_t opt;
     opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)SteamNetConnectionStatusChangedCallback);
@@ -463,7 +463,6 @@ bool PGESysNET::ConnectClient()
     if (m_hConnection == k_HSteamNetConnection_Invalid)
     {
         CConsole::getConsoleInstance("PGESysNET").EOLn("Client Failed to create connection");
-        destroySysNET();
         return false;
     }
 
