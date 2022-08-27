@@ -19,12 +19,6 @@
 #include "../PRRE/include/external/PR00FsReducedRenderingEngine.h"
 #include "PgePacket.h"
 
-
-struct Player_t
-{
-    PRREObject3D* pObject3D;
-};
-
 /**
     The primary interface to networking functionality.
     Singleton, can be instantiated with static createAndGet().
@@ -58,7 +52,6 @@ public:
     virtual void SendPacketToAllClients(const PgePacket& pkt) = 0;
     virtual void SendPacketToServer(const PgePacket& pkt) = 0;
     virtual std::deque<PgePacket>& getPacketQueue() = 0;  // TODO: TEMPORAL: obviously we should not allow this kind of access
-    virtual std::map<std::string, Player_t>& getPlayers() = 0;
 
     virtual int getPing(bool bForceUpdate) = 0;
     virtual float getQualityLocal(bool bForceUpdate) = 0;

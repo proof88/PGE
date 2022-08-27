@@ -38,7 +38,6 @@ public:
     void SendPacketToAllClients(const PgePacket& pkt) override;
     void SendPacketToServer(const PgePacket& pkt) override;
     std::deque<PgePacket>& getPacketQueue() override;  // TODO: TEMPORAL: obviously we should not allow this kind of access
-    std::map<std::string, Player_t>& getPlayers() override;
 
     int getPing(bool bForceUpdate) override;
     float getQualityLocal(bool bForceUpdate) override;
@@ -54,7 +53,6 @@ private:
     // ---------------------------------------------------------------------------
 
     PGESysNET m_PgeSysNET;
-    std::map<std::string, Player_t> m_mapPlayers;  // used by both server and clients
 
     PgeNetworkImpl();                /**< NULLs members only. */
     PgeNetworkImpl(const PgeNetworkImpl&);
@@ -156,11 +154,6 @@ void PgeNetworkImpl::SendPacketToServer(const PgePacket& pkt)
 std::deque<PgePacket>& PgeNetworkImpl::getPacketQueue()
 {
     return m_PgeSysNET.queuePackets;
-}
-
-std::map<std::string, Player_t>& PgeNetworkImpl::getPlayers()
-{
-    return m_mapPlayers;
 }
 
 int PgeNetworkImpl::getPing(bool bForceUpdate)
