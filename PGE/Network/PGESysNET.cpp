@@ -255,6 +255,7 @@ bool PGESysNET::PollIncomingMessages()
             PgePacket pkt;
             assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
             memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
+            // here we are client, we don't set pkt.connHandle because we expect it to be already properly filled in by sender (server)!
             // TODO: add blacklist logic here too!
             m_queuePackets.push_back(pkt);
 
@@ -588,8 +589,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             char szAddr[SteamNetworkingIPAddr::k_cchMaxString];
             pInfo->m_info.m_addrRemote.ToString(szAddr, sizeof(szAddr), true);
 
-            CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client is connecting from %s ...",
-                __func__, szAddr);
+            CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client is connecting from %s ...", __func__, szAddr);
 
             // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
             m_queuePackets.push_back(pkt);
