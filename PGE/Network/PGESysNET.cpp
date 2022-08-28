@@ -35,18 +35,18 @@ const uint32_t PgePktUserUpdate::id;
 
 bool PGESysNET::isServer()
 {
-    return bServer;
+    return s_bServer;
 }
 
 PGESysNET::PGESysNET() :
-    nPort(DEFAULT_SERVER_PORT),
+    m_nPort(DEFAULT_SERVER_PORT),
     m_pInterface(nullptr),
     m_hListenSock(k_HSteamListenSocket_Invalid),
     m_hPollGroup(k_HSteamNetPollGroup_Invalid),
     m_hConnection(k_HSteamNetConnection_Invalid)
 {
-    addrServer.Clear();
-    memset(&connRtStatus, 0, sizeof(connRtStatus));
+    m_addrServer.Clear();
+    memset(&m_connRtStatus, 0, sizeof(m_connRtStatus));
 } // PGESysNET()
 
 
@@ -84,7 +84,7 @@ bool PGESysNET::initSysNET(void)
         return false;
     }
 
-    bServer = (IDYES == MessageBox(0, "Szerver?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND));
+    s_bServer = (IDYES == MessageBox(0, "Szerver?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND));
 
     SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Msg, NetworkDbg);
 
@@ -109,7 +109,7 @@ bool PGESysNET::destroySysNET(void)
     {
         // Close all the connections
         CConsole::getConsoleInstance("PGESysNET").OLn("Server closing connections...");
-        for (auto it : m_mapClients)
+        for (const auto& it : m_mapClients)
         {
             // Send them one more goodbye message.  Note that we also have the
             // connection close reason as a place to send final data.  However,
@@ -142,8 +142,8 @@ bool PGESysNET::destroySysNET(void)
             m_pInterface->CloseConnection(m_hConnection, k_ESteamNetConnectionEnd_App_Generic, "PGESysNET Client Graceful shutdown", true);
             m_hConnection = k_HSteamNetConnection_Invalid;
         }
-        addrServer.Clear();
-        memset(&connRtStatus, 0, sizeof(connRtStatus));
+        m_addrServer.Clear();
+        memset(&m_connRtStatus, 0, sizeof(m_connRtStatus));
     }
     m_pInterface = nullptr;
     
@@ -210,7 +210,7 @@ bool PGESysNET::PollIncomingMessages()
                 assert(false);
             }
 
-            queuePackets.push_back(pkt);
+            m_queuePackets.push_back(pkt);
 
             // We don't need this anymore.
             // Note that we could even push pIncomingMsg to a queue, and process it later, and
@@ -255,8 +255,8 @@ bool PGESysNET::PollIncomingMessages()
             PgePacket pkt;
             assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
             memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
-
-            queuePackets.push_back(pkt);
+            // TODO: add blacklist logic here too!
+            m_queuePackets.push_back(pkt);
 
             // We don't need this anymore.
             // Note that we could even push pIncomingMsg to a queue, and process it later, and
@@ -275,7 +275,7 @@ void PGESysNET::PollConnectionStateChanges()
 }
 
 // ### from here server only
-void PGESysNET::SendStringToClient(HSteamNetConnection conn, const char* str)
+void PGESysNET::SendStringToClient(HSteamNetConnection conn, const char* szStr)
 {
     if (conn == k_HSteamNetConnection_Invalid)
     {
@@ -283,7 +283,7 @@ void PGESysNET::SendStringToClient(HSteamNetConnection conn, const char* str)
         // that is how server can handle itself as a client similar to any other client
         return;
     }
-    m_pInterface->SendMessageToConnection(conn, str, (uint32)strlen(str), k_nSteamNetworkingSend_Reliable, nullptr);
+    m_pInterface->SendMessageToConnection(conn, szStr, (uint32)strlen(szStr), k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
 void PGESysNET::SendPacketToClient(HSteamNetConnection conn, const PgePacket& pkt)
@@ -297,7 +297,7 @@ void PGESysNET::SendPacketToClient(HSteamNetConnection conn, const PgePacket& pk
     m_pInterface->SendMessageToConnection(conn, &pkt, (uint32)sizeof(pkt), k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
-void PGESysNET::SendStringToAllClients(const char* str, HSteamNetConnection except)
+void PGESysNET::SendStringToAllClients(const char* szStr, HSteamNetConnection except)
 {
     for (auto& client : m_mapClients)
     {
@@ -309,7 +309,7 @@ void PGESysNET::SendStringToAllClients(const char* str, HSteamNetConnection exce
         }
         if (client.first != except)
         {
-            SendStringToClient(client.first, str);
+            SendStringToClient(client.first, szStr);
         }
     }
 }
@@ -350,52 +350,52 @@ const SteamNetConnectionRealTimeStatus_t& PGESysNET::getRealTimeStatus(bool bFor
     if (isServer())
     {
         // I cannot retrieve such info for server
-        return connRtStatus;
+        return m_connRtStatus;
     }
 
     if (m_hConnection == k_HSteamNetConnection_Invalid)
     {
         CConsole::getConsoleInstance("PGESysNET").EOLn("%s invalid connection handle!", __func__);
         assert(false);
-        return connRtStatus;
+        return m_connRtStatus;
     }
 
     if (bForceUpdate)
     {
-        m_pInterface->GetConnectionRealTimeStatus(m_hConnection, &connRtStatus, 0, NULL);
+        m_pInterface->GetConnectionRealTimeStatus(m_hConnection, &m_connRtStatus, 0, NULL);
     }
 
-    return connRtStatus;
+    return m_connRtStatus;
 }
 
 bool PGESysNET::ConnectClient(const std::string& sServerAddress)
 {
-    addrServer.Clear();
-    if (!addrServer.ParseString(sServerAddress.c_str()))
+    m_addrServer.Clear();
+    if (!m_addrServer.ParseString(sServerAddress.c_str()))
     {
         CConsole::getConsoleInstance("PGESysNET").EOLn("%s() Failed to parse address: %s!", __func__, sServerAddress.c_str());
         return false;
     }
 
-    if (addrServer.m_port == 0)
+    if (m_addrServer.m_port == 0)
     {
-        addrServer.m_port = DEFAULT_SERVER_PORT;
-        CConsole::getConsoleInstance("PGESysNET").OLn("%s() Using default port: %d", __func__, addrServer.m_port);
+        m_addrServer.m_port = DEFAULT_SERVER_PORT;
+        CConsole::getConsoleInstance("PGESysNET").OLn("%s() Using default port: %d", __func__, m_addrServer.m_port);
     }
     else
     {
-        CConsole::getConsoleInstance("PGESysNET").OLn("%s() Using custom port: %d", __func__, addrServer.m_port);
+        CConsole::getConsoleInstance("PGESysNET").OLn("%s() Using custom port: %d", __func__, m_addrServer.m_port);
     }
 
     // Parse back to string just to make sure we are logging and connecting to proper address
     char szAddr[SteamNetworkingIPAddr::k_cchMaxString];
-    addrServer.ToString(szAddr, sizeof(szAddr), true);
+    m_addrServer.ToString(szAddr, sizeof(szAddr), true);
     CConsole::getConsoleInstance("PGESysNET").OLn("%s Connecting to server at %s", __func__, szAddr);
 
     SteamNetworkingConfigValue_t opt;
     opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)SteamNetConnectionStatusChangedCallback);
 
-    m_hConnection = m_pInterface->ConnectByIPAddress(addrServer, 1, &opt);
+    m_hConnection = m_pInterface->ConnectByIPAddress(m_addrServer, 1, &opt);
     if (m_hConnection == k_HSteamNetConnection_Invalid)
     {
         CConsole::getConsoleInstance("PGESysNET").EOLn("Client Failed to create connection");
@@ -411,7 +411,7 @@ bool PGESysNET::StartListening()
 {
     SteamNetworkingIPAddr serverLocalAddr;
     serverLocalAddr.Clear();
-    serverLocalAddr.m_port = nPort;
+    serverLocalAddr.m_port = m_nPort;
     SteamNetworkingConfigValue_t opt;
     opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)SteamNetConnectionStatusChangedCallback);
 
@@ -419,7 +419,7 @@ bool PGESysNET::StartListening()
     m_hListenSock = m_pInterface->CreateListenSocketIP(serverLocalAddr, 1, &opt);
     if (m_hListenSock == k_HSteamListenSocket_Invalid)
     {
-        CConsole::getConsoleInstance("PGESysNET").EOLn("%s() Failed to listen on port %d!", __func__, nPort);
+        CConsole::getConsoleInstance("PGESysNET").EOLn("%s() Failed to listen on port %d!", __func__, m_nPort);
         return false;
     }
 
@@ -430,7 +430,7 @@ bool PGESysNET::StartListening()
         destroySysNET();
         return false;
     }
-    CConsole::getConsoleInstance("PGESysNET").OLn("%s() Server listening on port %d", __func__, nPort);
+    CConsole::getConsoleInstance("PGESysNET").OLn("%s() Server listening on port %d", __func__, m_nPort);
 
     // here we create a client connect pkt that will inject to our queue so app level will process it and create
     // player object for the server itself, as it was a real client
@@ -446,7 +446,7 @@ bool PGESysNET::StartListening()
     // TODOOO: network layer needs to set user name! SetClientNick(k_HSteamNetConnection_Invalid, pkt.msg.userConnected.sUserName);
     
     // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
-    queuePackets.push_back(pkt);
+    m_queuePackets.push_back(pkt);
 
     return true;
 }
@@ -460,21 +460,21 @@ bool PGESysNET::StartListening()
 
 
 PGESysNET* PGESysNET::s_pCallbackInstance = nullptr;
-bool PGESysNET::bServer = false;
+bool PGESysNET::s_bServer = false;
 
 void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
 {
     // This function is also invoked on main thread when I call PGESysNET.PollConnectionStateChanges() from PGE::runGame()
     // so no need to utilize mutexes around here.
     // And the other function PollIncomingMessages() is also invoked by PGE::runGame().
-    // So it is safe to do operations on queuePackets.
+    // So it is safe to do operations on m_queuePackets.
     // The problem related to CConsole not being threadsafe was not due to the logs within this function
     // but to the callback function I've set with SteamNetworkingUtils()->SetDebugOutputFunction(), as it can be called
     // in parallel by SteamNetworking thread.
 
     if (isServer())
     {
-        char temp[1024];
+        char szTemp[1024];
 
         // What's the state of the connection?
         switch (pInfo->m_info.m_eState)
@@ -490,7 +490,6 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             // before we accepted the connection.)
             if (pInfo->m_eOldState == k_ESteamNetworkingConnectionState_Connected)
             {
-
                 // Locate the client.  Note that it should have been found, because this
                 // is the only codepath where we remove clients (except on shutdown),
                 // and connection change callbacks are dispatched in queue order.
@@ -502,14 +501,14 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 if (pInfo->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
                 {
                     pszDebugLogAction = "problem detected locally";
-                    sprintf(temp, "%s disappeared (%s)", itClient->second.c_str(), pInfo->m_info.m_szEndDebug);
+                    sprintf(szTemp, "%s disappeared (%s)", itClient->second.c_str(), pInfo->m_info.m_szEndDebug);
                 }
                 else
                 {
                     // Note that here we could check the reason code to see if
                     // it was a "usual" connection or an "unusual" one.
                     pszDebugLogAction = "closed by peer";
-                    sprintf(temp, "%s closed connection", itClient->second.c_str());
+                    sprintf(szTemp, "%s closed connection", itClient->second.c_str());
                 }
 
                 // Spew something to our own log.  Note that because we put their nick
@@ -531,7 +530,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 m_mapClients.erase(itClient);  // dont try to send anything to the disconnected client :)
 
                 // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
-                queuePackets.push_back(pkt);
+                m_queuePackets.push_back(pkt);
                 SendPacketToAllClients(pkt);  
             }
             else
@@ -593,7 +592,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 __func__, szAddr);
 
             // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
-            queuePackets.push_back(pkt);
+            m_queuePackets.push_back(pkt);
            
             break;
         }

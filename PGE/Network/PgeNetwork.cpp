@@ -156,7 +156,7 @@ void PgeNetworkImpl::SendPacketToServer(const PgePacket& pkt)
 
 std::deque<PgePacket>& PgeNetworkImpl::getPacketQueue()
 {
-    return m_PgeSysNET.queuePackets;
+    return m_PgeSysNET.m_queuePackets;
 }
 
 std::set<uint32_t>& PgeNetworkImpl::getBlackListedMessages()

@@ -23,15 +23,15 @@ struct PgePktUserConnected
     static const uint32_t id = 0;
 
     bool bCurrentClient;
-    char sUserName[64];
-    char sTrollfaceTex[64];
+    char szUserName[64];
+    char szTrollfaceTex[64];
 };
 
 // server -> clients and to self
 struct PgePktUserDisconnected
 {
     static const uint32_t id = 1;
-    char sUserName[64];
+    char szUserName[64];
 };
 
 enum class VerticalDirection : std::uint8_t
@@ -61,7 +61,7 @@ struct PgePktUserCmdMove
 struct PgePktUserUpdate
 {
     static const uint32_t id = 3;
-    char sUserName[64];
+    char szUserName[64];
     TXYZ pos;
 };
 

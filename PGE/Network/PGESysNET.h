@@ -54,7 +54,7 @@ public:
 
     // TODO: these needs to be private, temporarily here!
     HSteamNetConnection m_hConnection; // used by client only
-    std::deque<PgePacket> queuePackets;  // used by both client and server
+    std::deque<PgePacket> m_queuePackets;  // used by both client and server
     std::set< uint32_t > m_blackListedMessages;  // used by both client and server
 
     PGESysNET();
@@ -67,9 +67,9 @@ public:
     bool PollIncomingMessages();
     void PollConnectionStateChanges();
 
-    void SendStringToClient(HSteamNetConnection conn, const char* str);
+    void SendStringToClient(HSteamNetConnection conn, const char* szStr);
     void SendPacketToClient(HSteamNetConnection conn, const PgePacket& pkt);
-    void SendStringToAllClients(const char* str, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
+    void SendStringToAllClients(const char* szStr, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
     void SendPacketToAllClients(const PgePacket& pkt, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
     void SendPacketToServer(const PgePacket& pkt);
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
@@ -80,14 +80,14 @@ public:
 private:
 
     static PGESysNET* s_pCallbackInstance;
-    static bool bServer;
+    static bool s_bServer;
 
-    uint16 nPort;
-    SteamNetworkingIPAddr addrServer;  // used by client only
+    uint16 m_nPort;
+    SteamNetworkingIPAddr m_addrServer;  // used by client only
     ISteamNetworkingSockets* m_pInterface;
     HSteamListenSocket m_hListenSock;  // used by server only
     HSteamNetPollGroup m_hPollGroup;   // used by server only
-    SteamNetConnectionRealTimeStatus_t connRtStatus;  // used by client only
+    SteamNetConnectionRealTimeStatus_t m_connRtStatus;  // used by client only
 
     std::map< HSteamNetConnection, std::string > m_mapClients;  // used by server only
     // note that the first connection is this map is an invalid connection (k_HSteamNetConnection_Invalid), which
