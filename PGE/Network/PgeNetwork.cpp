@@ -32,10 +32,10 @@ public:
     void Update() override;
     bool ConnectClient(const std::string& sServerAddress) override; /* temporal */
     bool StartListening();
-    void SendStringToClient(const char* str) override;
-    void SendPacketToClient(const PgePacket& pkt) override;
-    void SendStringToAllClients(const char* str) override;
-    void SendPacketToAllClients(const PgePacket& pkt) override;
+    void SendStringToClient(uint32_t connHandle, const char* str) override;
+    void SendPacketToClient(uint32_t connHandle, const PgePacket& pkt) override;
+    void SendStringToAllClients(const char* str, uint32_t exceptConnHandle = 0) override;
+    void SendPacketToAllClients(const PgePacket& pkt, uint32_t exceptConnHandle = 0) override;
     void SendPacketToServer(const PgePacket& pkt) override;
     std::deque<PgePacket>& getPacketQueue() override;  // TODO: TEMPORAL: obviously we should not allow this kind of access
 
@@ -126,24 +126,26 @@ bool PgeNetworkImpl::StartListening()
     return m_PgeSysNET.StartListening();
 }
 
-void PgeNetworkImpl::SendStringToClient(const char* str)
+void PgeNetworkImpl::SendStringToClient(uint32_t connHandle, const char* str)
 {
-    m_PgeSysNET.SendStringToClient(m_PgeSysNET.m_hConnection, str);
+    // TODO add check: connHandle cannot be 0!
+    m_PgeSysNET.SendStringToClient(static_cast<HSteamNetConnection>(connHandle), str);
 }
 
-void PgeNetworkImpl::SendPacketToClient(const PgePacket& pkt)
+void PgeNetworkImpl::SendPacketToClient(uint32_t connHandle, const PgePacket& pkt)
 {
-    m_PgeSysNET.SendPacketToClient(m_PgeSysNET.m_hConnection, pkt);
+    // TODO add check: connHandle cannot be 0!
+    m_PgeSysNET.SendPacketToClient(static_cast<HSteamNetConnection>(connHandle), pkt);
 }
 
-void PgeNetworkImpl::SendStringToAllClients(const char* str)
+void PgeNetworkImpl::SendStringToAllClients(const char* str, uint32_t exceptConnHandle)
 {
-    m_PgeSysNET.SendStringToAllClients(str);
+    m_PgeSysNET.SendStringToAllClients(str, exceptConnHandle);
 }
 
-void PgeNetworkImpl::SendPacketToAllClients(const PgePacket& pkt)
+void PgeNetworkImpl::SendPacketToAllClients(const PgePacket& pkt, uint32_t exceptConnHandle)
 {
-    m_PgeSysNET.SendPacketToAllClients(pkt);
+    m_PgeSysNET.SendPacketToAllClients(pkt, exceptConnHandle);
 }
 
 void PgeNetworkImpl::SendPacketToServer(const PgePacket& pkt)

@@ -202,10 +202,14 @@ bool PGESysNET::PollIncomingMessages()
             PgePacket pkt;
             assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
             memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
+            pkt.connHandle = pIncomingMsg[i]->m_conn;
 
-            if (pkt.pktId == PgePktUserCmdMove::id)
+            if (pkt.pktId == PgePktUserUpdate::id)
             {
-                strncpy(pkt.msg.userCmdMove.sUserName, itClient->second.m_sNick.c_str(), 64);
+                // PgePktUserUpdate MUST NOT be received by server over network!
+                // PgePktUserUpdate is received only by clients!
+                // PgePktUserUpdate is also processed by server, but it injects this pkt into its queue, should never receive this over network!
+                assert(false);
             }
 
             queuePackets.push_back(pkt);
@@ -430,30 +434,19 @@ bool PGESysNET::StartListening()
     }
     CConsole::getConsoleInstance("PGESysNET").OLn("%s() Server listening on port %d", __func__, nPort);
 
-    // Gather some trollface pictures for the players
-    // Building this set up initially, each face is removed from the set when assigned to a player, so
-    // all players will have unique face texture assigned.
-    for (const auto& entry : std::filesystem::directory_iterator("gamedata/trollfaces/"))
-    {
-        if ((entry.path().extension().string() == ".bmp"))
-        {
-            trollFaces.insert(entry.path().string());
-        }
-    }
-    CConsole::getConsoleInstance("PGESysNET").OLn("%s() Server parsed %d trollfaces", __func__, trollFaces.size());
-
     // here we create a client connect pkt that will inject to our queue so app level will process it and create
     // player object for the server itself, as it was a real client
     PgePacket pkt;
     memset(&pkt, 0, sizeof(pkt));
     pkt.pktId = PgePktUserConnected::id;
     pkt.msg.userConnected.bCurrentClient = true;
-    SetupUserConnectedPkt(pkt.msg.userConnected, false); // 2nd argument is false, although we are server but we need to generate the data!
+
     // Add ourselves to the client list, using std::map wacky syntax
     // k_HSteamNetConnection_Invalid will mean the server itself
     m_mapClients[k_HSteamNetConnection_Invalid];
-    SetClientNick(k_HSteamNetConnection_Invalid, pkt.msg.userConnected.sUserName);
-    m_mapClients[k_HSteamNetConnection_Invalid].m_sTrollface = pkt.msg.userConnected.sTrollfaceTex;
+    
+    // TODOOO: network layer needs to set user name! SetClientNick(k_HSteamNetConnection_Invalid, pkt.msg.userConnected.sUserName);
+    
     // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
     queuePackets.push_back(pkt);
 
@@ -470,63 +463,6 @@ bool PGESysNET::StartListening()
 
 PGESysNET* PGESysNET::s_pCallbackInstance = nullptr;
 bool PGESysNET::bServer = false;
-
-void PGESysNET::SetupUserConnectedPkt(PgePktUserConnected& pktUserConnected, const bool bUseServerUserData)
-{
-    if (!bUseServerUserData)
-    {
-        // generate unique user name into pkt
-        bool found = false;
-        do
-        {
-            sprintf(pktUserConnected.sUserName, "User%d", 10000 + (rand() % 100000));
-            for (const auto& client : m_mapClients)
-            {
-                found = (client.second.m_sNick == pktUserConnected.sUserName);
-                if (found)
-                {
-                    break;
-                }
-            }
-        } while (found);
-
-        // TODO: trollface should be assigned be the app level
-        // if applevel assigns trollface, applevel server will be able to give back trollface texture into trollfaces std::set when user is deleted!
-        if (trollFaces.size() > 0)
-        {
-            strncpy(pktUserConnected.sTrollfaceTex, trollFaces.begin()->c_str(), 64);
-            trollFaces.erase(trollFaces.begin());
-        }
-        else
-        {
-            CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER No more trollfaces left for user %s", __func__, pktUserConnected.sUserName);
-        }
-    }
-    else
-    {
-        // this case can happen only when we are server and server is sending its own user data to a new client, in this case
-        // we set server's already existing data, so client can get to know server's user data. This is case of listen server, since
-        // a dedicated server doesn't have own user data.
-        
-        // Sanity check: require bCurrentClient already set to false so we know the caller knows what they are doing!
-        if (pktUserConnected.bCurrentClient)
-        {
-            CConsole::getConsoleInstance("PGESysNET").EOLn("%s: cannot happen: bServerUser is true, then bCurrentClient should not be true!", __func__);
-            assert(false);
-        }
-
-        if (isServer())
-        {
-            strncpy(pktUserConnected.sUserName, m_mapClients[k_HSteamNetConnection_Invalid].m_sNick.c_str(), 64);
-            strncpy(pktUserConnected.sTrollfaceTex, m_mapClients[k_HSteamNetConnection_Invalid].m_sTrollface.c_str(), 64);
-        }
-        else
-        {
-            CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT cannot happen: bServerUser is true!", __func__);
-            assert(false);
-        }
-    }
-}
 
 void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
 {
@@ -568,14 +504,14 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 if (pInfo->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
                 {
                     pszDebugLogAction = "problem detected locally";
-                    sprintf(temp, "%s disappeared (%s)", itClient->second.m_sNick.c_str(), pInfo->m_info.m_szEndDebug);
+                    sprintf(temp, "%s disappeared (%s)", itClient->second.c_str(), pInfo->m_info.m_szEndDebug);
                 }
                 else
                 {
                     // Note that here we could check the reason code to see if
                     // it was a "usual" connection or an "unusual" one.
                     pszDebugLogAction = "closed by peer";
-                    sprintf(temp, "%s closed connection", itClient->second.m_sNick.c_str());
+                    sprintf(temp, "%s closed connection", itClient->second.c_str());
                 }
 
                 // Spew something to our own log.  Note that because we put their nick
@@ -592,7 +528,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 PgePacket pkt;
                 memset(&pkt, 0, sizeof(pkt));
                 pkt.pktId = PgePktUserDisconnected::id;
-                strncpy(pkt.msg.userDisconnected.sUserName, itClient->second.m_sNick.c_str(), 64);;
+                pkt.connHandle = pInfo->m_hConn;
 
                 m_mapClients.erase(itClient);  // dont try to send anything to the disconnected client :)
 
@@ -645,35 +581,22 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             PgePacket pkt;
             memset(&pkt, 0, sizeof(pkt));
             pkt.pktId = PgePktUserConnected::id;
+            pkt.connHandle = static_cast<int32_t>(pInfo->m_hConn);
             pkt.msg.userConnected.bCurrentClient = false;
-            SetupUserConnectedPkt(pkt.msg.userConnected, false);
+
             // Add them to the client list, using std::map wacky syntax
             m_mapClients[pInfo->m_hConn];
-            SetClientNick(pInfo->m_hConn, pkt.msg.userConnected.sUserName);
-            m_mapClients[pInfo->m_hConn].m_sTrollface = pkt.msg.userConnected.sTrollfaceTex;
+            // TODOOO: network layer needs to set user name! SetClientNick(pInfo->m_hConn, pkt.msg.userConnected.sUserName);
 
             char szAddr[SteamNetworkingIPAddr::k_cchMaxString];
             pInfo->m_info.m_addrRemote.ToString(szAddr, sizeof(szAddr), true);
 
-            CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client with name %s is connecting from %s, trollface: %s ...",
-                __func__, pkt.msg.userConnected.sUserName, szAddr, pkt.msg.userConnected.sTrollfaceTex);
+            CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client is connecting from %s ...",
+                __func__, szAddr);
 
             // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
             queuePackets.push_back(pkt);
-            
-            // inform all other clients about this new user
-            SendPacketToAllClients(pkt, pInfo->m_hConn);
-
-            // now we send this pkt to the client with this bool flag set so client will know it is their connect
-            pkt.msg.userConnected.bCurrentClient = true;
-            SendPacketToClient(pInfo->m_hConn, pkt);
-            
-            // we also send a pkt to the client about the server user, otherwise client won't create the server user
-            // this is useful because in the future in case of dedicated server, there is no user on server side!
-            // so only listen server should create this pkt to the client.
-            pkt.msg.userConnected.bCurrentClient = false;
-            SetupUserConnectedPkt(pkt.msg.userConnected, true);
-            SendPacketToClient(pInfo->m_hConn, pkt);
+           
             break;
         }
 
@@ -691,7 +614,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             }
             else
             {
-                CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER Client %s has reached state Connected!", __func__, itClient->second.m_sNick.c_str());
+                CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER Client %s has reached state Connected!", __func__, itClient->second.c_str());
             }
             break;
         }
@@ -781,7 +704,7 @@ PGESysNET& PGESysNET::operator=(const PGESysNET&)
 void PGESysNET::SetClientNick(HSteamNetConnection hConn, const char* nick)
 {
     // Remember their nick
-    m_mapClients[hConn].m_sNick = nick;
+    m_mapClients[hConn] = nick;
 
     // Set the connection name, too, which is useful for debugging
     m_pInterface->SetConnectionName(hConn, nick);

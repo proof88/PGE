@@ -21,6 +21,7 @@
 struct PgePktUserConnected
 {
     static const uint32_t id = 0;
+
     bool bCurrentClient;
     char sUserName[64];
     char sTrollfaceTex[64];
@@ -52,7 +53,6 @@ enum class HorizontalDirection : std::uint8_t
 struct PgePktUserCmdMove
 {
     static const uint32_t id = 2;
-    char sUserName[64];  // obviously char array is overkill for identifying user but good for now ... server sets it, not the sender (client)
     HorizontalDirection horDirection;
     VerticalDirection verDirection;
 };
@@ -68,6 +68,7 @@ struct PgePktUserUpdate
 struct PgePacket
 {
     int32_t pktId;
+    uint32_t connHandle;
     union
     {
         PgePktUserConnected userConnected;

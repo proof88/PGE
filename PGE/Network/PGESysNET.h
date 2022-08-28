@@ -81,23 +81,14 @@ private:
     static PGESysNET* s_pCallbackInstance;
     static bool bServer;
 
-    std::set<std::string> trollFaces;  // used by server only
-
     uint16 nPort;
     SteamNetworkingIPAddr addrServer;  // used by client only
     ISteamNetworkingSockets* m_pInterface;
     HSteamListenSocket m_hListenSock;  // used by server only
     HSteamNetPollGroup m_hPollGroup;   // used by server only
     SteamNetConnectionRealTimeStatus_t connRtStatus;  // used by client only
-    
 
-    struct Client_t
-    {
-        std::string m_sNick;
-        std::string m_sTrollface;
-    };
-
-    std::map< HSteamNetConnection, Client_t > m_mapClients;  // used by server only
+    std::map< HSteamNetConnection, std::string > m_mapClients;  // used by server only
     // note that the first connection is this map is an invalid connection (k_HSteamNetConnection_Invalid), which
     // is the server itself, this is how this layer stores nickname for the server (self)
 
@@ -108,7 +99,6 @@ private:
     PGESysNET(const PGESysNET&); 
     PGESysNET& operator=(const PGESysNET&);
 
-    void SetupUserConnectedPkt(PgePktUserConnected& pktUserConnected, const bool bUseServerUserData);
     void SetClientNick(HSteamNetConnection hConn, const char* nick);
     void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo);
 
