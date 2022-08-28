@@ -38,6 +38,7 @@ public:
     void SendPacketToAllClients(const PgePacket& pkt, uint32_t exceptConnHandle = 0) override;
     void SendPacketToServer(const PgePacket& pkt) override;
     std::deque<PgePacket>& getPacketQueue() override;  // TODO: TEMPORAL: obviously we should not allow this kind of access
+    std::set<uint32_t>& getBlackListedMessages() override;
 
     int getPing(bool bForceUpdate) override;
     float getQualityLocal(bool bForceUpdate) override;
@@ -156,6 +157,11 @@ void PgeNetworkImpl::SendPacketToServer(const PgePacket& pkt)
 std::deque<PgePacket>& PgeNetworkImpl::getPacketQueue()
 {
     return m_PgeSysNET.queuePackets;
+}
+
+std::set<uint32_t>& PgeNetworkImpl::getBlackListedMessages()
+{
+    return m_PgeSysNET.m_blackListedMessages;
 }
 
 int PgeNetworkImpl::getPing(bool bForceUpdate)

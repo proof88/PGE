@@ -166,7 +166,7 @@ bool PGESysNET::isInitialized() const
 
 bool PGESysNET::PollIncomingMessages()
 {
-    static const int nIncomingMsgArraySize = 1;
+    static const int nIncomingMsgArraySize = 1; // TODO: make this configurable from outside
     ISteamNetworkingMessage* pIncomingMsg[nIncomingMsgArraySize];
     if (isServer())
     {
@@ -202,13 +202,11 @@ bool PGESysNET::PollIncomingMessages()
             PgePacket pkt;
             assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
             memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
-            pkt.connHandle = pIncomingMsg[i]->m_conn;
+            pkt.connHandle = static_cast<uint32_t>(pIncomingMsg[i]->m_conn);
 
-            if (pkt.pktId == PgePktUserUpdate::id)
+            if (m_blackListedMessages.end() != m_blackListedMessages.find(pkt.pktId))
             {
-                // PgePktUserUpdate MUST NOT be received by server over network!
-                // PgePktUserUpdate is received only by clients!
-                // PgePktUserUpdate is also processed by server, but it injects this pkt into its queue, should never receive this over network!
+                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER blacklisted messages received: %u from connection %u!", __func__, pkt.pktId, pkt.connHandle);
                 assert(false);
             }
 
@@ -528,7 +526,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 PgePacket pkt;
                 memset(&pkt, 0, sizeof(pkt));
                 pkt.pktId = PgePktUserDisconnected::id;
-                pkt.connHandle = pInfo->m_hConn;
+                pkt.connHandle = static_cast<uint32_t>(pInfo->m_hConn);
 
                 m_mapClients.erase(itClient);  // dont try to send anything to the disconnected client :)
 
@@ -581,7 +579,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             PgePacket pkt;
             memset(&pkt, 0, sizeof(pkt));
             pkt.pktId = PgePktUserConnected::id;
-            pkt.connHandle = static_cast<int32_t>(pInfo->m_hConn);
+            pkt.connHandle = static_cast<uint32_t>(pInfo->m_hConn);
             pkt.msg.userConnected.bCurrentClient = false;
 
             // Add them to the client list, using std::map wacky syntax

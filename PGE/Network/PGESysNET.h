@@ -55,6 +55,7 @@ public:
     // TODO: these needs to be private, temporarily here!
     HSteamNetConnection m_hConnection; // used by client only
     std::deque<PgePacket> queuePackets;  // used by both client and server
+    std::set< uint32_t > m_blackListedMessages;  // used by both client and server
 
     PGESysNET();
     virtual ~PGESysNET();

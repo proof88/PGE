@@ -67,7 +67,7 @@ struct PgePktUserUpdate
 
 struct PgePacket
 {
-    int32_t pktId;
+    uint32_t pktId;
     uint32_t connHandle;
     union
     {
