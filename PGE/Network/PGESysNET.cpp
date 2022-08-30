@@ -30,8 +30,6 @@
 const uint16 PGESysNET::DEFAULT_SERVER_PORT;
 
 const uint32_t PgePktUserConnected::id;
-const uint32_t PgePktUserCmdMove::id;
-const uint32_t PgePktUserUpdate::id;
 
 bool PGESysNET::isServer()
 {

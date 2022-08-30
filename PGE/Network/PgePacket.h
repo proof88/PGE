@@ -34,35 +34,11 @@ struct PgePktUserDisconnected
     char szUserName[64];
 };
 
-enum class VerticalDirection : std::uint8_t
-{
-    NONE = 0,
-    UP,
-    DOWN
-};
-
-enum class HorizontalDirection : std::uint8_t
-{
-    NONE = 0,
-    LEFT,
-    RIGHT
-};
-
-// PgePktUserCmd messages are sent from clients to server, so server will do sg and then update all the clients
-// clients -> server
-struct PgePktUserCmdMove
+// application-specific packet
+struct PgePktUserCustom
 {
     static const uint32_t id = 2;
-    HorizontalDirection horDirection;
-    VerticalDirection verDirection;
-};
-
-// server -> clients
-struct PgePktUserUpdate
-{
-    static const uint32_t id = 3;
-    char szUserName[64];
-    TXYZ pos;
+    char cData[256];
 };
 
 struct PgePacket
@@ -73,7 +49,6 @@ struct PgePacket
     {
         PgePktUserConnected userConnected;
         PgePktUserDisconnected userDisconnected;
-        PgePktUserCmdMove userCmdMove;
-        PgePktUserUpdate userUpdate;
+        PgePktUserCustom userCustom;
     } msg;
 };
