@@ -256,7 +256,14 @@ bool PGESysNET::PollIncomingMessages()
             assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
             memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
             // here we are client, we don't set pkt.connHandle because we expect it to be already properly filled in by sender (server)!
-            // TODO: add blacklist logic here too!
+            
+            if (m_blackListedMessages.end() != m_blackListedMessages.find(pkt.pktId))
+            {
+                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT blacklisted messages received: %u from server, connHandle: %u!",
+                    __func__, pkt.pktId, pkt.connHandle);
+                assert(false);
+            }
+
             m_queuePackets.push_back(pkt);
 
             // We don't need this anymore.
