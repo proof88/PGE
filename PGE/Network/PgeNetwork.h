@@ -46,10 +46,10 @@ public:
     virtual void Update() = 0;
     virtual bool StartListening() = 0;
     virtual bool ConnectClient(const std::string& sServerAddress) = 0; /* temporal */
-    virtual void SendStringToClient(uint32_t connHandle, const char* szStr) = 0;
-    virtual void SendPacketToClient(uint32_t connHandle, const PgePkt::PgePacket& pkt) = 0;
-    virtual void SendStringToAllClients(const char* szStr, uint32_t exceptConnHandle = 0) = 0;
-    virtual void SendPacketToAllClients(const PgePkt::PgePacket& pkt, uint32_t exceptConnHandle = 0) = 0;
+    virtual void SendStringToClient(PgePkt::PgeNetworkConnectionHandle connHandle, const char* szStr) = 0;
+    virtual void SendPacketToClient(PgePkt::PgeNetworkConnectionHandle connHandle, const PgePkt::PgePacket& pkt) = 0;
+    virtual void SendStringToAllClients(const char* szStr, PgePkt::PgeNetworkConnectionHandle exceptConnHandle = 0) = 0;
+    virtual void SendPacketToAllClients(const PgePkt::PgePacket& pkt, PgePkt::PgeNetworkConnectionHandle exceptConnHandle = 0) = 0;
     virtual void SendPacketToServer(const PgePkt::PgePacket& pkt) = 0;
     virtual std::deque<PgePkt::PgePacket>& getPacketQueue() = 0;  // TODO: TEMPORAL: obviously we should not allow this kind of access
     virtual std::set<uint32_t>& getBlackListedMessages() = 0;

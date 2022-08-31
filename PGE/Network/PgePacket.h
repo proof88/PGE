@@ -20,6 +20,8 @@
 namespace PgePkt
 {
 
+    typedef uint32_t PgeNetworkConnectionHandle;
+
     enum class PgePktId : uint32_t
     {
         USER_CONNECTED = 0,
@@ -59,7 +61,7 @@ namespace PgePkt
     struct PgePacket
     {
         PgePktId pktId;
-        uint32_t connHandle;
+        PgeNetworkConnectionHandle connHandle;
         union
         {
             PgeMsgUserConnected userConnected;

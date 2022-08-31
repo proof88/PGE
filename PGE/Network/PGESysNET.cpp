@@ -201,7 +201,7 @@ bool PGESysNET::PollIncomingMessages()
             PgePkt::PgePacket pkt;
             assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
             memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
-            pkt.connHandle = static_cast<uint32_t>(pIncomingMsg[i]->m_conn);
+            pkt.connHandle = static_cast<PgePkt::PgeNetworkConnectionHandle>(pIncomingMsg[i]->m_conn);
 
             // TODO: reintroduce blacklisting later!
             //if (m_blackListedMessages.end() != m_blackListedMessages.find(pkt.pktId))
@@ -534,7 +534,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 PgePkt::PgePacket pkt;
                 memset(&pkt, 0, sizeof(pkt));
                 pkt.pktId = PgePkt::PgeMsgUserDisconnected::id;
-                pkt.connHandle = static_cast<uint32_t>(pInfo->m_hConn);
+                pkt.connHandle = static_cast<PgePkt::PgeNetworkConnectionHandle>(pInfo->m_hConn);
 
                 m_mapClients.erase(itClient);  // dont try to send anything to the disconnected client :)
 
@@ -587,7 +587,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             PgePkt::PgePacket pkt;
             memset(&pkt, 0, sizeof(pkt));
             pkt.pktId = PgePkt::PgeMsgUserConnected::id;
-            pkt.connHandle = static_cast<uint32_t>(pInfo->m_hConn);
+            pkt.connHandle = static_cast<PgePkt::PgeNetworkConnectionHandle>(pInfo->m_hConn);
             pkt.msg.userConnected.bCurrentClient = false;
 
             // Add them to the client list, using std::map wacky syntax
