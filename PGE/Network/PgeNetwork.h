@@ -46,13 +46,13 @@ public:
     virtual void Update() = 0;
     virtual bool StartListening() = 0;
     virtual bool ConnectClient(const std::string& sServerAddress) = 0; /* temporal */
-    virtual void SendStringToClient(PgePkt::PgeNetworkConnectionHandle connHandle, const char* szStr) = 0;
-    virtual void SendPacketToClient(PgePkt::PgeNetworkConnectionHandle connHandle, const PgePkt::PgePacket& pkt) = 0;
-    virtual void SendStringToAllClients(const char* szStr, PgePkt::PgeNetworkConnectionHandle exceptConnHandle = 0) = 0;
-    virtual void SendPacketToAllClients(const PgePkt::PgePacket& pkt, PgePkt::PgeNetworkConnectionHandle exceptConnHandle = 0) = 0;
-    virtual void SendPacketToServer(const PgePkt::PgePacket& pkt) = 0;
-    virtual std::deque<PgePkt::PgePacket>& getPacketQueue() = 0;  // TODO: TEMPORAL: obviously we should not allow this kind of access
-    virtual std::set<PgePkt::TPgeMsgAppMsgId>& getBlackListedMessages() = 0;
+    virtual void SendStringToClient(pge_network::PgeNetworkConnectionHandle connHandle, const char* szStr) = 0;
+    virtual void SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) = 0;
+    virtual void SendStringToAllClients(const char* szStr, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) = 0;
+    virtual void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) = 0;
+    virtual void SendPacketToServer(const pge_network::PgePacket& pkt) = 0;
+    virtual std::deque<pge_network::PgePacket>& getPacketQueue() = 0;  // TODO: TEMPORAL: obviously we should not allow this kind of access
+    virtual std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedMessages() = 0;
 
     virtual int getPing(bool bForceUpdate) = 0;
     virtual float getQualityLocal(bool bForceUpdate) = 0;

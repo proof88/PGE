@@ -29,8 +29,8 @@
 
 const uint16 PGESysNET::DEFAULT_SERVER_PORT;
 
-const PgePkt::PgePktId PgePkt::PgeMsgUserConnected::id;
-const PgePkt::PgePktId PgePkt::PgeMsgUserDisconnected::id;
+const pge_network::PgePktId pge_network::PgeMsgUserConnected::id;
+const pge_network::PgePktId pge_network::PgeMsgUserDisconnected::id;
 
 bool PGESysNET::isServer()
 {
@@ -199,17 +199,17 @@ bool PGESysNET::PollIncomingMessages()
                 continue;
             }
 
-            PgePkt::PgePacket pkt;
+            pge_network::PgePacket pkt;
             assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
             memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
-            pkt.connHandle = static_cast<PgePkt::PgeNetworkConnectionHandle>(pIncomingMsg[i]->m_conn);
+            pkt.connHandle = static_cast<pge_network::PgeNetworkConnectionHandle>(pIncomingMsg[i]->m_conn);
 
             // We don't need this anymore.
             // Note that we could even push pIncomingMsg to a queue, and process it later, and
             // release it later, that could be a good speed optimization.
             (pIncomingMsg[i])->Release();
 
-            if (pkt.pktId == PgePkt::PgePktId::APP)
+            if (pkt.pktId == pge_network::PgePktId::APP)
             {
                 if (m_blackListedMessages.end() != m_blackListedMessages.find(pkt.msg.app.msgId))
                 {
@@ -257,7 +257,7 @@ bool PGESysNET::PollIncomingMessages()
 
         for (int i = 0; i < numMsgs; i++)
         {
-            PgePkt::PgePacket pkt;
+            pge_network::PgePacket pkt;
             assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
             memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
             // here we are client, we don't set pkt.connHandle because we expect it to be already properly filled in by sender (server)!
@@ -267,7 +267,7 @@ bool PGESysNET::PollIncomingMessages()
             // release it later, that could be a good speed optimization.
             (pIncomingMsg[i])->Release();
             
-            if (pkt.pktId == PgePkt::PgePktId::APP)
+            if (pkt.pktId == pge_network::PgePktId::APP)
             {
                 if (m_blackListedMessages.end() != m_blackListedMessages.find(pkt.msg.app.msgId))
                 {
@@ -303,7 +303,7 @@ void PGESysNET::SendStringToClient(HSteamNetConnection conn, const char* szStr)
     m_pInterface->SendMessageToConnection(conn, szStr, (uint32)strlen(szStr), k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
-void PGESysNET::SendPacketToClient(HSteamNetConnection conn, const PgePkt::PgePacket& pkt)
+void PGESysNET::SendPacketToClient(HSteamNetConnection conn, const pge_network::PgePacket& pkt)
 {
     if (conn == k_HSteamNetConnection_Invalid)
     {
@@ -331,7 +331,7 @@ void PGESysNET::SendStringToAllClients(const char* szStr, HSteamNetConnection ex
     }
 }
 
-void PGESysNET::SendPacketToAllClients(const PgePkt::PgePacket& pkt, HSteamNetConnection except)
+void PGESysNET::SendPacketToAllClients(const pge_network::PgePacket& pkt, HSteamNetConnection except)
 {
     for (auto& client : m_mapClients)
     {
@@ -351,7 +351,7 @@ void PGESysNET::SendPacketToAllClients(const PgePkt::PgePacket& pkt, HSteamNetCo
 
 
 // ### from here client only
-void PGESysNET::SendPacketToServer(const PgePkt::PgePacket& pkt)
+void PGESysNET::SendPacketToServer(const pge_network::PgePacket& pkt)
 {
     if (m_hConnection == k_HSteamNetConnection_Invalid)
     {
@@ -451,9 +451,9 @@ bool PGESysNET::StartListening()
 
     // here we create a client connect pkt that will inject to our queue so app level will process it and create
     // player object for the server itself, as it was a real client
-    PgePkt::PgePacket pkt;
+    pge_network::PgePacket pkt;
     memset(&pkt, 0, sizeof(pkt));
-    pkt.pktId = PgePkt::PgeMsgUserConnected::id;
+    pkt.pktId = pge_network::PgeMsgUserConnected::id;
     pkt.msg.userConnected.bCurrentClient = true;
 
     // Add ourselves to the client list, using std::map wacky syntax
@@ -539,10 +539,10 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                     pInfo->m_info.m_szEndDebug
                 );
 
-                PgePkt::PgePacket pkt;
+                pge_network::PgePacket pkt;
                 memset(&pkt, 0, sizeof(pkt));
-                pkt.pktId = PgePkt::PgeMsgUserDisconnected::id;
-                pkt.connHandle = static_cast<PgePkt::PgeNetworkConnectionHandle>(pInfo->m_hConn);
+                pkt.pktId = pge_network::PgeMsgUserDisconnected::id;
+                pkt.connHandle = static_cast<pge_network::PgeNetworkConnectionHandle>(pInfo->m_hConn);
 
                 m_mapClients.erase(itClient);  // dont try to send anything to the disconnected client :)
 
@@ -592,10 +592,10 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 break;
             }
 
-            PgePkt::PgePacket pkt;
+            pge_network::PgePacket pkt;
             memset(&pkt, 0, sizeof(pkt));
-            pkt.pktId = PgePkt::PgeMsgUserConnected::id;
-            pkt.connHandle = static_cast<PgePkt::PgeNetworkConnectionHandle>(pInfo->m_hConn);
+            pkt.pktId = pge_network::PgeMsgUserConnected::id;
+            pkt.connHandle = static_cast<pge_network::PgeNetworkConnectionHandle>(pInfo->m_hConn);
             pkt.msg.userConnected.bCurrentClient = false;
 
             // Add them to the client list, using std::map wacky syntax

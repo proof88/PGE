@@ -32,12 +32,12 @@ public:
     void Update() override;
     bool ConnectClient(const std::string& sServerAddress) override; /* temporal */
     bool StartListening();
-    void SendStringToClient(PgePkt::PgeNetworkConnectionHandle connHandle, const char* str) override;
-    void SendPacketToClient(PgePkt::PgeNetworkConnectionHandle connHandle, const PgePkt::PgePacket& pkt) override;
-    void SendStringToAllClients(const char* str, PgePkt::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
-    void SendPacketToAllClients(const PgePkt::PgePacket& pkt, PgePkt::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
-    void SendPacketToServer(const PgePkt::PgePacket& pkt) override;
-    std::deque<PgePkt::PgePacket>& getPacketQueue() override;  // TODO: TEMPORAL: obviously we should not allow this kind of access
+    void SendStringToClient(pge_network::PgeNetworkConnectionHandle connHandle, const char* str) override;
+    void SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) override;
+    void SendStringToAllClients(const char* str, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
+    void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
+    void SendPacketToServer(const pge_network::PgePacket& pkt) override;
+    std::deque<pge_network::PgePacket>& getPacketQueue() override;  // TODO: TEMPORAL: obviously we should not allow this kind of access
     std::set<uint32_t>& getBlackListedMessages() override;
 
     int getPing(bool bForceUpdate) override;
@@ -127,39 +127,39 @@ bool PgeNetworkImpl::StartListening()
     return m_PgeSysNET.StartListening();
 }
 
-void PgeNetworkImpl::SendStringToClient(PgePkt::PgeNetworkConnectionHandle connHandle, const char* str)
+void PgeNetworkImpl::SendStringToClient(pge_network::PgeNetworkConnectionHandle connHandle, const char* str)
 {
     // TODO add check: connHandle cannot be 0!
     m_PgeSysNET.SendStringToClient(static_cast<HSteamNetConnection>(connHandle), str);
 }
 
-void PgeNetworkImpl::SendPacketToClient(PgePkt::PgeNetworkConnectionHandle connHandle, const PgePkt::PgePacket& pkt)
+void PgeNetworkImpl::SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt)
 {
     // TODO add check: connHandle cannot be 0!
     m_PgeSysNET.SendPacketToClient(static_cast<HSteamNetConnection>(connHandle), pkt);
 }
 
-void PgeNetworkImpl::SendStringToAllClients(const char* str, PgePkt::PgeNetworkConnectionHandle exceptConnHandle)
+void PgeNetworkImpl::SendStringToAllClients(const char* str, pge_network::PgeNetworkConnectionHandle exceptConnHandle)
 {
     m_PgeSysNET.SendStringToAllClients(str, exceptConnHandle);
 }
 
-void PgeNetworkImpl::SendPacketToAllClients(const PgePkt::PgePacket& pkt, PgePkt::PgeNetworkConnectionHandle exceptConnHandle)
+void PgeNetworkImpl::SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle)
 {
     m_PgeSysNET.SendPacketToAllClients(pkt, exceptConnHandle);
 }
 
-void PgeNetworkImpl::SendPacketToServer(const PgePkt::PgePacket& pkt)
+void PgeNetworkImpl::SendPacketToServer(const pge_network::PgePacket& pkt)
 {
     m_PgeSysNET.SendPacketToServer(pkt);
 }
 
-std::deque<PgePkt::PgePacket>& PgeNetworkImpl::getPacketQueue()
+std::deque<pge_network::PgePacket>& PgeNetworkImpl::getPacketQueue()
 {
     return m_PgeSysNET.m_queuePackets;
 }
 
-std::set<PgePkt::TPgeMsgAppMsgId>& PgeNetworkImpl::getBlackListedMessages()
+std::set<pge_network::TPgeMsgAppMsgId>& PgeNetworkImpl::getBlackListedMessages()
 {
     return m_PgeSysNET.m_blackListedMessages;
 }

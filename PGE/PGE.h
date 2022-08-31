@@ -101,8 +101,8 @@ protected:
     virtual void onGameInitialized() {}   /**< Called after initializing the engine. */
     virtual void onGameRunning() {}       /**< Called while running the engine. */
     virtual void onPacketReceived(
-        PgePkt::PgeNetworkConnectionHandle,
-        const PgePkt::PgePacket&) {}      /**< Called when a new network packet is received. */
+        pge_network::PgeNetworkConnectionHandle,
+        const pge_network::PgePacket&) {}      /**< Called when a new network packet is received. */
     virtual void onGameDestroying() {}    /**< Called before stopping the engine. */
     virtual void onGameDestroyed() {}     /**< Called after stopping the engine. */
 

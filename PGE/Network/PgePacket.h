@@ -17,7 +17,7 @@
 // Different endianness is not considered as an issue because all machines expected to use this have same endianness for now.
 // In case this changes in the future, use a lib like cereal to easily solve endianness issue.
 
-namespace PgePkt
+namespace pge_network
 {
 
     typedef uint32_t PgeNetworkConnectionHandle;
@@ -70,4 +70,4 @@ namespace PgePkt
         } msg;
     };
 
-} // namespace PgePkt
+} // namespace pge_network
