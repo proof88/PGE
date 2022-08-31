@@ -582,6 +582,12 @@
     <ClInclude Include="Network\PgeNetwork.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
+    <ClInclude Include="Network\PgeServer.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\PgeClient.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -771,6 +777,12 @@
       <Filter>Source Files\Network</Filter>
     </ClCompile>
     <ClCompile Include="Network\PgeNetwork.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\PgeServer.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\PgeClient.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
   </ItemGroup>

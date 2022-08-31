@@ -32,21 +32,19 @@ const uint16 PGESysNET::DEFAULT_SERVER_PORT;
 const pge_network::PgePktId pge_network::PgeMsgUserConnected::id;
 const pge_network::PgePktId pge_network::PgeMsgUserDisconnected::id;
 
+/**
+    Creates and gets the singleton instance.
+*/
+PGESysNET& PGESysNET::createAndGet()
+{
+    static PGESysNET inst;
+    return inst;
+} // createAndGet()
+
 bool PGESysNET::isServer()
 {
     return s_bServer;
 }
-
-PGESysNET::PGESysNET() :
-    m_nPort(DEFAULT_SERVER_PORT),
-    m_pInterface(nullptr),
-    m_hListenSock(k_HSteamListenSocket_Invalid),
-    m_hPollGroup(k_HSteamNetPollGroup_Invalid),
-    m_hConnection(k_HSteamNetConnection_Invalid)
-{
-    m_addrServer.Clear();
-    memset(&m_connRtStatus, 0, sizeof(m_connRtStatus));
-} // PGESysNET()
 
 
 PGESysNET::~PGESysNET()
@@ -106,43 +104,11 @@ bool PGESysNET::destroySysNET(void)
 
     if (isServer())
     {
-        // Close all the connections
-        CConsole::getConsoleInstance("PGESysNET").OLn("Server closing connections...");
-        for (const auto& it : m_mapClients)
-        {
-            // Send them one more goodbye message.  Note that we also have the
-            // connection close reason as a place to send final data.  However,
-            // that's usually best left for more diagnostic/debug text not actual
-            // protocol strings.
-            //SendStringToClient(it.first, "Server is shutting down.  Goodbye.");
-
-            // Close the connection.  We use "linger mode" to ask SteamNetworkingSockets
-            // to flush this out and close gracefully.
-            m_pInterface->CloseConnection(it.first, k_ESteamNetConnectionEnd_App_Generic, "PGESysNET Server Graceful shutdown", true);
-        }
-        m_mapClients.clear();
-
-        if (m_hListenSock != k_HSteamListenSocket_Invalid)
-        {
-            m_pInterface->CloseListenSocket(m_hListenSock);
-            m_hListenSock = k_HSteamListenSocket_Invalid;
-        }
-
-        if (m_hPollGroup != k_HSteamNetPollGroup_Invalid)
-        {
-            m_pInterface->DestroyPollGroup(m_hPollGroup);
-            m_hPollGroup = k_HSteamNetPollGroup_Invalid;
-        }
+        StopListening();
     }
     else
     {
-        if (m_hConnection != k_HSteamNetConnection_Invalid)
-        {
-            m_pInterface->CloseConnection(m_hConnection, k_ESteamNetConnectionEnd_App_Generic, "PGESysNET Client Graceful shutdown", true);
-            m_hConnection = k_HSteamNetConnection_Invalid;
-        }
-        m_addrServer.Clear();
-        memset(&m_connRtStatus, 0, sizeof(m_connRtStatus));
+        DisconnectClient();
     }
     m_pInterface = nullptr;
     
@@ -351,7 +317,7 @@ void PGESysNET::SendPacketToAllClients(const pge_network::PgePacket& pkt, HSteam
 
 
 // ### from here client only
-void PGESysNET::SendPacketToServer(const pge_network::PgePacket& pkt)
+void PGESysNET::SendToServer(const pge_network::PgePacket& pkt)
 {
     if (m_hConnection == k_HSteamNetConnection_Invalid)
     {
@@ -385,7 +351,7 @@ const SteamNetConnectionRealTimeStatus_t& PGESysNET::getRealTimeStatus(bool bFor
     return m_connRtStatus;
 }
 
-bool PGESysNET::ConnectClient(const std::string& sServerAddress)
+bool PGESysNET::connectToServer(const std::string& sServerAddress)
 {
     m_addrServer.Clear();
     if (!m_addrServer.ParseString(sServerAddress.c_str()))
@@ -424,7 +390,24 @@ bool PGESysNET::ConnectClient(const std::string& sServerAddress)
 
     return true;
 }
-bool PGESysNET::StartListening()
+
+bool PGESysNET::DisconnectClient()
+{
+    if (m_hConnection != k_HSteamNetConnection_Invalid)
+    {
+        m_pInterface->CloseConnection(m_hConnection, k_ESteamNetConnectionEnd_App_Generic, "PGESysNET Client Graceful shutdown", true);
+        m_hConnection = k_HSteamNetConnection_Invalid;
+    }
+    m_addrServer.Clear();
+    memset(&m_connRtStatus, 0, sizeof(m_connRtStatus));
+
+    return true;
+}
+// ### client only until here
+
+
+// ### from here server only
+bool PGESysNET::startListening()
 {
     SteamNetworkingIPAddr serverLocalAddr;
     serverLocalAddr.Clear();
@@ -467,7 +450,40 @@ bool PGESysNET::StartListening()
 
     return true;
 }
-// ### client only until here
+
+bool PGESysNET::StopListening()
+{
+    // Close all the connections
+    CConsole::getConsoleInstance("PGESysNET").OLn("Server closing connections...");
+    for (const auto& it : m_mapClients)
+    {
+        // Send them one more goodbye message.  Note that we also have the
+        // connection close reason as a place to send final data.  However,
+        // that's usually best left for more diagnostic/debug text not actual
+        // protocol strings.
+        //SendStringToClient(it.first, "Server is shutting down.  Goodbye.");
+
+        // Close the connection.  We use "linger mode" to ask SteamNetworkingSockets
+        // to flush this out and close gracefully.
+        m_pInterface->CloseConnection(it.first, k_ESteamNetConnectionEnd_App_Generic, "PGESysNET Server Graceful shutdown", true);
+    }
+    m_mapClients.clear();
+
+    if (m_hListenSock != k_HSteamListenSocket_Invalid)
+    {
+        m_pInterface->CloseListenSocket(m_hListenSock);
+        m_hListenSock = k_HSteamListenSocket_Invalid;
+    }
+
+    if (m_hPollGroup != k_HSteamNetPollGroup_Invalid)
+    {
+        m_pInterface->DestroyPollGroup(m_hPollGroup);
+        m_hPollGroup = k_HSteamNetPollGroup_Invalid;
+    }
+
+    return true;
+}
+// ### server only until here
 
 
 // ############################## PROTECTED ##############################
@@ -478,6 +494,27 @@ bool PGESysNET::StartListening()
 
 PGESysNET* PGESysNET::s_pCallbackInstance = nullptr;
 bool PGESysNET::s_bServer = false;
+
+PGESysNET::PGESysNET() :
+    m_nPort(DEFAULT_SERVER_PORT),
+    m_pInterface(nullptr),
+    m_hListenSock(k_HSteamListenSocket_Invalid),
+    m_hPollGroup(k_HSteamNetPollGroup_Invalid),
+    m_hConnection(k_HSteamNetConnection_Invalid)
+{
+    m_addrServer.Clear();
+    memset(&m_connRtStatus, 0, sizeof(m_connRtStatus));
+} // PGESysNET()
+
+PGESysNET::PGESysNET(const PGESysNET&)
+{
+
+}
+
+PGESysNET& PGESysNET::operator=(const PGESysNET&)
+{
+    return *this;
+}
 
 void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
 {
@@ -702,16 +739,6 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
 void PGESysNET::SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo)
 {
     s_pCallbackInstance->OnSteamNetConnectionStatusChanged(pInfo);
-}
-
-PGESysNET::PGESysNET(const PGESysNET&)
-{
-
-}
-
-PGESysNET& PGESysNET::operator=(const PGESysNET&)
-{
-    return *this;
 }
 
 void PGESysNET::SetClientNick(HSteamNetConnection hConn, const char* nick)

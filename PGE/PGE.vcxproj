@@ -396,8 +396,10 @@
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamtypes.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamuniverse.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steam_api_common.h" />
+    <ClInclude Include="Network\PgeClient.h" />
     <ClInclude Include="Network\PgeNetwork.h" />
     <ClInclude Include="Network\PgePacket.h" />
+    <ClInclude Include="Network\PgeServer.h" />
     <ClInclude Include="Network\PGESysNET.h" />
     <ClInclude Include="PGE.h" />
     <ClInclude Include="PGEallHeaders.h" />
@@ -499,7 +501,9 @@
     <ClInclude Include="Weapons\WeaponManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Network\PgeClient.cpp" />
     <ClCompile Include="Network\PgeNetwork.cpp" />
+    <ClCompile Include="Network\PgeServer.cpp" />
     <ClCompile Include="Network\PGESysNET.cpp" />
     <ClCompile Include="PGE.cpp" />
     <ClCompile Include="PGEcfgFile.cpp" />

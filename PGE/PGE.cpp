@@ -718,10 +718,14 @@ int PGE::runGame()
 
         // TODO: do not invoke network functionality if it is not yet initialized by CustomPGE!!!
         getNetwork().Update();  // this may also add packet(s) to SysNET.queuePackets
-        while (getNetwork().getPacketQueue().size() > 0)
+        std::deque<pge_network::PgePacket>& pktQueue =
+            getNetwork().isServer() ?
+            getNetwork().getServer().getPacketQueue() :
+            getNetwork().getClient().getPacketQueue();
+        while (pktQueue.size() > 0)
         {
-            pge_network::PgePacket pkt = getNetwork().getPacketQueue().front();
-            getNetwork().getPacketQueue().pop_front();
+            pge_network::PgePacket pkt = pktQueue.front();
+            pktQueue.pop_front();
             onPacketReceived(pkt.connHandle, pkt);
         }
         

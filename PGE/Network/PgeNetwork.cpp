@@ -30,22 +30,9 @@ public:
 
     bool isServer() const override;
     void Update() override;
-    bool ConnectClient(const std::string& sServerAddress) override; /* temporal */
-    bool StartListening();
-    void SendStringToClient(pge_network::PgeNetworkConnectionHandle connHandle, const char* str) override;
-    void SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) override;
-    void SendStringToAllClients(const char* str, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
-    void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
-    void SendPacketToServer(const pge_network::PgePacket& pkt) override;
-    std::deque<pge_network::PgePacket>& getPacketQueue() override;  // TODO: TEMPORAL: obviously we should not allow this kind of access
-    std::set<uint32_t>& getBlackListedMessages() override;
 
-    int getPing(bool bForceUpdate) override;
-    float getQualityLocal(bool bForceUpdate) override;
-    float getQualityRemote(bool bForceUpdate) override;
-    float getRxByteRate(bool bForceUpdate) override;
-    float getTxByteRate(bool bForceUpdate) override;
-    int64_t getInternalQueueTimeUSecs(bool bForceUpdate) override;
+    pge_network::PgeClient& getClient() override;
+    pge_network::PgeServer& getServer() override;
 
     void WriteList() const override;
 
@@ -53,7 +40,9 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PGESysNET m_PgeSysNET;
+    PGESysNET& m_PgeSysNET;
+    pge_network::PgeClient& m_client;
+    pge_network::PgeServer& m_server;
 
     PgeNetworkImpl();                /**< NULLs members only. */
     PgeNetworkImpl(const PgeNetworkImpl&);
@@ -81,7 +70,31 @@ PgeNetworkImpl::~PgeNetworkImpl()
 */
 bool PgeNetworkImpl::initialize()
 {
-    return m_PgeSysNET.initSysNET();
+    bool b = m_PgeSysNET.initSysNET();
+    if (!b)
+    {
+        getConsole().EOLn("PgeSysNET has FAILED to initialize!");
+        return false;
+    }
+
+    if (m_PgeSysNET.isServer())
+    {
+        b = m_server.initialize();
+        if (!b)
+        {
+            getConsole().EOLn("PgeServer has FAILED to initialize!");
+        }
+    }
+    else
+    {
+        b = m_client.initialize();
+        if (!b)
+        {
+            getConsole().EOLn("PgeClient has FAILED to initialize!");
+        }
+    }
+
+    return b;
 } // initialize()
 
 
@@ -117,83 +130,15 @@ void PgeNetworkImpl::Update()
     m_PgeSysNET.PollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
 }
 
-bool PgeNetworkImpl::ConnectClient(const std::string& sServerAddress)
+pge_network::PgeClient& PgeNetworkImpl::getClient()
 {
-    return m_PgeSysNET.ConnectClient(sServerAddress);
+    return m_client;
 }
 
-bool PgeNetworkImpl::StartListening()
+pge_network::PgeServer& PgeNetworkImpl::getServer()
 {
-    return m_PgeSysNET.StartListening();
+    return m_server;
 }
-
-void PgeNetworkImpl::SendStringToClient(pge_network::PgeNetworkConnectionHandle connHandle, const char* str)
-{
-    // TODO add check: connHandle cannot be 0!
-    m_PgeSysNET.SendStringToClient(static_cast<HSteamNetConnection>(connHandle), str);
-}
-
-void PgeNetworkImpl::SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt)
-{
-    // TODO add check: connHandle cannot be 0!
-    m_PgeSysNET.SendPacketToClient(static_cast<HSteamNetConnection>(connHandle), pkt);
-}
-
-void PgeNetworkImpl::SendStringToAllClients(const char* str, pge_network::PgeNetworkConnectionHandle exceptConnHandle)
-{
-    m_PgeSysNET.SendStringToAllClients(str, exceptConnHandle);
-}
-
-void PgeNetworkImpl::SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle)
-{
-    m_PgeSysNET.SendPacketToAllClients(pkt, exceptConnHandle);
-}
-
-void PgeNetworkImpl::SendPacketToServer(const pge_network::PgePacket& pkt)
-{
-    m_PgeSysNET.SendPacketToServer(pkt);
-}
-
-std::deque<pge_network::PgePacket>& PgeNetworkImpl::getPacketQueue()
-{
-    return m_PgeSysNET.m_queuePackets;
-}
-
-std::set<pge_network::TPgeMsgAppMsgId>& PgeNetworkImpl::getBlackListedMessages()
-{
-    return m_PgeSysNET.m_blackListedMessages;
-}
-
-int PgeNetworkImpl::getPing(bool bForceUpdate)
-{
-    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_nPing;
-}
-
-float PgeNetworkImpl::getQualityLocal(bool bForceUpdate)
-{
-    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_flConnectionQualityLocal;
-}
-
-float PgeNetworkImpl::getQualityRemote(bool bForceUpdate)
-{
-    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_flConnectionQualityRemote;
-}
-
-float PgeNetworkImpl::getRxByteRate(bool bForceUpdate)
-{
-    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_flInBytesPerSec;
-}
-
-float PgeNetworkImpl::getTxByteRate(bool bForceUpdate)
-{
-    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_flOutBytesPerSec;
-}
-
-int64_t PgeNetworkImpl::getInternalQueueTimeUSecs(bool bForceUpdate)
-{
-    return static_cast<int64_t>(m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_usecQueueTime);
-}
-
 
 /**
     Writes statistics to console.
@@ -225,15 +170,19 @@ void PgeNetworkImpl::WriteList() const
 /**
     NULLs members only.
 */
-PgeNetworkImpl::PgeNetworkImpl() //:
-    //  ssets(PRRESharedSettings::createAndGet()),
+PgeNetworkImpl::PgeNetworkImpl() :
+    m_PgeSysNET(PGESysNET::createAndGet()),
+    m_client(pge_network::PgeClient::createAndGet()),
+    m_server(pge_network::PgeServer::createAndGet())
 {
 
 } // PgeNetworkImpl(...)
 
 
-PgeNetworkImpl::PgeNetworkImpl(const PgeNetworkImpl&) //:
-    //  ssets(PRRESharedSettings::createAndGet()),
+PgeNetworkImpl::PgeNetworkImpl(const PgeNetworkImpl&) :
+    m_PgeSysNET(PGESysNET::createAndGet()),
+    m_client(pge_network::PgeClient::createAndGet()),
+    m_server(pge_network::PgeServer::createAndGet())
 {
 }
 
@@ -258,8 +207,8 @@ PgeNetworkImpl& PgeNetworkImpl::operator=(const PgeNetworkImpl&)
 */
 pge_network::PgeNetwork& pge_network::PgeNetwork::createAndGet()
 {
-    static PgeNetworkImpl PRREinstance;
-    return PRREinstance;
+    static PgeNetworkImpl inst;
+    return inst;
 } // createAndGet()
 
 

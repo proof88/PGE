@@ -36,6 +36,9 @@
 #include PATH3(GameNetworkingSockets-,GAMENETWORKINGSOCKETS_VER,/include/steam/steamnetworkingsockets.h)
 #include PATH3(GameNetworkingSockets-,GAMENETWORKINGSOCKETS_VER,/include/steam/isteamnetworkingutils.h)
 
+// TODO: this whole PGESysNET should be also separated into client and server code, similar to how PgeNetwork separates
+// it into PgeClient and PgeServer, but currently no time for this ...
+
 /**
     PR00F's Game Engine networking subsystem.
 */
@@ -48,17 +51,18 @@ class PGESysNET
 public:
     static const uint16 DEFAULT_SERVER_PORT = 27020;
 
+    static PGESysNET& createAndGet();           /**< Creates and gets the singleton implementation instance. */
+
     static bool isServer();
 
     // ---------------------------------------------------------------------------
+
+    virtual ~PGESysNET();
 
     // TODO: these needs to be private, temporarily here!
     HSteamNetConnection m_hConnection; // used by client only
     std::deque<pge_network::PgePacket> m_queuePackets;  // used by both client and server
     std::set<pge_network::TPgeMsgAppMsgId> m_blackListedMessages;  // used by both client and server
-
-    PGESysNET();
-    virtual ~PGESysNET();
 
     bool initSysNET(void);
     bool destroySysNET(void);
@@ -71,11 +75,13 @@ public:
     void SendPacketToClient(HSteamNetConnection conn, const pge_network::PgePacket& pkt);
     void SendStringToAllClients(const char* szStr, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
     void SendPacketToAllClients(const pge_network::PgePacket& pkt, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
-    void SendPacketToServer(const pge_network::PgePacket& pkt);
+    void SendToServer(const pge_network::PgePacket& pkt);
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
 
-    bool ConnectClient(const std::string& sServerAddress); /* temporal, now I dont have better idea in this time */
-    bool StartListening();
+    bool connectToServer(const std::string& sServerAddress); /* temporal, now I dont have better idea in this time */
+    bool DisconnectClient();
+    bool startListening();
+    bool StopListening();
 
 private:
 
@@ -97,6 +103,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
+    PGESysNET();
     PGESysNET(const PGESysNET&); 
     PGESysNET& operator=(const PGESysNET&);
 
