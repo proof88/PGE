@@ -52,7 +52,7 @@ public:
     virtual void SendPacketToAllClients(const PgePkt::PgePacket& pkt, PgePkt::PgeNetworkConnectionHandle exceptConnHandle = 0) = 0;
     virtual void SendPacketToServer(const PgePkt::PgePacket& pkt) = 0;
     virtual std::deque<PgePkt::PgePacket>& getPacketQueue() = 0;  // TODO: TEMPORAL: obviously we should not allow this kind of access
-    virtual std::set<uint32_t>& getBlackListedMessages() = 0;
+    virtual std::set<PgePkt::TPgeMsgAppMsgId>& getBlackListedMessages() = 0;
 
     virtual int getPing(bool bForceUpdate) = 0;
     virtual float getQualityLocal(bool bForceUpdate) = 0;

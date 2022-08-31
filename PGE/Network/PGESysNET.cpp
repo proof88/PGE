@@ -194,7 +194,8 @@ bool PGESysNET::PollIncomingMessages()
             auto itClient = m_mapClients.find(pIncomingMsg[i]->m_conn);
             if (itClient == m_mapClients.end())
             {
-                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER failed to find connection in m_mapClients!", __func__);
+                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER failed to find connection %u in m_mapClients!",
+                    __func__, pIncomingMsg[i]->m_conn);
                 continue;
             }
 
@@ -203,19 +204,23 @@ bool PGESysNET::PollIncomingMessages()
             memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
             pkt.connHandle = static_cast<PgePkt::PgeNetworkConnectionHandle>(pIncomingMsg[i]->m_conn);
 
-            // TODO: reintroduce blacklisting later!
-            //if (m_blackListedMessages.end() != m_blackListedMessages.find(pkt.pktId))
-            //{
-            //    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER blacklisted messages received: %u from connection %u!", __func__, pkt.pktId, pkt.connHandle);
-            //    assert(false);
-            //}
-
-            m_queuePackets.push_back(pkt);
-
             // We don't need this anymore.
             // Note that we could even push pIncomingMsg to a queue, and process it later, and
             // release it later, that could be a good speed optimization.
             (pIncomingMsg[i])->Release();
+
+            if (pkt.pktId == PgePkt::PgePktId::APP)
+            {
+                if (m_blackListedMessages.end() != m_blackListedMessages.find(pkt.msg.app.msgId))
+                {
+                    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER blacklisted message received: %u from connection %u!",
+                        __func__, pkt.msg.app.msgId, pkt.connHandle);
+                    assert(false);
+                    continue;
+                }
+            }
+
+            m_queuePackets.push_back(pkt);
         }
 
         return true;
@@ -256,21 +261,24 @@ bool PGESysNET::PollIncomingMessages()
             assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
             memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
             // here we are client, we don't set pkt.connHandle because we expect it to be already properly filled in by sender (server)!
-            
-            // TODO: reintroduce blacklisting later!
-            //if (m_blackListedMessages.end() != m_blackListedMessages.find(pkt.pktId))
-            //{
-            //    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT blacklisted messages received: %u from server, connHandle: %u!",
-            //        __func__, pkt.pktId, pkt.connHandle);
-            //    assert(false);
-            //}
-
-            m_queuePackets.push_back(pkt);
 
             // We don't need this anymore.
             // Note that we could even push pIncomingMsg to a queue, and process it later, and
             // release it later, that could be a good speed optimization.
             (pIncomingMsg[i])->Release();
+            
+            if (pkt.pktId == PgePkt::PgePktId::APP)
+            {
+                if (m_blackListedMessages.end() != m_blackListedMessages.find(pkt.msg.app.msgId))
+                {
+                    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT blacklisted message received from server: %u from connection %u!",
+                        __func__, pkt.msg.app.msgId, pkt.connHandle);
+                    assert(false);
+                    continue;
+                }
+            }
+
+            m_queuePackets.push_back(pkt);
         }
 
         return true;

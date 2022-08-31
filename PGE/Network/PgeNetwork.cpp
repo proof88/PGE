@@ -159,7 +159,7 @@ std::deque<PgePkt::PgePacket>& PgeNetworkImpl::getPacketQueue()
     return m_PgeSysNET.m_queuePackets;
 }
 
-std::set<uint32_t>& PgeNetworkImpl::getBlackListedMessages()
+std::set<PgePkt::TPgeMsgAppMsgId>& PgeNetworkImpl::getBlackListedMessages()
 {
     return m_PgeSysNET.m_blackListedMessages;
 }
