@@ -19,7 +19,7 @@
 */
 
 class PgeNetworkImpl :
-    public PgeNetwork
+    public pge_network::PgeNetwork
 {
 public:
     virtual ~PgeNetworkImpl();       /**< Calls shutdown(). */
@@ -59,7 +59,7 @@ private:
     PgeNetworkImpl(const PgeNetworkImpl&);
     PgeNetworkImpl& operator=(const PgeNetworkImpl&);
 
-    friend class PgeNetwork;
+    friend class pge_network::PgeNetwork;
 };
 
 
@@ -256,7 +256,7 @@ PgeNetworkImpl& PgeNetworkImpl::operator=(const PgeNetworkImpl&)
 /**
     Creates and gets the singleton instance.
 */
-PgeNetwork& PgeNetwork::createAndGet()
+pge_network::PgeNetwork& pge_network::PgeNetwork::createAndGet()
 {
     static PgeNetworkImpl PRREinstance;
     return PRREinstance;
@@ -270,7 +270,7 @@ PgeNetwork& PgeNetwork::createAndGet()
 
     @return The logger module name of this class.
 */
-const char* PgeNetwork::getLoggerModuleName()
+const char* pge_network::PgeNetwork::getLoggerModuleName()
 {
     return "PgeNetwork";
 } // getLoggerModuleName()
@@ -282,7 +282,7 @@ const char* PgeNetwork::getLoggerModuleName()
 
     @return Console instance used by this class.
 */
-CConsole& PgeNetwork::getConsole() const
+CConsole& pge_network::PgeNetwork::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
 } // getConsole()

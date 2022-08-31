@@ -53,7 +53,7 @@ public:
     PGEInputHandler& getInput() const;       
     PGEWorld& getWorld() const;             
     PR00FsReducedRenderingEngine& getPRRE() const;
-    PgeNetwork& getNetwork() const;
+    pge_network::PgeNetwork& getNetwork() const;
     WeaponManager& getWeaponManager();
                     
     bool isGameRunning() const;               
@@ -80,7 +80,7 @@ private:
 
     PGESysCFG  SysCFG;
     PGESysGFX  SysGFX;
-    PgeNetwork& m_PgeNetwork;
+    pge_network::PgeNetwork& m_PgeNetwork;
     PGESysSFX  SysSFX;
     
     PR00FsReducedRenderingEngine& GFX; 
@@ -188,7 +188,7 @@ PR00FsReducedRenderingEngine& PGE::PGEimpl::getPRRE() const
     return GFX;
 }
 
-PgeNetwork& PGE::PGEimpl::getNetwork() const
+pge_network::PgeNetwork& PGE::PGEimpl::getNetwork() const
 {
     return m_PgeNetwork;
 }
@@ -276,7 +276,7 @@ PGE::PGEimpl::PGEimpl() :
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
-    m_PgeNetwork(PgeNetwork::createAndGet()),
+    m_PgeNetwork(pge_network::PgeNetwork::createAndGet()),
     SysCFG("") ,
     wpnMgr(GFX)
 {
@@ -288,7 +288,7 @@ PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
-    m_PgeNetwork( PgeNetwork::createAndGet() ),
+    m_PgeNetwork(pge_network::PgeNetwork::createAndGet() ),
     SysCFG(""),
     wpnMgr(GFX)
 {
@@ -310,7 +310,7 @@ PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
-    m_PgeNetwork(PgeNetwork::createAndGet()),
+    m_PgeNetwork(pge_network::PgeNetwork::createAndGet()),
     SysCFG(gameTitle),
     wpnMgr(GFX)
 {
@@ -546,7 +546,7 @@ PR00FsReducedRenderingEngine& PGE::getPRRE() const
 
     @return The network functionality interface.
 */
-PgeNetwork& PGE::getNetwork() const
+pge_network::PgeNetwork& PGE::getNetwork() const
 {
     return p->getNetwork();
 }

@@ -75,7 +75,7 @@ public:
     PGEInputHandler& getInput() const;         /**< Returns the input handler object. */
     PGEWorld& getWorld() const;                /**< Returns the world object. */
     PR00FsReducedRenderingEngine& getPRRE() const;   /**< Returns the graphics engine. */
-    PgeNetwork& getNetwork() const;            /**< Returns the network functionality interface. */
+    pge_network::PgeNetwork& getNetwork() const;     /**< Returns the network functionality interface. */
     
     WeaponManager& getWeaponManager();         /**< Returns the weapon manager object. */
 
