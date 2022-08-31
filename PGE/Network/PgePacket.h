@@ -13,42 +13,59 @@
 
 #include "../PGEallHeaders.h"
 
-// These packet structs are sent between server and clients.
+// These packet and message structs are sent between server and clients.
 // Different endianness is not considered as an issue because all machines expected to use this have same endianness for now.
 // In case this changes in the future, use a lib like cereal to easily solve endianness issue.
 
-// server -> clients and to self
-struct PgePktUserConnected
+namespace PgePkt
 {
-    static const uint32_t id = 0;
 
-    bool bCurrentClient;
-    char szUserName[64];
-    char szTrollfaceTex[64];
-};
-
-// server -> clients and to self
-struct PgePktUserDisconnected
-{
-    static const uint32_t id = 1;
-    char szUserName[64];
-};
-
-// application-specific packet
-struct PgePktUserCustom
-{
-    static const uint32_t id = 2;
-    char cData[256];
-};
-
-struct PgePacket
-{
-    uint32_t pktId;
-    uint32_t connHandle;
-    union
+    enum class PgePktId : uint32_t
     {
-        PgePktUserConnected userConnected;
-        PgePktUserDisconnected userDisconnected;
-        PgePktUserCustom userCustom;
-    } msg;
-};
+        USER_CONNECTED = 0,
+        USER_DISCONNECTED,
+        APP
+    };
+
+    // server -> clients and to self
+    struct PgeMsgUserConnected
+    {
+        static const PgePktId id = PgePktId::USER_CONNECTED;
+
+        bool bCurrentClient;
+        char szUserName[64];      // TODO: move to app
+        char szTrollfaceTex[64];  // TODO: move to app
+    };
+
+    // server -> clients and to self
+    struct PgeMsgUserDisconnected
+    {
+        static const PgePktId id = PgePktId::USER_DISCONNECTED;
+
+        char szUserName[64]; // TODO: move to app
+    };
+
+    typedef uint32_t TPgeMsgAppMsgId;
+
+    // application-specific message
+    struct PgeMsgApp
+    {
+        static const PgePktId id = PgePktId::APP;
+
+        TPgeMsgAppMsgId msgId;
+        char cData[256];
+    };
+
+    struct PgePacket
+    {
+        PgePktId pktId;
+        uint32_t connHandle;
+        union
+        {
+            PgeMsgUserConnected userConnected;
+            PgeMsgUserDisconnected userDisconnected;
+            PgeMsgApp app; // application should load/store its custom messages here
+        } msg;
+    };
+
+} // namespace PgePkt

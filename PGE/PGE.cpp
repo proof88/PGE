@@ -720,7 +720,7 @@ int PGE::runGame()
         getNetwork().Update();  // this may also add packet(s) to SysNET.queuePackets
         while (getNetwork().getPacketQueue().size() > 0)
         {
-            PgePacket pkt = getNetwork().getPacketQueue().front();
+            PgePkt::PgePacket pkt = getNetwork().getPacketQueue().front();
             getNetwork().getPacketQueue().pop_front();
             onPacketReceived(pkt.connHandle, pkt);
         }

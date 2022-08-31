@@ -54,7 +54,7 @@ public:
 
     // TODO: these needs to be private, temporarily here!
     HSteamNetConnection m_hConnection; // used by client only
-    std::deque<PgePacket> m_queuePackets;  // used by both client and server
+    std::deque<PgePkt::PgePacket> m_queuePackets;  // used by both client and server
     std::set< uint32_t > m_blackListedMessages;  // used by both client and server
 
     PGESysNET();
@@ -68,10 +68,10 @@ public:
     void PollConnectionStateChanges();
 
     void SendStringToClient(HSteamNetConnection conn, const char* szStr);
-    void SendPacketToClient(HSteamNetConnection conn, const PgePacket& pkt);
+    void SendPacketToClient(HSteamNetConnection conn, const PgePkt::PgePacket& pkt);
     void SendStringToAllClients(const char* szStr, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
-    void SendPacketToAllClients(const PgePacket& pkt, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
-    void SendPacketToServer(const PgePacket& pkt);
+    void SendPacketToAllClients(const PgePkt::PgePacket& pkt, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
+    void SendPacketToServer(const PgePkt::PgePacket& pkt);
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
 
     bool ConnectClient(const std::string& sServerAddress); /* temporal, now I dont have better idea in this time */
