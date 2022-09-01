@@ -104,7 +104,7 @@ bool PGESysNET::destroySysNET(void)
 
     if (isServer())
     {
-        StopListening();
+        stopListening();
     }
     else
     {
@@ -300,6 +300,16 @@ void PGESysNET::SendToServer(const pge_network::PgePacket& pkt)
     m_pInterface->SendMessageToConnection(m_hConnection, &pkt, (uint32)sizeof(pkt), k_nSteamNetworkingSend_Reliable, nullptr);
 }
 
+std::deque<pge_network::PgePacket>& PGESysNET::getPacketQueue()
+{
+    return m_queuePackets;
+}
+
+std::set<pge_network::TPgeMsgAppMsgId>& PGESysNET::getBlackListedMessages()
+{
+    return m_blackListedMessages;
+}
+
 const SteamNetConnectionRealTimeStatus_t& PGESysNET::getRealTimeStatus(bool bForceUpdate)
 {
     if (isServer())
@@ -423,7 +433,7 @@ bool PGESysNET::startListening()
     return true;
 }
 
-bool PGESysNET::StopListening()
+bool PGESysNET::stopListening()
 {
     // Close all the connections
     CConsole::getConsoleInstance("PGESysNET").OLn("Server closing connections...");

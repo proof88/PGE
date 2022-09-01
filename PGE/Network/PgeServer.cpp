@@ -82,7 +82,7 @@ bool PgeServerImpl::initialize()
 */
 bool PgeServerImpl::shutdown()
 {
-    return m_PgeSysNET.StopListening();
+    return m_PgeSysNET.stopListening();
 } // shutdown()
 
 /**
@@ -118,12 +118,12 @@ void PgeServerImpl::SendPacketToAllClients(const pge_network::PgePacket& pkt, pg
 
 std::deque<pge_network::PgePacket>& PgeServerImpl::getPacketQueue()
 {
-    return m_PgeSysNET.m_queuePackets;
+    return m_PgeSysNET.getPacketQueue();
 }
 
 std::set<pge_network::TPgeMsgAppMsgId>& PgeServerImpl::getBlackListedMessages()
 {
-    return m_PgeSysNET.m_blackListedMessages;
+    return m_PgeSysNET.getBlackListedMessages();
 }
 
 /**

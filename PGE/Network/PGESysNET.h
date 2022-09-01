@@ -59,11 +59,6 @@ public:
 
     virtual ~PGESysNET();
 
-    // TODO: these needs to be private, temporarily here!
-    HSteamNetConnection m_hConnection; // used by client only
-    std::deque<pge_network::PgePacket> m_queuePackets;  // used by both client and server
-    std::set<pge_network::TPgeMsgAppMsgId> m_blackListedMessages;  // used by both client and server
-
     bool initSysNET(void);
     bool destroySysNET(void);
     bool isInitialized() const;
@@ -74,12 +69,16 @@ public:
     void SendPacketToClient(HSteamNetConnection conn, const pge_network::PgePacket& pkt);
     void SendPacketToAllClients(const pge_network::PgePacket& pkt, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
     void SendToServer(const pge_network::PgePacket& pkt);
+
+    std::deque<pge_network::PgePacket>& getPacketQueue();  // TODO: TEMPORAL: obviously we should not allow this kind of access
+    std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedMessages();
+
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
 
     bool connectToServer(const std::string& sServerAddress); /* temporal, now I dont have better idea in this time */
     bool DisconnectClient();
     bool startListening();
-    bool StopListening();
+    bool stopListening();
 
 private:
 
@@ -88,6 +87,7 @@ private:
 
     uint16 m_nPort;
     SteamNetworkingIPAddr m_addrServer;  // used by client only
+    HSteamNetConnection m_hConnection; // used by client only
     ISteamNetworkingSockets* m_pInterface;
     HSteamListenSocket m_hListenSock;  // used by server only
     HSteamNetPollGroup m_hPollGroup;   // used by server only
@@ -96,6 +96,9 @@ private:
     std::map< HSteamNetConnection, std::string > m_mapClients;  // used by server only
     // note that the first connection is this map is an invalid connection (k_HSteamNetConnection_Invalid), which
     // is the server itself, this is how this layer stores nickname for the server (self)
+
+    std::deque<pge_network::PgePacket> m_queuePackets;  // used by both client and server
+    std::set<pge_network::TPgeMsgAppMsgId> m_blackListedMessages;  // used by both client and server
 
     static void SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
 

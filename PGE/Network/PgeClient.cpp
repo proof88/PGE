@@ -118,12 +118,12 @@ void PgeClientImpl::SendToServer(const pge_network::PgePacket& pkt)
 
 std::deque<pge_network::PgePacket>& PgeClientImpl::getPacketQueue()
 {
-    return m_PgeSysNET.m_queuePackets;
+    return m_PgeSysNET.getPacketQueue();
 }
 
 std::set<pge_network::TPgeMsgAppMsgId>& PgeClientImpl::getBlackListedMessages()
 {
-    return m_PgeSysNET.m_blackListedMessages;
+    return m_PgeSysNET.getBlackListedMessages();
 }
 
 int PgeClientImpl::getPing(bool bForceUpdate)
