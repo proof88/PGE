@@ -29,22 +29,19 @@ namespace pge_network
         APP
     };
 
-    // server -> clients and to self
+    // server -> self
+    // server app can process this in arbitrary way and might send custom message to all clients about new user
     struct PgeMsgUserConnected
     {
         static const PgePktId id = PgePktId::USER_CONNECTED;
 
         bool bCurrentClient;
-        char szUserName[64];      // TODO: move to app
-        char szTrollfaceTex[64];  // TODO: move to app
     };
 
     // server -> clients and to self
     struct PgeMsgUserDisconnected
     {
         static const PgePktId id = PgePktId::USER_DISCONNECTED;
-
-        char szUserName[64]; // TODO: move to app
     };
 
     typedef uint32_t TPgeMsgAppMsgId;
