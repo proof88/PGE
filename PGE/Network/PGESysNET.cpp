@@ -258,17 +258,6 @@ void PGESysNET::PollConnectionStateChanges()
 }
 
 // ### from here server only
-void PGESysNET::SendStringToClient(HSteamNetConnection conn, const char* szStr)
-{
-    if (conn == k_HSteamNetConnection_Invalid)
-    {
-        // silent ignore, in the future maybe we will simply inject a message to ourselves' message queue
-        // that is how server can handle itself as a client similar to any other client
-        return;
-    }
-    m_pInterface->SendMessageToConnection(conn, szStr, (uint32)strlen(szStr), k_nSteamNetworkingSend_Reliable, nullptr);
-}
-
 void PGESysNET::SendPacketToClient(HSteamNetConnection conn, const pge_network::PgePacket& pkt)
 {
     if (conn == k_HSteamNetConnection_Invalid)
@@ -278,23 +267,6 @@ void PGESysNET::SendPacketToClient(HSteamNetConnection conn, const pge_network::
         return;
     }
     m_pInterface->SendMessageToConnection(conn, &pkt, (uint32)sizeof(pkt), k_nSteamNetworkingSend_Reliable, nullptr);
-}
-
-void PGESysNET::SendStringToAllClients(const char* szStr, HSteamNetConnection except)
-{
-    for (auto& client : m_mapClients)
-    {
-        if (client.first == k_HSteamNetConnection_Invalid)
-        {
-            // silent ignore, in the future maybe we will simply inject a message to ourselves' message queue
-            // that is how server can handle itself as a client similar to any other client
-            continue;
-        }
-        if (client.first != except)
-        {
-            SendStringToClient(client.first, szStr);
-        }
-    }
 }
 
 void PGESysNET::SendPacketToAllClients(const pge_network::PgePacket& pkt, HSteamNetConnection except)

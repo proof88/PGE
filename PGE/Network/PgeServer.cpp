@@ -30,9 +30,7 @@ public:
 
     void Update() override;
     bool startListening();
-    void SendStringToClient(pge_network::PgeNetworkConnectionHandle connHandle, const char* str) override;
     void SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) override;
-    void SendStringToAllClients(const char* str, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
     void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
     std::deque<pge_network::PgePacket>& getPacketQueue() override;  // TODO: TEMPORAL: obviously we should not allow this kind of access
     std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedMessages() override;
@@ -107,21 +105,10 @@ bool PgeServerImpl::startListening()
     return m_PgeSysNET.startListening();
 }
 
-void PgeServerImpl::SendStringToClient(pge_network::PgeNetworkConnectionHandle connHandle, const char* str)
-{
-    // TODO add check: connHandle cannot be 0!
-    m_PgeSysNET.SendStringToClient(static_cast<HSteamNetConnection>(connHandle), str);
-}
-
 void PgeServerImpl::SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt)
 {
     // TODO add check: connHandle cannot be 0!
     m_PgeSysNET.SendPacketToClient(static_cast<HSteamNetConnection>(connHandle), pkt);
-}
-
-void PgeServerImpl::SendStringToAllClients(const char* str, pge_network::PgeNetworkConnectionHandle exceptConnHandle)
-{
-    m_PgeSysNET.SendStringToAllClients(str, exceptConnHandle);
 }
 
 void PgeServerImpl::SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle)

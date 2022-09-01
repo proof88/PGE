@@ -71,9 +71,7 @@ public:
     bool PollIncomingMessages();
     void PollConnectionStateChanges();
 
-    void SendStringToClient(HSteamNetConnection conn, const char* szStr);
     void SendPacketToClient(HSteamNetConnection conn, const pge_network::PgePacket& pkt);
-    void SendStringToAllClients(const char* szStr, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
     void SendPacketToAllClients(const pge_network::PgePacket& pkt, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
     void SendToServer(const pge_network::PgePacket& pkt);
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
