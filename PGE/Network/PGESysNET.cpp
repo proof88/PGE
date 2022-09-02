@@ -177,10 +177,20 @@ bool PGESysNET::PollIncomingMessages()
 
             if (pkt.pktId == pge_network::PgePktId::APP)
             {
-                if (m_blackListedMessages.end() != m_blackListedMessages.find(pkt.msg.app.msgId))
+                if (m_blackListedAppMessages.end() != m_blackListedAppMessages.find(pkt.msg.app.msgId))
                 {
-                    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER blacklisted message received: %u from connection %u!",
+                    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER blacklisted app message received: %u from connection %u!",
                         __func__, pkt.msg.app.msgId, pkt.connHandle);
+                    assert(false);
+                    continue;
+                }
+            }
+            else
+            {
+                if (m_blackListedPgeMessages.end() != m_blackListedPgeMessages.find(pkt.pktId))
+                {
+                    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER blacklisted pge message received: %u from connection %u!",
+                        __func__, pkt.pktId, pkt.connHandle);
                     assert(false);
                     continue;
                 }
@@ -235,10 +245,20 @@ bool PGESysNET::PollIncomingMessages()
             
             if (pkt.pktId == pge_network::PgePktId::APP)
             {
-                if (m_blackListedMessages.end() != m_blackListedMessages.find(pkt.msg.app.msgId))
+                if (m_blackListedAppMessages.end() != m_blackListedAppMessages.find(pkt.msg.app.msgId))
                 {
-                    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT blacklisted message received from server: %u from connection %u!",
+                    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT blacklisted app message received from server: %u from connection %u!",
                         __func__, pkt.msg.app.msgId, pkt.connHandle);
+                    assert(false);
+                    continue;
+                }
+            }
+            else
+            {
+                if (m_blackListedPgeMessages.end() != m_blackListedPgeMessages.find(pkt.pktId))
+                {
+                    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT blacklisted pge message received: %u from connection %u!",
+                        __func__, pkt.pktId, pkt.connHandle);
                     assert(false);
                     continue;
                 }
@@ -305,9 +325,14 @@ std::deque<pge_network::PgePacket>& PGESysNET::getPacketQueue()
     return m_queuePackets;
 }
 
-std::set<pge_network::TPgeMsgAppMsgId>& PGESysNET::getBlackListedMessages()
+std::set<pge_network::PgePktId>& PGESysNET::getBlackListedPgeMessages()
 {
-    return m_blackListedMessages;
+    return m_blackListedPgeMessages;
+}
+
+std::set<pge_network::TPgeMsgAppMsgId>& PGESysNET::getBlackListedAppMessages()
+{
+    return m_blackListedAppMessages;
 }
 
 const SteamNetConnectionRealTimeStatus_t& PGESysNET::getRealTimeStatus(bool bForceUpdate)

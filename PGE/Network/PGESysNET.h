@@ -71,7 +71,8 @@ public:
     void SendToServer(const pge_network::PgePacket& pkt);
 
     std::deque<pge_network::PgePacket>& getPacketQueue();  // TODO: TEMPORAL: obviously we should not allow this kind of access
-    std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedMessages();
+    std::set<pge_network::PgePktId>& getBlackListedPgeMessages();
+    std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages();
 
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
 
@@ -98,7 +99,8 @@ private:
     // is the server itself, this is how this layer stores nickname for the server (self)
 
     std::deque<pge_network::PgePacket> m_queuePackets;  // used by both client and server
-    std::set<pge_network::TPgeMsgAppMsgId> m_blackListedMessages;  // used by both client and server
+    std::set<pge_network::PgePktId> m_blackListedPgeMessages;  // used by both client and server
+    std::set<pge_network::TPgeMsgAppMsgId> m_blackListedAppMessages;  // used by both client and server
 
     static void SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
 

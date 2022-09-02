@@ -53,7 +53,8 @@ namespace pge_network
         virtual void SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) = 0;
         virtual void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) = 0;
         virtual std::deque<pge_network::PgePacket>& getPacketQueue() = 0;  // TODO: TEMPORAL: obviously we should not allow this kind of access
-        virtual std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedMessages() = 0;
+        virtual std::set<pge_network::PgePktId>& getBlackListedPgeMessages() = 0;
+        virtual std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages() = 0;
 
         virtual void WriteList() const = 0;    /**< Writes statistics to console. */
     }; // class PgeServer

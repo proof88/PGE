@@ -33,7 +33,8 @@ public:
     void SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) override;
     void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
     std::deque<pge_network::PgePacket>& getPacketQueue() override;  // TODO: TEMPORAL: obviously we should not allow this kind of access
-    std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedMessages() override;
+    std::set<pge_network::PgePktId>& getBlackListedPgeMessages() override;
+    std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages() override;
 
     void WriteList() const override;
 
@@ -121,9 +122,14 @@ std::deque<pge_network::PgePacket>& PgeServerImpl::getPacketQueue()
     return m_PgeSysNET.getPacketQueue();
 }
 
-std::set<pge_network::TPgeMsgAppMsgId>& PgeServerImpl::getBlackListedMessages()
+std::set<pge_network::PgePktId>& PgeServerImpl::getBlackListedPgeMessages()
 {
-    return m_PgeSysNET.getBlackListedMessages();
+    return m_PgeSysNET.getBlackListedPgeMessages();
+}
+
+std::set<pge_network::TPgeMsgAppMsgId>& PgeServerImpl::getBlackListedAppMessages()
+{
+    return m_PgeSysNET.getBlackListedAppMessages();
 }
 
 /**
@@ -159,8 +165,7 @@ void PgeServerImpl::WriteList() const
 PgeServerImpl::PgeServerImpl() :
     m_PgeSysNET(PGESysNET::createAndGet())
 {
-    getBlackListedMessages().insert(static_cast<pge_network::TPgeMsgAppMsgId>(pge_network::PgeMsgUserConnected::id));
-    getBlackListedMessages().insert(static_cast<pge_network::TPgeMsgAppMsgId>(pge_network::PgeMsgUserDisconnected::id));
+    m_PgeSysNET.getBlackListedPgeMessages().insert(pge_network::PgeMsgUserConnected::id);
 } // PgeServerImpl(...)
 
 

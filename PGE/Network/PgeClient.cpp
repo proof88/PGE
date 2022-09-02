@@ -32,7 +32,8 @@ public:
     bool connectToServer(const std::string& sServerAddress) override; /* temporal */
     void SendToServer(const pge_network::PgePacket& pkt) override;
     std::deque<pge_network::PgePacket>& getPacketQueue() override;  // TODO: TEMPORAL: obviously we should not allow this kind of access
-    std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedMessages() override;
+    std::set<pge_network::PgePktId>& getBlackListedPgeMessages();
+    std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages();
 
     int getPing(bool bForceUpdate) override;
     float getQualityLocal(bool bForceUpdate) override;
@@ -121,9 +122,14 @@ std::deque<pge_network::PgePacket>& PgeClientImpl::getPacketQueue()
     return m_PgeSysNET.getPacketQueue();
 }
 
-std::set<pge_network::TPgeMsgAppMsgId>& PgeClientImpl::getBlackListedMessages()
+std::set<pge_network::PgePktId>& PgeClientImpl::getBlackListedPgeMessages()
 {
-    return m_PgeSysNET.getBlackListedMessages();
+    return m_PgeSysNET.getBlackListedPgeMessages();
+}
+
+std::set<pge_network::TPgeMsgAppMsgId>& PgeClientImpl::getBlackListedAppMessages()
+{
+    return m_PgeSysNET.getBlackListedAppMessages();
 }
 
 int PgeClientImpl::getPing(bool bForceUpdate)
@@ -189,7 +195,7 @@ void PgeClientImpl::WriteList() const
 PgeClientImpl::PgeClientImpl() :
     m_PgeSysNET(PGESysNET::createAndGet())
 {
-    getBlackListedMessages().insert(static_cast<pge_network::TPgeMsgAppMsgId>(pge_network::PgeMsgUserConnected::id));
+    m_PgeSysNET.getBlackListedPgeMessages().insert(pge_network::PgeMsgUserConnected::id);
 } // PgeClientImpl(...)
 
 
