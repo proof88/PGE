@@ -159,7 +159,8 @@ void PgeServerImpl::WriteList() const
 PgeServerImpl::PgeServerImpl() :
     m_PgeSysNET(PGESysNET::createAndGet())
 {
-
+    getBlackListedMessages().insert(static_cast<pge_network::TPgeMsgAppMsgId>(pge_network::PgeMsgUserConnected::id));
+    getBlackListedMessages().insert(static_cast<pge_network::TPgeMsgAppMsgId>(pge_network::PgeMsgUserDisconnected::id));
 } // PgeServerImpl(...)
 
 
