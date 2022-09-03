@@ -29,9 +29,6 @@
 
 const uint16 PGESysNET::DEFAULT_SERVER_PORT;
 
-const pge_network::PgePktId pge_network::PgeMsgUserConnected::id;
-const pge_network::PgePktId pge_network::PgeMsgUserDisconnected::id;
-
 /**
     Creates and gets the singleton instance.
 */
