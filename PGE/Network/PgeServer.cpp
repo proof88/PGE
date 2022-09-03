@@ -138,17 +138,19 @@ std::set<pge_network::TPgeMsgAppMsgId>& PgeServerImpl::getBlackListedAppMessages
 void PgeServerImpl::WriteList() const
 {
     getConsole().OLnOI("PgeServer::WriteList() start");
-    getConsole().OLnOI("");
     if (isInitialized())
     {
-        // TODO
+        getConsole().OLn("Role: Server");
+        // TODO: PGESysNET will obviously use PGESysNET as module name when writing to console, so it is recommended now
+        // to always turn on PGESysNET logging as well together with PgeServer
+        m_PgeSysNET.WriteServerClientList();
     }
     else
     {
         getConsole().OLn("PgeServer is NOT initialized!");
     }
 
-    getConsole().OLnOO("PgeServer::WriteList() end");
+    getConsole().OOOLn("PgeServer::WriteList() end");
     getConsole().OLn("");
 } // WriteList()
 

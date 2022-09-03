@@ -48,6 +48,9 @@ namespace pge_network
         virtual bool shutdown() = 0;                     /**< This stops the client subsystem. */
         virtual bool isInitialized() const = 0;          /**< Gets the state of the client subsystem. */
 
+        virtual const pge_network::PgeNetworkConnectionHandle& getConnectionHandle() const = 0;
+        virtual const char* getServerAddress() const = 0;
+
         virtual void Update() = 0;
         virtual bool connectToServer(const std::string& sServerAddress) = 0; /* temporal */
         virtual void SendToServer(const pge_network::PgePacket& pkt) = 0;

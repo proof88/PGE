@@ -56,6 +56,8 @@ namespace pge_network
         virtual PgeClient& getClient() = 0;
         virtual PgeServer& getServer() = 0;
 
+        //virtual int getIpAddress() = 0;
+
         virtual void WriteList() const = 0;    /**< Writes statistics to console. */
     }; // class PgeNetwork
 

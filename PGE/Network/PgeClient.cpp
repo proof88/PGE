@@ -28,6 +28,9 @@ public:
     bool shutdown() override;
     bool isInitialized() const override;
 
+    const pge_network::PgeNetworkConnectionHandle& getConnectionHandle() const;
+    const char* getServerAddress() const;
+
     void Update() override;
     bool connectToServer(const std::string& sServerAddress) override; /* temporal */
     void SendToServer(const pge_network::PgePacket& pkt) override;
@@ -101,6 +104,16 @@ bool PgeClientImpl::isInitialized() const
     return m_PgeSysNET.isInitialized();
 } // isInitialized()
 
+const pge_network::PgeNetworkConnectionHandle& PgeClientImpl::getConnectionHandle() const
+{
+    return static_cast<pge_network::PgeNetworkConnectionHandle>(m_PgeSysNET.getConnectionHandle());
+}
+
+const char* PgeClientImpl::getServerAddress() const
+{
+    return m_PgeSysNET.getServerAddress();
+}
+
 void PgeClientImpl::Update()
 {
     m_PgeSysNET.PollIncomingMessages();
@@ -168,17 +181,26 @@ int64_t PgeClientImpl::getInternalQueueTimeUSecs(bool bForceUpdate)
 void PgeClientImpl::WriteList() const
 {
     getConsole().OLnOI("PgeClient::WriteList() start");
-    getConsole().OLnOI("");
     if (isInitialized())
     {
-        // TODO
+        getConsole().OLn("Role: Client");
+        if (getConnectionHandle() == 0)
+        {
+            getConsole().EOLn("Connection Handle: Invalid");
+        }
+        else
+        {
+            getConsole().SOLn("Connection Handle: %u", static_cast<uint32_t>(getConnectionHandle()));
+            getConsole().OLn("Server Address: %s", getServerAddress());
+        }
+        getConsole().OLn("");
     }
     else
     {
         getConsole().OLn("PgeClient is NOT initialized!");
     }
 
-    getConsole().OLnOO("PgeClient::WriteList() end");
+    getConsole().OOOLn("PgeClient::WriteList() end");
     getConsole().OLn("");
 } // WriteList()
 
@@ -259,5 +281,4 @@ CConsole& pge_network::PgeClient::getConsole() const
 
 
 // ############################### PRIVATE ###############################
-
 

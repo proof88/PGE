@@ -20,7 +20,7 @@
 namespace pge_network
 {
 
-    typedef uint32_t PgeNetworkConnectionHandle;
+    typedef uint32_t PgeNetworkConnectionHandle; // 0 is considered as an invalid handle
 
     enum class PgePktId : uint32_t
     {
@@ -54,9 +54,10 @@ namespace pge_network
     struct PgeMsgApp
     {
         static const PgePktId id = PgePktId::APP;
+        static const uint16_t nMessageMaxLength = 256;
 
         TPgeMsgAppMsgId msgId;
-        char cData[256];
+        char cData[nMessageMaxLength];
     };
 
     struct PgePacket

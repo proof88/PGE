@@ -146,17 +146,24 @@ pge_network::PgeServer& PgeNetworkImpl::getServer()
 void PgeNetworkImpl::WriteList() const
 {
     getConsole().OLnOI("PgeNetwork::WriteList() start");
-    getConsole().OLnOI("");
     if (isInitialized())
     {
-        // TODO
+        // m_server and m_client always exist but only one of them is initialized at a time
+        if (isServer())
+        {
+            m_server.WriteList();
+        }
+        else
+        {
+            m_client.WriteList();
+        }
     }
     else
     {
         getConsole().OLn("PgeNetwork is NOT initialized!");
     }
 
-    getConsole().OLnOO("PgeNetwork::WriteList() end");
+    getConsole().OOOLn("PgeNetwork::WriteList() end");
     getConsole().OLn("");
 } // WriteList()
 

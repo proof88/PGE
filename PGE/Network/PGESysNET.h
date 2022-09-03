@@ -36,6 +36,11 @@
 #include PATH3(GameNetworkingSockets-,GAMENETWORKINGSOCKETS_VER,/include/steam/steamnetworkingsockets.h)
 #include PATH3(GameNetworkingSockets-,GAMENETWORKINGSOCKETS_VER,/include/steam/isteamnetworkingutils.h)
 
+struct TClient
+{
+    std::string sCustomName;  /**< App level can set a custom name for client which is useful for debugging. */
+};
+
 // TODO: this whole PGESysNET should be also separated into client and server code, similar to how PgeNetwork separates
 // it into PgeClient and PgeServer, but currently no time for this ...
 
@@ -62,6 +67,9 @@ public:
     bool initSysNET(void);
     bool destroySysNET(void);
     bool isInitialized() const;
+
+    const HSteamNetConnection& getConnectionHandle() const;
+    const char* getServerAddress() const;
     
     bool PollIncomingMessages();
     void PollConnectionStateChanges();
@@ -81,6 +89,8 @@ public:
     bool startListening();
     bool stopListening();
 
+    void WriteServerClientList();
+
 private:
 
     static PGESysNET* s_pCallbackInstance;
@@ -88,13 +98,14 @@ private:
 
     uint16 m_nPort;
     SteamNetworkingIPAddr m_addrServer;  // used by client only
+    char m_szAddr[SteamNetworkingIPAddr::k_cchMaxString];  // used by client only
     HSteamNetConnection m_hConnection; // used by client only
     ISteamNetworkingSockets* m_pInterface;
     HSteamListenSocket m_hListenSock;  // used by server only
     HSteamNetPollGroup m_hPollGroup;   // used by server only
     SteamNetConnectionRealTimeStatus_t m_connRtStatus;  // used by client only
 
-    std::map< HSteamNetConnection, std::string > m_mapClients;  // used by server only
+    std::map< HSteamNetConnection, TClient > m_mapClients;  // used by server only
     // note that the first connection is this map is an invalid connection (k_HSteamNetConnection_Invalid), which
     // is the server itself, this is how this layer stores nickname for the server (self)
 
