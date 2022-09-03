@@ -726,7 +726,7 @@ int PGE::runGame()
         {
             pge_network::PgePacket pkt = pktQueue.front();
             pktQueue.pop_front();
-            onPacketReceived(pkt.connHandle, pkt);
+            onPacketReceived(pkt.m_connHandleServerSide, pkt);
         }
         
         if ( window.isActive() || p->bInactiveLikeActive )

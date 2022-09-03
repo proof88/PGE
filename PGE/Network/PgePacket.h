@@ -63,7 +63,7 @@ namespace pge_network
     struct PgePacket
     {
         PgePktId pktId;
-        PgeNetworkConnectionHandle connHandle;
+        PgeNetworkConnectionHandle m_connHandleServerSide;
         union
         {
             PgeMsgUserConnected userConnected;

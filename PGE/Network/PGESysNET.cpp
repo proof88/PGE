@@ -175,7 +175,7 @@ bool PGESysNET::PollIncomingMessages()
             pge_network::PgePacket pkt;
             assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
             memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
-            pkt.connHandle = static_cast<pge_network::PgeNetworkConnectionHandle>(pIncomingMsg[i]->m_conn);
+            pkt.m_connHandleServerSide = static_cast<pge_network::PgeNetworkConnectionHandle>(pIncomingMsg[i]->m_conn);
 
             // We don't need this anymore.
             // Note that we could even push pIncomingMsg to a queue, and process it later, and
@@ -187,7 +187,7 @@ bool PGESysNET::PollIncomingMessages()
                 if (m_blackListedAppMessages.end() != m_blackListedAppMessages.find(pkt.msg.app.msgId))
                 {
                     CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER blacklisted app message received: %u from connection %u!",
-                        __func__, pkt.msg.app.msgId, pkt.connHandle);
+                        __func__, pkt.msg.app.msgId, pkt.m_connHandleServerSide);
                     assert(false);
                     continue;
                 }
@@ -197,7 +197,7 @@ bool PGESysNET::PollIncomingMessages()
                 if (m_blackListedPgeMessages.end() != m_blackListedPgeMessages.find(pkt.pktId))
                 {
                     CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER blacklisted pge message received: %u from connection %u!",
-                        __func__, pkt.pktId, pkt.connHandle);
+                        __func__, pkt.pktId, pkt.m_connHandleServerSide);
                     assert(false);
                     continue;
                 }
@@ -255,7 +255,7 @@ bool PGESysNET::PollIncomingMessages()
                 if (m_blackListedAppMessages.end() != m_blackListedAppMessages.find(pkt.msg.app.msgId))
                 {
                     CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT blacklisted app message received from server: %u from connection %u!",
-                        __func__, pkt.msg.app.msgId, pkt.connHandle);
+                        __func__, pkt.msg.app.msgId, pkt.m_connHandleServerSide);
                     assert(false);
                     continue;
                 }
@@ -265,7 +265,7 @@ bool PGESysNET::PollIncomingMessages()
                 if (m_blackListedPgeMessages.end() != m_blackListedPgeMessages.find(pkt.pktId))
                 {
                     CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT blacklisted pge message received: %u from connection %u!",
-                        __func__, pkt.pktId, pkt.connHandle);
+                        __func__, pkt.pktId, pkt.m_connHandleServerSide);
                     assert(false);
                     continue;
                 }
@@ -451,7 +451,7 @@ bool PGESysNET::startListening()
     pge_network::PgePacket pkt;
     memset(&pkt, 0, sizeof(pkt));
     pkt.pktId = pge_network::PgeMsgUserConnected::id;
-    pkt.connHandle = k_HSteamNetConnection_Invalid;  // invalid means the server, it is not connected to anyone, they connect to it!
+    pkt.m_connHandleServerSide = k_HSteamNetConnection_Invalid;  // invalid means the server, it is not connected to anyone, they connect to it!
     pkt.msg.userConnected.bCurrentClient = true;
 
     // Add ourselves to the client list, using std::map wacky syntax
@@ -506,11 +506,11 @@ void PGESysNET::WriteServerClientList()
     {
         if (client.first == k_HSteamNetConnection_Invalid)
         {
-            CConsole::getConsoleInstance("PGESysNET").OLn("%u (this is me); Name: %s", client.first, client.second.sCustomName.c_str());
+            CConsole::getConsoleInstance("PGESysNET").OLn("connHandle: %u (this is me); Name: %s", client.first, client.second.sCustomName.c_str());
         }
         else
         {
-            CConsole::getConsoleInstance("PGESysNET").OLn("%u; Name: %s", client.first, client.second.sCustomName.c_str());
+            CConsole::getConsoleInstance("PGESysNET").OLn("connHandle: %u; Name: %s", client.first, client.second.sCustomName.c_str());
         }
     }
     CConsole::getConsoleInstance("PGESysNET").OLnOO("");
@@ -611,7 +611,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 pge_network::PgePacket pkt;
                 memset(&pkt, 0, sizeof(pkt));
                 pkt.pktId = pge_network::PgeMsgUserDisconnected::id;
-                pkt.connHandle = static_cast<pge_network::PgeNetworkConnectionHandle>(pInfo->m_hConn);
+                pkt.m_connHandleServerSide = static_cast<pge_network::PgeNetworkConnectionHandle>(pInfo->m_hConn);
 
                 m_mapClients.erase(itClient);  // dont try to send anything to the disconnected client :)
 
@@ -664,7 +664,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             pge_network::PgePacket pkt;
             memset(&pkt, 0, sizeof(pkt));
             pkt.pktId = pge_network::PgeMsgUserConnected::id;
-            pkt.connHandle = static_cast<pge_network::PgeNetworkConnectionHandle>(pInfo->m_hConn);
+            pkt.m_connHandleServerSide = static_cast<pge_network::PgeNetworkConnectionHandle>(pInfo->m_hConn);
             pkt.msg.userConnected.bCurrentClient = false;
 
             // Add them to the client list, using std::map wacky syntax

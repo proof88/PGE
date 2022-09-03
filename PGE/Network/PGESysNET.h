@@ -106,8 +106,11 @@ private:
     SteamNetConnectionRealTimeStatus_t m_connRtStatus;  // used by client only
 
     std::map< HSteamNetConnection, TClient > m_mapClients;  // used by server only
-    // note that the first connection is this map is an invalid connection (k_HSteamNetConnection_Invalid), which
-    // is the server itself, this is how this layer stores nickname for the server (self)
+    // The connection handle is used to identify clients in the map.
+    // This handle for a client is NOT the same as the handle on the client side, obviously.
+    // Note that the first connection is this map is an invalid connection (k_HSteamNetConnection_Invalid), which
+    // is the server itself, this is how this layer stores nickname for the server (self).
+    
 
     std::deque<pge_network::PgePacket> m_queuePackets;  // used by both client and server
     std::set<pge_network::PgePktId> m_blackListedPgeMessages;  // used by both client and server

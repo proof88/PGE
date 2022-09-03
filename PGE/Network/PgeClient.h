@@ -48,6 +48,7 @@ namespace pge_network
         virtual bool shutdown() = 0;                     /**< This stops the client subsystem. */
         virtual bool isInitialized() const = 0;          /**< Gets the state of the client subsystem. */
 
+        /** Returns client's handle to the connection opened towards the server. */
         virtual const pge_network::PgeNetworkConnectionHandle& getConnectionHandle() const = 0;
         virtual const char* getServerAddress() const = 0;
 
