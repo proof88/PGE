@@ -614,7 +614,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
 
                 pge_network::PgePacket pkt;
                 memset(&pkt, 0, sizeof(pkt));
-                pkt.pktId = pge_network::PgeMsgUserDisconnected::id;
+                pkt.pktId = pge_network::MsgUserDisconnected::id;
                 pkt.m_connHandleServerSide = static_cast<pge_network::PgeNetworkConnectionHandle>(pInfo->m_hConn);
 
                 m_mapClients.erase(itClient);  // dont try to send anything to the disconnected client :)

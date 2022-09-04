@@ -20,7 +20,7 @@ bool pge_network::initPktPgeMsgUserConnected(
 {
     memset(&pkt, 0, sizeof(pkt));
     pkt.m_connHandleServerSide = connHandleServerSide;
-    pkt.pktId = pge_network::PgeMsgUserConnected::id;
+    pkt.pktId = pge_network::MsgUserConnected::id;
     pkt.msg.userConnected.bCurrentClient = bCurrentClient;
     strncpy_s(pkt.msg.userConnected.szIpAddress, sizeof(pkt.msg.userConnected.szIpAddress), sIpAddress.c_str(), sIpAddress.length());
 
