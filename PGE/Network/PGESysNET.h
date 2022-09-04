@@ -38,7 +38,8 @@
 
 struct TClient
 {
-    std::string sCustomName;  /**< App level can set a custom name for client which is useful for debugging. */
+    std::string m_sCustomName;  /**< App level can set a custom name for client which is useful for debugging. */
+    char m_szAddr[SteamNetworkingIPAddr::k_cchMaxString];
 };
 
 // TODO: this whole PGESysNET should be also separated into client and server code, similar to how PgeNetwork separates

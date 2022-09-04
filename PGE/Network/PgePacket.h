@@ -36,8 +36,10 @@ namespace pge_network
     struct PgeMsgUserConnected
     {
         static const PgePktId id = PgePktId::USER_CONNECTED;
+        static const uint8_t nIpAddressMaxLength = 48;
 
         bool bCurrentClient;
+        char szIpAddress[nIpAddressMaxLength];
     };
 
     // server -> clients and to self

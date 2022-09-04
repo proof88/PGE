@@ -446,6 +446,11 @@ bool PGESysNET::startListening()
     }
     CConsole::getConsoleInstance("PGESysNET").OLn("%s() Server listening on port %d", __func__, m_nPort);
 
+    // Add ourselves to the client list, using std::map wacky syntax
+    // k_HSteamNetConnection_Invalid will mean the server itself
+    m_mapClients[k_HSteamNetConnection_Invalid];
+    memset(m_mapClients[k_HSteamNetConnection_Invalid].m_szAddr, sizeof(m_mapClients[k_HSteamNetConnection_Invalid].m_szAddr), 0);
+
     // here we create a client connect pkt that will be injected to our queue so app level will process it and create
     // player object for the server itself, as it was a real client
     pge_network::PgePacket pkt;
@@ -453,15 +458,10 @@ bool PGESysNET::startListening()
     pkt.pktId = pge_network::PgeMsgUserConnected::id;
     pkt.m_connHandleServerSide = k_HSteamNetConnection_Invalid;  // invalid means the server, it is not connected to anyone, they connect to it!
     pkt.msg.userConnected.bCurrentClient = true;
-
-    // Add ourselves to the client list, using std::map wacky syntax
-    // k_HSteamNetConnection_Invalid will mean the server itself
-    m_mapClients[k_HSteamNetConnection_Invalid];
-    
-    // TODOOO: network layer needs to set user name! SetClientNick(k_HSteamNetConnection_Invalid, pkt.msg.userConnected.sUserName);
-    
     // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
     m_queuePackets.push_back(pkt);
+
+    // TODOOO: network layer needs to set user name! SetClientNick(k_HSteamNetConnection_Invalid, pkt.msg.userConnected.sUserName);
 
     return true;
 }
@@ -506,11 +506,13 @@ void PGESysNET::WriteServerClientList()
     {
         if (client.first == k_HSteamNetConnection_Invalid)
         {
-            CConsole::getConsoleInstance("PGESysNET").OLn("connHandle: %u (this is me); Name: %s", client.first, client.second.sCustomName.c_str());
+            CConsole::getConsoleInstance("PGESysNET").OLn("connHandle: %u (this is me); Name: %s; Address: %s",
+                client.first, client.second.m_sCustomName.c_str(), client.second.m_szAddr);
         }
         else
         {
-            CConsole::getConsoleInstance("PGESysNET").OLn("connHandle: %u; Name: %s", client.first, client.second.sCustomName.c_str());
+            CConsole::getConsoleInstance("PGESysNET").OLn("connHandle: %u; Name: %s; Address: %s",
+                client.first, client.second.m_sCustomName.c_str(), client.second.m_szAddr);
         }
     }
     CConsole::getConsoleInstance("PGESysNET").OLnOO("");
@@ -587,14 +589,14 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 if (pInfo->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
                 {
                     pszDebugLogAction = "problem detected locally";
-                    sprintf(szTemp, "%s disappeared (%s)", itClient->second.sCustomName.c_str(), pInfo->m_info.m_szEndDebug);
+                    sprintf(szTemp, "%s disappeared (%s)", itClient->second.m_sCustomName.c_str(), pInfo->m_info.m_szEndDebug);
                 }
                 else
                 {
                     // Note that here we could check the reason code to see if
                     // it was a "usual" connection or an "unusual" one.
                     pszDebugLogAction = "closed by peer";
-                    sprintf(szTemp, "%s closed connection", itClient->second.sCustomName.c_str());
+                    sprintf(szTemp, "%s closed connection", itClient->second.m_sCustomName.c_str());
                 }
 
                 // Spew something to our own log.  Note that because we put their nick
@@ -661,23 +663,21 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
                 break;
             }
 
+            // Add them to the client list, using std::map wacky syntax
+            m_mapClients[pInfo->m_hConn];
+            pInfo->m_info.m_addrRemote.ToString(m_mapClients[pInfo->m_hConn].m_szAddr, sizeof(m_mapClients[pInfo->m_hConn].m_szAddr), true);
+            CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client is connecting from %s ...", __func__, m_mapClients[pInfo->m_hConn].m_szAddr);
+
             pge_network::PgePacket pkt;
             memset(&pkt, 0, sizeof(pkt));
             pkt.pktId = pge_network::PgeMsgUserConnected::id;
             pkt.m_connHandleServerSide = static_cast<pge_network::PgeNetworkConnectionHandle>(pInfo->m_hConn);
             pkt.msg.userConnected.bCurrentClient = false;
-
-            // Add them to the client list, using std::map wacky syntax
-            m_mapClients[pInfo->m_hConn];
-            // TODOOO: network layer needs to set user name! SetClientNick(pInfo->m_hConn, pkt.msg.userConnected.sUserName);
-
-            char szClientAddr[SteamNetworkingIPAddr::k_cchMaxString];
-            pInfo->m_info.m_addrRemote.ToString(szClientAddr, sizeof(szClientAddr), true);
-
-            CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client is connecting from %s ...", __func__, szClientAddr);
-
+            strncpy_s(pkt.msg.userConnected.szIpAddress, sizeof(pkt.msg.userConnected.szIpAddress), m_mapClients[pInfo->m_hConn].m_szAddr, sizeof(m_mapClients[pInfo->m_hConn].m_szAddr));
             // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
             m_queuePackets.push_back(pkt);
+
+            // TODOOO: network layer needs to set user name! SetClientNick(pInfo->m_hConn, pkt.msg.userConnected.sUserName);
            
             break;
         }
@@ -696,7 +696,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             }
             else
             {
-                CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER Client %s has reached state Connected!", __func__, itClient->second.sCustomName.c_str());
+                CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER Client %s has reached state Connected!", __func__, itClient->second.m_sCustomName.c_str());
             }
             break;
         }
@@ -776,7 +776,7 @@ void PGESysNET::SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatus
 void PGESysNET::SetClientNick(HSteamNetConnection hConn, const char* nick)
 {
     // Remember their nick
-    m_mapClients[hConn].sCustomName = nick;
+    m_mapClients[hConn].m_sCustomName = nick;
 
     // Set the connection name, too, which is useful for debugging
     m_pInterface->SetConnectionName(hConn, nick);
