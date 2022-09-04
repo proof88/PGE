@@ -30,7 +30,7 @@ namespace pge_network
     };
 
     // server -> self (injection)
-    // server app can process this in arbitrary way and might send custom message to all clients about new user
+    // server app can process this in arbitrary way and might send custom message to all clients about new user;
     // server app should not send this to clients; it is blacklisted for clients by default;
     // it is blacklisted also for server app because server should not receive this over network, it just injects it for itself
     struct MsgUserConnected
@@ -40,6 +40,8 @@ namespace pge_network
 
         bool bCurrentClient;
         char szIpAddress[nIpAddressMaxLength];
+        // TODO: server always knows IP address of clients, but doesn't know its own IP address used by the clients to connect.
+        // It should be grabbed from the first connecting client.
     };
 
     // server -> clients and to self

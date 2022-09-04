@@ -452,7 +452,7 @@ bool PGESysNET::startListening()
     memset(m_mapClients[k_HSteamNetConnection_Invalid].m_szAddr, sizeof(m_mapClients[k_HSteamNetConnection_Invalid].m_szAddr), 0);
 
     // here we create a client connect pkt that will be injected to our queue so app level will process it and create
-    // player object for the server itself, as it was a real client
+    // player object or whatever they want for the server itself, as it was a real client
     pge_network::PgePacket pkt;
     pge_network::initPktPgeMsgUserConnected(
         pkt,
@@ -693,13 +693,13 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             const auto itClient = m_mapClients.find(pInfo->m_hConn);
             if (itClient == m_mapClients.end())
             {
-                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER Cannot happen: a client has reached state Connected but not present in clients map!",
-                    __func__);
+                CConsole::getConsoleInstance("PGESysNET").EOLn("%s: SERVER Cannot happen: a client (%u) has reached state Connected but not present in clients map!",
+                    __func__, pInfo->m_hConn);
                 assert(false);
             }
             else
             {
-                CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER Client %s has reached state Connected!", __func__, itClient->second.m_sCustomName.c_str());
+                CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER Client with connHandle %u has reached state Connected!", __func__, pInfo->m_hConn);
             }
             break;
         }
