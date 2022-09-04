@@ -130,11 +130,15 @@ const HSteamNetConnection& PGESysNET::getConnectionHandle() const
     return m_hConnection;
 }
 
+const HSteamNetConnection& PGESysNET::getConnectionHandleServerSide() const
+{
+    return m_hConnectionServerSide;
+}
+
 const char* PGESysNET::getServerAddress() const
 {
     return m_szAddr;
 }
-
 
 bool PGESysNET::PollIncomingMessages()
 {
@@ -254,7 +258,7 @@ bool PGESysNET::PollIncomingMessages()
             {
                 if (m_blackListedAppMessages.end() != m_blackListedAppMessages.find(pkt.msg.app.msgId))
                 {
-                    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT blacklisted app message received from server: %u from connection %u!",
+                    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT blacklisted app message received from server: %u with m_connHandleServerSide %u!",
                         __func__, pkt.msg.app.msgId, pkt.m_connHandleServerSide);
                     assert(false);
                     continue;
@@ -264,7 +268,7 @@ bool PGESysNET::PollIncomingMessages()
             {
                 if (m_blackListedPgeMessages.end() != m_blackListedPgeMessages.find(pkt.pktId))
                 {
-                    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT blacklisted pge message received: %u from connection %u!",
+                    CConsole::getConsoleInstance("PGESysNET").EOLn("%s: CLIENT blacklisted pge message received: %u from server with m_connHandleServerSide %u!",
                         __func__, pkt.pktId, pkt.m_connHandleServerSide);
                     assert(false);
                     continue;
@@ -411,6 +415,7 @@ bool PGESysNET::DisconnectClient()
         m_pInterface->CloseConnection(m_hConnection, k_ESteamNetConnectionEnd_App_Generic, "PGESysNET Client Graceful shutdown", true);
         m_hConnection = k_HSteamNetConnection_Invalid;
     }
+    m_hConnectionServerSide = k_HSteamNetConnection_Invalid;
     m_addrServer.Clear();
     memset(m_szAddr, sizeof(m_szAddr), 0);
     memset(&m_connRtStatus, 0, sizeof(m_connRtStatus));
@@ -533,10 +538,11 @@ bool PGESysNET::s_bServer = false;
 
 PGESysNET::PGESysNET() :
     m_nPort(DEFAULT_SERVER_PORT),
+    m_hConnection(k_HSteamNetConnection_Invalid),
+    m_hConnectionServerSide(k_HSteamNetConnection_Invalid),
     m_pInterface(nullptr),
     m_hListenSock(k_HSteamListenSocket_Invalid),
-    m_hPollGroup(k_HSteamNetPollGroup_Invalid),
-    m_hConnection(k_HSteamNetConnection_Invalid)
+    m_hPollGroup(k_HSteamNetPollGroup_Invalid)
 {
     m_addrServer.Clear();
     memset(&m_connRtStatus, 0, sizeof(m_connRtStatus));
@@ -708,7 +714,7 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             // Silences -Wswitch
             break;
         }
-    }
+    } // end server
     else
     {
         assert(pInfo->m_hConn == m_hConnection || m_hConnection == k_HSteamNetConnection_Invalid);

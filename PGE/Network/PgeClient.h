@@ -50,6 +50,10 @@ namespace pge_network
 
         /** Returns client's handle to the connection opened towards the server. */
         virtual const pge_network::PgeNetworkConnectionHandle& getConnectionHandle() const = 0;
+        
+        /** Returns server's handle to the connection opened towards this client. */
+        virtual const pge_network::PgeNetworkConnectionHandle& getConnectionHandleServerSide() const = 0;
+
         virtual const char* getServerAddress() const = 0;
 
         virtual void Update() = 0;

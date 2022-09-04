@@ -29,6 +29,7 @@ public:
     bool isInitialized() const override;
 
     const pge_network::PgeNetworkConnectionHandle& getConnectionHandle() const;
+    const pge_network::PgeNetworkConnectionHandle& getConnectionHandleServerSide() const;
     const char* getServerAddress() const;
 
     void Update() override;
@@ -107,6 +108,11 @@ bool PgeClientImpl::isInitialized() const
 const pge_network::PgeNetworkConnectionHandle& PgeClientImpl::getConnectionHandle() const
 {
     return static_cast<pge_network::PgeNetworkConnectionHandle>(m_PgeSysNET.getConnectionHandle());
+}
+
+const pge_network::PgeNetworkConnectionHandle& PgeClientImpl::getConnectionHandleServerSide() const
+{
+    return static_cast<pge_network::PgeNetworkConnectionHandle>(m_PgeSysNET.getConnectionHandleServerSide());
 }
 
 const char* PgeClientImpl::getServerAddress() const
