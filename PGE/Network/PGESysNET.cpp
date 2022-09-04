@@ -761,9 +761,19 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             break;
 
         case k_ESteamNetworkingConnectionState_Connected:
+        {
             CConsole::getConsoleInstance("PGESysNET").OLn("%s: CLIENT Connected to server OK", __func__);
-            break;
+            
+            // KEKEKEKEKE
+            // you jumped here from PgePacket.h MsgUserConnected.
+            char szAddr[SteamNetworkingIPAddr::k_cchMaxString];
+            pInfo->m_info.m_addrRemote.ToString(szAddr, sizeof(szAddr), true);
+            CConsole::getConsoleInstance("PGESysNET").OLn("%s: CLIENT Remote address: %s", __func__, szAddr);
 
+            CConsole::getConsoleInstance("PGESysNET").OLn("%s: CLIENT conn. description: %s", __func__, pInfo->m_info.m_szConnectionDescription);
+
+            break;
+        }
         default:
             // Silences -Wswitch
             break;
