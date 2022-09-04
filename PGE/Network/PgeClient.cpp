@@ -201,7 +201,6 @@ void PgeClientImpl::WriteList() const
     }
 
     getConsole().OOOLn("PgeClient::WriteList() end");
-    getConsole().OLn("");
 } // WriteList()
 
 

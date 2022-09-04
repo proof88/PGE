@@ -517,7 +517,7 @@ void PGESysNET::WriteServerClientList()
                 client.first, client.second.m_sCustomName.c_str(), client.second.m_szAddr);
         }
     }
-    CConsole::getConsoleInstance("PGESysNET").OLnOO("");
+    CConsole::getConsoleInstance("PGESysNET").OO();
 }
 // ### server only until here
 
