@@ -32,7 +32,7 @@ namespace pge_network
     // server -> self (injection)
     // server app can process this in arbitrary way and might send custom message to all clients about new user
     // server app should not send this to clients; it is blacklisted for clients by default;
-    // it is blacklisted also for server app because it should not receive this over network, it just injects it for itself
+    // it is blacklisted also for server app because server should not receive this over network, it just injects it for itself
     struct PgeMsgUserConnected
     {
         static const PgePktId id = PgePktId::USER_CONNECTED;
@@ -43,7 +43,7 @@ namespace pge_network
     };
 
     // server -> clients and to self
-    // it is blacklisted for server app because it should not receive this over network, it just injects it for itself
+    // it is blacklisted for server app because server should not receive this over network, it just injects it for itself
     struct PgeMsgUserDisconnected
     {
         static const PgePktId id = PgePktId::USER_DISCONNECTED;
@@ -73,5 +73,13 @@ namespace pge_network
             PgeMsgApp app; // application should load/store its custom messages here
         } msg;
     };
+
+    // packet initializers
+
+    bool initPktPgeMsgUserConnected(
+        pge_network::PgePacket& pkt,
+        const pge_network::PgeNetworkConnectionHandle& connHandleServerSide,
+        bool bCurrentClient,
+        const std::string& sIpAddress);
 
 } // namespace pge_network

@@ -454,10 +454,12 @@ bool PGESysNET::startListening()
     // here we create a client connect pkt that will be injected to our queue so app level will process it and create
     // player object for the server itself, as it was a real client
     pge_network::PgePacket pkt;
-    memset(&pkt, 0, sizeof(pkt));
-    pkt.pktId = pge_network::PgeMsgUserConnected::id;
-    pkt.m_connHandleServerSide = k_HSteamNetConnection_Invalid;  // invalid means the server, it is not connected to anyone, they connect to it!
-    pkt.msg.userConnected.bCurrentClient = true;
+    pge_network::initPktPgeMsgUserConnected(
+        pkt,
+        static_cast<pge_network::PgeNetworkConnectionHandle>(k_HSteamNetConnection_Invalid),
+        true,
+        "" /* we dont know our IP address, later the 1st connecting client will tell us anyway */);
+
     // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
     m_queuePackets.push_back(pkt);
 
@@ -669,11 +671,12 @@ void PGESysNET::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChange
             CConsole::getConsoleInstance("PGESysNET").OLn("%s: SERVER A client is connecting from %s ...", __func__, m_mapClients[pInfo->m_hConn].m_szAddr);
 
             pge_network::PgePacket pkt;
-            memset(&pkt, 0, sizeof(pkt));
-            pkt.pktId = pge_network::PgeMsgUserConnected::id;
-            pkt.m_connHandleServerSide = static_cast<pge_network::PgeNetworkConnectionHandle>(pInfo->m_hConn);
-            pkt.msg.userConnected.bCurrentClient = false;
-            strncpy_s(pkt.msg.userConnected.szIpAddress, sizeof(pkt.msg.userConnected.szIpAddress), m_mapClients[pInfo->m_hConn].m_szAddr, sizeof(m_mapClients[pInfo->m_hConn].m_szAddr));
+            pge_network::initPktPgeMsgUserConnected(
+                pkt,
+                static_cast<pge_network::PgeNetworkConnectionHandle>(pInfo->m_hConn),
+                false,
+                m_mapClients[pInfo->m_hConn].m_szAddr);
+
             // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
             m_queuePackets.push_back(pkt);
 

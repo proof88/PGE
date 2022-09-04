@@ -503,6 +503,7 @@
   <ItemGroup>
     <ClCompile Include="Network\PgeClient.cpp" />
     <ClCompile Include="Network\PgeNetwork.cpp" />
+    <ClCompile Include="Network\PgePacket.cpp" />
     <ClCompile Include="Network\PgeServer.cpp" />
     <ClCompile Include="Network\PGESysNET.cpp" />
     <ClCompile Include="PGE.cpp" />
