@@ -126,6 +126,11 @@ bool PgeNetworkImpl::isServer() const
 
 void PgeNetworkImpl::Update()
 {
+    if (!isInitialized())
+    {
+        return;
+    }
+
     m_PgeSysNET.PollIncomingMessages();
     m_PgeSysNET.PollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
 }
