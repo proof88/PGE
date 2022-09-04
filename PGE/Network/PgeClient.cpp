@@ -196,10 +196,9 @@ void PgeClientImpl::WriteList() const
         }
         else
         {
-            getConsole().SOLn("Connection Handle: %u", static_cast<uint32_t>(getConnectionHandle()));
+            getConsole().OLn("Connection Handle: %u", static_cast<uint32_t>(getConnectionHandle()));
             getConsole().OLn("Server Address: %s", getServerAddress());
         }
-        getConsole().OLn("");
     }
     else
     {
