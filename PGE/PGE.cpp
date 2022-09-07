@@ -712,6 +712,8 @@ int PGE::runGame()
 {
     while ( isGameRunning() )
     {
+        onGameFrameBegin();
+
         PRREWindow& window = p->GFX.getWindow();
         window.ProcessMessages();
         p->bIsGameRunning = !window.hasCloseRequest();

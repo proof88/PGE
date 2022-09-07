@@ -99,6 +99,7 @@ protected:
     // Event handlers to be overridden.
     virtual void onGameInitializing() {}  /**< Called before initializing the engine. */
     virtual void onGameInitialized() {}   /**< Called after initializing the engine. */
+    virtual void onGameFrameBegin() {}    /**< Called at the beginning of a new frame. */
     virtual void onGameRunning() {}       /**< Called while running the engine. */
     virtual void onPacketReceived(
         pge_network::PgeNetworkConnectionHandle,
