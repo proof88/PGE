@@ -730,7 +730,7 @@ int PGE::runGame()
             onPacketReceived(pkt.m_connHandleServerSide, pkt);
         }
 
-        p->GFX.getRenderer()->RenderScene();
+        
         if (window.isActive() || p->bInactiveLikeActive)
         {
             PGEInputHandler::createAndGet().getMouse().ApplyRelativeInput();
@@ -738,7 +738,7 @@ int PGE::runGame()
         
         // TODO: on the long run, bullet movement and collision handling could be put here ...
         onGameRunning();
-
+        p->GFX.getRenderer()->RenderScene();
         //if ( window.isActive() || p->bInactiveLikeActive )
         //{
         //    p->GFX.getRenderer()->RenderScene();
