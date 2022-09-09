@@ -712,9 +712,9 @@ int PGE::runGame()
 {
     while ( isGameRunning() )
     {
-        onGameFrameBegin();
-
         PRREWindow& window = p->GFX.getWindow();
+        onGameFrameBegin();
+        
         window.ProcessMessages();
         p->bIsGameRunning = !window.hasCloseRequest();
 
@@ -729,13 +729,17 @@ int PGE::runGame()
             pktQueue.pop_front();
             onPacketReceived(pkt.m_connHandleServerSide, pkt);
         }
-        
-        if ( window.isActive() || p->bInactiveLikeActive )
+
+        if (window.isActive() || p->bInactiveLikeActive)
         {
             PGEInputHandler::createAndGet().getMouse().ApplyRelativeInput();
+        }
+        
+        // TODO: on the long run, bullet movement and collision handling could be put here ...
+        onGameRunning();
 
-            // TODO: on the long run, bullet movement and collision handling could be put here ...
-            onGameRunning();
+        if ( window.isActive() || p->bInactiveLikeActive )
+        {
             p->GFX.getRenderer()->RenderScene();
         }
         else
