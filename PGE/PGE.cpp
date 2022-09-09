@@ -730,6 +730,7 @@ int PGE::runGame()
             onPacketReceived(pkt.m_connHandleServerSide, pkt);
         }
 
+        p->GFX.getRenderer()->RenderScene();
         if (window.isActive() || p->bInactiveLikeActive)
         {
             PGEInputHandler::createAndGet().getMouse().ApplyRelativeInput();
@@ -738,26 +739,26 @@ int PGE::runGame()
         // TODO: on the long run, bullet movement and collision handling could be put here ...
         onGameRunning();
 
-        if ( window.isActive() || p->bInactiveLikeActive )
-        {
-            p->GFX.getRenderer()->RenderScene();
-        }
-        else
-        {
-            // I think that if multiplayer is enabled, we should not sleep that big because we are processing
-            // packets on this same thread, and if we are server, all clients rely on the response
-            // time of this main thread ...
-            // For now, I think it is enough if we do sleep only if we are clients ... server must not sleep.
-            // But at the same time, even server should also stick to some update rate in the future ...
-            // 
-            // TODO: change this condition: in case of multiplayer, do not sleep.
-            //if ( !isServer() && (p->nInactiveSleep > 0) )
-            //{
-            //    Sleep( p->nInactiveSleep );
-            //}
-            // in inactive state, even though RenderScene() doesn't get called from here,
-            // the scene may be re-rendered from WndProc(), if wnd repaint is needed ...
-        }
+        //if ( window.isActive() || p->bInactiveLikeActive )
+        //{
+        //    p->GFX.getRenderer()->RenderScene();
+        //}
+        //else
+        //{
+        //    // I think that if multiplayer is enabled, we should not sleep that big because we are processing
+        //    // packets on this same thread, and if we are server, all clients rely on the response
+        //    // time of this main thread ...
+        //    // For now, I think it is enough if we do sleep only if we are clients ... server must not sleep.
+        //    // But at the same time, even server should also stick to some update rate in the future ...
+        //    // 
+        //    // TODO: change this condition: in case of multiplayer, do not sleep.
+        //    //if ( !isServer() && (p->nInactiveSleep > 0) )
+        //    //{
+        //    //    Sleep( p->nInactiveSleep );
+        //    //}
+        //    // in inactive state, even though RenderScene() doesn't get called from here,
+        //    // the scene may be re-rendered from WndProc(), if wnd repaint is needed ...
+        //}
     }
 
     return 0;
