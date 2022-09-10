@@ -66,7 +66,9 @@ protected:
         AddSubTest("test_wpn_reload_doesnt_reload_when_already_reloading", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_doesnt_reload_when_already_reloading);
 
         AddSubTest("test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon);
-        AddSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle);
+        AddSubTest("test_wpn_update_position_updates_weapon_object_position", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_update_position_updates_weapon_object_position);
+        AddSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle_1", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle_1);
+        AddSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle_2", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle_2);
 
         AddSubTest("test_wpn_shoot_when_empty_does_not_shoot", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_when_empty_does_not_shoot);
         AddSubTest("test_wpn_shoot_during_reloading_per_mag_does_not_shoot", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_during_reloading_per_mag_does_not_shoot);
@@ -892,7 +894,26 @@ private:
         return b;
     }
 
-    bool test_wpn_update_positions_updates_weapon_object_position_and_angle()
+    bool test_wpn_update_position_updates_weapon_object_position()
+    {
+        bool b = false;
+
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            b = true;
+
+            wpn.UpdatePosition(PRREVector(10.f, 20.f, 30.f));
+            b &= assertEquals(PRREVector(10.f, 20.f, 30.f), wpn.getObject3D().getPosVec(), "pos");
+
+        }
+        catch (const std::exception&) {}
+
+        return b;
+    }
+
+    bool test_wpn_update_positions_updates_weapon_object_position_and_angle_1()
     {
         bool b = false;
 
@@ -935,17 +956,56 @@ private:
             Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
             b = true;
 
+            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
+            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
+
             wpn.UpdatePositions(PRREVector(0.f, 0.f, 0.f), PRREVector(1.f, 1.f, 0.f));
-            b &= assertEquals(PRREVector(0.f, 180.f, -45.f), wpn.getObject3D().getAngleVec(), "angle right up");
+            b &= assertEquals(PRREVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 1");
+            b &= assertEquals(PRREVector(-30.f /* angleX is untouched */, 180.f, -45.f), wpn.getObject3D().getAngleVec(), "angle right up");
+
+            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
+            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
 
             wpn.UpdatePositions(PRREVector(0.f, 0.f, 0.f), PRREVector(-1.f, 1.f, 0.f));
-            b &= assertEquals(PRREVector(0.f, 0.f, -45.f), wpn.getObject3D().getAngleVec(), "angle left up");
+            b &= assertEquals(PRREVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 2");
+            b &= assertEquals(PRREVector(-30.f /* angleX is untouched */, 0.f, -45.f), wpn.getObject3D().getAngleVec(), "angle left up");
+
+            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
+            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
 
             wpn.UpdatePositions(PRREVector(0.f, 0.f, 0.f), PRREVector(-1.f, -1.f, 0.f));
-            b &= assertEquals(PRREVector(0.f, 0.f, 45.f), wpn.getObject3D().getAngleVec(), "angle left bottom");
+            b &= assertEquals(PRREVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 3");
+            b &= assertEquals(PRREVector(-30.f /* angleX is untouched */, 0.f, 45.f), wpn.getObject3D().getAngleVec(), "angle left bottom");
+
+            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
+            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
 
             wpn.UpdatePositions(PRREVector(0.f, 0.f, 0.f), PRREVector(-1.f, -1.f, 0.f));
-            b &= assertEquals(PRREVector(0.f, 0.f, 45.f), wpn.getObject3D().getAngleVec(), "angle right bottom");
+            b &= assertEquals(PRREVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 4");
+            b &= assertEquals(PRREVector(-30.f /* angleX is untouched */, 0.f, 45.f), wpn.getObject3D().getAngleVec(), "angle right bottom");
+
+        }
+        catch (const std::exception&) {}
+
+        return b;
+    }
+
+    bool test_wpn_update_positions_updates_weapon_object_position_and_angle_2()
+    {
+        bool b = false;
+
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            b = true;
+
+            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
+            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
+
+            wpn.UpdatePositions(PRREVector(0.f, 0.f, 0.f), 180.f, 60.f);
+            b &= assertEquals(PRREVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos");
+            b &= assertEquals(PRREVector(-30.f /* angleX is untouched */, 180.f, 60.f), wpn.getObject3D().getAngleVec(), "angle");
 
         }
         catch (const std::exception&) {}

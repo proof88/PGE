@@ -271,6 +271,18 @@ PRREObject3D& Weapon::getObject3D()
     return *m_obj;
 }
 
+void Weapon::UpdatePosition(const PRREVector& playerPos)
+{
+    getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY(), playerPos.getZ());
+}
+
+void Weapon::UpdatePositions(const PRREVector& playerPos, TPRREfloat fAngleY, TPRREfloat fAngleZ)
+{
+    getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY(), playerPos.getZ());
+    getObject3D().getAngleVec().SetY(fAngleY);
+    getObject3D().getAngleVec().SetZ(fAngleZ);
+}
+
 void Weapon::UpdatePositions(const PRREVector& playerPos, const PRREVector& targetPos2D)
 {
     getObject3D().getPosVec().Set( playerPos.getX(), playerPos.getY(), playerPos.getZ() );
