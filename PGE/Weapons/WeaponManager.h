@@ -226,7 +226,7 @@ public:
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
     bool load(const char* fname);
-    std::vector<Weapon>& getWeapons();
+    std::vector<Weapon*>& getWeapons();
     void Clear();
     std::list<Bullet>& getBullets();
 
@@ -244,7 +244,7 @@ protected:
 private:
 
     PR00FsReducedRenderingEngine& m_gfx;
-    std::vector<Weapon> m_weapons;
+    std::vector<Weapon*> m_weapons;
     std::list<Bullet> m_bullets;
 
     // ---------------------------------------------------------------------------

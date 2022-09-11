@@ -555,7 +555,12 @@ bool WeaponManager::load(const char* fname)
 {
     try
     {
-        Weapon wpn(fname, m_bullets, m_gfx);
+        Weapon* const wpn = new Weapon(fname, m_bullets, m_gfx);
+        if (!wpn)
+        {
+            return false;
+        }
+
         m_weapons.push_back(wpn);
         return true;
     }
@@ -565,13 +570,17 @@ bool WeaponManager::load(const char* fname)
     }
 }
 
-std::vector<Weapon>& WeaponManager::getWeapons()
+std::vector<Weapon*>& WeaponManager::getWeapons()
 {
     return m_weapons;
 }
 
 void WeaponManager::Clear()
 {
+    for (auto& pWpn : m_weapons)
+    {
+        delete pWpn;
+    }
     m_weapons.clear();
     m_bullets.clear();
 }
