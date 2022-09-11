@@ -718,7 +718,7 @@ int PGE::runGame()
         window.ProcessMessages();
         p->bIsGameRunning = !window.hasCloseRequest();
 
-        getNetwork().Update();  // this may also add packet(s) to SysNET.queuePackets
+        getNetwork().Update();  // this may also inject packet(s) to SysNET.queuePackets
         std::deque<pge_network::PgePacket>& pktQueue =
             getNetwork().isServer() ?
             getNetwork().getServer().getPacketQueue() :
@@ -730,19 +730,13 @@ int PGE::runGame()
             onPacketReceived(pkt.m_connHandleServerSide, pkt);
         }
 
-        
-        if (window.isActive() || p->bInactiveLikeActive)
+        // TODO: on the long run, bullet movement and collision handling could be put here ...       
+        if ( window.isActive() || p->bInactiveLikeActive )
         {
             PGEInputHandler::createAndGet().getMouse().ApplyRelativeInput();
+            onGameRunning();
+            p->GFX.getRenderer()->RenderScene();
         }
-        
-        // TODO: on the long run, bullet movement and collision handling could be put here ...
-        onGameRunning();
-        p->GFX.getRenderer()->RenderScene();
-        //if ( window.isActive() || p->bInactiveLikeActive )
-        //{
-        //    p->GFX.getRenderer()->RenderScene();
-        //}
         //else
         //{
         //    // I think that if multiplayer is enabled, we should not sleep that big because we are processing
