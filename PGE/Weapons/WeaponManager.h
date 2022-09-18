@@ -129,6 +129,7 @@ public:
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
     PRREObject3D& getObject3D();
+    const PRREObject3D& getObject3D() const;
     void UpdatePosition(const PRREVector& playerPos);
     void UpdatePositions(const PRREVector& playerPos, TPRREfloat fAngleY, TPRREfloat fAngleZ);
     void UpdatePositions(const PRREVector& playerPos, const PRREVector& targetPos2D);

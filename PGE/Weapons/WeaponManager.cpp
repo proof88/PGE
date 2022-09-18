@@ -271,6 +271,11 @@ PRREObject3D& Weapon::getObject3D()
     return *m_obj;
 }
 
+const PRREObject3D& Weapon::getObject3D() const
+{
+    return *m_obj;
+}
+
 void Weapon::UpdatePosition(const PRREVector& playerPos)
 {
     getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY(), playerPos.getZ());
