@@ -131,7 +131,7 @@ void PgeNetworkImpl::Update()
         return;
     }
 
-    m_PgeSysNET.PollIncomingMessages();
+    while (m_PgeSysNET.PollIncomingMessages()) {}
     m_PgeSysNET.PollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
 }
 

@@ -142,7 +142,7 @@ const char* PGESysNET::getServerAddress() const
 
 bool PGESysNET::PollIncomingMessages()
 {
-    static const int nIncomingMsgArraySize = 1; // TODO: make this configurable from outside
+    static const int nIncomingMsgArraySize = 10; // TODO: make this configurable from outside
     ISteamNetworkingMessage* pIncomingMsg[nIncomingMsgArraySize];
     if (isServer())
     {
