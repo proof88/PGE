@@ -1,3 +1,6 @@
+#include "WeaponManager.h"
+#include "WeaponManager.h"
+#include "WeaponManager.h"
 /*
     ###################################################################################
     WeaponManager.cpp
@@ -25,11 +28,18 @@ const char* Bullet::getLoggerModuleName()
     return "Bullet";
 }
 
-Bullet::Bullet(PR00FsReducedRenderingEngine& gfx,
-        TPRREfloat wpn_px, TPRREfloat wpn_py, TPRREfloat wpn_pz,
-        TPRREfloat wpn_ax, TPRREfloat wpn_ay, TPRREfloat wpn_az,
-        TPRREfloat sx, TPRREfloat sy, TPRREfloat /*sz*/,
-        TPRREfloat speed, TPRREfloat gravity, TPRREfloat drag, TPRREbool fragile) :
+Bullet::BulletId Bullet::getGlobalBulletId()
+{
+    return m_globalBulletId;
+}
+
+Bullet::Bullet(
+    PR00FsReducedRenderingEngine& gfx,
+    TPRREfloat wpn_px, TPRREfloat wpn_py, TPRREfloat wpn_pz,
+    TPRREfloat wpn_ax, TPRREfloat wpn_ay, TPRREfloat wpn_az,
+    TPRREfloat sx, TPRREfloat sy, TPRREfloat /*sz*/,
+    TPRREfloat speed, TPRREfloat gravity, TPRREfloat drag, TPRREbool fragile) :
+    m_id(m_globalBulletId++),
     m_gfx(gfx),
     m_speed(speed),
     m_gravity(gravity),
@@ -53,6 +63,29 @@ Bullet::Bullet(PR00FsReducedRenderingEngine& gfx,
     m_obj->getAngleVec().Set(wpn_ax, wpn_ay, wpn_az);
 }
 
+Bullet::Bullet(
+    PR00FsReducedRenderingEngine& gfx,
+    TPRREfloat wpn_px, TPRREfloat wpn_py, TPRREfloat wpn_pz,
+    TPRREfloat wpn_ax, TPRREfloat wpn_ay, TPRREfloat wpn_az,
+    TPRREfloat sx, TPRREfloat sy, TPRREfloat /*sz*/) :
+    m_id(m_globalBulletId++),
+    m_gfx(gfx),
+    m_speed(0.f),
+    m_gravity(0.f),
+    m_drag(0.f),
+    m_fragile(0.f),
+    m_obj(NULL)
+{
+    m_put.getPosVec().Set(wpn_px, wpn_py, wpn_pz);
+    m_put.SetRotation(wpn_ax, (wpn_ay > 0.0f) ? 90.f : -90.f, (wpn_ay > 0.0f) ? wpn_az : -wpn_az);
+
+    m_obj = m_gfx.getObject3DManager().createPlane(sx, sy);
+    // TODO throw exception if cant create!
+    m_obj->SetDoubleSided(true);
+    m_obj->getPosVec().Set(wpn_px, wpn_py, wpn_pz);
+    m_obj->getAngleVec().Set(wpn_ax, wpn_ay, wpn_az);
+}
+
 Bullet::~Bullet()
 {
     if ( m_obj )
@@ -64,6 +97,11 @@ Bullet::~Bullet()
 CConsole& Bullet::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
+}
+
+Bullet::BulletId Bullet::getId() const
+{
+    return m_id;
 }
 
 TPRREfloat Bullet::getSpeed() const
@@ -108,6 +146,9 @@ const PRREObject3D& Bullet::getObject3D() const
 
 
 // ############################### PRIVATE ###############################
+
+
+uint32_t Bullet::m_globalBulletId = 0;
 
 
 /*

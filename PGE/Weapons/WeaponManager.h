@@ -31,7 +31,14 @@ class Bullet
 #endif
 
 public:
+    // for now uint32_t will be fine for bullet id ... if we calculate with 10 bullets/second for a player, who is shooting
+    // continuously in a 60 minutes gameplay, that is still only 36000 bullets for that player, and with 30 players that is
+    // still 1 080 000 bullets, so uint32_t is far enough for us. Even if it overflows, it is not the problem, since
+    // no such old bullets with low ids will even exists at that time ...
+    typedef uint32_t BulletId;
+
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+    static BulletId getGlobalBulletId();
 
     // ---------------------------------------------------------------------------
 
@@ -41,9 +48,18 @@ public:
         TPRREfloat wpn_ax, TPRREfloat wpn_ay, TPRREfloat wpn_az,
         TPRREfloat sx, TPRREfloat sy, TPRREfloat sz,
         TPRREfloat speed, TPRREfloat gravity, TPRREfloat drag, TPRREbool fragile);
+    
+    Bullet(
+        PR00FsReducedRenderingEngine& gfx,
+        TPRREfloat wpn_px, TPRREfloat wpn_py, TPRREfloat wpn_pz,
+        TPRREfloat wpn_ax, TPRREfloat wpn_ay, TPRREfloat wpn_az,
+        TPRREfloat sx, TPRREfloat sy, TPRREfloat sz);
+    
     virtual ~Bullet();
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+
+    BulletId getId() const;
 
     TPRREfloat getSpeed() const;
     TPRREfloat getGravity() const;
@@ -56,6 +72,7 @@ public:
     const PRREObject3D& getObject3D() const;
 
     Bullet(const Bullet& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
+        m_id(other.m_id),
         m_gfx(other.m_gfx),
         m_put(other.m_put),
         m_speed(other.m_speed),
@@ -71,6 +88,7 @@ public:
 
     Bullet& operator=(const Bullet& other) // TODO check if we really cannot live with just compiler generated operator=?
     {
+        m_id = other.m_id;
         m_gfx = other.m_gfx;
         m_put = other.m_put;
         m_speed = other.m_speed;
@@ -90,6 +108,9 @@ protected:
 
 private:
 
+    static BulletId m_globalBulletId;
+
+    BulletId m_id;
     PR00FsReducedRenderingEngine& m_gfx;
     PRREPosUpTarget m_put;
     TPRREfloat m_speed;
