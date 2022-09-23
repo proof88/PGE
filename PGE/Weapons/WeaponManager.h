@@ -51,6 +51,7 @@ public:
     
     Bullet(
         PR00FsReducedRenderingEngine& gfx,
+        Bullet::BulletId id,
         TPRREfloat wpn_px, TPRREfloat wpn_py, TPRREfloat wpn_pz,
         TPRREfloat wpn_ax, TPRREfloat wpn_ay, TPRREfloat wpn_az,
         TPRREfloat sx, TPRREfloat sy, TPRREfloat sz);

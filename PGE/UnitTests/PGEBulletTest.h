@@ -114,12 +114,13 @@ private:
 
         Bullet bullet(
             *engine,
+            static_cast<Bullet::BulletId>(1234),
             posVec.getX(), posVec.getY(), posVec.getZ(),
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ());
 
-        bool b = assertEquals(bullet.getId(), iLastBulletId, "bullet id");
-        b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId + 1, "global bullet id");
+        bool b = assertEquals(bullet.getId(), static_cast<Bullet::BulletId>(1234), "bullet id");
+        b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId, "global bullet id");
         b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "pos");
         b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "angle");
         b &= assertEquals(sizeVec, bullet.getObject3D().getSizeVec(), "size");
