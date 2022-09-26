@@ -9,6 +9,11 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
+
+#include "../../include/internal/GUI/imgui-1.88/imgui.h"
+#include "../../include/internal/GUI/imgui-1.88/backends/imgui_impl_opengl2.h"
+#include "../../include/internal/GUI/imgui-1.88/backends/imgui_impl_win32.h"
+
 #include "../../include/external/Display/PRREWindow.h"
 #include "../../include/internal/PRREpragmas.h"
 #include "../../include/internal/Display/PRRESharedSettings.h"
@@ -21,6 +26,7 @@ using namespace std;
 
 
 LRESULT __stdcall PRREdefaultWindowProc(HWND hWindow, UINT wndMsg, WPARAM wParam, LPARAM lParam);
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 
 class PRREWindowImpl :
@@ -219,6 +225,9 @@ LRESULT __stdcall PRREdefaultWindowProc(HWND hWindow, UINT wndMsg, WPARAM wParam
     
     if ( wnd == NULL )
         return DefWindowProc(hWindow, wndMsg, wParam, lParam);
+
+    if (ImGui_ImplWin32_WndProcHandler(hWindow, wndMsg, wParam, lParam))
+        return true;
 
     switch ( wndMsg )
     {

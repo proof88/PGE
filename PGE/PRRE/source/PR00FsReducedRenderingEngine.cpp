@@ -58,6 +58,7 @@ public:
     PRRECamera&           getCamera() const;      
     PRREuiManager&        getUImanager() const;
     PRREIRenderer*        getRenderer() const;
+    void                  ShowGuiDemo(TPRREbool state);
 
     void                  WriteList() const;
 
@@ -438,6 +439,11 @@ PRREuiManager& PR00FsReducedRenderingEngineImpl::getUImanager() const
 PRREIRenderer* PR00FsReducedRenderingEngineImpl::getRenderer() const
 {
     return pRenderer;
+}
+
+void PR00FsReducedRenderingEngineImpl::ShowGuiDemo(TPRREbool state)
+{
+    pRenderer->ShowGuiDemo(state);
 }
 
 

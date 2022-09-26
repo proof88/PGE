@@ -92,6 +92,8 @@ public:
     */
     virtual void RenderObject(PRREObject3D& object) = 0;
 
+    virtual void ShowGuiDemo(TPRREbool state) = 0;
+
     virtual TPRREuint getLastFrameObjectsVisible() const = 0;                         /**< Returns number of objects allowed to be visible in last frame. */
     virtual TPRREuint getLastFrameOccluders() const = 0;                              /**< Returns number of objects that were occluders in last frame. */
     virtual TPRREuint getLastFrameOccludeesNonOcclusionTested() const = 0;            /**< Returns number of occludees that had occlusion test disabled in last frame. */

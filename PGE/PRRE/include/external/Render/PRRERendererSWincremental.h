@@ -73,5 +73,7 @@ public:
     */
     virtual void RenderObject(PRREObject3D& object) = 0;
 
+    virtual void ShowGuiDemo(TPRREbool state) = 0;
+
 
 }; // PRRERendererHWfixedPipe

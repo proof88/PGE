@@ -54,6 +54,8 @@ public:
 
     void RenderScene(); 
 
+    void ShowGuiDemo(TPRREbool state);
+
     const TPRRE_RENDER_HINT& getRenderHints();
     void  SetRenderHints(const TPRRE_RENDER_HINT& hints);
 
@@ -383,6 +385,11 @@ void PRRERendererSWincrementalImpl::RenderScene()
     FinishRendering();
 
 } // RenderScene()
+
+void PRRERendererSWincrementalImpl::ShowGuiDemo(TPRREbool)
+{
+    // this is doing nothing intentionally since we dont have SW implementation for GUI
+}
 
 
 const TPRRE_RENDER_HINT& PRRERendererSWincrementalImpl::getRenderHints()

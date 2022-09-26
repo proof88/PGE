@@ -131,6 +131,8 @@ public:
     */
     virtual void RenderScene() = 0;
 
+    virtual void ShowGuiDemo(TPRREbool state) = 0;
+
     /**
         Get current render hints.
         Render hints are basically debug settings for the renderer used in rare circumstances.

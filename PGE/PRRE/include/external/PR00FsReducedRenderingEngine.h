@@ -79,6 +79,7 @@ public:
     virtual PRRECamera&          getCamera() const = 0;           /**< Get access to camera handler functions. */
     virtual PRREuiManager&       getUImanager() const = 0;        /**< Get access to user interface functions. */
     virtual PRREIRenderer*       getRenderer() const = 0;         /**< Get access to the selected renderer. */
+    virtual void                 ShowGuiDemo(TPRREbool state) = 0;
 
     virtual void                 WriteList() const = 0;           /**< Invoke WriteList() of all children instances. */
 
