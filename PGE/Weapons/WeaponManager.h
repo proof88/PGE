@@ -20,6 +20,7 @@
 #include "../PGEallHeaders.h"
 #include "../PGEcfgFile.h"
 #include "../PRRE/include/external/PR00FsReducedRenderingEngine.h"
+#include "../Network/PgePacket.h"
 
 /**
     Bullet class for PR00F's Game Engine Weapon Manager
@@ -42,13 +43,16 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    /** Ctor to be used by PGE server instance. */
     Bullet(
         PR00FsReducedRenderingEngine& gfx,
+        pge_network::PgeNetworkConnectionHandle connHandle,
         TPRREfloat wpn_px, TPRREfloat wpn_py, TPRREfloat wpn_pz,
         TPRREfloat wpn_ax, TPRREfloat wpn_ay, TPRREfloat wpn_az,
         TPRREfloat sx, TPRREfloat sy, TPRREfloat sz,
         TPRREfloat speed, TPRREfloat gravity, TPRREfloat drag, TPRREbool fragile);
     
+    /** Ctor to be used by PGE client instance. */
     Bullet(
         PR00FsReducedRenderingEngine& gfx,
         Bullet::BulletId id,
@@ -61,6 +65,8 @@ public:
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
     BulletId getId() const;
+
+    pge_network::PgeNetworkConnectionHandle getOwner() const;
 
     TPRREfloat getSpeed() const;
     TPRREfloat getGravity() const;
@@ -75,6 +81,7 @@ public:
     Bullet(const Bullet& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
         m_id(other.m_id),
         m_gfx(other.m_gfx),
+        m_connHandle(other.m_connHandle),
         m_put(other.m_put),
         m_speed(other.m_speed),
         m_gravity(other.m_gravity),
@@ -91,6 +98,7 @@ public:
     {
         m_id = other.m_id;
         m_gfx = other.m_gfx;
+        m_connHandle = other.m_connHandle;
         m_put = other.m_put;
         m_speed = other.m_speed;
         m_gravity = other.m_gravity;
@@ -109,17 +117,18 @@ protected:
 
 private:
 
-    static BulletId m_globalBulletId;
+    static BulletId m_globalBulletId;                      /**< Next unique bullet id for identifying. Used by PGE server instance only. */
 
-    BulletId m_id;
+    BulletId m_id;                                         /**< Unique bullet id for identifying. Used by PGE server and client instances. */
     PR00FsReducedRenderingEngine& m_gfx;
-    PRREPosUpTarget m_put;
-    TPRREfloat m_speed;
-    TPRREfloat m_gravity;
-    TPRREfloat m_drag;
-    TPRREbool m_fragile;
+    pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this bullet. Used by PGE server instance only. */
+    PRREPosUpTarget m_put;                                 /**< PUT to calculate next position. Used by PGE server instance only. */
+    TPRREfloat m_speed;                                    /**< Speed as defined by weapon file. Used by PGE server instance only. */
+    TPRREfloat m_gravity;                                  /**< Gravity as defined by weapon file. Used by PGE server instance only. */
+    TPRREfloat m_drag;                                     /**< Drag as defined by weapon file. Used by PGE server instance only. */
+    TPRREbool m_fragile;                                   /**< Fragile flag as defined by weapon file. Used by PGE server instance only. */
 
-    PRREObject3D* m_obj;
+    PRREObject3D* m_obj;                                   /**< Associated PRRE object to be rendered. Used by PGE server and client instances. */
 
     // ---------------------------------------------------------------------------
 
@@ -145,7 +154,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRenderingEngine& gfx);
+    Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRenderingEngine& gfx, pge_network::PgeNetworkConnectionHandle connHandle);
     virtual ~Weapon();
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
@@ -162,6 +171,8 @@ public:
     TPRREuint getMagBulletCount() const;
     void SetMagBulletCount(TPRREuint count);
 
+    pge_network::PgeNetworkConnectionHandle getOwner() const;
+
     void Update();
     State getState() const;
     TPRREbool reload();
@@ -171,6 +182,7 @@ public:
         PGEcfgFile(other),
         m_bullets(other.m_bullets),
         m_gfx(other.m_gfx),
+        m_connHandle(other.m_connHandle),
         m_state(other.m_state),
         m_nUnmagBulletCount(other.m_nUnmagBulletCount),
         m_nMagBulletCount(other.m_nMagBulletCount),
@@ -189,6 +201,7 @@ public:
     {
         m_bullets = other.m_bullets;
         m_gfx = other.m_gfx;
+        m_connHandle = other.m_connHandle;
         m_state = other.m_state;
         m_nUnmagBulletCount = other.m_nUnmagBulletCount;
         m_nMagBulletCount = other.m_nMagBulletCount;
@@ -213,13 +226,14 @@ private:
 
     std::list<Bullet>& m_bullets;
     PR00FsReducedRenderingEngine& m_gfx;
+    pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this weapon. Should be used by PGE server instance only. */
     PRREObject3D* m_obj;
-    State m_state;
-    TPRREuint m_nUnmagBulletCount;                     /**< Spare bullets not loaded into weapon. */
-    TPRREuint m_nMagBulletCount;                       /**< Bullets loaded into weapon. Even if weapon is not reloadable. */
-    TPRREuint m_nBulletsToReload;                      /**< Only updated during reload() / Update(). */
-    PFL::timeval m_timeReloadStarted;                  /**< Only updated during reload() / Update(). */
-    PFL::timeval m_timeLastShot;                       /**< Only updated during shoot() / Update(). */
+    State m_state;                                     /**< State as calculated and updated by PGE server instance. */
+    TPRREuint m_nUnmagBulletCount;                     /**< Spare bullets not loaded into weapon. Should be managed by PGE server instance. */
+    TPRREuint m_nMagBulletCount;                       /**< Bullets loaded into weapon. Even if weapon is not reloadable. Should be managed by PGE server instance. */
+    TPRREuint m_nBulletsToReload;                      /**< Only updated during reload() / Update(). Should be managed by PGE server instance. */
+    PFL::timeval m_timeReloadStarted;                  /**< Only updated during reload() / Update(). Should be managed by PGE server instance. */
+    PFL::timeval m_timeLastShot;                       /**< Only updated during shoot() / Update(). Should be managed by PGE server instance. */
 
     // ---------------------------------------------------------------------------
 
@@ -248,7 +262,7 @@ public:
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
-    bool load(const char* fname);
+    bool load(const char* fname, pge_network::PgeNetworkConnectionHandle connHandle);
     std::vector<Weapon*>& getWeapons();
     void Clear();
     std::list<Bullet>& getBullets();

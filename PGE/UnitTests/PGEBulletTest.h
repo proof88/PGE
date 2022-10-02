@@ -33,8 +33,8 @@ protected:
         engine = &PR00FsReducedRenderingEngine::createAndGet();
         engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
 
-        AddSubTest("test_bullet_ctor_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_good);
-        AddSubTest("test_bullet_ctor_2_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_2_good);
+        AddSubTest("test_bullet_ctor_server_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_good);
+        AddSubTest("test_bullet_ctor_client_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_good);
         AddSubTest("test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag",
             (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
         AddSubTest("test_bullet_update_updates_position", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_update_updates_position);
@@ -74,7 +74,7 @@ private:
         return *this;
     };
 
-    bool test_bullet_ctor_good()
+    bool test_bullet_ctor_server_good()
     {
         const Bullet::BulletId iLastBulletId = Bullet::getGlobalBulletId();
         const PRREVector posVec(1.f, 2.f, 3.f);
@@ -84,9 +84,11 @@ private:
         const float fGravity = 15.f;
         const float fDrag = 25.f;
         const bool bFragile = true;
+        const pge_network::PgeNetworkConnectionHandle connHandle = 52;
 
         Bullet bullet(
             *engine,
+            connHandle,
             posVec.getX(), posVec.getY(), posVec.getZ(),
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
@@ -94,6 +96,7 @@ private:
         
         bool b = assertEquals(bullet.getId(), iLastBulletId, "bullet id");
         b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId + 1, "global bullet id");
+        b &= assertEquals(connHandle, bullet.getOwner(), "owner");
         b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "pos");
         b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "angle");
         b &= assertEquals(sizeVec, bullet.getObject3D().getSizeVec(), "size");
@@ -105,7 +108,7 @@ private:
         return b;
     }
 
-    bool test_bullet_ctor_2_good()
+    bool test_bullet_ctor_client_good()
     {
         const Bullet::BulletId iLastBulletId = Bullet::getGlobalBulletId();
         const PRREVector posVec(1.f, 2.f, 3.f);
@@ -139,6 +142,7 @@ private:
         {
             Bullet bullet(
                 *engine,
+                0,
                 1.f, 2.f, 3.f,
                 20.f, 40.f, 60.f,
                 4.f, 5.f, 0.f,
@@ -161,7 +165,7 @@ private:
         put.SetRotation(angleVec.getX(), angleVec.getY(), angleVec.getZ());
         put.Move(speed);
 
-        Bullet bullet(*engine, 0.f, 0.f, 0.f, angleVec.getX(), angleVec.getY(), angleVec.getZ(), 1.f, 1.f, 1.f, speed, 15.f, 25.f, true);
+        Bullet bullet(*engine, 0, 0.f, 0.f, 0.f, angleVec.getX(), angleVec.getY(), angleVec.getZ(), 1.f, 1.f, 1.f, speed, 15.f, 25.f, true);
         bullet.Update();
 
         bool b = assertEquals(put.getPosVec(), bullet.getObject3D().getPosVec(), "pos");

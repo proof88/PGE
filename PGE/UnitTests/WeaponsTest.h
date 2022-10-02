@@ -130,7 +130,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_bad_assignment.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/wpn_test_bad_assignment.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -146,7 +146,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_unaccepted_var.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/wpn_test_unaccepted_var.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -162,7 +162,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_missing_var.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/wpn_test_missing_var.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -178,7 +178,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_double_defined_var.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/wpn_test_double_defined_var.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -194,7 +194,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_not_reloadable_incompatible_with_reload_per_mag.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/wpn_test_not_reloadable_incompatible_with_reload_per_mag.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -210,7 +210,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_bullets_default_cannot_be_greater_than_non_zero_reloadable.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/wpn_test_bullets_default_cannot_be_greater_than_non_zero_reloadable.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -226,7 +226,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_reload_whole_mag_incompatible_with_no_reload_per_mag.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/wpn_test_reload_whole_mag_incompatible_with_no_reload_per_mag.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -242,7 +242,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_no_recoil_incompatible_with_non_zero_recoil_cooldown.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/wpn_test_no_recoil_incompatible_with_non_zero_recoil_cooldown.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -258,7 +258,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_no_recoil_incompatible_with_recoil_control.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/wpn_test_no_recoil_incompatible_with_recoil_control.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -274,7 +274,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -290,7 +290,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_max_bullet_speed_incompatible_with_non_zero_bullet_drag.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/wpn_test_max_bullet_speed_incompatible_with_non_zero_bullet_drag.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -306,7 +306,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/wpn_test_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -322,9 +322,10 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 10);
             b = true;
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state") &
+                assertEquals(10u, wpn.getOwner(), "owner") &
                 assertEquals(30u, wpn.getMagBulletCount(), "mag") &
                 assertEquals(0u,  wpn.getUnmagBulletCount(), "unmag") &
                 assertEquals("Sample Weapon 1", wpn.getVars()["name"].getAsString(), "name") &
@@ -369,7 +370,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             // by default no unmag bullets are available, and we set mag to 0 as well
@@ -388,7 +389,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             wpn.SetUnmagBulletCount(100); // make sure we could reload
@@ -407,7 +408,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             wpn.SetUnmagBulletCount(100); // make sure we could reload
@@ -427,7 +428,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             wpn.getVars()["reload_whole_mag"].Set(false); // reload does not waste bullets
@@ -469,7 +470,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             wpn.getVars()["reload_whole_mag"].Set(false); // reload does not waste bullets
@@ -511,7 +512,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             // "reload_whole_mag" is true in sample wpn file
@@ -553,7 +554,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             // "reload_whole_mag" is true in sample wpn file
@@ -595,7 +596,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             wpn.SetUnmagBulletCount(100); // make sure we could reload
@@ -656,7 +657,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             wpn.SetUnmagBulletCount(100); // make sure we could reload
@@ -678,7 +679,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             // by default magazine is full == 30 bullets, set it to 0
@@ -698,7 +699,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             wpn.getVars()["reload_whole_mag"].Set(false); // reload does not waste bullets
@@ -729,7 +730,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             wpn.getVars()["reload_per_mag"].Set(false);   // reload per bullet
@@ -762,7 +763,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             const TPRREuint nOriginalMagBulletCount = wpn.getMagBulletCount();
@@ -793,7 +794,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             wpn.SetUnmagBulletCount(100); // make sure we could reload
@@ -845,7 +846,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             const TPRREuint nOriginalMagBulletCount = wpn.getMagBulletCount();
@@ -869,11 +870,12 @@ private:
     bool test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon()
     {
         bool b = false;
+        const pge_network::PgeNetworkConnectionHandle connHandle = 52;
 
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, connHandle);
             b = true;
 
             wpn.getObject3D().getPosVec().Set(1.f, 2.f, 3.f);
@@ -884,8 +886,9 @@ private:
             if ( b )
             {
                 const Bullet& bullet = *bullets.begin();
-                b &= assertEquals(bullet.getObject3D().getPosVec(), wpn.getObject3D().getPosVec(), "pos");
-                b &= assertEquals(bullet.getObject3D().getAngleVec(), wpn.getObject3D().getAngleVec(), "angle");
+                b &= assertEquals(wpn.getObject3D().getPosVec(), bullet.getObject3D().getPosVec(), "pos");
+                b &= assertEquals(wpn.getObject3D().getAngleVec(), bullet.getObject3D().getAngleVec(), "angle");
+                b &= assertEquals(connHandle, bullet.getOwner(), "bullet owner");
             }
 
         }
@@ -901,7 +904,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             wpn.UpdatePosition(PRREVector(10.f, 20.f, 30.f));
@@ -953,7 +956,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
@@ -997,7 +1000,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
             b = true;
 
             wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
@@ -1022,7 +1025,7 @@ private:
     bool test_wm_clear_weapons()
     {
         WeaponManager wm(*engine);
-        bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn.txt"), "load");
+        bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn.txt", 0), "load");
         wm.Clear();
 
         return b & assertTrue(wm.getWeapons().empty(), "empty");
@@ -1031,7 +1034,7 @@ private:
     bool test_wm_load_weapon_bad_assignment()
     {
         WeaponManager wm(*engine);
-        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_bad_assignment.txt"), "load");
+        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_bad_assignment.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty");
 
         return b;
@@ -1040,7 +1043,7 @@ private:
     bool test_wm_load_weapon_unaccepted_var()
     {
         WeaponManager wm(*engine);
-        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_unaccepted_var.txt"), "load");
+        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_unaccepted_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty");
 
         return b;
@@ -1049,7 +1052,7 @@ private:
     bool test_wm_load_weapon_missing_var()
     {
         WeaponManager wm(*engine);
-        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_missing_var.txt"), "load");
+        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_missing_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty");
 
         return b;
@@ -1058,7 +1061,7 @@ private:
     bool test_wm_load_weapon_double_defined_var()
     {
         WeaponManager wm(*engine);
-        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_double_defined_var.txt"), "load");
+        bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_double_defined_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty");
 
         return b;
@@ -1067,7 +1070,7 @@ private:
     bool test_wm_load_weapon_good()
     {
         WeaponManager wm(*engine);
-        bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn.txt"), "load");
+        bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn.txt", 0), "load");
         b &= assertFalse(wm.getWeapons().empty(), "not empty");
 
         return b;

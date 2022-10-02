@@ -1,6 +1,3 @@
-#include "WeaponManager.h"
-#include "WeaponManager.h"
-#include "WeaponManager.h"
 /*
     ###################################################################################
     WeaponManager.cpp
@@ -35,12 +32,14 @@ Bullet::BulletId Bullet::getGlobalBulletId()
 
 Bullet::Bullet(
     PR00FsReducedRenderingEngine& gfx,
+    pge_network::PgeNetworkConnectionHandle connHandle,
     TPRREfloat wpn_px, TPRREfloat wpn_py, TPRREfloat wpn_pz,
     TPRREfloat wpn_ax, TPRREfloat wpn_ay, TPRREfloat wpn_az,
     TPRREfloat sx, TPRREfloat sy, TPRREfloat /*sz*/,
     TPRREfloat speed, TPRREfloat gravity, TPRREfloat drag, TPRREbool fragile) :
     m_id(m_globalBulletId++),
     m_gfx(gfx),
+    m_connHandle(connHandle),
     m_speed(speed),
     m_gravity(gravity),
     m_drag(drag),
@@ -105,6 +104,11 @@ Bullet::BulletId Bullet::getId() const
     return m_id;
 }
 
+pge_network::PgeNetworkConnectionHandle Bullet::getOwner() const
+{
+    return m_connHandle;
+}
+
 TPRREfloat Bullet::getSpeed() const
 {
     return m_speed;
@@ -161,10 +165,11 @@ uint32_t Bullet::m_globalBulletId = 0;
 // ############################### PUBLIC ################################
 
 
-Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRenderingEngine& gfx) :
+Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRenderingEngine& gfx, pge_network::PgeNetworkConnectionHandle connHandle) :
     PGEcfgFile(true, false),
     m_bullets(bullets),
     m_gfx(gfx),
+    m_connHandle(connHandle),
     m_obj(NULL),
     m_state(WPN_READY),
     m_nUnmagBulletCount(0),
@@ -401,6 +406,11 @@ void Weapon::SetMagBulletCount(TPRREuint count)
     m_nMagBulletCount = count;
 }
 
+pge_network::PgeNetworkConnectionHandle Weapon::getOwner() const
+{
+    return m_connHandle;
+}
+
 void Weapon::Update()
 {
     UpdateGraphics();
@@ -526,6 +536,7 @@ TPRREbool Weapon::shoot()
     m_bullets.push_back(
         Bullet(
             m_gfx,
+            m_connHandle,
             m_obj->getPosVec().getX(), m_obj->getPosVec().getY(), m_obj->getPosVec().getZ(),
             m_obj->getAngleVec().getX(), m_obj->getAngleVec().getY(), m_obj->getAngleVec().getZ(),
             getVars()["bullet_size_x"].getAsFloat(),
@@ -556,6 +567,7 @@ Weapon::Weapon() :
     PGEcfgFile(true, false),
     m_bullets(m_bullets),
     m_gfx(m_gfx),
+    m_connHandle(0),
     m_obj(NULL),
     m_state(WPN_READY),
     m_nUnmagBulletCount(0),
@@ -598,11 +610,11 @@ const char* WeaponManager::getLoggerModuleName()
     return "WeaponManager";
 }
 
-bool WeaponManager::load(const char* fname)
+bool WeaponManager::load(const char* fname, pge_network::PgeNetworkConnectionHandle connHandleServerSide)
 {
     try
     {
-        Weapon* const wpn = new Weapon(fname, m_bullets, m_gfx);
+        Weapon* const wpn = new Weapon(fname, m_bullets, m_gfx, connHandleServerSide);
         if (!wpn)
         {
             return false;
