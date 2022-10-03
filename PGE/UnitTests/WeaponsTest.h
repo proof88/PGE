@@ -889,6 +889,7 @@ private:
                 b &= assertEquals(wpn.getObject3D().getPosVec(), bullet.getObject3D().getPosVec(), "pos");
                 b &= assertEquals(wpn.getObject3D().getAngleVec(), bullet.getObject3D().getAngleVec(), "angle");
                 b &= assertEquals(connHandle, bullet.getOwner(), "bullet owner");
+                b &= assertEquals(wpn.getVars()["damage_hp"].getAsInt(), bullet.getDamageHp(), "damageHp");
             }
 
         }

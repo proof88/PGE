@@ -1,3 +1,4 @@
+#include "WeaponManager.h"
 /*
     ###################################################################################
     WeaponManager.cpp
@@ -36,7 +37,7 @@ Bullet::Bullet(
     TPRREfloat wpn_px, TPRREfloat wpn_py, TPRREfloat wpn_pz,
     TPRREfloat wpn_ax, TPRREfloat wpn_ay, TPRREfloat wpn_az,
     TPRREfloat sx, TPRREfloat sy, TPRREfloat /*sz*/,
-    TPRREfloat speed, TPRREfloat gravity, TPRREfloat drag, TPRREbool fragile) :
+    TPRREfloat speed, TPRREfloat gravity, TPRREfloat drag, TPRREbool fragile, int nDamageHp) :
     m_id(m_globalBulletId++),
     m_gfx(gfx),
     m_connHandle(connHandle),
@@ -44,6 +45,7 @@ Bullet::Bullet(
     m_gravity(gravity),
     m_drag(drag),
     m_fragile(fragile),
+    m_nDamageHp(nDamageHp),
     m_obj(NULL)
 {
     if ( (m_speed == 1000.f) && (m_drag > 0.f))
@@ -127,6 +129,11 @@ TPRREfloat Bullet::getDrag() const
 TPRREbool Bullet::isFragile() const
 {
     return m_fragile;
+}
+
+int Bullet::getDamageHp() const
+{
+    return m_nDamageHp;
 }
 
 void Bullet::Update()
@@ -545,7 +552,8 @@ TPRREbool Weapon::shoot()
             getVars()["bullet_speed"].getAsFloat(),
             getVars()["bullet_gravity"].getAsFloat(),
             getVars()["bullet_drag"].getAsFloat(),
-            getVars()["bullet_fragile"].getAsBool())
+            getVars()["bullet_fragile"].getAsBool(),
+            getVars()["damage_hp"].getAsInt())
     );
 
     PFL::gettimeofday(&m_timeLastShot, 0);

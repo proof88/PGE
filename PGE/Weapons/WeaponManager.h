@@ -50,7 +50,7 @@ public:
         TPRREfloat wpn_px, TPRREfloat wpn_py, TPRREfloat wpn_pz,
         TPRREfloat wpn_ax, TPRREfloat wpn_ay, TPRREfloat wpn_az,
         TPRREfloat sx, TPRREfloat sy, TPRREfloat sz,
-        TPRREfloat speed, TPRREfloat gravity, TPRREfloat drag, TPRREbool fragile);
+        TPRREfloat speed, TPRREfloat gravity, TPRREfloat drag, TPRREbool fragile, int nDamageHp);
     
     /** Ctor to be used by PGE client instance. */
     Bullet(
@@ -72,6 +72,7 @@ public:
     TPRREfloat getGravity() const;
     TPRREfloat getDrag() const;
     TPRREbool isFragile() const;
+    int getDamageHp() const;
 
     void Update();
 
@@ -86,7 +87,8 @@ public:
         m_speed(other.m_speed),
         m_gravity(other.m_gravity),
         m_drag(other.m_drag),
-        m_fragile(other.m_fragile)
+        m_fragile(other.m_fragile),
+        m_nDamageHp(other.m_nDamageHp)
     {
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY()); // TODO: throw if cnanot creaate
         m_obj->SetDoubleSided(true);
@@ -104,6 +106,7 @@ public:
         m_gravity = other.m_gravity;
         m_drag = other.m_drag;
         m_fragile = other.m_fragile;
+        m_nDamageHp = other.m_nDamageHp;
 
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());  // TODO: throw if cnanot creaate
         m_obj->SetDoubleSided(true);
@@ -127,6 +130,7 @@ private:
     TPRREfloat m_gravity;                                  /**< Gravity as defined by weapon file. Used by PGE server instance only. */
     TPRREfloat m_drag;                                     /**< Drag as defined by weapon file. Used by PGE server instance only. */
     TPRREbool m_fragile;                                   /**< Fragile flag as defined by weapon file. Used by PGE server instance only. */
+    int m_nDamageHp;                                       /**< Damage to HP as defined by weapon file. Used by PGE server instance only. */
 
     PRREObject3D* m_obj;                                   /**< Associated PRRE object to be rendered. Used by PGE server and client instances. */
 

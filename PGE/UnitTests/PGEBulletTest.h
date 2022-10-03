@@ -84,6 +84,7 @@ private:
         const float fGravity = 15.f;
         const float fDrag = 25.f;
         const bool bFragile = true;
+        const int nDamageHp = 30;
         const pge_network::PgeNetworkConnectionHandle connHandle = 52;
 
         Bullet bullet(
@@ -92,7 +93,7 @@ private:
             posVec.getX(), posVec.getY(), posVec.getZ(),
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
-            fSpeed, fGravity, fDrag, bFragile);
+            fSpeed, fGravity, fDrag, bFragile, nDamageHp);
         
         bool b = assertEquals(bullet.getId(), iLastBulletId, "bullet id");
         b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId + 1, "global bullet id");
@@ -104,6 +105,7 @@ private:
         b &= assertEquals(fGravity, bullet.getGravity(), "gravity");
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(bFragile, bullet.isFragile(), "fragile");
+        b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
 
         return b;
     }
@@ -146,7 +148,7 @@ private:
                 1.f, 2.f, 3.f,
                 20.f, 40.f, 60.f,
                 4.f, 5.f, 0.f,
-                1000.f, 15.f, 25.f, true);
+                1000.f, 15.f, 25.f, true, 10);
         }
         catch (const std::exception)
         {
@@ -165,7 +167,7 @@ private:
         put.SetRotation(angleVec.getX(), angleVec.getY(), angleVec.getZ());
         put.Move(speed);
 
-        Bullet bullet(*engine, 0, 0.f, 0.f, 0.f, angleVec.getX(), angleVec.getY(), angleVec.getZ(), 1.f, 1.f, 1.f, speed, 15.f, 25.f, true);
+        Bullet bullet(*engine, 0, 0.f, 0.f, 0.f, angleVec.getX(), angleVec.getY(), angleVec.getZ(), 1.f, 1.f, 1.f, speed, 15.f, 25.f, true, 10);
         bullet.Update();
 
         bool b = assertEquals(put.getPosVec(), bullet.getObject3D().getPosVec(), "pos");
