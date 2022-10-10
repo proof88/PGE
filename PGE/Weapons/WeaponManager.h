@@ -182,6 +182,8 @@ public:
     TPRREbool reload();
     TPRREbool shoot();
 
+    void Reset();
+
     Weapon(const Weapon& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
         PGEcfgFile(other),
         m_bullets(other.m_bullets),

@@ -1,4 +1,3 @@
-#include "WeaponManager.h"
 /*
     ###################################################################################
     WeaponManager.cpp
@@ -284,8 +283,7 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRende
         throw std::runtime_error("damage_area_size is 0 but damage_area_pulse is non-zero in " + std::string(fname));
     }
 
-    // it doesnt matter if weapon is reloadable or not, the loaded bullet count is in nMagBulletCount
-    m_nMagBulletCount = getVars()["bullets_default"].getAsInt();
+    Reset();
 
     m_obj = m_gfx.getObject3DManager().createPlane(1.f, 0.5f); // TODO: grab sizes from wpn file
     if ( !m_obj )
@@ -559,6 +557,13 @@ TPRREbool Weapon::shoot()
     PFL::gettimeofday(&m_timeLastShot, 0);
 
     return true;
+}
+
+void Weapon::Reset()
+{
+    // it doesnt matter if weapon is reloadable or not, the loaded bullet count is in nMagBulletCount
+    m_nMagBulletCount = getVars()["bullets_default"].getAsInt();
+    m_nUnmagBulletCount = 0;
 }
 
 

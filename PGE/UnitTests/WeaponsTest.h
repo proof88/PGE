@@ -76,6 +76,7 @@ protected:
         AddSubTest("test_wpn_shoot_doesnt_shoot_when_already_shooting", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_doesnt_shoot_when_already_shooting);
         AddSubTest("test_wpn_shoot_continuously_in_loop_respects_cooldown_time", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_continuously_in_loop_respects_cooldown_time);
         AddSubTest("test_wpn_reload_doesnt_reload_during_shooting", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_doesnt_reload_during_shooting);
+        AddSubTest("test_wpn_reset_sets_defaults", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_reset_sets_defaults);
         
         AddSubTest("test_wm_initially_empty", (PFNUNITSUBTEST) &WeaponsTest::test_wm_initially_empty);
         AddSubTest("test_wm_clear_weapons", (PFNUNITSUBTEST) &WeaponsTest::test_wm_clear_weapons);
@@ -861,6 +862,32 @@ private:
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 2");
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 2");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 2");
+        }
+        catch (const std::exception&) {}
+
+        return b;
+    }
+
+    bool test_wpn_reset_sets_defaults()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 0);
+            b = true;
+
+            const TPRREuint nOriginalMagBulletCount = wpn.getMagBulletCount();
+            const TPRREuint nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
+
+            wpn.SetUnmagBulletCount(100); // default would be 0
+            wpn.SetMagBulletCount(14); // full would be 30
+
+            wpn.Reset();
+
+            b &= assertEquals(nOriginalMagBulletCount, wpn.getMagBulletCount(), "mag bullet count");
+            b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count");
+
         }
         catch (const std::exception&) {}
 
