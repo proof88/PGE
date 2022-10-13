@@ -524,24 +524,31 @@
     <ClCompile Include="PGEWorldWeather.cpp" />
     <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_opengl2.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_demo.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_draw.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_tables.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_widgets.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PRRE\source\Display\PRREScreen.cpp" />
     <ClCompile Include="PRRE\source\Display\PRRESharedSettings.cpp" />
