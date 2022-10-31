@@ -257,7 +257,9 @@ private:
             assertEquals("Notepad.jpg", PFL::changeExtension("Notepad", "jpg"), "notepad no ext") &
             assertEquals("C:\\Windows\\Notepad.tga", PFL::changeExtension("C:\\Windows\\Notepad.exe", "tga"), "notepad fullpath") &
             assertEquals("C:/Windows/Notepad.tga", PFL::changeExtension("C:/Windows/Notepad.exe", "tga"), "notepad fullpath 2") &
-            assertEquals("", PFL::changeExtension("", "jpg"), "empty");
+            assertEquals("", PFL::changeExtension("", "jpg"), "empty") &
+            assertEquals("Notepad", PFL::changeExtension("Notepad.exe", ""), "remove ext 1") &
+            assertEquals("Notepad", PFL::changeExtension("Notepad", ""), "remove ext 2");
     }
 
     bool testNumCharAppears()
