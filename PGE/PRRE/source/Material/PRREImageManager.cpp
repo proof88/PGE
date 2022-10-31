@@ -321,6 +321,14 @@ const char* PRREImageManager::getLoggerModuleName()
      - at 4 bits (16 colors) the width of the image must be divisible by 8;
      - at 1 bits (2 colors) the width of the image must be divisible by 32.
 
+    Note that with 32 bit BMP files you can utilize real alpha component of pixel colors, but
+    not all image editing application saves real alpha values into 32 bit color depth bitmap files.
+    For example, IrfanView and MS Paint saves 0 or 255 for every pixel's alpha component even if the
+    source image was a true transparent PNG.
+    But Adobe Flash properly saves transparency data.
+    If you want to utilize transparency of 32 bit bitmaps properly, follow the instructions given
+    in at PRREMaterial::setBlendFuncs().
+
     @return The created Image object on success, PGENULL otherwise.
 */
 PRREImage* PRREImageManager::createFromFile(const char* filename)

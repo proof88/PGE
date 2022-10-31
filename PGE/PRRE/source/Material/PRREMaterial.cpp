@@ -855,6 +855,10 @@ TPRREbool PRREMaterial::setDestinationBlendFunc(TPRRE_BLENDFACTOR value, TPRREui
     0 is the default level.
     Equivalent to calling setSourceBlendFunc(src, level) and setDestinationBlendFunc(dst, level), so check their documentation as well for accepted values.
     See the description of those functions for more details about the cases when there is no effect when calling them.
+    If you want to utilize transparency of a loaded 32 bit color depth bitmap, you have to make sure the bitmap has proper
+    alpha values. Some image editing applications don't save proper alpha values, as explained at PRREImageManager::createFromFile().
+    For bitmaps not having proper alpha bits use (PRRE_SRC_ALPHA, PRRE_ONE) for src and dst respectively.
+    For bitmaps having proper alpha bits use (PRRE_SRC_ALPHA, PRRE_ONE_MINUS_SRC_ALPHA) for src and dst respectively to utilize real alpha.
 
     @param src Source blend factor to be set on the specified level.
     @param dst Destination blend factor to be set on the specified level.

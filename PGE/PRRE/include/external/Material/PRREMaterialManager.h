@@ -98,7 +98,9 @@ enum TPRRE_BLENDMODE
 {
     PRRE_BM_NONE,                   /**< No blending. */
     PRRE_BM_MANUAL,                 /**< Manual blending, using custom blend factors. */
-    PRRE_BM_STANDARD_TRANSPARENCY   /**< Transparency. */
+    PRRE_BM_STANDARD_TRANSPARENCY   /**< Standard transparency. Recommended only if we have real alpha values.
+                                         Equivalent to setting (PRRE_SRC_ALPHA, PRRE_ONE_MINUS_SRC_ALPHA) src and dst blend factors
+                                         by PRREMaterial::setBlendFuncs(). */
 }; // TPRRE_BLENDMODE
 
 
