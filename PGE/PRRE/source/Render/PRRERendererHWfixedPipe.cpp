@@ -660,7 +660,7 @@ void PRRERendererHWfixedPipeImpl::RenderScene()
         getConsole().EOLn("%s() ERROR: unhandled iRenderPath!", __FUNCTION__);
         assert(false);
     } // switch iRenderPath
-
+    
     SwitchToOrtographicProjection();
     Draw2DObjects(*this);
 
@@ -1610,8 +1610,9 @@ void PRRERendererHWfixedPipeImpl::Draw2DObjects(PRREIRenderer& renderer)
 */
 void PRRERendererHWfixedPipeImpl::FinishRendering()
 {
-    glFlush();
-    SwapBuffers( wnd.getWndDC() );
+    glFlush(); // async: doesn't wait, just sends out previously buffered commands for execution
+    SwapBuffers( wnd.getWndDC() ); // async: doesn't wait, just requests buffer swap to be done in near future
+    //glFinish(); // sync: waits for all previously sent commands to be executed
 } // FinishRendering()
 
 
