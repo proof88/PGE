@@ -1,3 +1,5 @@
+#include "PGE.h"
+#include "PGE.h"
 /*
     ###################################################################################
     PGE.cpp
@@ -10,6 +12,10 @@
 
 //#include "PRRE/PRREbaseIncludes.h"  // PCH
 #include "PRREbaseIncludes.h"
+
+#include <chrono>
+#include <thread>
+
 #include "PGE.h"
 #include "PGEincludes.h"
 #include "PGEpragmas.h"
@@ -76,7 +82,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PGE*      _pOwner;                 /**< The owner public object who creates this pimpl object. */
+    PGE*      _pOwner;                  /**< The owner public object who creates this pimpl object. */
 
     PGESysCFG  SysCFG;
     PGESysGFX  SysGFX;
@@ -89,10 +95,13 @@ private:
     PGEWorld& world;
     WeaponManager wpnMgr;
 
-    bool        bIsGameRunning;        /**< Is the game running (true after successful init and before initiating shutdown)? */
-    std::string sGameTitle;            /**< Simplified name of the game, used in paths too, so can't contain joker chars. */
-    int         nInactiveSleep;        /**< Amount of sleep in millisecs when inactive, 0 means no sleep. */
-    bool        bInactiveLikeActive;   /**< If true, runGame() will act the same way in inactive state as in active state. */
+    bool        bIsGameRunning;         /**< Is the game running (true after successful init and before initiating shutdown)? */
+    std::string sGameTitle;             /**< Simplified name of the game, used in paths too, so can't contain joker chars. */
+    int         nInactiveSleep;         /**< Amount of sleep in millisecs when inactive, 0 means no sleep. */
+    bool        bInactiveLikeActive;    /**< If true, runGame() will act the same way in inactive state as in active state. */
+
+    unsigned int m_nTargetGameLoopFreq; /**< Frequency for the main game engine loop, 0 means no target frequency. */
+    double m_minFrameTimeMicrosecs;
 
     // ---------------------------------------------------------------------------
 
@@ -103,6 +112,9 @@ private:
 
     PGEimpl(const char* gametitle);
 
+    void frameFrameLimit(
+        std::chrono::time_point<std::chrono::steady_clock>& timeNow,
+        std::chrono::time_point<std::chrono::steady_clock>& timeLastTime);
 
     friend class PGE;
 
@@ -278,7 +290,9 @@ PGE::PGEimpl::PGEimpl() :
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
     m_PgeNetwork(pge_network::PgeNetwork::createAndGet()),
     SysCFG("") ,
-    wpnMgr(GFX)
+    wpnMgr(GFX),
+    m_nTargetGameLoopFreq(0),
+    m_minFrameTimeMicrosecs(0.0)
 {
     _pOwner = NULL;  // currently not used
 }
@@ -290,7 +304,9 @@ PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
     m_PgeNetwork(pge_network::PgeNetwork::createAndGet() ),
     SysCFG(""),
-    wpnMgr(GFX)
+    wpnMgr(GFX),
+    m_nTargetGameLoopFreq(0),
+    m_minFrameTimeMicrosecs(0.0)
 {
     _pOwner = NULL;  // currently not used
 }  
@@ -312,7 +328,9 @@ PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     GFX( PR00FsReducedRenderingEngine::createAndGet() ),
     m_PgeNetwork(pge_network::PgeNetwork::createAndGet()),
     SysCFG(gameTitle),
-    wpnMgr(GFX)
+    wpnMgr(GFX),
+    m_nTargetGameLoopFreq(0),
+    m_minFrameTimeMicrosecs(0.0)
 {
     _pOwner = NULL;  // currently not used
     sGameTitle = gameTitle;
@@ -320,6 +338,40 @@ PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     nInactiveSleep = PGE_INACTIVE_SLEEP;
     bInactiveLikeActive = PGE_INACTIVE_AS_ACTIVE;
 } // PGE(...)
+
+static void busyWait(double microsecsToWait)
+{
+    if (microsecsToWait <= 0.0)
+    {
+        return;
+    }
+
+    const std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+    long long microsecsWaited = 0;
+    while (microsecsWaited < microsecsToWait)
+    {
+        microsecsWaited = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start).count();
+    }
+}
+
+void PGE::PGEimpl::frameFrameLimit(
+    std::chrono::time_point<std::chrono::steady_clock>& timeNow,
+    std::chrono::time_point<std::chrono::steady_clock>& timeLastTime)
+{
+    if (m_minFrameTimeMicrosecs <= 0.0)
+    {
+        return;
+    }
+
+    timeNow = std::chrono::steady_clock::now();
+    const long long durElapsedMicrosecs = (std::chrono::duration_cast<std::chrono::microseconds>(timeNow - timeLastTime)).count();
+    if (durElapsedMicrosecs < m_minFrameTimeMicrosecs)
+    {
+        // not nice, but effective without using sleep
+        busyWait(m_minFrameTimeMicrosecs - durElapsedMicrosecs);
+    }
+    timeLastTime = std::chrono::steady_clock::now();
+}
 
 
 
@@ -702,7 +754,6 @@ int PGE::initializeGame()
     return 0;
 } // initializeGame()
 
-
 /**
     Runs the game.
 
@@ -710,6 +761,9 @@ int PGE::initializeGame()
 */
 int PGE::runGame()
 {
+    std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::steady_clock::now();
+    std::chrono::time_point<std::chrono::steady_clock> timeLastTime = timeNow;
+
     while ( isGameRunning() )
     {
         PRREWindow& window = p->GFX.getWindow();
@@ -736,6 +790,7 @@ int PGE::runGame()
             PGEInputHandler::createAndGet().getMouse().ApplyRelativeInput();
             onGameRunning();
             p->GFX.getRenderer()->RenderScene();
+            p->frameFrameLimit(timeNow, timeLastTime);
         }
         //else
         //{
@@ -785,6 +840,35 @@ int PGE::destroyGame()
     onGameDestroyed();
     return 0;
 } // destroyGameEngine()
+
+/**
+    Gets the frequency for the main game engine loop.
+    This controls how many times onGameRunning() will be invoked in each second by the game engine.
+    Basically this can be used to determine a target FPS value for your game.
+    Default value is 0, meaning not limiting maximum FPS.
+
+    Note that even if this value is 0, maximum FPS might be limited by the current V-Sync setting.
+    V-Sync is controlled by PRREScreen::SetVSyncEnabled().
+*/
+unsigned int PGE::getGameRunningFrequency() const
+{
+    return p->m_nTargetGameLoopFreq;
+}
+
+/**
+    Sets the frequency for the main game engine loop.
+    This controls how many times onGameRunning() will be invoked in each second by the game engine.
+    Basically this can be used to determine a target FPS value for your game.
+    Default value is 0, meaning not limiting maximum FPS.
+
+    Note that even if this value is 0, maximum FPS might be limited by the current V-Sync setting.
+    V-Sync is controlled by PRREScreen::SetVSyncEnabled().
+*/
+void PGE::setGameRunningFrequency(unsigned int freq)
+{
+    p->m_nTargetGameLoopFreq = freq;
+    p->m_minFrameTimeMicrosecs = freq > 0 ? (1000.0 * 1000.0 / freq) : 0;
+}
 
 
 // ############################## PROTECTED ##############################

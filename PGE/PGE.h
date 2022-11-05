@@ -58,7 +58,7 @@ public:
     static int  showInfoDialog(const char* msg);      /**< Shows an info dialog box. */
     static int  showInfoDialog(PGE_MSG_ID msg_id);    /**< Shows an info dialog box. */
 
-    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+    static const char* getLoggerModuleName();         /**< Returns the logger module name of this class. */
 
     // ---------------------------------------------------------------------------
 
@@ -83,6 +83,9 @@ public:
     int  runGame();                            /**< Runs the game. */
     bool isGameRunning() const;                /**< Gets the running state of the game. */
     int  destroyGame();                        /**< Destroys the game engine. */
+
+    unsigned int getGameRunningFrequency() const;      /**< Gets the frequency for the main game engine loop. */
+    void setGameRunningFrequency(unsigned int freq);   /**< Sets the frequency for the main game engine loop. */
 
 protected:
     
