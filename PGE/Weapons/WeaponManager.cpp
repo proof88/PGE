@@ -159,7 +159,7 @@ const PRREObject3D& Bullet::getObject3D() const
 // ############################### PRIVATE ###############################
 
 
-uint32_t Bullet::m_globalBulletId = 0;
+Bullet::BulletId Bullet::m_globalBulletId = 0;
 
 
 /*
