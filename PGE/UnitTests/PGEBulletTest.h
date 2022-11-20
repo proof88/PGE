@@ -35,6 +35,7 @@ protected:
 
         AddSubTest("test_bullet_ctor_server_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_good);
         AddSubTest("test_bullet_ctor_client_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_good);
+        AddSubTest("test_reset_global_bullet_id", (PFNUNITSUBTEST)&PGEBulletTest::test_reset_global_bullet_id);
         AddSubTest("test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag",
             (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
         AddSubTest("test_bullet_update_updates_position", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_update_updates_position);
@@ -135,6 +136,31 @@ private:
         b &= assertEquals(false, bullet.isFragile(), "fragile");
 
         return b;
+    }
+
+    bool test_reset_global_bullet_id()
+    {
+        const PRREVector posVec(1.f, 2.f, 3.f);
+        const PRREVector angleVec(20.f, 40.f, 60.f);
+        const PRREVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
+        const float fSpeed = 60.f;
+        const float fGravity = 15.f;
+        const float fDrag = 25.f;
+        const bool bFragile = true;
+        const int nDamageHp = 30;
+        const pge_network::PgeNetworkConnectionHandle connHandle = 52;
+
+        Bullet bullet(
+            *engine,
+            connHandle,
+            posVec.getX(), posVec.getY(), posVec.getZ(),
+            angleVec.getX(), angleVec.getY(), angleVec.getZ(),
+            sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
+            fSpeed, fGravity, fDrag, bFragile, nDamageHp);
+
+        Bullet::ResetGlobalBulletId();
+
+        return assertEquals(static_cast<Bullet::BulletId>(0), Bullet::getGlobalBulletId());
     }
 
     bool test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag()

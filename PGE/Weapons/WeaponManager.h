@@ -39,11 +39,13 @@ public:
     typedef uint32_t BulletId;
 
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+
     static BulletId getGlobalBulletId();
+    static void ResetGlobalBulletId();
 
     // ---------------------------------------------------------------------------
 
-    /** Ctor to be used by PGE server instance. */
+    /** Ctor to be used by PGE server instance: bullet id will be assigned within the ctor. */
     Bullet(
         PR00FsReducedRenderingEngine& gfx,
         pge_network::PgeNetworkConnectionHandle connHandle,
@@ -52,7 +54,7 @@ public:
         TPRREfloat sx, TPRREfloat sy, TPRREfloat sz,
         TPRREfloat speed, TPRREfloat gravity, TPRREfloat drag, TPRREbool fragile, int nDamageHp);
     
-    /** Ctor to be used by PGE client instance. */
+    /** Ctor to be used by PGE client instance: bullet id as received from server. */
     Bullet(
         PR00FsReducedRenderingEngine& gfx,
         Bullet::BulletId id,

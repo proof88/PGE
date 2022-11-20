@@ -30,6 +30,11 @@ Bullet::BulletId Bullet::getGlobalBulletId()
     return m_globalBulletId;
 }
 
+void Bullet::ResetGlobalBulletId()
+{
+    m_globalBulletId = 0;
+}
+
 Bullet::Bullet(
     PR00FsReducedRenderingEngine& gfx,
     pge_network::PgeNetworkConnectionHandle connHandle,
