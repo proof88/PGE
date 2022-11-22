@@ -49,7 +49,10 @@ protected:
         AddSubTest("wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled", (PFNUNITSUBTEST) &WeaponsTest::wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled);
         AddSubTest("test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
         AddSubTest("test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse);
+        
         AddSubTest("test_wpn_load_weapon_good", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_good);
+
+        AddSubTest("test_wpn_set_available", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_set_available);
         
         AddSubTest("test_wpn_reload_when_no_more_bullets_does_not_reload", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_when_no_more_bullets_does_not_reload);
         AddSubTest("test_wpn_reload_when_full_does_not_reload", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_when_full_does_not_reload);
@@ -326,6 +329,7 @@ private:
             Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 10);
             b = true;
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state") &
+                assertFalse(wpn.isAvailable(), "available") &
                 assertEquals(10u, wpn.getOwner(), "owner") &
                 assertEquals(30u, wpn.getMagBulletCount(), "mag") &
                 assertEquals(0u,  wpn.getUnmagBulletCount(), "unmag") &
@@ -359,6 +363,25 @@ private:
                 assertEquals("linear", wpn.getVars()["damage_area_effect"].getAsString(), "damage_area_effect") &
                 assertEquals(20.f, wpn.getVars()["damage_area_pulse"].getAsFloat(), "damage_area_pulse") &
                 assertTrue(bullets.empty(), "bullets");
+        }
+        catch (const std::exception&) {}
+
+        return b;
+    }
+
+    bool test_wpn_set_available()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 10);
+
+            wpn.SetAvailable(true);
+            b = assertTrue(wpn.isAvailable(), "true");
+
+            wpn.SetAvailable(false);
+            b &= assertFalse(wpn.isAvailable(), "false");
         }
         catch (const std::exception&) {}
 

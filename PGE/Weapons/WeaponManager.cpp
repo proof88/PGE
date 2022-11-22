@@ -185,7 +185,8 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRende
     m_state(WPN_READY),
     m_nUnmagBulletCount(0),
     m_nMagBulletCount(0),
-    m_nBulletsToReload(0)
+    m_nBulletsToReload(0),
+    m_bAvailable(false)
 {
     getConsole().OLnOI("Weapon::Weapon(%s) ...", fname);
 
@@ -569,6 +570,16 @@ void Weapon::Reset()
     // it doesnt matter if weapon is reloadable or not, the loaded bullet count is in nMagBulletCount
     m_nMagBulletCount = getVars()["bullets_default"].getAsInt();
     m_nUnmagBulletCount = 0;
+}
+
+bool Weapon::isAvailable() const
+{
+    return m_bAvailable;
+}
+
+void Weapon::SetAvailable(bool bAvail)
+{
+    m_bAvailable = bAvail;
 }
 
 

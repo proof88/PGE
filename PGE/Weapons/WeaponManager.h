@@ -186,6 +186,9 @@ public:
 
     void Reset();
 
+    bool isAvailable() const;
+    void SetAvailable(bool bAvail);
+
     Weapon(const Weapon& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
         PGEcfgFile(other),
         m_bullets(other.m_bullets),
@@ -196,7 +199,8 @@ public:
         m_nMagBulletCount(other.m_nMagBulletCount),
         m_nBulletsToReload(other.m_nBulletsToReload),
         m_timeReloadStarted(other.m_timeReloadStarted),
-        m_timeLastShot(other.m_timeLastShot)
+        m_timeLastShot(other.m_timeLastShot),
+        m_bAvailable(false)
     {
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());
         m_obj->SetDoubleSided(true);
@@ -216,6 +220,7 @@ public:
         m_nBulletsToReload = other.m_nBulletsToReload;
         m_timeReloadStarted = other.m_timeReloadStarted;
         m_timeLastShot = other.m_timeLastShot;
+        m_bAvailable = other.m_bAvailable;
 
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());
         m_obj->SetDoubleSided(true);
@@ -242,6 +247,7 @@ private:
     TPRREuint m_nBulletsToReload;                      /**< Only updated during reload() / Update(). Should be managed by PGE server instance. */
     PFL::timeval m_timeReloadStarted;                  /**< Only updated during reload() / Update(). Should be managed by PGE server instance. */
     PFL::timeval m_timeLastShot;                       /**< Only updated during shoot() / Update(). Should be managed by PGE server instance. */
+    bool m_bAvailable;                                 /**< Flag for the game, e.g. if true then the player has this weapon. */
 
     // ---------------------------------------------------------------------------
 
