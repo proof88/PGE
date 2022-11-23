@@ -83,6 +83,7 @@ protected:
         
         AddSubTest("test_wm_initially_empty", (PFNUNITSUBTEST) &WeaponsTest::test_wm_initially_empty);
         AddSubTest("test_wm_clear_weapons", (PFNUNITSUBTEST) &WeaponsTest::test_wm_clear_weapons);
+        AddSubTest("test_wm_set_default_available_weapon", (PFNUNITSUBTEST)&WeaponsTest::test_wm_set_default_available_weapon);
         AddSubTest("test_wm_load_weapon_bad_assignment", (PFNUNITSUBTEST) &WeaponsTest::test_wm_load_weapon_bad_assignment);
         AddSubTest("test_wm_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &WeaponsTest::test_wm_load_weapon_unaccepted_var);
         AddSubTest("test_wm_load_weapon_missing_var", (PFNUNITSUBTEST) &WeaponsTest::test_wm_load_weapon_missing_var);
@@ -1070,23 +1071,41 @@ private:
     bool test_wm_initially_empty()
     {
         WeaponManager wm(*engine);
-        return assertTrue(wm.getWeapons().empty(), "weapons") & assertTrue(wm.getBullets().empty(), "bullets");
+        return assertTrue(wm.getWeapons().empty(), "weapons") & assertTrue(wm.getBullets().empty(), "bullets") &
+            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
     }
 
     bool test_wm_clear_weapons()
     {
         WeaponManager wm(*engine);
         bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn.txt", 0), "load");
+        b &= assertTrue(wm.setDefaultAvailableWeapon("sample_good_wpn"), "setDefaultAvailable");
         wm.Clear();
 
-        return b & assertTrue(wm.getWeapons().empty(), "empty");
+        return b & assertTrue(wm.getWeapons().empty(), "empty") &
+            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
+    }
+
+    bool test_wm_set_default_available_weapon()
+    {
+        WeaponManager wm(*engine);
+        bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn.txt", 0), "load");
+        
+        b &= assertFalse(wm.setDefaultAvailableWeapon("xxx"), "setDefaultAvailable 1");
+        b &= assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon 1");
+
+        b &= assertTrue(wm.setDefaultAvailableWeapon("sample_good_wpn"), "setDefaultAvailable 2");
+        b &= assertEquals("sample_good_wpn", wm.getDefaultAvailableWeapon(), "defaultWeapon 2");
+
+        return b;
     }
 
     bool test_wm_load_weapon_bad_assignment()
     {
         WeaponManager wm(*engine);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_bad_assignment.txt", 0), "load");
-        b &= assertTrue(wm.getWeapons().empty(), "empty");
+        b &= assertTrue(wm.getWeapons().empty(), "empty") &
+            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
 
         return b;
     }
@@ -1095,7 +1114,8 @@ private:
     {
         WeaponManager wm(*engine);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_unaccepted_var.txt", 0), "load");
-        b &= assertTrue(wm.getWeapons().empty(), "empty");
+        b &= assertTrue(wm.getWeapons().empty(), "empty") &
+            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
 
         return b;
     }
@@ -1104,7 +1124,8 @@ private:
     {
         WeaponManager wm(*engine);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_missing_var.txt", 0), "load");
-        b &= assertTrue(wm.getWeapons().empty(), "empty");
+        b &= assertTrue(wm.getWeapons().empty(), "empty") &
+            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
 
         return b;
     }
@@ -1113,7 +1134,8 @@ private:
     {
         WeaponManager wm(*engine);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_double_defined_var.txt", 0), "load");
-        b &= assertTrue(wm.getWeapons().empty(), "empty");
+        b &= assertTrue(wm.getWeapons().empty(), "empty") &
+            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
 
         return b;
     }
@@ -1122,7 +1144,8 @@ private:
     {
         WeaponManager wm(*engine);
         bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn.txt", 0), "load");
-        b &= assertFalse(wm.getWeapons().empty(), "not empty");
+        b &= assertFalse(wm.getWeapons().empty(), "not empty") &
+            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
 
         return b;
     }

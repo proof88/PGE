@@ -278,6 +278,12 @@ public:
 
     bool load(const char* fname, pge_network::PgeNetworkConnectionHandle connHandle);
     std::vector<Weapon*>& getWeapons();
+
+    Weapon* getWeaponByName(const std::string& wpnName);
+
+    const std::string& getDefaultAvailableWeapon() const;
+    bool setDefaultAvailableWeapon(const std::string& wpnName);
+
     void Clear();
     std::list<Bullet>& getBullets();
 
@@ -297,6 +303,7 @@ private:
     PR00FsReducedRenderingEngine& m_gfx;
     std::vector<Weapon*> m_weapons;
     std::list<Bullet> m_bullets;
+    std::string m_sDefaultAvailableWeapon;
 
     // ---------------------------------------------------------------------------
 

@@ -128,8 +128,15 @@ bool PGEcfgFile::load(const char* fname)
         return false;
     }
 
+    m_sFilename = PFL::changeExtension(PFL::getFilename(fname).c_str(), "");;
+
     getConsole().SOLnOO("PGEcfgFile loaded!");
     return true;
+}
+
+const std::string& PGEcfgFile::getFilename() const
+{
+    return m_sFilename;
 }
 
 bool PGEcfgFile::getAllAcceptedVarsDefineRequirement() const

@@ -663,6 +663,39 @@ std::vector<Weapon*>& WeaponManager::getWeapons()
     return m_weapons;
 }
 
+Weapon* WeaponManager::getWeaponByName(const std::string& wpnName)
+{    
+    for (const auto pWpn : m_weapons)
+    {
+        if (pWpn)
+        {
+            if (pWpn->getFilename() == wpnName)
+            {
+                return pWpn;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+const std::string& WeaponManager::getDefaultAvailableWeapon() const
+{
+    return m_sDefaultAvailableWeapon;
+}
+
+bool WeaponManager::setDefaultAvailableWeapon(const std::string& wpnName)
+{
+    Weapon* wpn = getWeaponByName(wpnName);
+    if (wpn)
+    {
+        m_sDefaultAvailableWeapon = wpnName;
+        return true;
+    }
+
+    return false;
+}
+
 void WeaponManager::Clear()
 {
     for (auto& pWpn : m_weapons)
@@ -671,12 +704,14 @@ void WeaponManager::Clear()
     }
     m_weapons.clear();
     m_bullets.clear();
+    m_sDefaultAvailableWeapon.clear();
 }
 
 std::list<Bullet>& WeaponManager::getBullets()
 {
     return m_bullets;
 }
+
 
 
 // ############################## PROTECTED ##############################

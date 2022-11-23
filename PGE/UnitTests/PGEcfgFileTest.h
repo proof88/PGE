@@ -44,7 +44,7 @@ protected:
     {
         CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), true);
         
-        AddSubTest("test_wm_initially_empty_and_defaults_set", (PFNUNITSUBTEST) &PGEcfgFileTest::test_wm_initially_empty_and_defaults_set);
+        AddSubTest("test_initially_empty_and_defaults_set", (PFNUNITSUBTEST) &PGEcfgFileTest::test_initially_empty_and_defaults_set);
         AddSubTest("test_load_bad_assignment", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_bad_assignment);
         AddSubTest("test_load_fail_unaccepted_var", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_fail_unaccepted_var);
         AddSubTest("test_load_accept_missing_var", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_accept_missing_var);
@@ -76,12 +76,13 @@ private:
         return *this;
     };
 
-    bool test_wm_initially_empty_and_defaults_set()
+    bool test_initially_empty_and_defaults_set()
     {
         PGEcfgFile cfgFile(false, false);
         return assertTrue(cfgFile.getVars().empty(), "empty") &
             assertFalse(cfgFile.getAllAcceptedVarsDefineRequirement(), "getAllAcceptedVarsDefineRequirement") &
-            assertFalse(cfgFile.getCaseSensitiveVars(), "getCaseSensitiveVars");
+            assertFalse(cfgFile.getCaseSensitiveVars(), "getCaseSensitiveVars") &
+            assertTrue(cfgFile.getFilename().empty(), "filename");
     }
 
     bool test_load_bad_assignment()
@@ -89,7 +90,8 @@ private:
         PGEcfgFile cfgFile(false, false);
 
         bool b = assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_bad_assignment.txt"), "load");
-        b &= assertTrue(cfgFile.getVars().empty(), "empty");
+        b &= assertTrue(cfgFile.getVars().empty(), "empty") &
+            assertTrue(cfgFile.getFilename().empty(), "filename");
 
         return b;
     }
@@ -105,7 +107,8 @@ private:
         // since acceptedVars is not empty, load should fail on unknown var "almafa"
         b &= assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_unaccepted_var.txt"), "load");
         
-        return b & assertTrue(cfgFile.getVars().empty(), "empty");
+        return b & assertTrue(cfgFile.getVars().empty(), "empty") &
+            assertTrue(cfgFile.getFilename().empty(), "filename");
     }
 
     bool test_load_accept_missing_var()
@@ -121,7 +124,8 @@ private:
         b &= assertTrue(cfgFile.load("gamedata/cfgs/cfg_test_load_missing_var.txt"), "load");
 
         return b & assertFalse(cfgFile.getVars().empty(), "empty") &
-            assertTrue(cfgFile.getVars().find("name") != cfgFile.getVars().end(), "name");
+            assertTrue(cfgFile.getVars().find("name") != cfgFile.getVars().end(), "name") &
+            assertEquals("cfg_test_load_missing_var", cfgFile.getFilename(), "filename");
     }
 
     bool test_load_fail_missing_var()
@@ -138,7 +142,8 @@ private:
         // since acceptedVars is not empty, and we dont accept missing vars, we should fail on missing "almafa"
         b &= assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_missing_var.txt"), "load");
 
-        return b & assertTrue(cfgFile.getVars().empty(), "empty");
+        return b & assertTrue(cfgFile.getVars().empty(), "empty") &
+            assertTrue(cfgFile.getFilename().empty(), "filename");
     }
 
     bool test_load_double_defined_var()
@@ -147,7 +152,8 @@ private:
 
         bool b = assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_double_defined_var.txt"), "load");
 
-        return b & assertTrue(cfgFile.getVars().empty(), "empty");
+        return b & assertTrue(cfgFile.getVars().empty(), "empty") &
+            assertTrue(cfgFile.getFilename().empty(), "filename");
     }
 
     bool test_load_fail_case_sensitive_vars_with_case_insensivity()
@@ -162,7 +168,8 @@ private:
         // they are multiple defined vars so we should fail now
         b &= assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_case_insensitive_vars.txt"), "load");
 
-        return b & assertTrue(cfgFile.getVars().empty(), "empty");
+        return b & assertTrue(cfgFile.getVars().empty(), "empty") &
+            assertTrue(cfgFile.getFilename().empty(), "filename");
     }
 
     bool test_load_fail_case_sensitive_vars_with_case_sensivity()
@@ -178,7 +185,8 @@ private:
         // "Name" is accepted but "name" is not, since we are case sensitive now and that is unknown var
         b &= assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_case_insensitive_vars.txt"), "load");
 
-        return b & assertTrue(cfgFile.getVars().empty(), "empty");
+        return b & assertTrue(cfgFile.getVars().empty(), "empty") &
+            assertTrue(cfgFile.getFilename().empty(), "filename");
     }
 
     bool test_load_good_case_sensitive_vars_with_case_sensivity()
@@ -191,7 +199,8 @@ private:
 
         return b & assertFalse(cfgFile.getVars().empty(), "empty") &
             assertTrue(cfgFile.getVars().find("Name") != cfgFile.getVars().end(), "Name") &
-            assertTrue(cfgFile.getVars().find("name") != cfgFile.getVars().end(), "name");
+            assertTrue(cfgFile.getVars().find("name") != cfgFile.getVars().end(), "name") &
+            assertEquals("cfg_test_load_case_insensitive_vars", cfgFile.getFilename(), "filename");
     }
 
     bool test_load_good()
@@ -199,7 +208,8 @@ private:
         PGEcfgFile cfgFile(false, false);
 
         bool b = assertTrue(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load");
-        b &= assertFalse(cfgFile.getVars().empty(), "not empty");
+        b &= assertFalse(cfgFile.getVars().empty(), "not empty") &
+            assertEquals("cfg_test_load_good", cfgFile.getFilename(), "filename");
 
         b &= assertTrue(cfgFile.getVars().find("name") != cfgFile.getVars().end(), "name var") &
             assertTrue(cfgFile.getVars().find("cap_max") != cfgFile.getVars().end(), "reload_per_mag var") &
@@ -235,7 +245,8 @@ private:
         b &= assertFalse(cfgFile.getVars().empty(), "not empty");
         
         b &= assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load");
-        b &= assertFalse(cfgFile.getVars().empty(), "not empty");
+        b &= assertFalse(cfgFile.getVars().empty(), "not empty") &
+            assertEquals("cfg_test_load_good", cfgFile.getFilename(), "filename");
 
         return b;
     }
@@ -259,7 +270,8 @@ private:
     bool test_override_validateOnLoad()
     {
         PGEcfgFileDerived cfgFile(false, false);
-        bool b = assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load");
+        bool b = assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load") &
+            assertTrue(cfgFile.getFilename().empty(), "filename");
         
         return b;
     }

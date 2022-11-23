@@ -48,6 +48,8 @@ public:
 
     bool load(const char* fname);
 
+    const std::string& getFilename() const;
+
     bool getAllAcceptedVarsDefineRequirement() const;
     bool getCaseSensitiveVars() const;
 
@@ -58,7 +60,8 @@ public:
         m_acceptedVars(other.m_acceptedVars),
         m_vars(other.m_vars),
         m_bRequireAllAcceptedVarsDefineRequirement(other.m_bRequireAllAcceptedVarsDefineRequirement),
-        m_bCaseSensitiveVars(other.m_bCaseSensitiveVars)
+        m_bCaseSensitiveVars(other.m_bCaseSensitiveVars),
+        m_sFilename(other.m_sFilename)
     {}
 
     PGEcfgFile& operator=(const PGEcfgFile& other) // TODO check if we really cannot live with just compiler generated operator=?
@@ -67,6 +70,7 @@ public:
         m_vars = other.m_vars;
         m_bRequireAllAcceptedVarsDefineRequirement = other.m_bRequireAllAcceptedVarsDefineRequirement;
         m_bCaseSensitiveVars = other.m_bCaseSensitiveVars;
+        m_sFilename = other.m_sFilename;
         return *this;
     }
 
@@ -84,6 +88,8 @@ private:
 
     bool m_bRequireAllAcceptedVarsDefineRequirement;
     bool m_bCaseSensitiveVars;
+
+    std::string m_sFilename;
 
     // ---------------------------------------------------------------------------
 
