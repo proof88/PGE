@@ -417,9 +417,14 @@ void Weapon::SetMagBulletCount(TPRREuint count)
     m_nMagBulletCount = count;
 }
 
-pge_network::PgeNetworkConnectionHandle Weapon::getOwner() const
+const pge_network::PgeNetworkConnectionHandle& Weapon::getOwner() const
 {
     return m_connHandle;
+}
+
+void Weapon::SetOwner(const pge_network::PgeNetworkConnectionHandle& owner)
+{
+    m_connHandle = owner;
 }
 
 void Weapon::Update()

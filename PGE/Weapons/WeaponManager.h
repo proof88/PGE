@@ -177,7 +177,8 @@ public:
     TPRREuint getMagBulletCount() const;
     void SetMagBulletCount(TPRREuint count);
 
-    pge_network::PgeNetworkConnectionHandle getOwner() const;
+    const pge_network::PgeNetworkConnectionHandle& getOwner() const;
+    void SetOwner(const pge_network::PgeNetworkConnectionHandle& owner);
 
     void Update();
     State getState() const;

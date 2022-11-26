@@ -53,6 +53,7 @@ protected:
         AddSubTest("test_wpn_load_weapon_good", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_good);
 
         AddSubTest("test_wpn_set_available", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_set_available);
+        AddSubTest("test_wpn_set_owner", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_set_owner);
         
         AddSubTest("test_wpn_reload_when_no_more_bullets_does_not_reload", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_when_no_more_bullets_does_not_reload);
         AddSubTest("test_wpn_reload_when_full_does_not_reload", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_when_full_does_not_reload);
@@ -383,6 +384,22 @@ private:
 
             wpn.SetAvailable(false);
             b &= assertFalse(wpn.isAvailable(), "false");
+        }
+        catch (const std::exception&) {}
+
+        return b;
+    }
+
+    bool test_wpn_set_owner()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 10);
+
+            wpn.SetOwner(5678);
+            b = assertEquals(5678u, wpn.getOwner(), "owner");
         }
         catch (const std::exception&) {}
 
