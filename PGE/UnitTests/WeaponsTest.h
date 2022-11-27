@@ -42,7 +42,9 @@ protected:
         AddSubTest("test_wpn_load_weapon_missing_var", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_missing_var);
         AddSubTest("test_wpn_load_weapon_double_defined_var", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_double_defined_var);
         AddSubTest("test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag);
+        AddSubTest("test_wpn_load_weapon_reloadable_cannot_be_greater_than_cap_max", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_load_weapon_reloadable_cannot_be_greater_than_cap_max);
         AddSubTest("test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable);
+        AddSubTest("test_wpn_load_weapon_bullets_default_cannot_be_greater_than_cap_max", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_load_weapon_bullets_default_cannot_be_greater_than_cap_max);
         AddSubTest("test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag);
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown);
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control);
@@ -54,6 +56,9 @@ protected:
 
         AddSubTest("test_wpn_set_available", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_set_available);
         AddSubTest("test_wpn_set_owner", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_set_owner);
+        AddSubTest("test_wpn_set_mag_bullet_count", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_set_mag_bullet_count);
+        AddSubTest("test_wpn_set_unmag_bullet_count", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_set_unmag_bullet_count);
+        AddSubTest("test_wpn_inc_bullet_count", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_inc_bullet_count);
         
         AddSubTest("test_wpn_reload_when_no_more_bullets_does_not_reload", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_when_no_more_bullets_does_not_reload);
         AddSubTest("test_wpn_reload_when_full_does_not_reload", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_when_full_does_not_reload);
@@ -210,6 +215,22 @@ private:
         return b;
     }
 
+    bool test_wpn_load_weapon_reloadable_cannot_be_greater_than_cap_max()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/wpn_test_reloadable_cannot_be_greater_than_cap_max.txt", bullets, *engine, 0);
+        }
+        catch (const std::exception)
+        {
+            b = true;
+        }
+
+        return b;
+    }
+
     bool test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable()
     {
         bool b = false;
@@ -217,6 +238,22 @@ private:
         {
             std::list<Bullet> bullets;
             Weapon wpn("gamedata/weapons/wpn_test_bullets_default_cannot_be_greater_than_non_zero_reloadable.txt", bullets, *engine, 0);
+        }
+        catch (const std::exception)
+        {
+            b = true;
+        }
+
+        return b;
+    }
+
+    bool test_wpn_load_weapon_bullets_default_cannot_be_greater_than_cap_max()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/wpn_test_bullets_default_cannot_be_greater_than_cap_max.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -400,6 +437,110 @@ private:
 
             wpn.SetOwner(5678);
             b = assertEquals(5678u, wpn.getOwner(), "owner");
+        }
+        catch (const std::exception&) {}
+
+        return b;
+    }
+
+    bool test_wpn_set_mag_bullet_count()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 10);
+
+            // sample good wpn has reloadable as 30, so its mag bullet count is that value, unmag is 0 by default,
+            // and cap_max is 999
+            wpn.SetMagBulletCount(25);
+            b = assertEquals(25u, wpn.getMagBulletCount(), "1");
+
+            wpn.SetMagBulletCount(31);
+            b &= assertEquals(25u, wpn.getMagBulletCount(), "2");
+
+            // now change weapon to non-reloadable
+            wpn.getVars()["reloadable"].Set(0);
+
+            wpn.SetMagBulletCount(31);
+            b &= assertEquals(31u, wpn.getMagBulletCount(), "3");
+
+            // cap_max should limit it
+            wpn.SetMagBulletCount(1000);
+            b &= assertEquals(31u, wpn.getMagBulletCount(), "4");
+
+            wpn.SetMagBulletCount(999);
+            b &= assertEquals(999u, wpn.getMagBulletCount(), "4");
+        }
+        catch (const std::exception&) {}
+
+        return b;
+    }
+
+    bool test_wpn_set_unmag_bullet_count()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 10);
+
+            // sample good wpn has reloadable as 30, so its mag bullet count is that value, unmag is 0 by default,
+            // and cap_max is 999
+            wpn.SetUnmagBulletCount(25);
+            b = assertEquals(25u, wpn.getUnmagBulletCount(), "1");
+
+            wpn.SetUnmagBulletCount(31);
+            b &= assertEquals(31u, wpn.getUnmagBulletCount(), "2");
+
+            // cap_max should limit it
+            wpn.SetUnmagBulletCount(1000);
+            b &= assertEquals(31u, wpn.getUnmagBulletCount(), "3");
+
+            wpn.SetUnmagBulletCount(999);
+            b &= assertEquals(999u, wpn.getUnmagBulletCount(), "4");
+        }
+        catch (const std::exception&) {}
+
+        return b;
+    }
+
+    bool test_wpn_inc_bullet_count()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, 10);
+
+            // sample good wpn has reloadable as 30, so its mag bullet count is that value, unmag is 0 by default,
+            // and cap_max is 999
+            
+            // for reloadable weapon, "inc bullet count" increments the unmag bullet count until cap_max
+            wpn.IncBulletCount(5);
+            b = assertEquals(5u, wpn.getUnmagBulletCount(), "1");
+
+            wpn.IncBulletCount(0);
+            b &= assertEquals(5u, wpn.getUnmagBulletCount(), "2");
+            
+            wpn.IncBulletCount(5);
+            b &= assertEquals(10u, wpn.getUnmagBulletCount(), "3");
+
+            wpn.IncBulletCount(1000);
+            b &= assertEquals(999u, wpn.getUnmagBulletCount(), "4");
+
+            // now change weapon to non-reloadable
+            wpn.getVars()["reloadable"].Set(0);
+
+            // for non-reloadable weapon, "inc bullet count" increments the mag bullet count until cap_max
+            wpn.IncBulletCount(5);
+            b &= assertEquals(35u, wpn.getMagBulletCount(), "5");
+
+            wpn.IncBulletCount(0);
+            b &= assertEquals(35u, wpn.getMagBulletCount(), "6");
+
+            wpn.IncBulletCount(1000);
+            b &= assertEquals(999u, wpn.getMagBulletCount(), "7");
         }
         catch (const std::exception&) {}
 
@@ -923,11 +1064,13 @@ private:
 
             wpn.SetUnmagBulletCount(100); // default would be 0
             wpn.SetMagBulletCount(14); // full would be 30
+            wpn.SetAvailable(true); // default is false
 
             wpn.Reset();
 
             b &= assertEquals(nOriginalMagBulletCount, wpn.getMagBulletCount(), "mag bullet count");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count");
+            b &= assertFalse(wpn.isAvailable(), "available");
 
         }
         catch (const std::exception&) {}

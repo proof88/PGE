@@ -173,6 +173,7 @@ public:
 
     TPRREuint getUnmagBulletCount() const;
     void SetUnmagBulletCount(TPRREuint count);
+    void IncBulletCount(TPRREuint count);
 
     TPRREuint getMagBulletCount() const;
     void SetMagBulletCount(TPRREuint count);

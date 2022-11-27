@@ -244,10 +244,22 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRende
         throw std::runtime_error("reloadable is 0 but reload_per_mag is true in " + std::string(fname));
     }
 
+    if ( getVars()["reloadable"].getAsInt() > getVars()["cap_max"].getAsInt() )
+    {
+        getConsole().EOLnOO("reloadable cannot be greater than cap_max in %s! ", fname);
+        throw std::runtime_error("reloadable cannot be greater than cap_max in " + std::string(fname));
+    }
+
     if ( (getVars()["reloadable"].getAsInt() > 0) && (getVars()["bullets_default"].getAsInt() > getVars()["reloadable"].getAsInt()) )
     {
-        getConsole().EOLnOO("bullets_default cannot be greater than reloadable when the latter is non-zero %s! ", fname);
+        getConsole().EOLnOO("bullets_default cannot be greater than reloadable when the latter is non-zero in %s! ", fname);
         throw std::runtime_error("bullets_default cannot be greater than reloadable when the latter is non-zero in " + std::string(fname));
+    }
+
+    if (getVars()["bullets_default"].getAsInt() > getVars()["cap_max"].getAsInt())
+    {
+        getConsole().EOLnOO("bullets_default cannot be greater than cap_max in %s! ", fname);
+        throw std::runtime_error("bullets_default cannot be greater than cap_max in " + std::string(fname));
     }
 
     if ( getVars()["reload_whole_mag"].getAsBool() && !getVars()["reload_per_mag"].getAsBool() )
@@ -404,7 +416,23 @@ TPRREuint Weapon::getUnmagBulletCount() const
 
 void Weapon::SetUnmagBulletCount(TPRREuint count)
 {
-    m_nUnmagBulletCount = count;
+    if (count <= static_cast<TPRREuint>(getVars()["cap_max"].getAsInt()))
+    {
+        m_nUnmagBulletCount = count;
+    }
+}
+
+void Weapon::IncBulletCount(TPRREuint count)
+{
+    if (getVars()["reloadable"].getAsInt() > 0)
+    {
+        m_nUnmagBulletCount = min(static_cast<TPRREuint>(getVars()["cap_max"].getAsInt()), (m_nUnmagBulletCount + count));
+    }
+    else
+    {
+        // not reloadable has always zero m_nUnmagBulletCount, e.g. rail gun
+        m_nMagBulletCount = min(static_cast<TPRREuint>(getVars()["cap_max"].getAsInt()), (m_nMagBulletCount + count));
+    }
 }
 
 TPRREuint Weapon::getMagBulletCount() const
@@ -414,7 +442,17 @@ TPRREuint Weapon::getMagBulletCount() const
 
 void Weapon::SetMagBulletCount(TPRREuint count)
 {
-    m_nMagBulletCount = count;
+    if (getVars()["reloadable"].getAsInt() > 0)
+    {
+        if (count <= static_cast<TPRREuint>(getVars()["reloadable"].getAsInt()))
+        {
+            m_nMagBulletCount = count;
+        }
+    }
+    else if (count <= static_cast<TPRREuint>(getVars()["cap_max"].getAsInt()))
+    {
+        m_nMagBulletCount = count;
+    }
 }
 
 const pge_network::PgeNetworkConnectionHandle& Weapon::getOwner() const
@@ -572,6 +610,7 @@ TPRREbool Weapon::shoot()
 
 void Weapon::Reset()
 {
+    m_bAvailable = false;
     // it doesnt matter if weapon is reloadable or not, the loaded bullet count is in nMagBulletCount
     m_nMagBulletCount = getVars()["bullets_default"].getAsInt();
     m_nUnmagBulletCount = 0;
