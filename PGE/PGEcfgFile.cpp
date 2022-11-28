@@ -128,7 +128,9 @@ bool PGEcfgFile::load(const char* fname)
         return false;
     }
 
-    m_sFilename = PFL::changeExtension(PFL::getFilename(fname).c_str(), "");;
+    //m_sFilename = PFL::changeExtension(PFL::getFilename(fname).c_str(), "");
+    // TODO: there should be a separate name maybe for the filename without extension ...
+    m_sFilename = PFL::getFilename(fname);
 
     getConsole().SOLnOO("PGEcfgFile loaded!");
     return true;

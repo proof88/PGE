@@ -283,10 +283,10 @@ public:
     bool load(const char* fname, pge_network::PgeNetworkConnectionHandle connHandle);
     std::vector<Weapon*>& getWeapons();
 
-    Weapon* getWeaponByName(const std::string& wpnName);
+    Weapon* getWeaponByFilename(const std::string& wpnName);
 
-    const std::string& getDefaultAvailableWeapon() const;
-    bool setDefaultAvailableWeapon(const std::string& wpnName);
+    const std::string& getDefaultAvailableWeaponFilename() const;
+    bool setDefaultAvailableWeaponByFilename(const std::string& sFilename);
 
     void Clear();
     std::list<Bullet>& getBullets();

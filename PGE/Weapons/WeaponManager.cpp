@@ -719,7 +719,7 @@ std::vector<Weapon*>& WeaponManager::getWeapons()
     return m_weapons;
 }
 
-Weapon* WeaponManager::getWeaponByName(const std::string& wpnName)
+Weapon* WeaponManager::getWeaponByFilename(const std::string& wpnName)
 {    
     for (const auto pWpn : m_weapons)
     {
@@ -735,17 +735,17 @@ Weapon* WeaponManager::getWeaponByName(const std::string& wpnName)
     return nullptr;
 }
 
-const std::string& WeaponManager::getDefaultAvailableWeapon() const
+const std::string& WeaponManager::getDefaultAvailableWeaponFilename() const
 {
     return m_sDefaultAvailableWeapon;
 }
 
-bool WeaponManager::setDefaultAvailableWeapon(const std::string& wpnName)
+bool WeaponManager::setDefaultAvailableWeaponByFilename(const std::string& sFilename)
 {
-    Weapon* wpn = getWeaponByName(wpnName);
+    Weapon* wpn = getWeaponByFilename(sFilename);
     if (wpn)
     {
-        m_sDefaultAvailableWeapon = wpnName;
+        m_sDefaultAvailableWeapon = sFilename;
         return true;
     }
 

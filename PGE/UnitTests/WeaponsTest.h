@@ -1243,18 +1243,18 @@ private:
     {
         WeaponManager wm(*engine);
         return assertTrue(wm.getWeapons().empty(), "weapons") & assertTrue(wm.getBullets().empty(), "bullets") &
-            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
+            assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
     }
 
     bool test_wm_clear_weapons()
     {
         WeaponManager wm(*engine);
         bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn.txt", 0), "load");
-        b &= assertTrue(wm.setDefaultAvailableWeapon("sample_good_wpn"), "setDefaultAvailable");
+        b &= assertTrue(wm.setDefaultAvailableWeaponByFilename("sample_good_wpn.txt"), "setDefaultAvailable");
         wm.Clear();
 
         return b & assertTrue(wm.getWeapons().empty(), "empty") &
-            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
+            assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
     }
 
     bool test_wm_set_default_available_weapon()
@@ -1262,11 +1262,11 @@ private:
         WeaponManager wm(*engine);
         bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn.txt", 0), "load");
         
-        b &= assertFalse(wm.setDefaultAvailableWeapon("xxx"), "setDefaultAvailable 1");
-        b &= assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon 1");
+        b &= assertFalse(wm.setDefaultAvailableWeaponByFilename("xxx"), "setDefaultAvailable 1");
+        b &= assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon 1");
 
-        b &= assertTrue(wm.setDefaultAvailableWeapon("sample_good_wpn"), "setDefaultAvailable 2");
-        b &= assertEquals("sample_good_wpn", wm.getDefaultAvailableWeapon(), "defaultWeapon 2");
+        b &= assertTrue(wm.setDefaultAvailableWeaponByFilename("sample_good_wpn.txt"), "setDefaultAvailable 2");
+        b &= assertEquals("sample_good_wpn.txt", wm.getDefaultAvailableWeaponFilename(), "defaultWeapon 2");
 
         return b;
     }
@@ -1276,7 +1276,7 @@ private:
         WeaponManager wm(*engine);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_bad_assignment.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
-            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
+            assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
 
         return b;
     }
@@ -1286,7 +1286,7 @@ private:
         WeaponManager wm(*engine);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_unaccepted_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
-            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
+            assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
 
         return b;
     }
@@ -1296,7 +1296,7 @@ private:
         WeaponManager wm(*engine);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_missing_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
-            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
+            assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
 
         return b;
     }
@@ -1306,7 +1306,7 @@ private:
         WeaponManager wm(*engine);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_double_defined_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
-            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
+            assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
 
         return b;
     }
@@ -1316,7 +1316,7 @@ private:
         WeaponManager wm(*engine);
         bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn.txt", 0), "load");
         b &= assertFalse(wm.getWeapons().empty(), "not empty") &
-            assertTrue(wm.getDefaultAvailableWeapon().empty(), "defaultWeapon");
+            assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
 
         return b;
     }

@@ -125,7 +125,7 @@ private:
 
         return b & assertFalse(cfgFile.getVars().empty(), "empty") &
             assertTrue(cfgFile.getVars().find("name") != cfgFile.getVars().end(), "name") &
-            assertEquals("cfg_test_load_missing_var", cfgFile.getFilename(), "filename");
+            assertEquals("cfg_test_load_missing_var.txt", cfgFile.getFilename(), "filename");
     }
 
     bool test_load_fail_missing_var()
@@ -200,7 +200,7 @@ private:
         return b & assertFalse(cfgFile.getVars().empty(), "empty") &
             assertTrue(cfgFile.getVars().find("Name") != cfgFile.getVars().end(), "Name") &
             assertTrue(cfgFile.getVars().find("name") != cfgFile.getVars().end(), "name") &
-            assertEquals("cfg_test_load_case_insensitive_vars", cfgFile.getFilename(), "filename");
+            assertEquals("cfg_test_load_case_insensitive_vars.txt", cfgFile.getFilename(), "filename");
     }
 
     bool test_load_good()
@@ -209,7 +209,7 @@ private:
 
         bool b = assertTrue(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load");
         b &= assertFalse(cfgFile.getVars().empty(), "not empty") &
-            assertEquals("cfg_test_load_good", cfgFile.getFilename(), "filename");
+            assertEquals("cfg_test_load_good.txt", cfgFile.getFilename(), "filename");
 
         b &= assertTrue(cfgFile.getVars().find("name") != cfgFile.getVars().end(), "name var") &
             assertTrue(cfgFile.getVars().find("cap_max") != cfgFile.getVars().end(), "reload_per_mag var") &
@@ -246,7 +246,7 @@ private:
         
         b &= assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load");
         b &= assertFalse(cfgFile.getVars().empty(), "not empty") &
-            assertEquals("cfg_test_load_good", cfgFile.getFilename(), "filename");
+            assertEquals("cfg_test_load_good.txt", cfgFile.getFilename(), "filename");
 
         return b;
     }
