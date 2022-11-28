@@ -422,19 +422,6 @@ void Weapon::SetUnmagBulletCount(TPRREuint count)
     }
 }
 
-void Weapon::IncBulletCount(TPRREuint count)
-{
-    if (getVars()["reloadable"].getAsInt() > 0)
-    {
-        m_nUnmagBulletCount = min(static_cast<TPRREuint>(getVars()["cap_max"].getAsInt()), (m_nUnmagBulletCount + count));
-    }
-    else
-    {
-        // not reloadable has always zero m_nUnmagBulletCount, e.g. rail gun
-        m_nMagBulletCount = min(static_cast<TPRREuint>(getVars()["cap_max"].getAsInt()), (m_nMagBulletCount + count));
-    }
-}
-
 TPRREuint Weapon::getMagBulletCount() const
 {
     return m_nMagBulletCount;
@@ -452,6 +439,31 @@ void Weapon::SetMagBulletCount(TPRREuint count)
     else if (count <= static_cast<TPRREuint>(getVars()["cap_max"].getAsInt()))
     {
         m_nMagBulletCount = count;
+    }
+}
+
+bool Weapon::canIncBulletCount() const
+{
+    if (getVars().at("reloadable").getAsInt() > 0)
+    {
+        return m_nUnmagBulletCount < static_cast<TPRREuint>(getVars().at("cap_max").getAsInt());
+    }
+    else
+    {
+        return m_nMagBulletCount < static_cast<TPRREuint>(getVars().at("cap_max").getAsInt());
+    }
+}
+
+void Weapon::IncBulletCount(TPRREuint count)
+{
+    if (getVars()["reloadable"].getAsInt() > 0)
+    {
+        m_nUnmagBulletCount = min(static_cast<TPRREuint>(getVars()["cap_max"].getAsInt()), (m_nUnmagBulletCount + count));
+    }
+    else
+    {
+        // not reloadable has always zero m_nUnmagBulletCount, e.g. rail gun
+        m_nMagBulletCount = min(static_cast<TPRREuint>(getVars()["cap_max"].getAsInt()), (m_nMagBulletCount + count));
     }
 }
 

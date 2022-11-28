@@ -517,30 +517,41 @@ private:
             // and cap_max is 999
             
             // for reloadable weapon, "inc bullet count" increments the unmag bullet count until cap_max
+            b = assertTrue(wpn.canIncBulletCount(), "can 1");
             wpn.IncBulletCount(5);
-            b = assertEquals(5u, wpn.getUnmagBulletCount(), "1");
+            b &= assertEquals(5u, wpn.getUnmagBulletCount(), "1");
 
+            b &= assertTrue(wpn.canIncBulletCount(), "can 2");
             wpn.IncBulletCount(0);
             b &= assertEquals(5u, wpn.getUnmagBulletCount(), "2");
             
+            b &= assertTrue(wpn.canIncBulletCount(), "can 3");
             wpn.IncBulletCount(5);
             b &= assertEquals(10u, wpn.getUnmagBulletCount(), "3");
 
+            b &= assertTrue(wpn.canIncBulletCount(), "can 4");
             wpn.IncBulletCount(1000);
             b &= assertEquals(999u, wpn.getUnmagBulletCount(), "4");
+
+            b &= assertFalse(wpn.canIncBulletCount(), "can xxx");
 
             // now change weapon to non-reloadable
             wpn.getVars()["reloadable"].Set(0);
 
             // for non-reloadable weapon, "inc bullet count" increments the mag bullet count until cap_max
+            b &= assertTrue(wpn.canIncBulletCount(), "can 5");
             wpn.IncBulletCount(5);
             b &= assertEquals(35u, wpn.getMagBulletCount(), "5");
 
+            b &= assertTrue(wpn.canIncBulletCount(), "can 6");
             wpn.IncBulletCount(0);
             b &= assertEquals(35u, wpn.getMagBulletCount(), "6");
 
+            b &= assertTrue(wpn.canIncBulletCount(), "can 7");
             wpn.IncBulletCount(1000);
             b &= assertEquals(999u, wpn.getMagBulletCount(), "7");
+
+            b &= assertFalse(wpn.canIncBulletCount(), "can yyy");
         }
         catch (const std::exception&) {}
 

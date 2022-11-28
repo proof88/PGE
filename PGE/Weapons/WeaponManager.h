@@ -173,10 +173,12 @@ public:
 
     TPRREuint getUnmagBulletCount() const;
     void SetUnmagBulletCount(TPRREuint count);
-    void IncBulletCount(TPRREuint count);
 
     TPRREuint getMagBulletCount() const;
     void SetMagBulletCount(TPRREuint count);
+
+    bool canIncBulletCount() const;
+    void IncBulletCount(TPRREuint count);
 
     const pge_network::PgeNetworkConnectionHandle& getOwner() const;
     void SetOwner(const pge_network::PgeNetworkConnectionHandle& owner);
