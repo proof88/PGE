@@ -206,11 +206,18 @@ public:
         m_timeLastShot(other.m_timeLastShot),
         m_bAvailable(false)
     {
+        // TODO: this is same as in regular ctor and operator=
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());
         m_obj->SetDoubleSided(true);
-        PRRETexture* wpntex = m_gfx.getTextureManager().createFromFile( "gamedata\\textures\\hud_wpn_mchgun_b_nolabel.bmp" ); // TODO: grab texture from wpn file
-        m_obj->getMaterial().setTexture( wpntex );
-        m_obj->getMaterial(false).setBlendFuncs(PRRE_SRC_ALPHA, PRRE_ONE);
+
+        PRRETexture* const wpntex = m_gfx.getTextureManager().createFromFile(
+            (std::string("gamedata\\textures\\weapons\\") + PFL::changeExtension(this->getFilename().c_str(), "bmp")).c_str());
+        if (wpntex)
+        {
+            // set blending only when texture is available, otherwise object might not be visible at all
+            m_obj->getMaterial().setTexture(wpntex);
+            m_obj->getMaterial(false).setBlendFuncs(PRRE_SRC_ALPHA, PRRE_ONE);
+        }
     }
 
     Weapon& operator=(const Weapon& other) // TODO check if we really cannot live with just compiler generated operator_=?
@@ -226,11 +233,18 @@ public:
         m_timeLastShot = other.m_timeLastShot;
         m_bAvailable = other.m_bAvailable;
 
+        // TODO: this is same as in regular ctor and copy ctor
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());
         m_obj->SetDoubleSided(true);
-        PRRETexture* wpntex = m_gfx.getTextureManager().createFromFile( "gamedata\\textures\\hud_wpn_mchgun_b_nolabel.bmp" ); // TODO: grab texture from wpn file
-        m_obj->getMaterial().setTexture( wpntex );
-        m_obj->getMaterial(false).setBlendFuncs(PRRE_SRC_ALPHA, PRRE_ONE);
+
+        PRRETexture* const wpntex = m_gfx.getTextureManager().createFromFile(
+            (std::string("gamedata\\textures\\weapons\\") + PFL::changeExtension(this->getFilename().c_str(), "bmp")).c_str());
+        if (wpntex)
+        {
+            // set blending only when texture is available, otherwise object might not be visible at all
+            m_obj->getMaterial().setTexture(wpntex);
+            m_obj->getMaterial(false).setBlendFuncs(PRRE_SRC_ALPHA, PRRE_ONE);
+        }
 
         return *this;
     }

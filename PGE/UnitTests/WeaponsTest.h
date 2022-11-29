@@ -371,37 +371,40 @@ private:
                 assertFalse(wpn.isAvailable(), "available") &
                 assertEquals(10u, wpn.getOwner(), "owner") &
                 assertEquals(30u, wpn.getMagBulletCount(), "mag") &
-                assertEquals(0u,  wpn.getUnmagBulletCount(), "unmag") &
+                assertEquals(0u, wpn.getUnmagBulletCount(), "unmag") &
                 assertEquals("Sample Weapon 1", wpn.getVars()["name"].getAsString(), "name") &
                 assertEquals(999, wpn.getVars()["cap_max"].getAsInt(), "cap_max") &
-                assertEquals(30,  wpn.getVars()["reloadable"].getAsInt(), "reloadable") &
-                assertEquals(30,  wpn.getVars()["bullets_default"].getAsInt(), "bullets_default") &
+                assertEquals(30, wpn.getVars()["reloadable"].getAsInt(), "reloadable") &
+                assertEquals(30, wpn.getVars()["bullets_default"].getAsInt(), "bullets_default") &
                 assertTrue(wpn.getVars()["reload_per_mag"].getAsBool(), "reload_per_mag") &
                 assertTrue(wpn.getVars()["reload_whole_mag"].getAsBool(), "reload_whole_mag") &
-                assertEquals(1500,    wpn.getVars()["reload_time"].getAsInt(), "reload_time") &
-                assertEquals("semi",  wpn.getVars()["firing_mode_def"].getAsString(), "firing_mode_def") &
+                assertEquals(1500, wpn.getVars()["reload_time"].getAsInt(), "reload_time") &
+                assertEquals("semi", wpn.getVars()["firing_mode_def"].getAsString(), "firing_mode_def") &
                 assertEquals("burst", wpn.getVars()["firing_mode_max"].getAsString(), "firing_mode_max") &
-                assertEquals(300,    wpn.getVars()["firing_cooldown"].getAsInt(), "firing_cooldown") &
-                assertEquals(5.f,  wpn.getVars()["acc_angle"].getAsFloat(), "acc_angle") &
+                assertEquals(300, wpn.getVars()["firing_cooldown"].getAsInt(), "firing_cooldown") &
+                assertEquals(5.f, wpn.getVars()["acc_angle"].getAsFloat(), "acc_angle") &
                 assertEquals(1.2f, wpn.getVars()["acc_m_walk"].getAsFloat(), "acc_m_walk") &
                 assertEquals(3.0f, wpn.getVars()["acc_m_run"].getAsFloat(), "acc_m_run") &
                 assertEquals(0.6f, wpn.getVars()["acc_m_duck"].getAsFloat(), "acc_m_duck") &
                 assertEquals(1.1f, wpn.getVars()["recoil_m"].getAsFloat(), "recoil_m") &
-                assertEquals(500,  wpn.getVars()["recoil_cooldown"].getAsInt(), "recoil_cooldown") &
+                assertEquals(500, wpn.getVars()["recoil_cooldown"].getAsInt(), "recoil_cooldown") &
                 assertEquals("high", wpn.getVars()["recoil_control"].getAsString(), "recoil_control") &
-                assertEquals(1.f,  wpn.getVars()["bullet_size_x"].getAsFloat(), "bullet_size_x") &
-                assertEquals(2.f,  wpn.getVars()["bullet_size_y"].getAsFloat(), "bullet_size_y") &
-                assertEquals(3.f,  wpn.getVars()["bullet_size_z"].getAsFloat(), "bullet_size_z") &
+                assertEquals(1.f, wpn.getVars()["bullet_size_x"].getAsFloat(), "bullet_size_x") &
+                assertEquals(2.f, wpn.getVars()["bullet_size_y"].getAsFloat(), "bullet_size_y") &
+                assertEquals(3.f, wpn.getVars()["bullet_size_z"].getAsFloat(), "bullet_size_z") &
                 assertEquals(2.0f, wpn.getVars()["bullet_speed"].getAsFloat(), "bullet_speed") &
-                assertEquals(0.f,  wpn.getVars()["bullet_gravity"].getAsFloat(), "bullet_gravity") &
+                assertEquals(0.f, wpn.getVars()["bullet_gravity"].getAsFloat(), "bullet_gravity") &
                 assertEquals(0.2f, wpn.getVars()["bullet_drag"].getAsFloat(), "bullet_drag") &
                 assertTrue(wpn.getVars()["bullet_fragile"].getAsBool(), "bullet_fragile") &
-                assertEquals(20,  wpn.getVars()["damage_hp"].getAsInt(), "damage_hp") &
-                assertEquals(10,  wpn.getVars()["damage_ap"].getAsInt(), "damage_ap") &
+                assertEquals(20, wpn.getVars()["damage_hp"].getAsInt(), "damage_hp") &
+                assertEquals(10, wpn.getVars()["damage_ap"].getAsInt(), "damage_ap") &
                 assertEquals(5.f, wpn.getVars()["damage_area_size"].getAsFloat(), "damage_area_size") &
                 assertEquals("linear", wpn.getVars()["damage_area_effect"].getAsString(), "damage_area_effect") &
                 assertEquals(20.f, wpn.getVars()["damage_area_pulse"].getAsFloat(), "damage_area_pulse") &
-                assertTrue(bullets.empty(), "bullets");
+                assertTrue(bullets.empty(), "bullets") &
+                assertNotNull(&(wpn.getObject3D()), "object3d") &
+                assertNotNull(wpn.getObject3D().getMaterial().getTexture(), "texture") &
+                assertEquals("gamedata\\textures\\weapons\\sample_good_wpn.bmp", wpn.getObject3D().getMaterial().getTexture()->getFilename(), "texture filename");
         }
         catch (const std::exception&) {}
 

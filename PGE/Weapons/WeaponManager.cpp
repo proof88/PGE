@@ -303,6 +303,7 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRende
 
     Reset();
 
+    // TODO: this is same as in copy ctor and operator=
     m_obj = m_gfx.getObject3DManager().createPlane(1.f, 0.5f); // TODO: grab sizes from wpn file
     if ( !m_obj )
     {
@@ -311,9 +312,15 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRende
     }
 
     m_obj->SetDoubleSided(true);
-    PRRETexture* wpntex = m_gfx.getTextureManager().createFromFile( "gamedata\\textures\\hud_wpn_mchgun_b_nolabel.bmp" ); // TODO: grab texture from wpn file
-    m_obj->getMaterial().setTexture( wpntex );
-    m_obj->getMaterial(false).setBlendFuncs(PRRE_SRC_ALPHA, PRRE_ONE);
+
+    PRRETexture* const wpntex = m_gfx.getTextureManager().createFromFile(
+        (std::string("gamedata\\textures\\weapons\\") + PFL::changeExtension(this->getFilename().c_str(), "bmp")).c_str());
+    if (wpntex)
+    {
+        // set blending only when texture is available, otherwise object might not be visible at all
+        m_obj->getMaterial().setTexture(wpntex);
+        m_obj->getMaterial(false).setBlendFuncs(PRRE_SRC_ALPHA, PRRE_ONE);
+    }
 
     getConsole().SOLnOO("Weapon loaded!");
 }
