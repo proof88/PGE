@@ -209,6 +209,7 @@ public:
         // TODO: this is same as in regular ctor and operator=
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());
         m_obj->SetDoubleSided(true);
+        m_obj->Hide();
 
         PRRETexture* const wpntex = m_gfx.getTextureManager().createFromFile(
             (std::string("gamedata\\textures\\weapons\\") + PFL::changeExtension(this->getFilename().c_str(), "bmp")).c_str());
@@ -236,6 +237,7 @@ public:
         // TODO: this is same as in regular ctor and copy ctor
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());
         m_obj->SetDoubleSided(true);
+        m_obj->Hide();
 
         PRRETexture* const wpntex = m_gfx.getTextureManager().createFromFile(
             (std::string("gamedata\\textures\\weapons\\") + PFL::changeExtension(this->getFilename().c_str(), "bmp")).c_str());

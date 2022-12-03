@@ -403,6 +403,7 @@ private:
                 assertEquals(20.f, wpn.getVars()["damage_area_pulse"].getAsFloat(), "damage_area_pulse") &
                 assertTrue(bullets.empty(), "bullets") &
                 assertNotNull(&(wpn.getObject3D()), "object3d") &
+                assertFalse(wpn.getObject3D().isRenderingAllowed(), "rendering allowed") &
                 assertNotNull(wpn.getObject3D().getMaterial().getTexture(), "texture") &
                 assertEquals("gamedata\\textures\\weapons\\sample_good_wpn.bmp", wpn.getObject3D().getMaterial().getTexture()->getFilename(), "texture filename");
         }

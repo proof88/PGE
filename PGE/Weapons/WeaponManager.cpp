@@ -312,6 +312,7 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRende
     }
 
     m_obj->SetDoubleSided(true);
+    m_obj->Hide();
 
     PRRETexture* const wpntex = m_gfx.getTextureManager().createFromFile(
         (std::string("gamedata\\textures\\weapons\\") + PFL::changeExtension(this->getFilename().c_str(), "bmp")).c_str());
