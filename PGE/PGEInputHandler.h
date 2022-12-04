@@ -78,7 +78,7 @@ public:
     /**
         Mouse wheel interaction.
     */
-    virtual short int getWheel() const = 0;
+    virtual short int getWheel() = 0;
     virtual void ReceiveWheel(short int amount) = 0;
 
     /**

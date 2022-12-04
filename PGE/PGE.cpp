@@ -764,9 +764,12 @@ int PGE::runGame()
     std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::steady_clock::now();
     std::chrono::time_point<std::chrono::steady_clock> timeLastTime = timeNow;
 
+    PRREWindow& window = p->GFX.getWindow();
+    window.ProcessMessages();
+    getInput().getMouse().getWheel();  // trigger zeroing out any possibly accumulated wheel rotation so onGameRunning() won't see any
+
     while ( isGameRunning() )
     {
-        PRREWindow& window = p->GFX.getWindow();
         onGameFrameBegin();
         
         window.ProcessMessages();

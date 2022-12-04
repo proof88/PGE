@@ -63,7 +63,7 @@ public:
 
     void ApplyRelativeInput();
 
-    short int getWheel() const;
+    short int getWheel();
     void ReceiveWheel(short int amount);
 
     bool isButtonPressed(MouseButton mbtn) const;
@@ -241,15 +241,36 @@ void PGEInputMouseImpl::ApplyRelativeInput()
 }
 
 
-short int PGEInputMouseImpl::getWheel() const
+/**
+    Returns the amount of mouse wheel rotation and zeros out this value.
+    It is recommended to call this function in every iteration of your game loop.
+
+    @return Amount of wheel rotation.
+            A positive value indicates that the wheel was rotated forward, away from the user.
+            A negative value indicates that the wheel was rotated backward, toward the user.
+*/
+short int PGEInputMouseImpl::getWheel()
 {
-    return mWheel;
+    const short int nRetVal = mWheel / 120 /* WHEEL_DELTA from WinUser.h, see manual for WM_MOUSEWHEEL */;
+    if (nRetVal != 0)
+    {
+        // If at least WHEEL_DELTA is not yet accumulated in mWheel, don't zero mWheel out yet!
+        // This mechanism is needed so that notch-less mouses generating frequent messages with rotation amount
+        // less than WHEEL_DELTA can accumulate their values up to +/- WHEEL_DELTA.
+        mWheel %= 120;
+    }
+    return nRetVal;
 }
 
 
+/**
+    Adds the given amount of rotation to the accumulated rotation.
+    The accumulated rotation can be read and zeroed out with the getWheel() function.
+    The accumulation is implemented to support notch-less mouses i.e. mouses having freely rotation wheels.
+*/
 void PGEInputMouseImpl::ReceiveWheel(short int amount)
 {
-    mWheel = amount;
+    mWheel += amount;
 }
 
 
