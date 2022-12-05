@@ -1562,7 +1562,7 @@ TPRREbool PRREWindowImpl::actualCreateWindow(TPRREuint width, TPRREuint height, 
 LRESULT PRREWindowImpl::onActivate(TPRREbool isActive)
 {
     bActive = isActive;
-    getConsole().OLn("PRREdefaultWindowProc() isActive: %b", bActive);
+    //getConsole().OLn("PRREdefaultWindowProc() isActive: %b", bActive);
     return 0;
 } // onActivate()
 
