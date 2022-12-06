@@ -186,7 +186,8 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRende
     m_nUnmagBulletCount(0),
     m_nMagBulletCount(0),
     m_nBulletsToReload(0),
-    m_bAvailable(false)
+    m_bAvailable(false),
+    m_bTriggerReleased(true)
 {
     getConsole().OLnOI("Weapon::Weapon(%s) ...", fname);
 
@@ -552,7 +553,7 @@ Weapon::State Weapon::getState() const
 
 TPRREbool Weapon::reload()
 {
-    if ( m_state != WPN_READY )
+    if ( (m_state != WPN_READY) || !m_bTriggerReleased )
     {
         return false;
     }
@@ -591,13 +592,15 @@ TPRREbool Weapon::reload()
     return true;
 }
 
-TPRREbool Weapon::shoot()
+TPRREbool Weapon::pullTrigger()
 {
     if ( (m_state != WPN_READY) && /* reloading can be stopped if it is per-bullet */
          !( (m_state == WPN_RELOADING) && (!getVars()["reload_per_mag"].getAsBool()) ) )
     {
         return false;
     }
+
+    m_bTriggerReleased = false;
 
     if ( m_nMagBulletCount == 0 )
     {
@@ -628,12 +631,23 @@ TPRREbool Weapon::shoot()
     return true;
 }
 
+void Weapon::releaseTrigger()
+{
+    m_bTriggerReleased = true;
+}
+
+bool Weapon::isTriggerReleased() const
+{
+    return m_bTriggerReleased;
+}
+
 void Weapon::Reset()
 {
-    m_bAvailable = false;
     // it doesnt matter if weapon is reloadable or not, the loaded bullet count is in nMagBulletCount
     m_nMagBulletCount = getVars()["bullets_default"].getAsInt();
     m_nUnmagBulletCount = 0;
+    m_bAvailable = false;
+    m_bTriggerReleased = true;
 }
 
 bool Weapon::isAvailable() const

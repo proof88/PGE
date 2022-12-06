@@ -75,6 +75,7 @@ protected:
         AddSubTest("test_wpn_reload_doesnt_reload_when_already_reloading", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_doesnt_reload_when_already_reloading);
 
         AddSubTest("test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon);
+        AddSubTest("test_wpn_release_trigger_after_shoot", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_release_trigger_after_shoot);
         AddSubTest("test_wpn_update_position_updates_weapon_object_position", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_update_position_updates_weapon_object_position);
         AddSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle_1", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle_1);
         AddSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle_2", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle_2);
@@ -372,6 +373,7 @@ private:
                 assertEquals(10u, wpn.getOwner(), "owner") &
                 assertEquals(30u, wpn.getMagBulletCount(), "mag") &
                 assertEquals(0u, wpn.getUnmagBulletCount(), "unmag") &
+                assertTrue(wpn.isTriggerReleased(), "trigger") &
                 assertEquals("Sample Weapon 1", wpn.getVars()["name"].getAsString(), "name") &
                 assertEquals(999, wpn.getVars()["cap_max"].getAsInt(), "cap_max") &
                 assertEquals(30, wpn.getVars()["reloadable"].getAsInt(), "reloadable") &
@@ -882,8 +884,9 @@ private:
 
             // by default magazine is full == 30 bullets, set it to 0
             wpn.SetMagBulletCount(0);
-            b &= assertFalse(wpn.shoot(), "shoot");
+            b &= assertFalse(wpn.pullTrigger(), "shoot");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
+            b &= assertFalse(wpn.isTriggerReleased(), "trigger"); // since we didnt explicitly called releaseTrigger()
             b &= assertTrue(bullets.empty(), "bullets");
         }
         catch (const std::exception&) {}
@@ -910,7 +913,7 @@ private:
             b &= assertTrue(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
 
-            b &= assertFalse(wpn.shoot(), "shoot");
+            b &= assertFalse(wpn.pullTrigger(), "shoot");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 2");
             b &= assertTrue(bullets.empty(), "bullets");
             b &= assertEquals(nOriginalMagBulletCount, wpn.getMagBulletCount(), "mag bullet count");
@@ -942,7 +945,7 @@ private:
             b &= assertTrue(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
 
-            b &= assertTrue(wpn.shoot(), "shoot");
+            b &= assertTrue(wpn.pullTrigger(), "shoot");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 2");
             b &= assertFalse(bullets.empty(), "bullets");
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count");
@@ -968,14 +971,14 @@ private:
             const TPRREuint nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
             // first shot allowed
-            b &= assertTrue(wpn.shoot(), "shoot 1");
+            b &= assertTrue(wpn.pullTrigger(), "shoot 1");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 1");
             b &= assertEquals(1u, bullets.size(), "size 1");
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 1");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 1");
 
             // second shot now allowed
-            b &= assertFalse(wpn.shoot(), "shoot 2");
+            b &= assertFalse(wpn.pullTrigger(), "shoot 2");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 2");
             b &= assertEquals(1u, bullets.size(), "size 2");
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 2");
@@ -1017,7 +1020,7 @@ private:
             do
             {
                 iWait++;
-                wpn.shoot(); // even if we call shoot(), it must not shoot when conditions dont meet
+                wpn.pullTrigger(); // even if we call pullTrigger(), it must not shoot when conditions dont meet
                 wpn.Update();
                 expectedMagBulletCounts.erase( wpn.getMagBulletCount() );
                 Sleep(20);
@@ -1031,6 +1034,7 @@ private:
             b &= assertEquals(0u, wpn.getMagBulletCount(), "mag");
             b &= assertEquals(100u, wpn.getUnmagBulletCount(), "unmag");
             b &= assertTrue(expectedMagBulletCounts.empty(), "exp mag empty");
+            b &= assertFalse(wpn.isTriggerReleased(), "trigger"); // since we didnt explicitly called releaseTrigger()
         }
         catch (const std::exception&) {}
 
@@ -1050,7 +1054,7 @@ private:
             const TPRREuint nOriginalMagBulletCount = wpn.getMagBulletCount();
             const TPRREuint nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
-            b &= assertTrue(wpn.shoot(), "shoot");
+            b &= assertTrue(wpn.pullTrigger(), "shoot");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 1");
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 1");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 1");
@@ -1077,6 +1081,7 @@ private:
             const TPRREuint nOriginalMagBulletCount = wpn.getMagBulletCount();
             const TPRREuint nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
+            wpn.pullTrigger(); // default trigger released state is true, this changes to false
             wpn.SetUnmagBulletCount(100); // default would be 0
             wpn.SetMagBulletCount(14); // full would be 30
             wpn.SetAvailable(true); // default is false
@@ -1086,6 +1091,7 @@ private:
             b &= assertEquals(nOriginalMagBulletCount, wpn.getMagBulletCount(), "mag bullet count");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count");
             b &= assertFalse(wpn.isAvailable(), "available");
+            b &= assertTrue(wpn.isTriggerReleased(), "trigger");
 
         }
         catch (const std::exception&) {}
@@ -1106,7 +1112,8 @@ private:
 
             wpn.getObject3D().getPosVec().Set(1.f, 2.f, 3.f);
             wpn.getObject3D().getAngleVec().Set(30.f, 40.f, 50.f);
-            b &= assertTrue(wpn.shoot(), "shoot");
+            b &= assertTrue(wpn.pullTrigger(), "shoot");
+            b &= assertFalse(wpn.isTriggerReleased(), "trigger");
             b &= assertEquals(1u, bullets.size(), "size");
             
             if ( b )
@@ -1117,6 +1124,30 @@ private:
                 b &= assertEquals(connHandle, bullet.getOwner(), "bullet owner");
                 b &= assertEquals(wpn.getVars()["damage_hp"].getAsInt(), bullet.getDamageHp(), "damageHp");
             }
+
+        }
+        catch (const std::exception&) {}
+
+        return b;
+    }
+
+    bool test_wpn_release_trigger_after_shoot()
+    {
+        bool b = false;
+        const pge_network::PgeNetworkConnectionHandle connHandle = 52;
+
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn.txt", bullets, *engine, connHandle);
+            b = true;
+
+            b &= assertTrue(wpn.pullTrigger(), "shoot");
+            b &= assertFalse(wpn.isTriggerReleased(), "trigger 1");
+
+            // wpn state cares about cooldown, but trigger state is controlled by input
+            wpn.releaseTrigger();
+            b &= assertTrue(wpn.isTriggerReleased(), "trigger 2");
 
         }
         catch (const std::exception&) {}

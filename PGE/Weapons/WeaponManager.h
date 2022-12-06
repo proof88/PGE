@@ -186,7 +186,9 @@ public:
     void Update();
     State getState() const;
     TPRREbool reload();
-    TPRREbool shoot();
+    TPRREbool pullTrigger();
+    void releaseTrigger();
+    bool isTriggerReleased() const;
 
     void Reset();
 
@@ -204,7 +206,8 @@ public:
         m_nBulletsToReload(other.m_nBulletsToReload),
         m_timeReloadStarted(other.m_timeReloadStarted),
         m_timeLastShot(other.m_timeLastShot),
-        m_bAvailable(false)
+        m_bAvailable(false),
+        m_bTriggerReleased(true)
     {
         // TODO: this is same as in regular ctor and operator=
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());
@@ -233,6 +236,7 @@ public:
         m_timeReloadStarted = other.m_timeReloadStarted;
         m_timeLastShot = other.m_timeLastShot;
         m_bAvailable = other.m_bAvailable;
+        m_bTriggerReleased = other.m_bTriggerReleased;
 
         // TODO: this is same as in regular ctor and copy ctor
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());
@@ -266,8 +270,9 @@ private:
     TPRREuint m_nMagBulletCount;                       /**< Bullets loaded into weapon. Even if weapon is not reloadable. Should be managed by PGE server instance. */
     TPRREuint m_nBulletsToReload;                      /**< Only updated during reload() / Update(). Should be managed by PGE server instance. */
     PFL::timeval m_timeReloadStarted;                  /**< Only updated during reload() / Update(). Should be managed by PGE server instance. */
-    PFL::timeval m_timeLastShot;                       /**< Only updated during shoot() / Update(). Should be managed by PGE server instance. */
+    PFL::timeval m_timeLastShot;                       /**< Only updated during pullTrigger() / Update(). Should be managed by PGE server instance. */
     bool m_bAvailable;                                 /**< Flag for the game, e.g. if true then the player has this weapon. */
+    bool m_bTriggerReleased;                           /**< True if trigger is released, false when being pulled. True by default. */
 
     // ---------------------------------------------------------------------------
 
