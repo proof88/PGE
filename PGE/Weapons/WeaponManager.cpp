@@ -257,6 +257,43 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRende
         throw std::runtime_error("bullets_default cannot be greater than reloadable when the latter is non-zero in " + std::string(fname));
     }
 
+    // since we call PGEcfgFile ctor at the beginning with require all accepted values to be present, we can be sure that
+    // neither of the below getVars() calls return 'end' iterator
+    const auto itDefFiringModePos = std::find(m_vecOrderOfFiringModes.begin(), m_vecOrderOfFiringModes.end(), getVars()["firing_mode_def"].getAsString());
+    const auto itMaxFiringModePos = std::find(m_vecOrderOfFiringModes.begin(), m_vecOrderOfFiringModes.end(), getVars()["firing_mode_max"].getAsString());
+
+    if ((itDefFiringModePos == m_vecOrderOfFiringModes.end()) || (itMaxFiringModePos == m_vecOrderOfFiringModes.end()))
+    {
+        getConsole().EOLnOO("either default or max firing mode is unhandled: %s or %s in %s! ",
+            getVars()["firing_mode_def"].getAsString().c_str(),
+            getVars()["firing_mode_max"].getAsString().c_str(),
+            fname);
+        throw std::runtime_error("either default or max firing mode is unhandled: " + getVars()["firing_mode_def"].getAsString() +
+            " or " + getVars()["firing_mode_max"].getAsString() + " in " + std::string(fname));
+    }
+
+    if (std::distance(itDefFiringModePos, itMaxFiringModePos) < 0)
+    {
+        getConsole().EOLnOO("wrong order of default and max firing modes: %s and %s in %s! ",
+            getVars()["firing_mode_def"].getAsString().c_str(),
+            getVars()["firing_mode_max"].getAsString().c_str(),
+            fname);
+        throw std::runtime_error("wrong order of default and max firing modes: " + getVars()["firing_mode_def"].getAsString() +
+            " and " + getVars()["firing_mode_max"].getAsString() + " in " + std::string(fname));
+    }
+
+    if (((getVars()["firing_mode_def"].getAsString() == "burst") && (getVars()["firing_mode_max"].getAsString() == "proj"))
+        ||
+        ((getVars()["firing_mode_def"].getAsString() == "proj") && (getVars()["firing_mode_max"].getAsString() == "burst")))
+    {
+        getConsole().EOLnOO("incompatiable default and max firing modes: %s and %s in %s! ",
+            getVars()["firing_mode_def"].getAsString().c_str(),
+            getVars()["firing_mode_max"].getAsString().c_str(),
+            fname);
+        throw std::runtime_error("incompatiable default and max firing modes: " + getVars()["firing_mode_def"].getAsString() +
+            " and " + getVars()["firing_mode_max"].getAsString() + " in " + std::string(fname));
+    }
+
     if (getVars()["bullets_default"].getAsInt() > getVars()["cap_max"].getAsInt())
     {
         getConsole().EOLnOO("bullets_default cannot be greater than cap_max in %s! ", fname);
@@ -636,6 +673,13 @@ void Weapon::releaseTrigger()
     m_bTriggerReleased = true;
 }
 
+/**
+    Returns the state of the trigger.
+    Note that the trigger state is independent of the state of the weapon that can be queried by getState().
+    For example, a pulled trigger may or may not transition the state to WPN_SHOOTING.
+
+    @return True if the trigger is in released position, false if it is pulled.
+*/
 bool Weapon::isTriggerReleased() const
 {
     return m_bTriggerReleased;
@@ -666,6 +710,14 @@ void Weapon::SetAvailable(bool bAvail)
 
 // ############################### PRIVATE ###############################
 
+
+const std::vector<std::string> Weapon::m_vecOrderOfFiringModes =
+{
+    "semi",
+    "burst",
+    "proj",
+    "auto"
+};
 
 std::set<std::string> Weapon::m_WpnAcceptedVars;
 

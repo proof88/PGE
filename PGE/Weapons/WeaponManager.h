@@ -155,7 +155,8 @@ public:
         WPN_READY,
         WPN_RELOADING,
         WPN_SHOOTING
-    };
+    }; /**< Weapon states are independent of isTriggerReleased(). */
+
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
     // ---------------------------------------------------------------------------
@@ -258,6 +259,8 @@ public:
 protected:
 
 private:
+
+    static const std::vector<std::string> m_vecOrderOfFiringModes;
 
     static std::set<std::string> m_WpnAcceptedVars;
 

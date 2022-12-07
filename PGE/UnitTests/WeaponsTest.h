@@ -51,6 +51,8 @@ protected:
         AddSubTest("wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled", (PFNUNITSUBTEST) &WeaponsTest::wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled);
         AddSubTest("test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
         AddSubTest("test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse);
+        AddSubTest("test_wpn_firing_mode_max_cannot_be_less_than_default", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_firing_mode_max_cannot_be_less_than_default);
+        AddSubTest("test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj);
         
         AddSubTest("test_wpn_load_weapon_good", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_good);
 
@@ -351,6 +353,38 @@ private:
         {
             std::list<Bullet> bullets;
             Weapon wpn("gamedata/weapons/wpn_test_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse.txt", bullets, *engine, 0);
+        }
+        catch (const std::exception)
+        {
+            b = true;
+        }
+
+        return b;
+    }
+
+    bool test_wpn_firing_mode_max_cannot_be_less_than_default()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/wpn_test_firing_mode_max_cannot_be_less_than_default.txt", bullets, *engine, 0);
+        }
+        catch (const std::exception)
+        {
+            b = true;
+        }
+
+        return b;
+    }
+
+    bool test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/wpn_test_firing_modes_default_and_max_cannot_be_burst_and_proj.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
