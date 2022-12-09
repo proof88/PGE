@@ -523,13 +523,13 @@ void Weapon::SetOwner(const pge_network::PgeNetworkConnectionHandle& owner)
     m_connHandle = owner;
 }
 
-void Weapon::Update()
+bool Weapon::update()
 {
     UpdateGraphics();
 
     if ( m_state == WPN_READY )
     {
-        return;
+        return false;
     }
 
     PFL::timeval timeNow;
@@ -542,7 +542,7 @@ void Weapon::Update()
         {
             m_state = WPN_READY;
         }
-        return;
+        return false;
     }
 
     // WPN_RELOADING
@@ -561,6 +561,7 @@ void Weapon::Update()
             }
             m_nUnmagBulletCount -= m_nBulletsToReload;
             m_state = WPN_READY;
+            return true;
         }
     }
     else
@@ -579,8 +580,10 @@ void Weapon::Update()
             {
                 m_timeReloadStarted = timeNow;
             }
+            return true;
         }
     }
+    return false;
 }
 
 Weapon::State Weapon::getState() const

@@ -184,7 +184,7 @@ public:
     const pge_network::PgeNetworkConnectionHandle& getOwner() const;
     void SetOwner(const pge_network::PgeNetworkConnectionHandle& owner);
 
-    void Update();
+    bool update();
     State getState() const;
     TPRREbool reload();
     TPRREbool pullTrigger();
