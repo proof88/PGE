@@ -360,6 +360,11 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRende
         m_obj->getMaterial().setTexture(wpntex);
         m_obj->getMaterial(false).setBlendFuncs(PRRE_SRC_ALPHA, PRRE_ONE);
     }
+    else
+    {
+        getConsole().EOLnOO("texture file was not found for %s! ", fname);
+        throw std::runtime_error("texture file was not found for " + std::string(fname));
+    }
 
     getConsole().SOLnOO("Weapon loaded!");
 }
@@ -785,8 +790,9 @@ bool WeaponManager::load(const char* fname, pge_network::PgeNetworkConnectionHan
         m_weapons.push_back(wpn);
         return true;
     }
-    catch (const std::exception&)
+    catch (const std::exception& e)
     {
+        getConsole().EOLn("WeaponManager::load(%s) failed due to exception: %s", fname, e.what());
         return false;
     }
 }
