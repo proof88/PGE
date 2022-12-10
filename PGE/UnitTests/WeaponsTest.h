@@ -87,7 +87,7 @@ protected:
         AddSubTest("test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading);
         AddSubTest("test_wpn_shoot_doesnt_shoot_when_already_shooting", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_shoot_doesnt_shoot_when_already_shooting);
         AddSubTest("test_wpn_automatic_shoot_continuously_in_loop_respects_cooldown_time", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_automatic_shoot_continuously_in_loop_respects_cooldown_time);
-        //AddSubTest("test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop);
+        AddSubTest("test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop);
         AddSubTest("test_wpn_reload_doesnt_reload_during_shooting", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_doesnt_reload_during_shooting);
         AddSubTest("test_wpn_reset_sets_defaults", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_reset_sets_defaults);
         
@@ -905,23 +905,8 @@ private:
             // bullets count and we remove the observed values from the sets,
             // so after the loop we expect both sets to be empty, proving that
             // bullet counts were changing continuously by 1
-            std::set<TPRREuint> expectedMagBulletCounts;
-            // TODO: cpp11 initializer list!
-            expectedMagBulletCounts.insert(25);
-            expectedMagBulletCounts.insert(26);
-            expectedMagBulletCounts.insert(27);
-            expectedMagBulletCounts.insert(28);
-            expectedMagBulletCounts.insert(29);
-            expectedMagBulletCounts.insert(30);
-
-            std::set<TPRREuint> expectedUnmagBulletCounts;
-            // TODO: cpp11 initializer list!
-            expectedUnmagBulletCounts.insert(100);
-            expectedUnmagBulletCounts.insert(99);
-            expectedUnmagBulletCounts.insert(98);
-            expectedUnmagBulletCounts.insert(97);
-            expectedUnmagBulletCounts.insert(96);
-            expectedUnmagBulletCounts.insert(95);
+            std::set<TPRREuint> expectedMagBulletCounts = {25, 26, 27, 28, 29, 30};
+            std::set<TPRREuint> expectedUnmagBulletCounts = {100, 99, 98, 97, 96, 95};
 
             int iWait = 0;
             int nNumWpnUpdateChangedBulletCount = 0;
@@ -1126,12 +1111,17 @@ private:
             std::set<TPRREuint> expectedMagBulletCounts = {0, 1, 2, 3, 4, 5, 6};
 
             int iWait = 0;
+            unsigned int nNumPullTriggerReturnedTrue = 0;
             int nNumWpnUpdateChangedMagUnmagBulletCount = 0;
             // firing cooldown is 300 msecs by the file
             do
             {
                 iWait++;
-                wpn.pullTrigger(); // even if we call pullTrigger(), it must not shoot when conditions dont meet
+                // even if we call pullTrigger(), it must not shoot when conditions dont meet
+                if (wpn.pullTrigger())
+                {
+                    nNumPullTriggerReturnedTrue++;
+                }
                 if (wpn.update())
                 {
                     nNumWpnUpdateChangedMagUnmagBulletCount++;
@@ -1147,6 +1137,7 @@ private:
             b &= assertEquals(7u, bullets.size(), "created bullets size");
             b &= assertEquals(0u, wpn.getMagBulletCount(), "mag");
             b &= assertEquals(100u, wpn.getUnmagBulletCount(), "unmag");
+            b &= assertEquals(bullets.size(), nNumPullTriggerReturnedTrue, "pullTrigger true count");
             b &= assertEquals(0, nNumWpnUpdateChangedMagUnmagBulletCount, "update true count");
             b &= assertTrue(expectedMagBulletCounts.empty(), "exp mag empty");
             b &= assertFalse(wpn.isTriggerReleased(), "trigger"); // since we didnt explicitly called releaseTrigger()
@@ -1159,100 +1150,112 @@ private:
         return b;
     }
 
-    //bool test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop()
-    //{
-    //    bool b = false;
-    //    try
-    //    {
-    //        std::list<Bullet> bullets;
-    //        Weapon wpn("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", bullets, *engine, 0);
-    //        b = true;
-    //
-    //        b &= assertEquals("semi", wpn.getVars()["firing_mode_def"].getAsString(), "firing_mode_def");
-    //        b &= assertEquals("burst", wpn.getVars()["firing_mode_max"].getAsString(), "firing_mode_max");
-    //        b &= assertEquals(Weapon::FiringMode::WPN_FM_SEMI, wpn.getCurrentFiringMode(), "firing mode");
-    //
-    //        wpn.SetUnmagBulletCount(12); // make sure we could reload
-    //        wpn.SetMagBulletCount(7);    // full would be 12, just set a lower value to decrease test case time
-    //
-    //        // so the idea is that we are frequently checking the mag
-    //        // bullets count and we remove the observed values from the set,
-    //        // so after the loop we expect the set to be empty, proving that
-    //        // bullet counts were changing decreasing by 1
-    //        std::set<TPRREuint> expectedMagBulletCounts = { 0, 1, 2, 3, 4, 5, 6 };
-    //
-    //        // another idea is that in contrast to the automatic-type test above, here we have to release the
-    //        // trigger before any subsequent pull in order to shoot, otherwise it never shoots again.
-    //
-    //        // So, in the first loop below, we just continuously pull the trigger, never release, we expect only
-    //        // 1 shot this way.
-    //        int iWait = 0;
-    //        int nNumWpnUpdateChangedMagUnmagBulletCount = 0; // wpn.update() would change mag/unmag count only during reload
-    //        // firing cooldown is 300 msecs by the file
-    //        do
-    //        {
-    //            iWait++;
-    //            wpn.pullTrigger(); // even if we call pullTrigger(), it must not shoot when conditions dont meet
-    //            if (wpn.update())
-    //            {
-    //                nNumWpnUpdateChangedMagUnmagBulletCount++;
-    //            }
-    //            expectedMagBulletCounts.erase(wpn.getMagBulletCount());
-    //            Sleep(20);
-    //        } while ((wpn.getMagBulletCount() > 0) && (iWait < 150));
-    //        // let the cooldown after last shot elapse so state can also go back to READY
-    //        Sleep(wpn.getVars()["firing_cooldown"].getAsInt());
-    //        wpn.update();
-    //
-    //        b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
-    //        b &= assertEquals(1u, bullets.size(), "created bullets size");
-    //        b &= assertEquals(6u, wpn.getMagBulletCount(), "mag");
-    //        b &= assertEquals(12u, wpn.getUnmagBulletCount(), "unmag");
-    //        b &= assertEquals(0, nNumWpnUpdateChangedMagUnmagBulletCount, "update true count");
-    //        b &= assertEquals(6u, expectedMagBulletCounts.size(), "exp mag count");
-    //        b &= assertFalse(wpn.isTriggerReleased(), "trigger"); // since we didnt explicitly called releaseTrigger()
-    //
-    //        // if above stuff failed, there is no use proceeding with this test case
-    //        if (!b)
-    //        {
-    //            return b;
-    //        }
-    //
-    //        // In next loop below, we continuously pull AND release the trigger, we expect shooting until wpn becomes empty.
-    //        wpn.releaseTrigger();
-    //        iWait = 0;
-    //        nNumWpnUpdateChangedMagUnmagBulletCount = 0; // wpn.update() would change mag/unmag count only during reload
-    //        do
-    //        {
-    //            iWait++;
-    //            wpn.pullTrigger(); // even if we call pullTrigger(), it must not shoot when conditions dont meet
-    //            wpn.releaseTrigger();
-    //            if (wpn.update())
-    //            {
-    //                nNumWpnUpdateChangedMagUnmagBulletCount++;
-    //            }
-    //            expectedMagBulletCounts.erase(wpn.getMagBulletCount());
-    //            Sleep(20);
-    //        } while ((wpn.getMagBulletCount() > 0) && (iWait < 150));
-    //        // let the cooldown after last shot elapse so state can also go back to READY
-    //        Sleep(wpn.getVars()["firing_cooldown"].getAsInt());
-    //        wpn.update();
-    //
-    //        b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 2");
-    //        b &= assertEquals(7u, bullets.size(), "created bullets size 2");
-    //        b &= assertEquals(0u, wpn.getMagBulletCount(), "mag 2");
-    //        b &= assertEquals(12u, wpn.getUnmagBulletCount(), "unmag 2");
-    //        b &= assertEquals(0, nNumWpnUpdateChangedMagUnmagBulletCount, "update true count 2");
-    //        b &= assertTrue(expectedMagBulletCounts.empty(), "exp mag empty");
-    //        b &= assertTrue(wpn.isTriggerReleased(), "trigger 2");
-    //    }
-    //    catch (const std::exception& e)
-    //    {
-    //        assertTrue(false, e.what());
-    //    }
-    //
-    //    return b;
-    //}
+    bool test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", bullets, *engine, 0);
+            b = true;
+    
+            b &= assertEquals("semi", wpn.getVars()["firing_mode_def"].getAsString(), "firing_mode_def");
+            b &= assertEquals("burst", wpn.getVars()["firing_mode_max"].getAsString(), "firing_mode_max");
+            b &= assertEquals(Weapon::FiringMode::WPN_FM_SEMI, wpn.getCurrentFiringMode(), "firing mode");
+    
+            wpn.SetUnmagBulletCount(12); // make sure we could reload
+            wpn.SetMagBulletCount(7);    // full would be 12, just set a lower value to decrease test case time
+    
+            // so the idea is that we are frequently checking the mag
+            // bullets count and we remove the observed values from the set,
+            // so after the loop we expect the set to be empty, proving that
+            // bullet counts were changing decreasing by 1
+            std::set<TPRREuint> expectedMagBulletCounts = { 0, 1, 2, 3, 4, 5, 6 };
+    
+            // another idea is that in contrast to the automatic-type test above, here we have to release the
+            // trigger before any subsequent pull in order to shoot, otherwise it never shoots again.
+    
+            // So, in the first loop below, we just continuously pull the trigger, never release, we expect only
+            // 1 shot this way.
+            int iWait = 0;
+            unsigned int nNumPullTriggerReturnedTrue = 0;
+            int nNumWpnUpdateChangedMagUnmagBulletCount = 0; // wpn.update() would change mag/unmag count only during reload
+            // firing cooldown is 300 msecs by the file
+            do
+            {
+                iWait++;
+                // even if we call pullTrigger(), it must not shoot when conditions dont meet
+                if (wpn.pullTrigger())
+                {
+                    nNumPullTriggerReturnedTrue++;
+                }
+                if (wpn.update())
+                {
+                    nNumWpnUpdateChangedMagUnmagBulletCount++;
+                }
+                expectedMagBulletCounts.erase(wpn.getMagBulletCount());
+                Sleep(20);
+            } while ((wpn.getMagBulletCount() > 0) && (iWait < 150));
+            // let the cooldown after last shot elapse so state can also go back to READY
+            Sleep(wpn.getVars()["firing_cooldown"].getAsInt());
+            wpn.update();
+    
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
+            b &= assertEquals(1u, bullets.size(), "created bullets size");
+            b &= assertEquals(6u, wpn.getMagBulletCount(), "mag");
+            b &= assertEquals(12u, wpn.getUnmagBulletCount(), "unmag");
+            b &= assertEquals(bullets.size(), nNumPullTriggerReturnedTrue, "pullTrigger true count");
+            b &= assertEquals(0, nNumWpnUpdateChangedMagUnmagBulletCount, "update true count");
+            b &= assertEquals(6u, expectedMagBulletCounts.size(), "exp mag count");
+            b &= assertFalse(wpn.isTriggerReleased(), "trigger"); // since we didnt explicitly called releaseTrigger()
+    
+            // if above stuff failed, there is no use proceeding with this test case
+            if (!b)
+            {
+                return b;
+            }
+    
+            // In next loop below, we continuously pull AND release the trigger, we expect shooting until wpn becomes empty.
+            wpn.releaseTrigger();
+            iWait = 0;
+            nNumPullTriggerReturnedTrue = 0;
+            nNumWpnUpdateChangedMagUnmagBulletCount = 0; // wpn.update() would change mag/unmag count only during reload
+            do
+            {
+                iWait++;
+                // even if we call pullTrigger(), it must not shoot when conditions dont meet
+                if (wpn.pullTrigger())
+                {
+                    nNumPullTriggerReturnedTrue++;
+                }
+                wpn.releaseTrigger();
+                if (wpn.update())
+                {
+                    nNumWpnUpdateChangedMagUnmagBulletCount++;
+                }
+                expectedMagBulletCounts.erase(wpn.getMagBulletCount());
+                Sleep(20);
+            } while ((wpn.getMagBulletCount() > 0) && (iWait < 150));
+            // let the cooldown after last shot elapse so state can also go back to READY
+            Sleep(wpn.getVars()["firing_cooldown"].getAsInt());
+            wpn.update();
+    
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 2");
+            b &= assertEquals(7u, bullets.size(), "created bullets size 2");
+            b &= assertEquals(0u, wpn.getMagBulletCount(), "mag 2");
+            b &= assertEquals(12u, wpn.getUnmagBulletCount(), "unmag 2");
+            b &= assertEquals(6u, nNumPullTriggerReturnedTrue, "pullTrigger true count 2");
+            b &= assertEquals(0, nNumWpnUpdateChangedMagUnmagBulletCount, "update true count 2");
+            b &= assertTrue(expectedMagBulletCounts.empty(), "exp mag empty");
+            b &= assertTrue(wpn.isTriggerReleased(), "trigger 2");
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+    
+        return b;
+    }
 
     bool test_wpn_reload_doesnt_reload_during_shooting()
     {

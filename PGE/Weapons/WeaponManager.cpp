@@ -258,7 +258,7 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRende
         throw std::runtime_error("bullets_default cannot be greater than reloadable when the latter is non-zero in " + std::string(fname));
     }
 
-    // since we call PGEcfgFile ctor at the beginning with require all accepted values to be present, we can be sure that
+    // since we call PGEcfgFile ctor at the beginning with "require all accepted values to be present", we can be sure that
     // neither of the below getVars() calls return 'end' iterator
     const auto itDefFiringModePos = std::find_if(
         m_vecOrderOfFiringModes.begin(),
@@ -387,6 +387,9 @@ Weapon::~Weapon()
     }
 }
 
+/**
+    Returns access to console preset with logger module name as this class.
+*/
 CConsole& Weapon::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
@@ -397,21 +400,36 @@ const char* Weapon::getLoggerModuleName()
     return "Weapon";
 }
 
+/**
+ * Returns the graphical object entity associated to this weapon object.
+ */
 PRREObject3D& Weapon::getObject3D()
 {
     return *m_obj;
 }
 
+/**
+ * Returns the graphical object entity associated to this weapon object.
+ */
 const PRREObject3D& Weapon::getObject3D() const
 {
     return *m_obj;
 }
 
+/**
+ * Updates the graphical object entity associated to this weapon object.
+ * Only the position is updated.
+ */
 void Weapon::UpdatePosition(const PRREVector& playerPos)
 {
     getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY(), playerPos.getZ());
 }
 
+/**
+ * Updates the graphical object entity associated to this weapon object.
+ * The position and angles are updated to the specified values.
+ * This function can be used to update the weapon of other clients on our side.
+ */
 void Weapon::UpdatePositions(const PRREVector& playerPos, TPRREfloat fAngleY, TPRREfloat fAngleZ)
 {
     getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY(), playerPos.getZ());
@@ -419,6 +437,11 @@ void Weapon::UpdatePositions(const PRREVector& playerPos, TPRREfloat fAngleY, TP
     getObject3D().getAngleVec().SetZ(fAngleZ);
 }
 
+/**
+ * Updates the graphical object entity associated to this weapon object.
+ * The position and angles are updated. The angles are updated to point to the specified targetPos2D value.
+ * This function can be used to update our weapon on our side.
+ */
 void Weapon::UpdatePositions(const PRREVector& playerPos, const PRREVector& targetPos2D)
 {
     getObject3D().getPosVec().Set( playerPos.getX(), playerPos.getY(), playerPos.getZ() );
@@ -470,16 +493,36 @@ void Weapon::UpdatePositions(const PRREVector& playerPos, const PRREVector& targ
     }
 }
 
+/**
+ * Returns the current firing mode of the weapon.
+ * This is something between getVars("firing_mode_def") and getVars("firing_mode_max").
+ * 
+ * @return Current firing mode of the weapon.
+ */
 const Weapon::FiringMode& Weapon::getCurrentFiringMode() const
 {
     return m_firingMode;
 }
 
+/**
+ * Returns the "unmag" bullet count of this weapon.
+ * This is the number of bullets with the player not loaded into the weapon.
+ * To fire these bullets, they first need to be loaded into the weapon using reload().
+ * Only reloadable weapons can have positive number of "unmag" bullets.
+ * 
+ * @return "Unmag" bullet count i.e. number of bullets with the player not loaded into the weapon.
+ */
 TPRREuint Weapon::getUnmagBulletCount() const
 {
     return m_nUnmagBulletCount;
 }
 
+/**
+ * Sets the "unmag" bullet count of this weapon.
+ * See getUnmagBulletCount() for better understanding "unmag" bullet count.
+ * 
+ * @param count The "unmag" bullet count to be set. This cannot be greater than getVars()["cap_max"].
+ */
 void Weapon::SetUnmagBulletCount(TPRREuint count)
 {
     if (count <= static_cast<TPRREuint>(getVars()["cap_max"].getAsInt()))
@@ -488,11 +531,29 @@ void Weapon::SetUnmagBulletCount(TPRREuint count)
     }
 }
 
+/**
+ * Returns the "mag" bullet count of this weapon.
+ * This is the number of bullets already loaded into the weapon.
+ * A weapon can be fired only if it has positive "mag" bullet count.
+ * "Mag" is short for "magazine", even though not all weapons have "magazines", we always refer to "mag" bullet count
+ * to know how many bullets are ready to be fired from the weapon without the need of reload.
+ * This also means that not reloadable weapons have all their bullets counted as "mag" bullet count.
+ *
+ * @return "Mag" bullet count i.e. number of bullets already loaded into the weapon.
+ */
 TPRREuint Weapon::getMagBulletCount() const
 {
     return m_nMagBulletCount;
 }
 
+/**
+ * Sets the "mag" bullet count of this weapon.
+ * See getMagBulletCount() for better understanding "mag" bullet count.
+ * 
+ * @param count The "mag" bullet count to be set.
+ *              For reloadable weapons, this cannot be greater than getVars()["reloadable"].
+ *              For non-reloadable weapons, this cannot be greater than getVars()["cap_max"].
+ */
 void Weapon::SetMagBulletCount(TPRREuint count)
 {
     if (getVars()["reloadable"].getAsInt() > 0)
@@ -508,6 +569,13 @@ void Weapon::SetMagBulletCount(TPRREuint count)
     }
 }
 
+/**
+ * Returns if we can add more bullets for this weapon, i.e. if we can pick up more bullets for this weapon.
+ * Useful if we are touching bullet pack for this weapon and want to check if we can pick that up, or we are actually full.
+ * Basically this depends on the "unmag" or "mag" bullet count compared to getVars()["cap_max"], depending on if the weapon is reloadable or not.
+ * 
+ * @return True if we can still add more bullets for this weapon, false otherwise.
+ */
 bool Weapon::canIncBulletCount() const
 {
     if (getVars().at("reloadable").getAsInt() > 0)
@@ -520,6 +588,12 @@ bool Weapon::canIncBulletCount() const
     }
 }
 
+/**
+ * Adds more bullets for this weapon.
+ * Useful when we are picking up bullet pack for this weapon or same kind of weapon.
+ * 
+ * @param How many bullets we want to add. The actual increase value might be less. See more details at canIncBulletCount(). 
+ */
 void Weapon::IncBulletCount(TPRREuint count)
 {
     if (getVars()["reloadable"].getAsInt() > 0)
@@ -533,16 +607,35 @@ void Weapon::IncBulletCount(TPRREuint count)
     }
 }
 
+/**
+ * Returns the player associated with this weapon.
+ * This is the player specified originally in the constructor of this Weapon object, or another player set using SetOwner().
+ * Players are identified by their connection handle.
+ * 
+ * @return Connection handle of player associated with this Weapon object.
+ */
 const pge_network::PgeNetworkConnectionHandle& Weapon::getOwner() const
 {
     return m_connHandle;
 }
 
+/**
+ * Sets the player associated with this weapon.
+ * Players are identified by their connection handle.
+ */
 void Weapon::SetOwner(const pge_network::PgeNetworkConnectionHandle& owner)
 {
     m_connHandle = owner;
 }
 
+/**
+ * Updates the weapon based on the time elapsed since last call to this function.
+ * This function is recommended to be invoked by the game as often as possible, since it is time-dependent.
+ * Calling this function takes care of the state transition and other property updates of the weapon, initiated by
+ * a trigger pull or reload.
+ * 
+ * @return True if the mag- or unmag bullet count changed, false otherwise. 
+ */
 bool Weapon::update()
 {
     UpdateGraphics();
@@ -606,11 +699,26 @@ bool Weapon::update()
     return false;
 }
 
+/**
+ * Returns the current state of the weapon.
+ * Weapon state can be updated by functions like pullTrigger(), reload(), update(), etc.
+ * Weapon state is totally independent of the state of trigger, see: isTriggerReleased().
+ * 
+ * @return Current state of the weapon.
+ */
 Weapon::State Weapon::getState() const
 {
     return m_state;
 }
 
+/**
+ * Reloads the weapon i.e. moves some "unmag" bullets into "mag" bullet count.
+ * See the return value of the function if you are interested in if the reloading is actually triggered by this call.
+ * It can happen that the reloading process is not initiated by this call, e.g. reloading has been already initiated previously,
+ * or the magazine is already full, etc.
+ * 
+ * @return True if reload has been actually initiated by this call, false otherwise.
+ */
 TPRREbool Weapon::reload()
 {
     if ( (m_state != WPN_READY) || !m_bTriggerReleased )
@@ -652,15 +760,29 @@ TPRREbool Weapon::reload()
     return true;
 }
 
+/**
+ * Pulls the trigger of the weapon, which might result in shooting the weapon.
+ * Firing an actual shot depends on different things like current state of the weapon, firing mode, etc.
+ * If a shot was actually fired, at least one new bullet is placed in 'bullets' specified in the constructor of this weapon.
+ * 
+ * @return True if a shot was actually triggered, false otherwise.
+ */
 TPRREbool Weapon::pullTrigger()
 {
+    const bool bPrevTriggerReleased = m_bTriggerReleased;
+    m_bTriggerReleased = false;
+    
     if ( (m_state != WPN_READY) && /* reloading can be stopped if it is per-bullet */
          !( (m_state == WPN_RELOADING) && (!getVars()["reload_per_mag"].getAsBool()) ) )
     {
         return false;
     }
 
-    m_bTriggerReleased = false;
+    if (!bPrevTriggerReleased && (m_firingMode != WPN_FM_AUTO))
+    {
+        // in non-automatic modes, to trigger a next shot, we require the trigger to be released before being pulled
+        return false;
+    }
 
     if ( m_nMagBulletCount == 0 )
     {
@@ -691,6 +813,11 @@ TPRREbool Weapon::pullTrigger()
     return true;
 }
 
+/**
+ * Releases the trigger of the weapon.
+ * It is important to invoke this function whenever the player's input imply it.
+ * Some firing modes require repeated pull-and-release of the trigger, see FiringMode for details.
+ */
 void Weapon::releaseTrigger()
 {
     m_bTriggerReleased = true;
@@ -699,7 +826,9 @@ void Weapon::releaseTrigger()
 /**
     Returns the state of the trigger.
     Note that the trigger state is independent of the state of the weapon that can be queried by getState().
-    For example, a pulled trigger may or may not transition the state to WPN_SHOOTING.
+    For example:
+     - a pulled trigger may or may not transition the state to WPN_SHOOTING;
+     - releasing the trigger while the weapon has WPN_SHOOTING state doesn't change the state to anything else.
 
     @return True if the trigger is in released position, false if it is pulled.
 */
@@ -708,6 +837,11 @@ bool Weapon::isTriggerReleased() const
     return m_bTriggerReleased;
 }
 
+/**
+ * Resets properties of the weapon to its initial values like when it was just loaded from file. 
+ * Useful when the player respawns and we need to reset all of their weapons.
+ * The availability for the player is also being reset to false.
+ */
 void Weapon::Reset()
 {
     const auto itDefFiringModePos = std::find_if(
@@ -718,7 +852,7 @@ void Weapon::Reset()
 
     if (itDefFiringModePos == m_vecOrderOfFiringModes.end())
     {
-        // As I wrote in the ctor ... since we call PGEcfgFile ctor at the beginning with require all accepted values to be present, we
+        // As I wrote in the ctor ... since we call PGEcfgFile ctor at the beginning with "require all accepted values to be present", we
         // can be sure that getVars() doesn't return 'end' iterator there ... however, since we are in a public function of an already
         // constructed object, I can imagine some funny guys accidentally or intentionally screwing up content of getVars(), in such case
         // obviously we might get 'end' iterator here. In that case I throw exception here and expect the program to crash.
@@ -734,11 +868,20 @@ void Weapon::Reset()
     m_bTriggerReleased = true;
 }
 
+/**
+ * Returns if this weapon is available for the player.
+ * The player is that client whose connection handle was specified in the constructor of this Weapon object.
+ * 
+ * @return True if this weapon is available for the player, false otherwise.
+ */
 bool Weapon::isAvailable() const
 {
     return m_bAvailable;
 }
 
+/**
+ * Changes the availability of this weapon for the player.
+ */
 void Weapon::SetAvailable(bool bAvail)
 {
     m_bAvailable = bAvail;

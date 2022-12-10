@@ -175,39 +175,39 @@ public:
         pge_network::PgeNetworkConnectionHandle connHandle);
     virtual ~Weapon();
 
-    CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+    CConsole&   getConsole() const;                     /**< Returns access to console preset with logger module name as this class. */
 
-    PRREObject3D& getObject3D();
-    const PRREObject3D& getObject3D() const;
-    void UpdatePosition(const PRREVector& playerPos);
-    void UpdatePositions(const PRREVector& playerPos, TPRREfloat fAngleY, TPRREfloat fAngleZ);
-    void UpdatePositions(const PRREVector& playerPos, const PRREVector& targetPos2D);
+    PRREObject3D& getObject3D();                        /**< Returns the graphical object entity associated to this weapon object. */
+    const PRREObject3D& getObject3D() const;            /**< Returns the graphical object entity associated to this weapon object. */
+    void UpdatePosition(const PRREVector& playerPos);   /**< Updates the graphical object entity associated to this weapon object. */
+    void UpdatePositions(const PRREVector& playerPos, TPRREfloat fAngleY, TPRREfloat fAngleZ);  /**< Updates the graphical object entity associated to this weapon object. */
+    void UpdatePositions(const PRREVector& playerPos, const PRREVector& targetPos2D);           /**< Updates the graphical object entity associated to this weapon object. */
 
-    const FiringMode& getCurrentFiringMode() const;
+    const FiringMode& getCurrentFiringMode() const;  /**< Returns the current firing mode of the weapon. */
 
-    TPRREuint getUnmagBulletCount() const;
-    void SetUnmagBulletCount(TPRREuint count);
+    TPRREuint getUnmagBulletCount() const;      /**< Returns the "unmag" bullet count of this weapon. */
+    void SetUnmagBulletCount(TPRREuint count);  /**< Sets the "unmag" bullet count of this weapon. */
 
-    TPRREuint getMagBulletCount() const;
-    void SetMagBulletCount(TPRREuint count);
+    TPRREuint getMagBulletCount() const;        /**< Returns the "mag" bullet count of this weapon. */
+    void SetMagBulletCount(TPRREuint count);    /**< Sets the "mag" bullet count of this weapon. */
 
-    bool canIncBulletCount() const;
-    void IncBulletCount(TPRREuint count);
+    bool canIncBulletCount() const;             /**< Returns if we can add more bullets for this weapon. */
+    void IncBulletCount(TPRREuint count);       /**< Adds more bullets for this weapon. */
 
-    const pge_network::PgeNetworkConnectionHandle& getOwner() const;
-    void SetOwner(const pge_network::PgeNetworkConnectionHandle& owner);
+    const pge_network::PgeNetworkConnectionHandle& getOwner() const;      /**< Returns the player associated with this weapon. */
+    void SetOwner(const pge_network::PgeNetworkConnectionHandle& owner);  /**< Sets the player associated with this weapon. */
 
-    bool update();
-    State getState() const;
-    TPRREbool reload();
-    TPRREbool pullTrigger();
-    void releaseTrigger();
-    bool isTriggerReleased() const;
+    bool update();                     /**< Updates the weapon based on the time elapsed since last call to this function.*/
+    State getState() const;            /**< Returns the current state of the weapon. */
+    TPRREbool reload();                /**< Reloads the weapon i.e. moves some "unmag" bullets into "mag" bullet count. */
+    TPRREbool pullTrigger();           /**< Pulls the trigger of the weapon, which might result in shooting the weapon. */
+    void releaseTrigger();             /**< Releases the trigger of the weapon. */
+    bool isTriggerReleased() const;    /**< Returns the state of the trigger. */
 
-    void Reset();
+    void Reset();                      /**< Resets properties of the weapon to its initial values like when it was just loaded from file. */
 
-    bool isAvailable() const;
-    void SetAvailable(bool bAvail);
+    bool isAvailable() const;          /**< Returns if this weapon is available for the player. */
+    void SetAvailable(bool bAvail);    /**< Changes the availability of this weapon for the player. */
 
     Weapon(const Weapon& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
         PGEcfgFile(other),
