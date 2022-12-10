@@ -25,12 +25,12 @@ cap_max = 999
 # This can be also understood as magazine capacity.
 # If 0, it is not reloadable (e.g. rail gun).
 # Cannot be bigger than cap_max.
-reloadable = 30
+reloadable = 12
 
 # By default we have this amount of bullets with this weapon
 # If weapon is reloadable, this amount will be loaded, thus it
 # cannot be greater than "reloadable"
-bullets_default = 30
+bullets_default = 12
 
 # If true, reload is per-magazine, not per-bullet.
 # No effect if reloadable is 0.
@@ -66,7 +66,7 @@ reload_time = 1500
 # For pistols, this is usually "semi".
 # For shotguns, this is usually "proj".
 # For rifles, this is usually "auto".
-firing_mode_def = auto
+firing_mode_def = semi
 
 # Maximum supported firing mode.
 # User can loop from default to max firing mode using a mode selector.
@@ -76,7 +76,7 @@ firing_mode_def = auto
 # The user is able to select "auto" though even if "proj" is the default, in that case
 # weapon will shot projectiles in automatic mode (e.g. XM1014/Leone YG1265 Auto Shotgun in CS 1.6).
 # Max cannot be less than the default.
-firing_mode_max = auto
+firing_mode_max = burst
 
 # Time needed to elapse between 2 shots, in millisecs.
 # Cannot be 0.

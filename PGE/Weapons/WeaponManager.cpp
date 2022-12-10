@@ -183,6 +183,7 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRende
     m_connHandle(connHandle),
     m_obj(NULL),
     m_state(WPN_READY),
+    m_firingMode(WPN_FM_SEMI),
     m_nUnmagBulletCount(0),
     m_nMagBulletCount(0),
     m_nBulletsToReload(0),
@@ -259,8 +260,17 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRende
 
     // since we call PGEcfgFile ctor at the beginning with require all accepted values to be present, we can be sure that
     // neither of the below getVars() calls return 'end' iterator
-    const auto itDefFiringModePos = std::find(m_vecOrderOfFiringModes.begin(), m_vecOrderOfFiringModes.end(), getVars()["firing_mode_def"].getAsString());
-    const auto itMaxFiringModePos = std::find(m_vecOrderOfFiringModes.begin(), m_vecOrderOfFiringModes.end(), getVars()["firing_mode_max"].getAsString());
+    const auto itDefFiringModePos = std::find_if(
+        m_vecOrderOfFiringModes.begin(),
+        m_vecOrderOfFiringModes.end(),
+        [this](const FiringModeEnumToStringPair& fm) { return fm.second == getVars()["firing_mode_def"].getAsString(); }
+    );
+
+    const auto itMaxFiringModePos = std::find_if(
+        m_vecOrderOfFiringModes.begin(),
+        m_vecOrderOfFiringModes.end(),
+        [this](const FiringModeEnumToStringPair& fm) { return fm.second == getVars()["firing_mode_max"].getAsString(); }
+    );
 
     if ((itDefFiringModePos == m_vecOrderOfFiringModes.end()) || (itMaxFiringModePos == m_vecOrderOfFiringModes.end()))
     {
@@ -458,6 +468,11 @@ void Weapon::UpdatePositions(const PRREVector& playerPos, const PRREVector& targ
         getObject3D().getAngleVec().SetY( 180.f );
         getObject3D().getAngleVec().SetZ( -atan( distYXratio )*180.f / PFL::PI );
     }
+}
+
+const Weapon::FiringMode& Weapon::getCurrentFiringMode() const
+{
+    return m_firingMode;
 }
 
 TPRREuint Weapon::getUnmagBulletCount() const
@@ -695,6 +710,23 @@ bool Weapon::isTriggerReleased() const
 
 void Weapon::Reset()
 {
+    const auto itDefFiringModePos = std::find_if(
+        m_vecOrderOfFiringModes.begin(),
+        m_vecOrderOfFiringModes.end(),
+        [this](const FiringModeEnumToStringPair& fm) { return fm.second == getVars()["firing_mode_def"].getAsString(); }
+    );
+
+    if (itDefFiringModePos == m_vecOrderOfFiringModes.end())
+    {
+        // As I wrote in the ctor ... since we call PGEcfgFile ctor at the beginning with require all accepted values to be present, we
+        // can be sure that getVars() doesn't return 'end' iterator there ... however, since we are in a public function of an already
+        // constructed object, I can imagine some funny guys accidentally or intentionally screwing up content of getVars(), in such case
+        // obviously we might get 'end' iterator here. In that case I throw exception here and expect the program to crash.
+        throw std::runtime_error("Weapon::Reset(): itDefFiringModePos is at the end!");
+    }
+
+    m_firingMode = itDefFiringModePos->first;
+
     // it doesnt matter if weapon is reloadable or not, the loaded bullet count is in nMagBulletCount
     m_nMagBulletCount = getVars()["bullets_default"].getAsInt();
     m_nUnmagBulletCount = 0;
@@ -719,12 +751,12 @@ void Weapon::SetAvailable(bool bAvail)
 // ############################### PRIVATE ###############################
 
 
-const std::vector<std::string> Weapon::m_vecOrderOfFiringModes =
+const std::vector<Weapon::FiringModeEnumToStringPair> Weapon::m_vecOrderOfFiringModes =
 {
-    "semi",
-    "burst",
-    "proj",
-    "auto"
+    {WPN_FM_SEMI, "semi"},
+    {WPN_FM_BURST, "burst"},
+    {WPN_FM_PROJ, "proj"},
+    {WPN_FM_AUTO, "auto"}
 };
 
 std::set<std::string> Weapon::m_WpnAcceptedVars;

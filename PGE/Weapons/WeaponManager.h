@@ -157,11 +157,22 @@ public:
         WPN_SHOOTING
     }; /**< Weapon states are independent of isTriggerReleased(). */
 
+    enum FiringMode
+    {
+        WPN_FM_SEMI,  /**< Semi-automatic: trigger needs to be pulled-and-released as many times as many bullets we want to fire. */
+        WPN_FM_BURST, /**< Similar to semi, but 1 trigger pull shots some (limited amount) bullets after each other. */
+        WPN_FM_PROJ,  /**< Similar to burst, but 1 trigger pull shots some (limited amount) of projectiles AT ONCE, e.g. shotguns. */
+        WPN_FM_AUTO   /**< Trigger needs to be pulled only once to fire continuously until we have bullet. */
+    };
+
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
     // ---------------------------------------------------------------------------
 
-    Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRenderingEngine& gfx, pge_network::PgeNetworkConnectionHandle connHandle);
+    Weapon(
+        const char* fname, std::list<Bullet>& bullets,
+        PR00FsReducedRenderingEngine& gfx,
+        pge_network::PgeNetworkConnectionHandle connHandle);
     virtual ~Weapon();
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
@@ -171,6 +182,8 @@ public:
     void UpdatePosition(const PRREVector& playerPos);
     void UpdatePositions(const PRREVector& playerPos, TPRREfloat fAngleY, TPRREfloat fAngleZ);
     void UpdatePositions(const PRREVector& playerPos, const PRREVector& targetPos2D);
+
+    const FiringMode& getCurrentFiringMode() const;
 
     TPRREuint getUnmagBulletCount() const;
     void SetUnmagBulletCount(TPRREuint count);
@@ -202,6 +215,7 @@ public:
         m_gfx(other.m_gfx),
         m_connHandle(other.m_connHandle),
         m_state(other.m_state),
+        m_firingMode(other.m_firingMode),
         m_nUnmagBulletCount(other.m_nUnmagBulletCount),
         m_nMagBulletCount(other.m_nMagBulletCount),
         m_nBulletsToReload(other.m_nBulletsToReload),
@@ -231,6 +245,7 @@ public:
         m_gfx = other.m_gfx;
         m_connHandle = other.m_connHandle;
         m_state = other.m_state;
+        m_firingMode = other.m_firingMode;
         m_nUnmagBulletCount = other.m_nUnmagBulletCount;
         m_nMagBulletCount = other.m_nMagBulletCount;
         m_nBulletsToReload = other.m_nBulletsToReload;
@@ -260,7 +275,9 @@ protected:
 
 private:
 
-    static const std::vector<std::string> m_vecOrderOfFiringModes;
+    typedef std::pair<FiringMode, std::string> FiringModeEnumToStringPair;
+
+    static const std::vector<FiringModeEnumToStringPair> m_vecOrderOfFiringModes;
 
     static std::set<std::string> m_WpnAcceptedVars;
 
@@ -269,6 +286,7 @@ private:
     pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this weapon. Should be used by PGE server instance only. */
     PRREObject3D* m_obj;
     State m_state;                                     /**< State as calculated and updated by PGE server instance. */
+    FiringMode m_firingMode;                           /**< Current firing mode, something between getVars("firing_mode_def") and getVars("firing_mode_max"). */
     TPRREuint m_nUnmagBulletCount;                     /**< Spare bullets not loaded into weapon. Should be managed by PGE server instance. */
     TPRREuint m_nMagBulletCount;                       /**< Bullets loaded into weapon. Even if weapon is not reloadable. Should be managed by PGE server instance. */
     TPRREuint m_nBulletsToReload;                      /**< Only updated during reload() / Update(). Should be managed by PGE server instance. */
