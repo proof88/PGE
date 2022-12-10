@@ -665,7 +665,7 @@ int PGE::initializeGame()
     {
         getConsole().EOLnOO("Failed!");
         getConsole().OLn("");
-        /*return 1;*/
+        return 1;
     }
     else
     {
@@ -692,10 +692,10 @@ int PGE::initializeGame()
     getConsole().L();
     getConsole().OLnOI("Initializing Graphics ...");
     bool bGFXinit;
-    /*if ( MessageBox(0, "Teljes képernyõ?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES )
+    if ( MessageBox(0, "Fullscreen?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES )
         bGFXinit = p->SysGFX.initSysGFX(0, 0, PRRE_FULLSCREEN, 0, 32, 24, 0, 0);
-    else*/
-        bGFXinit = p->SysGFX.initSysGFX(800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0);
+    else
+        bGFXinit = p->SysGFX.initSysGFX(1024, 768, PRRE_WINDOWED, 0, 32, 24, 0, 0);
 
     if ( !bGFXinit )
     {
