@@ -56,6 +56,9 @@ public:
     bool getPermanent() const;
     void SetPermanent(bool value);
 
+    bool getDropShadow() const;
+    void SetDropShadow(bool value);
+
     const PRREuiFontWin* getFont() const;
 
     const PRREColor& getColor() const;
@@ -76,6 +79,7 @@ private:
     // unsigned long nHash;
     bool bDelete;
     bool bPermanent;
+    bool bDropShadow;
     PRREuiFontWin* uiFont;  // should be ptr, since uiFont instances should be unique managed by uimanager, this should point to there
     PRREColor clr;
 

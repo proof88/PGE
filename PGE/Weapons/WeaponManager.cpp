@@ -142,6 +142,23 @@ int Bullet::getDamageHp() const
 
 void Bullet::Update()
 {
+    /*
+    * In the PR00FPS Promo flash game I did this:
+    * 1.) when firing the bullet, the xMove and yMove properties of the new bullet were initialized like this:
+    *     eval("_root.mc_map.mc_bullet"+_root.bulletCount).xMove = Math.cos((this.mc_player_arm1._rotation+aimShit)*Math.PI/180.0) * neg;
+    *     eval("_root.mc_map.mc_bullet"+_root.bulletCount).yMove = Math.sin((this.mc_player_arm1._rotation+aimShit)*Math.PI/180.0) * neg;
+    *    
+    *     And initial positions were set based on the above like this:
+    *     eval("_root.mc_map.mc_bullet"+_root.bulletCount)._x = this.newX + eval("_root.mc_map.mc_bullet"+_root.bulletCount).xMove*this.mc_player_arm1._width;
+    *     eval("_root.mc_map.mc_bullet"+_root.bulletCount)._y = this.newY+150 + eval("_root.mc_map.mc_bullet"+_root.bulletCount).yMove*this.mc_player_arm1._width;
+    * 
+    * 2.) And bulletProc updated the position of the bullets with a simple multiplication:
+    *     this._x += this.xMove * _root.BULLETSPEED;
+    *     this._y += this.yMove * _root.BULLETSPEED;
+    * 
+    * Maybe this approach would be faster than using PUT.Move() like below.
+    * However, collision check is the most expensive thing now anyway, so I don't think about this now.
+    */
     m_put.Move(m_speed);
     m_obj->getPosVec() = m_put.getPosVec();
 }

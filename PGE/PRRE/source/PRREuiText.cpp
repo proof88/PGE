@@ -32,6 +32,7 @@ PRREuiText::PRREuiText() :
     _y(0),
     bDelete(false),
     bPermanent(false),
+    bDropShadow(false),
     uiFont(uiFont)
 {}
 
@@ -42,6 +43,7 @@ PRREuiText::PRREuiText(std::string text, int x, int y, PRREuiFontWin& font)
     _y = y;
     bDelete = false;
     bPermanent = true;
+    bDropShadow = false;
     uiFont = &font;
     // calcHash();
 }
@@ -52,6 +54,7 @@ PRREuiText::PRREuiText(const PRREuiText& uiText) :
     _y(uiText._y),
     bDelete(uiText.bDelete),
     bPermanent(uiText.bPermanent),
+    bDropShadow(uiText.bDropShadow),
     uiFont(uiText.uiFont)
 {}
 
@@ -118,6 +121,16 @@ const PRREuiFontWin* PRREuiText::getFont() const
     return uiFont;
 }
 
+bool PRREuiText::getDropShadow() const
+{
+    return bDropShadow;
+}
+
+void PRREuiText::SetDropShadow(bool value)
+{
+    bDropShadow = value;
+}
+
 /**
     Returns reference to text color.
     The text color is black by default.
@@ -144,6 +157,18 @@ void PRREuiText::PrintText() const
 
     if ( uiFont->getListBase() == 0 )
         return;
+
+    if (bDropShadow)
+    {
+        glColor4f(0.f, 0.f, 0.f, clr.getAlphaAsFloat());
+        glRasterPos2f((GLfloat)(_x+1), (GLfloat)(_y-1));
+        glPushAttrib(GL_LIST_BIT);
+
+            glListBase(uiFont->getListBase());
+            glCallLists(sText.length(), GL_UNSIGNED_BYTE, sText.c_str());
+
+        glPopAttrib();
+    }
 
     glColor4f(clr.getRedAsFloat(), clr.getGreenAsFloat(), clr.getBlueAsFloat(), clr.getAlphaAsFloat());
     glRasterPos2f((GLfloat)_x, (GLfloat)_y);
