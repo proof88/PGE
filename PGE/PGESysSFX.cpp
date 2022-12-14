@@ -67,6 +67,11 @@ bool PGESysSFX::destroySysSFX(void)
     return true;
 } // DestroySysSFX()
 
+SoLoud::Soloud& PGESysSFX::getAudioCore()
+{
+    return gSoloud;
+}
+
 
 // ############################## PROTECTED ##############################
 

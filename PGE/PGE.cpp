@@ -60,6 +60,7 @@ public:
     PGEWorld& getWorld() const;             
     PR00FsReducedRenderingEngine& getPRRE() const;
     pge_network::PgeNetwork& getNetwork() const;
+    SoLoud::Soloud& getAudio();
     WeaponManager& getWeaponManager();
                     
     bool isGameRunning() const;               
@@ -205,6 +206,10 @@ pge_network::PgeNetwork& PGE::PGEimpl::getNetwork() const
     return m_PgeNetwork;
 }
 
+SoLoud::Soloud& PGE::PGEimpl::getAudio()
+{
+    return SysSFX.getAudioCore();
+}
 
 WeaponManager& PGE::PGEimpl::getWeaponManager()
 {
@@ -601,6 +606,17 @@ PR00FsReducedRenderingEngine& PGE::getPRRE() const
 pge_network::PgeNetwork& PGE::getNetwork() const
 {
     return p->getNetwork();
+}
+
+
+/**
+    Returns audio lib interface.
+
+    @return Audio lib interface.
+*/
+SoLoud::Soloud& PGE::getAudio()
+{
+    return p->getAudio();
 }
 
 

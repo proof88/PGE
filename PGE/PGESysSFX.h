@@ -35,6 +35,8 @@ public:
     bool initSysSFX(void);
     bool destroySysSFX(void);
 
+    SoLoud::Soloud& getAudioCore();
+
 private:
     SoLoud::Soloud gSoloud;
 

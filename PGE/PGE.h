@@ -17,6 +17,9 @@
 #include "PRRE/include/external/PR00FsReducedRenderingEngine.h"
 #include "PGEInputHandler.h"
 #include "PGEWorld.h"
+// TODO: add "Audio/soloud-RELEASE_20200207/include/" to project include dirs, do not use that path here!
+#include "Audio/soloud-RELEASE_20200207/include/soloud.h"
+#include "Audio/soloud-RELEASE_20200207/include/soloud_wav.h"
 #include "Network/PgeNetwork.h"
 #include "Weapons/WeaponManager.h"
 
@@ -76,6 +79,7 @@ public:
     PGEWorld& getWorld() const;                /**< Returns the world object. */
     PR00FsReducedRenderingEngine& getPRRE() const;   /**< Returns the graphics engine. */
     pge_network::PgeNetwork& getNetwork() const;     /**< Returns the network functionality interface. */
+    SoLoud::Soloud& getAudio();                /**< Returns audio lib interface. */
     
     WeaponManager& getWeaponManager();         /**< Returns the weapon manager object. */
 
