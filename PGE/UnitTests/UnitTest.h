@@ -660,7 +660,10 @@ public:
         if ( setUp() )
         {
             bSkipAllSubTests = false;
-            TestMethod();
+            if (!testMethod())
+            {
+                AddToMessages(std::string("  <").append(sTestFile).append("> failed!").c_str());
+            }
         }
         else
         {
@@ -717,11 +720,12 @@ protected:
 
     virtual void Initialize() {}; /**< This gets called before running the test, use this instead of a ctor. */ 
 
-    virtual void TestMethod() {}; /**< This may be overridden in actual unit tests. It won't be invoked if setUp() returned false! */
+    virtual bool testMethod() { return true; }; /**< This may be overridden in actual unit tests. It won't be invoked if setUp() returned false! */
 
     virtual bool setUp() { return true; };   /**< This gets called before testMethod() and every subtest. */
 
-    virtual void TearDown() {};   /**< This gets called after TestMethod() and every subtest. This is invoked even if TestMethod() or a subtest got skipped due to setUp() returned false! */
+    virtual void TearDown() {};   /**< This gets called after testMethod() and every subtest.
+                                       This is invoked even if testMethod() or a subtest got skipped due to setUp() returned false! */
 
     virtual void Finalize() {};   /**< This gets called after running the whole tests, use this instead of a dtor. */
 
