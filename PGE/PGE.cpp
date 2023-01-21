@@ -22,7 +22,7 @@
 // Subsystems
 #include "PGESysGFX.h"
 #include "PGESysSFX.h"
-#include "PGESysCFG.h"
+#include "Config/PGESysCFG.h"
 #include "Weapons/WeaponManager.h"
 
 #include "PRRE/include/external/Display/PRREScreen.h"

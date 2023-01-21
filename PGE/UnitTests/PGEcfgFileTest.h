@@ -11,7 +11,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PGEcfgFile.h"
+#include "../Config/PGEcfgFile.h"
 
 class PGEcfgFileDerived : public PGEcfgFile
 {

@@ -133,6 +133,12 @@
     <Filter Include="Header Files\Network\GameNetworkingSockets-1.4.0">
       <UniqueIdentifier>{4ef90c79-aa18-40e6-a1d8-5699952cfdd2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Config">
+      <UniqueIdentifier>{e69e9b82-762a-4755-a04e-e4f3ead14545}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Config">
+      <UniqueIdentifier>{498b39db-6c89-4b42-8713-51a456f33837}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGE.h">
@@ -147,9 +153,6 @@
     <ClInclude Include="PGEpragmas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PGESysCFG.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PGESysGFX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -157,9 +160,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PGEInputHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PGEcfgVariable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PGEWorld.h">
@@ -405,9 +405,6 @@
     <ClInclude Include="PRRE\include\internal\SpatialStructures\PRREBoundingVolumeHierarchy.h">
       <Filter>Header Files\PRRE\include\internal\SpatialStructures</Filter>
     </ClInclude>
-    <ClInclude Include="PGEcfgFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Weapons\WeaponManager.h">
       <Filter>Header Files\Weapons</Filter>
     </ClInclude>
@@ -588,21 +585,24 @@
     <ClInclude Include="Network\PgeClient.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
+    <ClInclude Include="Config\PGEcfgFile.h">
+      <Filter>Header Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Config\PGEcfgVariable.h">
+      <Filter>Header Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Config\PGESysCFG.h">
+      <Filter>Header Files\Config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PGESysCFG.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PGESysGFX.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PGESysSFX.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PGEcfgVariable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PGEWorldTime.cpp">
@@ -746,9 +746,6 @@
     <ClCompile Include="PRRE\source\SpatialStructures\PRREBoundingVolumeHierarchy.cpp">
       <Filter>Source Files\PRRE\SpatialStructures</Filter>
     </ClCompile>
-    <ClCompile Include="PGEcfgFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Weapons\WeaponManager.cpp">
       <Filter>Source Files\Weapons</Filter>
     </ClCompile>
@@ -787,6 +784,15 @@
     </ClCompile>
     <ClCompile Include="Network\PgePacket.cpp">
       <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Config\PGEcfgFile.cpp">
+      <Filter>Source Files\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="Config\PGEcfgVariable.cpp">
+      <Filter>Source Files\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="Config\PGESysCFG.cpp">
+      <Filter>Source Files\Config</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

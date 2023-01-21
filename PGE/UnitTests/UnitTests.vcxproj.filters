@@ -43,6 +43,9 @@
     <Filter Include="Header Files\PGE\PRRE\Render">
       <UniqueIdentifier>{dd6585fd-c4c9-4d27-8666-250ac9293910}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PGE\Config">
+      <UniqueIdentifier>{862d123b-ed8d-4fa9-8a0f-29af67d12798}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PR00FsReducedRenderingEngineTest.h">
@@ -93,9 +96,6 @@
     <ClInclude Include="..\PGE.h">
       <Filter>Header Files\PGE</Filter>
     </ClInclude>
-    <ClInclude Include="..\PGESysCFG.h">
-      <Filter>Header Files\PGE</Filter>
-    </ClInclude>
     <ClInclude Include="PRREWindowTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -131,9 +131,6 @@
     </ClInclude>
     <ClInclude Include="PGESysCFGTest.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PGEcfgVariable.h">
-      <Filter>Header Files\PGE</Filter>
     </ClInclude>
     <ClInclude Include="PGEcfgVariableTest.h">
       <Filter>Header Files</Filter>
@@ -299,6 +296,15 @@
     </ClInclude>
     <ClInclude Include="PGEBulletTest.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Config\PGEcfgFile.h">
+      <Filter>Header Files\PGE\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Config\PGEcfgVariable.h">
+      <Filter>Header Files\PGE\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Config\PGESysCFG.h">
+      <Filter>Header Files\PGE\Config</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

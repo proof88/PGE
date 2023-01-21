@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PGEcfgVariable.h"
+#include "../Config/PGEcfgVariable.h"
 
 #ifndef E
 #define E 0.0001f

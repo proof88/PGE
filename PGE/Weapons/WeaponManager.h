@@ -18,7 +18,7 @@
 #include <vector>
 
 #include "../PGEallHeaders.h"
-#include "../PGEcfgFile.h"
+#include "../Config/PGEcfgFile.h"
 #include "../PRRE/include/external/PR00FsReducedRenderingEngine.h"
 #include "../Network/PgePacket.h"
 
