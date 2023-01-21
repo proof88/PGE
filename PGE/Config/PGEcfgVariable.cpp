@@ -9,7 +9,7 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
-#include "PGESysCFG.h"
+#include "PGEcfgProfiles.h"
 #include "../PGEincludes.h"
 #include "../PGEpragmas.h"
 

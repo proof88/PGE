@@ -129,7 +129,7 @@
     <ClInclude Include="PRREhwSystemMemoryTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PGESysCFGTest.h">
+    <ClInclude Include="PGEcfgProfilesTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PGEcfgVariableTest.h">

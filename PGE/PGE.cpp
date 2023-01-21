@@ -22,7 +22,7 @@
 // Subsystems
 #include "PGESysGFX.h"
 #include "PGESysSFX.h"
-#include "Config/PGESysCFG.h"
+#include "Config/PGEcfgProfiles.h"
 #include "Weapons/WeaponManager.h"
 
 #include "PRRE/include/external/Display/PRREScreen.h"
@@ -85,7 +85,7 @@ private:
 
     PGE*      _pOwner;                  /**< The owner public object who creates this pimpl object. */
 
-    PGESysCFG  SysCFG;
+    PGEcfgProfiles  SysCFG;
     PGESysGFX  SysGFX;
     pge_network::PgeNetwork& m_PgeNetwork;
     PGESysSFX  SysSFX;

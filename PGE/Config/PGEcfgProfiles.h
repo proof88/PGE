@@ -2,7 +2,7 @@
 
 /*
     ###################################################################################
-    PGESysCFG.h
+    PGEcfgProfiles.h
     This file is part of PGE.
     External header.
     PR00F's Game Engine cfg file handler
@@ -20,10 +20,10 @@
 /**
     PR00F's Game Engine cfg file handler class.
 */
-class PGESysCFG : public PGEcfgFile
+class PGEcfgProfiles : public PGEcfgFile
 {
 #ifdef PGE_CLASS_IS_INCLUDED_NOTIFICATION
-#pragma message("  PGESysCFG is included")   
+#pragma message("  PGEcfgProfiles is included")   
 #endif
 
 public:
@@ -31,8 +31,8 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    explicit PGESysCFG(const char* gameTitle);
-    virtual ~PGESysCFG();
+    explicit PGEcfgProfiles(const char* gameTitle);
+    virtual ~PGEcfgProfiles();
 
     CConsole&   getConsole() const;                   /**< Returns access to console preset with logger module name as this class. */
 
@@ -84,10 +84,10 @@ private:
 
     static bool findMyDocsFolder();         /**< Stores user docs folder path in sPathToMyDocs. */
     
-    PGESysCFG();
+    PGEcfgProfiles();
 
-    PGESysCFG(const PGESysCFG&);  
-    PGESysCFG& operator=(const PGESysCFG&);
+    PGEcfgProfiles(const PGEcfgProfiles&);  
+    PGEcfgProfiles& operator=(const PGEcfgProfiles&);
 
     bool getPlayerNameFromFile(
         const char* cFilename,
@@ -100,4 +100,4 @@ private:
         const std::string& sUser,
         const std::string& sNick);  /**< Writes lines to an opened file. */
 
-}; // class PGESysCFG
+}; // class PGEcfgProfiles

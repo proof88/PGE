@@ -1,6 +1,6 @@
 /*
     ###################################################################################
-    PGESysCFG.cpp
+    PGEcfgProfiles.cpp
     This file is part of PGE.
     PR00F's Game Engine cfg file handler
     Made by PR00F88
@@ -9,7 +9,7 @@
 */
 
 #include "PRREbaseIncludes.h"  // PCH
-#include "PGESysCFG.h"
+#include "PGEcfgProfiles.h"
 #include "../PGEincludes.h"
 #include "../PGEpragmas.h"
 
@@ -19,10 +19,10 @@ using namespace std;
 // ############################### PUBLIC ################################
 
 
-PGESysCFG::PGESysCFG(const char* gameTitle) :
+PGEcfgProfiles::PGEcfgProfiles(const char* gameTitle) :
     PGEcfgFile(false, false)
 {
-    getConsole().OLnOI("PGESysCFG::PGESysCFG(%s)", gameTitle);
+    getConsole().OLnOI("PGEcfgProfiles::PGEcfgProfiles(%s)", gameTitle);
     
     MAX_PATH;
     nActiveProfile = -1;
@@ -74,12 +74,12 @@ PGESysCFG::PGESysCFG(const char* gameTitle) :
 
     getConsole().SOLnOO("> done!");
     
-} // PGESysCFG(...)
+} // PGEcfgProfiles(...)
 
 
-PGESysCFG::~PGESysCFG()
+PGEcfgProfiles::~PGEcfgProfiles()
 {
-    getConsole().OLn("PGESysCFG::~PGESysCFG()");
+    getConsole().OLn("PGEcfgProfiles::~PGEcfgProfiles()");
     sPathToMyDocs.clear();
     for (int i = 0; i < nProfilesCount; i++)
     {
@@ -88,7 +88,7 @@ PGESysCFG::~PGESysCFG()
     }
     delete[] sFoundProfiles;
     delete[] sFoundProfilePlayerNames;
-} // ~PGESysCFG()
+} // ~PGEcfgProfiles()
 
 
 /**
@@ -97,7 +97,7 @@ PGESysCFG::~PGESysCFG()
 
     @return Console instance used by this class.
 */
-CConsole& PGESysCFG::getConsole() const
+CConsole& PGEcfgProfiles::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
 } // getConsole()
@@ -110,9 +110,9 @@ CConsole& PGESysCFG::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PGESysCFG::getLoggerModuleName()
+const char* PGEcfgProfiles::getLoggerModuleName()
 {
-    return "PGESysCFG";
+    return "PGEcfgProfiles";
 } // getLoggerModuleName()
 
 
@@ -120,7 +120,7 @@ const char* PGESysCFG::getLoggerModuleName()
     Returns the path to user documents.
     @return The absolute path to user documents directory. There is always a delimiter character at the end.
 */
-string PGESysCFG::getMyDocsFolder()
+string PGEcfgProfiles::getMyDocsFolder()
 {
     return sPathToMyDocs;
 } // getMyDocsFolder()
@@ -129,7 +129,7 @@ string PGESysCFG::getMyDocsFolder()
 /**
     Returns the file name of the selected language file.
 */
-string PGESysCFG::getLangFileName() const
+string PGEcfgProfiles::getLangFileName() const
 {
     return sLangFileName;
 } // getLangFileName()
@@ -139,9 +139,9 @@ string PGESysCFG::getLangFileName() const
     Reads the language file into the given table.
     @return The read language lines.
 */
-int PGESysCFG::readLanguageData(string** &langTable) const
+int PGEcfgProfiles::readLanguageData(string** &langTable) const
 {
-    getConsole().OLnOI("PGESysCFG::readLanguageData(...)");
+    getConsole().OLnOI("PGEcfgProfiles::readLanguageData(...)");
     ifstream f( sLangFileName.c_str() );
     if ( f.fail() )
     {
@@ -208,7 +208,7 @@ int PGESysCFG::readLanguageData(string** &langTable) const
     Returns whether player profiles are stored in user documents folder.
     Example: if true, MyDocs\<GAMENAME>\profiles, otherwise program folder\gamedata\profiles.
 */
-bool PGESysCFG::areProfilesInMyDocs() const
+bool PGEcfgProfiles::areProfilesInMyDocs() const
 {
     return bMainCFGinMyDocs;
 } // areProfilesInMyDocs()
@@ -218,7 +218,7 @@ bool PGESysCFG::areProfilesInMyDocs() const
     Returns the path to the profiles.
     @return The absolute path to game profiles directory. There is always a delimiter character at the end.
 */
-string PGESysCFG::getPathToProfiles() const
+string PGEcfgProfiles::getPathToProfiles() const
 {
     return sPathToProfiles;
 } // getPathToProfiles()
@@ -227,7 +227,7 @@ string PGESysCFG::getPathToProfiles() const
 /**
     Returns the number of found profiles.
 */
-int PGESysCFG::getProfilesCount() const
+int PGEcfgProfiles::getProfilesCount() const
 {
     return nProfilesCount;
 } // getProfilesCount()
@@ -236,7 +236,7 @@ int PGESysCFG::getProfilesCount() const
 /**
     Returns the found profile names.
 */
-const string** PGESysCFG::getProfilesList() const
+const string** PGEcfgProfiles::getProfilesList() const
 {
     return const_cast<const string**>(sFoundProfiles);
 } // getProfilesList()
@@ -245,7 +245,7 @@ const string** PGESysCFG::getProfilesList() const
 /**
     Returns the found player names in profiles.
 */
-const string** PGESysCFG::getProfilePlayersList() const
+const string** PGEcfgProfiles::getProfilePlayersList() const
 {
     return const_cast<const string**>(sFoundProfilePlayerNames);
 } // getProfilePlayersList()
@@ -265,12 +265,12 @@ const string** PGESysCFG::getProfilePlayersList() const
             -1 if a profile already exists with the given user name.
             -2 if a profile can't be created for some other reason.
 */
-int PGESysCFG::addProfile(const char* sUser, const char* sNick)
+int PGEcfgProfiles::addProfile(const char* sUser, const char* sNick)
 {
     if ( (sUser == NULL) || (sNick == NULL) )
         return -2;
 
-    getConsole().OLnOI("PGESysCFG::addProfile(%s, %s)", sUser, sNick);
+    getConsole().OLnOI("PGEcfgProfiles::addProfile(%s, %s)", sUser, sNick);
 
     const std::string sFileToCreate = getPathToProfiles() + sUser + "\\" + sUser + ".cfg";
     const std::string sDirToCreate = getPathToProfiles() + sUser;
@@ -338,9 +338,9 @@ int PGESysCFG::addProfile(const char* sUser, const char* sNick)
             -2 if the profile exists but can't be deleted for some reason.
             -3 profile file deleted but its directory could not be deleted.
 */
-int PGESysCFG::deleteProfile(int nIndex)
+int PGEcfgProfiles::deleteProfile(int nIndex)
 {
-    getConsole().OLnOI("PGESysCFG::deleteProfile(%d)", nIndex);
+    getConsole().OLnOI("PGEcfgProfiles::deleteProfile(%d)", nIndex);
     if ( (nIndex < 0) || (nIndex >= getProfilesCount()) )
     {
         getConsole().EOLnOO("ERROR: invalid index!");
@@ -383,7 +383,7 @@ int PGESysCFG::deleteProfile(int nIndex)
 /**
     Gets index of active profile.
 */
-int PGESysCFG::getProfile() const
+int PGEcfgProfiles::getProfile() const
 {
     return nActiveProfile;
 } // getActiveProfile()
@@ -394,9 +394,9 @@ int PGESysCFG::getProfile() const
     This also implies reading the configuration data for the given profile.
     The active profile index will be -1 if the given index is valid but an error occured while reading config data.
 */
-void PGESysCFG::SetProfile(int nIndex)
+void PGEcfgProfiles::SetProfile(int nIndex)
 {
-    getConsole().OLnOI("PGESysCFG::SetProfile(%d)", nIndex);
+    getConsole().OLnOI("PGEcfgProfiles::SetProfile(%d)", nIndex);
     if ( nIndex >= getProfilesCount() )
     {
         getConsole().EOLnOO("ERROR: invalid index!");
@@ -440,7 +440,7 @@ void PGESysCFG::SetProfile(int nIndex)
 
     @return The cvar specified by the given name or a default empty cvar if no profile is selected.
 */
-PGEcfgVariable& PGESysCFG::getVar(const char* varName)
+PGEcfgVariable& PGEcfgProfiles::getVar(const char* varName)
 {
     if ( getProfile() > -1 )
     {
@@ -457,7 +457,7 @@ PGEcfgVariable& PGESysCFG::getVar(const char* varName)
     If the given name doesn't exist, the function won't create it.
     @return The cvar specified by the given name or a default empty cvar if doesn't exist.
 */
-const PGEcfgVariable& PGESysCFG::getVar(const char* varName) const
+const PGEcfgVariable& PGEcfgProfiles::getVar(const char* varName) const
 {
     map<string, PGEcfgVariable>::const_iterator it = m_vars.find(varName);
     if ( (m_vars.end() == it) || (getProfile() == -1) )
@@ -473,7 +473,7 @@ const PGEcfgVariable& PGESysCFG::getVar(const char* varName) const
     If you delete a cvar from the current profile, it will be deleted only on memory-level.
     To save changes made to the current profile, use writeConfiguration().
 */
-void PGESysCFG::DeleteVar(const char* varName)
+void PGEcfgProfiles::DeleteVar(const char* varName)
 {
     if ( (varName == NULL) || (getProfile() == -1) )
         return;
@@ -489,7 +489,7 @@ void PGESysCFG::DeleteVar(const char* varName)
     Gets the number of cvars.
     @return The number of cvars for the active profile. Always 0 if no profile is selected.
 */
-int PGESysCFG::getVarsCount() const
+int PGEcfgProfiles::getVarsCount() const
 {
     return m_vars.size();
 } // getVarsCount()
@@ -499,9 +499,9 @@ int PGESysCFG::getVarsCount() const
     Loads configuration for current profile from file.
     @return True on success, false on failure.
 */
-bool PGESysCFG::readConfiguration()
+bool PGEcfgProfiles::readConfiguration()
 {
-    getConsole().OLnOI("PGESysCFG::readConfiguration()");
+    getConsole().OLnOI("PGEcfgProfiles::readConfiguration()");
     if ( getProfile() == -1 )
     {
         getConsole().EOLnOO("ERROR: current profile index is -1!");
@@ -525,9 +525,9 @@ bool PGESysCFG::readConfiguration()
     Saves configuration for current profile to file.
     @return True on success, false on failure.
 */
-bool PGESysCFG::writeConfiguration()
+bool PGEcfgProfiles::writeConfiguration()
 {
-    getConsole().OLnOI("PGESysCFG::writeConfiguration()");
+    getConsole().OLnOI("PGEcfgProfiles::writeConfiguration()");
     if ( getProfile() == -1 )
     {
         getConsole().EOLnOO("ERROR: current profile index is -1!");
@@ -554,7 +554,7 @@ bool PGESysCFG::writeConfiguration()
 // ############################## PROTECTED ##############################
 
 
-bool PGESysCFG::validateOnLoad(std::ifstream& f) const
+bool PGEcfgProfiles::validateOnLoad(std::ifstream& f) const
 {
     string tmp;
     f >> tmp;
@@ -565,24 +565,24 @@ bool PGESysCFG::validateOnLoad(std::ifstream& f) const
 // ############################### PRIVATE ###############################
 
 
-std::string PGESysCFG::sPathToMyDocs;
+std::string PGEcfgProfiles::sPathToMyDocs;
 
 
-PGESysCFG::PGESysCFG() :
+PGEcfgProfiles::PGEcfgProfiles() :
     PGEcfgFile(false, false)
 {
 
 }
 
 
-PGESysCFG::PGESysCFG(const PGESysCFG& other) :
+PGEcfgProfiles::PGEcfgProfiles(const PGEcfgProfiles& other) :
     PGEcfgFile(other.getAllAcceptedVarsDefineRequirement(), other.getCaseSensitiveVars())
 {
 
 } 
 
 
-PGESysCFG& PGESysCFG::operator=(const PGESysCFG&)
+PGEcfgProfiles& PGEcfgProfiles::operator=(const PGEcfgProfiles&)
 {
     return *this;
 }
@@ -592,11 +592,11 @@ PGESysCFG& PGESysCFG::operator=(const PGESysCFG&)
     Stores user docs folder path in sPathToMyDocs.
     @return True if successful, false on failure.
 */
-bool PGESysCFG::findMyDocsFolder()
+bool PGEcfgProfiles::findMyDocsFolder()
 {
     if ( !sPathToMyDocs.empty() )
     {
-        CConsole::getConsoleInstance("PGESysCFG").OLn("findMyDocsFolder(): already set folder: %s", sPathToMyDocs.c_str());
+        CConsole::getConsoleInstance("PGEcfgProfiles").OLn("findMyDocsFolder(): already set folder: %s", sPathToMyDocs.c_str());
         return true;
     }
 
@@ -621,7 +621,7 @@ bool PGESysCFG::findMyDocsFolder()
 /**
     Gets player name from given cfg file.
 */
-bool PGESysCFG::getPlayerNameFromFile(const char* cFilename, std::string& sPlayerName)
+bool PGEcfgProfiles::getPlayerNameFromFile(const char* cFilename, std::string& sPlayerName)
 {
     ifstream f_cfg(cFilename);
 
@@ -663,9 +663,9 @@ bool PGESysCFG::getPlayerNameFromFile(const char* cFilename, std::string& sPlaye
     If the current profile index is valid, it may change during this function but the current profile and loaded cvars
     remain unchanged.
 */
-void PGESysCFG::LoadProfilesList()
+void PGEcfgProfiles::LoadProfilesList()
 {
-    getConsole().OLnOI("PGESysCFG::LoadProfilesList() ...");
+    getConsole().OLnOI("PGEcfgProfiles::LoadProfilesList() ...");
     // save current user
     string sOriginalCurrentProfileUser;
     if ( getProfile() != -1 )
@@ -795,7 +795,7 @@ void PGESysCFG::LoadProfilesList()
 /**
     Removes all cvariables.
 */
-void PGESysCFG::ClearVars()
+void PGEcfgProfiles::ClearVars()
 {
     m_vars.clear();
 } // ClearVars()
@@ -813,7 +813,7 @@ void PGESysCFG::ClearVars()
                  Specify this only if this is a new profile being added and not yet current profile.
                  You can leave it empty if you want to save the current profile.
 */
-void PGESysCFG::WriteConfiguration(ofstream& f_cfg, const string& sUser, const string& sNick)
+void PGEcfgProfiles::WriteConfiguration(ofstream& f_cfg, const string& sUser, const string& sNick)
 {
     f_cfg << PGE_SYS_CFG_FILE_MAGIC_START << endl << endl;
     f_cfg << "# " << sUser << "'s settings file" << endl << endl;

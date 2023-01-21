@@ -21,7 +21,7 @@
 #include "PFLTest.h"
 #include "PGEcfgVariableTest.h"
 #include "PGEcfgFileTest.h"
-#include "PGESysCFGTest.h"
+#include "PGEcfgProfilesTest.h"
 #include "WeaponsTest.h"
 #include "PGEBulletTest.h"
 #include "PR00FsReducedRenderingEngineTest.h"
@@ -90,7 +90,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PFLTest                    testPFL;
     PGEcfgVariableTest         testPGEcfgVariable;
     PGEcfgFileTest             testPGEcfgFile;
-    PGESysCFGTest              testPGESysCFG; 
+    PGEcfgProfilesTest              testPGESysCFG; 
     WeaponsTest                testWeapons;
     PGEBulletTest              testPGEBullet;
     

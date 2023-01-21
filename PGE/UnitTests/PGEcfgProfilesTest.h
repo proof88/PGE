@@ -2,32 +2,32 @@
 
 /*
     ###################################################################################
-    PGESysCFGTest.h
-    Unit test for PGESysCFG.
+    PGEcfgProfilesTest.h
+    Unit test for PGEcfgProfiles.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 
 #include "UnitTest.h"  // PCH
-#include "../Config/PGESysCFG.h"
+#include "../Config/PGEcfgProfiles.h"
 
 #ifndef E
 #define E 0.0001f
 #endif // EPSILON
 
-class PGESysCFGTest :
+class PGEcfgProfilesTest :
     public UnitTest
 {
 public:
 
-    PGESysCFGTest() :
+    PGEcfgProfilesTest() :
         UnitTest( __FILE__ )
     {
         
     };
 
-    virtual ~PGESysCFGTest()
+    virtual ~PGEcfgProfilesTest()
     {
         
     }
@@ -36,27 +36,27 @@ protected:
 
     virtual void Initialize()
     {
-        //CConsole::getConsoleInstance().SetLoggingState(PGESysCFG::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PGEcfgProfiles::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), true);
-        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PGESysCFGTest::testCtor1);
-        AddSubTest("testGetMyDocsFolder", (PFNUNITSUBTEST) &PGESysCFGTest::testGetMyDocsFolder);
-        AddSubTest("testGetLangFileName", (PFNUNITSUBTEST) &PGESysCFGTest::testGetLangFileName);
-        AddSubTest("testReadLanguageData", (PFNUNITSUBTEST) &PGESysCFGTest::testReadLanguageData);
-        AddSubTest("testAreProfilesInMyDocs", (PFNUNITSUBTEST) &PGESysCFGTest::testAreProfilesInMyDocs);
-        AddSubTest("testGetPathToProfiles", (PFNUNITSUBTEST) &PGESysCFGTest::testGetPathToProfiles);
-        AddSubTest("testGetProfilesCount", (PFNUNITSUBTEST) &PGESysCFGTest::testGetProfilesCount);
-        AddSubTest("testGetProfilesList", (PFNUNITSUBTEST) &PGESysCFGTest::testGetProfilesList);
-        AddSubTest("testGetProfilePlayersList", (PFNUNITSUBTEST) &PGESysCFGTest::testGetProfilePlayersList);
-        AddSubTest("testAddProfile", (PFNUNITSUBTEST) &PGESysCFGTest::testAddProfile);
-        AddSubTest("testDeleteProfile", (PFNUNITSUBTEST) &PGESysCFGTest::testDeleteProfile);
-        AddSubTest("testGetProfile", (PFNUNITSUBTEST) &PGESysCFGTest::testGetProfile);
-        AddSubTest("testSetProfile", (PFNUNITSUBTEST) &PGESysCFGTest::testSetProfile);
-        AddSubTest("testGetVar1", (PFNUNITSUBTEST) &PGESysCFGTest::testGetVar1);
-        AddSubTest("testGetVar2", (PFNUNITSUBTEST) &PGESysCFGTest::testGetVar2);
-        AddSubTest("testDeleteVar", (PFNUNITSUBTEST) &PGESysCFGTest::testDeleteVar);
-        AddSubTest("testGetVarsCount", (PFNUNITSUBTEST) &PGESysCFGTest::testGetVarsCount);
-        AddSubTest("testReadConfiguration", (PFNUNITSUBTEST) &PGESysCFGTest::testReadConfiguration);
-        AddSubTest("testWriteConfiguration", (PFNUNITSUBTEST) &PGESysCFGTest::testWriteConfiguration);
+        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testCtor1);
+        AddSubTest("testGetMyDocsFolder", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetMyDocsFolder);
+        AddSubTest("testGetLangFileName", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetLangFileName);
+        AddSubTest("testReadLanguageData", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testReadLanguageData);
+        AddSubTest("testAreProfilesInMyDocs", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testAreProfilesInMyDocs);
+        AddSubTest("testGetPathToProfiles", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetPathToProfiles);
+        AddSubTest("testGetProfilesCount", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfilesCount);
+        AddSubTest("testGetProfilesList", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfilesList);
+        AddSubTest("testGetProfilePlayersList", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfilePlayersList);
+        AddSubTest("testAddProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testAddProfile);
+        AddSubTest("testDeleteProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testDeleteProfile);
+        AddSubTest("testGetProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfile);
+        AddSubTest("testSetProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testSetProfile);
+        AddSubTest("testGetVar1", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetVar1);
+        AddSubTest("testGetVar2", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetVar2);
+        AddSubTest("testDeleteVar", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testDeleteVar);
+        AddSubTest("testGetVarsCount", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetVarsCount);
+        AddSubTest("testReadConfiguration", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testReadConfiguration);
+        AddSubTest("testWriteConfiguration", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testWriteConfiguration);
     }
 
     virtual bool setUp()
@@ -69,30 +69,30 @@ protected:
 
     virtual void Finalize()
     {
-        CConsole::getConsoleInstance().SetLoggingState(PGESysCFG::getLoggerModuleName(), false);    
+        CConsole::getConsoleInstance().SetLoggingState(PGEcfgProfiles::getLoggerModuleName(), false);    
         CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), false);
     }
 
 
 private:
 
-    PGESysCFGTest(const PGESysCFGTest&)
+    PGEcfgProfilesTest(const PGEcfgProfilesTest&)
     {};         
 
-    PGESysCFGTest& operator=(const PGESysCFGTest&)
+    PGEcfgProfilesTest& operator=(const PGEcfgProfilesTest&)
     {
         return *this;
     };
 
     bool testCtor1()
     {
-        const PGESysCFG cfg("game title");
+        const PGEcfgProfiles cfg("game title");
         return true;
     }
 
     bool testGetMyDocsFolder()
     {
-        const PGESysCFG cfg("game title");
+        const PGEcfgProfiles cfg("game title");
 
         return assertTrue( (cfg.getMyDocsFolder() == "C:\\Users\\PR00F\\Documents\\") ||
             (cfg.getMyDocsFolder() == "C:\\Users\\eszabdm\\Documents\\") ||
@@ -101,14 +101,14 @@ private:
 
     bool testGetLangFileName()
     {
-        const PGESysCFG cfg("game title");
+        const PGEcfgProfiles cfg("game title");
 
         return assertEquals(std::string("gamedata\\language\\magyar_teszt.txt"), cfg.getLangFileName());
     }
 
     bool testReadLanguageData()
     {
-        PGESysCFG cfg("game title");
+        PGEcfgProfiles cfg("game title");
         std::string** saLangData;
         const int nReadLangLines = cfg.readLanguageData(saLangData);
 
@@ -144,25 +144,25 @@ private:
 
     bool testAreProfilesInMyDocs()
     {
-        const PGESysCFG cfg("game title");
+        const PGEcfgProfiles cfg("game title");
         return assertFalse( cfg.areProfilesInMyDocs() );
     }
 
     bool testGetPathToProfiles()
     {
-        const PGESysCFG cfg("game title");
+        const PGEcfgProfiles cfg("game title");
         return assertNotEquals(std::string::npos, cfg.getPathToProfiles().find("\\profiles\\") );
     }
 
     bool testGetProfilesCount()
     {
-        const PGESysCFG cfg("game title");
+        const PGEcfgProfiles cfg("game title");
         return assertEquals(4, cfg.getProfilesCount());
     }
 
     bool testGetProfilesList()
     {
-        const PGESysCFG cfg("game title");
+        const PGEcfgProfiles cfg("game title");
         const std::string** const sProfileList = cfg.getProfilesList();
         const char* const saProfilesExpected[4] = { "alma", "béla", "loller", "proof88" };
         bool bErrorFound = false;
@@ -178,7 +178,7 @@ private:
 
     bool testGetProfilePlayersList()
     {
-        const PGESysCFG cfg("game title");
+        const PGEcfgProfiles cfg("game title");
         const std::string** const sProfilePlayersList = cfg.getProfilePlayersList();
         const char* const saProfilePlayersExpected[4] = { "Alma 76", "Béla", "loller", "PR00F88" };
         bool bErrorFound = false;
@@ -194,7 +194,7 @@ private:
 
     bool testAddProfile()
     {
-        PGESysCFG cfg("game title");
+        PGEcfgProfiles cfg("game title");
         cfg.SetProfile( 3 );  // proof88.cfg
         const int nOriginalUsersCount = cfg.getProfilesCount();
         int nOriginalVarsCount = cfg.getVarsCount();
@@ -253,7 +253,7 @@ private:
 
     bool testDeleteProfile()
     {
-        PGESysCFG cfg("game title");
+        PGEcfgProfiles cfg("game title");
         cfg.SetProfile( 3 );  // proof88.cfg
         const int nOriginalUsersCount = cfg.getProfilesCount();
         int nOriginalVarsCount = cfg.getVarsCount();
@@ -289,13 +289,13 @@ private:
 
     bool testGetProfile()
     {
-        const PGESysCFG cfg("game title");
+        const PGEcfgProfiles cfg("game title");
         return assertEquals(-1, cfg.getProfile(), "getProfile()");
     }
 
     bool testSetProfile()
     {
-        PGESysCFG cfg("game title");
+        PGEcfgProfiles cfg("game title");
         bool b = true;
 
         cfg.SetProfile( -1 );
@@ -322,7 +322,7 @@ private:
     bool testGetVar1()
     {
         // non-const version
-        PGESysCFG cfg("game title");
+        PGEcfgProfiles cfg("game title");
         bool b = true;
 
         cfg.getVar("cl_alma") = 2;
@@ -344,7 +344,7 @@ private:
     bool testGetVar2()
     {
         // const version
-        const PGESysCFG cfg("game title");
+        const PGEcfgProfiles cfg("game title");
 
         PGEcfgVariable cvar = cfg.getVar("cl_alma");
 
@@ -355,7 +355,7 @@ private:
 
     bool testDeleteVar()
     {
-        PGESysCFG cfg("game title");
+        PGEcfgProfiles cfg("game title");
         bool b = true;
 
         b &= assertEquals(0, cfg.getVarsCount(), "getVarsCount() 1");
@@ -377,7 +377,7 @@ private:
 
     bool testGetVarsCount()
     {
-        PGESysCFG cfg("game title");
+        PGEcfgProfiles cfg("game title");
 
         bool b = assertEquals(0, cfg.getVarsCount(), "1");
 
@@ -389,7 +389,7 @@ private:
 
     bool testReadConfiguration()
     {
-        PGESysCFG cfg("game title");
+        PGEcfgProfiles cfg("game title");
         bool b = true;
 
         b &= assertFalse(cfg.readConfiguration(), "1");
@@ -411,7 +411,7 @@ private:
 
     bool testWriteConfiguration()
     {
-        PGESysCFG cfg("game title");
+        PGEcfgProfiles cfg("game title");
 
         bool b = assertFalse(cfg.writeConfiguration(), "writecfg 1");
 
@@ -440,4 +440,4 @@ private:
         return b;
     }
     
-}; // class PGESysCFGTest
+}; // class PGEcfgProfilesTest

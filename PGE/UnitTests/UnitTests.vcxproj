@@ -384,7 +384,7 @@
     <ClInclude Include="PFLTest.h" />
     <ClInclude Include="PGEcfgFileTest.h" />
     <ClInclude Include="PGEcfgVariableTest.h" />
-    <ClInclude Include="PGESysCFGTest.h" />
+    <ClInclude Include="PGEcfgProfilesTest.h" />
     <ClInclude Include="PR00FsReducedRenderingEngineTest.h" />
     <ClInclude Include="PR00FsReducedRenderingEngineTest2.h" />
     <ClInclude Include="PRREAxisAlignedBoundingBoxTest.h" />

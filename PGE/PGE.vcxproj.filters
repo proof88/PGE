@@ -591,7 +591,7 @@
     <ClInclude Include="Config\PGEcfgVariable.h">
       <Filter>Header Files\Config</Filter>
     </ClInclude>
-    <ClInclude Include="Config\PGESysCFG.h">
+    <ClInclude Include="Config\PGEcfgProfiles.h">
       <Filter>Header Files\Config</Filter>
     </ClInclude>
   </ItemGroup>
@@ -791,7 +791,7 @@
     <ClCompile Include="Config\PGEcfgVariable.cpp">
       <Filter>Source Files\Config</Filter>
     </ClCompile>
-    <ClCompile Include="Config\PGESysCFG.cpp">
+    <ClCompile Include="Config\PGEcfgProfiles.cpp">
       <Filter>Source Files\Config</Filter>
     </ClCompile>
   </ItemGroup>

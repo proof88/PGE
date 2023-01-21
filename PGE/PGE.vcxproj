@@ -393,7 +393,7 @@
     <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_wavstream.h" />
     <ClInclude Include="Config\PGEcfgFile.h" />
     <ClInclude Include="Config\PGEcfgVariable.h" />
-    <ClInclude Include="Config\PGESysCFG.h" />
+    <ClInclude Include="Config\PGEcfgProfiles.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingmessages.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingsockets.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingutils.h" />
@@ -509,7 +509,7 @@
   <ItemGroup>
     <ClCompile Include="Config\PGEcfgFile.cpp" />
     <ClCompile Include="Config\PGEcfgVariable.cpp" />
-    <ClCompile Include="Config\PGESysCFG.cpp" />
+    <ClCompile Include="Config\PGEcfgProfiles.cpp" />
     <ClCompile Include="Network\PgeClient.cpp" />
     <ClCompile Include="Network\PgeNetwork.cpp" />
     <ClCompile Include="Network\PgePacket.cpp" />

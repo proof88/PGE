@@ -79,7 +79,7 @@ protected:
     std::set<std::string> m_acceptedVars;
     std::map<std::string, PGEcfgVariable> m_vars;
 
-    // this is not private so PGESysCFG::getPlayerNameFromFile() can access it, otherwise this should be private
+    // this is not private so PGEcfgProfiles::getPlayerNameFromFile() can access it, otherwise this should be private
     static bool lineIsValueAssignment(const std::string& sTrimmedLine, bool bCaseSensitiveVars, std::string& sVar, std::string& sValue, bool& bParseError);
 
     virtual bool validateOnLoad(std::ifstream&) const; /**< Validate the file being processed by load(). */
