@@ -134,13 +134,13 @@
       <PreprocessorDefinitions>_ALLOW_RTCc_IN_STL;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeaderFile>PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PureBaseIncludes.h</PrecompiledHeaderFile>
       <PreprocessToFile>false</PreprocessToFile>
       <BrowseInformation>true</BrowseInformation>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -165,13 +165,13 @@
       <PreprocessorDefinitions>_ALLOW_RTCc_IN_STL;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeaderFile>PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PureBaseIncludes.h</PrecompiledHeaderFile>
       <PreprocessToFile>false</PreprocessToFile>
       <BrowseInformation>true</BrowseInformation>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -196,13 +196,13 @@
       <PreprocessorDefinitions>_ALLOW_RTCc_IN_STL;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeaderFile>PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PureBaseIncludes.h</PrecompiledHeaderFile>
       <PreprocessToFile>false</PreprocessToFile>
       <BrowseInformation>true</BrowseInformation>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -227,13 +227,13 @@
       <PreprocessorDefinitions>_ALLOW_RTCc_IN_STL;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SmallerTypeCheck>true</SmallerTypeCheck>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeaderFile>PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PureBaseIncludes.h</PrecompiledHeaderFile>
       <PreprocessToFile>false</PreprocessToFile>
       <BrowseInformation>true</BrowseInformation>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -258,7 +258,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PrecompiledHeaderFile>PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PureBaseIncludes.h</PrecompiledHeaderFile>
       <PreprocessToFile>false</PreprocessToFile>
       <BrowseInformation>false</BrowseInformation>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -269,7 +269,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -295,7 +295,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SmallerTypeCheck>false</SmallerTypeCheck>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PrecompiledHeaderFile>PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PureBaseIncludes.h</PrecompiledHeaderFile>
       <PreprocessToFile>false</PreprocessToFile>
       <BrowseInformation>false</BrowseInformation>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -306,7 +306,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -333,12 +333,12 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <PrecompiledHeaderFile>PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>PureBaseIncludes.h</PrecompiledHeaderFile>
       <DebugInformationFormat>None</DebugInformationFormat>
       <TreatWarningAsError>true</TreatWarningAsError>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>PRRE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -421,89 +421,89 @@
     <ClInclude Include="PGEWorld.h" />
     <ClInclude Include="PGEWorldTime.h" />
     <ClInclude Include="PGEWorldWeather.h" />
-    <ClInclude Include="PRRE\include\external\Display\PRREScreen.h" />
-    <ClInclude Include="PRRE\include\external\Display\PRREWindow.h" />
-    <ClInclude Include="PRRE\include\external\Hardware\PRREhwAudio.h" />
-    <ClInclude Include="PRRE\include\external\Hardware\PRREhwBase.h" />
-    <ClInclude Include="PRRE\include\external\Hardware\PRREhwCentralProcessor.h" />
-    <ClInclude Include="PRRE\include\external\Hardware\PRREhwInfo.h" />
-    <ClInclude Include="PRRE\include\external\Hardware\PRREhwSystemMemory.h" />
-    <ClInclude Include="PRRE\include\external\Hardware\PRREhwVideo.h" />
-    <ClInclude Include="PRRE\include\external\Material\PRREColor.h" />
-    <ClInclude Include="PRRE\include\external\Material\PRREImageManager.h" />
-    <ClInclude Include="PRRE\include\external\Material\PRREMaterialManager.h" />
-    <ClInclude Include="PRRE\include\external\Material\PRRETextureManager.h" />
-    <ClInclude Include="PRRE\include\external\Math\PRREMatrix.h" />
-    <ClInclude Include="PRRE\include\external\Math\PRREPosUpTarget.h" />
-    <ClInclude Include="PRRE\include\external\Math\PRRETransformMatrix.h" />
-    <ClInclude Include="PRRE\include\external\Math\PRREVector.h" />
-    <ClInclude Include="PRRE\include\external\Object3D\PRREMesh3DManager.h" />
-    <ClInclude Include="PRRE\include\external\Object3D\PRREObject3DManager.h" />
-    <ClInclude Include="PRRE\include\external\Object3D\PRREVertexTransferMode.h" />
-    <ClInclude Include="PRRE\include\external\PR00FsReducedRenderingEngine.h" />
-    <ClInclude Include="PRRE\include\external\PRREallHeaders.h" />
-    <ClInclude Include="PRRE\include\external\PRRECamera.h" />
-    <ClInclude Include="PRRE\include\external\PRREFiledManager.h" />
-    <ClInclude Include="PRRE\include\external\PRREManager.h" />
-    <ClInclude Include="PRRE\include\external\PRREtypes.h" />
-    <ClInclude Include="PRRE\include\external\PRREuiManager.h" />
-    <ClInclude Include="PRRE\include\external\Render\PRREIIncrementalRenderPipeline.h" />
-    <ClInclude Include="PRRE\include\external\Render\PRREIRenderable.h" />
-    <ClInclude Include="PRRE\include\external\Render\PRREIRenderer.h" />
-    <ClInclude Include="PRRE\include\external\Render\PRRERendererHWfixedPipe.h" />
-    <ClInclude Include="PRRE\include\external\Render\PRRERendererSWincremental.h" />
-    <ClInclude Include="PRRE\include\internal\Display\PRRESharedSettings.h" />
-    <ClInclude Include="PRRE\include\internal\gl\GL.h" />
-    <ClInclude Include="PRRE\include\internal\gl\GLAux.h" />
-    <ClInclude Include="PRRE\include\internal\gl\glext.h" />
-    <ClInclude Include="PRRE\include\internal\gl\GLU.h" />
-    <ClInclude Include="PRRE\include\internal\gl\glut.h" />
-    <ClInclude Include="PRRE\include\internal\gl\glxext.h" />
-    <ClInclude Include="PRRE\include\internal\gl\wglext.h" />
-    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_opengl2.h" />
-    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.h" />
-    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imconfig.h" />
-    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imgui.h" />
-    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imgui_internal.h" />
-    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imstb_rectpack.h" />
-    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imstb_textedit.h" />
-    <ClInclude Include="PRRE\include\internal\GUI\imgui-1.88\imstb_truetype.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGLbase.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_1.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_2.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_3.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_4.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_1_5.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_2_0.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_2_1.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_3_0.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_3_1.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_3_2.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_3_3.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_4_0.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_4_1.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_4_2.h" />
-    <ClInclude Include="PRRE\include\internal\Hardware\PRREhwVideoDiscoverOpenGL_4_3.h" />
-    <ClInclude Include="PRRE\include\internal\Material\PRREImageImpl.h" />
-    <ClInclude Include="PRRE\include\internal\Material\PRREMaterialImpl.h" />
-    <ClInclude Include="PRRE\include\internal\Material\PRRETextureImpl.h" />
-    <ClInclude Include="PRRE\include\internal\Math\PUREScissor.h" />
-    <ClInclude Include="PRRE\include\internal\Object3D\PRREMesh3DImpl.h" />
-    <ClInclude Include="PRRE\include\internal\Object3D\PRREMesh3DManagerImpl.h" />
-    <ClInclude Include="PRRE\include\internal\Object3D\PRREObject3DImpl.h" />
-    <ClInclude Include="PRRE\include\internal\Object3D\PRREVertexTransferModeImpl.h" />
-    <ClInclude Include="PRRE\include\internal\PRREbaseIncludes.h" />
-    <ClInclude Include="PRRE\include\internal\PRREconsts.h" />
-    <ClInclude Include="PRRE\include\internal\PRREGLextensionFuncs.h" />
-    <ClInclude Include="PRRE\include\internal\PRREGLsafeFuncs.h" />
-    <ClInclude Include="PRRE\include\internal\PRREGLsnippets.h" />
-    <ClInclude Include="PRRE\include\internal\PRREManagedImpl.h" />
-    <ClInclude Include="PRRE\include\internal\PRREpragmas.h" />
-    <ClInclude Include="PRRE\include\internal\PRREuiFontWin.h" />
-    <ClInclude Include="PRRE\include\internal\PRREuiText.h" />
-    <ClInclude Include="PRRE\include\internal\SpatialStructures\PRREBoundingVolumeHierarchy.h" />
-    <ClInclude Include="PRRE\include\internal\SpatialStructures\PRREOctree.h" />
-    <ClInclude Include="PRRE\include\internal\SpatialStructures\PRREAxisAlignedBoundingBox.h" />
+    <ClInclude Include="PURE\include\external\Display\PureScreen.h" />
+    <ClInclude Include="PURE\include\external\Display\PureWindow.h" />
+    <ClInclude Include="PURE\include\external\Hardware\PureHwAudio.h" />
+    <ClInclude Include="PURE\include\external\Hardware\PureHwBase.h" />
+    <ClInclude Include="PURE\include\external\Hardware\PureHwCentralProcessor.h" />
+    <ClInclude Include="PURE\include\external\Hardware\PureHwInfo.h" />
+    <ClInclude Include="PURE\include\external\Hardware\PureHwSystemMemory.h" />
+    <ClInclude Include="PURE\include\external\Hardware\PureHwVideo.h" />
+    <ClInclude Include="PURE\include\external\Material\PureColor.h" />
+    <ClInclude Include="PURE\include\external\Material\PureImageManager.h" />
+    <ClInclude Include="PURE\include\external\Material\PureMaterialManager.h" />
+    <ClInclude Include="PURE\include\external\Material\PureTextureManager.h" />
+    <ClInclude Include="PURE\include\external\Math\PureMatrix.h" />
+    <ClInclude Include="PURE\include\external\Math\PurePosUpTarget.h" />
+    <ClInclude Include="PURE\include\external\Math\PureTransformMatrix.h" />
+    <ClInclude Include="PURE\include\external\Math\PureVector.h" />
+    <ClInclude Include="PURE\include\external\Object3D\PureMesh3DManager.h" />
+    <ClInclude Include="PURE\include\external\Object3D\PureObject3DManager.h" />
+    <ClInclude Include="PURE\include\external\Object3D\PureVertexTransferMode.h" />
+    <ClInclude Include="PURE\include\external\PR00FsReducedRenderingEngine.h" />
+    <ClInclude Include="PURE\include\external\PureAllHeaders.h" />
+    <ClInclude Include="PURE\include\external\PureCamera.h" />
+    <ClInclude Include="PURE\include\external\PureFiledManager.h" />
+    <ClInclude Include="PURE\include\external\PureManager.h" />
+    <ClInclude Include="PURE\include\external\PureTypes.h" />
+    <ClInclude Include="PURE\include\external\PureUiManager.h" />
+    <ClInclude Include="PURE\include\external\Render\PureIIncrementalRenderPipeline.h" />
+    <ClInclude Include="PURE\include\external\Render\PureIRenderable.h" />
+    <ClInclude Include="PURE\include\external\Render\PureIRenderer.h" />
+    <ClInclude Include="PURE\include\external\Render\PureRendererHWfixedPipe.h" />
+    <ClInclude Include="PURE\include\external\Render\PureRendererSWincremental.h" />
+    <ClInclude Include="PURE\include\internal\Display\PureSharedSettings.h" />
+    <ClInclude Include="PURE\include\internal\gl\GL.h" />
+    <ClInclude Include="PURE\include\internal\gl\GLAux.h" />
+    <ClInclude Include="PURE\include\internal\gl\glext.h" />
+    <ClInclude Include="PURE\include\internal\gl\GLU.h" />
+    <ClInclude Include="PURE\include\internal\gl\glut.h" />
+    <ClInclude Include="PURE\include\internal\gl\glxext.h" />
+    <ClInclude Include="PURE\include\internal\gl\wglext.h" />
+    <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\backends\imgui_impl_opengl2.h" />
+    <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.h" />
+    <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imconfig.h" />
+    <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imgui.h" />
+    <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imgui_internal.h" />
+    <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imstb_rectpack.h" />
+    <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imstb_textedit.h" />
+    <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imstb_truetype.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGLbase.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_1_1.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_1_2.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_1_3.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_1_4.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_1_5.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_2_0.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_2_1.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_3_0.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_3_1.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_3_2.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_3_3.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_4_0.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_4_1.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_4_2.h" />
+    <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGL_4_3.h" />
+    <ClInclude Include="PURE\include\internal\Material\PureImageImpl.h" />
+    <ClInclude Include="PURE\include\internal\Material\PureMaterialImpl.h" />
+    <ClInclude Include="PURE\include\internal\Material\PureTextureImpl.h" />
+    <ClInclude Include="PURE\include\internal\Math\PureScissor.h" />
+    <ClInclude Include="PURE\include\internal\Object3D\PureMesh3DImpl.h" />
+    <ClInclude Include="PURE\include\internal\Object3D\PureMesh3DManagerImpl.h" />
+    <ClInclude Include="PURE\include\internal\Object3D\PureObject3DImpl.h" />
+    <ClInclude Include="PURE\include\internal\Object3D\PureVertexTransferModeImpl.h" />
+    <ClInclude Include="PURE\include\internal\PureBaseIncludes.h" />
+    <ClInclude Include="PURE\include\internal\PureConsts.h" />
+    <ClInclude Include="PURE\include\internal\PureGLextensionFuncs.h" />
+    <ClInclude Include="PURE\include\internal\PureGLsafeFuncs.h" />
+    <ClInclude Include="PURE\include\internal\PureGLsnippets.h" />
+    <ClInclude Include="PURE\include\internal\PureManagedImpl.h" />
+    <ClInclude Include="PURE\include\internal\PurePragmas.h" />
+    <ClInclude Include="PURE\include\internal\PureUiFontWin.h" />
+    <ClInclude Include="PURE\include\internal\PureUiText.h" />
+    <ClInclude Include="PURE\include\internal\SpatialStructures\PureBoundingVolumeHierarchy.h" />
+    <ClInclude Include="PURE\include\internal\SpatialStructures\PureOctree.h" />
+    <ClInclude Include="PURE\include\internal\SpatialStructures\PureAxisAlignedBoundingBox.h" />
     <ClInclude Include="Weapons\WeaponManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -522,7 +522,7 @@
     <ClCompile Include="PGEWorld.cpp" />
     <ClCompile Include="PGEWorldTime.cpp" />
     <ClCompile Include="PGEWorldWeather.cpp" />
-    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_opengl2.cpp">
+    <ClCompile Include="PURE\include\internal\GUI\imgui-1.88\backends\imgui_impl_opengl2.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -531,7 +531,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EV2008P03Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.cpp">
+    <ClCompile Include="PURE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -540,7 +540,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EV2008P03Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui.cpp">
+    <ClCompile Include="PURE\include\internal\GUI\imgui-1.88\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -549,7 +549,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EV2008P03Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_demo.cpp">
+    <ClCompile Include="PURE\include\internal\GUI\imgui-1.88\imgui_demo.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -558,7 +558,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EV2008P03Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_draw.cpp">
+    <ClCompile Include="PURE\include\internal\GUI\imgui-1.88\imgui_draw.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -567,7 +567,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EV2008P03Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_tables.cpp">
+    <ClCompile Include="PURE\include\internal\GUI\imgui-1.88\imgui_tables.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -576,7 +576,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EV2008P03Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PRRE\include\internal\GUI\imgui-1.88\imgui_widgets.cpp">
+    <ClCompile Include="PURE\include\internal\GUI\imgui-1.88\imgui_widgets.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -585,64 +585,64 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EV2008P03Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PRRE\source\Display\PRREScreen.cpp" />
-    <ClCompile Include="PRRE\source\Display\PRRESharedSettings.cpp" />
-    <ClCompile Include="PRRE\source\Display\PRREWindow.cpp" />
-    <ClCompile Include="PRRE\source\Hardware\PRREhwAudio.cpp" />
-    <ClCompile Include="PRRE\source\Hardware\PRREhwBase.cpp" />
-    <ClCompile Include="PRRE\source\Hardware\PRREhwCentralProcessor.cpp" />
-    <ClCompile Include="PRRE\source\Hardware\PRREhwInfo.cpp" />
-    <ClCompile Include="PRRE\source\Hardware\PRREhwSystemMemory.cpp" />
-    <ClCompile Include="PRRE\source\Hardware\PRREhwVideo.cpp" />
-    <ClCompile Include="PRRE\source\Hardware\PRREhwVideoDiscoverOpenGLbase.cpp" />
-    <ClCompile Include="PRRE\source\Material\PRREColor.cpp" />
-    <ClCompile Include="PRRE\source\Material\PRREImage.cpp" />
-    <ClCompile Include="PRRE\source\Material\PRREImageManager.cpp" />
-    <ClCompile Include="PRRE\source\Material\PRREMaterial.cpp" />
-    <ClCompile Include="PRRE\source\Material\PRREMaterialManager.cpp" />
-    <ClCompile Include="PRRE\source\Material\PRRETexture.cpp" />
-    <ClCompile Include="PRRE\source\Material\PRRETextureManager.cpp" />
-    <ClCompile Include="PRRE\source\Math\PRREMatrix.cpp" />
-    <ClCompile Include="PRRE\source\Math\PRREPosUpTarget.cpp" />
-    <ClCompile Include="PRRE\source\Math\PRRETransformMatrix.cpp" />
-    <ClCompile Include="PRRE\source\Math\PRREVector.cpp" />
-    <ClCompile Include="PRRE\source\Math\PUREScissor.cpp" />
-    <ClCompile Include="PRRE\source\Object3D\PRREMesh3D.cpp" />
-    <ClCompile Include="PRRE\source\Object3D\PRREMesh3DManager.cpp" />
-    <ClCompile Include="PRRE\source\Object3D\PRREObject3D.cpp" />
-    <ClCompile Include="PRRE\source\Object3D\PRREObject3DManager.cpp" />
-    <ClCompile Include="PRRE\source\Object3D\PRREVertexTransferMode.cpp" />
-    <ClCompile Include="PRRE\source\PR00FsReducedRenderingEngine.cpp" />
-    <ClCompile Include="PRRE\source\PRREbaseIncludes.cpp">
+    <ClCompile Include="PURE\source\Display\PRREScreen.cpp" />
+    <ClCompile Include="PURE\source\Display\PRRESharedSettings.cpp" />
+    <ClCompile Include="PURE\source\Display\PRREWindow.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PRREhwAudio.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PRREhwBase.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PRREhwCentralProcessor.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PRREhwInfo.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PRREhwSystemMemory.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PRREhwVideo.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PRREhwVideoDiscoverOpenGLbase.cpp" />
+    <ClCompile Include="PURE\source\Material\PRREColor.cpp" />
+    <ClCompile Include="PURE\source\Material\PRREImage.cpp" />
+    <ClCompile Include="PURE\source\Material\PRREImageManager.cpp" />
+    <ClCompile Include="PURE\source\Material\PRREMaterial.cpp" />
+    <ClCompile Include="PURE\source\Material\PRREMaterialManager.cpp" />
+    <ClCompile Include="PURE\source\Material\PRRETexture.cpp" />
+    <ClCompile Include="PURE\source\Material\PRRETextureManager.cpp" />
+    <ClCompile Include="PURE\source\Math\PRREMatrix.cpp" />
+    <ClCompile Include="PURE\source\Math\PRREPosUpTarget.cpp" />
+    <ClCompile Include="PURE\source\Math\PRRETransformMatrix.cpp" />
+    <ClCompile Include="PURE\source\Math\PRREVector.cpp" />
+    <ClCompile Include="PURE\source\Math\PUREScissor.cpp" />
+    <ClCompile Include="PURE\source\Object3D\PRREMesh3D.cpp" />
+    <ClCompile Include="PURE\source\Object3D\PRREMesh3DManager.cpp" />
+    <ClCompile Include="PURE\source\Object3D\PRREObject3D.cpp" />
+    <ClCompile Include="PURE\source\Object3D\PRREObject3DManager.cpp" />
+    <ClCompile Include="PURE\source\Object3D\PRREVertexTransferMode.cpp" />
+    <ClCompile Include="PURE\source\PR00FsReducedRenderingEngine.cpp" />
+    <ClCompile Include="PURE\source\PureBaseIncludes.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EV2008P03Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">../include/internal/PRREbaseIncludes.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='EV2008P03Debug|Win32'">../include/internal/PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">../include/internal/PureBaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='EV2008P03Debug|Win32'">../include/internal/PureBaseIncludes.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../include/internal/PRREbaseIncludes.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">../include/internal/PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../include/internal/PureBaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='DebugTest_PRooFPS-dd|Win32'">../include/internal/PureBaseIncludes.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../include/internal/PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../include/internal/PureBaseIncludes.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EV2008P03Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">../include/internal/PRREbaseIncludes.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='EV2008P03Release|Win32'">../include/internal/PRREbaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">../include/internal/PureBaseIncludes.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='EV2008P03Release|Win32'">../include/internal/PureBaseIncludes.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="PRRE\source\PRRECamera.cpp" />
-    <ClCompile Include="PRRE\source\PRREFiledManager.cpp" />
-    <ClCompile Include="PRRE\source\PRREGLextensionFuncs.cpp" />
-    <ClCompile Include="PRRE\source\PRREGLsafeFuncs.cpp" />
-    <ClCompile Include="PRRE\source\PRREGLsnippets.cpp" />
-    <ClCompile Include="PRRE\source\PRREManager.cpp" />
-    <ClCompile Include="PRRE\source\PRREuiFontWin.cpp" />
-    <ClCompile Include="PRRE\source\PRREuiManager.cpp" />
-    <ClCompile Include="PRRE\source\PRREuiText.cpp" />
-    <ClCompile Include="PRRE\source\Render\PRRERendererHWfixedPipe.cpp" />
-    <ClCompile Include="PRRE\source\Render\PRRERendererSWincremental.cpp" />
-    <ClCompile Include="PRRE\source\SpatialStructures\PRREAxisAlignedBoundingBox.cpp" />
-    <ClCompile Include="PRRE\source\SpatialStructures\PRREBoundingVolumeHierarchy.cpp" />
-    <ClCompile Include="PRRE\source\SpatialStructures\PRREOctree.cpp" />
+    <ClCompile Include="PURE\source\PRRECamera.cpp" />
+    <ClCompile Include="PURE\source\PRREFiledManager.cpp" />
+    <ClCompile Include="PURE\source\PRREGLextensionFuncs.cpp" />
+    <ClCompile Include="PURE\source\PRREGLsafeFuncs.cpp" />
+    <ClCompile Include="PURE\source\PRREGLsnippets.cpp" />
+    <ClCompile Include="PURE\source\PRREManager.cpp" />
+    <ClCompile Include="PURE\source\PRREuiFontWin.cpp" />
+    <ClCompile Include="PURE\source\PRREuiManager.cpp" />
+    <ClCompile Include="PURE\source\PRREuiText.cpp" />
+    <ClCompile Include="PURE\source\Render\PRRERendererHWfixedPipe.cpp" />
+    <ClCompile Include="PURE\source\Render\PRRERendererSWincremental.cpp" />
+    <ClCompile Include="PURE\source\SpatialStructures\PRREAxisAlignedBoundingBox.cpp" />
+    <ClCompile Include="PURE\source\SpatialStructures\PRREBoundingVolumeHierarchy.cpp" />
+    <ClCompile Include="PURE\source\SpatialStructures\PRREOctree.cpp" />
     <ClCompile Include="Weapons\WeaponManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

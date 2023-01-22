@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PRRE/include/external/PR00FsReducedRenderingEngine.h"
+#include "../Pure/include/external/PR00FsReducedRenderingEngine.h"
 
 class PR00FsReducedRenderingEngineTest2 :
     public UnitTest
@@ -55,7 +55,7 @@ protected:
     virtual bool setUp()
     {
         engine = &PR00FsReducedRenderingEngine::createAndGet();
-        return assertEquals((TPRREuint) 0, engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
+        return assertEquals((TPureuint) 0, engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
     }
 
     virtual void TearDown()
@@ -88,7 +88,7 @@ private:
 
     bool testInitialize()
     {
-        return assertFalse(engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0) == 0, "initialize()") &
+        return assertFalse(engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0) == 0, "initialize()") &
             assertTrue(engine->isInitialized(), "isInitialized()");
     }
 
@@ -149,8 +149,8 @@ private:
 
     bool testCopyScreenToTexture()
     {
-        PRREImage*    img = engine->getImageManager().createBlank(1024, 768, 24);
-        PRRETexture * tex = engine->getTextureManager().createTextureFromImage( *img );
+        PureImage*    img = engine->getImageManager().createBlank(1024, 768, 24);
+        PureTexture * tex = engine->getTextureManager().createTextureFromImage( *img );
 
         // we just simply call this and expect nothing bad to happen
         engine->CopyScreenToTexture(*tex);

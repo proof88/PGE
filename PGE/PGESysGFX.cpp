@@ -8,7 +8,7 @@
     ###################################################################################
 */
 
-#include "PRREbaseIncludes.h"  // PCH
+#include "PurebaseIncludes.h"  // PCH
 #include "PGESysGFX.h"
 #include "PGEincludes.h"
 #include "PGEpragmas.h"
@@ -37,10 +37,10 @@ PGESysGFX::~PGESysGFX()
 
 
 bool PGESysGFX::initSysGFX(
-    unsigned int width, unsigned int height, TPRRE_DISPLAY_MODES dmode, unsigned int freq,
+    unsigned int width, unsigned int height, TPure_DISPLAY_MODES dmode, unsigned int freq,
     int cdepth, int zdepth, int stencil, int samples )
 {
-    return ( engine.initialize( /*PRRE_RENDERER_SW*/ PRRE_RENDERER_HW_FP, width, height, dmode, freq, cdepth, zdepth, stencil, samples) == 0 );
+    return ( engine.initialize( /*Pure_RENDERER_SW*/ Pure_RENDERER_HW_FP, width, height, dmode, freq, cdepth, zdepth, stencil, samples) == 0 );
 } // initSysGFX()
 
 

@@ -10,8 +10,8 @@
     ###################################################################################
 */
 
-//#include "PRRE/PRREbaseIncludes.h"  // PCH
-#include "PRREbaseIncludes.h"
+//#include "Pure/PurebaseIncludes.h"  // PCH
+#include "PurebaseIncludes.h"
 
 #include <chrono>
 #include <thread>
@@ -25,8 +25,8 @@
 #include "Config/PGEcfgProfiles.h"
 #include "Weapons/WeaponManager.h"
 
-#include "PRRE/include/external/Display/PRREScreen.h"
-#include "PRRE/include/external/Display/PRREWindow.h"
+#include "Pure/include/external/Display/PureScreen.h"
+#include "Pure/include/external/Display/PureWindow.h"
 
 using namespace std;
 
@@ -58,7 +58,7 @@ public:
 
     PGEInputHandler& getInput() const;       
     PGEWorld& getWorld() const;             
-    PR00FsReducedRenderingEngine& getPRRE() const;
+    PR00FsReducedRenderingEngine& getPure() const;
     pge_network::PgeNetwork& getNetwork() const;
     SoLoud::Soloud& getAudio();
     WeaponManager& getWeaponManager();
@@ -196,7 +196,7 @@ PGEWorld& PGE::PGEimpl::getWorld() const
 } // getWorld()
 
 
-PR00FsReducedRenderingEngine& PGE::PGEimpl::getPRRE() const
+PR00FsReducedRenderingEngine& PGE::PGEimpl::getPure() const
 {
     return GFX;
 }
@@ -592,9 +592,9 @@ PGEWorld& PGE::getWorld() const
 
     @return Graphics engine.
 */
-PR00FsReducedRenderingEngine& PGE::getPRRE() const
+PR00FsReducedRenderingEngine& PGE::getPure() const
 {
-    return p->getPRRE();
+    return p->getPure();
 }
 
 
@@ -709,9 +709,9 @@ int PGE::initializeGame()
     getConsole().OLnOI("Initializing Graphics ...");
     bool bGFXinit;
     if ( MessageBox(0, "Fullscreen?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES )
-        bGFXinit = p->SysGFX.initSysGFX(0, 0, PRRE_FULLSCREEN, 0, 32, 24, 0, 0);
+        bGFXinit = p->SysGFX.initSysGFX(0, 0, Pure_FULLSCREEN, 0, 32, 24, 0, 0);
     else
-        bGFXinit = p->SysGFX.initSysGFX(1024, 768, PRRE_WINDOWED, 0, 32, 24, 0, 0);
+        bGFXinit = p->SysGFX.initSysGFX(1024, 768, Pure_WINDOWED, 0, 32, 24, 0, 0);
 
     if ( !bGFXinit )
     {
@@ -726,7 +726,7 @@ int PGE::initializeGame()
     }
     getConsole().L();
 
-    PRREWindow& window = p->GFX.getWindow();
+    PureWindow& window = p->GFX.getWindow();
     window.SetAutoCleanupOnQuitOn(false);
     window.SetCaption( p->sGameTitle );
     window.ShowFull();
@@ -780,7 +780,7 @@ int PGE::runGame()
     std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::steady_clock::now();
     std::chrono::time_point<std::chrono::steady_clock> timeLastTime = timeNow;
 
-    PRREWindow& window = p->GFX.getWindow();
+    PureWindow& window = p->GFX.getWindow();
     window.ProcessMessages();
     getInput().getMouse().getWheel();  // trigger zeroing out any possibly accumulated wheel rotation so onGameRunning() won't see any
 
@@ -867,7 +867,7 @@ int PGE::destroyGame()
     Default value is 0, meaning not limiting maximum FPS.
 
     Note that even if this value is 0, maximum FPS might be limited by the current V-Sync setting.
-    V-Sync is controlled by PRREScreen::SetVSyncEnabled().
+    V-Sync is controlled by PureScreen::SetVSyncEnabled().
 */
 unsigned int PGE::getGameRunningFrequency() const
 {
@@ -881,7 +881,7 @@ unsigned int PGE::getGameRunningFrequency() const
     Default value is 0, meaning not limiting maximum FPS.
 
     Note that even if this value is 0, maximum FPS might be limited by the current V-Sync setting.
-    V-Sync is controlled by PRREScreen::SetVSyncEnabled().
+    V-Sync is controlled by PureScreen::SetVSyncEnabled().
 */
 void PGE::setGameRunningFrequency(unsigned int freq)
 {

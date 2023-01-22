@@ -19,114 +19,42 @@
     <Filter Include="Header Files\PGE">
       <UniqueIdentifier>{3494da01-8940-4523-af71-24f9aa5e7ec6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\PGE\PRRE">
-      <UniqueIdentifier>{4be74e34-3d87-418d-bebe-aca6f35fb1bc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\PFL">
       <UniqueIdentifier>{463a06f9-cffb-4c37-baa4-b141edf7c4bc}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\PGE\PRRE\Hardware">
-      <UniqueIdentifier>{1e2455aa-9b57-4643-b32b-51848e39c2fe}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\PGE\PRRE\Math">
-      <UniqueIdentifier>{edc024e1-949d-4697-bb4e-828a352fcfae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\PGE\PRRE\Display">
-      <UniqueIdentifier>{cf6a6be9-8486-4a86-9dc0-28eb26835fa2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\PGE\PRRE\Material">
-      <UniqueIdentifier>{12a0fb52-cd97-4623-9cc0-e844fa4f62d8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\PGE\PRRE\Object3D">
-      <UniqueIdentifier>{4c7546c9-a147-487d-b264-d810e91eece3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\PGE\PRRE\Render">
-      <UniqueIdentifier>{dd6585fd-c4c9-4d27-8666-250ac9293910}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\PGE\Config">
       <UniqueIdentifier>{862d123b-ed8d-4fa9-8a0f-29af67d12798}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PGE\PURE">
+      <UniqueIdentifier>{82ab7fcc-6f76-4c52-808e-3fc8c4645282}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PGE\PURE\Display">
+      <UniqueIdentifier>{e0fb78ae-6035-4022-bf10-5ae195392b3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PGE\PURE\Hardware">
+      <UniqueIdentifier>{5cf9097c-25c7-443f-b151-cec1abc9326b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PGE\PURE\Material">
+      <UniqueIdentifier>{1b0822d1-bcc0-496b-bcfb-b34346228fc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PGE\PURE\Math">
+      <UniqueIdentifier>{b5535762-2e4b-445d-a680-b8ceab935268}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PGE\PURE\Object3D">
+      <UniqueIdentifier>{423b6fef-0ca6-4382-8e6e-566b09d8c221}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PGE\PURE\Render">
+      <UniqueIdentifier>{b690ff92-d9f4-4357-84cb-50a6afe215d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PR00FsReducedRenderingEngineTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PR00FsReducedRenderingEngineTest2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREColorTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREFiledManagedTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREFiledManagerTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREImageManagerTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREImageTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREManagedTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREManagerTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREMatrixTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREScreenTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRESharedSettingsTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRETextureManagerTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRETextureTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREVectorTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\PGE.h">
       <Filter>Header Files\PGE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREWindowTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREWindowTest2.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\PGEInputHandler.h">
       <Filter>Header Files\PGE</Filter>
     </ClInclude>
     <ClInclude Include="PFLTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREObject3DManagerTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREObject3DTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREhwInfoTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREhwAudioTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREhwVideoTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREhwCentralProcessorTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREhwSystemMemoryTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PGEcfgProfilesTest.h">
@@ -150,143 +78,11 @@
     <ClInclude Include="..\PGEallHeaders.h">
       <Filter>Header Files\PGE</Filter>
     </ClInclude>
-    <ClInclude Include="PRREMaterialManagerTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREMaterialTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRECameraTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\CConsole\CConsole\src\CConsole.h">
       <Filter>Header Files\CConsole</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PFL\PFL\PFL.h">
       <Filter>Header Files\PFL</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREScissorTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREPosUpTargetTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRETransformMatrixTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREMesh3DManagerTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREMesh3DTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREVertexTransferTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Display\PRREScreen.h">
-      <Filter>Header Files\PGE\PRRE\Display</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Display\PRREWindow.h">
-      <Filter>Header Files\PGE\PRRE\Display</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Hardware\PRREhwAudio.h">
-      <Filter>Header Files\PGE\PRRE\Hardware</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Hardware\PRREhwBase.h">
-      <Filter>Header Files\PGE\PRRE\Hardware</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Hardware\PRREhwCentralProcessor.h">
-      <Filter>Header Files\PGE\PRRE\Hardware</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Hardware\PRREhwInfo.h">
-      <Filter>Header Files\PGE\PRRE\Hardware</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Hardware\PRREhwSystemMemory.h">
-      <Filter>Header Files\PGE\PRRE\Hardware</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Hardware\PRREhwVideo.h">
-      <Filter>Header Files\PGE\PRRE\Hardware</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Material\PRREColor.h">
-      <Filter>Header Files\PGE\PRRE\Material</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Material\PRREImageManager.h">
-      <Filter>Header Files\PGE\PRRE\Material</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Material\PRREMaterialManager.h">
-      <Filter>Header Files\PGE\PRRE\Material</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Material\PRRETextureManager.h">
-      <Filter>Header Files\PGE\PRRE\Material</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Math\PRREMatrix.h">
-      <Filter>Header Files\PGE\PRRE\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Math\PRREPosUpTarget.h">
-      <Filter>Header Files\PGE\PRRE\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Math\PRRETransformMatrix.h">
-      <Filter>Header Files\PGE\PRRE\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Math\PRREVector.h">
-      <Filter>Header Files\PGE\PRRE\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Object3D\PRREMesh3DManager.h">
-      <Filter>Header Files\PGE\PRRE\Object3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Object3D\PRREObject3DManager.h">
-      <Filter>Header Files\PGE\PRRE\Object3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Object3D\PRREVertexTransferMode.h">
-      <Filter>Header Files\PGE\PRRE\Object3D</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Render\PRREIIncrementalRenderPipeline.h">
-      <Filter>Header Files\PGE\PRRE\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Render\PRREIRenderable.h">
-      <Filter>Header Files\PGE\PRRE\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Render\PRREIRenderer.h">
-      <Filter>Header Files\PGE\PRRE\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Render\PRRERendererHWfixedPipe.h">
-      <Filter>Header Files\PGE\PRRE\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\Render\PRRERendererSWincremental.h">
-      <Filter>Header Files\PGE\PRRE\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\PR00FsReducedRenderingEngine.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\PRREallHeaders.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\PRRECamera.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\PRREFiledManager.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\PRREManager.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\PRREtypes.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="..\PRRE\include\external\PRREuiManager.h">
-      <Filter>Header Files\PGE\PRRE</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREAxisAlignedBoundingBoxTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREOctreeTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRREBoundingVolumeHierarchyTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PRRERendererHWfixedPipeTest.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PGEcfgFileTest.h">
       <Filter>Header Files</Filter>
@@ -305,6 +101,213 @@
     </ClInclude>
     <ClInclude Include="..\Config\PGESysCFG.h">
       <Filter>Header Files\PGE\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\PR00FsReducedRenderingEngine.h">
+      <Filter>Header Files\PGE\PURE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\PureAllHeaders.h">
+      <Filter>Header Files\PGE\PURE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\PureCamera.h">
+      <Filter>Header Files\PGE\PURE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\PureFiledManager.h">
+      <Filter>Header Files\PGE\PURE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\PureManager.h">
+      <Filter>Header Files\PGE\PURE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\PureTypes.h">
+      <Filter>Header Files\PGE\PURE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\PureUiManager.h">
+      <Filter>Header Files\PGE\PURE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Display\PureScreen.h">
+      <Filter>Header Files\PGE\PURE\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Display\PureWindow.h">
+      <Filter>Header Files\PGE\PURE\Display</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Hardware\PureHwAudio.h">
+      <Filter>Header Files\PGE\PURE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Hardware\PureHwBase.h">
+      <Filter>Header Files\PGE\PURE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Hardware\PureHwCentralProcessor.h">
+      <Filter>Header Files\PGE\PURE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Hardware\PureHwInfo.h">
+      <Filter>Header Files\PGE\PURE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Hardware\PureHwSystemMemory.h">
+      <Filter>Header Files\PGE\PURE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Hardware\PureHwVideo.h">
+      <Filter>Header Files\PGE\PURE\Hardware</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Material\PureColor.h">
+      <Filter>Header Files\PGE\PURE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Material\PureImageManager.h">
+      <Filter>Header Files\PGE\PURE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Material\PureMaterialManager.h">
+      <Filter>Header Files\PGE\PURE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Material\PureTextureManager.h">
+      <Filter>Header Files\PGE\PURE\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Math\PureMatrix.h">
+      <Filter>Header Files\PGE\PURE\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Math\PurePosUpTarget.h">
+      <Filter>Header Files\PGE\PURE\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Math\PureTransformMatrix.h">
+      <Filter>Header Files\PGE\PURE\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Math\PureVector.h">
+      <Filter>Header Files\PGE\PURE\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Object3D\PureMesh3DManager.h">
+      <Filter>Header Files\PGE\PURE\Object3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Object3D\PureObject3DManager.h">
+      <Filter>Header Files\PGE\PURE\Object3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Object3D\PureVertexTransferMode.h">
+      <Filter>Header Files\PGE\PURE\Object3D</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Render\PureIIncrementalRenderPipeline.h">
+      <Filter>Header Files\PGE\PURE\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Render\PureIRenderable.h">
+      <Filter>Header Files\PGE\PURE\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Render\PureIRenderer.h">
+      <Filter>Header Files\PGE\PURE\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Render\PureRendererHWfixedPipe.h">
+      <Filter>Header Files\PGE\PURE\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Render\PureRendererSWincremental.h">
+      <Filter>Header Files\PGE\PURE\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="PR00FsReducedRenderingEngineTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PR00FsReducedRenderingEngineTest2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureAxisAlignedBoundingBoxTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureBoundingVolumeHierarchyTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureCameraTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureColorTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureFiledManagedTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureFiledManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureHardwareInfoTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PurehwAudioTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PurehwCentralProcessorTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PurehwInfoTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PurehwSystemMemoryTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PurehwVideoTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureImageManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureImageTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureManagedTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureMaterialManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureMaterialTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureMatrixTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureMesh3DManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureMesh3DTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureObject3DManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureObject3DTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureOctreeTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PurePosUpTargetTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureRendererHWfixedPipeTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureScissorTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureScreenTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureSharedSettingsTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureTextureManagerTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureTextureTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureTransformMatrixTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureVectorTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureVertexTransferTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureWindowTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PureWindowTest2.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

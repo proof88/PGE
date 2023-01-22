@@ -1,0 +1,262 @@
+#pragma once
+
+/*
+    ###################################################################################
+    PureCameraTest.h
+    Unit test for PureCamera.
+    Made by PR00F88
+    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
+    ###################################################################################
+*/
+
+#include "UnitTest.h"  // PCH
+#include "../Pure/include/external/PureCamera.h"
+#include "../Pure/include/external/Math/PureMatrix.h"
+
+#ifndef E2
+#define E2 0.005f
+#endif // EPSILON
+
+class PureCameraTest :
+    public UnitTest
+{
+public:
+
+    PureCameraTest() :
+        UnitTest( __FILE__ )
+    {
+        
+        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PureCameraTest::testCtor1);
+        AddSubTest("testCopyCtor", (PFNUNITSUBTEST) &PureCameraTest::testCopyCtor);
+        AddSubTest("testSetviewPort", (PFNUNITSUBTEST) &PureCameraTest::testSetviewPort);
+        AddSubTest("testSetAspectRatioMode", (PFNUNITSUBTEST) &PureCameraTest::testSetAspectRatioMode);
+        AddSubTest("testSetAspectRatio", (PFNUNITSUBTEST) &PureCameraTest::testSetAspectRatio);
+        AddSubTest("testSetClearMode", (PFNUNITSUBTEST) &PureCameraTest::testSetClearMode);
+        AddSubTest("testSetNearPlane", (PFNUNITSUBTEST) &PureCameraTest::testSetNearPlane);
+        AddSubTest("testSetFarPlane", (PFNUNITSUBTEST) &PureCameraTest::testSetFarPlane);
+        AddSubTest("testSetFieldOfView", (PFNUNITSUBTEST) &PureCameraTest::testSetFieldOfView);
+
+    } // PureCameraTest()
+
+    virtual ~PureCameraTest()
+    {
+        
+    }
+
+protected:
+
+    virtual bool setUp()
+    {
+        return true;
+    }
+
+    virtual void TearDown()
+    {
+
+    }
+
+    virtual void Initialize()
+    {
+        //CConsole::getConsoleInstance().SetLoggingState(PureCamera::getLoggerModuleName(), true);
+    }
+
+    virtual void Finalize()
+    {
+        CConsole::getConsoleInstance().SetLoggingState(PureCamera::getLoggerModuleName(), false);    
+    }
+
+private:
+
+    // ---------------------------------------------------------------------------
+
+    PureCameraTest(const PureCameraTest&)
+    {};         
+
+    PureCameraTest& operator=(const PureCameraTest&)
+    {
+        return *this;
+    };
+
+    bool testCtor1()
+    {
+        const PureCamera cam;
+        const PureVector vUp(0, 1, 0);
+        const PureVector vForward(0, 0, 1);
+        const PureVector vPos(0, 0, 0);
+        const PureColor  clrBg(0, 0, 0);
+
+        return assertEquals(0.0f, cam.getViewport().pos.x, "rect x") &
+            assertEquals(0.0f, cam.getViewport().pos.y, "rect y") &
+            assertGreater(cam.getViewport().size.width, 0.0f, "rect sx") &
+            assertGreater(cam.getViewport().size.height, 0.0f, "rect sy") &
+            assertTrue(vUp == cam.getUpVec(), "up") &
+            assertTrue(vForward == cam.getTargetVec(), "target") &
+            assertTrue(vPos == cam.getPosVec(), "pos") &
+            assertEquals(cam.getViewport().size.width / cam.getViewport().size.height, cam.getAspectRatio(), "ratio") &
+            assertEquals(TPure_ASPECTRATIO_MODE::Pure_AM_FIX, cam.getAspectRatioMode(), "ratio mode") &
+            assertTrue(clrBg == cam.getBackgroundColor(), "bg color") &
+            assertEquals(Pure_CLEAR_ZBUFFER_COLORBUFFER, cam.getClearMode(), "clear mode") &
+            assertTrue(cam.getNearPlane() > 0.0f, "nearplane") &
+            assertTrue(cam.getFarPlane() > cam.getNearPlane(), "farplane") &
+            assertTrue(cam.getFieldOfView() > 0.0f && cam.getFieldOfView() <= 180.0f, "fov");
+    }
+
+    bool testCopyCtor()
+    {
+        PureCamera cam;
+        cam.getPosVec().Set(1, 2, 3);
+        cam.getTargetVec().Set(1, 2, 3);
+        cam.getUpVec().Set(1, 2, 3);
+        cam.SetAspectRatio(3);
+        cam.SetAspectRatioMode(Pure_AM_DYNAMIC);
+        cam.SetClearMode(Pure_CLEAR_ZBUFFER);
+        cam.SetFarPlane(20);
+        cam.SetNearPlane(2);
+        cam.SetFieldOfView(50);
+        cam.SetRotation(1, 2, 3);
+        cam.SetViewport(1, 1, 2, 2);
+        cam.getBackgroundColor().Set(255, 255, 255, 255);
+
+        const PureCamera cam2(cam);
+
+        return assertEquals(cam.getViewport().pos.x, cam2.getViewport().pos.x, "rect x") &
+            assertEquals(cam.getViewport().pos.y, cam2.getViewport().pos.y, "rect y") &
+            assertEquals(cam.getViewport().size.width, cam2.getViewport().size.width, "rect sx") &
+            assertEquals(cam.getViewport().size.height,  cam2.getViewport().size.height, "rect sy") &
+            assertTrue(cam.getUpVec() == cam2.getUpVec(), "up") &
+            assertTrue(cam.getTargetVec() == cam2.getTargetVec(), "target") &
+            assertTrue(cam.getPosVec() == cam2.getPosVec(), "pos") &
+            assertEquals(cam.getAspectRatio(), cam2.getAspectRatio(), "ratio") &
+            assertEquals(cam.getAspectRatioMode(), cam2.getAspectRatioMode(), "ratio mode") &
+            assertTrue(cam.getBackgroundColor() == cam2.getBackgroundColor(), "bg color") &
+            assertEquals(cam.getClearMode(), cam2.getClearMode(), "clear mode") &
+            assertEquals(cam.getNearPlane(), cam2.getNearPlane(), "nearplane") &
+            assertEquals(cam.getFarPlane(), cam2.getFarPlane(), "farplane") &
+            assertEquals(cam.getFieldOfView(), cam2.getFieldOfView(), "fov");
+    }
+
+    bool testSetviewPort()
+    {
+        PureCamera cam;
+        cam.SetViewport(1, 1, 2, 2);
+
+        bool b = assertEquals(1, cam.getViewport().pos.x, "rect x") &
+               assertEquals(1, cam.getViewport().pos.y, "rect y") &
+               assertEquals(2, cam.getViewport().size.width, "rect sx") &
+               assertEquals(2, cam.getViewport().size.height, "rect sy");
+
+        cam.SetViewport(0, 0, 2, 2);
+        b = b & assertEquals(0, cam.getViewport().pos.x, "rect x 2 0") &
+               assertEquals(0, cam.getViewport().pos.y, "rect y 2 0") &
+               assertEquals(2, cam.getViewport().size.width, "rect sx 2 0") &
+               assertEquals(2, cam.getViewport().size.height, "rect sy 2 0");
+
+        cam.SetViewport(0, 0, 0, 2);
+        b = b & assertEquals(0, cam.getViewport().pos.x, "rect x 3 0") &
+               assertEquals(0, cam.getViewport().pos.y, "rect y 3 0") &
+               assertEquals(2, cam.getViewport().size.width, "rect sx 3 0") &
+               assertEquals(2, cam.getViewport().size.height, "rect sy 3 0");
+
+        cam.SetViewport(0, 0, 2, 0);
+        b = b & assertEquals(0, cam.getViewport().pos.x, "rect x 4 0") &
+               assertEquals(0, cam.getViewport().pos.y, "rect y 4 0") &
+               assertEquals(2, cam.getViewport().size.width, "rect sx 4 0") &
+               assertEquals(2, cam.getViewport().size.height, "rect sy 4 0");
+
+        return b;
+    }
+
+    bool testSetAspectRatioMode()
+    {
+        PureCamera cam;
+        cam.SetAspectRatioMode(Pure_AM_DYNAMIC);
+
+        return assertEquals(Pure_AM_DYNAMIC, cam.getAspectRatioMode());
+    }
+
+    bool testSetAspectRatio()
+    {
+        PureCamera cam;
+        cam.SetAspectRatio(3.f);
+
+        return assertEquals(3.f, cam.getAspectRatio());
+    }
+
+    bool testSetClearMode()
+    {
+        PureCamera cam;
+        cam.SetClearMode(Pure_CLEAR_ZBUFFER);
+
+        return assertEquals(Pure_CLEAR_ZBUFFER, cam.getClearMode());
+    }
+
+    bool testSetNearPlane()
+    {
+        PureCamera cam;
+        cam.SetNearPlane(2);
+
+        bool b = assertEquals(2.f, cam.getNearPlane(), "np 2");
+
+        cam.SetNearPlane(cam.getFarPlane());
+        b = b & assertEquals( 2.f, cam.getNearPlane(), "np far1");
+
+        cam.SetNearPlane(cam.getFarPlane() + 1.f);
+        b = b & assertEquals( 2.f, cam.getNearPlane(), "np far2");
+
+        cam.SetNearPlane(0.f);
+        b = b & assertEquals( 2.f, cam.getNearPlane(), "np 0");
+
+        cam.SetNearPlane(-5.f);
+        b = b & assertEquals( 2.f, cam.getNearPlane(), "np -5");
+
+        return b;
+    }
+
+    bool testSetFarPlane()
+    {
+        PureCamera cam;
+        cam.SetFarPlane(20.f);
+
+        bool b = assertEquals(20.f, cam.getFarPlane(), "fp 20");
+        
+        cam.SetFarPlane(cam.getNearPlane());
+        b = b & assertEquals(20.f, cam.getFarPlane(), "fp np1");
+
+        cam.SetFarPlane(cam.getNearPlane() - 1.f);
+        b = b & assertEquals(20.f, cam.getFarPlane(), "fp np2");
+
+        cam.SetFarPlane(0.f);
+        b = b & assertEquals(20.f, cam.getFarPlane(), "fp 0");
+
+        cam.SetFarPlane(-5.f);
+        b = b & assertEquals(20.f, cam.getFarPlane(), "fp -5");
+
+        return b;
+    }
+
+    bool testSetFieldOfView()
+    {
+        PureCamera cam;
+        PureCamera cam2;
+        
+        cam.SetFieldOfView(50);
+        bool b = assertEquals(50, cam.getFieldOfView());
+
+        const float fFOV = cam2.getFieldOfView();
+
+        cam2.SetFieldOfView(0);
+        b = b & assertEquals(fFOV, cam2.getFieldOfView(), "fov 0");
+
+        cam2.SetFieldOfView(-5);
+        b = b & assertEquals(fFOV, cam2.getFieldOfView(), "fov -5");
+
+        cam2.SetFieldOfView(181);
+        b = b & assertEquals(fFOV, cam2.getFieldOfView(), "fov 181");
+
+        cam2.SetFieldOfView(180.f);
+        b = b & assertEquals(180.f, cam2.getFieldOfView(), "fov 180");
+
+        return b;
+    }
+
+}; // class PureCameraTest

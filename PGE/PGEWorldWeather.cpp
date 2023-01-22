@@ -8,11 +8,11 @@
     ###################################################################################
 */
 
-#include "PRREbaseIncludes.h"  // PCH
+#include "PurebaseIncludes.h"  // PCH
 #include "PGEWorldWeather.h"
 #include "PGEincludes.h"
 #include "PGEpragmas.h"
-#include "PRRE/include/external/Math/PRREVector.h"
+#include "Pure/include/external/Math/PureVector.h"
 
 using namespace std;
 
@@ -65,7 +65,7 @@ private:
 
     float      nTemperature;    /**< Temperature in °C. */
     float      nWindSpeed;      /**< Wind speed in m/s. */
-    PRREVector vWindDir;        /**< Wind direction. */
+    PureVector vWindDir;        /**< Wind direction. */
     float      nPrecipitation;  /**< Precipitation amount in mm/h (~ equals to liter/m^2). */
 
     // ---------------------------------------------------------------------------

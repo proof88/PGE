@@ -31,7 +31,7 @@ protected:
         CConsole::getConsoleInstance().SetLoggingState(Bullet::getLoggerModuleName(), true);
 
         engine = &PR00FsReducedRenderingEngine::createAndGet();
-        engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
+        engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
 
         AddSubTest("test_bullet_ctor_server_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_good);
         AddSubTest("test_bullet_ctor_client_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_good);
@@ -78,9 +78,9 @@ private:
     bool test_bullet_ctor_server_good()
     {
         const Bullet::BulletId iLastBulletId = Bullet::getGlobalBulletId();
-        const PRREVector posVec(1.f, 2.f, 3.f);
-        const PRREVector angleVec(20.f, 40.f, 60.f);
-        const PRREVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
+        const PureVector posVec(1.f, 2.f, 3.f);
+        const PureVector angleVec(20.f, 40.f, 60.f);
+        const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
         const float fSpeed = 60.f;
         const float fGravity = 15.f;
         const float fDrag = 25.f;
@@ -114,9 +114,9 @@ private:
     bool test_bullet_ctor_client_good()
     {
         const Bullet::BulletId iLastBulletId = Bullet::getGlobalBulletId();
-        const PRREVector posVec(1.f, 2.f, 3.f);
-        const PRREVector angleVec(20.f, 40.f, 60.f);
-        const PRREVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
+        const PureVector posVec(1.f, 2.f, 3.f);
+        const PureVector angleVec(20.f, 40.f, 60.f);
+        const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
 
         Bullet bullet(
             *engine,
@@ -140,9 +140,9 @@ private:
 
     bool test_reset_global_bullet_id()
     {
-        const PRREVector posVec(1.f, 2.f, 3.f);
-        const PRREVector angleVec(20.f, 40.f, 60.f);
-        const PRREVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
+        const PureVector posVec(1.f, 2.f, 3.f);
+        const PureVector angleVec(20.f, 40.f, 60.f);
+        const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
         const float fSpeed = 60.f;
         const float fGravity = 15.f;
         const float fDrag = 25.f;
@@ -186,10 +186,10 @@ private:
 
     bool test_bullet_update_updates_position()
     {
-        const PRREVector angleVec(0.f, 90.f, 45.f);
+        const PureVector angleVec(0.f, 90.f, 45.f);
         const float speed = 60.f;
 
-        PRREPosUpTarget put;
+        PurePosUpTarget put;
         put.SetRotation(angleVec.getX(), angleVec.getY(), angleVec.getZ());
         put.Move(speed);
 

@@ -26,41 +26,41 @@
 #include "PGEBulletTest.h"
 #include "PR00FsReducedRenderingEngineTest.h"
 #include "PR00FsReducedRenderingEngineTest2.h"
-#include "PRREAxisAlignedBoundingBoxTest.h"
-#include "PRREOctreeTest.h"
-#include "PRREBoundingVolumeHierarchyTest.h"
-#include "PRRECameraTest.h"
-#include "PRREColorTest.h"
-#include "PRREFiledManagedTest.h"
-#include "PRREFiledManagerTest.h"
-#include "PRREhwAudioTest.h"
-#include "PRREhwCentralProcessorTest.h"
-#include "PRREhwInfoTest.h"
-#include "PRREhwSystemMemoryTest.h"
-#include "PRREhwVideoTest.h"
-#include "PRREImageTest.h"
-#include "PRREImageManagerTest.h"
-#include "PRREManagedTest.h"
-#include "PRREManagerTest.h"
-#include "PRREMaterialTest.h"
-#include "PRREMaterialManagerTest.h"
-#include "PRREMatrixTest.h"
-#include "PRREMesh3DTest.h"
-#include "PRREMesh3DManagerTest.h"
-#include "PRREObject3DTest.h"
-#include "PRREObject3DManagerTest.h"
-#include "PRREPosUpTargetTest.h"
-#include "PRREScissorTest.h"
-#include "PRREScreenTest.h"
-#include "PRRESharedSettingsTest.h"
-#include "PRRETextureTest.h"
-#include "PRRETextureManagerTest.h"
-#include "PRRETransformMatrixTest.h"
-#include "PRREVectorTest.h"
-#include "PRREVertexTransferTest.h"
-#include "PRREWindowTest.h"
-#include "PRREWindowTest2.h"
-#include "PRRERendererHWfixedPipeTest.h"
+#include "PureAxisAlignedBoundingBoxTest.h"
+#include "PureOctreeTest.h"
+#include "PureBoundingVolumeHierarchyTest.h"
+#include "PureCameraTest.h"
+#include "PureColorTest.h"
+#include "PureFiledManagedTest.h"
+#include "PureFiledManagerTest.h"
+#include "PurehwAudioTest.h"
+#include "PurehwCentralProcessorTest.h"
+#include "PurehwInfoTest.h"
+#include "PurehwSystemMemoryTest.h"
+#include "PureHwVideoTest.h"
+#include "PureImageTest.h"
+#include "PureImageManagerTest.h"
+#include "PureManagedTest.h"
+#include "PureManagerTest.h"
+#include "PureMaterialTest.h"
+#include "PureMaterialManagerTest.h"
+#include "PureMatrixTest.h"
+#include "PureMesh3DTest.h"
+#include "PureMesh3DManagerTest.h"
+#include "PureObject3DTest.h"
+#include "PureObject3DManagerTest.h"
+#include "PurePosUpTargetTest.h"
+#include "PureScissorTest.h"
+#include "PureScreenTest.h"
+#include "PureSharedSettingsTest.h"
+#include "PureTextureTest.h"
+#include "PureTextureManagerTest.h"
+#include "PureTransformMatrixTest.h"
+#include "PureVectorTest.h"
+#include "PureVertexTransferTest.h"
+#include "PureWindowTest.h"
+#include "PureWindowTest2.h"
+#include "PureRendererHWfixedPipeTest.h"
 
 #define CON_TITLE "Unit tests for PGE"
 
@@ -94,47 +94,47 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     WeaponsTest                testWeapons;
     PGEBulletTest              testPGEBullet;
     
-    PRREScreenTest                  testScreen;
-    PRRESharedSettingsTest          testSharedSettings;
+    PureScreenTest                  testScreen;
+    PureSharedSettingsTest          testSharedSettings;
 
-    PRREVectorTest                  testPRREVector;
-    PRREPosUpTargetTest             testPosUpTarget;
-    PRREMatrixTest                  testPRREMatrix;
-    PRRETransformMatrixTest         testPRRETransformMatrix;
-    PRREAxisAlignedBoundingBoxTest  testAABB;
-    PRREOctreeTest                  testOctree;
-    PRREBoundingVolumeHierarchyTest testBVH;
-    PRREScissorTest                 testPRREScissor;
-    PRREColorTest                   testPRREColor;
-    PRREManagerTest                 testPRREManager;
-    PRREManagedTest                 testPRREManaged;
-    PRREFiledManagerTest            testPRREFiledManager;
-    PRREFiledManagedTest            testPRREFiledManaged;
-    PRREhwInfoTest                  testPRREhwInfo;
-    PRREhwCentralProcessorTest      testPRREhwCentralProcessor;
-    PRREhwSystemMemoryTest          testPRREhwSystemMemory;
-    PRREhwAudioTest                 testPRREhwAudio;
-    PRREhwVideoTest                 testPRREhwVideo;
-    PRREImageManagerTest            testPRREImageManager;
-    PRREImageTest                   testPRREImage;
-    PRRETextureManagerTest          testPRRETextureManager;
-    PRRETextureTest                 testPRRETexture; 
-    PRREMaterialManagerTest         testPRREMaterialManager;
-    PRREMaterialTest                testPRREMaterial;
+    PureVectorTest                  testPureVector;
+    PurePosUpTargetTest             testPosUpTarget;
+    PureMatrixTest                  testPureMatrix;
+    PureTransformMatrixTest         testPureTransformMatrix;
+    PureAxisAlignedBoundingBoxTest  testAABB;
+    PureOctreeTest                  testOctree;
+    PureBoundingVolumeHierarchyTest testBVH;
+    PureScissorTest                 testPureScissor;
+    PureColorTest                   testPureColor;
+    PureManagerTest                 testPureManager;
+    PureManagedTest                 testPureManaged;
+    PureFiledManagerTest            testPureFiledManager;
+    PureFiledManagedTest            testPureFiledManaged;
+    PurehwInfoTest                  testPurehwInfo;
+    PurehwCentralProcessorTest      testPurehwCentralProcessor;
+    PurehwSystemMemoryTest          testPurehwSystemMemory;
+    PurehwAudioTest                 testPurehwAudio;
+    PureHwVideoTest                 testPureHwVideo;
+    PureImageManagerTest            testPureImageManager;
+    PureImageTest                   testPureImage;
+    PureTextureManagerTest          testPureTextureManager;
+    PureTextureTest                 testPureTexture; 
+    PureMaterialManagerTest         testPureMaterialManager;
+    PureMaterialTest                testPureMaterial;
 
-    PRRECameraTest                  testPRRECamera;
-    PRREMesh3DManagerTest           testPRREMesh3DManager;
-    PRREMesh3DTest                  testPRREMesh3D;
-    PRREVertexTransferTest          testPRREVertexTransfer;
-    PRREObject3DManagerTest         testPRREObject3DManager;
-    PRREObject3DTest                testPRREObject3D;
-    PRREWindowTest                  testPRREWindow;
-    PRREWindowTest2                 testPRREWindow2;
+    PureCameraTest                  testPureCamera;
+    PureMesh3DManagerTest           testPureMesh3DManager;
+    PureMesh3DTest                  testPureMesh3D;
+    PureVertexTransferTest          testPureVertexTransfer;
+    PureObject3DManagerTest         testPureObject3DManager;
+    PureObject3DTest                testPureObject3D;
+    PureWindowTest                  testPureWindow;
+    PureWindowTest2                 testPureWindow2;
 
-    PRRERendererHWfixedPipeTest     testPRRERendererHWfixedPipe;
+    PureRendererHWfixedPipeTest     testPureRendererHWfixedPipe;
     
-    PR00FsReducedRenderingEngineTest  testPRRE;
-    PR00FsReducedRenderingEngineTest2 testPRRE2;
+    PR00FsReducedRenderingEngineTest  testPure;
+    PR00FsReducedRenderingEngineTest2 testPure2;
     
     vector<UnitTest*> tests;
     
@@ -155,54 +155,54 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     /*  
     tests.push_back(&testPosUpTarget);
-    tests.push_back(&testPRREVector);  
-    tests.push_back(&testPRREMatrix);  
-    tests.push_back(&testPRRETransformMatrix);
+    tests.push_back(&testPureVector);  
+    tests.push_back(&testPureMatrix);  
+    tests.push_back(&testPureTransformMatrix);
     tests.push_back(&testAABB);
     tests.push_back(&testOctree);
     tests.push_back(&testBVH);
-    tests.push_back(&testPRREScissor);
+    tests.push_back(&testPureScissor);
          
-    tests.push_back(&testPRREColor);
-    tests.push_back(&testPRREManager);
-    tests.push_back(&testPRREManaged);
-    tests.push_back(&testPRREFiledManager);
-    tests.push_back(&testPRREFiledManaged);
+    tests.push_back(&testPureColor);
+    tests.push_back(&testPureManager);
+    tests.push_back(&testPureManaged);
+    tests.push_back(&testPureFiledManager);
+    tests.push_back(&testPureFiledManaged);
       
-    tests.push_back(&testPRREhwInfo);
-    tests.push_back(&testPRREhwCentralProcessor);
-    tests.push_back(&testPRREhwSystemMemory);
-    tests.push_back(&testPRREhwAudio);
-    tests.push_back(&testPRREhwVideo); 
+    tests.push_back(&testPurehwInfo);
+    tests.push_back(&testPurehwCentralProcessor);
+    tests.push_back(&testPurehwSystemMemory);
+    tests.push_back(&testPurehwAudio);
+    tests.push_back(&testPureHwVideo); 
     
-    tests.push_back(&testPRREImageManager);
-    tests.push_back(&testPRREImage); 
-    tests.push_back(&testPRRETextureManager);
-    tests.push_back(&testPRRETexture);
-    tests.push_back(&testPRREMaterialManager);
-    tests.push_back(&testPRREMaterial);
+    tests.push_back(&testPureImageManager);
+    tests.push_back(&testPureImage); 
+    tests.push_back(&testPureTextureManager);
+    tests.push_back(&testPureTexture);
+    tests.push_back(&testPureMaterialManager);
+    tests.push_back(&testPureMaterial);
     
-    tests.push_back(&testPRRECamera);  
+    tests.push_back(&testPureCamera);  
        
-    tests.push_back(&testPRREMesh3DManager);
-    tests.push_back(&testPRREMesh3D);
+    tests.push_back(&testPureMesh3DManager);
+    tests.push_back(&testPureMesh3D);
     
-    tests.push_back(&testPRREVertexTransfer);
+    tests.push_back(&testPureVertexTransfer);
     
-    tests.push_back(&testPRREObject3DManager);
-    tests.push_back(&testPRREObject3D);  
+    tests.push_back(&testPureObject3DManager);
+    tests.push_back(&testPureObject3D);  
     */
 
     /* 
-    tests.push_back(&testPRREWindow);
-    tests.push_back(&testPRREWindow2);
+    tests.push_back(&testPureWindow);
+    tests.push_back(&testPureWindow2);
     */
     
-    //tests.push_back(&testPRRERendererHWfixedPipe);
+    //tests.push_back(&testPureRendererHWfixedPipe);
     
     /*
-    tests.push_back(&testPRRE);
-    tests.push_back(&testPRRE2);
+    tests.push_back(&testPure);
+    tests.push_back(&testPure2);
     */
     
     vector<UnitTest*>::size_type nSucceededTests = 0;

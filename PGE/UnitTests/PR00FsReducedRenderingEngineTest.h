@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PRRE/include/external/PR00FsReducedRenderingEngine.h"
+#include "../Pure/include/external/PR00FsReducedRenderingEngine.h"
 
 class PR00FsReducedRenderingEngineTest :
     public UnitTest
@@ -99,61 +99,61 @@ private:
 
     bool testInitializeInvalidResolution2()
     {
-        return assertTrue(engine->initialize(PRRE_RENDERER_HW_FP, 400, 400, PRRE_FULLSCREEN, 0, 32, 24, 0, 0) > 0, "initialize()") &
+        return assertTrue(engine->initialize(Pure_RENDERER_HW_FP, 400, 400, Pure_FULLSCREEN, 0, 32, 24, 0, 0) > 0, "initialize()") &
             assertFalse(engine->isInitialized(), "isInitialized()");
     }
 
     bool testInitializeInvalidColorDepth()
     {
-        return assertTrue(engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 0, 24, 0, 0) > 0, "initialize()") &
+        return assertTrue(engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 0, 24, 0, 0) > 0, "initialize()") &
             assertFalse(engine->isInitialized(), "isInitialized()"); 
     }
 
     bool testInitializeInvalidZDepth()
     {
-        return assertTrue(engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 0, 0, 0) > 0, "initialize()") &
+        return assertTrue(engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 0, 0, 0) > 0, "initialize()") &
             assertFalse(engine->isInitialized(), "isInitialized()");
     }
 
     bool testInitializeInvalidRefreshRate()
     {
-        return assertTrue(engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_FULLSCREEN, 74554, 32, 24, 0, 0) > 0, "initialize()") &
+        return assertTrue(engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_FULLSCREEN, 74554, 32, 24, 0, 0) > 0, "initialize()") &
             assertFalse(engine->isInitialized(), "isInitialized()");
     }
 
     bool testInitializeWindowed800x600x32x24x0()
     {
-        return assertTrue(engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0) == 0, "initialize()") &
+        return assertTrue(engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0) == 0, "initialize()") &
             assertTrue(engine->isInitialized(), "isInitialized()");
     }
 
     bool testInitializeWindowed800x600x32x24x8()
     {
-        return assertTrue(engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_WINDOWED, 0, 32, 24, 8, 0) == 0, "initialize()") &
+        return assertTrue(engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 8, 0) == 0, "initialize()") &
             assertTrue(engine->isInitialized(), "isInitialized()");
     }
 
     bool testInitializeFullScreen800x600x32x24x0()
     {
-        return assertTrue(engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_FULLSCREEN, 0, 32, 24, 0, 0) == 0, "initialize()") &
+        return assertTrue(engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_FULLSCREEN, 0, 32, 24, 0, 0) == 0, "initialize()") &
             assertTrue(engine->isInitialized(), "isInitialized()");
     }
 
     bool testInitializeFullScreenRefreshRate0()
     {
-        return assertTrue(engine->initialize(PRRE_RENDERER_HW_FP, 800, 600, PRRE_FULLSCREEN, 60, 32, 24, 0, 0) == 0, "initialize()") &
+        return assertTrue(engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_FULLSCREEN, 60, 32, 24, 0, 0) == 0, "initialize()") &
             assertTrue(engine->isInitialized(), "isInitialized()");
     }
 
     bool testInitializeWindowedCurrentResolution()
     {
-        return assertTrue(engine->initialize(PRRE_RENDERER_HW_FP, 0, 0, PRRE_WINDOWED, 0, 32, 24, 0, 0) == 0, "initialize()") &
+        return assertTrue(engine->initialize(Pure_RENDERER_HW_FP, 0, 0, Pure_WINDOWED, 0, 32, 24, 0, 0) == 0, "initialize()") &
             assertTrue(engine->isInitialized(), "isInitialized()");
     }
 
     bool testInitializeFullScreenCurrentResolution()
     {
-        return assertTrue(engine->initialize(PRRE_RENDERER_HW_FP, 0, 0, PRRE_FULLSCREEN, 0, 32, 24, 0, 0) == 0, "initialize()") &
+        return assertTrue(engine->initialize(Pure_RENDERER_HW_FP, 0, 0, Pure_FULLSCREEN, 0, 32, 24, 0, 0) == 0, "initialize()") &
             assertTrue(engine->isInitialized(), "isInitialized()");
     }
 
@@ -215,7 +215,7 @@ private:
     bool testCopyScreenToTexture()
     {
         // we just simply call this and expect nothing bad to happen
-        PRRETexture* tex = NULL;
+        PureTexture* tex = NULL;
         engine->CopyScreenToTexture(*tex);
 
         return true;
