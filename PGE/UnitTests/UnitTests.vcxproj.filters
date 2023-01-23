@@ -192,10 +192,10 @@
     <ClInclude Include="..\PURE\include\external\Render\PureRendererSWincremental.h">
       <Filter>Header Files\PGE\PURE\Render</Filter>
     </ClInclude>
-    <ClInclude Include="PR00FsReducedRenderingEngineTest.h">
+    <ClInclude Include="PR00FsUltimateRenderingEngineTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PR00FsReducedRenderingEngineTest2.h">
+    <ClInclude Include="PR00FsUltimateRenderingEngineTest2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PureAxisAlignedBoundingBoxTest.h">
@@ -306,7 +306,7 @@
     <ClInclude Include="PureWindowTest2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\PURE\include\external\PR00FsReducedRenderingEngine.h">
+    <ClInclude Include="..\PURE\include\external\PR00FsUltimateRenderingEngine.h">
       <Filter>Header Files\PGE\PURE</Filter>
     </ClInclude>
   </ItemGroup>

@@ -30,7 +30,7 @@ protected:
     {
         CConsole::getConsoleInstance().SetLoggingState(Bullet::getLoggerModuleName(), true);
 
-        engine = &PR00FsReducedRenderingEngine::createAndGet();
+        engine = &PR00FsUltimateRenderingEngine::createAndGet();
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
 
         AddSubTest("test_bullet_ctor_server_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_good);
@@ -63,7 +63,7 @@ protected:
 
 private:
 
-    PR00FsReducedRenderingEngine* engine;
+    PR00FsUltimateRenderingEngine* engine;
 
     // ---------------------------------------------------------------------------
 

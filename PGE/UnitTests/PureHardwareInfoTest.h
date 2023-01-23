@@ -12,7 +12,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../PGE/PRRE/PR00FsReducedRenderingEngine.h"
+#include "../PGE/PRRE/PR00FsUltimateRenderingEngine.h"
 #include "../PGE/PRRE/PRREHardwareInfo.h"
 
 #ifndef E
@@ -83,7 +83,7 @@ protected:
     {
         if ( engine == NULL )
         {
-            engine = PR00FsReducedRenderingEngine::createAndGet();
+            engine = PR00FsUltimateRenderingEngine::createAndGet();
             engine->initialize(800, 600, PRRE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
             hw = PRREHardwareInfo::get();
         }
@@ -105,7 +105,7 @@ protected:
 
 private:
 
-    PR00FsReducedRenderingEngine* engine;
+    PR00FsUltimateRenderingEngine* engine;
     PRREHardwareInfo* hw;
 
     bool testCtor1()

@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../Pure/include/external/PR00FsReducedRenderingEngine.h"
+#include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
 #include "../Pure/include/external/Hardware/PureHwInfo.h"
 
 #ifndef E
@@ -51,7 +51,7 @@ protected:
         bool ret = true;
         if ( engine == NULL )
         {
-            engine = &PR00FsReducedRenderingEngine::createAndGet();
+            engine = &PR00FsUltimateRenderingEngine::createAndGet();
             ret = (0 == engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0));  // pretty standard display mode, should work on most systems
         }
         return ret;
@@ -73,7 +73,7 @@ protected:
 
 private:
 
-    PR00FsReducedRenderingEngine* engine;
+    PR00FsUltimateRenderingEngine* engine;
     PureHwInfo& hw;
 
     // ---------------------------------------------------------------------------

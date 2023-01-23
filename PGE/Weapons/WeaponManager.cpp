@@ -36,7 +36,7 @@ void Bullet::ResetGlobalBulletId()
 }
 
 Bullet::Bullet(
-    PR00FsReducedRenderingEngine& gfx,
+    PR00FsUltimateRenderingEngine& gfx,
     pge_network::PgeNetworkConnectionHandle connHandle,
     TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
     TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
@@ -69,7 +69,7 @@ Bullet::Bullet(
 }
 
 Bullet::Bullet(
-    PR00FsReducedRenderingEngine& gfx,
+    PR00FsUltimateRenderingEngine& gfx,
     Bullet::BulletId id,
     TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
     TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
@@ -193,7 +193,7 @@ Bullet::BulletId Bullet::m_globalBulletId = 0;
 // ############################### PUBLIC ################################
 
 
-Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRenderingEngine& gfx, pge_network::PgeNetworkConnectionHandle connHandle) :
+Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsUltimateRenderingEngine& gfx, pge_network::PgeNetworkConnectionHandle connHandle) :
     PGEcfgFile(true, false),
     m_bullets(bullets),
     m_gfx(gfx),
@@ -948,7 +948,7 @@ void Weapon::UpdateGraphics()
 // ############################### PUBLIC ################################
 
 
-WeaponManager::WeaponManager(PR00FsReducedRenderingEngine& gfx) :
+WeaponManager::WeaponManager(PR00FsUltimateRenderingEngine& gfx) :
     m_gfx(gfx)
 {
 

@@ -58,7 +58,7 @@ public:
 
     PGEInputHandler& getInput() const;       
     PGEWorld& getWorld() const;             
-    PR00FsReducedRenderingEngine& getPure() const;
+    PR00FsUltimateRenderingEngine& getPure() const;
     pge_network::PgeNetwork& getNetwork() const;
     SoLoud::Soloud& getAudio();
     WeaponManager& getWeaponManager();
@@ -90,7 +90,7 @@ private:
     pge_network::PgeNetwork& m_PgeNetwork;
     PGESysSFX  SysSFX;
     
-    PR00FsReducedRenderingEngine& GFX; 
+    PR00FsUltimateRenderingEngine& GFX; 
     void* pSFX;
     PGEInputHandler& inputHandler;
     PGEWorld& world;
@@ -196,7 +196,7 @@ PGEWorld& PGE::PGEimpl::getWorld() const
 } // getWorld()
 
 
-PR00FsReducedRenderingEngine& PGE::PGEimpl::getPure() const
+PR00FsUltimateRenderingEngine& PGE::PGEimpl::getPure() const
 {
     return GFX;
 }
@@ -292,7 +292,7 @@ int PGE::PGEimpl::showWindowsMessageDialogWin32(PGE_MSG_ID msg_id, PGE_MSG_ID cp
 PGE::PGEimpl::PGEimpl() :
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
-    GFX( PR00FsReducedRenderingEngine::createAndGet() ),
+    GFX( PR00FsUltimateRenderingEngine::createAndGet() ),
     m_PgeNetwork(pge_network::PgeNetwork::createAndGet()),
     SysCFG("") ,
     wpnMgr(GFX),
@@ -306,7 +306,7 @@ PGE::PGEimpl::PGEimpl() :
 PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
-    GFX( PR00FsReducedRenderingEngine::createAndGet() ),
+    GFX( PR00FsUltimateRenderingEngine::createAndGet() ),
     m_PgeNetwork(pge_network::PgeNetwork::createAndGet() ),
     SysCFG(""),
     wpnMgr(GFX),
@@ -330,7 +330,7 @@ PGE::PGEimpl& PGE::PGEimpl::operator=(const PGE::PGEimpl&)
 PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     inputHandler( PGEInputHandler::createAndGet() ),
     world( PGEWorld::createAndGet() ),
-    GFX( PR00FsReducedRenderingEngine::createAndGet() ),
+    GFX( PR00FsUltimateRenderingEngine::createAndGet() ),
     m_PgeNetwork(pge_network::PgeNetwork::createAndGet()),
     SysCFG(gameTitle),
     wpnMgr(GFX),
@@ -592,7 +592,7 @@ PGEWorld& PGE::getWorld() const
 
     @return Graphics engine.
 */
-PR00FsReducedRenderingEngine& PGE::getPure() const
+PR00FsUltimateRenderingEngine& PGE::getPure() const
 {
     return p->getPure();
 }

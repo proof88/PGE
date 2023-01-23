@@ -10,7 +10,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../Pure/include/external/PR00FsReducedRenderingEngine.h"
+#include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
 #include "../Pure/include/external/Object3D/PureObject3DManager.h"
 
 #ifndef E
@@ -49,7 +49,7 @@ protected:
         //CConsole::getConsoleInstance().SetLoggingState(PureVertexTransfer::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureObject3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureObject3D::getLoggerModuleName(), true);
-        engine = &PR00FsReducedRenderingEngine::createAndGet();
+        engine = &PR00FsUltimateRenderingEngine::createAndGet();
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         om = &engine->getObject3DManager();
         obj = NULL;
@@ -223,7 +223,7 @@ protected:
     }
 
 private:
-    PR00FsReducedRenderingEngine* engine;
+    PR00FsUltimateRenderingEngine* engine;
     PureObject3DManager* om;
     PureObject3D* obj;
     PureObject3D* objFromFile;

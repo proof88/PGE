@@ -3,7 +3,7 @@
 /*
     ###################################################################################
     PureHwVideoDiscoverOpenGL_3_1.h
-    This file is part of Pure.
+    This file is part of PURE.
     Internal header.
     Pure OpenGL 3.1 capabilities class.
     Made by PR00F88

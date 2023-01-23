@@ -24,8 +24,8 @@
 #include "PGEcfgProfilesTest.h"
 #include "WeaponsTest.h"
 #include "PGEBulletTest.h"
-#include "PR00FsReducedRenderingEngineTest.h"
-#include "PR00FsReducedRenderingEngineTest2.h"
+#include "PR00FsUltimateRenderingEngineTest.h"
+#include "PR00FsUltimateRenderingEngineTest2.h"
 #include "PureAxisAlignedBoundingBoxTest.h"
 #include "PureOctreeTest.h"
 #include "PureBoundingVolumeHierarchyTest.h"
@@ -133,8 +133,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     PureRendererHWfixedPipeTest     testPureRendererHWfixedPipe;
     
-    PR00FsReducedRenderingEngineTest  testPure;
-    PR00FsReducedRenderingEngineTest2 testPure2;
+    PR00FsUltimateRenderingEngineTest  testPure;
+    PR00FsUltimateRenderingEngineTest2 testPure2;
     
     vector<UnitTest*> tests;
     

@@ -34,7 +34,7 @@ protected:
         CConsole::getConsoleInstance().SetLoggingState(WeaponManager::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(Weapon::getLoggerModuleName(), true);
         
-        engine = &PR00FsReducedRenderingEngine::createAndGet();
+        engine = &PR00FsUltimateRenderingEngine::createAndGet();
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
 
         AddSubTest("test_wpn_load_weapon_bad_assignment", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_bad_assignment);
@@ -127,7 +127,7 @@ protected:
 
 private:
 
-    PR00FsReducedRenderingEngine* engine;
+    PR00FsUltimateRenderingEngine* engine;
 
     // ---------------------------------------------------------------------------
 

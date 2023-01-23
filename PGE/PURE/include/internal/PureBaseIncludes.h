@@ -65,7 +65,7 @@
 
 // Own headers, but rarely changed, so we can keep them here in PCH
 #include "../external/PureAllHeaders.h"
-#include "Pureconsts.h"
+#include "PureConsts.h"
 #include "../external/PureTypes.h"
 #include "../../../../PFL/PFL/PFL.h"
 #include "../../../../CConsole/CConsole/src/CConsole.h"

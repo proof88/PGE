@@ -24,7 +24,7 @@
 
 
 PGESysGFX::PGESysGFX() :
-    engine( PR00FsReducedRenderingEngine::createAndGet() )
+    engine( PR00FsUltimateRenderingEngine::createAndGet() )
 {
 
 } // PGESysGFX()
@@ -58,7 +58,7 @@ bool PGESysGFX::destroySysGFX(void)
 
 
 PGESysGFX::PGESysGFX(const PGESysGFX&) :
-    engine( PR00FsReducedRenderingEngine::createAndGet() )
+    engine( PR00FsUltimateRenderingEngine::createAndGet() )
 {
 
 }

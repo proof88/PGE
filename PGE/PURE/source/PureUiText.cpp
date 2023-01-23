@@ -3,7 +3,7 @@
 /*
     ###################################################################################
     PureUiText.cpp
-    This file is part of Pure.
+    This file is part of PURE.
     Pure User Interface Text class.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com

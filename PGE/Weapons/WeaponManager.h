@@ -19,7 +19,7 @@
 
 #include "../PGEallHeaders.h"
 #include "../Config/PGEcfgFile.h"
-#include "../Pure/include/external/PR00FsReducedRenderingEngine.h"
+#include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
 #include "../Network/PgePacket.h"
 
 /**
@@ -47,7 +47,7 @@ public:
 
     /** Ctor to be used by PGE server instance: bullet id will be assigned within the ctor. */
     Bullet(
-        PR00FsReducedRenderingEngine& gfx,
+        PR00FsUltimateRenderingEngine& gfx,
         pge_network::PgeNetworkConnectionHandle connHandle,
         TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
         TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
@@ -56,7 +56,7 @@ public:
     
     /** Ctor to be used by PGE client instance: bullet id as received from server. */
     Bullet(
-        PR00FsReducedRenderingEngine& gfx,
+        PR00FsUltimateRenderingEngine& gfx,
         Bullet::BulletId id,
         TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
         TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
@@ -125,7 +125,7 @@ private:
     static BulletId m_globalBulletId;                      /**< Next unique bullet id for identifying. Used by PGE server instance only. */
 
     BulletId m_id;                                         /**< Unique bullet id for identifying. Used by PGE server and client instances. */
-    PR00FsReducedRenderingEngine& m_gfx;
+    PR00FsUltimateRenderingEngine& m_gfx;
     pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this bullet. Used by PGE server instance only. */
     PurePosUpTarget m_put;                                 /**< PUT to calculate next position. Used by PGE server instance only. */
     TPureFloat m_speed;                                    /**< Speed as defined by weapon file. Used by PGE server instance only. */
@@ -171,7 +171,7 @@ public:
 
     Weapon(
         const char* fname, std::list<Bullet>& bullets,
-        PR00FsReducedRenderingEngine& gfx,
+        PR00FsUltimateRenderingEngine& gfx,
         pge_network::PgeNetworkConnectionHandle connHandle);
     virtual ~Weapon();
 
@@ -282,7 +282,7 @@ private:
     static std::set<std::string> m_WpnAcceptedVars;
 
     std::list<Bullet>& m_bullets;
-    PR00FsReducedRenderingEngine& m_gfx;
+    PR00FsUltimateRenderingEngine& m_gfx;
     pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this weapon. Should be used by PGE server instance only. */
     PureObject3D* m_obj;
     State m_state;                                     /**< State as calculated and updated by PGE server instance. */
@@ -317,7 +317,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    WeaponManager(PR00FsReducedRenderingEngine& gfx);
+    WeaponManager(PR00FsUltimateRenderingEngine& gfx);
     virtual ~WeaponManager();
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
@@ -346,7 +346,7 @@ protected:
 
 private:
 
-    PR00FsReducedRenderingEngine& m_gfx;
+    PR00FsUltimateRenderingEngine& m_gfx;
     std::vector<Weapon*> m_weapons;
     std::list<Bullet> m_bullets;
     std::string m_sDefaultAvailableWeapon;

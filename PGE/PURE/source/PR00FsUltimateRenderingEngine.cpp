@@ -1,8 +1,8 @@
 /*
     ###################################################################################
-    PR00FsReducedRenderingEngine.cpp
-    This file is part of Pure.
-    PR00F's Reduced Rendering Engine
+    PR00FsUltimateRenderingEngine.cpp
+    This file is part of PURE.
+    PR00F's Ultimate Rendering Engine
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
@@ -13,7 +13,7 @@
 
 #include "../include/internal/GUI/imgui-1.88/imgui.h"
 
-#include "../include/external/PR00FsReducedRenderingEngine.h"
+#include "../include/external/PR00FsUltimateRenderingEngine.h"
 #include "../include/external/Render/PureRendererHWfixedPipe.h"
 #include "../include/external/Render/PureRendererSWincremental.h"
 #include "../include/internal/PureGLsnippets.h"
@@ -26,15 +26,15 @@ using namespace std;
 
 
 /*
-   PR00FsReducedRenderingEngineImpl
+   PR00FsUltimateRenderingEngineImpl
    ###########################################################################
 */
 
-class PR00FsReducedRenderingEngineImpl :
-    public PR00FsReducedRenderingEngine
+class PR00FsUltimateRenderingEngineImpl :
+    public PR00FsUltimateRenderingEngine
 {
 public:
-    virtual ~PR00FsReducedRenderingEngineImpl();       /**< Calls shutdown(). */
+    virtual ~PR00FsUltimateRenderingEngineImpl();       /**< Calls shutdown(). */
 
     TPureUInt initialize(
         TPURE_RENDERER rndr,
@@ -88,11 +88,11 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PR00FsReducedRenderingEngineImpl();                /**< NULLs members only. */
-    PR00FsReducedRenderingEngineImpl(const PR00FsReducedRenderingEngineImpl&);
-    PR00FsReducedRenderingEngineImpl& operator=(const PR00FsReducedRenderingEngineImpl&);
+    PR00FsUltimateRenderingEngineImpl();                /**< NULLs members only. */
+    PR00FsUltimateRenderingEngineImpl(const PR00FsUltimateRenderingEngineImpl&);
+    PR00FsUltimateRenderingEngineImpl& operator=(const PR00FsUltimateRenderingEngineImpl&);
 
-    friend class PR00FsReducedRenderingEngine;
+    friend class PR00FsUltimateRenderingEngine;
 
 };
 
@@ -103,10 +103,10 @@ private:
 /**
     Calls shutdown().
 */
-PR00FsReducedRenderingEngineImpl::~PR00FsReducedRenderingEngineImpl()
+PR00FsUltimateRenderingEngineImpl::~PR00FsUltimateRenderingEngineImpl()
 {
     shutdown();
-} // ~PR00FsReducedRenderingEngine()
+} // ~PR00FsUltimateRenderingEngine()
 
 
 /**
@@ -126,7 +126,7 @@ PR00FsReducedRenderingEngineImpl::~PR00FsReducedRenderingEngineImpl()
 
     @return The result of the initialization. 0 on success, positive value otherwise. Currently 1 for any error.
 */
-TPureUInt PR00FsReducedRenderingEngineImpl::initialize(
+TPureUInt PR00FsUltimateRenderingEngineImpl::initialize(
     TPURE_RENDERER rndr,
     TPureUInt width, TPureUInt height,
     TPURE_DISPLAY_MODES dmode, TPureUInt freq,
@@ -250,9 +250,9 @@ TPureUInt PR00FsReducedRenderingEngineImpl::initialize(
 
     @return True on successful shutdown, false otherwise.
 */
-TPureBool PR00FsReducedRenderingEngineImpl::shutdown()
+TPureBool PR00FsUltimateRenderingEngineImpl::shutdown()
 {
-    getConsole().OLn("PR00FsReducedRenderingEngine::shutdown()");
+    getConsole().OLn("PR00FsUltimateRenderingEngine::shutdown()");
     getConsole().OLn("");
 
     if ( getAutoWriteStatsAtShutdown() )
@@ -320,7 +320,7 @@ TPureBool PR00FsReducedRenderingEngineImpl::shutdown()
     Gets the state of the engine.
     @return True if the engine is successfully initialized, false before initialization or after shutdown.
 */
-TPureBool PR00FsReducedRenderingEngineImpl::isInitialized() const
+TPureBool PR00FsUltimateRenderingEngineImpl::isInitialized() const
 {
     return ( pRenderer && pRenderer->isInitialized() );
 } // isInitialized()
@@ -331,7 +331,7 @@ TPureBool PR00FsReducedRenderingEngineImpl::isInitialized() const
 
     @return Reference to PureScreen object if engine is initialized, invalid reference otherwise.
 */
-PureScreen& PR00FsReducedRenderingEngineImpl::getScreen() const
+PureScreen& PR00FsUltimateRenderingEngineImpl::getScreen() const
 {
     return screen;
 } // getScreen()
@@ -342,7 +342,7 @@ PureScreen& PR00FsReducedRenderingEngineImpl::getScreen() const
 
     @return Reference to PureWindow object if engine is initialized, invalid reference otherwise.
 */
-PureWindow& PR00FsReducedRenderingEngineImpl::getWindow() const
+PureWindow& PR00FsUltimateRenderingEngineImpl::getWindow() const
 {
     return wnd;
 } // getWindow()
@@ -353,7 +353,7 @@ PureWindow& PR00FsReducedRenderingEngineImpl::getWindow() const
 
     @return Reference to PureHwInfo object if engine is initialized, invalid reference otherwise.
 */
-PureHwInfo& PR00FsReducedRenderingEngineImpl::getHardwareInfo() const
+PureHwInfo& PR00FsUltimateRenderingEngineImpl::getHardwareInfo() const
 {
     return hwInfo;
 } // getHardwareInfo()
@@ -364,7 +364,7 @@ PureHwInfo& PR00FsReducedRenderingEngineImpl::getHardwareInfo() const
 
     @return Reference to PureImageManager object if engine is initialized, invalid reference otherwise.
 */
-PureImageManager& PR00FsReducedRenderingEngineImpl::getImageManager() const
+PureImageManager& PR00FsUltimateRenderingEngineImpl::getImageManager() const
 {
     return *pImageMgr;
 } // getImageManager()
@@ -375,7 +375,7 @@ PureImageManager& PR00FsReducedRenderingEngineImpl::getImageManager() const
 
     @return Reference to PureTextureManager object if engine is initialized, invalid reference otherwise.
 */
-PureTextureManager& PR00FsReducedRenderingEngineImpl::getTextureManager() const
+PureTextureManager& PR00FsUltimateRenderingEngineImpl::getTextureManager() const
 {
     return *pTextureMgr;
 } // getTextureManager()
@@ -386,13 +386,13 @@ PureTextureManager& PR00FsReducedRenderingEngineImpl::getTextureManager() const
 
     @return Reference to PureMaterialManager object if engine is initialized, invalid reference otherwise.
 */
-PureMaterialManager& PR00FsReducedRenderingEngineImpl::getMaterialManager() const
+PureMaterialManager& PR00FsUltimateRenderingEngineImpl::getMaterialManager() const
 {
     return *pMaterialMgr;
 }
 
 
-PureMesh3DManager& PR00FsReducedRenderingEngineImpl::getMesh3DManager() const
+PureMesh3DManager& PR00FsUltimateRenderingEngineImpl::getMesh3DManager() const
 {
     return *pMesh3DMgr;
 }
@@ -403,7 +403,7 @@ PureMesh3DManager& PR00FsReducedRenderingEngineImpl::getMesh3DManager() const
 
     @return Reference to PureObject3DManager object if engine is initialized, invalid reference otherwise.
 */
-PureObject3DManager& PR00FsReducedRenderingEngineImpl::getObject3DManager() const
+PureObject3DManager& PR00FsUltimateRenderingEngineImpl::getObject3DManager() const
 {
     return *pObject3DMgr;
 } // getObject3DManager()
@@ -414,7 +414,7 @@ PureObject3DManager& PR00FsReducedRenderingEngineImpl::getObject3DManager() cons
 
     @return Reference to PureCamera object if engine is initialized, invalid reference otherwise.
 */
-PureCamera& PR00FsReducedRenderingEngineImpl::getCamera() const
+PureCamera& PR00FsUltimateRenderingEngineImpl::getCamera() const
 {
     return *pCamera;
 } // getCamera()
@@ -425,7 +425,7 @@ PureCamera& PR00FsReducedRenderingEngineImpl::getCamera() const
 
     @return Reference to PureUiManager object if engine is initialized, invalid reference otherwise.
 */
-PureUiManager& PR00FsReducedRenderingEngineImpl::getUImanager() const
+PureUiManager& PR00FsUltimateRenderingEngineImpl::getUImanager() const
 {
     return uiMgr;
 } // getUImanager()
@@ -436,18 +436,18 @@ PureUiManager& PR00FsReducedRenderingEngineImpl::getUImanager() const
 
     @return Pointer to a renderer object implementing PureIRenderer interface if engine is initialized, NULL otherwise.
 */
-PureIRenderer* PR00FsReducedRenderingEngineImpl::getRenderer() const
+PureIRenderer* PR00FsUltimateRenderingEngineImpl::getRenderer() const
 {
     return pRenderer;
 }
 
-void PR00FsReducedRenderingEngineImpl::ShowGuiDemo(TPureBool state)
+void PR00FsUltimateRenderingEngineImpl::ShowGuiDemo(TPureBool state)
 {
     pRenderer->ShowGuiDemo(state);
 }
 
 
-void PR00FsReducedRenderingEngineImpl::PrintTexturesUnusedByMaterials() const
+void PR00FsUltimateRenderingEngineImpl::PrintTexturesUnusedByMaterials() const
 {
     if ( !isInitialized() )
         return;
@@ -491,7 +491,7 @@ void PR00FsReducedRenderingEngineImpl::PrintTexturesUnusedByMaterials() const
 } // PrintUnusedTextures()
 
 
-void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByMeshes() const
+void PR00FsUltimateRenderingEngineImpl::PrintMaterialsUnusedByMeshes() const
 {
     if ( !isInitialized() )
         return;
@@ -542,7 +542,7 @@ void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByMeshes() const
 } // PrintMaterialsUnusedByMeshes()
 
 
-void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByObjects() const
+void PR00FsUltimateRenderingEngineImpl::PrintMaterialsUnusedByObjects() const
 {
     if ( !isInitialized() )
         return;
@@ -613,9 +613,9 @@ void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByObjects() const
     Invoke WriteList() of all children instances.
     This will give you a verbose list of all created/loaded managed and manager instances with information about resource usage.
 */
-void PR00FsReducedRenderingEngineImpl::WriteList() const
+void PR00FsUltimateRenderingEngineImpl::WriteList() const
 {
-    getConsole().OLnOI("PR00FsReducedRenderingEngine::WriteList() start");
+    getConsole().OLnOI("PR00FsUltimateRenderingEngine::WriteList() start");
     getConsole().OLnOI("");
     if ( isInitialized() )
     {
@@ -664,10 +664,10 @@ void PR00FsReducedRenderingEngineImpl::WriteList() const
     }
     else
     {
-        getConsole().OLn("PR00FsReducedRenderingEngine is NOT initialized!");
+        getConsole().OLn("PR00FsUltimateRenderingEngine is NOT initialized!");
     }
 
-    getConsole().OLnOO("PR00FsReducedRenderingEngine::WriteList() end");
+    getConsole().OLnOO("PR00FsUltimateRenderingEngine::WriteList() end");
     getConsole().OLn("");
 } // WriteList()
 
@@ -678,7 +678,7 @@ void PR00FsReducedRenderingEngineImpl::WriteList() const
 
     @return True if WriteList() would be invoked automatically at the beginning of shutdown(), false otherwise.
 */
-TPureBool PR00FsReducedRenderingEngineImpl::getAutoWriteStatsAtShutdown() const
+TPureBool PR00FsUltimateRenderingEngineImpl::getAutoWriteStatsAtShutdown() const
 {
     return bAutoWriteStatsAtShutdown;
 } // getAutoWriteStatsAtShutdown()
@@ -690,7 +690,7 @@ TPureBool PR00FsReducedRenderingEngineImpl::getAutoWriteStatsAtShutdown() const
 
     @param state If true WriteList() will be invoked automatically at the beginning of shutdown(), otherwise it won't be invoked.
 */
-void PR00FsReducedRenderingEngineImpl::SetAutoWriteStatsAtShutdown(TPureBool state)
+void PR00FsUltimateRenderingEngineImpl::SetAutoWriteStatsAtShutdown(TPureBool state)
 {
     bAutoWriteStatsAtShutdown = state;
 } // SetAutoWriteStatsAtShutdown()
@@ -701,7 +701,7 @@ void PR00FsReducedRenderingEngineImpl::SetAutoWriteStatsAtShutdown(TPureBool sta
 
     @param tex The target texture to where we save content of the screen. Width of the texture must be same as viewport width of the camera.
 */
-void PR00FsReducedRenderingEngineImpl::CopyScreenToTexture(PureTexture& tex)
+void PR00FsUltimateRenderingEngineImpl::CopyScreenToTexture(PureTexture& tex)
 {
     // This function should be rather part of PureScreen(), however it is easier to implement here.
     // One challenge of implementing this in PureScreen() is that that class needs to know:
@@ -747,7 +747,7 @@ void PR00FsReducedRenderingEngineImpl::CopyScreenToTexture(PureTexture& tex)
 /**
     NULLs members only.
 */                                                                         
-PR00FsReducedRenderingEngineImpl::PR00FsReducedRenderingEngineImpl() :
+PR00FsUltimateRenderingEngineImpl::PR00FsUltimateRenderingEngineImpl() :
     ssets( PureSharedSettings::createAndGet() ),
     wnd( PureWindow::createAndGet() ),
     hwInfo( PureHwInfo::get() ),
@@ -759,10 +759,10 @@ PR00FsReducedRenderingEngineImpl::PR00FsReducedRenderingEngineImpl() :
     pTextureMgr = PGENULL;
     pCamera = PGENULL;
     pRenderer = PGENULL;
-} // PR00FsReducedRenderingEngineImpl(...)
+} // PR00FsUltimateRenderingEngineImpl(...)
 
 
-PR00FsReducedRenderingEngineImpl::PR00FsReducedRenderingEngineImpl(const PR00FsReducedRenderingEngineImpl&) :
+PR00FsUltimateRenderingEngineImpl::PR00FsUltimateRenderingEngineImpl(const PR00FsUltimateRenderingEngineImpl&) :
     ssets( PureSharedSettings::createAndGet() ),
     wnd( PureWindow::createAndGet() ),
     hwInfo( PureHwInfo::get() ),
@@ -773,14 +773,14 @@ PR00FsReducedRenderingEngineImpl::PR00FsReducedRenderingEngineImpl(const PR00FsR
 }
 
 
-PR00FsReducedRenderingEngineImpl& PR00FsReducedRenderingEngineImpl::operator=(const PR00FsReducedRenderingEngineImpl&)
+PR00FsUltimateRenderingEngineImpl& PR00FsUltimateRenderingEngineImpl::operator=(const PR00FsUltimateRenderingEngineImpl&)
 {
     return *this;
 }
 
 
 /*
-   PR00FsReducedRenderingEngine
+   PR00FsUltimateRenderingEngine
    ###########################################################################
 */
 
@@ -791,9 +791,9 @@ PR00FsReducedRenderingEngineImpl& PR00FsReducedRenderingEngineImpl::operator=(co
 /**
     Creates and gets the singleton instance.
 */
-PR00FsReducedRenderingEngine& PR00FsReducedRenderingEngine::createAndGet()
+PR00FsUltimateRenderingEngine& PR00FsUltimateRenderingEngine::createAndGet()
 {
-    static PR00FsReducedRenderingEngineImpl Pureinstance;
+    static PR00FsUltimateRenderingEngineImpl Pureinstance;
     return Pureinstance;
 } // createAndGet()
 
@@ -804,7 +804,7 @@ PR00FsReducedRenderingEngine& PR00FsReducedRenderingEngine::createAndGet()
 
     @return Console instance used by this class.
 */
-CConsole& PR00FsReducedRenderingEngine::getConsole() const
+CConsole& PR00FsUltimateRenderingEngine::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
 } // getConsole()
@@ -817,9 +817,9 @@ CConsole& PR00FsReducedRenderingEngine::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PR00FsReducedRenderingEngine::getLoggerModuleName()
+const char* PR00FsUltimateRenderingEngine::getLoggerModuleName()
 {
-    return "PR00FsReducedRenderingEngine";
+    return "PR00FsUltimateRenderingEngine";
 } // getLoggerModuleName()
 
 

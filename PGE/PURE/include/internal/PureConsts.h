@@ -2,7 +2,7 @@
 
 /*
     ###################################################################################
-    Pureconsts.h
+    PureConsts.h
     This file is part of PURE.
     Internal header.
     Pure constants, macros.
@@ -26,7 +26,7 @@
 #define PGE_CCONSOLE_IS_ENABLED
 #endif
 
-#define PURE_NAME    "PR00F's Reduced Rendering Engine (Pure)"           /**< Name of the engine. */
-#define PURE_VERSION "0.3 private alpha built on "__DATE__" @ "__TIME__  /**< Version of the engine. */
+#define PURE_NAME    "PR00F's Ultimate Rendering Engine (PURE)"
+#define PURE_VERSION "0.3 private alpha built on "__DATE__" @ "__TIME__
 
 

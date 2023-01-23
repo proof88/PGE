@@ -258,9 +258,6 @@
     <ClInclude Include="PURE\include\external\Object3D\PureVertexTransferMode.h">
       <Filter>Header Files\PURE\include\external\Object3D</Filter>
     </ClInclude>
-    <ClInclude Include="PURE\include\external\PR00FsReducedRenderingEngine.h">
-      <Filter>Header Files\PURE\include\external</Filter>
-    </ClInclude>
     <ClInclude Include="PURE\include\external\PureAllHeaders.h">
       <Filter>Header Files\PURE\include\external</Filter>
     </ClInclude>
@@ -594,6 +591,12 @@
     <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGLbase.h">
       <Filter>Header Files\PURE\include\internal\Hardware</Filter>
     </ClInclude>
+    <ClInclude Include="PURE\include\external\PR00FsReducedRenderingEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PURE\include\external\PR00FsUltimateRenderingEngine.h">
+      <Filter>Header Files\PURE\include\external</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -616,9 +619,6 @@
     </ClCompile>
     <ClCompile Include="PGEWorld.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\PR00FsReducedRenderingEngine.cpp">
-      <Filter>Source Files\PURE</Filter>
     </ClCompile>
     <ClCompile Include="PURE\source\PureBaseIncludes.cpp">
       <Filter>Source Files\PURE</Filter>
@@ -793,6 +793,9 @@
     </ClCompile>
     <ClCompile Include="PURE\source\PureUiText.cpp">
       <Filter>Source Files\PURE</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\PR00FsUltimateRenderingEngine.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

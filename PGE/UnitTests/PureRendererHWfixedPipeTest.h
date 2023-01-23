@@ -12,7 +12,7 @@
 #include "UnitTest.h"  // PCH
 #include "../Pure/include/external/Render/PureIRenderer.h"
 #include "../Pure/include/external/Render/PureRendererHWfixedPipe.h"
-#include "../Pure/include/external/PR00FsReducedRenderingEngine.h"
+#include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
 
 #ifndef E
 #define E 0.0001f
@@ -63,7 +63,7 @@ protected:
         bool ret = true;
         if ( engine == NULL )
         {
-            engine = &PR00FsReducedRenderingEngine::createAndGet();
+            engine = &PR00FsUltimateRenderingEngine::createAndGet();
             ret &= assertEquals((TPureUInt)0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
             renderer = engine->getRenderer();
             ret &= assertNotNull(renderer, "renderer null");
@@ -96,7 +96,7 @@ protected:
 
 
 private:
-    PR00FsReducedRenderingEngine* engine;
+    PR00FsUltimateRenderingEngine* engine;
     PureIRenderer* renderer;
     PureObject3DManager* om;
 

@@ -15,7 +15,7 @@
 #include "../Pure/include/external/Object3D/PureMesh3DManager.h"
 #include "../Pure/include/internal/Object3D/PureMesh3DImpl.h"
 #include "../Pure/include/internal/Object3D/PureMesh3DManagerImpl.h"
-#include "../Pure/include/external/PR00FsReducedRenderingEngine.h"
+#include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
 
 #ifndef E
 #define E 0.0001f
@@ -210,7 +210,7 @@ protected:
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3D::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureVertexTransfer::getLoggerModuleName(), true);
-        engine = &PR00FsReducedRenderingEngine::createAndGet();
+        engine = &PR00FsUltimateRenderingEngine::createAndGet();
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         vtm = new SampleManagerForDescendantFromVertexTransfer(engine->getMaterialManager()); 
         mesh = NULL;
@@ -281,7 +281,7 @@ protected:
 
 
 private:
-    PR00FsReducedRenderingEngine* engine;
+    PR00FsUltimateRenderingEngine* engine;
     SampleManagerForDescendantFromVertexTransfer* vtm;
     SampleDescendantFromVertexTransfer* mesh;
     SampleDescendantFromVertexTransfer* meshFromFile;

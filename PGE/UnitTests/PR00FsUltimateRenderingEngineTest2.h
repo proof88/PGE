@@ -2,28 +2,28 @@
 
 /*
     ###################################################################################
-    PR00FsReducedRenderingEngineTest2.h
-    Unit test for PR00FsReducedRenderingEngine.
+    PR00FsUltimateRenderingEngineTest2.h
+    Unit test for PR00FsUltimateRenderingEngine.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 
 #include "UnitTest.h"  // PCH
-#include "../Pure/include/external/PR00FsReducedRenderingEngine.h"
+#include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
 
-class PR00FsReducedRenderingEngineTest2 :
+class PR00FsUltimateRenderingEngineTest2 :
     public UnitTest
 {
 public:
 
-    PR00FsReducedRenderingEngineTest2() :
+    PR00FsUltimateRenderingEngineTest2() :
         UnitTest( __FILE__, "inited" )
     {
         
     }
 
-    virtual ~PR00FsReducedRenderingEngineTest2()
+    virtual ~PR00FsUltimateRenderingEngineTest2()
     {
         
     }
@@ -32,29 +32,29 @@ protected:
 
     virtual void Initialize()
     {
-        //CConsole::getConsoleInstance().SetLoggingState(PR00FsReducedRenderingEngine::getLoggerModuleName(), true);
+        //CConsole::getConsoleInstance().SetLoggingState(PR00FsUltimateRenderingEngine::getLoggerModuleName(), true);
         engine = NULL;
-        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testInitialize);
-        AddSubTest("testShutdown", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testShutdown);
-        AddSubTest("testIsInitialized", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testIsInitialized);
-        AddSubTest("testGetScreen", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetScreen);
-        AddSubTest("testGetWindow", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetWindow);
-        AddSubTest("testGetHardwareInfo", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetHardwareInfo);
-        AddSubTest("testGetImageManager", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetImageManager);
-        AddSubTest("testGetTextureManager", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetTextureManager);
-        AddSubTest("testGetObject3DManager", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetObject3DManager);
-        AddSubTest("testGetCamera", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetCamera);
-        AddSubTest("testGetUImanager", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetUImanager);
-        AddSubTest("testGetRenderer", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetRenderer);
-        AddSubTest("testCopyScreenToTexture", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testCopyScreenToTexture);
-        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testWriteList);
-        AddSubTest("testGetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testGetAutoWriteStatsAtShutdown);
-        AddSubTest("testSetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsReducedRenderingEngineTest2::testSetAutoWriteStatsAtShutdown);
+        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testInitialize);
+        AddSubTest("testShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testShutdown);
+        AddSubTest("testIsInitialized", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testIsInitialized);
+        AddSubTest("testGetScreen", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetScreen);
+        AddSubTest("testGetWindow", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetWindow);
+        AddSubTest("testGetHardwareInfo", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetHardwareInfo);
+        AddSubTest("testGetImageManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetImageManager);
+        AddSubTest("testGetTextureManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetTextureManager);
+        AddSubTest("testGetObject3DManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetObject3DManager);
+        AddSubTest("testGetCamera", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetCamera);
+        AddSubTest("testGetUImanager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetUImanager);
+        AddSubTest("testGetRenderer", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetRenderer);
+        AddSubTest("testCopyScreenToTexture", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testCopyScreenToTexture);
+        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testWriteList);
+        AddSubTest("testGetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetAutoWriteStatsAtShutdown);
+        AddSubTest("testSetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testSetAutoWriteStatsAtShutdown);
     }
 
     virtual bool setUp()
     {
-        engine = &PR00FsReducedRenderingEngine::createAndGet();
+        engine = &PR00FsUltimateRenderingEngine::createAndGet();
         return assertEquals((TPureUInt) 0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
     }
 
@@ -69,19 +69,19 @@ protected:
 
     virtual void Finalize()
     {
-        CConsole::getConsoleInstance().SetLoggingState(PR00FsReducedRenderingEngine::getLoggerModuleName(), false);    
+        CConsole::getConsoleInstance().SetLoggingState(PR00FsUltimateRenderingEngine::getLoggerModuleName(), false);    
     }
 
 private:
 
-    PR00FsReducedRenderingEngine* engine;
+    PR00FsUltimateRenderingEngine* engine;
 
     // ---------------------------------------------------------------------------
 
-    PR00FsReducedRenderingEngineTest2(const PR00FsReducedRenderingEngineTest2&)
+    PR00FsUltimateRenderingEngineTest2(const PR00FsUltimateRenderingEngineTest2&)
     {};         
 
-    PR00FsReducedRenderingEngineTest2& operator=(const PR00FsReducedRenderingEngineTest2&)
+    PR00FsUltimateRenderingEngineTest2& operator=(const PR00FsUltimateRenderingEngineTest2&)
     {
         return *this;
     };
@@ -183,4 +183,4 @@ private:
         return b;
     }
    
-}; // class PR00FsReducedRenderingEngineTest2
+}; // class PR00FsUltimateRenderingEngineTest2

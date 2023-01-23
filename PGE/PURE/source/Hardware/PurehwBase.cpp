@@ -1,7 +1,7 @@
 /*
     ###################################################################################
     PurehwBase.cpp
-    This file is part of Pure.
+    This file is part of PURE.
     Base class for Pure hardware classes.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com

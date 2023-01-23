@@ -440,7 +440,7 @@
     <ClInclude Include="PURE\include\external\Object3D\PureMesh3DManager.h" />
     <ClInclude Include="PURE\include\external\Object3D\PureObject3DManager.h" />
     <ClInclude Include="PURE\include\external\Object3D\PureVertexTransferMode.h" />
-    <ClInclude Include="PURE\include\external\PR00FsReducedRenderingEngine.h" />
+    <ClInclude Include="PURE\include\external\PR00FsUltimateRenderingEngine.h" />
     <ClInclude Include="PURE\include\external\PureAllHeaders.h" />
     <ClInclude Include="PURE\include\external\PureCamera.h" />
     <ClInclude Include="PURE\include\external\PureFiledManager.h" />
@@ -612,7 +612,7 @@
     <ClCompile Include="PURE\source\Object3D\PureObject3D.cpp" />
     <ClCompile Include="PURE\source\Object3D\PureObject3DManager.cpp" />
     <ClCompile Include="PURE\source\Object3D\PureVertexTransferMode.cpp" />
-    <ClCompile Include="PURE\source\PR00FsReducedRenderingEngine.cpp" />
+    <ClCompile Include="PURE\source\PR00FsUltimateRenderingEngine.cpp" />
     <ClCompile Include="PURE\source\PureBaseIncludes.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EV2008P03Debug|Win32'">Create</PrecompiledHeader>

@@ -3,7 +3,7 @@
 /*
     ###################################################################################
     PureCamera.cpp
-    This file is part of Pure.
+    This file is part of PURE.
     Camera class.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com

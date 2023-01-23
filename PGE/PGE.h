@@ -14,7 +14,7 @@
 #include "PGEallHeaders.h"
 #include <string>
 #include "../../CConsole/CConsole/src/CConsole.h"
-#include "PURE/include/external/PR00FsReducedRenderingEngine.h"
+#include "PURE/include/external/PR00FsUltimateRenderingEngine.h"
 #include "PGEInputHandler.h"
 #include "PGEWorld.h"
 // TODO: add "Audio/soloud-RELEASE_20200207/include/" to project include dirs, do not use that path here!
@@ -77,7 +77,7 @@ public:
 
     PGEInputHandler& getInput() const;         /**< Returns the input handler object. */
     PGEWorld& getWorld() const;                /**< Returns the world object. */
-    PR00FsReducedRenderingEngine& getPure() const;   /**< Returns the graphics engine. */
+    PR00FsUltimateRenderingEngine& getPure() const;   /**< Returns the graphics engine. */
     pge_network::PgeNetwork& getNetwork() const;     /**< Returns the network functionality interface. */
     SoLoud::Soloud& getAudio();                /**< Returns audio lib interface. */
     

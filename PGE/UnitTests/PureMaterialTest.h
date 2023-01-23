@@ -11,7 +11,7 @@
 
 #include "UnitTest.h"  // PCH
 #include "../Pure/include/external/Material/PureMaterialManager.h"
-#include "../Pure/include/external/PR00FsReducedRenderingEngine.h"
+#include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
 
 #ifndef E
 #define E 0.0001f
@@ -118,7 +118,7 @@ protected:
         CConsole::getConsoleInstance().SetLoggingState(PureImage::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(PureImageManager::getLoggerModuleName(), true);
         */
-        engine = &PR00FsReducedRenderingEngine::createAndGet();
+        engine = &PR00FsUltimateRenderingEngine::createAndGet();
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         tm = &engine->getTextureManager();
         mm = &engine->getMaterialManager();
@@ -173,7 +173,7 @@ protected:
     }
 
 private:
-    PR00FsReducedRenderingEngine* engine;
+    PR00FsUltimateRenderingEngine* engine;
     PureTextureManager* tm;
     PureMaterialManager* mm;
     PureMaterial* mat;
@@ -274,7 +274,7 @@ private:
 
     bool testSetTexture()
     {
-        PureTexture* tex128x128x24 = PR00FsReducedRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
+        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
 
@@ -292,7 +292,7 @@ private:
 
     bool testGetTextureCount()
     {
-        PureTexture* tex128x128x24 = PR00FsReducedRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
+        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
 
@@ -313,7 +313,7 @@ private:
 
     bool testIsTextured()
     {
-        PureTexture* tex128x128x24 = PR00FsReducedRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
+        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
 
@@ -331,7 +331,7 @@ private:
 
     bool testIsSingleTextured()
     {
-        PureTexture* tex128x128x24 = PR00FsReducedRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
+        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
 
@@ -352,7 +352,7 @@ private:
 
     bool testIsMultiTextured()
     {
-        PureTexture* tex128x128x24 = PR00FsReducedRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
+        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
 

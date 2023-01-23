@@ -11,7 +11,7 @@
 
 #include "UnitTest.h"  // PCH
 #include "../Pure/include/external/Material/PureTextureManager.h"
-#include "../Pure/include/external/PR00FsReducedRenderingEngine.h"
+#include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
 
 #ifndef E
 #define E 0.0001f
@@ -63,7 +63,7 @@ protected:
         CConsole::getConsoleInstance().SetLoggingState(PureTextureManager::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(PureImage::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(PureImageManager::getLoggerModuleName(), true);*/
-        engine = &PR00FsReducedRenderingEngine::createAndGet();
+        engine = &PR00FsUltimateRenderingEngine::createAndGet();
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         tm = &engine->getTextureManager();
         tm->SetLazyInstancingEnabled(false);
@@ -173,7 +173,7 @@ protected:
     }
 
 private:
-    PR00FsReducedRenderingEngine* engine;
+    PR00FsUltimateRenderingEngine* engine;
     PureTextureManager* tm;
     PureTexture* tex128x128x24;
     PureTexture* tex128x128x32opaque,

@@ -1,7 +1,7 @@
 /*
     ###################################################################################
     PureAxisAlignedBoundingBox.cpp
-    This file is part of Pure.
+    This file is part of PURE.
     PureAxisAlignedBoundingBox class.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com

@@ -1,7 +1,7 @@
 /*
     ###################################################################################
     PureFiledManager.cpp
-    This file is part of Pure.
+    This file is part of PURE.
     PureFiledManager and PureFiledManaged classes.
     Manager loading from / saving to a file.
     Managed loaded from / saved to a file.

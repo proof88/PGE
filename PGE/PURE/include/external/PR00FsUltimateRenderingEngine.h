@@ -2,10 +2,10 @@
 
 /*
     ###################################################################################
-    PR00FsReducedRenderingEngine.h
+    PR00FsUltimateRenderingEngine.h
     This file is part of Pure.
     External header.
-    PR00F's Reduced Rendering Engine
+    PR00F's Ultimate Rendering Engine
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
@@ -42,14 +42,14 @@ enum TPURE_RENDERER
     This initializes the engine.
 */
 
-class PR00FsReducedRenderingEngine
+class PR00FsUltimateRenderingEngine
 {
 #ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
-#pragma message("  PR00FsReducedRenderingEngine is included")
+#pragma message("  PR00FsUltimateRenderingEngine is included")
 #endif
 
 public:
-    static PR00FsReducedRenderingEngine& createAndGet();    /**< Creates and gets the singleton implementation instance. */
+    static PR00FsUltimateRenderingEngine& createAndGet();    /**< Creates and gets the singleton implementation instance. */
 
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
@@ -88,4 +88,4 @@ public:
 
     virtual void                 CopyScreenToTexture(PureTexture& tex) = 0;  /**< Copies screen content to texture. */
   
-}; // class PR00FsReducedRenderingEngine
+}; // class PR00FsUltimateRenderingEngine

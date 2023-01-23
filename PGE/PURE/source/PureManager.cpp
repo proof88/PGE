@@ -1,7 +1,7 @@
 /*
     ###################################################################################
     PureManager.cpp
-    This file is part of Pure.
+    This file is part of PURE.
     Ancestor classes for manager and managed classes.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com

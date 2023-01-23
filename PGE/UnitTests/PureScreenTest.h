@@ -12,7 +12,7 @@
 #include "UnitTest.h"  // PCH
 #include "../Pure/include/external/Display/PureScreen.h"
 #include "../Pure/include/external/Display/PureWindow.h"
-#include "../Pure/include/external/PR00FsReducedRenderingEngine.h"
+#include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
 
 #ifndef E
 #define E 0.0001f
@@ -96,7 +96,7 @@ protected:
 private:
     PureScreen& scr;
     PureWindow& wnd;
-    PR00FsReducedRenderingEngine* engine;
+    PR00FsUltimateRenderingEngine* engine;
     bool screensvrOrig;
     bool monitorpwrOrig;
     bool standbyOrig;
@@ -382,7 +382,7 @@ private:
 
     bool testSetVSyncEnabled2()
     {
-        engine = &PR00FsReducedRenderingEngine::createAndGet();
+        engine = &PR00FsUltimateRenderingEngine::createAndGet();
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         
         scr.SetVSyncEnabled(true);
@@ -417,7 +417,7 @@ private:
 
     bool testSetFSAAlevel3()
     {
-        engine = &PR00FsReducedRenderingEngine::createAndGet();
+        engine = &PR00FsUltimateRenderingEngine::createAndGet();
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 2); // FSAA 2x
 
         const bool b1 = scr.isFSAAready();

@@ -3,7 +3,7 @@
 /*
     ###################################################################################
     PureHwVideoDiscoverOpenGLbase.h
-    This file is part of Pure.
+    This file is part of PURE.
     Internal header.
     Pure OpenGL capabilities base class.
     Made by PR00F88

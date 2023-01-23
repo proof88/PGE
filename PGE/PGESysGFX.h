@@ -12,7 +12,7 @@
 */
 
 #include "PGEallHeaders.h"
-#include "PURE/include/external/PR00FsReducedRenderingEngine.h"
+#include "PURE/include/external/PR00FsUltimateRenderingEngine.h"
 // #include "PURE/PURE.h"
 
 /**
@@ -35,7 +35,7 @@ public:
     bool destroySysGFX(void);
 
 private:
-    PR00FsReducedRenderingEngine& engine;
+    PR00FsUltimateRenderingEngine& engine;
 
     // ---------------------------------------------------------------------------
 

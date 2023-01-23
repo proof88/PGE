@@ -3,7 +3,7 @@
 /*
     ###################################################################################
     PureHwVideoDiscoverOpenGL_4_2.h
-    This file is part of Pure.
+    This file is part of PURE.
     Internal header.
     Pure OpenGL 4.2 capabilities class.
     Made by PR00F88
