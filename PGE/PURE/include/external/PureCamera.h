@@ -21,20 +21,20 @@
 /**
     What buffers to clear before rendering.
 */
-enum TPure_CLEAR_MODE
+enum TPURE_CLEAR_MODE
 {
-    Pure_CLEAR_ZBUFFER_COLORBUFFER,  /**< Clear both Z-Buffer and Color Buffer. */
-    Pure_CLEAR_ZBUFFER               /**< Clear Z-Buffer only. Faster. */
+    PURE_CLEAR_ZBUFFER_COLORBUFFER,  /**< Clear both Z-Buffer and Color Buffer. */
+    PURE_CLEAR_ZBUFFER               /**< Clear Z-Buffer only. Faster. */
 };
 
 
 /**
     Aspect ratio mode.
 */
-enum TPure_ASPECTRATIO_MODE
+enum TPURE_ASPECTRATIO_MODE
 {
-    Pure_AM_FIX,                     /**< Aspect ratio will be the set value. */
-    Pure_AM_DYNAMIC                  /**< Aspect ratio will be set by the viewport geometry. */
+    PURE_AM_FIX,                     /**< Aspect ratio will be the set value. */
+    PURE_AM_DYNAMIC                  /**< Aspect ratio will be set by the viewport geometry. */
 };
 
 
@@ -46,7 +46,7 @@ enum TPure_ASPECTRATIO_MODE
 class PureCamera : 
     public PurePosUpTarget
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureCamera is included")
 #endif
 
@@ -67,28 +67,28 @@ public:
 
     const TRECT& getViewport() const;           /**< Gets camera viewport. */
     void SetViewport(
-        TPureuint vx,
-        TPureuint vy,
-        TPureuint vsx,
-        TPureuint vsy);                         /**< Sets viewport position and size. */
+        TPureUInt vx,
+        TPureUInt vy,
+        TPureUInt vsx,
+        TPureUInt vsy);                         /**< Sets viewport position and size. */
 
-    TPurefloat getNearPlane() const;            /**< Gets camera near plane distance from eye position. */
-    void SetNearPlane(TPurefloat value);        /**< Sets camera near plane distance from eye position. */
+    TPureFloat getNearPlane() const;            /**< Gets camera near plane distance from eye position. */
+    void SetNearPlane(TPureFloat value);        /**< Sets camera near plane distance from eye position. */
 
-    TPurefloat getFarPlane() const;             /**< Gets camera far plane distance from eye position. */
-    void SetFarPlane(TPurefloat value);         /**< Sets camera far plane distance from eye position. */
+    TPureFloat getFarPlane() const;             /**< Gets camera far plane distance from eye position. */
+    void SetFarPlane(TPureFloat value);         /**< Sets camera far plane distance from eye position. */
 
-    TPurefloat getFieldOfView() const;          /**< Gets camera field of view angle on Y direction in degrees. */
-    void SetFieldOfView(TPurefloat value);      /**< Sets camera field of view angle on Y direction in degrees. */
+    TPureFloat getFieldOfView() const;          /**< Gets camera field of view angle on Y direction in degrees. */
+    void SetFieldOfView(TPureFloat value);      /**< Sets camera field of view angle on Y direction in degrees. */
 
-    TPurefloat getAspectRatio() const;          /**< Gets the camera's aspect ratio (usually viewport width / height). */
-    void SetAspectRatio(TPurefloat value);      /**< Sets the camera's aspect ratio (usually viewport width / height). */
+    TPureFloat getAspectRatio() const;          /**< Gets the camera's aspect ratio (usually viewport width / height). */
+    void SetAspectRatio(TPureFloat value);      /**< Sets the camera's aspect ratio (usually viewport width / height). */
 
-    TPure_CLEAR_MODE getClearMode() const;      /**< Gets clear mode. */
-    void SetClearMode(TPure_CLEAR_MODE mode);   /**< Sets clear mode. */
+    TPURE_CLEAR_MODE getClearMode() const;      /**< Gets clear mode. */
+    void SetClearMode(TPURE_CLEAR_MODE mode);   /**< Sets clear mode. */
 
-    TPure_ASPECTRATIO_MODE getAspectRatioMode() const;     /**< Gets aspect ratio mode. */
-    void SetAspectRatioMode(TPure_ASPECTRATIO_MODE mode);  /**< Sets aspect ratio mode. */
+    TPURE_ASPECTRATIO_MODE getAspectRatioMode() const;     /**< Gets aspect ratio mode. */
+    void SetAspectRatioMode(TPURE_ASPECTRATIO_MODE mode);  /**< Sets aspect ratio mode. */
 
     PureColor& getBackgroundColor();               /**< Gets camera background color. */
     const PureColor& getBackgroundColor() const;   /**< Gets camera background color. */

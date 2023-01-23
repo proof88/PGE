@@ -24,7 +24,7 @@
 */
 class PureIIncrementalRenderPipeline
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureIIncrementalRenderPipeline is included")
 #endif
 
@@ -32,30 +32,30 @@ public:
 
     virtual void GeometricStage(
         const TXYZ* pVertices,
-        TPureuint nVertices_h,
+        TPureUInt nVertices_h,
         bool bIndexed,
         const void* pVertexIndices,
-        TPureuint nVertexIndices_h,
+        TPureUInt nVertexIndices_h,
         unsigned int nIndicesType,
-        TPure_TRANSFORMED_VERTEX* pVerticesTransf,
+        TPURE_TRANSFORMED_VERTEX* pVerticesTransf,
         const TXYZ& pos,
         const TXYZ& rot,
         const TXYZ& scaling,
         const TXYZ& campos,
         const TXYZ& camrot,
-        TPureint vp_x,
-        TPureint vp_y,
-        TPureuint vp_w,
-        TPureuint vp_h
+        TPureInt vp_x,
+        TPureInt vp_y,
+        TPureUInt vp_w,
+        TPureUInt vp_h
     ) = 0;
 
     virtual void RenderStage(
-        TPureuint nVertexIndices_h,
-        TPure_TRANSFORMED_VERTEX* pVerticesTransf,
-        TPureint vp_x,
-        TPureint vp_y,
-        TPureuint vp_w,
-        TPureuint vp_h
+        TPureUInt nVertexIndices_h,
+        TPURE_TRANSFORMED_VERTEX* pVerticesTransf,
+        TPureInt vp_x,
+        TPureInt vp_y,
+        TPureUInt vp_w,
+        TPureUInt vp_h
     ) = 0;
 
 };

@@ -2,7 +2,7 @@
 
 /*
     ###################################################################################
-    PureuiText.h
+    PureUiText.h
     This file is part of PURE.
     Internal header.
     Pure User Interface Text class.
@@ -12,17 +12,17 @@
 */
 
 #include "../external/PureAllHeaders.h"
-#include "PureuiFontWin.h"
+#include "PureUiFontWin.h"
 #include "../external/Material/PureColor.h"
 
 
 /**
     Pure User Interface Text class.
 */
-class PureuiText
+class PureUiText
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
-#pragma message("  PureuiText is included")
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
+#pragma message("  PureUiText is included")
 #endif
 
 public:
@@ -32,13 +32,13 @@ public:
     // ---------------------------------------------------------------------------
 
  
-    PureuiText();
-    PureuiText(std::string text, int x, int y, PureuiFontWin& font);
+    PureUiText();
+    PureUiText(std::string text, int x, int y, PureUiFontWin& font);
 
-    PureuiText(const PureuiText& uiText);
-    PureuiText& operator=(const PureuiText& uiText);
+    PureUiText(const PureUiText& uiText);
+    PureUiText& operator=(const PureUiText& uiText);
 
-    virtual ~PureuiText();
+    virtual ~PureUiText();
 
     const std::string& getText() const;
 
@@ -59,7 +59,7 @@ public:
     bool getDropShadow() const;
     void SetDropShadow(bool value);
 
-    const PureuiFontWin* getFont() const;
+    const PureUiFontWin* getFont() const;
 
     const PureColor& getColor() const;
           PureColor& getColor();
@@ -80,7 +80,7 @@ private:
     bool bDelete;
     bool bPermanent;
     bool bDropShadow;
-    PureuiFontWin* uiFont;  // should be ptr, since uiFont instances should be unique managed by uimanager, this should point to there
+    PureUiFontWin* uiFont;  // should be ptr, since uiFont instances should be unique managed by uimanager, this should point to there
     PureColor clr;
 
     // ---------------------------------------------------------------------------

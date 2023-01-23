@@ -29,38 +29,38 @@ class PureImage::PureImageImpl
 public:
     virtual ~PureImageImpl();
     
-    TPureuint getWidth() const;          
-    TPureuint getHeight() const;          
-    TPureuint getBitsPerPixels() const;    
+    TPureUInt getWidth() const;          
+    TPureUInt getHeight() const;          
+    TPureUInt getBitsPerPixels() const;    
     
-    TPure_PIXEL_COMPONENT_ORDER
+    TPURE_PIXEL_COMPONENT_ORDER
         getPixelComponentOrder() const;          
-    TPure_PIXEL_COMPONENT_ORDER
+    TPURE_PIXEL_COMPONENT_ORDER
         getOriginalPixelComponentOrder() const;  
-	TPurebool
+	TPureBool
         setPixelComponentOrder(
-            TPure_PIXEL_COMPONENT_ORDER corder); 
+            TPURE_PIXEL_COMPONENT_ORDER corder); 
 
-    PureColor getPixel(TPureuint x, TPureuint y);       
-    PureColor getPixel(TPureuint x, TPureuint y) const;
+    PureColor getPixel(TPureUInt x, TPureUInt y);       
+    PureColor getPixel(TPureUInt x, TPureUInt y) const;
 
-    TPurebool setPixel(TPureuint x, TPureuint y,
-                  TPureubyte r, TPureubyte g, TPureubyte b,
-                  TPureubyte a = 0);                            
+    TPureBool setPixel(TPureUInt x, TPureUInt y,
+                  TPureUByte r, TPureUByte g, TPureUByte b,
+                  TPureUByte a = 0);                            
                              
-    TPurebool setPixel(TPureuint x, TPureuint y, PureColor clr);
+    TPureBool setPixel(TPureUInt x, TPureUInt y, PureColor clr);
 
-    TPurebool isChanged() const;         
+    TPureBool isChanged() const;         
 
-    const TPureubyte* getPixels() const;     
-    TPureubyte*       getPixels();           
-    TPureuint         getPixelsSize() const; 
+    const TPureUByte* getPixels() const;     
+    TPureUByte*       getPixels();           
+    TPureUInt         getPixelsSize() const; 
 
     virtual void FlushResources();          
     
-    virtual TPureuint getUsedSystemMemory() const;  
+    virtual TPureUInt getUsedSystemMemory() const;  
 
-    TPurebool cannibalize(PureImage& victim);
+    TPureBool cannibalize(PureImage& victim);
 
 protected:
 
@@ -68,15 +68,15 @@ protected:
 
 private:
 
-    static TPureuint nImagesTotal;
+    static TPureUInt nImagesTotal;
 
     // ---------------------------------------------------------------------------
 
-    static TPurebool setColorComponentsIndices(
-        TPurebyte& r,
-        TPurebyte& g,
-        TPurebyte& b,
-        TPurebyte& a,
+    static TPureBool setColorComponentsIndices(
+        TPureByte& r,
+        TPureByte& g,
+        TPureByte& b,
+        TPureByte& a,
         TPIXCOMPORD pxcord);  /**< Saves indices of the color components to the given params [-1 - 3]. */
 
     static TPIXCOMPORD getIntermediatePixelCompOrder(
@@ -86,15 +86,15 @@ private:
     // ---------------------------------------------------------------------------
 
     PureImage*  _pOwner;             /**< The owner public object who creates this pimpl object. */
-    TPureuint   nBits;               /**< Bit depth (number of color bits per pixel). */
-    TPureuint   nWidth;              /**< Width (pixel). */
-    TPureuint   nHeight;             /**< Height (pixel). */
+    TPureUInt   nBits;               /**< Bit depth (number of color bits per pixel). */
+    TPureUInt   nWidth;              /**< Width (pixel). */
+    TPureUInt   nHeight;             /**< Height (pixel). */
     TPIXCOMPORD clrCompOrderOrig;    /**< Original color component order: right after loading. */
     TPIXCOMPORD clrCompOrder;        /**< Actual color component order (swapColors(), setPixelComponentOrder() are changing it). */
-    TPurebool   bUpsideDown;         /**< True if the 1st row is the last row and the last row is the 1st row. */
-    TPurebool   bChanged;            /**< True if the pixel data has been changed since loading it from file. */
-    TPureubyte* pPixels;             /**< Array of pixels. */
-    TPureuint   nSizePixels;         /**< Size of array of pixels. */
+    TPureBool   bUpsideDown;         /**< True if the 1st row is the last row and the last row is the 1st row. */
+    TPureBool   bChanged;            /**< True if the pixel data has been changed since loading it from file. */
+    TPureUByte* pPixels;             /**< Array of pixels. */
+    TPureUInt   nSizePixels;         /**< Size of array of pixels. */
 
     // ---------------------------------------------------------------------------
 
@@ -102,37 +102,37 @@ private:
     PureImageImpl(const PureImageImpl&);
     PureImageImpl& operator=(const PureImageImpl&);
 
-    TPureuint getIndexToPixel(
-        TPureuint x, TPureuint y ) const;      /**< Gets the index in pPixels to the pixel at the given (x,y) coordinate. */
+    TPureUInt getIndexToPixel(
+        TPureUInt x, TPureUInt y ) const;      /**< Gets the index in pPixels to the pixel at the given (x,y) coordinate. */
     
-    TPurebool swapColors(
-        TPure_PIXEL_COMPONENT_ORDER from,
-        TPure_PIXEL_COMPONENT_ORDER to,
-        TPurebyte swapcount );                 /**< Transforms the color component order of the image to another. */
+    TPureBool swapColors(
+        TPURE_PIXEL_COMPONENT_ORDER from,
+        TPURE_PIXEL_COMPONENT_ORDER to,
+        TPureByte swapcount );                 /**< Transforms the color component order of the image to another. */
 
     bool initMembers(
-        TPureuint bits, TPureuint w, TPureuint h,
+        TPureUInt bits, TPureUInt w, TPureUInt h,
         TPIXCOMPORD clrCOrderOrig, TPIXCOMPORD clrCOrder,
-        TPurebool upsDown, TPurebool chngd,
-        TPureubyte* pxls, TPureuint npxls ); 
+        TPureBool upsDown, TPureBool chngd,
+        TPureUByte* pxls, TPureUInt npxls ); 
 
-    TPurebool  readBMP32pixels(HANDLE f);   /**< Used by readBMPpixels() for 32-bpp BMPs. */
+    TPureBool  readBMP32pixels(HANDLE f);   /**< Used by readBMPpixels() for 32-bpp BMPs. */
 
-    TPurebool  readBMP24pixels(HANDLE f);   /**< Used by readBMPpixels() for 24-bpp BMPs. */
+    TPureBool  readBMP24pixels(HANDLE f);   /**< Used by readBMPpixels() for 24-bpp BMPs. */
 
     unsigned char* readPaletteIndices(const HANDLE f);  /**< Reads palette indices from given file. */
 
-    TPurebool  readBMP8pixels(
+    TPureBool  readBMP8pixels(
         HANDLE f, const RGBQUAD* palette);     /**< Used by readBMPpixels() for 8-bpp BMPs. */
 
-    TPurebool  readBMP4pixels(
+    TPureBool  readBMP4pixels(
         HANDLE f, const RGBQUAD* palette);     /**< Used by readBMPpixels() for 4-bpp BMPs. */
 
-    TPurebool  readBMP1pixels(
+    TPureBool  readBMP1pixels(
         HANDLE f,
         const RGBQUAD* palette);               /**< Used by readBMPpixels() for 1-bpp BMPs. */
 
-    TPurebool  readBMPpixels(
+    TPureBool  readBMPpixels(
         HANDLE f,
         const RGBQUAD* palette,
         WORD nBitCount);                       /**< Reads pixels into memory in correct format. */

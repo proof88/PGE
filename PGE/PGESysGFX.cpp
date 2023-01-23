@@ -37,10 +37,10 @@ PGESysGFX::~PGESysGFX()
 
 
 bool PGESysGFX::initSysGFX(
-    unsigned int width, unsigned int height, TPure_DISPLAY_MODES dmode, unsigned int freq,
+    unsigned int width, unsigned int height, TPURE_DISPLAY_MODES dmode, unsigned int freq,
     int cdepth, int zdepth, int stencil, int samples )
 {
-    return ( engine.initialize( /*Pure_RENDERER_SW*/ Pure_RENDERER_HW_FP, width, height, dmode, freq, cdepth, zdepth, stencil, samples) == 0 );
+    return ( engine.initialize( /*PURE_RENDERER_SW*/ PURE_RENDERER_HW_FP, width, height, dmode, freq, cdepth, zdepth, stencil, samples) == 0 );
 } // initSysGFX()
 
 

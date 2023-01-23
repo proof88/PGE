@@ -24,7 +24,7 @@
 class PureHwVideoDiscoverOpenGL_1_2 :
     public PureHwVideoDiscoverOpenGLbase
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureHwVideoDiscoverOpenGL_1_2 is included")
 #endif
 
@@ -33,8 +33,8 @@ public:
         const std::string& sVidFeaturesOGL,
         const std::string& sVidFeaturesWGL,
         const std::string& sVidVersionOGL,
-        const TPureuint& nVidVersionGLSLmaj,
-        const TPureuint& nVidVersionGLSLmin) :
+        const TPureUInt& nVidVersionGLSLmaj,
+        const TPureUInt& nVidVersionGLSLmin) :
     PureHwVideoDiscoverOpenGLbase(
         sVidFeaturesOGL,
         sVidFeaturesWGL,
@@ -138,7 +138,7 @@ public:
         Gets whether uploading of native DIBs (BGRA) is supported or not.
         @return True if uploading of native DIBs (BGRA) is supported, otherwise false.
     */
-    TPurebool isNativeDIBFormatSupported() const
+    TPureBool isNativeDIBFormatSupported() const
     {
         return bSuppBGRAtex;
     } // isNativeDIBFormatSupported()
@@ -146,7 +146,7 @@ public:
     /**
         Gets whether DrawRangeElements is supported or not.
     */
-    TPurebool isDrawRangeElementsSupported() const
+    TPureBool isDrawRangeElementsSupported() const
     {
         return bSuppDrawRangeElements;
     } // isDrawRangeElementsSupported()
@@ -162,7 +162,7 @@ protected:
     PureHwVideoDiscoverOpenGL_1_2& operator=(const PureHwVideoDiscoverOpenGL_1_2&) { return *this; };
     
 private:
-    TPurebool bSuppBGRAtex;               /**< Is uploading textures in BGRA-format available? */
-    TPurebool bSuppDrawRangeElements;     /**< Is DrawRangeElements supported? */
+    TPureBool bSuppBGRAtex;               /**< Is uploading textures in BGRA-format available? */
+    TPureBool bSuppDrawRangeElements;     /**< Is DrawRangeElements supported? */
 
 };

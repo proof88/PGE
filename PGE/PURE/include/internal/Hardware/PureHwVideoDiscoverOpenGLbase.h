@@ -29,12 +29,12 @@
 */
 class PureHwVideoDiscoverOpenGLbase
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureHwVideoDiscoverOpenGLbase is included")
 #endif
 
 public:
-    static TPurebool isExtensionSupported(
+    static TPureBool isExtensionSupported(
         const char* extname,
         const std::string& sVidFeaturesOGL,
         const std::string& sVidFeaturesWGL);   /**< Is the given extension supported? */
@@ -55,8 +55,8 @@ public:
         const std::string& sFtrsOGL,
         const std::string& sFtrsWGL,
         const std::string& sVerOGL,
-        const TPureuint& nVidVerGLSLmaj,
-        const TPureuint& nVidVerGLSLmin);
+        const TPureUInt& nVidVerGLSLmaj,
+        const TPureUInt& nVidVerGLSLmin);
 
     virtual ~PureHwVideoDiscoverOpenGLbase();
 
@@ -67,8 +67,8 @@ public:
     virtual bool discoverOpenGLavailability() = 0;
 
 protected:
-    const TPureuint& nVidVersionGLSLmaj;  /**< GLSL major version. */
-    const TPureuint& nVidVersionGLSLmin;  /**< GLSL minor version. */
+    const TPureUInt& nVidVersionGLSLmaj;  /**< GLSL major version. */
+    const TPureUInt& nVidVersionGLSLmin;  /**< GLSL minor version. */
 
     GLint   tmpRet[6];                    /**< Hold for glGetInteger...() results. */
     GLfloat tmpRetf[2];                   /**< Hold for glGetFloat...() results. */
@@ -78,7 +78,7 @@ protected:
     PureHwVideoDiscoverOpenGLbase(const PureHwVideoDiscoverOpenGLbase&);
     PureHwVideoDiscoverOpenGLbase& operator=(const PureHwVideoDiscoverOpenGLbase&);
 
-    TPurebool isExtensionSupported(const char* extname) const;   /**< Is the given extension supported? */
+    TPureBool isExtensionSupported(const char* extname) const;   /**< Is the given extension supported? */
 
     bool printExtensionSupported(const char* title, const char* name, std::vector<void*>& functions);
 

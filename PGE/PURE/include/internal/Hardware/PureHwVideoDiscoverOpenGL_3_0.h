@@ -21,7 +21,7 @@
 class PureHwVideoDiscoverOpenGL_3_0 :
     public PureHwVideoDiscoverOpenGLbase
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureHwVideoDiscoverOpenGL_3_0 is included")
 #endif
 
@@ -30,8 +30,8 @@ public:
         const std::string& sVidFeaturesOGL,
         const std::string& sVidFeaturesWGL,
         const std::string& sVidVersionOGL,
-        const TPureuint& nVidVersionGLSLmaj,
-        const TPureuint& nVidVersionGLSLmin) :
+        const TPureUInt& nVidVersionGLSLmaj,
+        const TPureUInt& nVidVersionGLSLmin) :
     PureHwVideoDiscoverOpenGLbase(
         sVidFeaturesOGL,
         sVidFeaturesWGL,
@@ -268,7 +268,7 @@ public:
         Gets whether Red-Green compression is supported or not.
         @return True if Red-Green compression is supported, otherwise false.
     */
-    TPurebool isRGTCSupported() const
+    TPureBool isRGTCSupported() const
     {
         return bSuppRGTC;
     } // isRGTCSupported()
@@ -283,6 +283,6 @@ protected:
     PureHwVideoDiscoverOpenGL_3_0& operator=(const PureHwVideoDiscoverOpenGL_3_0&) { return *this; };
 
 private:
-    TPurebool bSuppRGTC;                  /**< Is Red-Green compression supported? */
+    TPureBool bSuppRGTC;                  /**< Is Red-Green compression supported? */
     
 };

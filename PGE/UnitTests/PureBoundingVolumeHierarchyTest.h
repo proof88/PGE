@@ -38,7 +38,7 @@ protected:
         if ( engine == NULL )
         {
             engine = &PR00FsReducedRenderingEngine::createAndGet();
-            ret &= assertEquals((TPureuint)0, engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
+            ret &= assertEquals((TPureUInt)0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
             om = &engine->getObject3DManager();
             ret &= assertNotNull(om, "om null");
         }
@@ -81,8 +81,8 @@ private:
         return assertEquals(1.0f, tree.getPos().getX(), "pos.x") &
         assertEquals(2.0f, tree.getPos().getY(), "pos.y") &
         assertEquals(3.0f, tree.getPos().getZ(), "pos.z") &
-        assertEquals((TPureuint)3, tree.getMaxDepthLevel(), "max depth level") &
-        assertEquals((TPureuint)0, tree.getDepthLevel(), "root node depth level") &
+        assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
+        assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
         assertEquals(1000.0f, tree.getSize(), "size") &
         assertEquals(PureOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
         assertEquals((std::size_t)0, tree.getChildren().size(), "children") &

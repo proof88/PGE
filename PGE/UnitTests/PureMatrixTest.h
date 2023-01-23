@@ -110,13 +110,13 @@ private:
 
     bool testCtorNotableZero()
     {
-        const PureMatrix mat(Pure_MATRIX_ZERO);
+        const PureMatrix mat(PURE_MATRIX_ZERO);
         return assertTrue(mat.isZero());
     }
 
     bool testCtorNotableIdentity()
     {
-        const PureMatrix mat(Pure_MATRIX_IDENTITY);
+        const PureMatrix mat(PURE_MATRIX_IDENTITY);
         return assertTrue(mat.isIdentity());
     }
 
@@ -178,7 +178,7 @@ private:
 
     bool testIsZero()
     {
-        PureMatrix mat(Pure_MATRIX_ZERO);
+        PureMatrix mat(PURE_MATRIX_ZERO);
         return assertTrue(mat.isZero());
     }
 
@@ -194,7 +194,7 @@ private:
 
     bool testIsIdentity()
     {
-        const PureMatrix mat(Pure_MATRIX_IDENTITY);
+        const PureMatrix mat(PURE_MATRIX_IDENTITY);
         return assertTrue(mat.isIdentity());
     }
 
@@ -239,7 +239,7 @@ private:
         mattransposed.Transpose();
 
         return assertNotNull(mat.getTransposed(), "not NULL") &
-            assertTrue(0 == memcmp(mat.getTransposed(), mattransposed.get(), sizeof(TPurefloat)*4*4), "memcmp");
+            assertTrue(0 == memcmp(mat.getTransposed(), mattransposed.get(), sizeof(TPureFloat)*4*4), "memcmp");
     }
 
     bool getDeterminantOfIdentity()
@@ -277,7 +277,7 @@ private:
         mat.Set(2,0,  9);  mat.Set(2,1, 10);  mat.Set(2,2, 11);  mat.Set(2,3, 12);
         mat.Set(3,0, 13);  mat.Set(3,1, 14);  mat.Set(3,2, 15);  mat.Set(3,3, 16);
 
-        const TPurefloat det = mat.getDeterminant();
+        const TPureFloat det = mat.getDeterminant();
 
         mat.Transpose();
 
@@ -329,7 +329,7 @@ private:
         PureMatrix mat;
         mat.SetIdentity();
 
-        const TPurefloat det = mat.getDeterminant();
+        const TPureFloat det = mat.getDeterminant();
         const bool b1 = mat.invert();
 
         return assertEquals(1/det, mat.getDeterminant(), E, "det" ) &
@@ -342,7 +342,7 @@ private:
         PureMatrix mat;
         mat.SetZero();
 
-        const TPurefloat det = mat.getDeterminant();
+        const TPureFloat det = mat.getDeterminant();
         const bool b1 = mat.invert();
 
         return assertEquals(det, mat.getDeterminant(), E, "det" ) &
@@ -359,7 +359,7 @@ private:
         mat.Set(3,0, 13);  mat.Set(3,1, 14);  mat.Set(3,2, 15);  mat.Set(3,3, 16);
         const PureMatrix mat2 = mat;
 
-        const TPurefloat det = mat.getDeterminant();
+        const TPureFloat det = mat.getDeterminant();
         const bool b1 = mat.invert();
 
         return assertEquals(det, mat.getDeterminant(), E, "det" ) &
@@ -376,7 +376,7 @@ private:
         mat.Set(3,0,  6);  mat.Set(3,1,  2);  mat.Set(3,2,  2);  mat.Set(3,3,  1);
         const PureMatrix mat2 = mat;
 
-        const TPurefloat det = mat.getDeterminant();
+        const TPureFloat det = mat.getDeterminant();
         const bool b1 = mat.invert();
         const PureMatrix ident = mat*mat2;
 
@@ -408,7 +408,7 @@ private:
         mat.SetIdentity();
         matinverted = mat;
         const bool b1 = matinverted.invert();
-        const TPurefloat* p = mat.getInverse();
+        const TPureFloat* p = mat.getInverse();
 
         return assertNotNull(p, "not NULL") &
             assertTrue(b1, "invert") &
@@ -437,7 +437,7 @@ private:
         mat.SetZero();
         matinverted = mat;
         const bool b1 = matinverted.invert();
-        const TPurefloat* p = mat.getInverse();
+        const TPureFloat* p = mat.getInverse();
 
         return assertNull(p, "NULL") &
             assertFalse(b1, "invert");
@@ -453,7 +453,7 @@ private:
         matinverted = mat;
 
         const bool b1 = matinverted.invert();
-        const TPurefloat* p = mat.getInverse();
+        const TPureFloat* p = mat.getInverse();
 
         return assertNull(p, "NULL") &
             assertTrue(matinverted == mat, "matinverted == mat") &
@@ -470,7 +470,7 @@ private:
         matinverted = mat;
 
         const bool b1 = matinverted.invert();
-        const TPurefloat* p = mat.getInverse();
+        const TPureFloat* p = mat.getInverse();
 
         return assertNotNull(p, "not NULL") &
             assertTrue(b1, "invert") &

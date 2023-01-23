@@ -14,7 +14,7 @@
 #include "PGEallHeaders.h"
 #include <string>
 #include "../../CConsole/CConsole/src/CConsole.h"
-#include "Pure/include/external/PR00FsReducedRenderingEngine.h"
+#include "PURE/include/external/PR00FsReducedRenderingEngine.h"
 #include "PGEInputHandler.h"
 #include "PGEWorld.h"
 // TODO: add "Audio/soloud-RELEASE_20200207/include/" to project include dirs, do not use that path here!

@@ -29,11 +29,11 @@
 /**
     Which renderer to be used.
 */
-enum TPure_RENDERER
+enum TPURE_RENDERER
 {
-    Pure_RENDERER_SW,      /**< Software renderer. */
-    Pure_RENDERER_HW_FP    /**< Hardware renderer. */
-}; // TPure_RENDERER
+    PURE_RENDERER_SW,      /**< Software renderer. */
+    PURE_RENDERER_HW_FP    /**< Hardware renderer. */
+}; // TPURE_RENDERER
 
 
 /**
@@ -44,7 +44,7 @@ enum TPure_RENDERER
 
 class PR00FsReducedRenderingEngine
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PR00FsReducedRenderingEngine is included")
 #endif
 
@@ -57,16 +57,16 @@ public:
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
-    virtual TPureuint initialize(
-        TPure_RENDERER rndr,
-        TPureuint width, TPureuint height,
-        TPure_DISPLAY_MODES dmode,
-        TPureuint freq, TPureint cdepth,
-        TPureint zdepth, TPureint stencil,
-        TPureint samples,
+    virtual TPureUInt initialize(
+        TPURE_RENDERER rndr,
+        TPureUInt width, TPureUInt height,
+        TPURE_DISPLAY_MODES dmode,
+        TPureUInt freq, TPureInt cdepth,
+        TPureInt zdepth, TPureInt stencil,
+        TPureInt samples,
         HWND window = NULL) = 0;                            /**< Initializes the engine. */
-    virtual TPurebool shutdown() = 0;                       /**< This stops the engine. */
-    virtual TPurebool isInitialized() const = 0;            /**< Gets the state of the engine. */
+    virtual TPureBool shutdown() = 0;                       /**< This stops the engine. */
+    virtual TPureBool isInitialized() const = 0;            /**< Gets the state of the engine. */
     
     virtual PureScreen&          getScreen() const = 0;           /**< Get access to screen manipulation functions. */
     virtual PureWindow&          getWindow() const = 0;           /**< Get access to window manipulation functions. */
@@ -79,12 +79,12 @@ public:
     virtual PureCamera&          getCamera() const = 0;           /**< Get access to camera handler functions. */
     virtual PureUiManager&       getUImanager() const = 0;        /**< Get access to user interface functions. */
     virtual PureIRenderer*       getRenderer() const = 0;         /**< Get access to the selected renderer. */
-    virtual void                 ShowGuiDemo(TPurebool state) = 0;
+    virtual void                 ShowGuiDemo(TPureBool state) = 0;
 
     virtual void                 WriteList() const = 0;           /**< Invoke WriteList() of all children instances. */
 
-    virtual TPurebool getAutoWriteStatsAtShutdown() const = 0;           /**< Checks if invoke of WriteStats() would happen at the beginning of shutdown(). */
-    virtual void      SetAutoWriteStatsAtShutdown(TPurebool state) = 0;  /**< Sets if invoke of WriteStats() should happen at the beginning of shutdown(). */
+    virtual TPureBool getAutoWriteStatsAtShutdown() const = 0;           /**< Checks if invoke of WriteStats() would happen at the beginning of shutdown(). */
+    virtual void      SetAutoWriteStatsAtShutdown(TPureBool state) = 0;  /**< Sets if invoke of WriteStats() should happen at the beginning of shutdown(). */
 
     virtual void                 CopyScreenToTexture(PureTexture& tex) = 0;  /**< Copies screen content to texture. */
   

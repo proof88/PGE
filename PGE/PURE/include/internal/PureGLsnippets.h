@@ -22,7 +22,7 @@
 */
 class PureGLsnippets
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureGLsnippets is included")
 #endif
 
@@ -30,23 +30,23 @@ public:
 
     static void        Init();                              /**< Initialize static class instance. */
     static const char* getGLErrorTextFromEnum(GLenum err);  /**< Gets the string representation of the given GL error. */
-    static TPurebool   isGLErrorPresent();                  /**< Gets whether there is an error in OpenGL or not. */
+    static TPureBool   isGLErrorPresent();                  /**< Gets whether there is an error in OpenGL or not. */
     static GLenum      getLastSavedGLError();               /**< Gets the last saved GL error. */
     static void        ClearGLError();                      /**< Clears GL error state. */
 
-    static TPureuint getSizeofIndexType(GLenum iType);                                           /**< Returns the size in Bytes of the given OpenGL index type. */
-    static TPureuint getVertexIndex(const void* arr, TPureuint index, GLenum iType);             /**< Returns arr[index] element from the given array of iType type elements. */
-    static TPurebool setVertexIndex(void* arr, TPureuint index, TPureuint value, GLenum iType);  /**< Sets arr[index] element of the given array of iType type elements to value. */
+    static TPureUInt getSizeofIndexType(GLenum iType);                                           /**< Returns the size in Bytes of the given OpenGL index type. */
+    static TPureUInt getVertexIndex(const void* arr, TPureUInt index, GLenum iType);             /**< Returns arr[index] element from the given array of iType type elements. */
+    static TPureBool setVertexIndex(void* arr, TPureUInt index, TPureUInt value, GLenum iType);  /**< Sets arr[index] element of the given array of iType type elements to value. */
 
-    static void      SetGLBoundingBoxRendering(TPurebool state);                                 /**< Sets GL states up for bounding box rendering or resets them. */
+    static void      SetGLBoundingBoxRendering(TPureBool state);                                 /**< Sets GL states up for bounding box rendering or resets them. */
     static void      glPrepareBeforeDrawBoundingBox();
-    static void      SetZPassRendering(TPurebool state);
+    static void      SetZPassRendering(TPureBool state);
 
-    static TPure_BLENDFACTOR getPureBlendFromGLBlend(GLenum glb);                               /**< Gets the appropriate Pure blend factor for the given GL enum. */
-    static GLenum            getGLBlendFromPureBlend(TPure_BLENDFACTOR bf);                     /**< Gets the appropriate GL enum for the given Pure blend factor. */
+    static TPURE_BLENDFACTOR getPureBlendFromGLBlend(GLenum glb);                               /**< Gets the appropriate Pure blend factor for the given GL enum. */
+    static GLenum            getGLBlendFromPureBlend(TPURE_BLENDFACTOR bf);                     /**< Gets the appropriate GL enum for the given Pure blend factor. */
     
-    static void      glLoadTextureIntoTMU(const PureTexture* tex, TPureuint iTMU, TPurebool bSticked);  /**< Loads the given texture into the texture mapping unit. */
-    static void      glLoadTexturesAndSetBlendState(const PureMaterial* mat, TPurebool bObjLevel1Sticked, TPurebool bObjLevel1Blended);       /**< Loads all textures into texture mapping units and sets blending if needed for single-pass multitexturing. */
+    static void      glLoadTextureIntoTMU(const PureTexture* tex, TPureUInt iTMU, TPureBool bSticked);  /**< Loads the given texture into the texture mapping unit. */
+    static void      glLoadTexturesAndSetBlendState(const PureMaterial* mat, TPureBool bObjLevel1Sticked, TPureBool bObjLevel1Blended);       /**< Loads all textures into texture mapping units and sets blending if needed for single-pass multitexturing. */
 
 private:
     static const char* const GL_ERR_STR_NO_ERROR;

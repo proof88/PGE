@@ -20,55 +20,55 @@ class PureTexture::PureTextureImpl
 
 public:
     /** Gets the Pure iso texture filtering value that corresponds to the given GL enum value. */
-    static TPure_ISO_TEX_FILTERING   getPureisoTexFilteringNameFromGLname(GLenum value);
+    static TPURE_ISO_TEX_FILTERING   getPureisoTexFilteringNameFromGLname(GLenum value);
     /** Gets the GL enum value that corresponds to the given Pure iso texture filtering value. */
-    static GLenum                    getGLnameFromPureisoTexFilteringName(TPure_ISO_TEX_FILTERING value);
+    static GLenum                    getGLnameFromPureisoTexFilteringName(TPURE_ISO_TEX_FILTERING value);
 
     /** Gets the Pure texture wrapping mode value that corresponds to the given GL enum value. */
-    static TPure_TEX_WRAPPING getPuretexWrappingNameFromGLname(GLenum value);
+    static TPURE_TEX_WRAPPING getPuretexWrappingNameFromGLname(GLenum value);
     /** Gets the GL enum value that corresponds to the given Pure texture wrapping mode value. */
-    static GLenum             getGLnameFromPuretexWrappingName(TPure_TEX_WRAPPING value);
+    static GLenum             getGLnameFromPuretexWrappingName(TPURE_TEX_WRAPPING value);
 
     // ---------------------------------------------------------------------------  
 
     virtual ~PureTextureImpl();
     
-    TPure_TEX_FORMAT getInternalFormat() const;   
+    TPURE_TEX_FORMAT getInternalFormat() const;   
     GLuint           getInternalNum() const;       
     
-    TPure_ISO_TEX_FILTERING getMinFilteringMode() const;  
-    TPure_ISO_TEX_FILTERING getMagFilteringMode() const;  
-    TPurebool setMinFilteringMode(TPure_ISO_TEX_FILTERING filtering);  
-    TPurebool setMagFilteringMode(TPure_ISO_TEX_FILTERING filtering);  
-    TPurebool setIsoFilteringMode(TPure_ISO_TEX_FILTERING minfilter,
-        TPure_ISO_TEX_FILTERING magfilter);                       
+    TPURE_ISO_TEX_FILTERING getMinFilteringMode() const;  
+    TPURE_ISO_TEX_FILTERING getMagFilteringMode() const;  
+    TPureBool setMinFilteringMode(TPURE_ISO_TEX_FILTERING filtering);  
+    TPureBool setMagFilteringMode(TPURE_ISO_TEX_FILTERING filtering);  
+    TPureBool setIsoFilteringMode(TPURE_ISO_TEX_FILTERING minfilter,
+        TPURE_ISO_TEX_FILTERING magfilter);                       
 
-    TPureuint getMIPmapCount() const;               
+    TPureUInt getMIPmapCount() const;               
 
-    TPure_ANISO_TEX_FILTERING
+    TPURE_ANISO_TEX_FILTERING
         getAnisoFilteringMode() const;              
-    TPurebool
+    TPureBool
         setAnisoFilteringMode(
-            TPure_ANISO_TEX_FILTERING filtering); 
+            TPURE_ANISO_TEX_FILTERING filtering); 
 
-    TPure_TEX_WRAPPING
+    TPURE_TEX_WRAPPING
         getTextureWrappingModeS() const;
-    TPure_TEX_WRAPPING
+    TPURE_TEX_WRAPPING
         getTextureWrappingModeT() const;
-    TPurebool
+    TPureBool
         setTextureWrappingMode(
-            TPure_TEX_WRAPPING tw_s,
-            TPure_TEX_WRAPPING tw_t );
+            TPURE_TEX_WRAPPING tw_s,
+            TPURE_TEX_WRAPPING tw_t );
 
-    TPurebool        getBorder() const;
-    TPurebool        setBorder(TPurebool state);
+    TPureBool        getBorder() const;
+    TPureBool        setBorder(TPureBool state);
     const PureColor& getBorderColor() const;
-    TPurebool        setBorderColor(const PureColor& clr);
+    TPureBool        setBorderColor(const PureColor& clr);
 
-    TPurebool uploadPixels();                             
+    TPureBool uploadPixels();                             
     
-    virtual TPureuint getUsedSystemMemory() const;   
-    TPureuint         getUsedTextureMemory() const;  
+    virtual TPureUInt getUsedSystemMemory() const;   
+    TPureUInt         getUsedTextureMemory() const;  
 
 protected:
 
@@ -78,17 +78,17 @@ private:
 
     PureTexture*  _pOwner;                 /**< The owner public object who creates this pimpl object. */
 
-    TPureuint nSize;                       /**< Amount of VRAM allocated (considering compression, MIP mapping, etc...). */
-    TPure_TEX_FORMAT texFormat;            /**< Texture format. */
-    TPure_ISO_TEX_FILTERING   filtIsoMin;  /**< Isotropic filtering mode when zooming out (1 texel < 1 pixel). */
-    TPure_ISO_TEX_FILTERING   filtIsoMag;  /**< Isotropic filtering mode when zooming in (1 texel > 1 pixel). */
-    TPure_ANISO_TEX_FILTERING filtAniso;   /**< Anisotropic filtering mode. */
+    TPureUInt nSize;                       /**< Amount of VRAM allocated (considering compression, MIP mapping, etc...). */
+    TPURE_TEX_FORMAT texFormat;            /**< Texture format. */
+    TPURE_ISO_TEX_FILTERING   filtIsoMin;  /**< Isotropic filtering mode when zooming out (1 texel < 1 pixel). */
+    TPURE_ISO_TEX_FILTERING   filtIsoMag;  /**< Isotropic filtering mode when zooming in (1 texel > 1 pixel). */
+    TPURE_ANISO_TEX_FILTERING filtAniso;   /**< Anisotropic filtering mode. */
     GLuint    nInternalNum;                /**< OpenGL texture ID. */
-    TPureuint nMIPmapCount;                /**< Number of MIP maps (>0). */
-    TPure_TEX_COMPRESSION_MODE texCompr;   /**< Texture compression mode. */
-    TPurebool bBorder;                     /**< Texture has border or not. */
+    TPureUInt nMIPmapCount;                /**< Number of MIP maps (>0). */
+    TPURE_TEX_COMPRESSION_MODE texCompr;   /**< Texture compression mode. */
+    TPureBool bBorder;                     /**< Texture has border or not. */
     PureColor clrBorder;                   /**< Texture border color. Black by default. */
-    TPure_TEX_WRAPPING twS, twT;           /**< Texture wrapping mode for S- and T- texture coordinates. */
+    TPURE_TEX_WRAPPING twS, twT;           /**< Texture wrapping mode for S- and T- texture coordinates. */
 
     // ---------------------------------------------------------------------------
 
@@ -103,9 +103,9 @@ private:
     PureTextureImpl& operator=(const PureTextureImpl&);
 
     GLenum getTransformedSourceFormat(
-        TPure_PIXEL_COMPONENT_ORDER oldco );    /**< Transforms to a proper pixel component order and returns the source format. */
+        TPURE_PIXEL_COMPONENT_ORDER oldco );    /**< Transforms to a proper pixel component order and returns the source format. */
     GLint  getTargetInternalFormat();           /**< Figures out the target internal format. */
-    TPurebool actualUploadProc(
+    TPureBool actualUploadProc(
         GLint internalfmt, GLenum glTexFormat); /**< This contains the actual pixel upload code. */
     void   DescribeTexFormatAndSize(
         GLint internalfmt);                     /**< Updates texFormat and nSize members based on given internalfmt. */

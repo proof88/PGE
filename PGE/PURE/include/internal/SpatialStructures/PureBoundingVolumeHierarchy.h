@@ -29,7 +29,7 @@
 */
 class PureBoundingVolumeHierarchy : public PureOctree
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureBoundingVolumeHierarchy is included")
 #endif
 
@@ -37,7 +37,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    PureBoundingVolumeHierarchy(const PureVector& pos, TPurefloat size, TPureuint maxDepthLevel, TPureuint currentDepthLevel);
+    PureBoundingVolumeHierarchy(const PureVector& pos, TPureFloat size, TPureUInt maxDepthLevel, TPureUInt currentDepthLevel);
     virtual ~PureBoundingVolumeHierarchy();
 
     // yes, this is valid: overriding base method with a return type derived from the original return type: called as "covariant return type"
@@ -55,7 +55,7 @@ protected:
     PureBoundingVolumeHierarchy(const PureBoundingVolumeHierarchy&);
     PureBoundingVolumeHierarchy& operator=(const PureBoundingVolumeHierarchy&);
 
-    virtual TPurebool subdivide(); // override
+    virtual TPureBool subdivide(); // override
 
 private:
 

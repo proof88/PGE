@@ -21,7 +21,7 @@
 class PureHwVideoDiscoverOpenGL_3_3 :
     public PureHwVideoDiscoverOpenGLbase
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureHwVideoDiscoverOpenGL_3_3 is included")
 #endif
 
@@ -30,8 +30,8 @@ public:
         const std::string& sVidFeaturesOGL,
         const std::string& sVidFeaturesWGL,
         const std::string& sVidVersionOGL,
-        const TPureuint& nVidVersionGLSLmaj,
-        const TPureuint& nVidVersionGLSLmin) :
+        const TPureUInt& nVidVersionGLSLmaj,
+        const TPureUInt& nVidVersionGLSLmin) :
     PureHwVideoDiscoverOpenGLbase(
         sVidFeaturesOGL,
         sVidFeaturesWGL,
@@ -162,7 +162,7 @@ public:
         @param isRegularHwOcclusionQueryAvailable True if the original HW occlusion query functionality is supported.
                Higher-level logic has the correct value when it invokes this function.
     */
-    void DiscoverBooleanHwOcclusionQueryAvailability(TPurebool isRegularHwOcclusionQueryAvailable)
+    void DiscoverBooleanHwOcclusionQueryAvailability(TPureBool isRegularHwOcclusionQueryAvailable)
     {
         if ( bSuppBooleanOcclusionQuery )
         {
@@ -184,7 +184,7 @@ public:
         Gets whether boolean (true/false) HW occlusion query is supported or not.
         @return True if boolean (true/false) HW occlusion query is supported, otherwise false.
     */
-    TPurebool isBooleanOcclusionQuerySupported() const
+    TPureBool isBooleanOcclusionQuerySupported() const
     {
         return bSuppBooleanOcclusionQuery;
     } // isOcclusionQuerySupported()
@@ -200,6 +200,6 @@ protected:
 
 private:
 
-    TPurebool bSuppBooleanOcclusionQuery;        /**< Is true/false HW occlusion query supported? */
+    TPureBool bSuppBooleanOcclusionQuery;        /**< Is true/false HW occlusion query supported? */
     
 };

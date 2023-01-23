@@ -49,18 +49,18 @@ public:
     Bullet(
         PR00FsReducedRenderingEngine& gfx,
         pge_network::PgeNetworkConnectionHandle connHandle,
-        TPurefloat wpn_px, TPurefloat wpn_py, TPurefloat wpn_pz,
-        TPurefloat wpn_ax, TPurefloat wpn_ay, TPurefloat wpn_az,
-        TPurefloat sx, TPurefloat sy, TPurefloat sz,
-        TPurefloat speed, TPurefloat gravity, TPurefloat drag, TPurebool fragile, int nDamageHp);
+        TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
+        TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
+        TPureFloat sx, TPureFloat sy, TPureFloat sz,
+        TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile, int nDamageHp);
     
     /** Ctor to be used by PGE client instance: bullet id as received from server. */
     Bullet(
         PR00FsReducedRenderingEngine& gfx,
         Bullet::BulletId id,
-        TPurefloat wpn_px, TPurefloat wpn_py, TPurefloat wpn_pz,
-        TPurefloat wpn_ax, TPurefloat wpn_ay, TPurefloat wpn_az,
-        TPurefloat sx, TPurefloat sy, TPurefloat sz);
+        TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
+        TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
+        TPureFloat sx, TPureFloat sy, TPureFloat sz);
     
     virtual ~Bullet();
 
@@ -70,10 +70,10 @@ public:
 
     pge_network::PgeNetworkConnectionHandle getOwner() const;
 
-    TPurefloat getSpeed() const;
-    TPurefloat getGravity() const;
-    TPurefloat getDrag() const;
-    TPurebool isFragile() const;
+    TPureFloat getSpeed() const;
+    TPureFloat getGravity() const;
+    TPureFloat getDrag() const;
+    TPureBool isFragile() const;
     int getDamageHp() const;
 
     void Update();
@@ -128,10 +128,10 @@ private:
     PR00FsReducedRenderingEngine& m_gfx;
     pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this bullet. Used by PGE server instance only. */
     PurePosUpTarget m_put;                                 /**< PUT to calculate next position. Used by PGE server instance only. */
-    TPurefloat m_speed;                                    /**< Speed as defined by weapon file. Used by PGE server instance only. */
-    TPurefloat m_gravity;                                  /**< Gravity as defined by weapon file. Used by PGE server instance only. */
-    TPurefloat m_drag;                                     /**< Drag as defined by weapon file. Used by PGE server instance only. */
-    TPurebool m_fragile;                                   /**< Fragile flag as defined by weapon file. Used by PGE server instance only. */
+    TPureFloat m_speed;                                    /**< Speed as defined by weapon file. Used by PGE server instance only. */
+    TPureFloat m_gravity;                                  /**< Gravity as defined by weapon file. Used by PGE server instance only. */
+    TPureFloat m_drag;                                     /**< Drag as defined by weapon file. Used by PGE server instance only. */
+    TPureBool m_fragile;                                   /**< Fragile flag as defined by weapon file. Used by PGE server instance only. */
     int m_nDamageHp;                                       /**< Damage to HP as defined by weapon file. Used by PGE server instance only. */
 
     PureObject3D* m_obj;                                   /**< Associated Pure object to be rendered. Used by PGE server and client instances. */
@@ -180,27 +180,27 @@ public:
     PureObject3D& getObject3D();                        /**< Returns the graphical object entity associated to this weapon object. */
     const PureObject3D& getObject3D() const;            /**< Returns the graphical object entity associated to this weapon object. */
     void UpdatePosition(const PureVector& playerPos);   /**< Updates the graphical object entity associated to this weapon object. */
-    void UpdatePositions(const PureVector& playerPos, TPurefloat fAngleY, TPurefloat fAngleZ);  /**< Updates the graphical object entity associated to this weapon object. */
+    void UpdatePositions(const PureVector& playerPos, TPureFloat fAngleY, TPureFloat fAngleZ);  /**< Updates the graphical object entity associated to this weapon object. */
     void UpdatePositions(const PureVector& playerPos, const PureVector& targetPos2D);           /**< Updates the graphical object entity associated to this weapon object. */
 
     const FiringMode& getCurrentFiringMode() const;  /**< Returns the current firing mode of the weapon. */
 
-    TPureuint getUnmagBulletCount() const;      /**< Returns the "unmag" bullet count of this weapon. */
-    void SetUnmagBulletCount(TPureuint count);  /**< Sets the "unmag" bullet count of this weapon. */
+    TPureUInt getUnmagBulletCount() const;      /**< Returns the "unmag" bullet count of this weapon. */
+    void SetUnmagBulletCount(TPureUInt count);  /**< Sets the "unmag" bullet count of this weapon. */
 
-    TPureuint getMagBulletCount() const;        /**< Returns the "mag" bullet count of this weapon. */
-    void SetMagBulletCount(TPureuint count);    /**< Sets the "mag" bullet count of this weapon. */
+    TPureUInt getMagBulletCount() const;        /**< Returns the "mag" bullet count of this weapon. */
+    void SetMagBulletCount(TPureUInt count);    /**< Sets the "mag" bullet count of this weapon. */
 
     bool canIncBulletCount() const;             /**< Returns if we can add more bullets for this weapon. */
-    void IncBulletCount(TPureuint count);       /**< Adds more bullets for this weapon. */
+    void IncBulletCount(TPureUInt count);       /**< Adds more bullets for this weapon. */
 
     const pge_network::PgeNetworkConnectionHandle& getOwner() const;      /**< Returns the player associated with this weapon. */
     void SetOwner(const pge_network::PgeNetworkConnectionHandle& owner);  /**< Sets the player associated with this weapon. */
 
     bool update();                     /**< Updates the weapon based on the time elapsed since last call to this function.*/
     State getState() const;            /**< Returns the current state of the weapon. */
-    TPurebool reload();                /**< Reloads the weapon i.e. moves some "unmag" bullets into "mag" bullet count. */
-    TPurebool pullTrigger();           /**< Pulls the trigger of the weapon, which might result in shooting the weapon. */
+    TPureBool reload();                /**< Reloads the weapon i.e. moves some "unmag" bullets into "mag" bullet count. */
+    TPureBool pullTrigger();           /**< Pulls the trigger of the weapon, which might result in shooting the weapon. */
     void releaseTrigger();             /**< Releases the trigger of the weapon. */
     bool isTriggerReleased() const;    /**< Returns the state of the trigger. */
 
@@ -235,7 +235,7 @@ public:
         {
             // set blending only when texture is available, otherwise object might not be visible at all
             m_obj->getMaterial().setTexture(wpntex);
-            m_obj->getMaterial(false).setBlendFuncs(Pure_SRC_ALPHA, Pure_ONE);
+            m_obj->getMaterial(false).setBlendFuncs(PURE_SRC_ALPHA, PURE_ONE);
         }
     }
 
@@ -265,7 +265,7 @@ public:
         {
             // set blending only when texture is available, otherwise object might not be visible at all
             m_obj->getMaterial().setTexture(wpntex);
-            m_obj->getMaterial(false).setBlendFuncs(Pure_SRC_ALPHA, Pure_ONE);
+            m_obj->getMaterial(false).setBlendFuncs(PURE_SRC_ALPHA, PURE_ONE);
         }
 
         return *this;
@@ -287,9 +287,9 @@ private:
     PureObject3D* m_obj;
     State m_state;                                     /**< State as calculated and updated by PGE server instance. */
     FiringMode m_firingMode;                           /**< Current firing mode, something between getVars("firing_mode_def") and getVars("firing_mode_max"). */
-    TPureuint m_nUnmagBulletCount;                     /**< Spare bullets not loaded into weapon. Should be managed by PGE server instance. */
-    TPureuint m_nMagBulletCount;                       /**< Bullets loaded into weapon. Even if weapon is not reloadable. Should be managed by PGE server instance. */
-    TPureuint m_nBulletsToReload;                      /**< Only updated during reload() / Update(). Should be managed by PGE server instance. */
+    TPureUInt m_nUnmagBulletCount;                     /**< Spare bullets not loaded into weapon. Should be managed by PGE server instance. */
+    TPureUInt m_nMagBulletCount;                       /**< Bullets loaded into weapon. Even if weapon is not reloadable. Should be managed by PGE server instance. */
+    TPureUInt m_nBulletsToReload;                      /**< Only updated during reload() / Update(). Should be managed by PGE server instance. */
     PFL::timeval m_timeReloadStarted;                  /**< Only updated during reload() / Update(). Should be managed by PGE server instance. */
     PFL::timeval m_timeLastShot;                       /**< Only updated during pullTrigger() / Update(). Should be managed by PGE server instance. */
     bool m_bAvailable;                                 /**< Flag for the game, e.g. if true then the player has this weapon. */

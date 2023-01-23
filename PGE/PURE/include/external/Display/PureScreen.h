@@ -25,12 +25,12 @@
 /**
     What pixelformat to be set.
 */
-enum TPure_SCREEN_PF
+enum TPURE_SCREEN_PF
 {
-    Pure_SCREEN_PF_SIMPLE,      /**< Simple pixelformat for usual HW-accelerated rendering. */
-    Pure_SCREEN_PF_ADVANCED,    /**< Advanced HW-accelerated pixelformat with e.g. MSAA support. */
-    Pure_SCREEN_PF_NONE         /**< No need to set pixelformat, i.e. software rendering is used. */
-}; // TPure_SCREEN_PF
+    PURE_SCREEN_PF_SIMPLE,      /**< Simple pixelformat for usual HW-accelerated rendering. */
+    PURE_SCREEN_PF_ADVANCED,    /**< Advanced HW-accelerated pixelformat with e.g. MSAA support. */
+    PURE_SCREEN_PF_NONE         /**< No need to set pixelformat, i.e. software rendering is used. */
+}; // TPURE_SCREEN_PF
 
 
 /**
@@ -39,7 +39,7 @@ enum TPure_SCREEN_PF
 */
 class PureScreen
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureScreen is included")
 #endif
 
@@ -70,7 +70,7 @@ public:
 
         @return True if succeeds, false on error.
     */
-    virtual TPurebool applyDisplaySettings(HDC dc, TPure_SCREEN_PF pixelFormat = Pure_SCREEN_PF_SIMPLE) = 0;
+    virtual TPureBool applyDisplaySettings(HDC dc, TPURE_SCREEN_PF pixelFormat = PURE_SCREEN_PF_SIMPLE) = 0;
 
 
     /**
@@ -83,7 +83,7 @@ public:
     /**
         Gets whether display settings are applied.
     */
-    virtual TPurebool isInitialized() const = 0;
+    virtual TPureBool isInitialized() const = 0;
 
 
     /**
@@ -92,7 +92,7 @@ public:
 
         @return The horizontal display resolution in pixels.
     */
-    virtual TPureuint getResWidth() const = 0;
+    virtual TPureUInt getResWidth() const = 0;
 
 
     /**
@@ -101,7 +101,7 @@ public:
 
         @return The vertical display resolution in pixels.
     */
-    virtual TPureuint getResHeight() const = 0;
+    virtual TPureUInt getResHeight() const = 0;
 
 
     /**
@@ -111,14 +111,14 @@ public:
         If the current screen resolution can't be queried, the target will be 800x600.
         A call to applyDisplaySettings() is needed to apply the stored display resolution.
     */
-    virtual void SetResolution(TPureuint w, TPureuint h) = 0;
+    virtual void SetResolution(TPureUInt w, TPureUInt h) = 0;
 
 
     /**
         Gets whether we wanted fullscreen or not.
         @return True, if we wanted fullscreen mode, otherwise false.
     */
-    virtual TPurebool isFullScreened() const = 0;
+    virtual TPureBool isFullScreened() const = 0;
 
 
     /**
@@ -126,7 +126,7 @@ public:
         Can be used only before applyDisplaySettings(), no effect otherwise.
         A call to applyDisplaySettings() is needed to apply the setting.
     */
-    virtual void SetFullScreened(TPurebool fs) = 0;
+    virtual void SetFullScreened(TPureBool fs) = 0;
 
 
     /**
@@ -135,7 +135,7 @@ public:
         @return 0 or the stored value, if called before a successful applyDisplaySettings(), otherwise
                 the finally selected refreshrate after a successful applyDisplaySettings().
     */
-    virtual TPureuint getFreq() const = 0;
+    virtual TPureUInt getFreq() const = 0;
 
 
     /**
@@ -143,7 +143,7 @@ public:
         Can be used only before applyDisplaySettings(), no effect otherwise.
         The stored display refresh rate will be applied only in fullscreen mode by a successful applyDisplaySettings().
     */
-    virtual void SetFreq(TPureuint f) = 0;
+    virtual void SetFreq(TPureUInt f) = 0;
 
 
     /**
@@ -152,7 +152,7 @@ public:
                 The stored value after SetColorBits() and before applyDisplaySettings().
                 The finally selected value after a successful applyDisplaySettings().
     */
-    virtual TPureint getColorBits() const = 0;
+    virtual TPureInt getColorBits() const = 0;
 
 
     /**
@@ -160,7 +160,7 @@ public:
         Can be used only before applyDisplaySettings(), no effect otherwise.
         A call to applyDisplaySettings() is needed to apply the setting.
     */
-    virtual void SetColorBits(TPureint c) = 0;
+    virtual void SetColorBits(TPureInt c) = 0;
 
 
     /**
@@ -171,7 +171,7 @@ public:
                 The finally selected value after a successful applyDisplaySettings(). This value maybe lower than the needed value because
                 the engine automatically tries to apply a lower value if the needed value is not supported by the driver.
     */
-    virtual TPureint getDepthBits() const = 0;
+    virtual TPureInt getDepthBits() const = 0;
 
 
     /**
@@ -179,7 +179,7 @@ public:
         Can be used only before applyDisplaySettings(), no effect otherwise.
         A call to applyDisplaySettings() is needed to apply the setting.
     */
-    virtual void SetDepthBits(TPureint d) = 0;
+    virtual void SetDepthBits(TPureInt d) = 0;
 
 
     /**
@@ -189,7 +189,7 @@ public:
                 The stored value after SetStencilBits() and before applyDisplaySettings().
                 The finally selected value after a successful applyDisplaySettings().
     */
-    virtual TPureint getStencilBits() const = 0;
+    virtual TPureInt getStencilBits() const = 0;
 
 
     /**
@@ -197,7 +197,7 @@ public:
         Can be used only before applyDisplaySettings(), no effect otherwise.
         A call to applyDisplaySettings() is needed to apply the setting.
     */
-    virtual void SetStencilBits(TPureint s) = 0;
+    virtual void SetStencilBits(TPureInt s) = 0;
 
 
     /**
@@ -206,14 +206,14 @@ public:
 
         @return True if screensaver is allowed, false otherwise. 
     */
-    virtual TPurebool isScreensaverEnabled() const = 0;
+    virtual TPureBool isScreensaverEnabled() const = 0;
 
 
     /**
         Sets whether the screensaver is allowed or not while the engine is running.
         Disabled by default.
     */
-    virtual void SetScreensaverEnabled(TPurebool state) = 0;
+    virtual void SetScreensaverEnabled(TPureBool state) = 0;
 
 
     /**
@@ -222,14 +222,14 @@ public:
 
         @return True if monitor power saving is allowed, false otherwise.
     */
-    virtual TPurebool isMonitorPowersaveEnabled() const = 0;
+    virtual TPureBool isMonitorPowersaveEnabled() const = 0;
 
 
     /**
         Sets whether monitor power saving is allowed or not while the engine is running.
         Enabled by default.
     */
-    virtual void SetMonitorPowersaveEnabled(TPurebool state) = 0;
+    virtual void SetMonitorPowersaveEnabled(TPureBool state) = 0;
 
 
     /**
@@ -238,28 +238,28 @@ public:
 
         @return True if computer standy is allowed, false otherwise.
     */
-    virtual TPurebool isStandbyEnabled() const = 0;
+    virtual TPureBool isStandbyEnabled() const = 0;
 
 
     /**
         Sets whether computer standy is allowed or not while the engine is running.
         Disabled by default.
     */
-    virtual void SetStandbyEnabled(TPurebool state) = 0;
+    virtual void SetStandbyEnabled(TPureBool state) = 0;
 
 
     /**
         Gets whether the engine is ready to use FSAA.
         @return True if FSAA can be used, false otherwise. 
     */
-    virtual TPurebool isFSAAready() const = 0;
+    virtual TPureBool isFSAAready() const = 0;
 
 
     /**
         Gets the actual FSAA-level. Default value is 0.
         @return The actual FSAA-value, 0 means no FSAA.
     */
-    virtual TPureint getFSAAlevel() const = 0;
+    virtual TPureInt getFSAAlevel() const = 0;
 
 
     /**
@@ -267,7 +267,7 @@ public:
         Can be used only before applyDisplaySettings(), no effect otherwise.
         A call to applyDisplaySettings() is needed to apply the setting.
     */
-    virtual void SetFSAAlevel(TPureint level) = 0;
+    virtual void SetFSAAlevel(TPureInt level) = 0;
 
 
     /**
@@ -276,7 +276,7 @@ public:
 
         @return True if VSync is currently enabled, otherwise false.
     */
-    virtual TPurebool isVSyncEnabled() const = 0;
+    virtual TPureBool isVSyncEnabled() const = 0;
 
 
     /**
@@ -284,7 +284,7 @@ public:
         Default state is false.
         No effect if VSync is not supported.
     */
-    virtual void SetVSyncEnabled(TPurebool state) = 0;
+    virtual void SetVSyncEnabled(TPureBool state) = 0;
 
 
 }; // class PureScreen

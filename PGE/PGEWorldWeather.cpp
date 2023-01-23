@@ -12,7 +12,7 @@
 #include "PGEWorldWeather.h"
 #include "PGEincludes.h"
 #include "PGEpragmas.h"
-#include "Pure/include/external/Math/PureVector.h"
+#include "PURE/include/external/Math/PureVector.h"
 
 using namespace std;
 

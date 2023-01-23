@@ -21,7 +21,7 @@
 class PureHwVideoDiscoverOpenGL_1_5 :
     public PureHwVideoDiscoverOpenGLbase
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureHwVideoDiscoverOpenGL_1_5 is included")
 #endif
 
@@ -30,8 +30,8 @@ public:
         const std::string& sVidFeaturesOGL,
         const std::string& sVidFeaturesWGL,
         const std::string& sVidVersionOGL,
-        const TPureuint& nVidVersionGLSLmaj,
-        const TPureuint& nVidVersionGLSLmin) :
+        const TPureUInt& nVidVersionGLSLmaj,
+        const TPureUInt& nVidVersionGLSLmin) :
     PureHwVideoDiscoverOpenGLbase(
         sVidFeaturesOGL,
         sVidFeaturesWGL,
@@ -136,7 +136,7 @@ public:
         Gets whether Vertex Buffer Object is supported or not.
         @return True if Vertex Buffer Object is supported, otherwise false.
     */
-    TPurebool isVertexBufferObjectSupported() const
+    TPureBool isVertexBufferObjectSupported() const
     {
         return bSuppVertexBuffers;
     } // isVertexBufferObjectSupported()
@@ -145,7 +145,7 @@ public:
         Gets whether HW occlusion query is supported or not.
         @return True if HW occlusion query is supported, otherwise false.
     */
-    TPurebool isOcclusionQuerySupported() const
+    TPureBool isOcclusionQuerySupported() const
     {
         return bSuppOcclusionQuery;
     } // isOcclusionQuerySupported()
@@ -161,7 +161,7 @@ protected:
     PureHwVideoDiscoverOpenGL_1_5& operator=(const PureHwVideoDiscoverOpenGL_1_5&) { return *this; };
 
 private:
-    TPurebool bSuppVertexBuffers;         /**< Is Vertex Buffer Object supported? */
-    TPurebool bSuppOcclusionQuery;        /**< Is HW occlusion query supported? */
+    TPureBool bSuppVertexBuffers;         /**< Is Vertex Buffer Object supported? */
+    TPureBool bSuppOcclusionQuery;        /**< Is HW occlusion query supported? */
     
 };

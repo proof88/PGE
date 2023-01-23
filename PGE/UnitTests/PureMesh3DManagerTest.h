@@ -59,7 +59,7 @@ protected:
         if ( engine == NULL )
         {
             engine = &PR00FsReducedRenderingEngine::createAndGet();
-            ret &= assertEquals((TPureuint)0, engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
+            ret &= assertEquals((TPureUInt)0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
             mm = &engine->getMesh3DManager();
             ret &= assertNotNull(mm, "mm null");
         }
@@ -139,7 +139,7 @@ private:
         // This snail object is from legacy proofps project, so its subobject names contain texture file names as well,
         // so that related textures can be auto-loaded. We do NOT expect texture increase here, because Mesh stuff
         // doesn't care about textures. Object3DManager may care about autoloading them.
-        const TPureint nTexturesBeforeLoad = engine->getTextureManager().getCount();
+        const TPureInt nTexturesBeforeLoad = engine->getTextureManager().getCount();
 
         const PureMesh3D* const obj = mm->createFromFile("_res/models/snail_proofps/snail.obj");
 

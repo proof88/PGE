@@ -97,7 +97,7 @@ protected:
         if ( engine == NULL )
         {
             engine = &PR00FsReducedRenderingEngine::createAndGet();
-            ret = (0 == engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0));  // pretty standard display mode, should work on most systems
+            ret = (0 == engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0));  // pretty standard display mode, should work on most systems
         }
         return ret;
     }
@@ -149,14 +149,14 @@ private:
     {
         hw.Deinitialize();
         const bool l = assertFalse(video.isInitialized(), "isInitialized()") &
-            assertEquals((TPureuint) 0, video.getUsedVideoMemory(), "getUsedVideoMemory()") &
-            assertEquals((TPureuint) 0, video.getUsedTextureMemory(), "getUsedTextureMemory()") &
-            assertEquals((TPureuint) 0, video.getColorBufferPixelCount(), "getColorBufferPixelCount()") &
-            assertEquals((TPureuint) 0, video.getColorBufferSize(), "getColorBufferSize()") &
-            assertEquals((TPureuint) 0, video.getDepthBufferSize(), "getDepthBufferSize()") &
-            assertEquals((TPureuint) 0, video.getStencilBufferSize(), "getStencilBufferSize()") &
-            assertEquals((TPureuint) 0, video.getSampleBufferSize(), "getSampleBufferSize()") &
-            assertEquals((TPureuint) 0, video.getUsedFrameBufferMemory(), "getUsedFrameBufferMemory()") &
+            assertEquals((TPureUInt) 0, video.getUsedVideoMemory(), "getUsedVideoMemory()") &
+            assertEquals((TPureUInt) 0, video.getUsedTextureMemory(), "getUsedTextureMemory()") &
+            assertEquals((TPureUInt) 0, video.getColorBufferPixelCount(), "getColorBufferPixelCount()") &
+            assertEquals((TPureUInt) 0, video.getColorBufferSize(), "getColorBufferSize()") &
+            assertEquals((TPureUInt) 0, video.getDepthBufferSize(), "getDepthBufferSize()") &
+            assertEquals((TPureUInt) 0, video.getStencilBufferSize(), "getStencilBufferSize()") &
+            assertEquals((TPureUInt) 0, video.getSampleBufferSize(), "getSampleBufferSize()") &
+            assertEquals((TPureUInt) 0, video.getUsedFrameBufferMemory(), "getUsedFrameBufferMemory()") &
             assertFalse(video.isVSyncSupported(), "isVSyncSupported()") &
             assertFalse(video.isMultiTexturingSupported(), "isMultiTexturingSupported()") &
             assertEquals(0, video.getTextureUnitsCount(), "getTextureUnitsCount()") &
@@ -208,7 +208,7 @@ private:
 
     bool testGetUsedTextureMemory()
     {
-        return assertGequals(video.getUsedTextureMemory(), (TPureulong) 0);
+        return assertGequals(video.getUsedTextureMemory(), (TPureULong) 0);
     }
 
     bool testGetColorBufferPixelCount()
@@ -230,12 +230,12 @@ private:
 
     bool testGetStencilBufferSize()
     {
-        return assertEquals((TPureuint) 0, video.getStencilBufferSize());
+        return assertEquals((TPureUInt) 0, video.getStencilBufferSize());
     }
 
     bool testGetSampleBufferSize()
     {
-        return assertEquals((TPureuint) 0, video.getSampleBufferSize());
+        return assertEquals((TPureUInt) 0, video.getSampleBufferSize());
     }
     
     bool testGetUsedFrameBufferMemory()

@@ -51,7 +51,7 @@
 */
 class PureOctree
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureOctree is included")
 #endif
 
@@ -76,7 +76,7 @@ public:
         set named bits depending on where the child node is placed on each axis compared to its parent.
         Front means facing to camera, back means looking away from camera view.
     */
-    typedef TPureuint ChildIndex;
+    typedef TPureUInt ChildIndex;
 
     static const ChildIndex BIT_AXIS_Y;                             /**< Bit to set to TOP or BOTTOM. */
     static const ChildIndex BIT_AXIS_X;                             /**< Bit to set to LEFT or RIGHT. */
@@ -91,7 +91,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    PureOctree(const PureVector& pos, TPurefloat size, TPureuint maxDepthLevel, TPureuint currentDepthLevel);
+    PureOctree(const PureVector& pos, TPureFloat size, TPureUInt maxDepthLevel, TPureUInt currentDepthLevel);
     virtual ~PureOctree();
 
     ChildIndex calculateIndex(const PureVector& pos) const;         /**< Calculates child node index for the given position in the current node. */
@@ -99,13 +99,13 @@ public:
     virtual PureOctree* insertObject(const PureObject3D& obj);      /**< Inserts the given object in the octree. */
     // remove is not supported, since currently Octree is used for static objects, which are not being deleted,
     // only when the octree would need full rebuild anyway
-    //TPurebool removeObject(const PureObject3D& obj);              /**< Removes the given object from the octree. */
+    //TPureBool removeObject(const PureObject3D& obj);              /**< Removes the given object from the octree. */
     virtual const PureOctree* findObject(const PureObject3D& obj) const;  /**< Finds the given object in the octree. */
-    TPureuint getDepthLevel() const;                                /**< Gets the current depth level of the octree node. */
-    TPureuint getMaxDepthLevel() const;                             /**< Gets the maximum depth level of the octree node as it was specified in the constructor of the octree. */
+    TPureUInt getDepthLevel() const;                                /**< Gets the current depth level of the octree node. */
+    TPureUInt getMaxDepthLevel() const;                             /**< Gets the maximum depth level of the octree node as it was specified in the constructor of the octree. */
     NodeType getNodeType() const;                                   /**< Gets the type of the octree node which depends on if the node has any objects or children nodes. */
     const PureVector& getPos() const;                               /**< Gets the world-space position of the node as specified in the constructor. */
-    TPurefloat getSize() const;                                     /**< Gets the length of the side of the cube represented by this node as it was specified in the constructor. */
+    TPureFloat getSize() const;                                     /**< Gets the length of the side of the cube represented by this node as it was specified in the constructor. */
     const std::vector<PureOctree*>& getChildren() const;            /**< Gets the children nodes of this node. */
     const PureOctree* getParent() const;                            /**< Gets the parent node of this node. */
     const std::set<const PureObject3D*>& getObjects() const;        /**< Gets the stored objects of this node. */
@@ -123,15 +123,15 @@ protected:
     PureOctree& operator=(const PureOctree&);
 
     // virtual subdivide so derived can override by resizing vector with derived instances!
-    virtual TPurebool subdivide();
+    virtual TPureBool subdivide();
     void DeleteChildren();
 
 private:
 
     PureVector vPos;
-    TPurefloat fSize;
-    TPureuint nCurrentDepth;
-    TPureuint nMaxDepth;
+    TPureFloat fSize;
+    TPureUInt nCurrentDepth;
+    TPureUInt nMaxDepth;
     NodeType nodeType;
     std::set<const PureObject3D*> vObjects;
 

@@ -53,7 +53,7 @@ protected:
         if ( engine == NULL )
         {
             engine = &PR00FsReducedRenderingEngine::createAndGet();
-            ret = (0 == engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0));  // pretty standard display mode, should work on most systems
+            ret = (0 == engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0));  // pretty standard display mode, should work on most systems
         }
         return ret;
     }

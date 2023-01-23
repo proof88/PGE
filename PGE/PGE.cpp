@@ -10,7 +10,7 @@
     ###################################################################################
 */
 
-//#include "Pure/PurebaseIncludes.h"  // PCH
+//#include "PURE/PurebaseIncludes.h"  // PCH
 #include "PurebaseIncludes.h"
 
 #include <chrono>
@@ -25,8 +25,8 @@
 #include "Config/PGEcfgProfiles.h"
 #include "Weapons/WeaponManager.h"
 
-#include "Pure/include/external/Display/PureScreen.h"
-#include "Pure/include/external/Display/PureWindow.h"
+#include "PURE/include/external/Display/PureScreen.h"
+#include "PURE/include/external/Display/PureWindow.h"
 
 using namespace std;
 
@@ -709,9 +709,9 @@ int PGE::initializeGame()
     getConsole().OLnOI("Initializing Graphics ...");
     bool bGFXinit;
     if ( MessageBox(0, "Fullscreen?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES )
-        bGFXinit = p->SysGFX.initSysGFX(0, 0, Pure_FULLSCREEN, 0, 32, 24, 0, 0);
+        bGFXinit = p->SysGFX.initSysGFX(0, 0, PURE_FULLSCREEN, 0, 32, 24, 0, 0);
     else
-        bGFXinit = p->SysGFX.initSysGFX(1024, 768, Pure_WINDOWED, 0, 32, 24, 0, 0);
+        bGFXinit = p->SysGFX.initSysGFX(1024, 768, PURE_WINDOWED, 0, 32, 24, 0, 0);
 
     if ( !bGFXinit )
     {

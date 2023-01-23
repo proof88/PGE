@@ -50,7 +50,7 @@ protected:
         //CConsole::getConsoleInstance().SetLoggingState(PureObject3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureObject3D::getLoggerModuleName(), true);
         engine = &PR00FsReducedRenderingEngine::createAndGet();
-        engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
+        engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         om = &engine->getObject3DManager();
         obj = NULL;
         objFromFile = NULL;
@@ -250,7 +250,7 @@ private:
 
     bool testDtor()
     {
-        const TPureint objCount = om->getCount();
+        const TPureInt objCount = om->getCount();
 
         delete obj;
         obj = NULL;
@@ -304,33 +304,33 @@ private:
 
     bool testGetPrimitiveFormat()
     {
-        return assertEquals(Pure_PM_TRIANGLES, objFromFile->getPrimitiveFormat(), "objFromFile") &
-            assertEquals(Pure_PM_TRIANGLES, objFromFileCloned->getPrimitiveFormat(), "objFromFileCloned") &
-            assertEquals(Pure_PM_QUADS, obj->getPrimitiveFormat(), "obj") &
-            assertEquals(Pure_PM_QUADS, objCloned->getPrimitiveFormat(), "objCloned") &
-            assertEquals(Pure_PM_QUADS, objPlane->getPrimitiveFormat(), "plane") &
-            assertEquals(Pure_PM_QUADS, objBox->getPrimitiveFormat(), "box") &
-            assertEquals(Pure_PM_QUADS, objCube->getPrimitiveFormat(), "cube");
+        return assertEquals(PURE_PM_TRIANGLES, objFromFile->getPrimitiveFormat(), "objFromFile") &
+            assertEquals(PURE_PM_TRIANGLES, objFromFileCloned->getPrimitiveFormat(), "objFromFileCloned") &
+            assertEquals(PURE_PM_QUADS, obj->getPrimitiveFormat(), "obj") &
+            assertEquals(PURE_PM_QUADS, objCloned->getPrimitiveFormat(), "objCloned") &
+            assertEquals(PURE_PM_QUADS, objPlane->getPrimitiveFormat(), "plane") &
+            assertEquals(PURE_PM_QUADS, objBox->getPrimitiveFormat(), "box") &
+            assertEquals(PURE_PM_QUADS, objCube->getPrimitiveFormat(), "cube");
     }
 
     bool testGetVerticesCount()
     {
         // note: not testing cloned with getAttachedAt() and similar stuff is not overridden to handle cloned objects
-        TPureuint nVerticesCount = 0;
-        for (TPureint i = 0; i < objFromFile->getCount(); i++)
+        TPureUInt nVerticesCount = 0;
+        for (TPureInt i = 0; i < objFromFile->getCount(); i++)
         {
             nVerticesCount += ((PureObject3D*)objFromFile->getAttachedAt(i))->getVerticesCount();
         }
 
-        return assertEquals((TPureuint) 4, objPlane->getVerticesCount(), "plane") &
-            assertEquals((TPureuint) 24, objBox->getVerticesCount(), "box") &
-            assertEquals((TPureuint) 24, objCube->getVerticesCount(), "cube") &
+        return assertEquals((TPureUInt) 4, objPlane->getVerticesCount(), "plane") &
+            assertEquals((TPureUInt) 24, objBox->getVerticesCount(), "box") &
+            assertEquals((TPureUInt) 24, objCube->getVerticesCount(), "cube") &
             assertEquals(nVerticesCount, objFromFile->getVerticesCount(), "objFromFile") &
             assertEquals(nVerticesCount, objFromFileCloned->getVerticesCount(), "objFromFileCloned") &
             assertEquals(((PureObject3D*)objPlane->getAttachedAt(0))->getVerticesCount(), objPlane->getVerticesCount(), "plane 2") &
             assertEquals(((PureObject3D*)objBox->getAttachedAt(0))->getVerticesCount(), objBox->getVerticesCount(), "box 2") &
             assertEquals(((PureObject3D*)objCube->getAttachedAt(0))->getVerticesCount(), objCube->getVerticesCount(), "cube 2") &
-            assertEquals((TPureuint)144, ((PureObject3D*)objFromFile->getAttachedAt(0))->getVerticesCount(), "objFromFile 3");
+            assertEquals((TPureUInt)144, ((PureObject3D*)objFromFile->getAttachedAt(0))->getVerticesCount(), "objFromFile 3");
     }
 
     bool testGetVertices()
@@ -370,11 +370,11 @@ private:
     bool testGetMinVertexIndex()
     {
         // note: not testing cloned with getAttachedAt() and similar stuff is not overridden to handle cloned objects
-        return assertEquals((TPureuint)0, objPlane->getMinVertexIndex(), "plane") &
-            assertEquals((TPureuint)0, objBox->getMinVertexIndex(), "box") &
-            assertEquals((TPureuint)0, objCube->getMinVertexIndex(), "cube") &
-            assertEquals((TPureuint)UINT_MAX, objFromFile->getMinVertexIndex(), "objFromFile") &
-            assertEquals((TPureuint)UINT_MAX, objFromFileCloned->getMinVertexIndex(), "objFromFileCloned") &
+        return assertEquals((TPureUInt)0, objPlane->getMinVertexIndex(), "plane") &
+            assertEquals((TPureUInt)0, objBox->getMinVertexIndex(), "box") &
+            assertEquals((TPureUInt)0, objCube->getMinVertexIndex(), "cube") &
+            assertEquals((TPureUInt)UINT_MAX, objFromFile->getMinVertexIndex(), "objFromFile") &
+            assertEquals((TPureUInt)UINT_MAX, objFromFileCloned->getMinVertexIndex(), "objFromFileCloned") &
             /* doesn't matter if implicit access or not, if there is vertex or not, 0 is the expected anyway */
             assertEquals(((PureObject3D*)objPlane->getAttachedAt(0))->getMinVertexIndex(), objPlane->getMinVertexIndex(false), "plane sub noimplicit") &
             assertEquals(((PureObject3D*)objBox->getAttachedAt(0))->getMinVertexIndex(), objBox->getMinVertexIndex(false), "box sub noimplicit") &
@@ -383,47 +383,47 @@ private:
             assertEquals(((PureObject3D*)objPlane->getAttachedAt(0))->getMinVertexIndex(), objPlane->getMinVertexIndex(), "plane sub") &
             assertEquals(((PureObject3D*)objBox->getAttachedAt(0))->getMinVertexIndex(), objBox->getMinVertexIndex(), "box sub") &
             assertEquals(((PureObject3D*)objCube->getAttachedAt(0))->getMinVertexIndex(), objCube->getMinVertexIndex(), "cube sub") &
-            assertEquals((TPureuint) 0, ((PureObject3D*)objFromFile->getAttachedAt(0))->getMinVertexIndex(), "objFromFile sub");
+            assertEquals((TPureUInt) 0, ((PureObject3D*)objFromFile->getAttachedAt(0))->getMinVertexIndex(), "objFromFile sub");
     }
 
     bool testGetMaxVertexIndex()
     {
         // note: not testing cloned with getAttachedAt() and similar stuff is not overridden to handle cloned objects
-        return assertEquals((TPureuint)3, objPlane->getMaxVertexIndex(), "plane") &
-            assertEquals((TPureuint)23, objBox->getMaxVertexIndex(), "box") &
-            assertEquals((TPureuint)23, objCube->getMaxVertexIndex(), "cube") &
-            assertEquals((TPureuint)0, objFromFile->getMaxVertexIndex(), "objFromFile") &
-            assertEquals((TPureuint)0, objFromFileCloned->getMaxVertexIndex(), "objFromFileCloned") &
-            assertEquals((TPureuint)0, objPlane->getMaxVertexIndex(false), "plane noimplicit") &
-            assertEquals((TPureuint)0, objBox->getMaxVertexIndex(false), "box noimplicit") &
-            assertEquals((TPureuint)0, objCube->getMaxVertexIndex(false), "cube noimplicit") &
-            assertEquals((TPureuint)0, objFromFile->getMaxVertexIndex(false), "objFromFile noimplicit") &
-            assertEquals((TPureuint)0, objFromFileCloned->getMaxVertexIndex(false), "objFromFileCloned noimplicit") &
-            assertEquals((TPureuint)3, ((PureObject3D*)objPlane->getAttachedAt(0))->getMaxVertexIndex(), "plane sub") &
-            assertEquals((TPureuint)23, ((PureObject3D*)objBox->getAttachedAt(0))->getMaxVertexIndex(), "box sub") &
-            assertEquals((TPureuint)23, ((PureObject3D*)objCube->getAttachedAt(0))->getMaxVertexIndex(), "cube sub") &
-            assertEquals((TPureuint)143, ((PureObject3D*)objFromFile->getAttachedAt(0))->getMaxVertexIndex(), "objFromFile sub");
+        return assertEquals((TPureUInt)3, objPlane->getMaxVertexIndex(), "plane") &
+            assertEquals((TPureUInt)23, objBox->getMaxVertexIndex(), "box") &
+            assertEquals((TPureUInt)23, objCube->getMaxVertexIndex(), "cube") &
+            assertEquals((TPureUInt)0, objFromFile->getMaxVertexIndex(), "objFromFile") &
+            assertEquals((TPureUInt)0, objFromFileCloned->getMaxVertexIndex(), "objFromFileCloned") &
+            assertEquals((TPureUInt)0, objPlane->getMaxVertexIndex(false), "plane noimplicit") &
+            assertEquals((TPureUInt)0, objBox->getMaxVertexIndex(false), "box noimplicit") &
+            assertEquals((TPureUInt)0, objCube->getMaxVertexIndex(false), "cube noimplicit") &
+            assertEquals((TPureUInt)0, objFromFile->getMaxVertexIndex(false), "objFromFile noimplicit") &
+            assertEquals((TPureUInt)0, objFromFileCloned->getMaxVertexIndex(false), "objFromFileCloned noimplicit") &
+            assertEquals((TPureUInt)3, ((PureObject3D*)objPlane->getAttachedAt(0))->getMaxVertexIndex(), "plane sub") &
+            assertEquals((TPureUInt)23, ((PureObject3D*)objBox->getAttachedAt(0))->getMaxVertexIndex(), "box sub") &
+            assertEquals((TPureUInt)23, ((PureObject3D*)objCube->getAttachedAt(0))->getMaxVertexIndex(), "cube sub") &
+            assertEquals((TPureUInt)143, ((PureObject3D*)objFromFile->getAttachedAt(0))->getMaxVertexIndex(), "objFromFile sub");
     }
 
     bool testGetVertexIndicesCount()
     {
         // note: not testing cloned with getAttachedAt() and similar stuff is not overridden to handle cloned objects
 
-        TPureuint nVertexIndicesCount = 0;
-        for (TPureint i = 0; i < objFromFile->getCount(); i++)
+        TPureUInt nVertexIndicesCount = 0;
+        for (TPureInt i = 0; i < objFromFile->getCount(); i++)
         {
             nVertexIndicesCount += ((PureObject3D*)objFromFile->getAttachedAt(i))->getVertexIndicesCount();
         }
 
-        return assertEquals((TPureuint) 4, objPlane->getVertexIndicesCount(), "plane") &
-            assertEquals((TPureuint) 24, objBox->getVertexIndicesCount(), "box") &
-            assertEquals((TPureuint) 24, objCube->getVertexIndicesCount(), "cube") &
+        return assertEquals((TPureUInt) 4, objPlane->getVertexIndicesCount(), "plane") &
+            assertEquals((TPureUInt) 24, objBox->getVertexIndicesCount(), "box") &
+            assertEquals((TPureUInt) 24, objCube->getVertexIndicesCount(), "cube") &
             assertEquals(nVertexIndicesCount, objFromFile->getVertexIndicesCount(), "objFromFile") &
             assertEquals(nVertexIndicesCount, objFromFileCloned->getVertexIndicesCount(), "objFromFileCloned") &
             assertEquals(((PureObject3D*)objPlane->getAttachedAt(0))->getVertexIndicesCount(), objPlane->getVertexIndicesCount(), "plane 2") &
             assertEquals(((PureObject3D*)objBox->getAttachedAt(0))->getVertexIndicesCount(), objBox->getVertexIndicesCount(), "box 2") &
             assertEquals(((PureObject3D*)objCube->getAttachedAt(0))->getVertexIndicesCount(), objCube->getVertexIndicesCount(), "cube 2") &
-            assertEquals((TPureuint)144, ((PureObject3D*)objFromFile->getAttachedAt(0))->getVertexIndicesCount(), "objFromFile 3");
+            assertEquals((TPureUInt)144, ((PureObject3D*)objFromFile->getAttachedAt(0))->getVertexIndicesCount(), "objFromFile 3");
     }
 
     bool testGetVertexIndex()
@@ -433,51 +433,51 @@ private:
         // note: not testing cloned with getAttachedAt() and similar stuff is not overridden to handle cloned objects
         
         const PureObject3D& submeshPlane = * ((PureObject3D*) (objPlane->getAttachedAt(0)));
-        for (TPureuint i = 0; i < submeshPlane.getVertexIndicesCount(); i++)
+        for (TPureUInt i = 0; i < submeshPlane.getVertexIndicesCount(); i++)
         {
             b &= assertEquals(i, submeshPlane.getVertexIndex(i),
             (std::string("plane sub ") + std::to_string(i)).c_str());
             b &= assertEquals(i, objPlane->getVertexIndex(i),
             (std::string("plane implicit ") + std::to_string(i)).c_str());
             // here explicit should return 0 since objPlane is level-1 obj without own geometry
-            b &= assertEquals((TPureuint)0, objPlane->getVertexIndex(i, false),
+            b &= assertEquals((TPureUInt)0, objPlane->getVertexIndex(i, false),
             (std::string("plane explicit ") + std::to_string(i)).c_str());
         }
 
         const PureObject3D& submeshBox = * ((PureObject3D*) (objBox->getAttachedAt(0)));
-        for (TPureuint i = 0; i < submeshBox.getVertexIndicesCount(); i++)
+        for (TPureUInt i = 0; i < submeshBox.getVertexIndicesCount(); i++)
         {
             b &= assertEquals(i, submeshBox.getVertexIndex(i),
             (std::string("box sub ") + std::to_string(i)).c_str());
             b &= assertEquals(i, objBox->getVertexIndex(i),
             (std::string("box implicit ") + std::to_string(i)).c_str());
             // here explicit should return 0 since objBox is level-1 obj without own geometry
-            b &= assertEquals((TPureuint)0, objBox->getVertexIndex(i, false),
+            b &= assertEquals((TPureUInt)0, objBox->getVertexIndex(i, false),
             (std::string("box explicit ") + std::to_string(i)).c_str());
         }
 
         const PureObject3D& submeshCube = * ((PureObject3D*) (objCube->getAttachedAt(0)));
-        for (TPureuint i = 0; i < submeshCube.getVertexIndicesCount(); i++)
+        for (TPureUInt i = 0; i < submeshCube.getVertexIndicesCount(); i++)
         {
             b &= assertEquals(i, submeshCube.getVertexIndex(i),
             (std::string("cube sub ") + std::to_string(i)).c_str());
             b &= assertEquals(i, objCube->getVertexIndex(i),
             (std::string("cube implicit ") + std::to_string(i)).c_str());
             // here explicit should return 0 since objCube is level-1 obj without own geometry
-            b &= assertEquals((TPureuint)0, objCube->getVertexIndex(i, false),
+            b &= assertEquals((TPureUInt)0, objCube->getVertexIndex(i, false),
             (std::string("cube explicit ") + std::to_string(i)).c_str());
         }
 
         const PureObject3D& submeshFile = * ((PureObject3D*) (objFromFile->getAttachedAt(0)));
-        for (TPureuint i = 0; i < submeshFile.getVertexIndicesCount(); i++)
+        for (TPureUInt i = 0; i < submeshFile.getVertexIndicesCount(); i++)
         {
             b &= assertEquals(i, submeshFile.getVertexIndex(i),
             (std::string("objFromFile sub ") + std::to_string(i)).c_str());
             // here implicit should return 0 since submesh is not selected implicitly for multi-submesh objects!
-            b &= assertEquals((TPureuint)0, objFromFile->getVertexIndex(i),
+            b &= assertEquals((TPureUInt)0, objFromFile->getVertexIndex(i),
             (std::string("objFromFile implicit ") + std::to_string(i)).c_str());
             // here explicit should return 0 since objFromFile is level-1 obj without own geometry
-            b &= assertEquals((TPureuint)0, objFromFile->getVertexIndex(i, false),
+            b &= assertEquals((TPureUInt)0, objFromFile->getVertexIndex(i, false),
             (std::string("objFromFile explicit ") + std::to_string(i)).c_str());
         }
 
@@ -504,52 +504,52 @@ private:
 
     bool testGetFaceCount()
     {
-        return assertEquals((TPureuint)6, obj->getFaceCount(), "obj") &
-            assertEquals((TPureuint)728, objFromFile->getFaceCount(), "objFromFile") &
-            assertEquals((TPureuint)6, objCloned->getFaceCount(), "objCloned") &
-            assertEquals((TPureuint)728, objFromFileCloned->getFaceCount(), "objFromFileCloned");
+        return assertEquals((TPureUInt)6, obj->getFaceCount(), "obj") &
+            assertEquals((TPureUInt)728, objFromFile->getFaceCount(), "objFromFile") &
+            assertEquals((TPureUInt)6, objCloned->getFaceCount(), "objCloned") &
+            assertEquals((TPureUInt)728, objFromFileCloned->getFaceCount(), "objFromFileCloned");
     }
 
     bool testGetTriangleCount()
     {
-        return assertEquals((TPureuint)12, obj->getTriangleCount(), "obj") &
-            assertEquals((TPureuint)728, objFromFile->getTriangleCount(), "objFromFile") &
-            assertEquals((TPureuint)12, objCloned->getTriangleCount(), "objCloned") &
-            assertEquals((TPureuint)728, objFromFileCloned->getTriangleCount(), "objFromFileCloned");
+        return assertEquals((TPureUInt)12, obj->getTriangleCount(), "obj") &
+            assertEquals((TPureUInt)728, objFromFile->getTriangleCount(), "objFromFile") &
+            assertEquals((TPureUInt)12, objCloned->getTriangleCount(), "objCloned") &
+            assertEquals((TPureUInt)728, objFromFileCloned->getTriangleCount(), "objFromFileCloned");
     }
 
     bool testGetVertexModifyingHabit()
     {
-        const TPure_VERTEX_MODIFYING_HABIT originalVertexModifyingHabit = obj->getVertexModifyingHabit();
+        const TPURE_VERTEX_MODIFYING_HABIT originalVertexModifyingHabit = obj->getVertexModifyingHabit();
         // if we change the modifying habit of the referred object, cloned object returns the updated vertex modifying habit of the referred object
-        bool b = assertTrue(obj->setVertexModifyingHabit(Pure_VMOD_DYNAMIC), "set");
+        bool b = assertTrue(obj->setVertexModifyingHabit(PURE_VMOD_DYNAMIC), "set");
 
-        b &= assertEquals(Pure_VMOD_STATIC, originalVertexModifyingHabit, "obj original") &
-            assertEquals(Pure_VMOD_DYNAMIC, obj->getVertexModifyingHabit(), "obj") &
-            assertEquals(Pure_VMOD_DYNAMIC, objCloned->getVertexModifyingHabit(), "objCloned") &
-            assertEquals(Pure_VMOD_STATIC, objFromFile->getVertexModifyingHabit(), "objFromFile") &
-            assertEquals(Pure_VMOD_STATIC, objPlane->getVertexModifyingHabit(), "plane") &
-            assertEquals(Pure_VMOD_STATIC, objBox->getVertexModifyingHabit(), "box") &
-            assertEquals(Pure_VMOD_STATIC, objCube->getVertexModifyingHabit(), "cube");
+        b &= assertEquals(PURE_VMOD_STATIC, originalVertexModifyingHabit, "obj original") &
+            assertEquals(PURE_VMOD_DYNAMIC, obj->getVertexModifyingHabit(), "obj") &
+            assertEquals(PURE_VMOD_DYNAMIC, objCloned->getVertexModifyingHabit(), "objCloned") &
+            assertEquals(PURE_VMOD_STATIC, objFromFile->getVertexModifyingHabit(), "objFromFile") &
+            assertEquals(PURE_VMOD_STATIC, objPlane->getVertexModifyingHabit(), "plane") &
+            assertEquals(PURE_VMOD_STATIC, objBox->getVertexModifyingHabit(), "box") &
+            assertEquals(PURE_VMOD_STATIC, objCube->getVertexModifyingHabit(), "cube");
         
         return b;
     }
 
     bool testSetVertexModifyingHabit()
     {
-        bool b = assertTrue(objFromFile->setVertexModifyingHabit(Pure_VMOD_DYNAMIC), "set objFromFile");
-        b &= assertTrue(obj->setVertexModifyingHabit(Pure_VMOD_DYNAMIC), "set obj");
+        bool b = assertTrue(objFromFile->setVertexModifyingHabit(PURE_VMOD_DYNAMIC), "set objFromFile");
+        b &= assertTrue(obj->setVertexModifyingHabit(PURE_VMOD_DYNAMIC), "set obj");
 
         // subobjects must reject this when called by user
         PureObject3D* const subobj1Obj = (PureObject3D*)(obj->getAttachedAt(0));
-        b &= assertFalse(subobj1Obj->setVertexModifyingHabit( Pure_VMOD_STATIC ), "set subobj1Obj");
+        b &= assertFalse(subobj1Obj->setVertexModifyingHabit( PURE_VMOD_STATIC ), "set subobj1Obj");
 
         PureObject3D* const subobj1ObjFromFile = (PureObject3D*)(objFromFile->getAttachedAt(0));
-        b &= assertFalse(subobj1ObjFromFile->setVertexModifyingHabit( Pure_VMOD_STATIC ), "set subobj1FromFile");
+        b &= assertFalse(subobj1ObjFromFile->setVertexModifyingHabit( PURE_VMOD_STATIC ), "set subobj1FromFile");
 
         // cloned object must reject this in any case
-        b &= assertFalse(objCloned->setVertexModifyingHabit( Pure_VMOD_STATIC ), "set objCloned");
-        b &= assertFalse(objFromFileCloned->setVertexModifyingHabit( Pure_VMOD_STATIC ), "set objFromFileCloned");
+        b &= assertFalse(objCloned->setVertexModifyingHabit( PURE_VMOD_STATIC ), "set objCloned");
+        b &= assertFalse(objFromFileCloned->setVertexModifyingHabit( PURE_VMOD_STATIC ), "set objFromFileCloned");
 
         b &= assertTrue( PureVertexTransfer::isVertexModifyingDynamic(obj->getVertexTransferMode()), "obj" ) &
             assertTrue( PureVertexTransfer::isVertexModifyingDynamic(objFromFile->getVertexTransferMode()), "objFromFile" ) &
@@ -563,36 +563,36 @@ private:
 
     bool testGetVertexReferencingMode()
     {
-        const TPure_VERTEX_REFERENCING_MODE originalVertexRefMode = obj->getVertexReferencingMode();
+        const TPURE_VERTEX_REFERENCING_MODE originalVertexRefMode = obj->getVertexReferencingMode();
         // if we change the referencing mode of the referred object, cloned object returns the updated vertex referencing mode of the referred object
-        bool b = assertTrue(obj->setVertexReferencingMode(Pure_VREF_INDEXED), "set obj");
+        bool b = assertTrue(obj->setVertexReferencingMode(PURE_VREF_INDEXED), "set obj");
 
-        b &= assertEquals(Pure_VREF_DIRECT, originalVertexRefMode, "obj original") &
-            assertEquals(Pure_VREF_INDEXED, obj->getVertexReferencingMode(), "obj") &
-            assertEquals(Pure_VREF_INDEXED, objCloned->getVertexReferencingMode(), "objCloned") &
-            assertEquals(Pure_VREF_INDEXED, objFromFile->getVertexReferencingMode(), "objFromFile") &
-            assertEquals(Pure_VREF_DIRECT, objPlane->getVertexReferencingMode(), "plane") &
-            assertEquals(Pure_VREF_DIRECT, objBox->getVertexReferencingMode(), "box") &
-            assertEquals(Pure_VREF_DIRECT, objCube->getVertexReferencingMode(), "cube");
+        b &= assertEquals(PURE_VREF_DIRECT, originalVertexRefMode, "obj original") &
+            assertEquals(PURE_VREF_INDEXED, obj->getVertexReferencingMode(), "obj") &
+            assertEquals(PURE_VREF_INDEXED, objCloned->getVertexReferencingMode(), "objCloned") &
+            assertEquals(PURE_VREF_INDEXED, objFromFile->getVertexReferencingMode(), "objFromFile") &
+            assertEquals(PURE_VREF_DIRECT, objPlane->getVertexReferencingMode(), "plane") &
+            assertEquals(PURE_VREF_DIRECT, objBox->getVertexReferencingMode(), "box") &
+            assertEquals(PURE_VREF_DIRECT, objCube->getVertexReferencingMode(), "cube");
 
         return b;
     }
 
     bool testSetVertexReferencingMode()
     {
-        bool b = assertTrue(obj->setVertexReferencingMode(Pure_VREF_INDEXED), "set obj");
-        b &= assertTrue(objFromFile->setVertexReferencingMode(Pure_VREF_DIRECT), "set objFromFile");
+        bool b = assertTrue(obj->setVertexReferencingMode(PURE_VREF_INDEXED), "set obj");
+        b &= assertTrue(objFromFile->setVertexReferencingMode(PURE_VREF_DIRECT), "set objFromFile");
 
         // subobjects must reject this when called by user
         PureObject3D* const subobj1Obj = (PureObject3D*)(obj->getAttachedAt(0));
-        b &= assertFalse(subobj1Obj->setVertexReferencingMode( Pure_VREF_DIRECT ), "set subobj1Obj");
+        b &= assertFalse(subobj1Obj->setVertexReferencingMode( PURE_VREF_DIRECT ), "set subobj1Obj");
 
         PureObject3D* const subobj1ObjFromFile = (PureObject3D*)(objFromFile->getAttachedAt(0));
-        b &= assertFalse(subobj1ObjFromFile->setVertexReferencingMode( Pure_VREF_INDEXED ), "set subobj1ObjFromFile");
+        b &= assertFalse(subobj1ObjFromFile->setVertexReferencingMode( PURE_VREF_INDEXED ), "set subobj1ObjFromFile");
 
         // cloned object must reject this in any case
-        b &= assertFalse(objCloned->setVertexReferencingMode( Pure_VREF_DIRECT ), "set objCloned");
-        b &= assertFalse(objFromFileCloned->setVertexReferencingMode( Pure_VREF_DIRECT ), "set objFromFileCloned");
+        b &= assertFalse(objCloned->setVertexReferencingMode( PURE_VREF_DIRECT ), "set objCloned");
+        b &= assertFalse(objFromFileCloned->setVertexReferencingMode( PURE_VREF_DIRECT ), "set objFromFileCloned");
 
         b &= assertTrue( PureVertexTransfer::isVertexReferencingIndexed(obj->getVertexTransferMode()), "obj" ) &
             assertFalse( PureVertexTransfer::isVertexReferencingIndexed(objFromFile->getVertexTransferMode()), "objFromFile" ) &
@@ -607,133 +607,133 @@ private:
     bool testGetVertexTransferMode()
     {
         // Generic server-side vertex array should be selected, main test machine supports it
-        const TPure_VERTEX_TRANSFER_MODE vtExpected = Pure_VMOD_STATIC | Pure_VREF_DIRECT | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpected = PURE_VMOD_STATIC | PURE_VREF_DIRECT | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
 
         // if we change the transfer mode of the referred object, cloned object returns the updated vertex transfer mode of the referred object
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedForCloned = Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedForCloned = PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT;
         bool b = assertTrue(obj->setVertexTransferMode(vtExpectedForCloned), "set obj");
 
         b &= assertEquals(vtExpectedForCloned, obj->getVertexTransferMode() & vtExpectedForCloned, "obj 1") &
-            assertEquals(0u, BITF_READ(obj->getVertexTransferMode(), Pure_VT_VENDOR_BITS, 3), "obj 2") &
+            assertEquals(0u, BITF_READ(obj->getVertexTransferMode(), PURE_VT_VENDOR_BITS, 3), "obj 2") &
             assertEquals(vtExpectedForCloned, objCloned->getVertexTransferMode() & vtExpectedForCloned, "objCloned 1") &
-            assertEquals(0u, BITF_READ(objCloned->getVertexTransferMode(), Pure_VT_VENDOR_BITS, 3), "objCloned 2") &
+            assertEquals(0u, BITF_READ(objCloned->getVertexTransferMode(), PURE_VT_VENDOR_BITS, 3), "objCloned 2") &
             assertEquals(vtExpected, objFromFile->getVertexTransferMode() & vtExpected, "objFromFile 1") &
-            assertEquals(0u, BITF_READ(objFromFile->getVertexTransferMode(), Pure_VT_VENDOR_BITS, 3), "objFromFile 2") &
+            assertEquals(0u, BITF_READ(objFromFile->getVertexTransferMode(), PURE_VT_VENDOR_BITS, 3), "objFromFile 2") &
             assertEquals(vtExpected, objPlane->getVertexTransferMode() & vtExpected, "plane 1") &
-            assertEquals(0u, BITF_READ(objPlane->getVertexTransferMode(), Pure_VT_VENDOR_BITS, 3), "plane 2") &
+            assertEquals(0u, BITF_READ(objPlane->getVertexTransferMode(), PURE_VT_VENDOR_BITS, 3), "plane 2") &
             assertEquals(vtExpected, objBox->getVertexTransferMode() & vtExpected, "box 1") &
-            assertEquals(0u, BITF_READ(objBox->getVertexTransferMode(), Pure_VT_VENDOR_BITS, 3), "box 2") &
+            assertEquals(0u, BITF_READ(objBox->getVertexTransferMode(), PURE_VT_VENDOR_BITS, 3), "box 2") &
             assertEquals(vtExpected, objCube->getVertexTransferMode() & vtExpected, "cube 1") &
-            assertEquals(0u, BITF_READ(objCube->getVertexTransferMode(), Pure_VT_VENDOR_BITS, 3), "cube 2");
+            assertEquals(0u, BITF_READ(objCube->getVertexTransferMode(), PURE_VT_VENDOR_BITS, 3), "cube 2");
 
         return b;
     }
 
     bool testSetVertexTransferMode()
     {
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedObj = obj->getVertexTransferMode();
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedObj = obj->getVertexTransferMode();
         bool b = assertTrue(obj->setVertexTransferMode( obj->getVertexTransferMode() ), "set obj"); // intentionally testing setting to the same
         b &= assertEquals(vtExpectedObj, obj->getVertexTransferMode(), "sva obj 1");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedObjFromFile = objFromFile->getVertexTransferMode();
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedObjFromFile = objFromFile->getVertexTransferMode();
         b &= assertTrue(objFromFile->setVertexTransferMode( objFromFile->getVertexTransferMode() ), "set objFromFile"); // intentionally testing setting to the same
         b &= assertEquals(vtExpectedObjFromFile, objFromFile->getVertexTransferMode(), "sva objFromFile 1");
 
-        // make sure the mode of the 2 objects is not just simple (Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT) (1by1 immediate mode)
-        b &= assertNotEquals(Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT, obj->getVertexTransferMode(), "obj not dir 1by1");
-        b &= assertNotEquals(Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT, objFromFile->getVertexTransferMode(), "objFromFile not dir 1by1");
+        // make sure the mode of the 2 objects is not just simple (PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT) (1by1 immediate mode)
+        b &= assertNotEquals(PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT, obj->getVertexTransferMode(), "obj not dir 1by1");
+        b &= assertNotEquals(PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT, objFromFile->getVertexTransferMode(), "objFromFile not dir 1by1");
 
         // subobjects must reject this when called by user
-        // by default the selected transfer mode is NOT Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT hence we try set that but expect no change!
+        // by default the selected transfer mode is NOT PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT hence we try set that but expect no change!
         PureObject3D* const subobj1Obj = (PureObject3D*)(obj->getAttachedAt(0));
-        b &= assertFalse(subobj1Obj->setVertexTransferMode( Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT ), "set subobj1Obj");
+        b &= assertFalse(subobj1Obj->setVertexTransferMode( PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT ), "set subobj1Obj");
         b &= assertEquals(vtExpectedObj, subobj1Obj->getVertexTransferMode(), "dir obj subobject");
 
         PureObject3D* const subobj1ObjFromFile = (PureObject3D*)(objFromFile->getAttachedAt(0));
-        b &= assertFalse(subobj1ObjFromFile->setVertexTransferMode( Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT ), "set subobj1ObjFromFile");
+        b &= assertFalse(subobj1ObjFromFile->setVertexTransferMode( PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT ), "set subobj1ObjFromFile");
         b &= assertEquals(vtExpectedObjFromFile, subobj1ObjFromFile->getVertexTransferMode(), "dir objFromFile subobject");
 
         // cloned object must reject this in any case
-        // by default the selected transfer mode is NOT Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT hence we try set that but expect no change!
-        b &= assertFalse(objCloned->setVertexTransferMode( Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT ), "set objCloned");
+        // by default the selected transfer mode is NOT PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT hence we try set that but expect no change!
+        b &= assertFalse(objCloned->setVertexTransferMode( PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT ), "set objCloned");
         b &= assertEquals(vtExpectedObj, objCloned->getVertexTransferMode(), "dir obj cloned");
 
-        b &= assertFalse(objFromFileCloned->setVertexTransferMode( Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT ), "set objFromFileCloned");
+        b &= assertFalse(objFromFileCloned->setVertexTransferMode( PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT ), "set objFromFileCloned");
         b &= assertEquals(vtExpectedObjFromFile, objFromFileCloned->getVertexTransferMode(), "dir objFromFile cloned");
 
         // Generic server-side vertex arrays are supported by main test machine
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedStaIndSVAobj = Pure_VMOD_STATIC  | Pure_VREF_INDEXED | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedStaIndSVAobj = PURE_VMOD_STATIC  | PURE_VREF_INDEXED | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
         b &= assertTrue(obj->setVertexTransferMode( vtExpectedStaIndSVAobj ), "set obj sva");
         b &= assertEquals(vtExpectedStaIndSVAobj, obj->getVertexTransferMode(), "sva obj 2");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedStaIndSVAobjFromFile = Pure_VMOD_STATIC  | Pure_VREF_INDEXED | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedStaIndSVAobjFromFile = PURE_VMOD_STATIC  | PURE_VREF_INDEXED | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
         b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedStaIndSVAobjFromFile ), "set objFromFile sva");
         b &= assertEquals(vtExpectedStaIndSVAobjFromFile, objFromFile->getVertexTransferMode(), "sva objFromFile 2");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynIndSVAobj = Pure_VMOD_DYNAMIC  | Pure_VREF_INDEXED | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynIndSVAobj = PURE_VMOD_DYNAMIC  | PURE_VREF_INDEXED | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
         b &= assertTrue(obj->setVertexTransferMode( vtExpectedDynIndSVAobj ), "set obj sva 3");
         b &= assertEquals(vtExpectedDynIndSVAobj, obj->getVertexTransferMode(), "sva obj 3");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynIndSVAobjFromFile = Pure_VMOD_DYNAMIC  | Pure_VREF_INDEXED | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynIndSVAobjFromFile = PURE_VMOD_DYNAMIC  | PURE_VREF_INDEXED | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
         b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedDynIndSVAobjFromFile ), "set objFromFile sva 3");
         b &= assertEquals(vtExpectedDynIndSVAobjFromFile, objFromFile->getVertexTransferMode(), "sva objFromFile 3");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynDirSVAobj = Pure_VMOD_DYNAMIC  | Pure_VREF_DIRECT | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynDirSVAobj = PURE_VMOD_DYNAMIC  | PURE_VREF_DIRECT | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
         b &= assertTrue(obj->setVertexTransferMode( vtExpectedDynDirSVAobj ), "set obj sva 4");
         b &= assertEquals(vtExpectedDynDirSVAobj, obj->getVertexTransferMode(), "sva obj 4");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynDirSVAobjFromFile = Pure_VMOD_DYNAMIC  | Pure_VREF_DIRECT | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynDirSVAobjFromFile = PURE_VMOD_DYNAMIC  | PURE_VREF_DIRECT | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
         b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedDynDirSVAobjFromFile ), "set objFromFile sva 4");
         b &= assertEquals(vtExpectedDynDirSVAobjFromFile, objFromFile->getVertexTransferMode(), "sva objFromFile 4");
 
         // following modes must be supported on every machine
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynDir1by1obj = Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynDir1by1obj = PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT;
         b &= assertTrue(obj->setVertexTransferMode( vtExpectedDynDir1by1obj ), "set obj 1b1");
         b &= assertEquals(vtExpectedDynDir1by1obj, obj->getVertexTransferMode(), "dir obj 1b1");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynDir1by1objFromFile = Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynDir1by1objFromFile = PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT;
         b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedDynDir1by1objFromFile ), "set objFromFile 1b1");
         b &= assertEquals(vtExpectedDynDir1by1objFromFile, objFromFile->getVertexTransferMode(), "dir objFromFile 1b1");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynDirVAobj = Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT | BIT(Pure_VT_VA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynDirVAobj = PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT | BIT(PURE_VT_VA_BIT);
         b &= assertTrue(obj->setVertexTransferMode( vtExpectedDynDirVAobj ), "set obj rva");
         b &= assertEquals(vtExpectedDynDirVAobj, obj->getVertexTransferMode(), "dir obj rva");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynDirVAobjFromFile = Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT | BIT(Pure_VT_VA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynDirVAobjFromFile = PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT | BIT(PURE_VT_VA_BIT);
         b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedDynDirVAobjFromFile ), "set objFromFile rva");
         b &= assertEquals(vtExpectedDynDirVAobjFromFile, objFromFile->getVertexTransferMode(), "dir objFromFile rva");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynInd1by1obj = Pure_VMOD_DYNAMIC | Pure_VREF_INDEXED;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynInd1by1obj = PURE_VMOD_DYNAMIC | PURE_VREF_INDEXED;
         b &= assertTrue(obj->setVertexTransferMode( vtExpectedDynInd1by1obj ), "set obj 1b1");
         b &= assertEquals(vtExpectedDynInd1by1obj, obj->getVertexTransferMode(), "ind obj 1b1");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynInd1by1objFromFile = Pure_VMOD_DYNAMIC | Pure_VREF_INDEXED;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynInd1by1objFromFile = PURE_VMOD_DYNAMIC | PURE_VREF_INDEXED;
         b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedDynInd1by1objFromFile ), "set objFromFile 1b1");
         b &= assertEquals(vtExpectedDynInd1by1objFromFile, objFromFile->getVertexTransferMode(), "ind objFromFile 1b1");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynIndVAobj = Pure_VMOD_DYNAMIC | Pure_VREF_INDEXED | BIT(Pure_VT_VA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynIndVAobj = PURE_VMOD_DYNAMIC | PURE_VREF_INDEXED | BIT(PURE_VT_VA_BIT);
         b &= assertTrue(obj->setVertexTransferMode( vtExpectedDynIndVAobj ), "set obj rva");
         b &= assertEquals(vtExpectedDynIndVAobj, obj->getVertexTransferMode(), "ind obj rva");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynIndVAobjFromFile = Pure_VMOD_DYNAMIC | Pure_VREF_INDEXED | BIT(Pure_VT_VA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynIndVAobjFromFile = PURE_VMOD_DYNAMIC | PURE_VREF_INDEXED | BIT(PURE_VT_VA_BIT);
         b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedDynIndVAobjFromFile ), "set objFromFile rv");
         b &= assertEquals(vtExpectedDynIndVAobjFromFile, objFromFile->getVertexTransferMode(), "ind objFromFile rva");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedStaDirDLobj = Pure_VMOD_STATIC | Pure_VREF_DIRECT;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedStaDirDLobj = PURE_VMOD_STATIC | PURE_VREF_DIRECT;
         b &= assertTrue(obj->setVertexTransferMode( vtExpectedStaDirDLobj ), "set obj DL");
         b &= assertEquals(vtExpectedStaDirDLobj, obj->getVertexTransferMode(), "dir obj DL");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedStaDirDLobjFromFile = Pure_VMOD_STATIC | Pure_VREF_DIRECT;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedStaDirDLobjFromFile = PURE_VMOD_STATIC | PURE_VREF_DIRECT;
         b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedStaDirDLobjFromFile ), "set objFromFile DL");
         b &= assertEquals(vtExpectedStaDirDLobjFromFile, objFromFile->getVertexTransferMode(), "dir objFromFile DL");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedStaIndDLobj = Pure_VMOD_STATIC | Pure_VREF_INDEXED;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedStaIndDLobj = PURE_VMOD_STATIC | PURE_VREF_INDEXED;
         b &= assertTrue(obj->setVertexTransferMode( vtExpectedStaIndDLobj ), "set obj DL");
         b &= assertEquals(vtExpectedStaIndDLobj, obj->getVertexTransferMode(), "ind obj DL");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedStaIndDLobjFromFile = Pure_VMOD_STATIC | Pure_VREF_INDEXED;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedStaIndDLobjFromFile = PURE_VMOD_STATIC | PURE_VREF_INDEXED;
         b &= assertTrue(objFromFile->setVertexTransferMode( vtExpectedStaIndDLobjFromFile ), "set objFromFile DL");
         b &= assertEquals(vtExpectedStaIndDLobjFromFile, objFromFile->getVertexTransferMode(), "ind objFromFile DL");
 
@@ -743,16 +743,16 @@ private:
     bool testGetLastTransferredVertexCount()
     {
         // non-initial values are checked in testTransferVertices()
-        return assertEquals((TPureuint)0, obj->getLastTransferredVertexCount(), "obj") &
-            assertEquals((TPureuint)0, objFromFile->getLastTransferredVertexCount(), "objFromFile");
+        return assertEquals((TPureUInt)0, obj->getLastTransferredVertexCount(), "obj") &
+            assertEquals((TPureUInt)0, objFromFile->getLastTransferredVertexCount(), "objFromFile");
 
     }
 
     bool testGetLastTransferredTriangleCount()
     {
         // non-initial values are checked in testTransferVertices()
-        return assertEquals((TPureuint)0, obj->getLastTransferredTriangleCount(), "obj") &
-            assertEquals((TPureuint)0, objFromFile->getLastTransferredTriangleCount(), "objFromFile");
+        return assertEquals((TPureUInt)0, obj->getLastTransferredTriangleCount(), "obj") &
+            assertEquals((TPureUInt)0, objFromFile->getLastTransferredTriangleCount(), "objFromFile");
 
     }
 
@@ -829,8 +829,8 @@ private:
 
     bool testSetScalingToScalar()
     {
-        const TPurefloat fOriginalBiggestAreaScaledObj = obj->getBiggestAreaScaled();
-        const TPurefloat fOriginalBiggestAreaScaledObjFromFile = objFromFile->getBiggestAreaScaled();
+        const TPureFloat fOriginalBiggestAreaScaledObj = obj->getBiggestAreaScaled();
+        const TPureFloat fOriginalBiggestAreaScaledObjFromFile = objFromFile->getBiggestAreaScaled();
 
         obj->SetScaling(3.0f);
         objFromFile->SetScaling(3.0f);
@@ -901,8 +901,8 @@ private:
 
     bool testScaleByScalar()
     {
-        const TPurefloat fOriginalBiggestAreaScaledObj = obj->getBiggestAreaScaled();
-        const TPurefloat fOriginalBiggestAreaScaledObjFromFile = objFromFile->getBiggestAreaScaled();
+        const TPureFloat fOriginalBiggestAreaScaledObj = obj->getBiggestAreaScaled();
+        const TPureFloat fOriginalBiggestAreaScaledObjFromFile = objFromFile->getBiggestAreaScaled();
 
         obj->Scale(3.0f);
         bool b = assertEquals(3.0f, obj->getScaling().getX(), E, "b X") &
@@ -1001,11 +1001,11 @@ private:
             assertEquals(6.0f, objBox->getBiggestAreaScaled(), E, "objBox") &
             assertEquals(1.0f, objCube->getBiggestAreaScaled(), E, "objCube");
         
-        TPurefloat fObjFileAreaXY = objFromFile->getSizeVec().getX() * objFromFile->getSizeVec().getY();
-        TPurefloat fObjFileAreaXZ = objFromFile->getSizeVec().getX() * objFromFile->getSizeVec().getZ();
-        TPurefloat fObjFileAreaYZ = objFromFile->getSizeVec().getY() * objFromFile->getSizeVec().getZ();
+        TPureFloat fObjFileAreaXY = objFromFile->getSizeVec().getX() * objFromFile->getSizeVec().getY();
+        TPureFloat fObjFileAreaXZ = objFromFile->getSizeVec().getX() * objFromFile->getSizeVec().getZ();
+        TPureFloat fObjFileAreaYZ = objFromFile->getSizeVec().getY() * objFromFile->getSizeVec().getZ();
 
-        TPurefloat fObjFileExpectedBiggestArea;
+        TPureFloat fObjFileExpectedBiggestArea;
         if ( fObjFileAreaXY > fObjFileAreaXZ )
         {
             fObjFileExpectedBiggestArea = fObjFileAreaXY > fObjFileAreaYZ ? fObjFileAreaXY : fObjFileAreaYZ;
@@ -1024,7 +1024,7 @@ private:
         fObjFileAreaXZ *= vScaleBy.getX() * vScaleBy.getZ();
         fObjFileAreaYZ *= vScaleBy.getY() * vScaleBy.getZ();
 
-        TPurefloat fObjFileExpectedBiggestAreaScaled;
+        TPureFloat fObjFileExpectedBiggestAreaScaled;
         if ( fObjFileAreaXY > fObjFileAreaXZ )
         {
             fObjFileExpectedBiggestAreaScaled = fObjFileAreaXY > fObjFileAreaYZ ? fObjFileAreaXY : fObjFileAreaYZ;
@@ -1041,8 +1041,8 @@ private:
 
     bool testRecalculateBiggerAreaScaled()
     {
-        const TPurefloat fObjAreaBiggest = obj->getBiggestAreaScaled();
-        const TPurefloat fObjFromFileAreaBiggest = objFromFile->getBiggestAreaScaled();
+        const TPureFloat fObjAreaBiggest = obj->getBiggestAreaScaled();
+        const TPureFloat fObjFromFileAreaBiggest = objFromFile->getBiggestAreaScaled();
 
         bool b = assertEquals(fObjAreaBiggest, obj->recalculateBiggestAreaScaled(), E, "obj") &
             assertEquals(fObjFromFileAreaBiggest, objFromFile->recalculateBiggestAreaScaled(), E, "objFromFile");
@@ -1142,24 +1142,24 @@ private:
 
     bool testGetRotationOrder()
     {
-        return assertEquals(Pure_YXZ, obj->getRotationOrder(), "obj") &
-            assertEquals(Pure_YXZ, objFromFile->getRotationOrder(), "objFromFile") &
-            assertEquals(Pure_YXZ, objPlane->getRotationOrder(), "plane") &
-            assertEquals(Pure_YXZ, objBox->getRotationOrder(), "box") &
-            assertEquals(Pure_YXZ, objCube->getRotationOrder(), "cube");
+        return assertEquals(PURE_YXZ, obj->getRotationOrder(), "obj") &
+            assertEquals(PURE_YXZ, objFromFile->getRotationOrder(), "objFromFile") &
+            assertEquals(PURE_YXZ, objPlane->getRotationOrder(), "plane") &
+            assertEquals(PURE_YXZ, objBox->getRotationOrder(), "box") &
+            assertEquals(PURE_YXZ, objCube->getRotationOrder(), "cube");
     }
 
     bool testSetRotationOrder()
     {
-        obj->SetRotationOrder(Pure_XYZ);
-        objFromFile->SetRotationOrder(Pure_XYZ);
+        obj->SetRotationOrder(PURE_XYZ);
+        objFromFile->SetRotationOrder(PURE_XYZ);
 
         PureObject3D* const subObjFromFile = (PureObject3D*)(objFromFile->getAttachedAt(0));
-        const TPure_ROTATION_ORDER vOriginalSubobjectProperty = subObjFromFile->getRotationOrder();
-        subObjFromFile->SetRotationOrder(Pure_XYZ);
+        const TPURE_ROTATION_ORDER vOriginalSubobjectProperty = subObjFromFile->getRotationOrder();
+        subObjFromFile->SetRotationOrder(PURE_XYZ);
         bool b = assertTrue(vOriginalSubobjectProperty == subObjFromFile->getRotationOrder(), "property unchanged for subobject");
 
-        return b & assertEquals(Pure_XYZ, obj->getRotationOrder(), "obj") & assertEquals(Pure_XYZ, objFromFile->getRotationOrder(), "objFromFile");
+        return b & assertEquals(PURE_XYZ, obj->getRotationOrder(), "obj") & assertEquals(PURE_XYZ, objFromFile->getRotationOrder(), "objFromFile");
     }
 
     bool testIsLit()
@@ -1429,7 +1429,7 @@ private:
             assertTrue(std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), objFromFile) == om->get2dBlendedOccludees().end(), "objFromFile is NOT in get2dBlendedOccludees 5");
         objFromFile->Show();
 
-        objFromFile->getMaterial().setBlendMode(Pure_BM_STANDARD_TRANSPARENCY);
+        objFromFile->getMaterial().setBlendMode(PURE_BM_STANDARD_TRANSPARENCY);
         objFromFile->SetOccluder(true);
         b &= assertFalse(objFromFile->isOccluder(), "objFromFile is not occluder 6") &
             assertTrue(std::find(om->getOccluders().begin(), om->getOccluders().end(), objFromFile) == om->getOccluders().end(), "objFromFile is NOT in getOccluders 6") &
@@ -1437,7 +1437,7 @@ private:
             assertTrue(std::find(om->get3dBlendedOccludees().begin(), om->get3dBlendedOccludees().end(), objFromFile) != om->get3dBlendedOccludees().end(), "objFromFile is in get3dBlendedOccludees 6") &
             assertTrue(std::find(om->get2dOpaqueOccludees().begin(), om->get2dOpaqueOccludees().end(), objFromFile) == om->get2dOpaqueOccludees().end(), "objFromFile is NOT in get2dOpaqueOccludees 6") &
             assertTrue(std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), objFromFile) == om->get2dBlendedOccludees().end(), "objFromFile is NOT in get2dBlendedOccludees 6");
-        objFromFile->getMaterial().setBlendMode(Pure_BM_NONE);
+        objFromFile->getMaterial().setBlendMode(PURE_BM_NONE);
 
         objFromFile->SetOccluder(true);
 
@@ -1530,10 +1530,10 @@ private:
         objFromFile->SetOcclusionTested(true);
 
         // intentionally drawing both twice, to check if draw() properly resets the counters before transferring vertices!
-        obj->draw(Pure_RPASS_NORMAL, false, false);
-        objFromFile->draw(Pure_RPASS_NORMAL, false, false);
-        TPureuint nObjLastTransferredVertices = obj->draw(Pure_RPASS_NORMAL, false, false);
-        TPureuint nObjFromFileLastTransferredVertices = objFromFile->draw(Pure_RPASS_NORMAL, false, false);
+        obj->draw(PURE_RPASS_NORMAL, false, false);
+        objFromFile->draw(PURE_RPASS_NORMAL, false, false);
+        TPureUInt nObjLastTransferredVertices = obj->draw(PURE_RPASS_NORMAL, false, false);
+        TPureUInt nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_NORMAL, false, false);
 
         bool b = assertEquals(obj->getVertexIndicesCount(), obj->getLastTransferredVertexCount(), "obj 1") &
             assertEquals(objFromFile->getVertexIndicesCount(), objFromFile->getLastTransferredVertexCount(), "objFromFile 1") &
@@ -1545,8 +1545,8 @@ private:
         // hide the objects and expect their counters to be zero after draw (so they still reset their counters before deciding not drawing anything)
         obj->SetRenderingAllowed(false);
         objFromFile->SetRenderingAllowed(false);
-        nObjLastTransferredVertices = obj->draw(Pure_RPASS_NORMAL, false, false);
-        nObjFromFileLastTransferredVertices = objFromFile->draw(Pure_RPASS_NORMAL, false, false);
+        nObjLastTransferredVertices = obj->draw(PURE_RPASS_NORMAL, false, false);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_NORMAL, false, false);
 
         b &= assertEquals(0u, obj->getLastTransferredVertexCount(), "obj 1 hidden 1") &
             assertEquals(0u, objFromFile->getLastTransferredVertexCount(), "objFromFile 1 hidden 1") &
@@ -1555,9 +1555,9 @@ private:
             assertEquals(0u, obj->getLastTransferredTriangleCount(), "obj 3 hidden 1") &
             assertEquals(0u, objFromFile->getLastTransferredTriangleCount(), "objFromFile 3 hidden 1");
         
-        // check the same with Pure_RPASS_START_OCCLUSION_QUERY render pass
-        nObjLastTransferredVertices = obj->draw(Pure_RPASS_NORMAL, false, false);
-        nObjFromFileLastTransferredVertices = objFromFile->draw(Pure_RPASS_NORMAL, false, false);
+        // check the same with PURE_RPASS_START_OCCLUSION_QUERY render pass
+        nObjLastTransferredVertices = obj->draw(PURE_RPASS_NORMAL, false, false);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_NORMAL, false, false);
 
         b &= assertEquals(0u, obj->getLastTransferredVertexCount(), "obj 1 hidden 2") &
             assertEquals(0u, objFromFile->getLastTransferredVertexCount(), "objFromFile 1 hidden 2") &
@@ -1574,39 +1574,39 @@ private:
         obj->getPosVec().SetZ(-100.f);
         objFromFile->getPosVec().SetZ(-100.f);
 
-        nObjLastTransferredVertices = obj->draw(Pure_RPASS_START_OCCLUSION_QUERY, false, false);
-        nObjFromFileLastTransferredVertices = objFromFile->draw(Pure_RPASS_START_OCCLUSION_QUERY, false, false);
+        nObjLastTransferredVertices = obj->draw(PURE_RPASS_START_OCCLUSION_QUERY, false, false);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_START_OCCLUSION_QUERY, false, false);
 
-        b &= assertEquals((TPureuint)0, obj->getLastTransferredVertexCount(), "obj 4") &
-            assertEquals((TPureuint)24, objFromFile->getLastTransferredVertexCount(), "objFromFile 4") &
+        b &= assertEquals((TPureUInt)0, obj->getLastTransferredVertexCount(), "obj 4") &
+            assertEquals((TPureUInt)24, objFromFile->getLastTransferredVertexCount(), "objFromFile 4") &
             assertEquals(nObjLastTransferredVertices, obj->getLastTransferredVertexCount(), "obj 5") &
             assertEquals(nObjFromFileLastTransferredVertices, objFromFile->getLastTransferredVertexCount(), "objFromFile 5") &
-            assertEquals((TPureuint)0, obj->getLastTransferredTriangleCount(), "obj 6") &
-            assertEquals((TPureuint)12, objFromFile->getLastTransferredTriangleCount(), "objFromFile 6");
+            assertEquals((TPureUInt)0, obj->getLastTransferredTriangleCount(), "obj 6") &
+            assertEquals((TPureUInt)12, objFromFile->getLastTransferredTriangleCount(), "objFromFile 6");
         
-        nObjLastTransferredVertices = obj->draw(Pure_RPASS_NORMAL, false, false);
-        nObjFromFileLastTransferredVertices = objFromFile->draw(Pure_RPASS_NORMAL, false, false);
+        nObjLastTransferredVertices = obj->draw(PURE_RPASS_NORMAL, false, false);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_NORMAL, false, false);
 
         // expecting all zeros for objFromFile due to behind the camera and occlusion test fail, but
         // expecting same positive values as before for obj because it is not occlusion tested!
         b &= assertEquals(obj->getVertexIndicesCount(), obj->getLastTransferredVertexCount(), "obj 7") &
-            assertEquals((TPureuint)0, objFromFile->getLastTransferredVertexCount(), "objFromFile 7") &
+            assertEquals((TPureUInt)0, objFromFile->getLastTransferredVertexCount(), "objFromFile 7") &
             assertEquals(nObjLastTransferredVertices, nObjLastTransferredVertices, "obj 8") &
-            assertEquals((TPureuint)0, nObjFromFileLastTransferredVertices, "objFromFile 8") &
+            assertEquals((TPureUInt)0, nObjFromFileLastTransferredVertices, "objFromFile 8") &
             assertEquals(obj->getTriangleCount(), obj->getLastTransferredTriangleCount(), "obj 9") &
-            assertEquals((TPureuint)0, objFromFile->getLastTransferredTriangleCount(), "objFromFile 9");
+            assertEquals((TPureUInt)0, objFromFile->getLastTransferredTriangleCount(), "objFromFile 9");
 
         // debug bounding box must be rendered regardless of object occlusion state, but
         // it must not be rendered for an object which is not occlusion tested
-        nObjLastTransferredVertices = obj->draw(Pure_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
-        nObjFromFileLastTransferredVertices = objFromFile->draw(Pure_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
+        nObjLastTransferredVertices = obj->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
 
-        b &= assertEquals((TPureuint)0, obj->getLastTransferredVertexCount(), "obj 10") &
-            assertEquals((TPureuint)24, objFromFile->getLastTransferredVertexCount(), "objFromFile 10") &
+        b &= assertEquals((TPureUInt)0, obj->getLastTransferredVertexCount(), "obj 10") &
+            assertEquals((TPureUInt)24, objFromFile->getLastTransferredVertexCount(), "objFromFile 10") &
             assertEquals(nObjLastTransferredVertices, obj->getLastTransferredVertexCount(), "obj 11") &
             assertEquals(nObjFromFileLastTransferredVertices, objFromFile->getLastTransferredVertexCount(), "objFromFile 11") &
-            assertEquals((TPureuint)0, obj->getLastTransferredTriangleCount(), "obj 12") &
-            assertEquals((TPureuint)12, objFromFile->getLastTransferredTriangleCount(), "objFromFile 12");
+            assertEquals((TPureUInt)0, obj->getLastTransferredTriangleCount(), "obj 12") &
+            assertEquals((TPureUInt)12, objFromFile->getLastTransferredTriangleCount(), "objFromFile 12");
 
         return b;
     } // testDraw()
@@ -1621,8 +1621,8 @@ private:
         objFromFile->SetOcclusionTested(true);
         objFromFileCloned->SetOcclusionTested(true);
 
-        TPureuint nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(Pure_RPASS_NORMAL, false, false);
-        objFromFileCloned->draw(Pure_RPASS_NORMAL, false, false);
+        TPureUInt nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_NORMAL, false, false);
+        objFromFileCloned->draw(PURE_RPASS_NORMAL, false, false);
 
         bool b = assertEquals(objFromFileCloned->getVertexIndicesCount(), objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 1") &
             assertEquals(nObjFromFileClonedLastTransferredVertices, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 2") &
@@ -1632,7 +1632,7 @@ private:
 
         // check if cloned object also properly resets counters to 0 when trying to draw it when it is not allowed to be drawn
         objFromFileCloned->SetRenderingAllowed(false);
-        objFromFileCloned->draw(Pure_RPASS_NORMAL, false, false);
+        objFromFileCloned->draw(PURE_RPASS_NORMAL, false, false);
 
         b &= assertEquals(0u, objFromFile->getLastTransferredVertexCount(), "objFromFile 1 hidden 1") &
             assertEquals(0u, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 1 hidden 1") &
@@ -1644,7 +1644,7 @@ private:
         // allow draw again
         objFromFileCloned->SetRenderingAllowed(true);
 
-        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(Pure_RPASS_START_OCCLUSION_QUERY, false, false);
+        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_START_OCCLUSION_QUERY, false, false);
         objFromFileCloned->getLastTransferredVertexCount();
 
         b &= assertEquals(24u, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 4") &
@@ -1653,7 +1653,7 @@ private:
             assertEquals(12u, objFromFileCloned->getLastTransferredTriangleCount(), "objFromFileCloned 6") &
             assertEquals(12u, objFromFile->getLastTransferredTriangleCount(), "objFromFile 4");
         
-        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(Pure_RPASS_NORMAL, false, false);
+        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_NORMAL, false, false);
 
         // expecting all zeros for objFromFileCloned due to behind the camera and occlusion test fail
         b &= assertEquals(0u, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 7") &
@@ -1663,7 +1663,7 @@ private:
             assertEquals(0u, objFromFile->getLastTransferredTriangleCount(), "objFromFile 6");
 
         // debug bounding box must be rendered regardless of object occlusion state
-        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(Pure_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
+        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
 
         b &= assertEquals(24u, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 10") &
             assertEquals(nObjFromFileClonedLastTransferredVertices, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 11") &
@@ -1674,7 +1674,7 @@ private:
         // debug bounding box must NOT be rendered if occlusion test is off
         objFromFileCloned->SetOcclusionTested(false);
         
-        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(Pure_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
+        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
 
         b &= assertEquals(0u, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 13") &
             assertEquals(nObjFromFileClonedLastTransferredVertices, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 14") &
@@ -1696,8 +1696,8 @@ private:
 
     bool testGetUsedVideoMemory()
     {
-        TPureuint objFromFileMinMemUsage = 0;
-        for (TPureint i = 0; i < objFromFile->getCount(); i++)
+        TPureUInt objFromFileMinMemUsage = 0;
+        for (TPureInt i = 0; i < objFromFile->getCount(); i++)
         {
             const PureObject3D* const submesh = (PureObject3D*) objFromFile->getAttachedAt(i);
             objFromFileMinMemUsage += submesh->getVerticesCount() * sizeof(TXYZ) * 2 /* *2 because of we have normals too */ +
@@ -1711,12 +1711,12 @@ private:
 
         // by default the created objects should eat video memory, except the cloned object
         // since it doesn't have underlying geometry, or bounding box object in this case!
-        const bool b = assertEquals(objCloned->getUsedVideoMemory(), (TPureuint) 0,          "objCloned") &
-            assertGreater(obj->getUsedVideoMemory(),                 (TPureuint) 0,          "obj") &
+        const bool b = assertEquals(objCloned->getUsedVideoMemory(), (TPureUInt) 0,          "objCloned") &
+            assertGreater(obj->getUsedVideoMemory(),                 (TPureUInt) 0,          "obj") &
             assertGreater(objFromFile->getUsedVideoMemory(),         objFromFileMinMemUsage, "objFromFile") &
-            assertGreater(objPlane->getUsedVideoMemory(),            (TPureuint) 0,          "plane") &
-            assertGreater(objBox->getUsedVideoMemory(),              (TPureuint) 0,          "box") &
-            assertGreater(objCube->getUsedVideoMemory(),             (TPureuint) 0,          "cube");
+            assertGreater(objPlane->getUsedVideoMemory(),            (TPureUInt) 0,          "plane") &
+            assertGreater(objBox->getUsedVideoMemory(),              (TPureUInt) 0,          "box") &
+            assertGreater(objCube->getUsedVideoMemory(),             (TPureUInt) 0,          "cube");
         
         return b;
     }
@@ -1759,7 +1759,7 @@ private:
 
     bool testPreAlloc()
     {
-        const TPureint prevSize = obj->getSize();
+        const TPureInt prevSize = obj->getSize();
         obj->PreAlloc(10);
 
         return assertEquals(prevSize + 10, obj->getSize());

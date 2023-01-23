@@ -20,7 +20,7 @@
 class PureHwVideoDiscoverOpenGL_1_1 :
     public PureHwVideoDiscoverOpenGLbase
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureHwVideoDiscoverOpenGL_1_1 is included")
 #endif
 
@@ -29,8 +29,8 @@ public:
         const std::string& sVidFeaturesOGL,
         const std::string& sVidFeaturesWGL,
         const std::string& sVidVersionOGL,
-        const TPureuint& nVidVersionGLSLmaj,
-        const TPureuint& nVidVersionGLSLmin) :
+        const TPureUInt& nVidVersionGLSLmaj,
+        const TPureUInt& nVidVersionGLSLmin) :
     PureHwVideoDiscoverOpenGLbase(
         sVidFeaturesOGL,
         sVidFeaturesWGL,

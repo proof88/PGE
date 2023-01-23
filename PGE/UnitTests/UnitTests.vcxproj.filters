@@ -102,9 +102,6 @@
     <ClInclude Include="..\Config\PGESysCFG.h">
       <Filter>Header Files\PGE\Config</Filter>
     </ClInclude>
-    <ClInclude Include="..\PURE\include\external\PR00FsReducedRenderingEngine.h">
-      <Filter>Header Files\PGE\PURE</Filter>
-    </ClInclude>
     <ClInclude Include="..\PURE\include\external\PureAllHeaders.h">
       <Filter>Header Files\PGE\PURE</Filter>
     </ClInclude>
@@ -308,6 +305,9 @@
     </ClInclude>
     <ClInclude Include="PureWindowTest2.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PURE\include\external\PR00FsReducedRenderingEngine.h">
+      <Filter>Header Files\PGE\PURE</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

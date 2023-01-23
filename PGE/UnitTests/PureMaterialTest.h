@@ -119,7 +119,7 @@ protected:
         CConsole::getConsoleInstance().SetLoggingState(PureImageManager::getLoggerModuleName(), true);
         */
         engine = &PR00FsReducedRenderingEngine::createAndGet();
-        engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
+        engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         tm = &engine->getTextureManager();
         mm = &engine->getMaterialManager();
 
@@ -190,16 +190,16 @@ private:
 
     bool testIsBlendFuncBlends()
     {
-        return assertFalse(PureMaterial::isBlendFuncReallyBlending(Pure_ONE, Pure_ZERO), "(ONE, ZERO)") &
-            assertTrue(PureMaterial::isBlendFuncReallyBlending(Pure_ONE, Pure_ONE), "(ONE, ONE)") &
-            assertTrue(PureMaterial::isBlendFuncReallyBlending(Pure_SRC_COLOR, Pure_ZERO), "(SRC_COLOR, ZERO)") &
-            assertTrue(PureMaterial::isBlendFuncReallyBlending(Pure_DST_COLOR, Pure_ONE), "(DST_COLOR, ONE)") &
-            assertTrue(PureMaterial::isBlendFuncReallyBlending(Pure_ZERO, Pure_DST_ALPHA), "(ZERO, DST_ALPHA)") &
-            assertTrue(PureMaterial::isBlendFuncReallyBlending(Pure_ONE_MINUS_CONSTANT_COLOR, Pure_ONE), "(ONE_MINUS_CONSTANT_COLOR, ONE)") &
-            assertTrue(PureMaterial::isBlendFuncReallyBlending(Pure_CONSTANT_COLOR, Pure_ONE), "(CONSTANT_COLOR, ONE)") &
-            assertTrue(PureMaterial::isBlendFuncReallyBlending(Pure_ZERO, Pure_ONE_MINUS_DST_ALPHA), "(ZERO, ONE_MINUS_DST_ALPHA)") &
-            assertTrue(PureMaterial::isBlendFuncReallyBlending(Pure_ZERO, Pure_CONSTANT_ALPHA), "(ZERO, CONSTANT_ALPHA)") &
-            assertTrue(PureMaterial::isBlendFuncReallyBlending(Pure_SRC_ALPHA_SATURATE, Pure_ONE), "(SRC_ALPHA_SATURATE, ONE)");
+        return assertFalse(PureMaterial::isBlendFuncReallyBlending(PURE_ONE, PURE_ZERO), "(ONE, ZERO)") &
+            assertTrue(PureMaterial::isBlendFuncReallyBlending(PURE_ONE, PURE_ONE), "(ONE, ONE)") &
+            assertTrue(PureMaterial::isBlendFuncReallyBlending(PURE_SRC_COLOR, PURE_ZERO), "(SRC_COLOR, ZERO)") &
+            assertTrue(PureMaterial::isBlendFuncReallyBlending(PURE_DST_COLOR, PURE_ONE), "(DST_COLOR, ONE)") &
+            assertTrue(PureMaterial::isBlendFuncReallyBlending(PURE_ZERO, PURE_DST_ALPHA), "(ZERO, DST_ALPHA)") &
+            assertTrue(PureMaterial::isBlendFuncReallyBlending(PURE_ONE_MINUS_CONSTANT_COLOR, PURE_ONE), "(ONE_MINUS_CONSTANT_COLOR, ONE)") &
+            assertTrue(PureMaterial::isBlendFuncReallyBlending(PURE_CONSTANT_COLOR, PURE_ONE), "(CONSTANT_COLOR, ONE)") &
+            assertTrue(PureMaterial::isBlendFuncReallyBlending(PURE_ZERO, PURE_ONE_MINUS_DST_ALPHA), "(ZERO, ONE_MINUS_DST_ALPHA)") &
+            assertTrue(PureMaterial::isBlendFuncReallyBlending(PURE_ZERO, PURE_CONSTANT_ALPHA), "(ZERO, CONSTANT_ALPHA)") &
+            assertTrue(PureMaterial::isBlendFuncReallyBlending(PURE_SRC_ALPHA_SATURATE, PURE_ONE), "(SRC_ALPHA_SATURATE, ONE)");
         // not checking every combination, no problem
     }
 
@@ -207,23 +207,23 @@ private:
     {
         const PureColor clrWhite(255,255,255,255);
 
-        const TPureuint nMaxLayers = mm->getMaximumLayerCount();
+        const TPureUInt nMaxLayers = mm->getMaximumLayerCount();
         bool b = true;
-        TPureuint i = 0;
+        TPureUInt i = 0;
 
         while ( i < nMaxLayers )
         {
             // by default no array is allocated
-            b &= assertEquals((TPureuint) 0, mat->getColorsCount(i), "getColorsCount") &
+            b &= assertEquals((TPureUInt) 0, mat->getColorsCount(i), "getColorsCount") &
                 assertNull(mat->getColors(i), "getColors") &
-                assertEquals((TPureuint)0, mat->getIndicesCount(), "getIndicesCount") &
-                assertEquals((TPureuint)0, mat->getTexcoordsCount(i), "getTexcoordsCount") &
+                assertEquals((TPureUInt)0, mat->getIndicesCount(), "getIndicesCount") &
+                assertEquals((TPureUInt)0, mat->getTexcoordsCount(i), "getTexcoordsCount") &
                 assertNull(mat->getTexcoords(i), "getTexcoords") &
                 assertNull(mat->getTexture(i), "getTexture") &
                 assertTrue(clrWhite == mat->getTextureEnvColor(i), "getTextureEnvColor") &
-                assertEquals(TPure_BLENDFACTOR::Pure_ONE, mat->getSourceBlendFunc(i), "getSourceBlendFunc") &
-                assertEquals(TPure_BLENDFACTOR::Pure_ZERO, mat->getDestinationBlendFunc(i), "getDestinationBlendFunc") &
-                assertEquals(TPure_BLENDMODE::Pure_BM_NONE, mat->getBlendMode(i), "getBlendMode");
+                assertEquals(TPURE_BLENDFACTOR::PURE_ONE, mat->getSourceBlendFunc(i), "getSourceBlendFunc") &
+                assertEquals(TPURE_BLENDFACTOR::PURE_ZERO, mat->getDestinationBlendFunc(i), "getDestinationBlendFunc") &
+                assertEquals(TPURE_BLENDMODE::PURE_BM_NONE, mat->getBlendMode(i), "getBlendMode");
             i++;
         }
         std::stringstream ss;
@@ -247,15 +247,15 @@ private:
 
     bool testAllocateArrays()
     {
-        const TPureuint nColors    = 5;
-        const TPureuint nTexCoords = 6;
-        const TPureuint nIndices   = 7;
-        const TPureuint nIndexSize = 4;
+        const TPureUInt nColors    = 5;
+        const TPureUInt nTexCoords = 6;
+        const TPureUInt nIndices   = 7;
+        const TPureUInt nIndexSize = 4;
 
         const bool bAlloc = assertTrue(mat->allocateArrays(nColors, nTexCoords, nIndices, nIndexSize), "allocate");
 
         bool b = true;
-        TPureuint  i = 0;
+        TPureUInt  i = 0;
         while ( i < mm->getMaximumLayerCount() )
         {
             b &= assertEquals(nColors, mat->getColorsCount(i), "getColorsCount") &
@@ -296,17 +296,17 @@ private:
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
 
-        bool b = assertEquals((TPureuint)0, mat->getTextureCount(), "1st");
+        bool b = assertEquals((TPureUInt)0, mat->getTextureCount(), "1st");
 
         b &= assertTrue(mat->setTexture(tex128x128x24), "setTexture text128x128x24");
-        b &= assertEquals((TPureuint)1, mat->getTextureCount(), "2nd");
+        b &= assertEquals((TPureUInt)1, mat->getTextureCount(), "2nd");
 
         b &= assertTrue(mat->setTexture(NULL), "setTexture NULL");
         b &= assertTrue(mat->setTexture(tex128x128x24, 1), "setTexture text128x128x24, 1");
-        b &= assertEquals((TPureuint)1, mat->getTextureCount(), "3rd");
+        b &= assertEquals((TPureUInt)1, mat->getTextureCount(), "3rd");
 
         b &= assertTrue(mat->setTexture(tex128x128x24), "setTexture text128x128x24");
-        b &= assertEquals((TPureuint)2, mat->getTextureCount(), "4th");
+        b &= assertEquals((TPureUInt)2, mat->getTextureCount(), "4th");
 
         return b;
     }
@@ -383,29 +383,29 @@ private:
         mat->SetUtiliser(sampleUtiliser);
         bool b = assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 1");
 
-        b &= assertTrue(mat->setSourceBlendFunc(TPure_BLENDFACTOR::Pure_CONSTANT_ALPHA), "Pure_CONSTANT_ALPHA");
-        b &= assertEquals( TPure_BLENDFACTOR::Pure_CONSTANT_ALPHA, mat->getSourceBlendFunc(), "1st") &
+        b &= assertTrue(mat->setSourceBlendFunc(TPURE_BLENDFACTOR::PURE_CONSTANT_ALPHA), "PURE_CONSTANT_ALPHA");
+        b &= assertEquals( TPURE_BLENDFACTOR::PURE_CONSTANT_ALPHA, mat->getSourceBlendFunc(), "1st") &
             assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 2");
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 3");
 
-        b &= assertTrue(mat->setSourceBlendFunc(TPure_BLENDFACTOR::Pure_CONSTANT_COLOR, 1), "Pure_CONSTANT_COLOR");
-        b &= assertEquals( TPure_BLENDFACTOR::Pure_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "2nd") &
+        b &= assertTrue(mat->setSourceBlendFunc(TPURE_BLENDFACTOR::PURE_CONSTANT_COLOR, 1), "PURE_CONSTANT_COLOR");
+        b &= assertEquals( TPURE_BLENDFACTOR::PURE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "2nd") &
             assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 4");
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 5");
 
-        b &= assertFalse(mat->setSourceBlendFunc(TPure_BLENDFACTOR::Pure_SRC_COLOR), "Pure_SRC_COLOR"); // invalid src param
-        b &= assertEquals( TPure_BLENDFACTOR::Pure_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "3rd") &
+        b &= assertFalse(mat->setSourceBlendFunc(TPURE_BLENDFACTOR::PURE_SRC_COLOR), "PURE_SRC_COLOR"); // invalid src param
+        b &= assertEquals( TPURE_BLENDFACTOR::PURE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "3rd") &
             assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 6");
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 7");
 
-        b &= assertFalse(mat->setSourceBlendFunc(TPure_BLENDFACTOR::Pure_ONE_MINUS_SRC_COLOR), "Pure_ONE_MINUS_SRC_COLOR"); // invalid src param
-        b &= assertEquals( TPure_BLENDFACTOR::Pure_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "4th") &
+        b &= assertFalse(mat->setSourceBlendFunc(TPURE_BLENDFACTOR::PURE_ONE_MINUS_SRC_COLOR), "PURE_ONE_MINUS_SRC_COLOR"); // invalid src param
+        b &= assertEquals( TPURE_BLENDFACTOR::PURE_CONSTANT_COLOR, mat->getSourceBlendFunc(1), "4th") &
             assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 8");
 
         return b;
@@ -423,36 +423,36 @@ private:
         mat->SetUtiliser(sampleUtiliser);
         bool b = assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 1");
 
-        b &= assertTrue(mat->setDestinationBlendFunc(TPure_BLENDFACTOR::Pure_CONSTANT_ALPHA), "Pure_CONSTANT_ALPHA");
-        b &= assertEquals( TPure_BLENDFACTOR::Pure_CONSTANT_ALPHA, mat->getDestinationBlendFunc(), "1st") &
+        b &= assertTrue(mat->setDestinationBlendFunc(TPURE_BLENDFACTOR::PURE_CONSTANT_ALPHA), "PURE_CONSTANT_ALPHA");
+        b &= assertEquals( TPURE_BLENDFACTOR::PURE_CONSTANT_ALPHA, mat->getDestinationBlendFunc(), "1st") &
             assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 2");
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 3");
 
-        b &= assertTrue(mat->setDestinationBlendFunc(TPure_BLENDFACTOR::Pure_CONSTANT_COLOR, 1), "Pure_CONSTANT_COLOR");
-        b &= assertEquals( TPure_BLENDFACTOR::Pure_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "2nd") &
+        b &= assertTrue(mat->setDestinationBlendFunc(TPURE_BLENDFACTOR::PURE_CONSTANT_COLOR, 1), "PURE_CONSTANT_COLOR");
+        b &= assertEquals( TPURE_BLENDFACTOR::PURE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "2nd") &
             assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 4");
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 5");
 
-        b &= assertFalse(mat->setDestinationBlendFunc(TPure_BLENDFACTOR::Pure_DST_COLOR, 1), "Pure_DST_COLOR"); // invalid dst param
-        b &= assertEquals( TPure_BLENDFACTOR::Pure_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "3rd") &
+        b &= assertFalse(mat->setDestinationBlendFunc(TPURE_BLENDFACTOR::PURE_DST_COLOR, 1), "PURE_DST_COLOR"); // invalid dst param
+        b &= assertEquals( TPURE_BLENDFACTOR::PURE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "3rd") &
             assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 6");
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 7");
 
-        b &= assertFalse(mat->setDestinationBlendFunc(TPure_BLENDFACTOR::Pure_ONE_MINUS_DST_COLOR, 1), "Pure_ONE_MINUS_DST_COLOR"); // invalid dst param
-        b &= assertEquals( TPure_BLENDFACTOR::Pure_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "4th") &
+        b &= assertFalse(mat->setDestinationBlendFunc(TPURE_BLENDFACTOR::PURE_ONE_MINUS_DST_COLOR, 1), "PURE_ONE_MINUS_DST_COLOR"); // invalid dst param
+        b &= assertEquals( TPURE_BLENDFACTOR::PURE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "4th") &
             assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 8");
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 9");
 
-        b &= assertFalse(mat->setDestinationBlendFunc(TPure_BLENDFACTOR::Pure_SRC_ALPHA_SATURATE, 1), "Pure_SRC_ALPHA_SATURATE"); // invalid dst param
-        b &= assertEquals( TPure_BLENDFACTOR::Pure_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "5th") &
+        b &= assertFalse(mat->setDestinationBlendFunc(TPURE_BLENDFACTOR::PURE_SRC_ALPHA_SATURATE, 1), "PURE_SRC_ALPHA_SATURATE"); // invalid dst param
+        b &= assertEquals( TPURE_BLENDFACTOR::PURE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "5th") &
             assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 10");
 
         return b;
@@ -470,57 +470,57 @@ private:
         mat->SetUtiliser(sampleUtiliser);
         bool b = assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 1");
 
-        b &= assertTrue(mat->setBlendFuncs(Pure_CONSTANT_ALPHA, Pure_CONSTANT_COLOR), "Pure_CONSTANT_ALPHA, Pure_CONSTANT_COLOR");
-        b &= assertEquals( Pure_CONSTANT_ALPHA, mat->getSourceBlendFunc(), "1st src") &
-            assertEquals( Pure_CONSTANT_COLOR, mat->getDestinationBlendFunc(), "1st dst") &
+        b &= assertTrue(mat->setBlendFuncs(PURE_CONSTANT_ALPHA, PURE_CONSTANT_COLOR), "PURE_CONSTANT_ALPHA, PURE_CONSTANT_COLOR");
+        b &= assertEquals( PURE_CONSTANT_ALPHA, mat->getSourceBlendFunc(), "1st src") &
+            assertEquals( PURE_CONSTANT_COLOR, mat->getDestinationBlendFunc(), "1st dst") &
             assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 1");
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 2");
 
-        b &= assertTrue(mat->setBlendFuncs(Pure_CONSTANT_ALPHA, Pure_CONSTANT_COLOR, 1), "RRE_CONSTANT_ALPHA, Pure_CONSTANT_COLOR, 1");
-        b &= assertEquals( Pure_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "2nd src") &
-            assertEquals( Pure_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "2nd dst") &
+        b &= assertTrue(mat->setBlendFuncs(PURE_CONSTANT_ALPHA, PURE_CONSTANT_COLOR, 1), "RRE_CONSTANT_ALPHA, PURE_CONSTANT_COLOR, 1");
+        b &= assertEquals( PURE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "2nd src") &
+            assertEquals( PURE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "2nd dst") &
             assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 3");
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 4");
 
-        b &= assertFalse(mat->setBlendFuncs(Pure_SRC_COLOR, Pure_CONSTANT_COLOR, 1), "Pure_SRC_COLOR, Pure_CONSTANT_COLOR, 1"); // invalid src param
-        b &= assertEquals( Pure_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "3rd src") &
-            assertEquals( Pure_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "3rd dst") &
+        b &= assertFalse(mat->setBlendFuncs(PURE_SRC_COLOR, PURE_CONSTANT_COLOR, 1), "PURE_SRC_COLOR, PURE_CONSTANT_COLOR, 1"); // invalid src param
+        b &= assertEquals( PURE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "3rd src") &
+            assertEquals( PURE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "3rd dst") &
             assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 5"); // srcBlendFunc is invalid, so dstBlendFunc will not be invoked at all thus no call to change handler!
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 6");
 
-        b &= assertFalse(mat->setBlendFuncs(Pure_ONE_MINUS_SRC_COLOR, Pure_CONSTANT_COLOR, 1), "Pure_ONE_MINUS_SRC_COLOR, Pure_CONSTANT_COLOR, 1"); // invalid src param
-        b &= assertEquals( Pure_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "4th src") &
-            assertEquals( Pure_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "4th dst") &
+        b &= assertFalse(mat->setBlendFuncs(PURE_ONE_MINUS_SRC_COLOR, PURE_CONSTANT_COLOR, 1), "PURE_ONE_MINUS_SRC_COLOR, PURE_CONSTANT_COLOR, 1"); // invalid src param
+        b &= assertEquals( PURE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "4th src") &
+            assertEquals( PURE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "4th dst") &
             assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 7"); // srcBlendFunc is invalid, so dstBlendFunc will not be invoked at all thus no call to change handler!
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 8");
 
-        b &= assertFalse(mat->setBlendFuncs(Pure_CONSTANT_ALPHA, Pure_DST_COLOR, 1), "Pure_CONSTANT_ALPHA, Pure_DST_COLOR, 1"); // invalid dst param
-        b &= assertEquals( Pure_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "5th src") &
-            assertEquals( Pure_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "5th dst") &
+        b &= assertFalse(mat->setBlendFuncs(PURE_CONSTANT_ALPHA, PURE_DST_COLOR, 1), "PURE_CONSTANT_ALPHA, PURE_DST_COLOR, 1"); // invalid dst param
+        b &= assertEquals( PURE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "5th src") &
+            assertEquals( PURE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "5th dst") &
             assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 9"); // srcBlendFunc is valid, so that will be set and will invoke change handler!
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 10");
 
-        b &= assertFalse(mat->setBlendFuncs(Pure_CONSTANT_ALPHA, Pure_ONE_MINUS_DST_COLOR, 1), "Pure_CONSTANT_ALPHA, Pure_ONE_MINUS_DST_COLOR, 1"); // invalid dst param
-        b &= assertEquals( Pure_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "6th src") &
-            assertEquals( Pure_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "6th dst") &
+        b &= assertFalse(mat->setBlendFuncs(PURE_CONSTANT_ALPHA, PURE_ONE_MINUS_DST_COLOR, 1), "PURE_CONSTANT_ALPHA, PURE_ONE_MINUS_DST_COLOR, 1"); // invalid dst param
+        b &= assertEquals( PURE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "6th src") &
+            assertEquals( PURE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "6th dst") &
             assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 11"); // srcBlendFunc is valid, so that will be set and will invoke change handler!
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 12");
 
-        b &= assertFalse(mat->setBlendFuncs(Pure_CONSTANT_ALPHA, Pure_SRC_ALPHA_SATURATE, 1), "Pure_CONSTANT_ALPHA, Pure_SRC_ALPHA_SATURATE, 1"); // invalid dst param
-        b &= assertEquals( Pure_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "7th src") &
-            assertEquals( Pure_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "7th dst") &
+        b &= assertFalse(mat->setBlendFuncs(PURE_CONSTANT_ALPHA, PURE_SRC_ALPHA_SATURATE, 1), "PURE_CONSTANT_ALPHA, PURE_SRC_ALPHA_SATURATE, 1"); // invalid dst param
+        b &= assertEquals( PURE_CONSTANT_ALPHA, mat->getSourceBlendFunc(1), "7th src") &
+            assertEquals( PURE_CONSTANT_COLOR, mat->getDestinationBlendFunc(1), "7th dst") &
             assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 13"); // srcBlendFunc is valid, so that will be set and will invoke change handler!
 
         return b;
@@ -538,19 +538,19 @@ private:
         mat->SetUtiliser(sampleUtiliser);
         bool b = assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 1");
 
-        b &= assertTrue(mat->setBlendMode(TPure_BLENDMODE::Pure_BM_STANDARD_TRANSPARENCY), "Pure_BM_STANDARD_TRANSPARENCY");
-        b &= assertEquals( Pure_BM_STANDARD_TRANSPARENCY, mat->getBlendMode(), "1st mode") & 
-            assertEquals( Pure_SRC_ALPHA, mat->getSourceBlendFunc(), "1st src") &
-            assertEquals( Pure_ONE_MINUS_SRC_ALPHA, mat->getDestinationBlendFunc(), "1st dst") &
+        b &= assertTrue(mat->setBlendMode(TPURE_BLENDMODE::PURE_BM_STANDARD_TRANSPARENCY), "PURE_BM_STANDARD_TRANSPARENCY");
+        b &= assertEquals( PURE_BM_STANDARD_TRANSPARENCY, mat->getBlendMode(), "1st mode") & 
+            assertEquals( PURE_SRC_ALPHA, mat->getSourceBlendFunc(), "1st src") &
+            assertEquals( PURE_ONE_MINUS_SRC_ALPHA, mat->getDestinationBlendFunc(), "1st dst") &
             assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 2");
 
         sampleManager.ResetHandleManagedPropertyChangedInvoked();
         b &= assertFalse(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 3");
 
-        b &= assertTrue(mat->setBlendMode(TPure_BLENDMODE::Pure_BM_NONE, 1), "Pure_BM_NONE, 1");
-        b &= assertEquals( Pure_BM_NONE, mat->getBlendMode(1), "2nd mode") & 
-            assertEquals( Pure_ONE, mat->getSourceBlendFunc(1), "2nd src") &
-            assertEquals( Pure_ZERO, mat->getDestinationBlendFunc(1), "2nd dst") &
+        b &= assertTrue(mat->setBlendMode(TPURE_BLENDMODE::PURE_BM_NONE, 1), "PURE_BM_NONE, 1");
+        b &= assertEquals( PURE_BM_NONE, mat->getBlendMode(1), "2nd mode") & 
+            assertEquals( PURE_ONE, mat->getSourceBlendFunc(1), "2nd src") &
+            assertEquals( PURE_ZERO, mat->getDestinationBlendFunc(1), "2nd dst") &
             assertTrue(sampleManager.isHandleManagedPropertyChangedInvoked(), "propChangedInvoked 4");
 
         return b;
@@ -569,13 +569,13 @@ private:
         bool b = assertFalse(mat->copyFromMaterial(*mat2, 0, 0), "1st");  // should fail due to non-matching array layout
        
         // make sure nothing has been changed in mat
-        TPureuint i = 0;
+        TPureUInt i = 0;
         while ( i < mm->getMaximumLayerCount() )
         {
-            b &= assertEquals((TPureuint) 0, mat->getColorsCount(i), "getColorsCount") &
+            b &= assertEquals((TPureUInt) 0, mat->getColorsCount(i), "getColorsCount") &
                 assertNull(mat->getColors(i), "getColors") &
-                assertEquals((TPureuint)0, mat->getIndicesCount(), "getIndicesCount") &
-                assertEquals((TPureuint)0, mat->getTexcoordsCount(i), "getTexcoordsCount") &
+                assertEquals((TPureUInt)0, mat->getIndicesCount(), "getIndicesCount") &
+                assertEquals((TPureUInt)0, mat->getTexcoordsCount(i), "getTexcoordsCount") &
                 assertNull(mat->getTexcoords(i), "getTexcoords");
             i++;
         }
@@ -591,10 +591,10 @@ private:
         i = 0;
         while ( i < mm->getMaximumLayerCount() )
         {
-            b &= assertEquals((TPureuint) 2, mat->getColorsCount(i), "getColorsCount") &
+            b &= assertEquals((TPureUInt) 2, mat->getColorsCount(i), "getColorsCount") &
                 assertNotNull(mat->getColors(i), "getColors") &
-                assertEquals((TPureuint)2, mat->getIndicesCount(), "getIndicesCount") &
-                assertEquals((TPureuint)2, mat->getTexcoordsCount(i), "getTexcoordsCount") &
+                assertEquals((TPureUInt)2, mat->getIndicesCount(), "getIndicesCount") &
+                assertEquals((TPureUInt)2, mat->getTexcoordsCount(i), "getTexcoordsCount") &
                 assertNotNull(mat->getTexcoords(i), "getTexcoords");
             i++;
         }

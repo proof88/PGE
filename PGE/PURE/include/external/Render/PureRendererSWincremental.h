@@ -25,13 +25,13 @@
 class PureRendererSWincremental :
     public PureIRenderer
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureRendererSWincremental is included")
 #endif
 
 public:
     /** Default render hints for PureRendererSWincremental. */
-    static const TPure_RENDER_HINT DefaultHints = 0;
+    static const TPURE_RENDER_HINT DefaultHints = 0;
 
     static PureRendererSWincremental& createAndGet(
         PureWindow& _wnd,
@@ -59,12 +59,12 @@ public:
 
         @return The result of the initialization. 0 on success, 1 otherwise.
     */
-    virtual TPureuint initialize(
-        TPureuint width, TPureuint height,
-        TPure_DISPLAY_MODES dmode,
-        TPureuint freq, TPureint cdepth,
-        TPureint zdepth, TPureint stencil,
-        TPureint samples,
+    virtual TPureUInt initialize(
+        TPureUInt width, TPureUInt height,
+        TPURE_DISPLAY_MODES dmode,
+        TPureUInt freq, TPureInt cdepth,
+        TPureInt zdepth, TPureInt stencil,
+        TPureInt samples,
         HWND window = NULL) = 0;
 
     /**
@@ -73,7 +73,7 @@ public:
     */
     virtual void RenderObject(PureObject3D& object) = 0;
 
-    virtual void ShowGuiDemo(TPurebool state) = 0;
+    virtual void ShowGuiDemo(TPureBool state) = 0;
 
 
 }; // PureRendererHWfixedPipe

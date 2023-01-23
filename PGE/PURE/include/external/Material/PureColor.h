@@ -22,7 +22,7 @@
 */
 class PureColor
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureColor is included")
 #endif
 
@@ -35,52 +35,52 @@ public:
     PureColor(const PureColor& cm);
 
     PureColor(
-        const TPureubyte& red,
-        const TPureubyte& green,
-        const TPureubyte& blue,
-        const TPureubyte& alpha = 0);    /**< Constructs a color. */
+        const TPureUByte& red,
+        const TPureUByte& green,
+        const TPureUByte& blue,
+        const TPureUByte& alpha = 0);    /**< Constructs a color. */
 
-    TPureubyte getRed() const;           /**< Gets red component. */
-    TPureubyte getGreen() const;         /**< Gets green component. */
-    TPureubyte getBlue() const;          /**< Gets blue component. */
-    TPureubyte getAlpha() const;         /**< Gets alpha component. */
+    TPureUByte getRed() const;           /**< Gets red component. */
+    TPureUByte getGreen() const;         /**< Gets green component. */
+    TPureUByte getBlue() const;          /**< Gets blue component. */
+    TPureUByte getAlpha() const;         /**< Gets alpha component. */
 
     void Set(
-        TPureubyte red,
-        TPureubyte green,
-        TPureubyte blue,
-        TPureubyte alpha = 0);           /**< Sets all color components. */
+        TPureUByte red,
+        TPureUByte green,
+        TPureUByte blue,
+        TPureUByte alpha = 0);           /**< Sets all color components. */
 
-    void SetRed(TPureubyte red);         /**< Sets red component. */
-    void SetGreen(TPureubyte green);     /**< Sets green component. */
-    void SetBlue(TPureubyte blue);       /**< Sets blue component. */
-    void SetAlpha(TPureubyte alpha);     /**< Sets alpha component. */
+    void SetRed(TPureUByte red);         /**< Sets red component. */
+    void SetGreen(TPureUByte green);     /**< Sets green component. */
+    void SetBlue(TPureUByte blue);       /**< Sets blue component. */
+    void SetAlpha(TPureUByte alpha);     /**< Sets alpha component. */
 
-    TPurefloat getRedAsFloat() const;    /**< Gets red component. */
-    TPurefloat getGreenAsFloat() const;  /**< Gets green component. */
-    TPurefloat getBlueAsFloat() const;   /**< Gets blue component. */
-    TPurefloat getAlphaAsFloat() const;  /**< Gets alpha component. */
+    TPureFloat getRedAsFloat() const;    /**< Gets red component. */
+    TPureFloat getGreenAsFloat() const;  /**< Gets green component. */
+    TPureFloat getBlueAsFloat() const;   /**< Gets blue component. */
+    TPureFloat getAlphaAsFloat() const;  /**< Gets alpha component. */
 
     void SetAsFloats(
-        TPurefloat red,
-        TPurefloat green,
-        TPurefloat blue,
-        TPurefloat alpha = 0.0f);        /**< Sets all color components. */
+        TPureFloat red,
+        TPureFloat green,
+        TPureFloat blue,
+        TPureFloat alpha = 0.0f);        /**< Sets all color components. */
 
-    void SetRedAsFloat(TPurefloat red);        /**< Sets red component. */
-    void SetGreenAsFloat(TPurefloat green);    /**< Sets green component. */
-    void SetBlueAsFloat(TPurefloat blue);      /**< Sets blue component. */
-    void SetAlphaAsFloat(TPurefloat alpha);    /**< Sets alpha component. */
+    void SetRedAsFloat(TPureFloat red);        /**< Sets red component. */
+    void SetGreenAsFloat(TPureFloat green);    /**< Sets green component. */
+    void SetBlueAsFloat(TPureFloat blue);      /**< Sets blue component. */
+    void SetAlphaAsFloat(TPureFloat alpha);    /**< Sets alpha component. */
 
-    TPurebool operator==(const PureColor& clr) const;  /**< Equals to operator. */
-    TPurebool operator!=(const PureColor& clr) const;  /**< Not equals to operator. */
+    TPureBool operator==(const PureColor& clr) const;  /**< Equals to operator. */
+    TPureBool operator!=(const PureColor& clr) const;  /**< Not equals to operator. */
     PureColor& operator=(const PureColor& vec);        /**< Assignment operator. */
 
 private:
 
     // ---------------------------------------------------------------------------
 
-    TPureubyte r, g, b, a;
+    TPureUByte r, g, b, a;
 
 }; // class PureColor
 

@@ -42,7 +42,7 @@ protected:
         if ( engine == NULL )
         {
             engine = &PR00FsReducedRenderingEngine::createAndGet();
-            ret &= assertEquals((TPureuint)0, engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
+            ret &= assertEquals((TPureUInt)0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
             om = &engine->getObject3DManager();
             ret &= assertNotNull(om, "om null");
         }
@@ -85,8 +85,8 @@ private:
         return assertEquals(1.0f, tree.getPos().getX(), "pos.x") &
         assertEquals(2.0f, tree.getPos().getY(), "pos.y") &
         assertEquals(3.0f, tree.getPos().getZ(), "pos.z") &
-        assertEquals((TPureuint)3, tree.getMaxDepthLevel(), "max depth level") &
-        assertEquals((TPureuint)0, tree.getDepthLevel(), "root node depth level") &
+        assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
+        assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
         assertEquals(1000.0f, tree.getSize(), "size") &
         assertEquals(PureOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
         assertEquals((std::size_t)0, tree.getChildren().size(), "children") &
@@ -184,8 +184,8 @@ private:
             assertEquals(treeOrigin.getX(), tree.getPos().getX(), "tree pos.x") &
             assertEquals(treeOrigin.getY(), tree.getPos().getY(), "tree pos.y") &
             assertEquals(treeOrigin.getZ(), tree.getPos().getZ(), "tree pos.z") &
-            assertEquals((TPureuint)2, tree.getMaxDepthLevel(), "tree max depth level") &
-            assertEquals((TPureuint)0, tree.getDepthLevel(), "tree depth level") &
+            assertEquals((TPureUInt)2, tree.getMaxDepthLevel(), "tree max depth level") &
+            assertEquals((TPureUInt)0, tree.getDepthLevel(), "tree depth level") &
             assertEquals(1000.0f, tree.getSize(), "tree size") &
             assertEquals(PureOctree::NodeType::Parent, tree.getNodeType(), "tree nodeType") &
             assertEquals((std::size_t)8, tree.getChildren().size(), "tree children") &
@@ -197,8 +197,8 @@ private:
         {
             b &= assertEquals(500.0f, tree.getChildren()[i]->getSize(), (std::string("node 1 children ") + std::to_string(i) + " size").c_str());
             b &= assertEquals(&tree, tree.getChildren()[i]->getParent(), (std::string("node 1 children ") + std::to_string(i) + " parent").c_str());
-            b &= assertEquals((TPureuint)2, tree.getChildren()[i]->getMaxDepthLevel(), (std::string("node 1 children ") + std::to_string(i) + " maxDepthLevel").c_str());
-            b &= assertEquals((TPureuint)1, tree.getChildren()[i]->getDepthLevel(), (std::string("node 1 children ") + std::to_string(i) + " depthLevel").c_str());
+            b &= assertEquals((TPureUInt)2, tree.getChildren()[i]->getMaxDepthLevel(), (std::string("node 1 children ") + std::to_string(i) + " maxDepthLevel").c_str());
+            b &= assertEquals((TPureUInt)1, tree.getChildren()[i]->getDepthLevel(), (std::string("node 1 children ") + std::to_string(i) + " depthLevel").c_str());
         }
 
         // check level 1 nodes' different properties too
@@ -274,8 +274,8 @@ private:
         {
             b &= assertEquals(250.0f, tree_BRF.getChildren()[i]->getSize(), (std::string("tree_BRF children ") + std::to_string(i) + " size").c_str());
             b &= assertEquals(&tree_BRF, tree_BRF.getChildren()[i]->getParent(), (std::string("node 1 children ") + std::to_string(i) + " parent").c_str());
-            b &= assertEquals((TPureuint)2, tree_BRF.getChildren()[i]->getMaxDepthLevel(), (std::string("tree_BRF children ") + std::to_string(i) + " maxDepthLevel").c_str());
-            b &= assertEquals((TPureuint)2, tree_BRF.getChildren()[i]->getDepthLevel(), (std::string("tree_BRF children ") + std::to_string(i) + " depthLevel").c_str());
+            b &= assertEquals((TPureUInt)2, tree_BRF.getChildren()[i]->getMaxDepthLevel(), (std::string("tree_BRF children ") + std::to_string(i) + " maxDepthLevel").c_str());
+            b &= assertEquals((TPureUInt)2, tree_BRF.getChildren()[i]->getDepthLevel(), (std::string("tree_BRF children ") + std::to_string(i) + " depthLevel").c_str());
         }
 
         // check level 2 nodes' different properties too

@@ -26,7 +26,7 @@
 */
 class PureAxisAlignedBoundingBox
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureAxisAlignedBoundingBox is included")
 #endif
 
@@ -41,8 +41,8 @@ public:
     const PureVector& getPosVec() const;                      /**< Gets the world-space position which is the center of the bounding box. */
     const PureVector& getSizeVec() const;                     /**< Gets the base sizes. */
 
-    TPurebool isInside(const PureVector& p) const;                     /**< Is the given point inside the bounding box? */
-    TPurebool isInside(const PureAxisAlignedBoundingBox& aabb) const;  /**< Is the given box inside the bounding box? */
+    TPureBool isInside(const PureVector& p) const;                     /**< Is the given point inside the bounding box? */
+    TPureBool isInside(const PureAxisAlignedBoundingBox& aabb) const;  /**< Is the given box inside the bounding box? */
     void ExtendBy(const PureVector& p);                                /**< Extends the size of the bounding box so the given point will be inside the box. */
     void ExtendBy(const PureAxisAlignedBoundingBox& aabb);             /**< Extends the size of the bounding box so the given box will be inside the box. */
 

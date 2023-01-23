@@ -93,9 +93,9 @@ private:
             assertTrue(vForward == cam.getTargetVec(), "target") &
             assertTrue(vPos == cam.getPosVec(), "pos") &
             assertEquals(cam.getViewport().size.width / cam.getViewport().size.height, cam.getAspectRatio(), "ratio") &
-            assertEquals(TPure_ASPECTRATIO_MODE::Pure_AM_FIX, cam.getAspectRatioMode(), "ratio mode") &
+            assertEquals(TPURE_ASPECTRATIO_MODE::PURE_AM_FIX, cam.getAspectRatioMode(), "ratio mode") &
             assertTrue(clrBg == cam.getBackgroundColor(), "bg color") &
-            assertEquals(Pure_CLEAR_ZBUFFER_COLORBUFFER, cam.getClearMode(), "clear mode") &
+            assertEquals(PURE_CLEAR_ZBUFFER_COLORBUFFER, cam.getClearMode(), "clear mode") &
             assertTrue(cam.getNearPlane() > 0.0f, "nearplane") &
             assertTrue(cam.getFarPlane() > cam.getNearPlane(), "farplane") &
             assertTrue(cam.getFieldOfView() > 0.0f && cam.getFieldOfView() <= 180.0f, "fov");
@@ -108,8 +108,8 @@ private:
         cam.getTargetVec().Set(1, 2, 3);
         cam.getUpVec().Set(1, 2, 3);
         cam.SetAspectRatio(3);
-        cam.SetAspectRatioMode(Pure_AM_DYNAMIC);
-        cam.SetClearMode(Pure_CLEAR_ZBUFFER);
+        cam.SetAspectRatioMode(PURE_AM_DYNAMIC);
+        cam.SetClearMode(PURE_CLEAR_ZBUFFER);
         cam.SetFarPlane(20);
         cam.SetNearPlane(2);
         cam.SetFieldOfView(50);
@@ -169,9 +169,9 @@ private:
     bool testSetAspectRatioMode()
     {
         PureCamera cam;
-        cam.SetAspectRatioMode(Pure_AM_DYNAMIC);
+        cam.SetAspectRatioMode(PURE_AM_DYNAMIC);
 
-        return assertEquals(Pure_AM_DYNAMIC, cam.getAspectRatioMode());
+        return assertEquals(PURE_AM_DYNAMIC, cam.getAspectRatioMode());
     }
 
     bool testSetAspectRatio()
@@ -185,9 +185,9 @@ private:
     bool testSetClearMode()
     {
         PureCamera cam;
-        cam.SetClearMode(Pure_CLEAR_ZBUFFER);
+        cam.SetClearMode(PURE_CLEAR_ZBUFFER);
 
-        return assertEquals(Pure_CLEAR_ZBUFFER, cam.getClearMode());
+        return assertEquals(PURE_CLEAR_ZBUFFER, cam.getClearMode());
     }
 
     bool testSetNearPlane()

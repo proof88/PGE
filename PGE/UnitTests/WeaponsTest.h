@@ -35,7 +35,7 @@ protected:
         CConsole::getConsoleInstance().SetLoggingState(Weapon::getLoggerModuleName(), true);
         
         engine = &PR00FsReducedRenderingEngine::createAndGet();
-        engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
+        engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
 
         AddSubTest("test_wpn_load_weapon_bad_assignment", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_bad_assignment);
         AddSubTest("test_wpn_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_unaccepted_var);
@@ -719,7 +719,7 @@ private:
 
             PFL::timeval timeReloadEnded;
             PFL::gettimeofday(&timeReloadEnded, 0);
-            const TPurefloat fMillisecsReloadTook = PFL::getTimeDiffInUs(timeReloadEnded, timeReloadStarted) / 1000.f;
+            const TPureFloat fMillisecsReloadTook = PFL::getTimeDiffInUs(timeReloadEnded, timeReloadStarted) / 1000.f;
 
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 2");
             b &= assertEquals(30u, wpn.getMagBulletCount(), "mag");
@@ -769,7 +769,7 @@ private:
 
             PFL::timeval timeReloadEnded;
             PFL::gettimeofday(&timeReloadEnded, 0);
-            const TPurefloat fMillisecsReloadTook = PFL::getTimeDiffInUs(timeReloadEnded, timeReloadStarted) / 1000.f;
+            const TPureFloat fMillisecsReloadTook = PFL::getTimeDiffInUs(timeReloadEnded, timeReloadStarted) / 1000.f;
 
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 2");
             b &= assertEquals(21u, wpn.getMagBulletCount(), "mag");
@@ -819,7 +819,7 @@ private:
 
             PFL::timeval timeReloadEnded;
             PFL::gettimeofday(&timeReloadEnded, 0);
-            const TPurefloat fMillisecsReloadTook = PFL::getTimeDiffInUs(timeReloadEnded, timeReloadStarted) / 1000.f;
+            const TPureFloat fMillisecsReloadTook = PFL::getTimeDiffInUs(timeReloadEnded, timeReloadStarted) / 1000.f;
 
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 2");
             b &= assertEquals(30u, wpn.getMagBulletCount(), "mag");
@@ -869,7 +869,7 @@ private:
 
             PFL::timeval timeReloadEnded;
             PFL::gettimeofday(&timeReloadEnded, 0);
-            const TPurefloat fMillisecsReloadTook = PFL::getTimeDiffInUs(timeReloadEnded, timeReloadStarted) / 1000.f;
+            const TPureFloat fMillisecsReloadTook = PFL::getTimeDiffInUs(timeReloadEnded, timeReloadStarted) / 1000.f;
 
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 2");
             b &= assertEquals(7u, wpn.getMagBulletCount(), "mag");
@@ -905,8 +905,8 @@ private:
             // bullets count and we remove the observed values from the sets,
             // so after the loop we expect both sets to be empty, proving that
             // bullet counts were changing continuously by 1
-            std::set<TPureuint> expectedMagBulletCounts = {25, 26, 27, 28, 29, 30};
-            std::set<TPureuint> expectedUnmagBulletCounts = {100, 99, 98, 97, 96, 95};
+            std::set<TPureUInt> expectedMagBulletCounts = {25, 26, 27, 28, 29, 30};
+            std::set<TPureUInt> expectedUnmagBulletCounts = {100, 99, 98, 97, 96, 95};
 
             int iWait = 0;
             int nNumWpnUpdateChangedBulletCount = 0;
@@ -1001,8 +1001,8 @@ private:
             wpn.SetUnmagBulletCount(100); // make sure we could reload
             wpn.SetMagBulletCount(14); // full would be 30
 
-            const TPureuint nOriginalMagBulletCount = wpn.getMagBulletCount();
-            const TPureuint nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
+            const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
+            const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
             b &= assertTrue(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
@@ -1036,8 +1036,8 @@ private:
             wpn.SetUnmagBulletCount(100); // make sure we could reload
             wpn.SetMagBulletCount(14); // full would be 30
 
-            const TPureuint nOriginalMagBulletCount = wpn.getMagBulletCount();
-            const TPureuint nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
+            const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
+            const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
             b &= assertTrue(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
@@ -1067,8 +1067,8 @@ private:
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
             b = true;
 
-            const TPureuint nOriginalMagBulletCount = wpn.getMagBulletCount();
-            const TPureuint nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
+            const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
+            const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
             // first shot allowed
             b &= assertTrue(wpn.pullTrigger(), "shoot 1");
@@ -1108,7 +1108,7 @@ private:
             // bullets count and we remove the observed values from the set,
             // so after the loop we expect the set to be empty, proving that
             // bullet counts were changing decreasing by 1
-            std::set<TPureuint> expectedMagBulletCounts = {0, 1, 2, 3, 4, 5, 6};
+            std::set<TPureUInt> expectedMagBulletCounts = {0, 1, 2, 3, 4, 5, 6};
 
             int iWait = 0;
             unsigned int nNumPullTriggerReturnedTrue = 0;
@@ -1170,7 +1170,7 @@ private:
             // bullets count and we remove the observed values from the set,
             // so after the loop we expect the set to be empty, proving that
             // bullet counts were changing decreasing by 1
-            std::set<TPureuint> expectedMagBulletCounts = { 0, 1, 2, 3, 4, 5, 6 };
+            std::set<TPureUInt> expectedMagBulletCounts = { 0, 1, 2, 3, 4, 5, 6 };
     
             // another idea is that in contrast to the automatic-type test above, here we have to release the
             // trigger before any subsequent pull in order to shoot, otherwise it never shoots again.
@@ -1267,8 +1267,8 @@ private:
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
             b = true;
 
-            const TPureuint nOriginalMagBulletCount = wpn.getMagBulletCount();
-            const TPureuint nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
+            const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
+            const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
             b &= assertTrue(wpn.pullTrigger(), "shoot");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 1");
@@ -1297,8 +1297,8 @@ private:
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
             b = true;
 
-            const TPureuint nOriginalMagBulletCount = wpn.getMagBulletCount();
-            const TPureuint nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
+            const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
+            const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
             wpn.pullTrigger(); // default trigger released state is true, this changes to false
             wpn.SetUnmagBulletCount(100); // default would be 0

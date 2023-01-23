@@ -12,7 +12,7 @@
 */
 
 #include "PGEallHeaders.h"
-#include "Pure/include/external/PR00FsReducedRenderingEngine.h"
+#include "PURE/include/external/PR00FsReducedRenderingEngine.h"
 // #include "PURE/PURE.h"
 
 /**
@@ -29,7 +29,7 @@ public:
     virtual ~PGESysGFX();
 
     bool initSysGFX(
-        unsigned int width, unsigned int height, TPure_DISPLAY_MODES dmode, unsigned int freq,
+        unsigned int width, unsigned int height, TPURE_DISPLAY_MODES dmode, unsigned int freq,
         int cdepth, int zdepth, int stencil, int samples );
 
     bool destroySysGFX(void);

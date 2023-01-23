@@ -116,7 +116,7 @@ private:
     bool testPreAlloc()
     {
         PureManager mgr;
-        const TPureint prevSize = mgr.getSize();
+        const TPureInt prevSize = mgr.getSize();
         mgr.PreAlloc(10);
 
         return assertEquals(prevSize + 10, mgr.getSize());

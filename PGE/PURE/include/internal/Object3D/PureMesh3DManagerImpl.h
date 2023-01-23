@@ -21,16 +21,16 @@ class PureMesh3DManager::PureMesh3DManagerImpl
 public:
     virtual ~PureMesh3DManagerImpl();
 
-    TPurebool isInitialized() const;
+    TPureBool isInitialized() const;
 
-    TPurebool isMinimalIndexStorageEnabled() const;
-    void      SetMinimalIndexStorageEnabled(TPurebool state);
+    TPureBool isMinimalIndexStorageEnabled() const;
+    void      SetMinimalIndexStorageEnabled(TPureBool state);
 
-    TPurebool convertToPlane(
-        PureMesh3D& mesh, TPurefloat a, TPurefloat b);                            /**< Converts the given Mesh to a plane with the given sizes. */
+    TPureBool convertToPlane(
+        PureMesh3D& mesh, TPureFloat a, TPureFloat b);                            /**< Converts the given Mesh to a plane with the given sizes. */
 
-    TPurebool convertToBox(
-        PureMesh3D& mesh, TPurefloat a, TPurefloat b, TPurefloat c);              /**< Converts the given Mesh to a box with the given sizes. */
+    TPureBool convertToBox(
+        PureMesh3D& mesh, TPureFloat a, TPureFloat b, TPureFloat c);              /**< Converts the given Mesh to a box with the given sizes. */
 
     PureMaterial* createMaterialForMesh(PureMesh3D& mesh) const;                  /**< Creates a material for the given Mesh if it doesn't yet have one. */
 
@@ -43,9 +43,9 @@ private:
 
     PureMaterialManager& materialMgr;           /**< Used to auto-load/create materials for objects. */
 
-    TPurebool            bInited;               /**< True if successfully inited, false if not functional. */
-    TPureuint            nRunningCounter;       /**< Always increased when creating a new level-1 Mesh3D instance. */
-    TPurebool            bMinimalIndexStorage;  /**< True if storage of indices is minimalized. */
+    TPureBool            bInited;               /**< True if successfully inited, false if not functional. */
+    TPureUInt            nRunningCounter;       /**< Always increased when creating a new level-1 Mesh3D instance. */
+    TPureBool            bMinimalIndexStorage;  /**< True if storage of indices is minimalized. */
 
     // ---------------------------------------------------------------------------
 

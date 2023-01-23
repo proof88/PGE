@@ -26,7 +26,7 @@
 #define PGE_CCONSOLE_IS_ENABLED
 #endif
 
-#define Pure_NAME    "PR00F's Reduced Rendering Engine (Pure)"           /**< Name of the engine. */
-#define Pure_VERSION "0.3 private alpha built on "__DATE__" @ "__TIME__  /**< Version of the engine. */
+#define PURE_NAME    "PR00F's Reduced Rendering Engine (Pure)"           /**< Name of the engine. */
+#define PURE_VERSION "0.3 private alpha built on "__DATE__" @ "__TIME__  /**< Version of the engine. */
 
 

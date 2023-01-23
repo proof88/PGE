@@ -26,7 +26,7 @@
 */
 class PurePosUpTarget
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PurePosUpTarget is included")
 #endif
 
@@ -49,16 +49,16 @@ public:
     PureVector& getUpVec();                     /**< Gets Up vector. */
     const PureVector& getUpVec() const;         /**< Gets Up vector. */
 
-    void Move(TPurefloat amount);               /**< Moves forward or backward by the specified amount based on current direction. */
-    void Strafe(TPurefloat amount);             /**< Moves horizontally by the specified amount based on current direction. */
-    void Elevate(TPurefloat amount);            /**< Changes Y-position by the specified amount. */
+    void Move(TPureFloat amount);               /**< Moves forward or backward by the specified amount based on current direction. */
+    void Strafe(TPureFloat amount);             /**< Moves horizontally by the specified amount based on current direction. */
+    void Elevate(TPureFloat amount);            /**< Changes Y-position by the specified amount. */
     void SetRotation(
-        TPurefloat x,
-        TPurefloat y,
-        TPurefloat z);                          /**< Sets direction. */
+        TPureFloat x,
+        TPureFloat y,
+        TPureFloat z);                          /**< Sets direction. */
 
-    TPurebool operator==(const PurePosUpTarget& clr) const;  /**< Equals to operator. */
-    TPurebool operator!=(const PurePosUpTarget& clr) const;  /**< Not equals to operator. */
+    TPureBool operator==(const PurePosUpTarget& clr) const;  /**< Equals to operator. */
+    TPureBool operator!=(const PurePosUpTarget& clr) const;  /**< Not equals to operator. */
     PurePosUpTarget& operator=(const PurePosUpTarget& vec);  /**< Assignment operator. */
 
 private:

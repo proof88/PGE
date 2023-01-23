@@ -56,7 +56,7 @@ protected:
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3D::getLoggerModuleName(), true);
         engine = &PR00FsReducedRenderingEngine::createAndGet();
-        engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
+        engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         mm = &engine->getMesh3DManager();
         mesh = NULL;
         meshFromFile = NULL;
@@ -217,29 +217,29 @@ private:
 
     bool testGetPrimitiveFormat()
     {
-        return assertEquals(Pure_PM_TRIANGLES, meshFromFile->getPrimitiveFormat(), "meshFromFile") &
-            assertEquals(Pure_PM_QUADS, mesh->getPrimitiveFormat(), "mesh") &
-            assertEquals(Pure_PM_QUADS, meshPlane->getPrimitiveFormat(), "plane") &
-            assertEquals(Pure_PM_QUADS, meshBox->getPrimitiveFormat(), "box") &
-            assertEquals(Pure_PM_QUADS, meshCube->getPrimitiveFormat(), "cube");
+        return assertEquals(PURE_PM_TRIANGLES, meshFromFile->getPrimitiveFormat(), "meshFromFile") &
+            assertEquals(PURE_PM_QUADS, mesh->getPrimitiveFormat(), "mesh") &
+            assertEquals(PURE_PM_QUADS, meshPlane->getPrimitiveFormat(), "plane") &
+            assertEquals(PURE_PM_QUADS, meshBox->getPrimitiveFormat(), "box") &
+            assertEquals(PURE_PM_QUADS, meshCube->getPrimitiveFormat(), "cube");
     }
 
     bool testGetVerticesCount()
     {
-        TPureuint nVerticesCount = 0;
-        for (TPureint i = 0; i < meshFromFile->getCount(); i++)
+        TPureUInt nVerticesCount = 0;
+        for (TPureInt i = 0; i < meshFromFile->getCount(); i++)
         {
             nVerticesCount += ((PureMesh3D*)meshFromFile->getAttachedAt(i))->getVerticesCount();
         }
 
-        return assertEquals((TPureuint) 4, meshPlane->getVerticesCount(), "plane") &
-            assertEquals((TPureuint) 24, meshBox->getVerticesCount(), "box") &
-            assertEquals((TPureuint) 24, meshCube->getVerticesCount(), "cube") &
+        return assertEquals((TPureUInt) 4, meshPlane->getVerticesCount(), "plane") &
+            assertEquals((TPureUInt) 24, meshBox->getVerticesCount(), "box") &
+            assertEquals((TPureUInt) 24, meshCube->getVerticesCount(), "cube") &
             assertEquals(nVerticesCount, meshFromFile->getVerticesCount(), "meshFromFile") &
             assertEquals(((PureMesh3D*)meshPlane->getAttachedAt(0))->getVerticesCount(), meshPlane->getVerticesCount(), "plane 2") &
             assertEquals(((PureMesh3D*)meshBox->getAttachedAt(0))->getVerticesCount(), meshBox->getVerticesCount(), "box 2") &
             assertEquals(((PureMesh3D*)meshCube->getAttachedAt(0))->getVerticesCount(), meshCube->getVerticesCount(), "cube 2") &
-            assertEquals((TPureuint)144, ((PureMesh3D*)meshFromFile->getAttachedAt(0))->getVerticesCount(), "meshFromFile 3");
+            assertEquals((TPureUInt)144, ((PureMesh3D*)meshFromFile->getAttachedAt(0))->getVerticesCount(), "meshFromFile 3");
     }
 
     bool testGetVertices()
@@ -272,10 +272,10 @@ private:
 
     bool testGetMinVertexIndex()
     {
-        return assertEquals((TPureuint)0, meshPlane->getMinVertexIndex(), "plane") &
-            assertEquals((TPureuint)0, meshBox->getMinVertexIndex(), "box") &
-            assertEquals((TPureuint)0, meshCube->getMinVertexIndex(), "cube") &
-            assertEquals((TPureuint)UINT_MAX, meshFromFile->getMinVertexIndex(), "meshFromFile") &
+        return assertEquals((TPureUInt)0, meshPlane->getMinVertexIndex(), "plane") &
+            assertEquals((TPureUInt)0, meshBox->getMinVertexIndex(), "box") &
+            assertEquals((TPureUInt)0, meshCube->getMinVertexIndex(), "cube") &
+            assertEquals((TPureUInt)UINT_MAX, meshFromFile->getMinVertexIndex(), "meshFromFile") &
             /* doesn't matter if implicit access or not, if there is vertex or not, 0 is the expected anyway */
             assertEquals(((PureMesh3D*)meshPlane->getAttachedAt(0))->getMinVertexIndex(), meshPlane->getMinVertexIndex(false), "plane sub noimplicit") &
             assertEquals(((PureMesh3D*)meshBox->getAttachedAt(0))->getMinVertexIndex(), meshBox->getMinVertexIndex(false), "box sub noimplicit") &
@@ -284,41 +284,41 @@ private:
             assertEquals(((PureMesh3D*)meshPlane->getAttachedAt(0))->getMinVertexIndex(), meshPlane->getMinVertexIndex(), "plane sub") &
             assertEquals(((PureMesh3D*)meshBox->getAttachedAt(0))->getMinVertexIndex(), meshBox->getMinVertexIndex(), "box sub") &
             assertEquals(((PureMesh3D*)meshCube->getAttachedAt(0))->getMinVertexIndex(), meshCube->getMinVertexIndex(), "cube sub") &
-            assertEquals((TPureuint) 0, ((PureMesh3D*)meshFromFile->getAttachedAt(0))->getMinVertexIndex(), "meshFromFile sub");
+            assertEquals((TPureUInt) 0, ((PureMesh3D*)meshFromFile->getAttachedAt(0))->getMinVertexIndex(), "meshFromFile sub");
     }
 
     bool testGetMaxVertexIndex()
     {
-        return assertEquals((TPureuint)3, meshPlane->getMaxVertexIndex(), "plane") &
-            assertEquals((TPureuint)23, meshBox->getMaxVertexIndex(), "box") &
-            assertEquals((TPureuint)23, meshCube->getMaxVertexIndex(), "cube") &
-            assertEquals((TPureuint)0, meshFromFile->getMaxVertexIndex(), "meshFromFile") &
-            assertEquals((TPureuint)0, meshPlane->getMaxVertexIndex(false), "plane noimplicit") &
-            assertEquals((TPureuint)0, meshBox->getMaxVertexIndex(false), "box noimplicit") &
-            assertEquals((TPureuint)0, meshCube->getMaxVertexIndex(false), "cube noimplicit") &
-            assertEquals((TPureuint)0, meshFromFile->getMaxVertexIndex(false), "meshFromFile noimplicit") &
-            assertEquals((TPureuint)3, ((PureMesh3D*)meshPlane->getAttachedAt(0))->getMaxVertexIndex(), "plane sub") &
-            assertEquals((TPureuint)23, ((PureMesh3D*)meshBox->getAttachedAt(0))->getMaxVertexIndex(), "box sub") &
-            assertEquals((TPureuint)23, ((PureMesh3D*)meshCube->getAttachedAt(0))->getMaxVertexIndex(), "cube sub") &
-            assertEquals((TPureuint)143, ((PureMesh3D*)meshFromFile->getAttachedAt(0))->getMaxVertexIndex(), "meshFromFile sub");
+        return assertEquals((TPureUInt)3, meshPlane->getMaxVertexIndex(), "plane") &
+            assertEquals((TPureUInt)23, meshBox->getMaxVertexIndex(), "box") &
+            assertEquals((TPureUInt)23, meshCube->getMaxVertexIndex(), "cube") &
+            assertEquals((TPureUInt)0, meshFromFile->getMaxVertexIndex(), "meshFromFile") &
+            assertEquals((TPureUInt)0, meshPlane->getMaxVertexIndex(false), "plane noimplicit") &
+            assertEquals((TPureUInt)0, meshBox->getMaxVertexIndex(false), "box noimplicit") &
+            assertEquals((TPureUInt)0, meshCube->getMaxVertexIndex(false), "cube noimplicit") &
+            assertEquals((TPureUInt)0, meshFromFile->getMaxVertexIndex(false), "meshFromFile noimplicit") &
+            assertEquals((TPureUInt)3, ((PureMesh3D*)meshPlane->getAttachedAt(0))->getMaxVertexIndex(), "plane sub") &
+            assertEquals((TPureUInt)23, ((PureMesh3D*)meshBox->getAttachedAt(0))->getMaxVertexIndex(), "box sub") &
+            assertEquals((TPureUInt)23, ((PureMesh3D*)meshCube->getAttachedAt(0))->getMaxVertexIndex(), "cube sub") &
+            assertEquals((TPureUInt)143, ((PureMesh3D*)meshFromFile->getAttachedAt(0))->getMaxVertexIndex(), "meshFromFile sub");
     }
 
      bool testGetVertexIndicesCount()
     {
-        TPureuint nVertexIndicesCount = 0;
-        for (TPureint i = 0; i < meshFromFile->getCount(); i++)
+        TPureUInt nVertexIndicesCount = 0;
+        for (TPureInt i = 0; i < meshFromFile->getCount(); i++)
         {
             nVertexIndicesCount += ((PureMesh3D*)meshFromFile->getAttachedAt(i))->getVertexIndicesCount();
         }
 
-        return assertEquals((TPureuint) 4, meshPlane->getVertexIndicesCount(), "plane") &
-            assertEquals((TPureuint) 24, meshBox->getVertexIndicesCount(), "box") &
-            assertEquals((TPureuint) 24, meshCube->getVertexIndicesCount(), "cube") &
+        return assertEquals((TPureUInt) 4, meshPlane->getVertexIndicesCount(), "plane") &
+            assertEquals((TPureUInt) 24, meshBox->getVertexIndicesCount(), "box") &
+            assertEquals((TPureUInt) 24, meshCube->getVertexIndicesCount(), "cube") &
             assertEquals(nVertexIndicesCount, meshFromFile->getVertexIndicesCount(), "meshFromFile") &
             assertEquals(((PureMesh3D*)meshPlane->getAttachedAt(0))->getVertexIndicesCount(), meshPlane->getVertexIndicesCount(), "plane 2") &
             assertEquals(((PureMesh3D*)meshBox->getAttachedAt(0))->getVertexIndicesCount(), meshBox->getVertexIndicesCount(), "box 2") &
             assertEquals(((PureMesh3D*)meshCube->getAttachedAt(0))->getVertexIndicesCount(), meshCube->getVertexIndicesCount(), "cube 2") &
-            assertEquals((TPureuint)144, ((PureMesh3D*)meshFromFile->getAttachedAt(0))->getVertexIndicesCount(), "meshFromFile 3");
+            assertEquals((TPureUInt)144, ((PureMesh3D*)meshFromFile->getAttachedAt(0))->getVertexIndicesCount(), "meshFromFile 3");
     }
 
     bool testGetVertexIndex()
@@ -326,51 +326,51 @@ private:
         bool b = true;
         
         const PureMesh3D& submeshPlane = * ((PureMesh3D*) (meshPlane->getAttachedAt(0)));
-        for (TPureuint i = 0; i < submeshPlane.getVertexIndicesCount(); i++)
+        for (TPureUInt i = 0; i < submeshPlane.getVertexIndicesCount(); i++)
         {
             b &= assertEquals(i, submeshPlane.getVertexIndex(i),
             (std::string("plane sub ") + std::to_string(i)).c_str());
             b &= assertEquals(i, meshPlane->getVertexIndex(i),
             (std::string("plane implicit ") + std::to_string(i)).c_str());
             // here explicit should return 0 since meshPlane is level-1 mesh without own geometry
-            b &= assertEquals((TPureuint)0, meshPlane->getVertexIndex(i, false),
+            b &= assertEquals((TPureUInt)0, meshPlane->getVertexIndex(i, false),
             (std::string("plane explicit ") + std::to_string(i)).c_str());
         }
 
         const PureMesh3D& submeshBox = * ((PureMesh3D*) (meshBox->getAttachedAt(0)));
-        for (TPureuint i = 0; i < submeshBox.getVertexIndicesCount(); i++)
+        for (TPureUInt i = 0; i < submeshBox.getVertexIndicesCount(); i++)
         {
             b &= assertEquals(i, submeshBox.getVertexIndex(i),
             (std::string("box sub ") + std::to_string(i)).c_str());
             b &= assertEquals(i, meshBox->getVertexIndex(i),
             (std::string("box implicit ") + std::to_string(i)).c_str());
             // here explicit should return 0 since meshBox is level-1 mesh without own geometry
-            b &= assertEquals((TPureuint)0, meshBox->getVertexIndex(i, false),
+            b &= assertEquals((TPureUInt)0, meshBox->getVertexIndex(i, false),
             (std::string("box explicit ") + std::to_string(i)).c_str());
         }
 
         const PureMesh3D& submeshCube = * ((PureMesh3D*) (meshCube->getAttachedAt(0)));
-        for (TPureuint i = 0; i < submeshCube.getVertexIndicesCount(); i++)
+        for (TPureUInt i = 0; i < submeshCube.getVertexIndicesCount(); i++)
         {
             b &= assertEquals(i, submeshCube.getVertexIndex(i),
             (std::string("cube sub ") + std::to_string(i)).c_str());
             b &= assertEquals(i, meshCube->getVertexIndex(i),
             (std::string("cube implicit ") + std::to_string(i)).c_str());
             // here explicit should return 0 since meshCube is level-1 mesh without own geometry
-            b &= assertEquals((TPureuint)0, meshCube->getVertexIndex(i, false),
+            b &= assertEquals((TPureUInt)0, meshCube->getVertexIndex(i, false),
             (std::string("cube explicit ") + std::to_string(i)).c_str());
         }
 
         const PureMesh3D& submeshFile = * ((PureMesh3D*) (meshFromFile->getAttachedAt(0)));
-        for (TPureuint i = 0; i < submeshFile.getVertexIndicesCount(); i++)
+        for (TPureUInt i = 0; i < submeshFile.getVertexIndicesCount(); i++)
         {
             b &= assertEquals(i, submeshFile.getVertexIndex(i),
             (std::string("meshFromFile sub ") + std::to_string(i)).c_str());
             // here implicit should return 0 since submesh is not selected implicitly for multi-submesh objects!
-            b &= assertEquals((TPureuint)0, meshFromFile->getVertexIndex(i),
+            b &= assertEquals((TPureUInt)0, meshFromFile->getVertexIndex(i),
             (std::string("meshFromFile implicit ") + std::to_string(i)).c_str());
             // here explicit should return 0 since meshFromFile is level-1 mesh without own geometry
-            b &= assertEquals((TPureuint)0, meshFromFile->getVertexIndex(i, false),
+            b &= assertEquals((TPureUInt)0, meshFromFile->getVertexIndex(i, false),
             (std::string("meshFromFile explicit ") + std::to_string(i)).c_str());
         }
 
@@ -395,34 +395,34 @@ private:
 
     bool testGetFaceCount()
     {
-        return assertEquals((TPureuint)6, mesh->getFaceCount(), "mesh") &
-            assertEquals((TPureuint)728, meshFromFile->getFaceCount(), "meshFromFile");
+        return assertEquals((TPureUInt)6, mesh->getFaceCount(), "mesh") &
+            assertEquals((TPureUInt)728, meshFromFile->getFaceCount(), "meshFromFile");
     }
 
     bool testGetTriangleCount()
     {
-        return assertEquals((TPureuint)12, mesh->getTriangleCount(), "mesh") &
-            assertEquals((TPureuint)728, meshFromFile->getTriangleCount(), "meshFromFile");
+        return assertEquals((TPureUInt)12, mesh->getTriangleCount(), "mesh") &
+            assertEquals((TPureUInt)728, meshFromFile->getTriangleCount(), "meshFromFile");
     }
 
     bool testGetPosVec()
     {
         // in our loaded object, there shouldn't be any subobject in pos(0,0,0)
         bool b1 = true;
-        for (TPureint i = 0; i < meshFromFile->getCount(); i++)
+        for (TPureInt i = 0; i < meshFromFile->getCount(); i++)
             b1 = b1 & assertFalse( ((PureMesh3D*)meshFromFile->getAttachedAt(i))->getPosVec().isZero(), "pos zero mesh sub" );
 
         // in our other objects, all subobjects should be at pos(0,0,0)
         bool b2 = true;
-        for (TPureint i = 0; i < meshPlane->getCount(); i++)
+        for (TPureInt i = 0; i < meshPlane->getCount(); i++)
             b2 = b2 & assertTrue( ((PureMesh3D*)meshPlane->getAttachedAt(i))->getPosVec().isZero(), "pos zero plane sub" );
 
         bool b3 = true;
-        for (TPureint i = 0; i < meshBox->getCount(); i++)
+        for (TPureInt i = 0; i < meshBox->getCount(); i++)
             b3 = b3 & assertTrue( ((PureMesh3D*)meshBox->getAttachedAt(i))->getPosVec().isZero(), "pos zero box sub" );
 
         bool b4 = true;
-        for (TPureint i = 0; i < meshCube->getCount(); i++)
+        for (TPureInt i = 0; i < meshCube->getCount(); i++)
             b4 = b4 & assertTrue( ((PureMesh3D*)meshCube->getAttachedAt(i))->getPosVec().isZero(), "pos zero cube sub" );
 
         return assertEquals(0.0f, meshFromFile->getPosVec().getX(), E, "meshFromFile x") &        
@@ -444,20 +444,20 @@ private:
     {
         // all subobjects should have their relpos as [0,0,0] since their position is calculated from their vertices' position and size
         bool b1 = true;
-        for (TPureint i = 0; i < meshFromFile->getCount(); i++)
+        for (TPureInt i = 0; i < meshFromFile->getCount(); i++)
             b1 = b1 & assertTrue( ((PureMesh3D*)meshFromFile->getAttachedAt(i))->getRelPosVec().isZero(), "relpos zero mesh sub" );
 
         // in other objects, this is also valid!
         bool b2 = true;
-        for (TPureint i = 0; i < meshPlane->getCount(); i++)
+        for (TPureInt i = 0; i < meshPlane->getCount(); i++)
             b2 = b2 & assertTrue( ((PureMesh3D*)meshPlane->getAttachedAt(i))->getRelPosVec().isZero(), "relpos zero plane sub" );
 
         bool b3 = true;
-        for (TPureint i = 0; i < meshBox->getCount(); i++)
+        for (TPureInt i = 0; i < meshBox->getCount(); i++)
             b3 = b3 & assertTrue( ((PureMesh3D*)meshBox->getAttachedAt(i))->getRelPosVec().isZero(), "relpos zero box sub" );
 
         bool b4 = true;
-        for (TPureint i = 0; i < meshCube->getCount(); i++)
+        for (TPureInt i = 0; i < meshCube->getCount(); i++)
             b4 = b4 & assertTrue( ((PureMesh3D*)meshCube->getAttachedAt(i))->getRelPosVec().isZero(), "relpos zero cube sub" );
 
         return assertEquals(0.0f, meshFromFile->getRelPosVec().getX(), E, "meshFromFile x") &        
@@ -479,20 +479,20 @@ private:
     {
         // in our loaded object, there shouldn't be any subobject with size(0,0,0)
         bool b1 = true;
-        for (TPureint i = 0; i < meshFromFile->getCount(); i++)
+        for (TPureInt i = 0; i < meshFromFile->getCount(); i++)
             b1 = b1 & assertFalse( ((PureMesh3D*)meshFromFile->getAttachedAt(i))->getSizeVec().isZero(), "size zero mesh sub" );
 
         // in our other objects, all subobjects size should be same as object size
         bool b2 = true;
-        for (TPureint i = 0; i < meshPlane->getCount(); i++)
+        for (TPureInt i = 0; i < meshPlane->getCount(); i++)
             b2 = b2 & assertTrue( ((PureMesh3D*)meshPlane->getAttachedAt(i))->getSizeVec() == meshPlane->getSizeVec(), "size plane sub" );
 
         bool b3 = true;
-        for (TPureint i = 0; i < meshBox->getCount(); i++)
+        for (TPureInt i = 0; i < meshBox->getCount(); i++)
             b3 = b3 & assertTrue( ((PureMesh3D*)meshBox->getAttachedAt(i))->getSizeVec() == meshBox->getSizeVec(), "size box sub" );
 
         bool b4 = true;
-        for (TPureint i = 0; i < meshCube->getCount(); i++)
+        for (TPureInt i = 0; i < meshCube->getCount(); i++)
             b4 = b4 & assertTrue( ((PureMesh3D*)meshCube->getAttachedAt(i))->getSizeVec() == meshCube->getSizeVec(), "size cube sub" );
 
         return assertEquals(1.0f, meshPlane->getSizeVec().getX(), E, "plane x") &        
@@ -517,22 +517,22 @@ private:
 
     bool testGetMaterialNoTexture()
     {
-        return assertEquals((TPureubyte) 255, mesh->getMaterial().getTextureEnvColor().getRed(), "env mesh r") &
-            assertEquals((TPureubyte) 255, mesh->getMaterial().getTextureEnvColor().getGreen(), "env mesh g") &
-            assertEquals((TPureubyte) 255, mesh->getMaterial().getTextureEnvColor().getBlue(), "env mesh b") &
-            assertEquals((TPureubyte) 255, mesh->getMaterial().getTextureEnvColor().getAlpha(), "env mesh a") &
-            assertEquals((TPureubyte) 255, meshPlane->getMaterial().getTextureEnvColor().getRed(), "env plane r") &
-            assertEquals((TPureubyte) 255, meshPlane->getMaterial().getTextureEnvColor().getGreen(), "env plane g") &
-            assertEquals((TPureubyte) 255, meshPlane->getMaterial().getTextureEnvColor().getBlue(), "env plane b") &
-            assertEquals((TPureubyte) 255, meshPlane->getMaterial().getTextureEnvColor().getAlpha(), "env plane a") &
-            assertEquals((TPureubyte) 255, meshBox->getMaterial().getTextureEnvColor().getRed(), "env box r") &
-            assertEquals((TPureubyte) 255, meshBox->getMaterial().getTextureEnvColor().getGreen(), "env box g") &
-            assertEquals((TPureubyte) 255, meshBox->getMaterial().getTextureEnvColor().getBlue(), "env box b") &
-            assertEquals((TPureubyte) 255, meshBox->getMaterial().getTextureEnvColor().getAlpha(), "env box a") &
-            assertEquals((TPureubyte) 255, meshCube->getMaterial().getTextureEnvColor().getRed(), "env cube r") &
-            assertEquals((TPureubyte) 255, meshCube->getMaterial().getTextureEnvColor().getGreen(), "env cube g") &
-            assertEquals((TPureubyte) 255, meshCube->getMaterial().getTextureEnvColor().getBlue(), "env cube b") &
-            assertEquals((TPureubyte) 255, meshCube->getMaterial().getTextureEnvColor().getAlpha(), "env cube a") &
+        return assertEquals((TPureUByte) 255, mesh->getMaterial().getTextureEnvColor().getRed(), "env mesh r") &
+            assertEquals((TPureUByte) 255, mesh->getMaterial().getTextureEnvColor().getGreen(), "env mesh g") &
+            assertEquals((TPureUByte) 255, mesh->getMaterial().getTextureEnvColor().getBlue(), "env mesh b") &
+            assertEquals((TPureUByte) 255, mesh->getMaterial().getTextureEnvColor().getAlpha(), "env mesh a") &
+            assertEquals((TPureUByte) 255, meshPlane->getMaterial().getTextureEnvColor().getRed(), "env plane r") &
+            assertEquals((TPureUByte) 255, meshPlane->getMaterial().getTextureEnvColor().getGreen(), "env plane g") &
+            assertEquals((TPureUByte) 255, meshPlane->getMaterial().getTextureEnvColor().getBlue(), "env plane b") &
+            assertEquals((TPureUByte) 255, meshPlane->getMaterial().getTextureEnvColor().getAlpha(), "env plane a") &
+            assertEquals((TPureUByte) 255, meshBox->getMaterial().getTextureEnvColor().getRed(), "env box r") &
+            assertEquals((TPureUByte) 255, meshBox->getMaterial().getTextureEnvColor().getGreen(), "env box g") &
+            assertEquals((TPureUByte) 255, meshBox->getMaterial().getTextureEnvColor().getBlue(), "env box b") &
+            assertEquals((TPureUByte) 255, meshBox->getMaterial().getTextureEnvColor().getAlpha(), "env box a") &
+            assertEquals((TPureUByte) 255, meshCube->getMaterial().getTextureEnvColor().getRed(), "env cube r") &
+            assertEquals((TPureUByte) 255, meshCube->getMaterial().getTextureEnvColor().getGreen(), "env cube g") &
+            assertEquals((TPureUByte) 255, meshCube->getMaterial().getTextureEnvColor().getBlue(), "env cube b") &
+            assertEquals((TPureUByte) 255, meshCube->getMaterial().getTextureEnvColor().getAlpha(), "env cube a") &
             assertNull(mesh->getMaterial().getTexture(), "tex mesh") &
             assertNull(meshPlane->getMaterial().getTexture(), "tex plane") &
             assertNull(meshBox->getMaterial().getTexture(), "tex box") &
@@ -549,9 +549,9 @@ private:
             assertFalse(meshPlane->getMaterial().isMultiTextured(), "isTexMulti plane") &
             assertFalse(meshBox->getMaterial().isMultiTextured(), "isTexMulti box") &
             assertFalse(meshCube->getMaterial().isMultiTextured(), "isTexMulti cube") &
-            assertEquals((TPureuint) 4, meshPlane->getMaterial().getTexcoordsCount(), "texcoordcount plane") &
-            assertEquals((TPureuint) 24, meshBox->getMaterial().getTexcoordsCount(), "texcoordcount box") &
-            assertEquals((TPureuint) 24, meshCube->getMaterial().getTexcoordsCount(), "texcoordcount cube") &
+            assertEquals((TPureUInt) 4, meshPlane->getMaterial().getTexcoordsCount(), "texcoordcount plane") &
+            assertEquals((TPureUInt) 24, meshBox->getMaterial().getTexcoordsCount(), "texcoordcount box") &
+            assertEquals((TPureUInt) 24, meshCube->getMaterial().getTexcoordsCount(), "texcoordcount cube") &
             assertEquals(((PureMesh3D*)meshPlane->getAttachedAt(0))->getMaterial().getTexcoordsCount(), meshPlane->getMaterial().getTexcoordsCount(), "texcoordcount plane 2") &
             assertEquals(((PureMesh3D*)meshBox->getAttachedAt(0))->getMaterial().getTexcoordsCount(), meshBox->getMaterial().getTexcoordsCount(), "texcoordcount box 2") &
             assertEquals(((PureMesh3D*)meshCube->getAttachedAt(0))->getMaterial().getTexcoordsCount(), meshCube->getMaterial().getTexcoordsCount(), "texcoordcount cube 2") &
@@ -561,15 +561,15 @@ private:
             assertEquals(((PureMesh3D*)meshPlane->getAttachedAt(0))->getMaterial().getTexcoords(), meshPlane->getMaterial().getTexcoords(), "texcoords plane 2") &
             assertEquals(((PureMesh3D*)meshBox->getAttachedAt(0))->getMaterial().getTexcoords(), meshBox->getMaterial().getTexcoords(), "texcoords box 2") &
             assertEquals(((PureMesh3D*)meshCube->getAttachedAt(0))->getMaterial().getTexcoords(), meshCube->getMaterial().getTexcoords(), "texcoords cube 2") &
-            assertEquals((TPureuint) 4, meshPlane->getMaterial().getColorsCount(), "colorscount plane") &
-            assertEquals((TPureuint) 24, meshBox->getMaterial().getColorsCount(), "colorscount box") &
-            assertEquals((TPureuint) 24, meshCube->getMaterial().getColorsCount(), "colorscount cube") &
+            assertEquals((TPureUInt) 4, meshPlane->getMaterial().getColorsCount(), "colorscount plane") &
+            assertEquals((TPureUInt) 24, meshBox->getMaterial().getColorsCount(), "colorscount box") &
+            assertEquals((TPureUInt) 24, meshCube->getMaterial().getColorsCount(), "colorscount cube") &
             assertEquals(((PureMesh3D*)meshPlane->getAttachedAt(0))->getMaterial().getColorsCount(), meshPlane->getMaterial().getColorsCount(), "colorscount plane 2") &
             assertEquals(((PureMesh3D*)meshBox->getAttachedAt(0))->getMaterial().getColorsCount(), meshBox->getMaterial().getColorsCount(), "colorscount box 2") &
             assertEquals(((PureMesh3D*)meshCube->getAttachedAt(0))->getMaterial().getColorsCount(), meshCube->getMaterial().getColorsCount(), "colorscount cube 2") &
-            assertEquals((TPureuint) 4, meshPlane->getMaterial().getIndicesCount(), "indicescount plane") &
-            assertEquals((TPureuint) 24, meshBox->getMaterial().getIndicesCount(), "indicescount box") &
-            assertEquals((TPureuint) 24, meshCube->getMaterial().getIndicesCount(), "indicescount cube") &
+            assertEquals((TPureUInt) 4, meshPlane->getMaterial().getIndicesCount(), "indicescount plane") &
+            assertEquals((TPureUInt) 24, meshBox->getMaterial().getIndicesCount(), "indicescount box") &
+            assertEquals((TPureUInt) 24, meshCube->getMaterial().getIndicesCount(), "indicescount cube") &
             assertEquals(((PureMesh3D*)meshPlane->getAttachedAt(0))->getMaterial().getIndicesCount(), meshPlane->getMaterial().getIndicesCount(), "indicescount plane 2") &
             assertEquals(((PureMesh3D*)meshBox->getAttachedAt(0))->getMaterial().getIndicesCount(), meshBox->getMaterial().getIndicesCount(), "indicescount box 2") &
             assertEquals(((PureMesh3D*)meshCube->getAttachedAt(0))->getMaterial().getIndicesCount(), meshCube->getMaterial().getIndicesCount(), "indicescount cube 2") &
@@ -667,7 +667,7 @@ private:
 
     bool testPreAlloc()
     {
-        const TPureint prevSize = mesh->getSize();
+        const TPureInt prevSize = mesh->getSize();
         mesh->PreAlloc(10);
 
         return assertEquals(prevSize + 10, mesh->getSize());
@@ -740,35 +740,35 @@ private:
     {
         bool b = true;
 
-        for (TPureint i = 0; b && (i < mesh->getCount()); i++)
+        for (TPureInt i = 0; b && (i < mesh->getCount()); i++)
         {
             const PureMesh3D* const submesh = (PureMesh3D*) (mesh->getAttachedAt(i));
             const PureMaterial& submeshMat = submesh->getMaterial();
             b &= assertEquals(submesh, submeshMat.getUtiliser(), (std::string("mesh submeshes[") + std::to_string(i) + "]").c_str());
         }
 
-        for (TPureint i = 0; b && (i < meshFromFile->getCount()); i++)
+        for (TPureInt i = 0; b && (i < meshFromFile->getCount()); i++)
         {
             const PureMesh3D* const submesh = (PureMesh3D*) (meshFromFile->getAttachedAt(i));
             const PureMaterial& submeshMat = submesh->getMaterial();
             b &= assertEquals(submesh, submeshMat.getUtiliser(), (std::string("meshFromFile submeshes[") + std::to_string(i) + "]").c_str());
         }
 
-        for (TPureint i = 0; b && (i < meshPlane->getCount()); i++)
+        for (TPureInt i = 0; b && (i < meshPlane->getCount()); i++)
         {
             const PureMesh3D* const submesh = (PureMesh3D*) (meshPlane->getAttachedAt(i));
             const PureMaterial& submeshMat = submesh->getMaterial();
             b &= assertEquals(submesh, submeshMat.getUtiliser(), (std::string("meshPlane submeshes[") + std::to_string(i) + "]").c_str());
         }
 
-        for (TPureint i = 0; b && (i < meshBox->getCount()); i++)
+        for (TPureInt i = 0; b && (i < meshBox->getCount()); i++)
         {
             const PureMesh3D* const submesh = (PureMesh3D*) (meshBox->getAttachedAt(i));
             const PureMaterial& submeshMat = submesh->getMaterial();
             b &= assertEquals(submesh, submeshMat.getUtiliser(), (std::string("meshBox submeshes[") + std::to_string(i) + "]").c_str());
         }
 
-        for (TPureint i = 0; b && (i < meshCube->getCount()); i++)
+        for (TPureInt i = 0; b && (i < meshCube->getCount()); i++)
         {
             const PureMesh3D* const submesh = (PureMesh3D*) (meshCube->getAttachedAt(i));
             const PureMaterial& submeshMat = submesh->getMaterial();

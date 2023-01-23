@@ -38,10 +38,10 @@ void Bullet::ResetGlobalBulletId()
 Bullet::Bullet(
     PR00FsReducedRenderingEngine& gfx,
     pge_network::PgeNetworkConnectionHandle connHandle,
-    TPurefloat wpn_px, TPurefloat wpn_py, TPurefloat wpn_pz,
-    TPurefloat wpn_ax, TPurefloat wpn_ay, TPurefloat wpn_az,
-    TPurefloat sx, TPurefloat sy, TPurefloat /*sz*/,
-    TPurefloat speed, TPurefloat gravity, TPurefloat drag, TPurebool fragile, int nDamageHp) :
+    TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
+    TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
+    TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
+    TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile, int nDamageHp) :
     m_id(m_globalBulletId++),
     m_gfx(gfx),
     m_connHandle(connHandle),
@@ -71,9 +71,9 @@ Bullet::Bullet(
 Bullet::Bullet(
     PR00FsReducedRenderingEngine& gfx,
     Bullet::BulletId id,
-    TPurefloat wpn_px, TPurefloat wpn_py, TPurefloat wpn_pz,
-    TPurefloat wpn_ax, TPurefloat wpn_ay, TPurefloat wpn_az,
-    TPurefloat sx, TPurefloat sy, TPurefloat /*sz*/) :
+    TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
+    TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
+    TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/) :
     m_id(id),
     m_gfx(gfx),
     m_speed(0.f),
@@ -115,22 +115,22 @@ pge_network::PgeNetworkConnectionHandle Bullet::getOwner() const
     return m_connHandle;
 }
 
-TPurefloat Bullet::getSpeed() const
+TPureFloat Bullet::getSpeed() const
 {
     return m_speed;
 }
 
-TPurefloat Bullet::getGravity() const
+TPureFloat Bullet::getGravity() const
 {
     return m_gravity;
 }
 
-TPurefloat Bullet::getDrag() const
+TPureFloat Bullet::getDrag() const
 {
     return m_drag;
 }
 
-TPurebool Bullet::isFragile() const
+TPureBool Bullet::isFragile() const
 {
     return m_fragile;
 }
@@ -385,7 +385,7 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsReducedRende
     {
         // set blending only when texture is available, otherwise object might not be visible at all
         m_obj->getMaterial().setTexture(wpntex);
-        m_obj->getMaterial(false).setBlendFuncs(Pure_SRC_ALPHA, Pure_ONE);
+        m_obj->getMaterial(false).setBlendFuncs(PURE_SRC_ALPHA, PURE_ONE);
     }
     else
     {
@@ -447,7 +447,7 @@ void Weapon::UpdatePosition(const PureVector& playerPos)
  * The position and angles are updated to the specified values.
  * This function can be used to update the weapon of other clients on our side.
  */
-void Weapon::UpdatePositions(const PureVector& playerPos, TPurefloat fAngleY, TPurefloat fAngleZ)
+void Weapon::UpdatePositions(const PureVector& playerPos, TPureFloat fAngleY, TPureFloat fAngleZ)
 {
     getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY(), playerPos.getZ());
     getObject3D().getAngleVec().SetY(fAngleY);
@@ -529,7 +529,7 @@ const Weapon::FiringMode& Weapon::getCurrentFiringMode() const
  * 
  * @return "Unmag" bullet count i.e. number of bullets with the player not loaded into the weapon.
  */
-TPureuint Weapon::getUnmagBulletCount() const
+TPureUInt Weapon::getUnmagBulletCount() const
 {
     return m_nUnmagBulletCount;
 }
@@ -540,9 +540,9 @@ TPureuint Weapon::getUnmagBulletCount() const
  * 
  * @param count The "unmag" bullet count to be set. This cannot be greater than getVars()["cap_max"].
  */
-void Weapon::SetUnmagBulletCount(TPureuint count)
+void Weapon::SetUnmagBulletCount(TPureUInt count)
 {
-    if (count <= static_cast<TPureuint>(getVars()["cap_max"].getAsInt()))
+    if (count <= static_cast<TPureUInt>(getVars()["cap_max"].getAsInt()))
     {
         m_nUnmagBulletCount = count;
     }
@@ -558,7 +558,7 @@ void Weapon::SetUnmagBulletCount(TPureuint count)
  *
  * @return "Mag" bullet count i.e. number of bullets already loaded into the weapon.
  */
-TPureuint Weapon::getMagBulletCount() const
+TPureUInt Weapon::getMagBulletCount() const
 {
     return m_nMagBulletCount;
 }
@@ -571,16 +571,16 @@ TPureuint Weapon::getMagBulletCount() const
  *              For reloadable weapons, this cannot be greater than getVars()["reloadable"].
  *              For non-reloadable weapons, this cannot be greater than getVars()["cap_max"].
  */
-void Weapon::SetMagBulletCount(TPureuint count)
+void Weapon::SetMagBulletCount(TPureUInt count)
 {
     if (getVars()["reloadable"].getAsInt() > 0)
     {
-        if (count <= static_cast<TPureuint>(getVars()["reloadable"].getAsInt()))
+        if (count <= static_cast<TPureUInt>(getVars()["reloadable"].getAsInt()))
         {
             m_nMagBulletCount = count;
         }
     }
-    else if (count <= static_cast<TPureuint>(getVars()["cap_max"].getAsInt()))
+    else if (count <= static_cast<TPureUInt>(getVars()["cap_max"].getAsInt()))
     {
         m_nMagBulletCount = count;
     }
@@ -597,11 +597,11 @@ bool Weapon::canIncBulletCount() const
 {
     if (getVars().at("reloadable").getAsInt() > 0)
     {
-        return m_nUnmagBulletCount < static_cast<TPureuint>(getVars().at("cap_max").getAsInt());
+        return m_nUnmagBulletCount < static_cast<TPureUInt>(getVars().at("cap_max").getAsInt());
     }
     else
     {
-        return m_nMagBulletCount < static_cast<TPureuint>(getVars().at("cap_max").getAsInt());
+        return m_nMagBulletCount < static_cast<TPureUInt>(getVars().at("cap_max").getAsInt());
     }
 }
 
@@ -611,16 +611,16 @@ bool Weapon::canIncBulletCount() const
  * 
  * @param How many bullets we want to add. The actual increase value might be less. See more details at canIncBulletCount(). 
  */
-void Weapon::IncBulletCount(TPureuint count)
+void Weapon::IncBulletCount(TPureUInt count)
 {
     if (getVars()["reloadable"].getAsInt() > 0)
     {
-        m_nUnmagBulletCount = min(static_cast<TPureuint>(getVars()["cap_max"].getAsInt()), (m_nUnmagBulletCount + count));
+        m_nUnmagBulletCount = min(static_cast<TPureUInt>(getVars()["cap_max"].getAsInt()), (m_nUnmagBulletCount + count));
     }
     else
     {
         // not reloadable has always zero m_nUnmagBulletCount, e.g. rail gun
-        m_nMagBulletCount = min(static_cast<TPureuint>(getVars()["cap_max"].getAsInt()), (m_nMagBulletCount + count));
+        m_nMagBulletCount = min(static_cast<TPureUInt>(getVars()["cap_max"].getAsInt()), (m_nMagBulletCount + count));
     }
 }
 
@@ -667,7 +667,7 @@ bool Weapon::update()
 
     if ( m_state == WPN_SHOOTING )
     {      
-        const TPurefloat fMillisecsSinceLastShot = PFL::getTimeDiffInUs(timeNow, m_timeLastShot) / 1000.f;
+        const TPureFloat fMillisecsSinceLastShot = PFL::getTimeDiffInUs(timeNow, m_timeLastShot) / 1000.f;
         if ( getVars()["firing_cooldown"].getAsInt() <= fMillisecsSinceLastShot )
         {
             m_state = WPN_READY;
@@ -678,7 +678,7 @@ bool Weapon::update()
     // WPN_RELOADING
     if ( getVars()["reload_per_mag"].getAsBool() )
     {
-        const TPurefloat fMillisecsSinceReloadStarted = PFL::getTimeDiffInUs(timeNow, m_timeReloadStarted) / 1000.f;
+        const TPureFloat fMillisecsSinceReloadStarted = PFL::getTimeDiffInUs(timeNow, m_timeReloadStarted) / 1000.f;
         if ( getVars()["reload_time"].getAsInt() <= fMillisecsSinceReloadStarted )
         {
             if ( getVars()["reload_whole_mag"].getAsBool() )
@@ -696,7 +696,7 @@ bool Weapon::update()
     }
     else
     {
-        const TPurefloat fMillisecsSinceLastBulletReload = PFL::getTimeDiffInUs(timeNow, m_timeReloadStarted) / 1000.f;
+        const TPureFloat fMillisecsSinceLastBulletReload = PFL::getTimeDiffInUs(timeNow, m_timeReloadStarted) / 1000.f;
         if ( getVars()["reload_time"].getAsInt() <= fMillisecsSinceLastBulletReload )
         {
             m_nMagBulletCount++;
@@ -736,14 +736,14 @@ Weapon::State Weapon::getState() const
  * 
  * @return True if reload has been actually initiated by this call, false otherwise.
  */
-TPurebool Weapon::reload()
+TPureBool Weapon::reload()
 {
     if ( (m_state != WPN_READY) || !m_bTriggerReleased )
     {
         return false;
     }
 
-    const TPureuint nCapMagazine = getVars()["reloadable"].getAsInt();
+    const TPureUInt nCapMagazine = getVars()["reloadable"].getAsInt();
     if ( nCapMagazine == 0 )
     {
         // not reloadable
@@ -784,7 +784,7 @@ TPurebool Weapon::reload()
  * 
  * @return True if a shot was actually triggered, false otherwise.
  */
-TPurebool Weapon::pullTrigger()
+TPureBool Weapon::pullTrigger()
 {
     const bool bPrevTriggerReleased = m_bTriggerReleased;
     m_bTriggerReleased = false;

@@ -13,22 +13,21 @@
 
 #include "PureAllHeaders.h"
 #include "Material/PureColor.h"
-#include "../internal/PureuiText.h"
+#include "../internal/PureUiText.h"
 
-
-#define Pure_UI_MGR_FONT_DEFAULT_FACE "Arial"
-#define Pure_UI_MGR_FONT_DEFAULT_SIZE 12
-#define Pure_UI_MGR_FONT_DEFAULT_BOLD false
-#define Pure_UI_MGR_FONT_DEFAULT_ITALIC false
-#define Pure_UI_MGR_FONT_DEFAULT_UNDERLINE false
-#define Pure_UI_MGR_FONT_DEFAULT_STRIKEOUT false
+#define PURE_UI_MGR_FONT_DEFAULT_FACE "Arial"
+#define PURE_UI_MGR_FONT_DEFAULT_SIZE 12
+#define PURE_UI_MGR_FONT_DEFAULT_BOLD false
+#define PURE_UI_MGR_FONT_DEFAULT_ITALIC false
+#define PURE_UI_MGR_FONT_DEFAULT_UNDERLINE false
+#define PURE_UI_MGR_FONT_DEFAULT_STRIKEOUT false
 
 /**
     Pure User Interface Manager class.
 */
 class PureUiManager
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureUiManager is included")
 #endif
 
@@ -61,7 +60,7 @@ public:
     /**
         Gets whether we are initialized.
     */
-    virtual TPurebool isInitialized() const = 0;
+    virtual TPureBool isInitialized() const = 0;
 
 
     /**
@@ -69,7 +68,7 @@ public:
         Permanent texts live until explicit deletion. This means that after you add a permanent text to the UI, it will be
         displayed in all next rendered frames.
     */
-    virtual PureuiText* addText(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout) = 0;
+    virtual PureUiText* addText(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout) = 0;
 
 
     /**
@@ -77,7 +76,7 @@ public:
         Permanent texts live until explicit deletion. This means that after you add a permanent text to the UI, it will be
         displayed in all next rendered frames.
     */
-    virtual PureuiText* addText(const std::string& txt, int x, int y) = 0;
+    virtual PureUiText* addText(const std::string& txt, int x, int y) = 0;
 
 
     /**
@@ -92,7 +91,7 @@ public:
         more than 1 frame, you have to issue this command before rendering every single frame. Although there isn't much
         performance issue with using temporary texts during multiple frames, adding permanent text could be a better choice.
     */
-    virtual PureuiText* text(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout) = 0;
+    virtual PureUiText* text(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout) = 0;
 
     /**
         Adds temporary text to the UI.
@@ -100,7 +99,7 @@ public:
         more than 1 frame, you have to issue this command before rendering every single frame. Although there isn't much
         performance issue with using temporary texts during multiple frames, adding permanent text could be a better choice.
     */
-    virtual PureuiText* text(const std::string& txt, int x, int y) = 0;
+    virtual PureUiText* text(const std::string& txt, int x, int y) = 0;
 
     virtual const std::string& getDefaultFontFace() const = 0;
 

@@ -2,7 +2,7 @@
 
 /*
     ###################################################################################
-    include/external/include/external/include/external/include/external/include/external/PureTypes.h
+    PureTypes.h
     This file is part of PURE.
     External header.
     Pure typedefs, enums, struct defs.
@@ -25,147 +25,147 @@
 */
 
 /** Very small signed integer type (always 1 Byte, but remember this doesn't necessarily 8 bits). */
-typedef char TPurebyte;
+typedef char TPureByte;
 
-/** Very small unsigned integer type (has same size as TPurebyte). */
-typedef unsigned char TPureubyte;
+/** Very small unsigned integer type (has same size as TPureByte). */
+typedef unsigned char TPureUByte;
 
 /** Small signed integer type (2 Bytes on a standard desktop system). */
-typedef short int TPureshort;
+typedef short int TPureShort;
 
 /** Small unsigned integer type (2 Bytes on a standard desktop system). */
-typedef unsigned short int TPureushort;
+typedef unsigned short int TPureUShort;
 
 /** Normal signed integer type (4 Bytes on a standard desktop system). */
-typedef int TPureint;
+typedef int TPureInt;
 
 /** Normal unsigned integer type (4 Bytes on a standard desktop system). */
-typedef unsigned int TPureuint;
+typedef unsigned int TPureUInt;
 
 /** Long signed type (4 Bytes on a standard desktop system). */
-typedef long TPurelong;
+typedef long TPureLong;
 
 /** Long unsigned type (4 Bytes on a standard desktop system). */
-typedef unsigned long TPureulong;
+typedef unsigned long TPureULong;
 
 /** Normal signed floating point type (4 Bytes on a standard desktop system). */
-typedef float TPurefloat;
+typedef float TPureFloat;
 
 /** Logical type (1 Byte on a standard desktop system). */
-typedef bool TPurebool;
+typedef bool TPureBool;
 
 
 /**
     2D space coordinate.
 */
-struct TPure_XY
+struct TPURE_XY
 {
-    TPurefloat x, y;
+    TPureFloat x, y;
 };
 
-typedef TPure_XY TXY;
+typedef TPURE_XY TXY;
 
-struct TPure_SIZE_XY
+struct TPURE_SIZE_XY
 {
-    TPurefloat width, height;
+    TPureFloat width, height;
 };
 
-typedef TPure_SIZE_XY TSXY;
+typedef TPURE_SIZE_XY TSXY;
 
 
 /**
     3D space coordinate.
 */
-struct TPure_XYZ
+struct TPURE_XYZ
 {
-    TPurefloat x, y, z;
-}; // TPure_XYZ
+    TPureFloat x, y, z;
+}; // TPURE_XYZ
 
-typedef TPure_XYZ TXYZ;
+typedef TPURE_XYZ TXYZ;
 
 
 /**
     4D coordinate.
 */
-struct TPure_XYZW
+struct TPURE_XYZW
 {
-    TPurefloat x, y, z, w;
-}; // TPure_XYZW
+    TPureFloat x, y, z, w;
+}; // TPURE_XYZW
 
-typedef TPure_XYZW TXYZW;
+typedef TPURE_XYZW TXYZW;
 
 
 /**
     Simple RGB color [0.0-1.0].
 */
-struct TPure_RGB_FLOAT
+struct TPURE_RGB_FLOAT
 {
-    TPurefloat red;
-    TPurefloat green;
-    TPurefloat blue;
-}; // TPure_RGB_FLOAT
+    TPureFloat red;
+    TPureFloat green;
+    TPureFloat blue;
+}; // TPURE_RGB_FLOAT
 
-typedef TPure_RGB_FLOAT TRGBFLOAT;
+typedef TPURE_RGB_FLOAT TRGBFLOAT;
 
 
 /**
     Simple RGB color [0-255].
 */
-struct TPure_RGB_UBYTE
+struct TPURE_RGB_UBYTE
 {
-    TPureubyte red;
-    TPureubyte green;
-    TPureubyte blue;
-}; // TPure_RGB_UBYTE
+    TPureUByte red;
+    TPureUByte green;
+    TPureUByte blue;
+}; // TPURE_RGB_UBYTE
 
-typedef TPure_RGB_UBYTE TRGBUBYTE;
+typedef TPURE_RGB_UBYTE TRGBUBYTE;
 
 
 /**
     Simple RGBA color [0.0-1.0].
 */
-struct TPure_RGBA_FLOAT
+struct TPURE_RGBA_FLOAT
 {
-    TPurefloat red;
-    TPurefloat green;
-    TPurefloat blue;
-    TPurefloat alpha;
-}; // TPure_RGBA_FLOAT
+    TPureFloat red;
+    TPureFloat green;
+    TPureFloat blue;
+    TPureFloat alpha;
+}; // TPURE_RGBA_FLOAT
 
-typedef TPure_RGBA_FLOAT TRGBAFLOAT;
+typedef TPURE_RGBA_FLOAT TRGBAFLOAT;
 
 
 /**
     Simple RGBA color [0-255].
 */
-struct TPure_RGBA_UBYTE
+struct TPURE_RGBA_UBYTE
 {
-    TPureubyte red;
-    TPureubyte green;
-    TPureubyte blue;
-    TPureubyte alpha;
-}; // TPure_RGBA_UBYTE
+    TPureUByte red;
+    TPureUByte green;
+    TPureUByte blue;
+    TPureUByte alpha;
+}; // TPURE_RGBA_UBYTE
 
-typedef TPure_RGBA_UBYTE TRGBAUBYTE;
+typedef TPURE_RGBA_UBYTE TRGBAUBYTE;
 
 
 /**
     Simple rectangle.
 */
-struct TPure_RECT_FLOAT
+struct TPURE_RECT_FLOAT
 {
     TXY pos;
     TSXY size;
 };
 
-typedef TPure_RECT_FLOAT TRECT;
+typedef TPURE_RECT_FLOAT TRECT;
 
 
 /**
     Display modes.
 */
-enum TPure_DISPLAY_MODES
+enum TPURE_DISPLAY_MODES
 {
-    Pure_FULLSCREEN,       /**< Fullscreen mode. */
-    Pure_WINDOWED          /**< Windowed mode. */
-}; // TPure_DISPLAY_MODES
+    PURE_FULLSCREEN,       /**< Fullscreen mode. */
+    PURE_WINDOWED          /**< Windowed mode. */
+}; // TPURE_DISPLAY_MODES

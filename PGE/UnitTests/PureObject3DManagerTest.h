@@ -73,7 +73,7 @@ protected:
         if ( engine == NULL )
         {
             engine = &PR00FsReducedRenderingEngine::createAndGet();
-            ret &= assertEquals((TPureuint)0, engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
+            ret &= assertEquals((TPureUInt)0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
             om = &engine->getObject3DManager();
             ret &= assertNotNull(om, "om null");
         }
@@ -159,7 +159,7 @@ private:
             & assertEquals((std::size_t)0, om->get2dBlendedOccludees().size(), "get2dBlendedOccludees empty 3");
         b &= assertFalse(objBox->isOcclusionTested(), "objBox not occlusiontested 2") & assertFalse(objPlane->isOccluder(), "objPlane not occluder 2");
 
-        objPlane->getMaterial(false).setBlendMode(Pure_BM_STANDARD_TRANSPARENCY);
+        objPlane->getMaterial(false).setBlendMode(PURE_BM_STANDARD_TRANSPARENCY);
 
         b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 3") & assertEquals((std::size_t)1, om->get3dOpaqueOccludees().size(), "getOpaqueOccludees not empty 3")
             & assertEquals((std::size_t)1, om->get3dBlendedOccludees().size(), "get3dBlendedOccludees not empty 1") & assertEquals((std::size_t)0, om->get2dOpaqueOccludees().size(), "get2dOpaqueOccludees empty 4")
@@ -169,14 +169,14 @@ private:
 
         b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 4") & assertEquals((std::size_t)1, om->get3dOpaqueOccludees().size(), "getOpaqueOccludees not empty 4")
             & assertEquals((std::size_t)0, om->get3dBlendedOccludees().size(), "get3dBlendedOccludees empty 4")
-            & assertEquals(Pure_BM_NONE, objPlane->getMaterial(false).getBlendMode(), "setBlendMode is nonblend 1") & assertEquals((std::size_t)0, om->get2dOpaqueOccludees().size(), "get2dOpaqueOccludees empty 5")
+            & assertEquals(PURE_BM_NONE, objPlane->getMaterial(false).getBlendMode(), "setBlendMode is nonblend 1") & assertEquals((std::size_t)0, om->get2dOpaqueOccludees().size(), "get2dOpaqueOccludees empty 5")
             & assertEquals((std::size_t)0, om->get2dBlendedOccludees().size(), "get2dBlendedOccludees empty 5");
 
         om->Attach(*objPlane);
 
         b &= assertEquals((std::size_t)0, om->getOccluders().size(), "getOccluders empty 5") & assertEquals((std::size_t)2, om->get3dOpaqueOccludees().size(), "getOpaqueOccludees not empty 5")
             & assertEquals((std::size_t)0, om->get3dBlendedOccludees().size(), "get3dBlendedOccludees empty 5")
-            & assertEquals(Pure_BM_NONE, objPlane->getMaterial(false).getBlendMode(), "setBlendMode is nonblend 2") & assertEquals((std::size_t)0, om->get2dOpaqueOccludees().size(), "get2dOpaqueOccludees empty 6")
+            & assertEquals(PURE_BM_NONE, objPlane->getMaterial(false).getBlendMode(), "setBlendMode is nonblend 2") & assertEquals((std::size_t)0, om->get2dOpaqueOccludees().size(), "get2dOpaqueOccludees empty 6")
             & assertEquals((std::size_t)0, om->get2dBlendedOccludees().size(), "get2dBlendedOccludees empty 6");
 
         objPlane->SetStickedToScreen(true);
@@ -216,7 +216,7 @@ private:
 
         objBox->SetOcclusionTested(true);
         objPlane->SetOccluder(true);
-        objCube->getMaterial(false).setBlendMode(Pure_BM_STANDARD_TRANSPARENCY);
+        objCube->getMaterial(false).setBlendMode(PURE_BM_STANDARD_TRANSPARENCY);
 
         bool b = assertEquals((std::size_t)1, om->getOccluders().size(), "getOccluders not empty 1") & assertEquals((std::size_t)1, om->get3dOpaqueOccludees().size(), "getOpaqueOccludees not empty 1")
             & assertEquals((std::size_t)1, om->get3dBlendedOccludees().size(), "get3dBlendedOccludees not empty 1") & assertEquals((std::size_t)0, om->get2dOpaqueOccludees().size(), "get2dOpaqueOccludees empty 1")
@@ -245,7 +245,7 @@ private:
         }
 
         return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
-            assertEquals((TPureuint)4, obj->getVerticesCount(), "vertices count") &
+            assertEquals((TPureUInt)4, obj->getVerticesCount(), "vertices count") &
             assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->get3dOpaqueOccludees().empty(), "getOpaqueOccludees not empty") &
             assertTrue(om->get3dBlendedOccludees().empty(), "get3dBlendedOccludees empty") & assertEquals((std::size_t)0, om->get2dOpaqueOccludees().size(), "get2dOpaqueOccludees empty 1")
             & assertEquals((std::size_t)0, om->get2dBlendedOccludees().size(), "get2dBlendedOccludees empty 1");
@@ -262,7 +262,7 @@ private:
         }
 
         return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
-            assertEquals((TPureuint)24, obj->getVerticesCount(), "vertices count") &
+            assertEquals((TPureUInt)24, obj->getVerticesCount(), "vertices count") &
             assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->get3dOpaqueOccludees().empty(), "getOpaqueOccludees not empty") &
             assertTrue(om->get3dBlendedOccludees().empty(), "get3dBlendedOccludees empty") & assertEquals((std::size_t)0, om->get2dOpaqueOccludees().size(), "get2dOpaqueOccludees empty 1")
             & assertEquals((std::size_t)0, om->get2dBlendedOccludees().size(), "get2dBlendedOccludees empty 1");
@@ -279,7 +279,7 @@ private:
         }
 
         return assertNotEquals(std::string::npos, obj->getName().find("Object3D "), "name substr") &
-            assertEquals((TPureuint)24, obj->getVerticesCount(), "vertices count") &
+            assertEquals((TPureUInt)24, obj->getVerticesCount(), "vertices count") &
             assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->get3dOpaqueOccludees().empty(), "getOpaqueOccludees not empty") &
             assertTrue(om->get3dBlendedOccludees().empty(), "get3dBlendedOccludees empty") & assertEquals((std::size_t)0, om->get2dOpaqueOccludees().size(), "get2dOpaqueOccludees empty 1")
             & assertEquals((std::size_t)0, om->get2dBlendedOccludees().size(), "get2dBlendedOccludees empty 1");
@@ -290,7 +290,7 @@ private:
         // This snail object is from legacy proofps project, so its subobject names contain texture file names as well,
         // so that related textures can be auto-loaded. We can check here if number of textures has increased or not.
         // We expect textures to be auto-loaded as well, so increase in number of textures.
-        const TPureint nTexturesBeforeLoad = engine->getTextureManager().getCount();
+        const TPureInt nTexturesBeforeLoad = engine->getTextureManager().getCount();
 
         const PureObject3D* const objFromFile = om->createFromFile("_res/models/snail_proofps/snail.obj");
 
@@ -301,12 +301,12 @@ private:
 
         // As texture filenames shouldn't be part of final subobject names, we can check for that also.
         bool b1 = true;
-        for (TPureint i = 0; i < objFromFile->getCount(); i++)
+        for (TPureInt i = 0; i < objFromFile->getCount(); i++)
             b1 = b1 & assertNull( strstr(((PureObject3D*)objFromFile->getAttachedAt(i))->getName().c_str(), ".bmp"), "bmp ext in subname" );
 
         return assertLess( nTexturesBeforeLoad, engine->getTextureManager().getCount(), "textures count") &
             assertNotEquals(std::string::npos, objFromFile->getName().find("Object3D "), "name substr") &
-            assertEquals((TPureint)9, objFromFile->getCount(), "subobject count") &
+            assertEquals((TPureInt)9, objFromFile->getCount(), "subobject count") &
             b1 &
             assertTrue(om->getOccluders().empty(), "getOccluders empty") & assertFalse(om->get3dOpaqueOccludees().empty(), "getOpaqueOccludees not empty") &
             assertTrue(om->get3dBlendedOccludees().empty(), "get3dBlendedOccludees empty") & assertEquals((std::size_t)0, om->get2dOpaqueOccludees().size(), "get2dOpaqueOccludees empty 1")
@@ -323,9 +323,9 @@ private:
         objPlane->SetDoubleSided(true);
         objPlane->SetAffectingZBuffer(false);
         objPlane->SetLit(false);
-        objPlane->SetRotationOrder(TPure_ROTATION_ORDER::Pure_ZYX);
+        objPlane->SetRotationOrder(TPURE_ROTATION_ORDER::PURE_ZYX);
         objPlane->SetStickedToScreen(true);
-        objPlane->setVertexTransferMode( PureVertexTransfer::selectVertexTransferMode(Pure_VMOD_STATIC, Pure_VREF_DIRECT, false) );
+        objPlane->setVertexTransferMode( PureVertexTransfer::selectVertexTransferMode(PURE_VMOD_STATIC, PURE_VREF_DIRECT, false) );
         objPlane->SetRenderingAllowed(false);
         objPlane->SetWireframed(true);
         objPlane->SetWireframedCulled(true);
@@ -474,7 +474,7 @@ private:
              assertTrue( std::find(om->get2dOpaqueOccludees().begin(), om->get2dOpaqueOccludees().end(), objFromFile) == om->get2dOpaqueOccludees().end(), "objFromFile is NOT in get2dOpaqueOccludees 3") &
              assertTrue( std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), objFromFile) == om->get2dBlendedOccludees().end(), "objFromFile is NOT in get2dBlendedOccludees 3");
 
-        objFromFile->getMaterial().setBlendMode(Pure_BM_STANDARD_TRANSPARENCY);
+        objFromFile->getMaterial().setBlendMode(PURE_BM_STANDARD_TRANSPARENCY);
         om->UpdateOccluderStates();
         b &= assertFalse(objFromFile->isOccluder(), "objFromFile not occluder 2") &
              assertTrue( std::find(om->get3dOpaqueOccludees().begin(), om->get3dOpaqueOccludees().end(), objFromFile) == om->get3dOpaqueOccludees().end(), "objFromFile is NOT in getOpaqueOccludees 4") &
@@ -485,7 +485,7 @@ private:
              assertTrue( std::find(om->get2dOpaqueOccludees().begin(), om->get2dOpaqueOccludees().end(), objFromFile) == om->get2dOpaqueOccludees().end(), "objFromFile is NOT in get2dOpaqueOccludees 4") &
              assertTrue( std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), objFromFile) == om->get2dBlendedOccludees().end(), "objFromFile is NOT in get2dBlendedOccludees 4");
 
-        objFromFile->getMaterial().setBlendMode(Pure_BM_NONE);
+        objFromFile->getMaterial().setBlendMode(PURE_BM_NONE);
         om->UpdateOccluderStates();
         b &= assertTrue(objFromFile->isOccluder(), "objFromFile is occluder 3") &
              assertFalse( std::find(om->get3dOpaqueOccludees().begin(), om->get3dOpaqueOccludees().end(), objFromFile) != om->get3dOpaqueOccludees().end(), "objFromFile is NOT in getOpaqueOccludees 5") &
@@ -552,7 +552,7 @@ private:
              assertTrue( std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), plane) == om->get2dBlendedOccludees().end(), "plane is NOT in get2dBlendedOccludees 1");
 
         // remember we dont need the explicit subobject access, we want parent object's blending to be changed!
-        plane->getMaterial(false).setBlendMode(Pure_BM_STANDARD_TRANSPARENCY);
+        plane->getMaterial(false).setBlendMode(PURE_BM_STANDARD_TRANSPARENCY);
 
         // Material's responsibility to invoke Object3DManager's HandleManagedPropertyChanged() when blendmode is change, however
         // it is Object3DManager's responsibility to set plane as its Material's utiliser. If that is set correctly, we assume
@@ -566,7 +566,7 @@ private:
              assertTrue( std::find(om->get2dOpaqueOccludees().begin(), om->get2dOpaqueOccludees().end(), plane) == om->get2dOpaqueOccludees().end(), "plane is NOT in get2dOpaqueOccludees 2") &
              assertTrue( std::find(om->get2dBlendedOccludees().begin(), om->get2dBlendedOccludees().end(), plane) == om->get2dBlendedOccludees().end(), "plane is NOT in get2dBlendedOccludees 2");
 
-        plane->getMaterial(false).setBlendMode(Pure_BM_NONE);
+        plane->getMaterial(false).setBlendMode(PURE_BM_NONE);
 
         // plane is not occluder even though it is opaque again, because only UpdateOccluderStates() would set it to occluder again, by calculating and comparing biggest area sizes!
         b &= assertFalse(plane->isOccluder(), "plane is NOT occluder 3") &

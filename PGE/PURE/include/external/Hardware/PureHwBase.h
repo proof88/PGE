@@ -19,7 +19,7 @@
 */
 class PurehwBase
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PurehwBase is included")
 #endif
 
@@ -29,7 +29,7 @@ public:
 
     void      Initialize();           /**< Initializes the instance. */
     void      Deinitialize();         /**< Deinitializes the instance. */
-    TPurebool isInitialized() const;  /**< Returns whether the instance is successfully initialized. */
+    TPureBool isInitialized() const;  /**< Returns whether the instance is successfully initialized. */
 
     virtual void WriteStats() = 0;    /**< Writes statistics to the console. */
 
@@ -46,7 +46,7 @@ protected:
 
     virtual void      PreInitialize();         /**< Preinitializes members.
                                                     Being called from ctor and Deinitialize(). */
-    virtual TPurebool initializeBase() = 0;    /**< Does the real initialization within descendant class.
+    virtual TPureBool initializeBase() = 0;    /**< Does the real initialization within descendant class.
                                                     Being called from Initialize(). */
     virtual void      DeinitializeBase() = 0;  /**< Does the real deinitialization within descendant class.
                                                     Being called from Deinitialize(). */

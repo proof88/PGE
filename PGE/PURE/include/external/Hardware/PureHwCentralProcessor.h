@@ -21,7 +21,7 @@
 class PurehwCentralProcessor :
     public PurehwBase
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PurehwCentralProcessor is included")
 #endif
 

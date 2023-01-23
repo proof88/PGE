@@ -195,9 +195,9 @@ private:
     {
         const bool bA1 = initDisp();
 
-        const TPureuint desktopResX = scr.getResWidth();
-        const TPureuint desktopResY = scr.getResHeight();
-        const TPureint  desktopCBits = scr.getColorBits();
+        const TPureUInt desktopResX = scr.getResWidth();
+        const TPureUInt desktopResY = scr.getResHeight();
+        const TPureInt  desktopCBits = scr.getColorBits();
         
         scr.ResetDisplaySettings();
         
@@ -226,8 +226,8 @@ private:
     bool testSetResolution1()
     {
         scr.SetResolution(800, 600);
-        return assertEquals((TPureuint) 800, scr.getResWidth(), "width") &
-            assertEquals((TPureuint) 600, scr.getResHeight(), "height"); 
+        return assertEquals((TPureUInt) 800, scr.getResWidth(), "width") &
+            assertEquals((TPureUInt) 600, scr.getResHeight(), "height"); 
     }
 
     bool testSetFullScreened1()
@@ -244,7 +244,7 @@ private:
     bool testSetFreq1()
     {
         scr.SetFreq(30);
-        return assertEquals((TPureuint)30, scr.getFreq());
+        return assertEquals((TPureUInt)30, scr.getFreq());
     }
 
     bool testSetColorBits1()
@@ -281,8 +281,8 @@ private:
         const bool bA1 = initDisp();
 
         scr.SetResolution(640, 480);
-        const bool b1 = (scr.getResWidth() == (TPureuint) 800);
-        const bool b2 = (scr.getResHeight() == (TPureuint) 600);
+        const bool b1 = (scr.getResWidth() == (TPureUInt) 800);
+        const bool b2 = (scr.getResHeight() == (TPureUInt) 600);
 
         StopDisp();
 
@@ -306,7 +306,7 @@ private:
         const bool bA1 = initDisp();
 
         scr.SetFreq(30);
-        const bool b1 = ((TPureuint)30 == scr.getFreq());
+        const bool b1 = ((TPureUInt)30 == scr.getFreq());
 
         StopDisp();
 
@@ -352,8 +352,8 @@ private:
     bool testSetResolution3()
     {
         scr.SetResolution(0, 0);
-        return assertNotEquals((TPureuint) 0, scr.getResWidth(), "width") &
-            assertNotEquals((TPureuint) 0, scr.getResHeight(), "height"); 
+        return assertNotEquals((TPureUInt) 0, scr.getResWidth(), "width") &
+            assertNotEquals((TPureUInt) 0, scr.getResHeight(), "height"); 
     }
 
     bool testSetScreensaver()
@@ -383,7 +383,7 @@ private:
     bool testSetVSyncEnabled2()
     {
         engine = &PR00FsReducedRenderingEngine::createAndGet();
-        engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
+        engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         
         scr.SetVSyncEnabled(true);
         const bool b1 = scr.isVSyncEnabled();
@@ -418,7 +418,7 @@ private:
     bool testSetFSAAlevel3()
     {
         engine = &PR00FsReducedRenderingEngine::createAndGet();
-        engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 2); // FSAA 2x
+        engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 2); // FSAA 2x
 
         const bool b1 = scr.isFSAAready();
         const bool b2 = (scr.getFSAAlevel() == 2);

@@ -22,6 +22,6 @@
 /**
     Controls the "XYZ is included" preprocessor messages.
 */
-#ifndef Pure_CLASS_IS_INCLUDED_NOTIFICATION
-//#define Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifndef PURE_CLASS_IS_INCLUDED_NOTIFICATION
+//#define PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #endif

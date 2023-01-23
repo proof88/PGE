@@ -48,7 +48,7 @@ public:
     virtual void       FlushResources();                  /**< This can be used if the specialized managed object has some resources
                                                                that may be released from memory when not needed anymore. */
 
-    virtual TPureuint  getUsedSystemMemory() const;       /**< Gets the amount of allocated system memory for this managed. */
+    virtual TPureUInt  getUsedSystemMemory() const;       /**< Gets the amount of allocated system memory for this managed. */
 
     // ---------------------------------------------------------------------------
 
@@ -75,7 +75,7 @@ private:
 */
 class PureManager
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureManager is included")
 #endif
 
@@ -89,14 +89,14 @@ public:
 
     CConsole&    getConsole() const;                      /**< Returns access to console preset with logger module name as this class. */
 
-    TPureint     getCount() const;                        /**< Gets the number of managed objects. */
-    TPurebool    isEmpty() const;                         /**< Is the number of manageds 0? */
-    TPureint     getSize() const;                         /**< Gets the number of allocated slots for managed objects; getSize() >= getCount(). */
-    PureManaged* getAttachedAt(TPureint ind) const;       /**< Gets the pointer to the managed at the given index. */
-    TPureint     getAttachedIndex(
+    TPureInt     getCount() const;                        /**< Gets the number of managed objects. */
+    TPureBool    isEmpty() const;                         /**< Is the number of manageds 0? */
+    TPureInt     getSize() const;                         /**< Gets the number of allocated slots for managed objects; getSize() >= getCount(). */
+    PureManaged* getAttachedAt(TPureInt ind) const;       /**< Gets the pointer to the managed at the given index. */
+    TPureInt     getAttachedIndex(
         const PureManaged& m) const;                      /**< Gets the index of the given managed. */
-    void         PreAlloc(TPureint count);                /**< Allocates count free slots for manageds. */
-    TPurebool    hasAttached(const PureManaged& m) const; /**< Gets whether the given managed is managed by this manager. */
+    void         PreAlloc(TPureInt count);                /**< Allocates count free slots for manageds. */
+    TPureBool    hasAttached(const PureManaged& m) const; /**< Gets whether the given managed is managed by this manager. */
     virtual void Attach(PureManaged& m);                  /**< Adds the given managed to the manager, if the managed has no manager yet. */
     virtual void Detach(PureManaged& m);                  /**< Removes the given managed from the manager, so the managed will have no manager. */
     void         DeleteAttachedInstance(PureManaged& m);  /**< Removes the given managed from the manager and destructs it. */
@@ -104,7 +104,7 @@ public:
     virtual void HandleManagedPropertyChanged(
                  PureManaged& m);                         /**< Should be invoked when a managed's property got changed from a different kind of manager or managed. */
     virtual
-    TPureuint    getUsedSystemMemory() const;             /**< Gets the amount of allocated system memory for all manageds owner by this manager. */
+    TPureUInt    getUsedSystemMemory() const;             /**< Gets the amount of allocated system memory for all manageds owner by this manager. */
     virtual void WriteList() const;                       /**< Writes a list of managed objects to the console. */
 
 protected:

@@ -64,7 +64,7 @@ protected:
         if ( engine == NULL )
         {
             engine = &PR00FsReducedRenderingEngine::createAndGet();
-            ret &= assertEquals((TPureuint)0, engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0), "engine" );  // pretty standard display mode, should work on most systems
+            ret &= assertEquals((TPureUInt)0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine" );  // pretty standard display mode, should work on most systems
             im = &engine->getImageManager();
             tm = &engine->getTextureManager();
             mm = &engine->getMaterialManager();
@@ -131,7 +131,7 @@ private:
 
         return assertNull(mm->createMaterial(), "createMaterial") &
             assertFalse(mm->isInitialized(), "isInit") &
-            assertEquals((TPureuint) 1, mm->getMaximumLayerCount(), "maxLayerCount");
+            assertEquals((TPureUInt) 1, mm->getMaximumLayerCount(), "maxLayerCount");
     }
 
     bool testCtor2()

@@ -27,7 +27,7 @@ class PureFiledManager;
 class PureFiledManaged :
     public PureManaged
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureFiledManaged is included")
 #endif
 
@@ -41,7 +41,7 @@ public:
 
     CConsole&   getManagedConsole() const;           /**< Returns access to console preset with logger module name as this class. */
 
-    virtual TPureuint getUsedSystemMemory() const;   /**< Gets the amount of allocated system memory for this managed. */
+    virtual TPureUInt getUsedSystemMemory() const;   /**< Gets the amount of allocated system memory for this managed. */
 
     const std::string& getFilename() const;          /**< Gets the filename. */
 
@@ -70,7 +70,7 @@ private:
 class PureFiledManager :
     public PureManager
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureFiledManager is included")
 #endif
 

@@ -23,7 +23,7 @@
 */
 class PureTransformMatrix : public PureMatrix
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureTransformMatrix is included")
 #endif
 
@@ -36,27 +36,27 @@ public:
 
     PureTransformMatrix();                                           /**< Creates an identity matrix. */
     PureTransformMatrix(const PureTransformMatrix& cm);
-    explicit PureTransformMatrix(const TPure_NOTABLE_MATRICES& nm);  /**< Creates the requested matrix. */
+    explicit PureTransformMatrix(const TPURE_NOTABLE_MATRICES& nm);  /**< Creates the requested matrix. */
     virtual ~PureTransformMatrix();
 
-    void SetRotationX(TPurefloat anglex);  /**< Sets the matrix to a rotation matrix around X-axis. */
-    void SetRotationY(TPurefloat angley);  /**< Sets the matrix to a rotation matrix around Y-axis. */
-    void SetRotationZ(TPurefloat anglez);  /**< Sets the matrix to a rotation matrix around Z-axis. */
+    void SetRotationX(TPureFloat anglex);  /**< Sets the matrix to a rotation matrix around X-axis. */
+    void SetRotationY(TPureFloat angley);  /**< Sets the matrix to a rotation matrix around Y-axis. */
+    void SetRotationZ(TPureFloat anglez);  /**< Sets the matrix to a rotation matrix around Z-axis. */
     void SetTranslation(
-        TPurefloat x,
-        TPurefloat y,
-        TPurefloat z );                     /**< Sets the matrix to a translation matrix. */
+        TPureFloat x,
+        TPureFloat y,
+        TPureFloat z );                     /**< Sets the matrix to a translation matrix. */
 
-    TPurefloat getScaleX() const;           /**< Gets the scaling on the X-axis. */
-    TPurefloat getScaleY() const;           /**< Gets the scaling on the Y-axis. */
-    TPurefloat getScaleZ() const;           /**< Gets the scaling on the Z-axis. */
+    TPureFloat getScaleX() const;           /**< Gets the scaling on the X-axis. */
+    TPureFloat getScaleY() const;           /**< Gets the scaling on the Y-axis. */
+    TPureFloat getScaleZ() const;           /**< Gets the scaling on the Z-axis. */
     void       SetScale(
-        TPurefloat x,
-        TPurefloat y,
-        TPurefloat z );                     /**< Sets the scalings on the 3 axes. */
-    void       SetScaleX( TPurefloat x );   /**< Sets the matrix to a scaling matrix only on the X-axis. */
-    void       SetScaleY( TPurefloat y );   /**< Sets the matrix to a scaling matrix only on the Y-axis. */
-    void       SetScaleZ( TPurefloat z );   /**< Sets the matrix to a scaling matrix only on the Z-axis. */
+        TPureFloat x,
+        TPureFloat y,
+        TPureFloat z );                     /**< Sets the scalings on the 3 axes. */
+    void       SetScaleX( TPureFloat x );   /**< Sets the matrix to a scaling matrix only on the X-axis. */
+    void       SetScaleY( TPureFloat y );   /**< Sets the matrix to a scaling matrix only on the Y-axis. */
+    void       SetScaleZ( TPureFloat z );   /**< Sets the matrix to a scaling matrix only on the Z-axis. */
 
     void SetMirrorXY();   /**< Sets the matrix to a mirroring matrix on the XY planes. */
     void SetMirrorXZ();   /**< Sets the matrix to a mirroring matrix on the XZ planes. */

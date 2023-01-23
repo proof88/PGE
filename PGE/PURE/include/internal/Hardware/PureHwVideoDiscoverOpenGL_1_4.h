@@ -21,7 +21,7 @@
 class PureHwVideoDiscoverOpenGL_1_4 :
     public PureHwVideoDiscoverOpenGLbase
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureHwVideoDiscoverOpenGL_1_4 is included")
 #endif
 
@@ -30,8 +30,8 @@ public:
         const std::string& sVidFeaturesOGL,
         const std::string& sVidFeaturesWGL,
         const std::string& sVidVersionOGL,
-        const TPureuint& nVidVersionGLSLmaj,
-        const TPureuint& nVidVersionGLSLmin) :
+        const TPureUInt& nVidVersionGLSLmaj,
+        const TPureUInt& nVidVersionGLSLmin) :
     PureHwVideoDiscoverOpenGLbase(
         sVidFeaturesOGL,
         sVidFeaturesWGL,
@@ -159,7 +159,7 @@ public:
     /**
         Gets whether MultiDrawArrays is supported or not.
     */
-    TPurebool isMultiDrawArraysSupported() const
+    TPureBool isMultiDrawArraysSupported() const
     {
         return bSuppMultiDrawArrays;
     } // isMultiDrawArraysSupported()
@@ -174,6 +174,6 @@ protected:
     PureHwVideoDiscoverOpenGL_1_4& operator=(const PureHwVideoDiscoverOpenGL_1_4&) { return *this; };
 
 private:
-    TPurebool bSuppMultiDrawArrays;       /**< Is MultiDrawArrays supported? */
+    TPureBool bSuppMultiDrawArrays;       /**< Is MultiDrawArrays supported? */
     
 };

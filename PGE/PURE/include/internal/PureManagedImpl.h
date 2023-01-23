@@ -29,7 +29,7 @@ public:
     virtual void       FlushResources();                  /**< This can be used if the specialized managed object has some resources
                                                                that may be released from memory when not needed anymore. */
 
-    virtual TPureuint  getUsedSystemMemory() const;       /**< Gets the amount of allocated system memory for this managed. */
+    virtual TPureUInt  getUsedSystemMemory() const;       /**< Gets the amount of allocated system memory for this managed. */
 
     // ---------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ protected:
     PureManagedImpl& operator=(const PureManagedImpl& other);
 
 private:
-    static TPureint nManagedsTotal;
+    static TPureInt nManagedsTotal;
 
     // ---------------------------------------------------------------------------
 

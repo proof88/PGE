@@ -88,13 +88,13 @@ private:
 
     bool testCtorNotableZero()
     {
-        const PureTransformMatrix mat(Pure_MATRIX_ZERO);
+        const PureTransformMatrix mat(PURE_MATRIX_ZERO);
         return assertTrue(mat.isZero());
     }
 
     bool testCtorNotableIdentity()
     {
-        const PureTransformMatrix mat(Pure_MATRIX_IDENTITY);
+        const PureTransformMatrix mat(PURE_MATRIX_IDENTITY);
         return assertTrue(mat.isIdentity());
     }
 
@@ -115,13 +115,13 @@ private:
 
     bool testIsZero()
     {
-        PureTransformMatrix mat(Pure_MATRIX_ZERO);
+        PureTransformMatrix mat(PURE_MATRIX_ZERO);
         return assertTrue(mat.isZero());
     }
 
     bool testIsIdentity()
     {
-        const PureTransformMatrix mat(Pure_MATRIX_IDENTITY);
+        const PureTransformMatrix mat(PURE_MATRIX_IDENTITY);
         return assertTrue(mat.isIdentity());
     }
 

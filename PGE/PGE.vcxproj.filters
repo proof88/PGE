@@ -623,129 +623,6 @@
     <ClCompile Include="PURE\source\PureBaseIncludes.cpp">
       <Filter>Source Files\PURE</Filter>
     </ClCompile>
-    <ClCompile Include="PURE\source\PRRECamera.cpp">
-      <Filter>Source Files\PURE</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\PRREFiledManager.cpp">
-      <Filter>Source Files\PURE</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\PRREGLextensionFuncs.cpp">
-      <Filter>Source Files\PURE</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\PRREGLsnippets.cpp">
-      <Filter>Source Files\PURE</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\PRREManager.cpp">
-      <Filter>Source Files\PURE</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\PRREuiFontWin.cpp">
-      <Filter>Source Files\PURE</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\PRREuiManager.cpp">
-      <Filter>Source Files\PURE</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\PRREuiText.cpp">
-      <Filter>Source Files\PURE</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Object3D\PRREMesh3D.cpp">
-      <Filter>Source Files\PURE\Object3D</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Object3D\PRREMesh3DManager.cpp">
-      <Filter>Source Files\PURE\Object3D</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Object3D\PRREObject3D.cpp">
-      <Filter>Source Files\PURE\Object3D</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Object3D\PRREObject3DManager.cpp">
-      <Filter>Source Files\PURE\Object3D</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Object3D\PRREVertexTransferMode.cpp">
-      <Filter>Source Files\PURE\Object3D</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Material\PRREColor.cpp">
-      <Filter>Source Files\PURE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Material\PRREImage.cpp">
-      <Filter>Source Files\PURE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Material\PRREImageManager.cpp">
-      <Filter>Source Files\PURE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Material\PRREMaterial.cpp">
-      <Filter>Source Files\PURE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Material\PRREMaterialManager.cpp">
-      <Filter>Source Files\PURE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Material\PRRETexture.cpp">
-      <Filter>Source Files\PURE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Material\PRRETextureManager.cpp">
-      <Filter>Source Files\PURE\Material</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Math\PRREMatrix.cpp">
-      <Filter>Source Files\PURE\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Math\PRREPosUpTarget.cpp">
-      <Filter>Source Files\PURE\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Math\PRRETransformMatrix.cpp">
-      <Filter>Source Files\PURE\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Math\PRREVector.cpp">
-      <Filter>Source Files\PURE\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Math\PUREScissor.cpp">
-      <Filter>Source Files\PURE\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Display\PRREScreen.cpp">
-      <Filter>Source Files\PURE\Display</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Display\PRRESharedSettings.cpp">
-      <Filter>Source Files\PURE\Display</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Display\PRREWindow.cpp">
-      <Filter>Source Files\PURE\Display</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PRREhwAudio.cpp">
-      <Filter>Source Files\PURE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PRREhwBase.cpp">
-      <Filter>Source Files\PURE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PRREhwCentralProcessor.cpp">
-      <Filter>Source Files\PURE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PRREhwInfo.cpp">
-      <Filter>Source Files\PURE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PRREhwSystemMemory.cpp">
-      <Filter>Source Files\PURE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PRREhwVideo.cpp">
-      <Filter>Source Files\PURE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PRREhwVideoDiscoverOpenGLbase.cpp">
-      <Filter>Source Files\PURE\Hardware</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Render\PRRERendererHWfixedPipe.cpp">
-      <Filter>Source Files\PURE\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\Render\PRRERendererSWincremental.cpp">
-      <Filter>Source Files\PURE\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\PRREGLsafeFuncs.cpp">
-      <Filter>Source Files\PURE</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\SpatialStructures\PRREAxisAlignedBoundingBox.cpp">
-      <Filter>Source Files\PURE\SpatialStructures</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\SpatialStructures\PRREOctree.cpp">
-      <Filter>Source Files\PURE\SpatialStructures</Filter>
-    </ClCompile>
-    <ClCompile Include="PURE\source\SpatialStructures\PRREBoundingVolumeHierarchy.cpp">
-      <Filter>Source Files\PURE\SpatialStructures</Filter>
-    </ClCompile>
     <ClCompile Include="Weapons\WeaponManager.cpp">
       <Filter>Source Files\Weapons</Filter>
     </ClCompile>
@@ -793,6 +670,129 @@
     </ClCompile>
     <ClCompile Include="Config\PGEcfgProfiles.cpp">
       <Filter>Source Files\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Display\PureScreen.cpp">
+      <Filter>Source Files\PURE\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Display\PureSharedSettings.cpp">
+      <Filter>Source Files\PURE\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Display\PureWindow.cpp">
+      <Filter>Source Files\PURE\Display</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Hardware\PurehwAudio.cpp">
+      <Filter>Source Files\PURE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Hardware\PurehwBase.cpp">
+      <Filter>Source Files\PURE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Hardware\PurehwCentralProcessor.cpp">
+      <Filter>Source Files\PURE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Hardware\PurehwInfo.cpp">
+      <Filter>Source Files\PURE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Hardware\PurehwSystemMemory.cpp">
+      <Filter>Source Files\PURE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Hardware\PurehwVideo.cpp">
+      <Filter>Source Files\PURE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Hardware\PurehwVideoDiscoverOpenGLbase.cpp">
+      <Filter>Source Files\PURE\Hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Material\PureColor.cpp">
+      <Filter>Source Files\PURE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Material\PureImage.cpp">
+      <Filter>Source Files\PURE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Material\PureImageManager.cpp">
+      <Filter>Source Files\PURE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Material\PureMaterial.cpp">
+      <Filter>Source Files\PURE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Material\PureMaterialManager.cpp">
+      <Filter>Source Files\PURE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Material\PureTexture.cpp">
+      <Filter>Source Files\PURE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Material\PureTextureManager.cpp">
+      <Filter>Source Files\PURE\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Math\PureMatrix.cpp">
+      <Filter>Source Files\PURE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Math\PurePosUpTarget.cpp">
+      <Filter>Source Files\PURE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Math\PureScissor.cpp">
+      <Filter>Source Files\PURE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Math\PureTransformMatrix.cpp">
+      <Filter>Source Files\PURE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Math\PureVector.cpp">
+      <Filter>Source Files\PURE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Object3D\PureMesh3D.cpp">
+      <Filter>Source Files\PURE\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Object3D\PureMesh3DManager.cpp">
+      <Filter>Source Files\PURE\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Object3D\PureObject3D.cpp">
+      <Filter>Source Files\PURE\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Object3D\PureObject3DManager.cpp">
+      <Filter>Source Files\PURE\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Object3D\PureVertexTransferMode.cpp">
+      <Filter>Source Files\PURE\Object3D</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Render\PureRendererHWfixedPipe.cpp">
+      <Filter>Source Files\PURE\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Render\PureRendererSWincremental.cpp">
+      <Filter>Source Files\PURE\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\SpatialStructures\PureAxisAlignedBoundingBox.cpp">
+      <Filter>Source Files\PURE\SpatialStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\SpatialStructures\PureBoundingVolumeHierarchy.cpp">
+      <Filter>Source Files\PURE\SpatialStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\SpatialStructures\PureOctree.cpp">
+      <Filter>Source Files\PURE\SpatialStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\PureCamera.cpp">
+      <Filter>Source Files\PURE</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\PureFiledManager.cpp">
+      <Filter>Source Files\PURE</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\PureGLextensionFuncs.cpp">
+      <Filter>Source Files\PURE</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\PureGLsafeFuncs.cpp">
+      <Filter>Source Files\PURE</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\PureGLsnippets.cpp">
+      <Filter>Source Files\PURE</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\PureManager.cpp">
+      <Filter>Source Files\PURE</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\PureUiFontWin.cpp">
+      <Filter>Source Files\PURE</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\PureUiManager.cpp">
+      <Filter>Source Files\PURE</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\PureUiText.cpp">
+      <Filter>Source Files\PURE</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

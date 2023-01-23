@@ -137,19 +137,19 @@ private:
     {
         wnd.Deinitialize();
 
-        return assertEquals((TPureuint)0, wnd.getWidth(), "width") &
-            assertEquals((TPureuint)0, wnd.getHeight(), "height") &
-            assertEquals((TPureuint)0, wnd.getClientWidth(), "clwidth") &
-            assertEquals((TPureuint)0, wnd.getClientHeight(), "clheight") &
-            assertEquals((TPureuint)0, wnd.getSideFrameWidth(), "sideFrameWidth") &
-            assertEquals((TPureuint)0, wnd.getBottomFrameHeight(), "bottomFrameHeight") &
-            assertEquals((TPureuint)0, wnd.getCaptionHeight(), "captionHeight") &
-            assertEquals((TPureuint)0, wnd.getTitleBarHeight(), "titleBarHeight") &
+        return assertEquals((TPureUInt)0, wnd.getWidth(), "width") &
+            assertEquals((TPureUInt)0, wnd.getHeight(), "height") &
+            assertEquals((TPureUInt)0, wnd.getClientWidth(), "clwidth") &
+            assertEquals((TPureUInt)0, wnd.getClientHeight(), "clheight") &
+            assertEquals((TPureUInt)0, wnd.getSideFrameWidth(), "sideFrameWidth") &
+            assertEquals((TPureUInt)0, wnd.getBottomFrameHeight(), "bottomFrameHeight") &
+            assertEquals((TPureUInt)0, wnd.getCaptionHeight(), "captionHeight") &
+            assertEquals((TPureUInt)0, wnd.getTitleBarHeight(), "titleBarHeight") &
             assertEquals("", wnd.getCaption(), "caption") &
             assertEquals((HDC)0, wnd.getWndDC(), "dc") &
             assertEquals((HWND)0, wnd.getWndHandle(), "handle") &
-            assertEquals((TPureuint)0, wnd.getX(), "x") &
-            assertEquals((TPureuint)0, wnd.getY(), "y") &
+            assertEquals((TPureUInt)0, wnd.getX(), "x") &
+            assertEquals((TPureUInt)0, wnd.getY(), "y") &
             assertFalse(wnd.isActive(), "isactive") &
             assertTrue(wnd.isAutoCleanupOnQuitOn(), "autocleanup") &
             assertTrue(wnd.isAutoRedrawAllOnPosChange(), "autoredrawposchng") &
@@ -182,54 +182,54 @@ private:
 
     bool testGetWidth()
     {
-        return assertLequals((TPureuint)WINDOW_WIDTH, wnd.getWidth());
+        return assertLequals((TPureUInt)WINDOW_WIDTH, wnd.getWidth());
     }
 
     bool testGetHeight()
     {
-        return assertLequals((TPureuint)WINDOW_HEIGHT, wnd.getHeight());
+        return assertLequals((TPureUInt)WINDOW_HEIGHT, wnd.getHeight());
     }
 
     bool testGetClientWidth()
     {
-        return assertEquals((TPureuint)WINDOW_WIDTH, wnd.getClientWidth());
+        return assertEquals((TPureUInt)WINDOW_WIDTH, wnd.getClientWidth());
     }
 
     bool testGetClientHeight()
     {
-        return assertEquals((TPureuint)WINDOW_WIDTH, wnd.getClientHeight());
+        return assertEquals((TPureUInt)WINDOW_WIDTH, wnd.getClientHeight());
     }
 
     bool testSetWidth()
     {
         const unsigned int newWidth = 50;
         wnd.SetWidth(newWidth);
-        return assertEquals((TPureuint)newWidth, wnd.getWidth(), "width") &
-            assertGequals((TPureuint)newWidth, wnd.getClientWidth(), "clientwidth");
+        return assertEquals((TPureUInt)newWidth, wnd.getWidth(), "width") &
+            assertGequals((TPureUInt)newWidth, wnd.getClientWidth(), "clientwidth");
     }
 
     bool testSetHeight()
     {
         const unsigned int newHeight = 50;
         wnd.SetHeight(newHeight);
-        return assertEquals((TPureuint)newHeight, wnd.getHeight(), "height") &
-            assertGequals((TPureuint)newHeight, wnd.getClientHeight(), "clientheight");
+        return assertEquals((TPureUInt)newHeight, wnd.getHeight(), "height") &
+            assertGequals((TPureUInt)newHeight, wnd.getClientHeight(), "clientheight");
     }
 
     bool testSetClientWidth()
     {
         const unsigned int newClientWidth = 50;
         wnd.SetClientWidth(newClientWidth);
-        return assertEquals((TPureuint)newClientWidth, wnd.getClientWidth(), "clientwidth") &
-            assertLequals((TPureuint)newClientWidth, wnd.getWidth(), "width");
+        return assertEquals((TPureUInt)newClientWidth, wnd.getClientWidth(), "clientwidth") &
+            assertLequals((TPureUInt)newClientWidth, wnd.getWidth(), "width");
     }
 
     bool testSetClientHeight()
     {
         const unsigned int newClientHeight = 50;
         wnd.SetClientHeight(newClientHeight);
-        return assertEquals((TPureuint)newClientHeight, wnd.getClientHeight(), "clientheight") &
-            assertLequals((TPureuint)newClientHeight, wnd.getHeight(), "height");
+        return assertEquals((TPureUInt)newClientHeight, wnd.getClientHeight(), "clientheight") &
+            assertLequals((TPureUInt)newClientHeight, wnd.getHeight(), "height");
     }
 
     bool testGetSideFrameWidth()
@@ -259,21 +259,21 @@ private:
     bool testSetX()
     {
         wnd.SetX(5);
-        return assertEquals((TPureuint)5, wnd.getX(), "getX") &
-            assertLequals((TPureuint)WINDOW_WIDTH, wnd.getWidth(), "width") &
-            assertLequals((TPureuint)WINDOW_HEIGHT, wnd.getHeight(), "height") &
-            assertEquals((TPureuint)WINDOW_WIDTH, wnd.getClientWidth(), "clientwidth") &
-            assertEquals((TPureuint)WINDOW_HEIGHT, wnd.getClientHeight(), "clientheight");
+        return assertEquals((TPureUInt)5, wnd.getX(), "getX") &
+            assertLequals((TPureUInt)WINDOW_WIDTH, wnd.getWidth(), "width") &
+            assertLequals((TPureUInt)WINDOW_HEIGHT, wnd.getHeight(), "height") &
+            assertEquals((TPureUInt)WINDOW_WIDTH, wnd.getClientWidth(), "clientwidth") &
+            assertEquals((TPureUInt)WINDOW_HEIGHT, wnd.getClientHeight(), "clientheight");
     }
 
     bool testSetY()
     {
         wnd.SetY(5);
-        return assertEquals((TPureuint)5, wnd.getY()) &
-            assertLequals((TPureuint)WINDOW_WIDTH, wnd.getWidth(), "width") &
-            assertLequals((TPureuint)WINDOW_HEIGHT, wnd.getHeight(), "height") &
-            assertEquals((TPureuint)WINDOW_WIDTH, wnd.getClientWidth(), "clientwidth") &
-            assertEquals((TPureuint)WINDOW_HEIGHT, wnd.getClientHeight(), "clientheight");
+        return assertEquals((TPureUInt)5, wnd.getY()) &
+            assertLequals((TPureUInt)WINDOW_WIDTH, wnd.getWidth(), "width") &
+            assertLequals((TPureUInt)WINDOW_HEIGHT, wnd.getHeight(), "height") &
+            assertEquals((TPureUInt)WINDOW_WIDTH, wnd.getClientWidth(), "clientwidth") &
+            assertEquals((TPureUInt)WINDOW_HEIGHT, wnd.getClientHeight(), "clientheight");
     }
 
     bool testGetWndHandle()

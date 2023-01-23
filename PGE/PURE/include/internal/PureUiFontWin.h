@@ -2,7 +2,7 @@
 
 /*
     ###################################################################################
-    PureuiFontWin.h
+    PureUiFontWin.h
     This file is part of PURE.
     Internal header.
     Pure User Interface Windows Font class.
@@ -16,10 +16,10 @@
 /**
     Pure User Interface Windows Font class.
 */
-class PureuiFontWin
+class PureUiFontWin
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
-#pragma message("  PureuiFontWin is included")
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
+#pragma message("  PureUiFontWin is included")
 #endif
 
 public:
@@ -28,16 +28,16 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    PureuiFontWin();
+    PureUiFontWin();
 
-    PureuiFontWin(
+    PureUiFontWin(
         const std::string& fontFaceName, int height, bool bold, bool italic, bool underline, bool strikeout,
         HDC wnd_dc );
 
-    PureuiFontWin(const PureuiFontWin& uiFont);
-    PureuiFontWin& operator=(const PureuiFontWin& uiFont);
+    PureUiFontWin(const PureUiFontWin& uiFont);
+    PureUiFontWin& operator=(const PureUiFontWin& uiFont);
 
-    virtual ~PureuiFontWin();
+    virtual ~PureUiFontWin();
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 

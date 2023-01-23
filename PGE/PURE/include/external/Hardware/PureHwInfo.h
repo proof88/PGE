@@ -23,7 +23,7 @@
 */
 class PureHwInfo
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureHwInfo is included")
 #endif
 
@@ -35,11 +35,11 @@ public:
     /** Sets members to real values within the singleton instance. */
     virtual void      Initialize(
         HGLRC rc, HDC wnd_dc,
-        TPureuint nResX, TPureuint nResY,
-        TPureint nColorBits, TPureint nDepthBits,
-        TPureint nStencilBits, TPureint nFSAAlevel ) = 0;
+        TPureUInt nResX, TPureUInt nResY,
+        TPureInt nColorBits, TPureInt nDepthBits,
+        TPureInt nStencilBits, TPureInt nFSAAlevel ) = 0;
     virtual void      Deinitialize() = 0;         /**< Deinitializes the singleton instance. */
-    virtual TPurebool isInitialized() const = 0;  /**< Returns whether the singleton instance is successfully initialized. */
+    virtual TPureBool isInitialized() const = 0;  /**< Returns whether the singleton instance is successfully initialized. */
 
     virtual PurehwCentralProcessor& getCentralProcessor() const = 0;  /**< Gives access to PurehwCentralProcessor instance. */
     virtual PurehwSystemMemory&     getMemory() const = 0;            /**< Gives access to PurehwSystemMemory instance. */

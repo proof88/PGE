@@ -585,33 +585,33 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EV2008P03Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="PURE\source\Display\PRREScreen.cpp" />
-    <ClCompile Include="PURE\source\Display\PRRESharedSettings.cpp" />
-    <ClCompile Include="PURE\source\Display\PRREWindow.cpp" />
-    <ClCompile Include="PURE\source\Hardware\PRREhwAudio.cpp" />
-    <ClCompile Include="PURE\source\Hardware\PRREhwBase.cpp" />
-    <ClCompile Include="PURE\source\Hardware\PRREhwCentralProcessor.cpp" />
-    <ClCompile Include="PURE\source\Hardware\PRREhwInfo.cpp" />
-    <ClCompile Include="PURE\source\Hardware\PRREhwSystemMemory.cpp" />
-    <ClCompile Include="PURE\source\Hardware\PRREhwVideo.cpp" />
-    <ClCompile Include="PURE\source\Hardware\PRREhwVideoDiscoverOpenGLbase.cpp" />
-    <ClCompile Include="PURE\source\Material\PRREColor.cpp" />
-    <ClCompile Include="PURE\source\Material\PRREImage.cpp" />
-    <ClCompile Include="PURE\source\Material\PRREImageManager.cpp" />
-    <ClCompile Include="PURE\source\Material\PRREMaterial.cpp" />
-    <ClCompile Include="PURE\source\Material\PRREMaterialManager.cpp" />
-    <ClCompile Include="PURE\source\Material\PRRETexture.cpp" />
-    <ClCompile Include="PURE\source\Material\PRRETextureManager.cpp" />
-    <ClCompile Include="PURE\source\Math\PRREMatrix.cpp" />
-    <ClCompile Include="PURE\source\Math\PRREPosUpTarget.cpp" />
-    <ClCompile Include="PURE\source\Math\PRRETransformMatrix.cpp" />
-    <ClCompile Include="PURE\source\Math\PRREVector.cpp" />
-    <ClCompile Include="PURE\source\Math\PUREScissor.cpp" />
-    <ClCompile Include="PURE\source\Object3D\PRREMesh3D.cpp" />
-    <ClCompile Include="PURE\source\Object3D\PRREMesh3DManager.cpp" />
-    <ClCompile Include="PURE\source\Object3D\PRREObject3D.cpp" />
-    <ClCompile Include="PURE\source\Object3D\PRREObject3DManager.cpp" />
-    <ClCompile Include="PURE\source\Object3D\PRREVertexTransferMode.cpp" />
+    <ClCompile Include="PURE\source\Display\PureScreen.cpp" />
+    <ClCompile Include="PURE\source\Display\PureSharedSettings.cpp" />
+    <ClCompile Include="PURE\source\Display\PureWindow.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PurehwAudio.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PurehwBase.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PurehwCentralProcessor.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PurehwInfo.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PurehwSystemMemory.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PurehwVideo.cpp" />
+    <ClCompile Include="PURE\source\Hardware\PurehwVideoDiscoverOpenGLbase.cpp" />
+    <ClCompile Include="PURE\source\Material\PureColor.cpp" />
+    <ClCompile Include="PURE\source\Material\PureImage.cpp" />
+    <ClCompile Include="PURE\source\Material\PureImageManager.cpp" />
+    <ClCompile Include="PURE\source\Material\PureMaterial.cpp" />
+    <ClCompile Include="PURE\source\Material\PureMaterialManager.cpp" />
+    <ClCompile Include="PURE\source\Material\PureTexture.cpp" />
+    <ClCompile Include="PURE\source\Material\PureTextureManager.cpp" />
+    <ClCompile Include="PURE\source\Math\PureMatrix.cpp" />
+    <ClCompile Include="PURE\source\Math\PurePosUpTarget.cpp" />
+    <ClCompile Include="PURE\source\Math\PureScissor.cpp" />
+    <ClCompile Include="PURE\source\Math\PureTransformMatrix.cpp" />
+    <ClCompile Include="PURE\source\Math\PureVector.cpp" />
+    <ClCompile Include="PURE\source\Object3D\PureMesh3D.cpp" />
+    <ClCompile Include="PURE\source\Object3D\PureMesh3DManager.cpp" />
+    <ClCompile Include="PURE\source\Object3D\PureObject3D.cpp" />
+    <ClCompile Include="PURE\source\Object3D\PureObject3DManager.cpp" />
+    <ClCompile Include="PURE\source\Object3D\PureVertexTransferMode.cpp" />
     <ClCompile Include="PURE\source\PR00FsReducedRenderingEngine.cpp" />
     <ClCompile Include="PURE\source\PureBaseIncludes.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugPR00FPS|Win32'">Create</PrecompiledHeader>
@@ -629,20 +629,20 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='ReleasePR00FPS|Win32'">../include/internal/PureBaseIncludes.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='EV2008P03Release|Win32'">../include/internal/PureBaseIncludes.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="PURE\source\PRRECamera.cpp" />
-    <ClCompile Include="PURE\source\PRREFiledManager.cpp" />
-    <ClCompile Include="PURE\source\PRREGLextensionFuncs.cpp" />
-    <ClCompile Include="PURE\source\PRREGLsafeFuncs.cpp" />
-    <ClCompile Include="PURE\source\PRREGLsnippets.cpp" />
-    <ClCompile Include="PURE\source\PRREManager.cpp" />
-    <ClCompile Include="PURE\source\PRREuiFontWin.cpp" />
-    <ClCompile Include="PURE\source\PRREuiManager.cpp" />
-    <ClCompile Include="PURE\source\PRREuiText.cpp" />
-    <ClCompile Include="PURE\source\Render\PRRERendererHWfixedPipe.cpp" />
-    <ClCompile Include="PURE\source\Render\PRRERendererSWincremental.cpp" />
-    <ClCompile Include="PURE\source\SpatialStructures\PRREAxisAlignedBoundingBox.cpp" />
-    <ClCompile Include="PURE\source\SpatialStructures\PRREBoundingVolumeHierarchy.cpp" />
-    <ClCompile Include="PURE\source\SpatialStructures\PRREOctree.cpp" />
+    <ClCompile Include="PURE\source\PureCamera.cpp" />
+    <ClCompile Include="PURE\source\PureFiledManager.cpp" />
+    <ClCompile Include="PURE\source\PureGLextensionFuncs.cpp" />
+    <ClCompile Include="PURE\source\PureGLsafeFuncs.cpp" />
+    <ClCompile Include="PURE\source\PureGLsnippets.cpp" />
+    <ClCompile Include="PURE\source\PureManager.cpp" />
+    <ClCompile Include="PURE\source\PureUiFontWin.cpp" />
+    <ClCompile Include="PURE\source\PureUiManager.cpp" />
+    <ClCompile Include="PURE\source\PureUiText.cpp" />
+    <ClCompile Include="PURE\source\Render\PureRendererHWfixedPipe.cpp" />
+    <ClCompile Include="PURE\source\Render\PureRendererSWincremental.cpp" />
+    <ClCompile Include="PURE\source\SpatialStructures\PureAxisAlignedBoundingBox.cpp" />
+    <ClCompile Include="PURE\source\SpatialStructures\PureBoundingVolumeHierarchy.cpp" />
+    <ClCompile Include="PURE\source\SpatialStructures\PureOctree.cpp" />
     <ClCompile Include="Weapons\WeaponManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -36,16 +36,16 @@ class PR00FsReducedRenderingEngineImpl :
 public:
     virtual ~PR00FsReducedRenderingEngineImpl();       /**< Calls shutdown(). */
 
-    TPureuint initialize(
-        TPure_RENDERER rndr,
-        TPureuint width, TPureuint height,
-        TPure_DISPLAY_MODES dmode,
-        TPureuint freq, TPureint cdepth,
-        TPureint zdepth, TPureint stencil,
-        TPureint samples,
+    TPureUInt initialize(
+        TPURE_RENDERER rndr,
+        TPureUInt width, TPureUInt height,
+        TPURE_DISPLAY_MODES dmode,
+        TPureUInt freq, TPureInt cdepth,
+        TPureInt zdepth, TPureInt stencil,
+        TPureInt samples,
         HWND window = NULL);         
-    TPurebool shutdown();            
-    TPurebool isInitialized() const;         
+    TPureBool shutdown();            
+    TPureBool isInitialized() const;         
     
     PureScreen&           getScreen() const;         
     PureWindow&           getWindow() const;        
@@ -58,7 +58,7 @@ public:
     PureCamera&           getCamera() const;      
     PureUiManager&        getUImanager() const;
     PureIRenderer*        getRenderer() const;
-    void                  ShowGuiDemo(TPurebool state);
+    void                  ShowGuiDemo(TPureBool state);
 
     void                  WriteList() const;
 
@@ -68,8 +68,8 @@ public:
     void PrintMaterialsUnusedByMeshes() const;
     void PrintMaterialsUnusedByObjects() const;
     void WriteStats() const;     
-    TPurebool getAutoWriteStatsAtShutdown() const;
-    void SetAutoWriteStatsAtShutdown(TPurebool state);
+    TPureBool getAutoWriteStatsAtShutdown() const;
+    void SetAutoWriteStatsAtShutdown(TPureBool state);
 
 private:
     PureSharedSettings&  ssets;        /**< Shared settings, singleton. */
@@ -84,7 +84,7 @@ private:
     PureCamera*          pCamera;      /**< Camera, at least 1 instance. */
     PureUiManager&       uiMgr;        /**< UI manager, singleton. */
     PureIRenderer*       pRenderer;    /**< Renderer, singleton. */
-    TPurebool            bAutoWriteStatsAtShutdown;  /** If true, will invoke WriteStats() at the beginning of shutdown(). Default false. */
+    TPureBool            bAutoWriteStatsAtShutdown;  /** If true, will invoke WriteStats() at the beginning of shutdown(). Default false. */
 
     // ---------------------------------------------------------------------------
 
@@ -126,15 +126,15 @@ PR00FsReducedRenderingEngineImpl::~PR00FsReducedRenderingEngineImpl()
 
     @return The result of the initialization. 0 on success, positive value otherwise. Currently 1 for any error.
 */
-TPureuint PR00FsReducedRenderingEngineImpl::initialize(
-    TPure_RENDERER rndr,
-    TPureuint width, TPureuint height,
-    TPure_DISPLAY_MODES dmode, TPureuint freq,
-    TPureint cdepth, TPureint zdepth, TPureint stencil,
-    TPureint samples,
+TPureUInt PR00FsReducedRenderingEngineImpl::initialize(
+    TPURE_RENDERER rndr,
+    TPureUInt width, TPureUInt height,
+    TPURE_DISPLAY_MODES dmode, TPureUInt freq,
+    TPureInt cdepth, TPureInt zdepth, TPureInt stencil,
+    TPureInt samples,
     HWND window)
 {
-    TPureint st = stencil;
+    TPureInt st = stencil;
 
     getConsole().OLn("Pure::initialize(%d, %d, %d, dmode, %d, %d, %d, %d, %d)",
                       rndr, width, height, freq, cdepth, zdepth, st, samples);
@@ -144,16 +144,16 @@ TPureuint PR00FsReducedRenderingEngineImpl::initialize(
         return 1;
     }
 
-    getConsole().OIOLn( Pure_NAME );
-    getConsole().OLn( Pure_VERSION );
+    getConsole().OIOLn( PURE_NAME );
+    getConsole().OLn( PURE_VERSION );
     getConsole().OLn( "  with Dear ImGui %s", IMGUI_VERSION);
 
     switch (rndr)
     {
-    case Pure_RENDERER_SW:
+    case PURE_RENDERER_SW:
         pRenderer = &PureRendererSWincremental::createAndGet(wnd, screen, hwInfo);
         break;
-    case Pure_RENDERER_HW_FP:
+    case PURE_RENDERER_HW_FP:
         pRenderer = &PureRendererHWfixedPipe::createAndGet(wnd, screen, hwInfo);
         break;
     default:
@@ -218,7 +218,7 @@ TPureuint PR00FsReducedRenderingEngineImpl::initialize(
         // initialize camera viewport to window client area
         // we can trust window clientrect size even if this is an external window
         pCamera->SetViewport(0, 0, wnd.getClientWidth(), wnd.getClientHeight());
-        pCamera->SetAspectRatio(wnd.getClientWidth() / (TPurefloat) wnd.getClientHeight());
+        pCamera->SetAspectRatio(wnd.getClientWidth() / (TPureFloat) wnd.getClientHeight());
     } // try
     catch (const std::bad_alloc&)
     {
@@ -250,7 +250,7 @@ TPureuint PR00FsReducedRenderingEngineImpl::initialize(
 
     @return True on successful shutdown, false otherwise.
 */
-TPurebool PR00FsReducedRenderingEngineImpl::shutdown()
+TPureBool PR00FsReducedRenderingEngineImpl::shutdown()
 {
     getConsole().OLn("PR00FsReducedRenderingEngine::shutdown()");
     getConsole().OLn("");
@@ -320,7 +320,7 @@ TPurebool PR00FsReducedRenderingEngineImpl::shutdown()
     Gets the state of the engine.
     @return True if the engine is successfully initialized, false before initialization or after shutdown.
 */
-TPurebool PR00FsReducedRenderingEngineImpl::isInitialized() const
+TPureBool PR00FsReducedRenderingEngineImpl::isInitialized() const
 {
     return ( pRenderer && pRenderer->isInitialized() );
 } // isInitialized()
@@ -441,7 +441,7 @@ PureIRenderer* PR00FsReducedRenderingEngineImpl::getRenderer() const
     return pRenderer;
 }
 
-void PR00FsReducedRenderingEngineImpl::ShowGuiDemo(TPurebool state)
+void PR00FsReducedRenderingEngineImpl::ShowGuiDemo(TPureBool state)
 {
     pRenderer->ShowGuiDemo(state);
 }
@@ -458,22 +458,22 @@ void PR00FsReducedRenderingEngineImpl::PrintTexturesUnusedByMaterials() const
     getConsole().OLn("List of Textures Unused by Materials");
     getConsole().OLn("====================================");
 
-    TPureuint nUnusedTextures = 0;
+    TPureUInt nUnusedTextures = 0;
 
-    for (TPureint texi = 0; texi < texMgr.getCount(); texi++)
+    for (TPureInt texi = 0; texi < texMgr.getCount(); texi++)
     {
         PureTexture* tex = (PureTexture*) texMgr.getAttachedAt(texi);
         if ( !tex )
             continue;
 
         bool textureUsedByMaterial = false;
-        for (TPureint mati = 0; !textureUsedByMaterial && (mati < matMgr.getCount()); mati++)
+        for (TPureInt mati = 0; !textureUsedByMaterial && (mati < matMgr.getCount()); mati++)
         {
             PureMaterial* mat = (PureMaterial*) matMgr.getAttachedAt(mati);
             if ( !mat)
                 continue;
 
-            for (TPureuint layeri = 0; !textureUsedByMaterial && (layeri < matMgr.getMaximumLayerCount()); layeri++)
+            for (TPureUInt layeri = 0; !textureUsedByMaterial && (layeri < matMgr.getMaximumLayerCount()); layeri++)
             {
                 if ( mat->getTexture(layeri) == tex )
                     textureUsedByMaterial = true;
@@ -502,16 +502,16 @@ void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByMeshes() const
     getConsole().OLn("List of Materials Unused by Meshes");
     getConsole().OLn("==================================");
 
-    TPureuint nUnusedMaterials = 0;
+    TPureUInt nUnusedMaterials = 0;
 
-    for (TPureint mati = 0; mati < matMgr.getCount(); mati++)
+    for (TPureInt mati = 0; mati < matMgr.getCount(); mati++)
     {
         PureMaterial* mat = (PureMaterial*) matMgr.getAttachedAt(mati);
         if ( !mat )
             continue;
 
         bool matUsedByMesh = false;
-        for (TPureint meshi = 0; !matUsedByMesh && (meshi < meshMgr.getCount()); meshi++)
+        for (TPureInt meshi = 0; !matUsedByMesh && (meshi < meshMgr.getCount()); meshi++)
         {
             PureMesh3D* mesh = (PureMesh3D*) meshMgr.getAttachedAt(meshi);
             if ( !mesh)
@@ -520,7 +520,7 @@ void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByMeshes() const
             if ( &(mesh->getMaterial(false)) == mat )
                 matUsedByMesh = true;
             
-            for (TPureint submeshi = 0; !matUsedByMesh && (submeshi < mesh->getCount()); submeshi++)
+            for (TPureInt submeshi = 0; !matUsedByMesh && (submeshi < mesh->getCount()); submeshi++)
             {
                 PureMesh3D* submesh = (PureMesh3D*) mesh->getAttachedAt(submeshi);
                 if ( !submesh)
@@ -553,16 +553,16 @@ void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByObjects() const
     getConsole().OLn("List of Materials Unused by Object3Ds");
     getConsole().OLn("=====================================");
 
-    TPureuint nUnusedMaterials = 0;
+    TPureUInt nUnusedMaterials = 0;
 
-    for (TPureint mati = 0; mati < matMgr.getCount(); mati++)
+    for (TPureInt mati = 0; mati < matMgr.getCount(); mati++)
     {
         PureMaterial* mat = (PureMaterial*) matMgr.getAttachedAt(mati);
         if ( !mat )
             continue;
 
         bool matUsedByObject3D = false;
-        for (TPureint obji = 0; !matUsedByObject3D && (obji < objMgr.getCount()); obji++)
+        for (TPureInt obji = 0; !matUsedByObject3D && (obji < objMgr.getCount()); obji++)
         {
             PureObject3D* obj = (PureObject3D*) objMgr.getAttachedAt(obji);
             if ( !obj)
@@ -576,7 +576,7 @@ void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByObjects() const
                 if ( &(obj->getBoundingBoxObject()->getMaterial(false)) == mat )
                     matUsedByObject3D = true;
 
-                for (TPureint subobji = 0; !matUsedByObject3D && (subobji < obj->getBoundingBoxObject()->getCount()); subobji++)
+                for (TPureInt subobji = 0; !matUsedByObject3D && (subobji < obj->getBoundingBoxObject()->getCount()); subobji++)
                 {
                     PureObject3D* subobj = (PureObject3D*) obj->getBoundingBoxObject()->getAttachedAt(subobji);
                     if ( !subobj)
@@ -587,7 +587,7 @@ void PR00FsReducedRenderingEngineImpl::PrintMaterialsUnusedByObjects() const
                 }
             } // bounding box
 
-            for (TPureint subobji = 0; !matUsedByObject3D && (subobji < obj->getCount()); subobji++)
+            for (TPureInt subobji = 0; !matUsedByObject3D && (subobji < obj->getCount()); subobji++)
             {
                 PureObject3D* subobj = (PureObject3D*) obj->getAttachedAt(subobji);
                 if ( !subobj)
@@ -635,7 +635,7 @@ void PR00FsReducedRenderingEngineImpl::WriteList() const
         // getCamera() doesnt have such ...
         // getUImanager() doesnt have such ...
 
-        const TPureuint nSumSysMemUsed =
+        const TPureUInt nSumSysMemUsed =
             sizeof(wnd) + 
             sizeof(hwInfo) + 
             sizeof(*pCamera) + 
@@ -652,7 +652,7 @@ void PR00FsReducedRenderingEngineImpl::WriteList() const
             sizeof(getObject3DManager()) + 
             getObject3DManager().getUsedSystemMemory();
     
-        const TPureuint nSumVidMemUsed =
+        const TPureUInt nSumVidMemUsed =
             getTextureManager().getUsedTextureMemory() +
             getObject3DManager().getUsedVideoMemory();
             /* todo: add screen vram usage i.e. framebuffer, copy this from old JointFuture engine */
@@ -678,7 +678,7 @@ void PR00FsReducedRenderingEngineImpl::WriteList() const
 
     @return True if WriteList() would be invoked automatically at the beginning of shutdown(), false otherwise.
 */
-TPurebool PR00FsReducedRenderingEngineImpl::getAutoWriteStatsAtShutdown() const
+TPureBool PR00FsReducedRenderingEngineImpl::getAutoWriteStatsAtShutdown() const
 {
     return bAutoWriteStatsAtShutdown;
 } // getAutoWriteStatsAtShutdown()
@@ -690,7 +690,7 @@ TPurebool PR00FsReducedRenderingEngineImpl::getAutoWriteStatsAtShutdown() const
 
     @param state If true WriteList() will be invoked automatically at the beginning of shutdown(), otherwise it won't be invoked.
 */
-void PR00FsReducedRenderingEngineImpl::SetAutoWriteStatsAtShutdown(TPurebool state)
+void PR00FsReducedRenderingEngineImpl::SetAutoWriteStatsAtShutdown(TPureBool state)
 {
     bAutoWriteStatsAtShutdown = state;
 } // SetAutoWriteStatsAtShutdown()

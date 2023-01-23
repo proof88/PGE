@@ -119,19 +119,19 @@ private:
 
     bool testCtor()
     {
-        return assertEquals((TPureuint)0, wnd.getWidth(), "width") &
-            assertEquals((TPureuint)0, wnd.getHeight(), "height") &
-            assertEquals((TPureuint)0, wnd.getClientWidth(), "clwidth") &
-            assertEquals((TPureuint)0, wnd.getClientHeight(), "clheight") &
-            assertEquals((TPureuint)0, wnd.getSideFrameWidth(), "sideFrameWidth") &
-            assertEquals((TPureuint)0, wnd.getBottomFrameHeight(), "bottomFrameHeight") &
-            assertEquals((TPureuint)0, wnd.getCaptionHeight(), "captionHeight") &
-            assertEquals((TPureuint)0, wnd.getTitleBarHeight(), "titleBarHeight") &
+        return assertEquals((TPureUInt)0, wnd.getWidth(), "width") &
+            assertEquals((TPureUInt)0, wnd.getHeight(), "height") &
+            assertEquals((TPureUInt)0, wnd.getClientWidth(), "clwidth") &
+            assertEquals((TPureUInt)0, wnd.getClientHeight(), "clheight") &
+            assertEquals((TPureUInt)0, wnd.getSideFrameWidth(), "sideFrameWidth") &
+            assertEquals((TPureUInt)0, wnd.getBottomFrameHeight(), "bottomFrameHeight") &
+            assertEquals((TPureUInt)0, wnd.getCaptionHeight(), "captionHeight") &
+            assertEquals((TPureUInt)0, wnd.getTitleBarHeight(), "titleBarHeight") &
             assertEquals("", wnd.getCaption(), "caption") &
             assertEquals((HDC)0, wnd.getWndDC(), "dc") &
             assertEquals((HWND)0, wnd.getWndHandle(), "handle") &
-            assertEquals((TPureuint)0, wnd.getX(), "x") &
-            assertEquals((TPureuint)0, wnd.getY(), "y") &
+            assertEquals((TPureUInt)0, wnd.getX(), "x") &
+            assertEquals((TPureUInt)0, wnd.getY(), "y") &
             assertFalse(wnd.isActive(), "isactive") &
             assertTrue(wnd.isAutoCleanupOnQuitOn(), "autocleanup") &
             assertTrue(wnd.isAutoRedrawAllOnPosChange(), "autoredrawposchng") &
@@ -163,19 +163,19 @@ private:
     {
         wnd.Deinitialize();
 
-        return assertEquals((TPureuint)0, wnd.getWidth(), "width") &
-            assertEquals((TPureuint)0, wnd.getHeight(), "height") &
-            assertEquals((TPureuint)0, wnd.getClientWidth(), "clwidth") &
-            assertEquals((TPureuint)0, wnd.getClientHeight(), "clheight") &
-            assertEquals((TPureuint)0, wnd.getSideFrameWidth(), "sideFrameWidth") &
-            assertEquals((TPureuint)0, wnd.getBottomFrameHeight(), "bottomFrameHeight") &
-            assertEquals((TPureuint)0, wnd.getCaptionHeight(), "captionHeight") &
-            assertEquals((TPureuint)0, wnd.getTitleBarHeight(), "titleBarHeight") &
+        return assertEquals((TPureUInt)0, wnd.getWidth(), "width") &
+            assertEquals((TPureUInt)0, wnd.getHeight(), "height") &
+            assertEquals((TPureUInt)0, wnd.getClientWidth(), "clwidth") &
+            assertEquals((TPureUInt)0, wnd.getClientHeight(), "clheight") &
+            assertEquals((TPureUInt)0, wnd.getSideFrameWidth(), "sideFrameWidth") &
+            assertEquals((TPureUInt)0, wnd.getBottomFrameHeight(), "bottomFrameHeight") &
+            assertEquals((TPureUInt)0, wnd.getCaptionHeight(), "captionHeight") &
+            assertEquals((TPureUInt)0, wnd.getTitleBarHeight(), "titleBarHeight") &
             assertEquals("", wnd.getCaption(), "caption") &
             assertEquals((HDC)0, wnd.getWndDC(), "dc") &
             assertEquals((HWND)0, wnd.getWndHandle(), "handle") &
-            assertEquals((TPureuint)0, wnd.getX(), "x") &
-            assertEquals((TPureuint)0, wnd.getY(), "y") &
+            assertEquals((TPureUInt)0, wnd.getX(), "x") &
+            assertEquals((TPureUInt)0, wnd.getY(), "y") &
             assertFalse(wnd.isActive(), "isactive") &
             assertTrue(wnd.isAutoCleanupOnQuitOn(), "autocleanup") &
             assertTrue(wnd.isAutoRedrawAllOnPosChange(), "autoredrawposchng") &
@@ -209,57 +209,57 @@ private:
     bool testSetWidth()
     {
         wnd.SetWidth(5);
-        return assertEquals((TPureuint)0, wnd.getWidth());
+        return assertEquals((TPureUInt)0, wnd.getWidth());
     }
 
     bool testSetHeight()
     {
         wnd.SetHeight(5);
-        return assertEquals((TPureuint)0, wnd.getHeight());
+        return assertEquals((TPureUInt)0, wnd.getHeight());
     }
 
     bool testSetClientWidth()
     {
         wnd.SetClientWidth(5);
-        return assertEquals((TPureuint)0, wnd.getClientWidth());
+        return assertEquals((TPureUInt)0, wnd.getClientWidth());
     }
 
     bool testSetClientHeight()
     {
         wnd.SetClientHeight(5);
-        return assertEquals((TPureuint)0, wnd.getClientHeight());
+        return assertEquals((TPureUInt)0, wnd.getClientHeight());
     }
 
     bool testGetSideFrameWidth()
     {
-        return assertEquals((TPureuint)0, wnd.getSideFrameWidth());
+        return assertEquals((TPureUInt)0, wnd.getSideFrameWidth());
     }
     
     bool testGetBottomFrameHeight()
     {
-        return assertEquals((TPureuint)0, wnd.getBottomFrameHeight());
+        return assertEquals((TPureUInt)0, wnd.getBottomFrameHeight());
     }
     
     bool testGetCaptionHeight()
     {
-        return assertEquals((TPureuint)0, wnd.getCaptionHeight());
+        return assertEquals((TPureUInt)0, wnd.getCaptionHeight());
     }
     
     bool testGetTitleBarHeight()
     {
-        return assertEquals((TPureuint)0, wnd.getTitleBarHeight());
+        return assertEquals((TPureUInt)0, wnd.getTitleBarHeight());
     }
 
     bool testSetX()
     {
         wnd.SetX(5);
-        return assertEquals((TPureuint)0, wnd.getX());
+        return assertEquals((TPureUInt)0, wnd.getX());
     }
 
     bool testSetY()
     {
         wnd.SetY(5);
-        return assertEquals((TPureuint)0, wnd.getY());
+        return assertEquals((TPureUInt)0, wnd.getY());
     }
 
     bool testGetWndHandle()

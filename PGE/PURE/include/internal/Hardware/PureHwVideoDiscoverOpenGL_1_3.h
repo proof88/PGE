@@ -23,7 +23,7 @@
 class PureHwVideoDiscoverOpenGL_1_3 :
     public PureHwVideoDiscoverOpenGLbase
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureHwVideoDiscoverOpenGL_1_3 is included")
 #endif
 
@@ -32,11 +32,11 @@ public:
         const std::string& sVidFeaturesOGL,
         const std::string& sVidFeaturesWGL,
         const std::string& sVidVersionOGL,
-        const TPureuint& nVidVersionGLSLmaj,
-        const TPureuint& nVidVersionGLSLmin,
-        const TPureint&  nClrBits,
-        const TPureint&  nDpthBits,
-        const TPureint&  nStnclBits) :
+        const TPureUInt& nVidVersionGLSLmaj,
+        const TPureUInt& nVidVersionGLSLmin,
+        const TPureInt&  nClrBits,
+        const TPureInt&  nDpthBits,
+        const TPureInt&  nStnclBits) :
     PureHwVideoDiscoverOpenGLbase(
         sVidFeaturesOGL,
         sVidFeaturesWGL,
@@ -365,7 +365,7 @@ public:
             return;
         }
     
-        TPureint samples = MSAA_SUPP_LEVELS_ARRAY_SIZE;
+        TPureInt samples = MSAA_SUPP_LEVELS_ARRAY_SIZE;
         int iAttributes[] =
         {
             WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
@@ -398,7 +398,7 @@ public:
         }
         getConsole().OLn("Supported MSAA levels:");
         std::string sMsaaLevels;
-        for (TPureint i = 0; i < MSAA_SUPP_LEVELS_ARRAY_SIZE; i++)
+        for (TPureInt i = 0; i < MSAA_SUPP_LEVELS_ARRAY_SIZE; i++)
         {
             if (bMSAAlevels[i])
             {
@@ -414,7 +414,7 @@ public:
         Gets whether texture compression is supported or not.
         @return True if texture compression is supported, otherwise false.
     */
-    TPurebool isTextureCompressionSupported() const
+    TPureBool isTextureCompressionSupported() const
     {
         return bSuppTexCompression;
     } // isTextureCompressionSupported()
@@ -423,7 +423,7 @@ public:
         Gets whether Volume Texture Compression is supported or not.
         @return True if Volume Texture Compression is supported, otherwise false.
     */
-    TPurebool isVTCSupported() const
+    TPureBool isVTCSupported() const
     {
         return bSuppVTC;
     } // isVTCSupported()
@@ -432,7 +432,7 @@ public:
         Gets whether 3Dc/ATI2/DXN compression is supported or not.
         @return True if 3Dc/ATI2/DXN compression is supported, otherwise false.
     */
-    TPurebool is3DcSupported() const
+    TPureBool is3DcSupported() const
     {
         return bSupp3Dc;
     } // is3DcSupported()
@@ -441,7 +441,7 @@ public:
         Gets whether Luminance-Alpha compression is supported or not.
         @return True if Luminance-Alpha compression is supported, otherwise false.
     */
-    TPurebool isLATCSupported() const
+    TPureBool isLATCSupported() const
     {
         return bSuppLATC;
     } // isLATCsupported()
@@ -450,7 +450,7 @@ public:
         Gets whether multitexturing is supported or not.
         @return True if multitexturing is supported, false otherwise.
     */
-    TPurebool isMultiTexturingSupported() const
+    TPureBool isMultiTexturingSupported() const
     {
         return bSuppMultiTexturing;
     } // isMultiTexturingSupported()
@@ -459,7 +459,7 @@ public:
         Gets the number of texture units.
         @return The number of texture units.
     */
-    TPureint getTextureUnitsCount() const
+    TPureInt getTextureUnitsCount() const
     {
         return nTMUcount;
     } // getTextureUnitsCount()
@@ -468,7 +468,7 @@ public:
         Gets whether FSAA is supported or not.
         @return True if FSAA is supported, otherwise false.
     */
-    TPurebool isFullSceneAntiAliasingSupported() const
+    TPureBool isFullSceneAntiAliasingSupported() const
     {
         return  nMSAAmaxLevel > 1;
     } // isFullSceneAntiAliasingSupported()
@@ -478,7 +478,7 @@ public:
         Gets the maximum FSAA level.
         @return The maximum available FSAA-level.
     */
-    TPureint getMaxSamplesCount() const
+    TPureInt getMaxSamplesCount() const
     {
         return nMSAAmaxLevel;
     } // getMaxSamplesCount()
@@ -488,7 +488,7 @@ public:
         Gets whether the given MSAA-level is supported or not.
         @return True if the given MSAA-level is supported, otherwise false.
     */
-    TPurebool isSamplesSupported(TPureint numsamples) const
+    TPureBool isSamplesSupported(TPureInt numsamples) const
     {
         return (numsamples > 0) && ((numsamples < MSAA_SUPP_LEVELS_ARRAY_SIZE) ? bMSAAlevels[numsamples] : false);
     } // isSamplesSupported()
@@ -519,20 +519,20 @@ protected:
 
 private:
     static const GLint    GL_STANDARD_MIN_COMPRESSED_TEXTURE_FORMATS = 4;
-    static const TPureint MSAA_SUPP_LEVELS_ARRAY_SIZE = 33;                /**< Size of array which holds the support of MSAA-levels. */
+    static const TPureInt MSAA_SUPP_LEVELS_ARRAY_SIZE = 33;                /**< Size of array which holds the support of MSAA-levels. */
 
-    const TPureint&  nColorBits;
-    const TPureint&  nDepthBits;
-    const TPureint&  nStencilBits;
+    const TPureInt&  nColorBits;
+    const TPureInt&  nDepthBits;
+    const TPureInt&  nStencilBits;
 
     // Would be better to use C++11 uniform initialization style to fill the map ...
     std::map<GLint, std::string> vTexComprFmts;  /**< List of compressed texture formats with names. */
-    TPurebool bSuppTexCompression;        /**< Is texture compression available? */
-    TPurebool bSuppVTC;                   /**< Is Volume Texture Compression available? */
-    TPurebool bSupp3Dc;                   /**< Is 3Dc/ATI2/DXN compression supported? */
-    TPurebool bSuppLATC;                  /**< Is Luminance-Alpha compression supported? */
-    TPurebool bSuppMultiTexturing;        /**< Is multitexturing available (fixed func. pipeline)? */
-    TPureint  nTMUcount;                  /**< Number of texture units. */
-    TPurebool bMSAAlevels[MSAA_SUPP_LEVELS_ARRAY_SIZE];  /**< Is the specified MSAA-level available? */
-    TPureint  nMSAAmaxLevel;              /**< Maximum level of MSAA. */
+    TPureBool bSuppTexCompression;        /**< Is texture compression available? */
+    TPureBool bSuppVTC;                   /**< Is Volume Texture Compression available? */
+    TPureBool bSupp3Dc;                   /**< Is 3Dc/ATI2/DXN compression supported? */
+    TPureBool bSuppLATC;                  /**< Is Luminance-Alpha compression supported? */
+    TPureBool bSuppMultiTexturing;        /**< Is multitexturing available (fixed func. pipeline)? */
+    TPureInt  nTMUcount;                  /**< Number of texture units. */
+    TPureBool bMSAAlevels[MSAA_SUPP_LEVELS_ARRAY_SIZE];  /**< Is the specified MSAA-level available? */
+    TPureInt  nMSAAmaxLevel;              /**< Maximum level of MSAA. */
 };

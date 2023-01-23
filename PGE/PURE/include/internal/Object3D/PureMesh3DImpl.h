@@ -24,27 +24,27 @@ public:
 
     virtual ~PureMesh3DImpl();
 
-    TPurebool isLevel1() const;
-    TPurebool isLevel2() const;
+    TPureBool isLevel1() const;
+    TPureBool isLevel2() const;
 
-    TPure_PRIMITIVE_FORMAT getPrimitiveFormat() const;     
+    TPURE_PRIMITIVE_FORMAT getPrimitiveFormat() const;     
 
-    TPureuint   getVerticesCount() const;      
-    const TXYZ* getVertices(TPurebool implicitAccessSubobject = true) const;  
-          TXYZ* getVertices(TPurebool implicitAccessSubobject = true);
+    TPureUInt   getVerticesCount() const;      
+    const TXYZ* getVertices(TPureBool implicitAccessSubobject = true) const;  
+          TXYZ* getVertices(TPureBool implicitAccessSubobject = true);
 
-    TPureuint   getVertexIndicesCount() const;
-    const void* getVertexIndices(TPurebool implicitAccessSubobject = true) const;
+    TPureUInt   getVertexIndicesCount() const;
+    const void* getVertexIndices(TPureBool implicitAccessSubobject = true) const;
 
-    unsigned int getVertexIndicesType(TPurebool implicitAccessSubobject = true) const;
-    TPureuint    getMinVertexIndex(TPurebool implicitAccessSubobject = true) const;
-    TPureuint    getMaxVertexIndex(TPurebool implicitAccessSubobject = true) const;
-    TPureuint    getVertexIndex(TPureuint index, TPurebool implicitAccessSubobject = true) const;
+    unsigned int getVertexIndicesType(TPureBool implicitAccessSubobject = true) const;
+    TPureUInt    getMinVertexIndex(TPureBool implicitAccessSubobject = true) const;
+    TPureUInt    getMaxVertexIndex(TPureBool implicitAccessSubobject = true) const;
+    TPureUInt    getVertexIndex(TPureUInt index, TPureBool implicitAccessSubobject = true) const;
      
-    const TXYZ* getNormals(TPurebool implicitAccessSubobject = true) const;  
+    const TXYZ* getNormals(TPureBool implicitAccessSubobject = true) const;  
 
-    TPureuint getFaceCount() const;
-    TPureuint getTriangleCount() const;
+    TPureUInt getFaceCount() const;
+    TPureUInt getTriangleCount() const;
 
     PureVector&       getPosVec();                  
     const PureVector& getPosVec() const;
@@ -52,12 +52,12 @@ public:
     const PureVector& getSizeVec() const; 
     void              RecalculateSize();
 
-    const PureMaterial& getMaterial(TPurebool implicitAccessSubobject = true) const;
-          PureMaterial& getMaterial(TPurebool implicitAccessSubobject = true);
+    const PureMaterial& getMaterial(TPureBool implicitAccessSubobject = true) const;
+          PureMaterial& getMaterial(TPureBool implicitAccessSubobject = true);
 
-    TPureuint getUsedSystemMemory() const; 
+    TPureUInt getUsedSystemMemory() const; 
 
-    TPurebool cannibalize(PureMesh3D& victim);
+    TPureBool cannibalize(PureMesh3D& victim);
 
     // ---------------------------------------------------------------------------
 
@@ -65,27 +65,27 @@ protected:
 
     // ---------------------------------------------------------------------------
 
-    TPure_PRIMITIVE_FORMAT primitiveFormat;              /**< Primitives' format. */
+    TPURE_PRIMITIVE_FORMAT primitiveFormat;              /**< Primitives' format. */
     TXYZ*       pVertices;          /**< Pointer to vertices. */
     TXYZ*       pNormals;           /**< Pointer to normals. */
     void*       pVertexIndices;     /**< Pointer to vertex indices. We use these to index into arrays of Material too. */
-    TPureuint   nVertexIndices_h;   /**< Number of vertex indices. */
-    TPureuint   nMinVertexIndex;    /**< Smallest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
-    TPureuint   nMaxVertexIndex;    /**< Biggest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
+    TPureUInt   nVertexIndices_h;   /**< Number of vertex indices. */
+    TPureUInt   nMinVertexIndex;    /**< Smallest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
+    TPureUInt   nMaxVertexIndex;    /**< Biggest value in the pVertexIndices array. Used by glDrawRangeElementsEXT(). */
     GLenum      nIndicesType;       /**< Type of indices stored in pVertexIndices array. Should be as small as possible per object. */
-    TPureuint   nVertices_h;        /**< Number of vertices. */
-    TPureuint   nFaces_h;           /**< Number of faces. */
+    TPureUInt   nVertices_h;        /**< Number of vertices. */
+    TPureUInt   nFaces_h;           /**< Number of faces. */
 
     PureVector vPos;                /**< 3D World-space Position. */
     PureVector vRelPos;             /**< 3D offset position of vertices relative to center of mesh [0,0,0]. */
     PureVector vSize;               /**< 3D Size. */
     
-    PureMesh3DImpl(PureMesh3D* owner, TPure_PRIMITIVE_FORMAT prfmt);
+    PureMesh3DImpl(PureMesh3D* owner, TPURE_PRIMITIVE_FORMAT prfmt);
     
     PureMesh3DImpl(const PureMesh3DImpl&);
     PureMesh3DImpl& operator=(const PureMesh3DImpl&);
 
-    TPurebool setVertexIndex(TPureuint index, TPureuint value);  /**< Sets an index value in the vertex index array. */
+    TPureBool setVertexIndex(TPureUInt index, TPureUInt value);  /**< Sets an index value in the vertex index array. */
 
 private:
     PureMesh3D* _pOwner;            /**< The owner public object who creates this pimpl object. */

@@ -13,34 +13,34 @@
 
 #include "../external/PureAllHeaders.h"
 
-TPurebool pglHint (GLenum target, GLenum mode);
-TPurebool pglFeedbackBuffer (GLsizei size, GLenum type, GLfloat *buffer);
+TPureBool pglHint (GLenum target, GLenum mode);
+TPureBool pglFeedbackBuffer (GLsizei size, GLenum type, GLfloat *buffer);
 
 GLuint    pglGenLists (GLsizei range);
-TPurebool pglNewList (GLuint list, GLenum mode);
-TPurebool pglEndList (void );
-TPurebool pglDeleteLists (GLuint list, GLsizei range);
+TPureBool pglNewList (GLuint list, GLenum mode);
+TPureBool pglEndList (void );
+TPureBool pglDeleteLists (GLuint list, GLsizei range);
 
-TPurebool pglGenBuffersARB (GLsizei n, GLuint *buffers);
-TPurebool pglBindBufferARB (GLenum target, GLuint buffer);
-TPurebool pglBufferDataARB (GLenum target, GLsizeiptrARB size, const GLvoid *data, GLenum usage);
-TPurebool pglDeleteBuffersARB (GLsizei n, const GLuint *buffers);
+TPureBool pglGenBuffersARB (GLsizei n, GLuint *buffers);
+TPureBool pglBindBufferARB (GLenum target, GLuint buffer);
+TPureBool pglBufferDataARB (GLenum target, GLsizeiptrARB size, const GLvoid *data, GLenum usage);
+TPureBool pglDeleteBuffersARB (GLsizei n, const GLuint *buffers);
 
-TPurebool pglGenTextures (GLsizei n, GLuint *textures);
-TPurebool pglBindTexture (GLenum target, GLuint texture);
-TPurebool pglTexEnvf (GLenum target, GLenum pname, GLfloat param);
-TPurebool pglTexEnvfv (GLenum target, GLenum pname, const GLfloat *params);
-TPurebool pglTexEnvi (GLenum target, GLenum pname, GLint param);
-TPurebool pglTexEnviv (GLenum target, GLenum pname, const GLint *params);
-TPurebool pglTexGenf (GLenum coord, GLenum pname, GLfloat param);
-TPurebool pglTexGenfv (GLenum coord, GLenum pname, const GLfloat *params);
-TPurebool pglTexGeni (GLenum coord, GLenum pname, GLint param);
-TPurebool pglTexGeniv (GLenum coord, GLenum pname, const GLint *params);
-TPurebool pglTexParameterf (GLenum target, GLenum pname, GLfloat param);
-TPurebool pglTexParameteri (GLenum target, GLenum pname, GLint param);
-TPurebool pglTexParameterfv (GLenum target, GLenum pname, const GLfloat *params);
-TPurebool pglTexParameteriv (GLenum target, GLenum pname, const GLint *params);
-TPurebool pglGetTexParameterfv (GLenum target, GLenum pname, GLfloat *params);
-TPurebool pglGetTexParameteriv (GLenum target, GLenum pname, GLint *params);
-TPurebool pglTexImage2D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
-TPurebool pglGenQueries (GLsizei n, GLuint *ids);
+TPureBool pglGenTextures (GLsizei n, GLuint *textures);
+TPureBool pglBindTexture (GLenum target, GLuint texture);
+TPureBool pglTexEnvf (GLenum target, GLenum pname, GLfloat param);
+TPureBool pglTexEnvfv (GLenum target, GLenum pname, const GLfloat *params);
+TPureBool pglTexEnvi (GLenum target, GLenum pname, GLint param);
+TPureBool pglTexEnviv (GLenum target, GLenum pname, const GLint *params);
+TPureBool pglTexGenf (GLenum coord, GLenum pname, GLfloat param);
+TPureBool pglTexGenfv (GLenum coord, GLenum pname, const GLfloat *params);
+TPureBool pglTexGeni (GLenum coord, GLenum pname, GLint param);
+TPureBool pglTexGeniv (GLenum coord, GLenum pname, const GLint *params);
+TPureBool pglTexParameterf (GLenum target, GLenum pname, GLfloat param);
+TPureBool pglTexParameteri (GLenum target, GLenum pname, GLint param);
+TPureBool pglTexParameterfv (GLenum target, GLenum pname, const GLfloat *params);
+TPureBool pglTexParameteriv (GLenum target, GLenum pname, const GLint *params);
+TPureBool pglGetTexParameterfv (GLenum target, GLenum pname, GLfloat *params);
+TPureBool pglGetTexParameteriv (GLenum target, GLenum pname, GLint *params);
+TPureBool pglTexImage2D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels);
+TPureBool pglGenQueries (GLsizei n, GLuint *ids);

@@ -41,12 +41,12 @@
 
     Blended color components won't exceed maximum color component values.
 
-    Pure_CONSTANT_COLOR, Pure_ONE_MINUS_CONSTANT_COLOR, Pure_CONSTANT_ALPHA and Pure_ONE_MINUS_CONSTANT_ALPHA are available
+    PURE_CONSTANT_COLOR, PURE_ONE_MINUS_CONSTANT_COLOR, PURE_CONSTANT_ALPHA and PURE_ONE_MINUS_CONSTANT_ALPHA are available
     only if the GL version is 1.4 or greater or if ARB_imaging is supported by the driver.
     
-    Pure_SRC_COLOR, Pure_ONE_MINUS_SRC_COLOR, Pure_DST_COLOR and Pure_ONE_MINUS_DST_COLOR are available only if GL version is 1.4 or greater.
+    PURE_SRC_COLOR, PURE_ONE_MINUS_SRC_COLOR, PURE_DST_COLOR and PURE_ONE_MINUS_DST_COLOR are available only if GL version is 1.4 or greater.
 
-    Example blending: when srcF = Pure_SRC_ALPHA, dstF = Pure_ONE_MINUS_SRC_ALPHA, is a recommended way to implement traditional transparency.
+    Example blending: when srcF = PURE_SRC_ALPHA, dstF = PURE_ONE_MINUS_SRC_ALPHA, is a recommended way to implement traditional transparency.
         When srcA = 1.0, the result will be simple replacements which is expected since source/incoming alpha is 1.0 meaning that object is not transparent at all:
             srcF = 1.0/1.0 = 1,
             dstF = 1 - 1.0/1.0 = 0
@@ -62,7 +62,7 @@
             Blue  = 0.4 * srcB + 0.6 * dstB
             Alpha = 0.4 * srcA + 0.6 * dstA
 
-    Another example blending: when srcF = Pure_SRC_ALPHA, dstF = Pure_ONE, and srcA = 0.8, the result will be:
+    Another example blending: when srcF = PURE_SRC_ALPHA, dstF = PURE_ONE, and srcA = 0.8, the result will be:
         destination (color buffer content) is brightened based on srcA value:
         srcF = 0.8/1.0 = 0.8,
         dstF = 1.0/1.0 = 1
@@ -72,42 +72,42 @@
         Alpha = 0.8 * srcA + 1 * dstA = 0.8*srcA + dstA
 
 */
-enum TPure_BLENDFACTOR
+enum TPURE_BLENDFACTOR
 {
-    Pure_ZERO,                     /**< Full zero (0,0,0,0). */
-    Pure_ONE,                      /**< Full one (1,1,1,1). */
-    Pure_SRC_COLOR,                /**< Source color components get divided by maximum color component values. */
-    Pure_ONE_MINUS_SRC_COLOR,      /**< 1 minus value of Pure_SRC_COLOR. */
-    Pure_DST_COLOR,                /**< Destination color components get divided by maximum color component values. */
-    Pure_ONE_MINUS_DST_COLOR,      /**< 1 minus value of Pure_DST_COLOR. */
-    Pure_SRC_ALPHA,                /**< Source alpha component get divided by maximum alpha component values. */
-    Pure_ONE_MINUS_SRC_ALPHA,      /**< 1 minus value of Pure_SRC_ALPHA. */
-    Pure_DST_ALPHA,                /**< Destination alpha component get divided by maximum alpha component values. */
-    Pure_ONE_MINUS_DST_ALPHA,      /**< 1 minus value of Pure_DST_ALPHA. */
-    Pure_CONSTANT_COLOR,           /**< Color components specified by glBlendColor(). */
-    Pure_ONE_MINUS_CONSTANT_COLOR, /**< 1 minus value of Pure_CONSTANT_COLOR. */
-    Pure_CONSTANT_ALPHA,           /**< Alpha component specified by glBlendColor(). */
-    Pure_ONE_MINUS_CONSTANT_ALPHA, /**< 1 minus value of Pure_CONSTANT_ALPHA. */
-    Pure_SRC_ALPHA_SATURATE        /**< (p,p,p,1) where p = min(srcA, maxA-dstA) / maxA. */
-}; // TPure_BLENDFACTOR
+    PURE_ZERO,                     /**< Full zero (0,0,0,0). */
+    PURE_ONE,                      /**< Full one (1,1,1,1). */
+    PURE_SRC_COLOR,                /**< Source color components get divided by maximum color component values. */
+    PURE_ONE_MINUS_SRC_COLOR,      /**< 1 minus value of PURE_SRC_COLOR. */
+    PURE_DST_COLOR,                /**< Destination color components get divided by maximum color component values. */
+    PURE_ONE_MINUS_DST_COLOR,      /**< 1 minus value of PURE_DST_COLOR. */
+    PURE_SRC_ALPHA,                /**< Source alpha component get divided by maximum alpha component values. */
+    PURE_ONE_MINUS_SRC_ALPHA,      /**< 1 minus value of PURE_SRC_ALPHA. */
+    PURE_DST_ALPHA,                /**< Destination alpha component get divided by maximum alpha component values. */
+    PURE_ONE_MINUS_DST_ALPHA,      /**< 1 minus value of PURE_DST_ALPHA. */
+    PURE_CONSTANT_COLOR,           /**< Color components specified by glBlendColor(). */
+    PURE_ONE_MINUS_CONSTANT_COLOR, /**< 1 minus value of PURE_CONSTANT_COLOR. */
+    PURE_CONSTANT_ALPHA,           /**< Alpha component specified by glBlendColor(). */
+    PURE_ONE_MINUS_CONSTANT_ALPHA, /**< 1 minus value of PURE_CONSTANT_ALPHA. */
+    PURE_SRC_ALPHA_SATURATE        /**< (p,p,p,1) where p = min(srcA, maxA-dstA) / maxA. */
+}; // TPURE_BLENDFACTOR
 
 /**
     Preset blend modes.
 */
-enum TPure_BLENDMODE
+enum TPURE_BLENDMODE
 {
-    Pure_BM_NONE,                   /**< No blending. */
-    Pure_BM_MANUAL,                 /**< Manual blending, using custom blend factors. */
-    Pure_BM_STANDARD_TRANSPARENCY   /**< Standard transparency. Recommended only if we have real alpha values.
-                                         Equivalent to setting (Pure_SRC_ALPHA, Pure_ONE_MINUS_SRC_ALPHA) src and dst blend factors
+    PURE_BM_NONE,                   /**< No blending. */
+    PURE_BM_MANUAL,                 /**< Manual blending, using custom blend factors. */
+    PURE_BM_STANDARD_TRANSPARENCY   /**< Standard transparency. Recommended only if we have real alpha values.
+                                         Equivalent to setting (PURE_SRC_ALPHA, PURE_ONE_MINUS_SRC_ALPHA) src and dst blend factors
                                          by PureMaterial::setBlendFuncs(). */
-}; // TPure_BLENDMODE
+}; // TPURE_BLENDMODE
 
 
 /**
     Texture environment modes / functions.
     Each mode defines how produced fragment colors and alpha are calculated.
-    The default mode is Pure_TEX_FUNC_MODULATE.
+    The default mode is PURE_TEX_FUNC_MODULATE.
 
     Ctxl = color computed from the previous texture stage / incoming fragment color at stage 0.
     Csrc = texture source color.
@@ -118,28 +118,28 @@ enum TPure_BLENDMODE
     
 */  // TODO: ADD? COMBINE_EXT? etc?
     // TODO: get/set functions are not defined for this.
-enum TPure_TEX_FUNC
+enum TPURE_TEX_FUNC
 {
-    Pure_TEX_FUNC_REPLACE,   /**< Produced fragment color = Csrc.
+    PURE_TEX_FUNC_REPLACE,   /**< Produced fragment color = Csrc.
                                   Produced alpha value = Asrc for texture formats containing alpha, Atxl otherwise. */
-    Pure_TEX_FUNC_DECAL,     /**< Produced fragment color = Ctxl * (1 - Asrc) + Csrc*Asrc for texture formats containing alpha, Csrc otherwise.
+    PURE_TEX_FUNC_DECAL,     /**< Produced fragment color = Ctxl * (1 - Asrc) + Csrc*Asrc for texture formats containing alpha, Csrc otherwise.
                                   Produced alpha value = Atxl. */
-    Pure_TEX_FUNC_MODULATE,  /**< For every texture format, produced fragment color = Ctxl * Csrc.
+    PURE_TEX_FUNC_MODULATE,  /**< For every texture format, produced fragment color = Ctxl * Csrc.
                                   Produced alpha value = Atxl * Asrc for texture formats containing alpha, Atxl otherwise. */
-    Pure_TEX_FUNC_BLEND,     /**< For every texture format, produced fragment color = Ctxl * (1 - Csrc) + Cenv*Csrc.
+    PURE_TEX_FUNC_BLEND,     /**< For every texture format, produced fragment color = Ctxl * (1 - Csrc) + Cenv*Csrc.
                                   Produced alpha value = Atxl * Asrc for texture formats containing alpha, Atxl otherwise. */ 
-}; // TPure_TEX_FUNC
+}; // TPURE_TEX_FUNC
 
 
 /**
     Texture coordinate.
 */
-struct TPure_UVW
+struct TPURE_UVW
 {
     float u, v, w;
-}; // TPure_UVW
+}; // TPURE_UVW
 
-typedef TPure_UVW TUVW;
+typedef TPURE_UVW TUVW;
 
 
 
@@ -151,14 +151,14 @@ class PureMaterialManager;
 class PureMaterial :
     public PureFiledManaged
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureMaterial is included")
 #endif
 
 public:
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
-    static TPurebool isBlendFuncReallyBlending(TPure_BLENDFACTOR sfactor, TPure_BLENDFACTOR dfactor);  /**< Gets whether the given source and destination factors really mean blending or not. */
+    static TPureBool isBlendFuncReallyBlending(TPURE_BLENDFACTOR sfactor, TPURE_BLENDFACTOR dfactor);  /**< Gets whether the given source and destination factors really mean blending or not. */
 
     // ---------------------------------------------------------------------------
 
@@ -166,60 +166,60 @@ public:
 
             CConsole&    getManagedConsole() const;                           /**< Returns access to console preset with logger module name as this class. */
     
-            TPurebool    allocateArrays(                                      
-                            TPureuint nColorCount,
-                            TPureuint nTexcoordCount,
-                            TPureuint nIndexCount,
-                            TPureuint nIndexSize);                            /**< Allocate color-, texture coordinate-, and index arrays on all available levels. */
+            TPureBool    allocateArrays(                                      
+                            TPureUInt nColorCount,
+                            TPureUInt nTexcoordCount,
+                            TPureUInt nIndexCount,
+                            TPureUInt nIndexSize);                            /**< Allocate color-, texture coordinate-, and index arrays on all available levels. */
 
-            TPureuint    getIndicesCount() const;
+            TPureUInt    getIndicesCount() const;
             
-            TPureuint    getColorsCount(TPureuint level = 0) const;           /**< Gets the number of colors on the specified level. */
-            TRGBAFLOAT*  getColors(TPureuint level = 0);                      /**< Gets the pointer to colors on the specified level. */
-    const   TRGBAFLOAT*  getColors(TPureuint level = 0) const;                /**< Gets the pointer to colors on the specified level. */
+            TPureUInt    getColorsCount(TPureUInt level = 0) const;           /**< Gets the number of colors on the specified level. */
+            TRGBAFLOAT*  getColors(TPureUInt level = 0);                      /**< Gets the pointer to colors on the specified level. */
+    const   TRGBAFLOAT*  getColors(TPureUInt level = 0) const;                /**< Gets the pointer to colors on the specified level. */
             
-            TPureuint    getTexcoordsCount(TPureuint level = 0) const;        /**< Gets the number of texture coordinates on the specified level. */
-            TUVW*        getTexcoords(TPureuint level = 0);                   /**< Gets the pointer to texture coordinates on the specified level. */
-    const   TUVW*        getTexcoords(TPureuint level = 0) const;             /**< Gets the pointer to texture coordinates on the specified level. */
+            TPureUInt    getTexcoordsCount(TPureUInt level = 0) const;        /**< Gets the number of texture coordinates on the specified level. */
+            TUVW*        getTexcoords(TPureUInt level = 0);                   /**< Gets the pointer to texture coordinates on the specified level. */
+    const   TUVW*        getTexcoords(TPureUInt level = 0) const;             /**< Gets the pointer to texture coordinates on the specified level. */
 
-            PureTexture* getTexture(TPureuint level = 0);                     /**< Gets the texture of the material on the specified level. */
-    const   PureTexture* getTexture(TPureuint level = 0) const;               /**< Gets the texture of the material on the specified level. */
-            TPurebool    setTexture(PureTexture* tex, TPureuint level = 0);   /**< Sets the texture of the material on the specified level. */
+            PureTexture* getTexture(TPureUInt level = 0);                     /**< Gets the texture of the material on the specified level. */
+    const   PureTexture* getTexture(TPureUInt level = 0) const;               /**< Gets the texture of the material on the specified level. */
+            TPureBool    setTexture(PureTexture* tex, TPureUInt level = 0);   /**< Sets the texture of the material on the specified level. */
 
-            TPureuint    getTextureCount() const;                             /**< Gets the number of textures assigned to this material. */
-            TPurebool    isTextured() const;                                  /**< Gets whether the material has at least 1 textured layer. */
-            TPurebool    isSingleTextured() const;                            /**< Gets whether the material has only 1 textured layer. */
-            TPurebool    isMultiTextured() const;                             /**< Gets whether the material has at least 2 textured layers. */
+            TPureUInt    getTextureCount() const;                             /**< Gets the number of textures assigned to this material. */
+            TPureBool    isTextured() const;                                  /**< Gets whether the material has at least 1 textured layer. */
+            TPureBool    isSingleTextured() const;                            /**< Gets whether the material has only 1 textured layer. */
+            TPureBool    isMultiTextured() const;                             /**< Gets whether the material has at least 2 textured layers. */
 
-            PureColor&   getTextureEnvColor(TPureuint level = 0);             /**< Gets the texture environment color of the material on the specified level. */
-    const   PureColor&   getTextureEnvColor(TPureuint level = 0) const;       /**< Gets the texture environment color of the material on the specified level. */
+            PureColor&   getTextureEnvColor(TPureUInt level = 0);             /**< Gets the texture environment color of the material on the specified level. */
+    const   PureColor&   getTextureEnvColor(TPureUInt level = 0) const;       /**< Gets the texture environment color of the material on the specified level. */
 
-            TPure_BLENDFACTOR getSourceBlendFunc(TPureuint level = 0) const;       /**< Gets the source blend factor on the specified level. */
-            TPurebool         setSourceBlendFunc(
-                               TPure_BLENDFACTOR value,
-                               TPureuint level = 0);                               /**< Sets the source blend factor on the specified level. */
+            TPURE_BLENDFACTOR getSourceBlendFunc(TPureUInt level = 0) const;       /**< Gets the source blend factor on the specified level. */
+            TPureBool         setSourceBlendFunc(
+                               TPURE_BLENDFACTOR value,
+                               TPureUInt level = 0);                               /**< Sets the source blend factor on the specified level. */
 
-            TPure_BLENDFACTOR getDestinationBlendFunc(TPureuint level = 0) const;  /**< Gets the destination blend factor on the specified level. */
-            TPurebool         setDestinationBlendFunc(
-                               TPure_BLENDFACTOR value,
-                               TPureuint level = 0);                               /**< Sets the destination blend factor on the specified level. */
+            TPURE_BLENDFACTOR getDestinationBlendFunc(TPureUInt level = 0) const;  /**< Gets the destination blend factor on the specified level. */
+            TPureBool         setDestinationBlendFunc(
+                               TPURE_BLENDFACTOR value,
+                               TPureUInt level = 0);                               /**< Sets the destination blend factor on the specified level. */
 
-            TPurebool         setBlendFuncs(
-                               TPure_BLENDFACTOR src,
-                               TPure_BLENDFACTOR dst,
-                               TPureuint level = 0);                               /**< Sets the blend factors on the specified level. */
+            TPureBool         setBlendFuncs(
+                               TPURE_BLENDFACTOR src,
+                               TPURE_BLENDFACTOR dst,
+                               TPureUInt level = 0);                               /**< Sets the blend factors on the specified level. */
 
-            TPure_BLENDMODE   getBlendMode(TPureuint level = 0) const;             /**< Gets the blend mode on the specified level. */
-            TPurebool         setBlendMode(
-                               TPure_BLENDMODE mode,
-                               TPureuint level = 0);                               /**< Sets the blend mode on the specified level. */
+            TPURE_BLENDMODE   getBlendMode(TPureUInt level = 0) const;             /**< Gets the blend mode on the specified level. */
+            TPureBool         setBlendMode(
+                               TPURE_BLENDMODE mode,
+                               TPureUInt level = 0);                               /**< Sets the blend mode on the specified level. */
 
-            TPurebool    copyFromMaterial(
+            TPureBool    copyFromMaterial(
                             PureMaterial& srcMat,
-                            TPureuint dstLevel,
-                            TPureuint srcLevel);                              /**< Copies a layer of a material to a layer of this material. */
+                            TPureUInt dstLevel,
+                            TPureUInt srcLevel);                              /**< Copies a layer of a material to a layer of this material. */
 
-    virtual TPureuint    getUsedSystemMemory() const;                         /**< Gets the amount of allocated system memory. */
+    virtual TPureUInt    getUsedSystemMemory() const;                         /**< Gets the amount of allocated system memory. */
 
     // ---------------------------------------------------------------------------
 
@@ -227,7 +227,7 @@ protected:
 
     // ---------------------------------------------------------------------------
     
-    explicit PureMaterial(TPureuint nLayers = 1);    /**< Only PureMaterialManager creates it. */ /* TODO: mark this as noexcept(false) when using newer compiler! */
+    explicit PureMaterial(TPureUInt nLayers = 1);    /**< Only PureMaterialManager creates it. */ /* TODO: mark this as noexcept(false) when using newer compiler! */
     
     PureMaterial(const PureMaterial&);
     PureMaterial& operator=(const PureMaterial&);
@@ -247,7 +247,7 @@ private:
 class PureMaterialManager :
     public PureFiledManager
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureMaterialManager is included")
 #endif
 
@@ -262,9 +262,9 @@ public:
 
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
-    TPurebool isInitialized() const;  /**< Tells whether the object is correctly initialized or not. */
+    TPureBool isInitialized() const;  /**< Tells whether the object is correctly initialized or not. */
     
-    TPureuint getMaximumLayerCount() const;  /**< Tells maximum number of layers allowed per material. */
+    TPureUInt getMaximumLayerCount() const;  /**< Tells maximum number of layers allowed per material. */
 
     PureMaterial* createMaterial();   /**< Creates a new material. */
     

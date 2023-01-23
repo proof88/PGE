@@ -42,7 +42,7 @@
     Render hints are basically debug settings for the renderer used in rare circumstances.
     The available render hints are documented at each renderer implementation.    
 */
-typedef TPureuint TPure_RENDER_HINT;
+typedef TPureUInt TPURE_RENDER_HINT;
 
 class PureObject3D;
 class PureObject3DManager;
@@ -55,7 +55,7 @@ class PureObject3DManager;
 */
 class PureIRenderer
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureIRenderer is included")
 #endif
 
@@ -81,12 +81,12 @@ public:
         @param window  If a target window is already created for rendering purpose, it can be specified here. To be used for legacy reasons only.
         @return The result of the initialization. 0 on success, positive value otherwise.
     */
-    virtual TPureuint initialize(
-        TPureuint width, TPureuint height,
-        TPure_DISPLAY_MODES dmode,
-        TPureuint freq, TPureint cdepth,
-        TPureint zdepth, TPureint stencil,
-        TPureint samples,
+    virtual TPureUInt initialize(
+        TPureUInt width, TPureUInt height,
+        TPURE_DISPLAY_MODES dmode,
+        TPureUInt freq, TPureInt cdepth,
+        TPureInt zdepth, TPureInt stencil,
+        TPureInt samples,
         HWND window = NULL) = 0;
 
     /**
@@ -98,13 +98,13 @@ public:
 
         @return True on successful shutdown, false otherwise.
     */
-    virtual TPurebool shutdown() = 0;
+    virtual TPureBool shutdown() = 0;
 
     /**
         Gets the state of the renderer.
         @return True if the renderer is successfully initialized, false before initialization or after shutdown.
     */
-    virtual TPurebool isInitialized() const = 0;
+    virtual TPureBool isInitialized() const = 0;
 
     /**
         This should be called after initialization, prior to first call to RenderScene().
@@ -131,21 +131,21 @@ public:
     */
     virtual void RenderScene() = 0;
 
-    virtual void ShowGuiDemo(TPurebool state) = 0;
+    virtual void ShowGuiDemo(TPureBool state) = 0;
 
     /**
         Get current render hints.
         Render hints are basically debug settings for the renderer used in rare circumstances.
         The available render hints are documented at each renderer implementation.
     */
-    virtual const TPure_RENDER_HINT& getRenderHints() = 0;
+    virtual const TPURE_RENDER_HINT& getRenderHints() = 0;
 
     /**
         Set current render hints.
         Render hints are basically debug settings for the renderer used in rare circumstances.
         The available render hints are documented at each renderer implementation.
     */
-    virtual void SetRenderHints(const TPure_RENDER_HINT& hints) = 0;
+    virtual void SetRenderHints(const TPURE_RENDER_HINT& hints) = 0;
 
 
     /**

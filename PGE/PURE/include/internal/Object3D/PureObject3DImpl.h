@@ -25,14 +25,14 @@ public:
     struct CurrentStats
     {
         PFL::timeval timeLongestGlobalWaitForSyncQueryFinish;       /**< Maximum measured per-object timeLongestWaitForSyncQueryFinish value. */
-        TPureuint    nFramesWaitedForOcclusionTestResultGlobalMin;  /**< Async: Minimum counted per-object nFramesWaitedForOcclusionTestResultMin value. */
-        TPureuint    nFramesWaitedForOcclusionTestResultGlobalMax;  /**< Async: Maximum counted per-object nFramesWaitedForOcclusionTestResultMax value. */
+        TPureUInt    nFramesWaitedForOcclusionTestResultGlobalMin;  /**< Async: Minimum counted per-object nFramesWaitedForOcclusionTestResultMin value. */
+        TPureUInt    nFramesWaitedForOcclusionTestResultGlobalMax;  /**< Async: Maximum counted per-object nFramesWaitedForOcclusionTestResultMax value. */
 
         CurrentStats();
     };
 
-    static const TPureuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE;
-    static const TPureuint OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED;
+    static const TPureUInt OQ_MAX_FRAMES_WO_START_QUERY_WHEN_VISIBLE;
+    static const TPureUInt OQ_MAX_FRAMES_WO_START_QUERY_WHEN_OCCLUDED;
 
     static std::vector<CurrentStats> stats;
 
@@ -49,8 +49,8 @@ public:
     PureObject3D* getReferredObject() const;   
     const std::set<PureObject3D*>& getReferrerObjects() const;
 
-    TPure_TRANSFORMED_VERTEX* getTransformedVertices(
-        TPurebool implicitAccessSubobject = true);
+    TPURE_TRANSFORMED_VERTEX* getTransformedVertices(
+        TPureBool implicitAccessSubobject = true);
                 
     PureVector&       getAngleVec();                
     const PureVector& getAngleVec() const;          
@@ -58,53 +58,53 @@ public:
     PureVector        getScaledSizeVec() const;     
                 
     const PureVector& getScaling() const;           
-    void              SetScaling(TPurefloat value);
+    void              SetScaling(TPureFloat value);
     void              SetScaling(const PureVector& value);
-    void              Scale(TPurefloat value);
+    void              Scale(TPureFloat value);
     void              Scale(const PureVector& value);
 
-    TPurefloat        getBiggestAreaScaled() const;
-    TPurefloat        recalculateBiggestAreaScaled();
+    TPureFloat        getBiggestAreaScaled() const;
+    TPureFloat        recalculateBiggestAreaScaled();
 
-    TPurebool isRenderingAllowed() const;                    
-    void      SetRenderingAllowed(TPurebool state);          
+    TPureBool isRenderingAllowed() const;                    
+    void      SetRenderingAllowed(TPureBool state);          
     void      Show();                               
     void      Hide();                               
-    TPurebool isColliding_TO_BE_REMOVED() const;              
-    void      SetColliding_TO_BE_REMOVED(TPurebool value);    
+    TPureBool isColliding_TO_BE_REMOVED() const;              
+    void      SetColliding_TO_BE_REMOVED(TPureBool value);    
 
-    TPure_ROTATION_ORDER getRotationOrder() const;      
-    void SetRotationOrder(TPure_ROTATION_ORDER value);  
+    TPURE_ROTATION_ORDER getRotationOrder() const;      
+    void SetRotationOrder(TPURE_ROTATION_ORDER value);  
 
-    TPurebool isLit() const;                            
-    void      SetLit(TPurebool value);                    
-    TPurebool isDoubleSided() const;                     
-    void      SetDoubleSided(TPurebool value);          
-    TPurebool isWireframed() const;                     
-    void      SetWireframed(TPurebool value);           
-    TPurebool isWireframedCulled() const;               
-    void      SetWireframedCulled(TPurebool value);      
-    TPurebool isAffectingZBuffer() const;              
-    void      SetAffectingZBuffer(TPurebool value);      
-    TPurebool isTestingAgainstZBuffer() const;          
-    void      SetTestingAgainstZBuffer(TPurebool value); 
-    TPurebool isStickedToScreen() const;               
-    void      SetStickedToScreen(TPurebool value);  
+    TPureBool isLit() const;                            
+    void      SetLit(TPureBool value);                    
+    TPureBool isDoubleSided() const;                     
+    void      SetDoubleSided(TPureBool value);          
+    TPureBool isWireframed() const;                     
+    void      SetWireframed(TPureBool value);           
+    TPureBool isWireframedCulled() const;               
+    void      SetWireframedCulled(TPureBool value);      
+    TPureBool isAffectingZBuffer() const;              
+    void      SetAffectingZBuffer(TPureBool value);      
+    TPureBool isTestingAgainstZBuffer() const;          
+    void      SetTestingAgainstZBuffer(TPureBool value); 
+    TPureBool isStickedToScreen() const;               
+    void      SetStickedToScreen(TPureBool value);  
 
-    TPurebool           isOccluder() const;
-    void                SetOccluder(TPurebool value);
-    TPurebool           isOccluded() const;
-    TPurebool           isOcclusionTested() const;
-    void                SetOcclusionTested(TPurebool state);
+    TPureBool           isOccluder() const;
+    void                SetOccluder(TPureBool value);
+    TPureBool           isOccluded() const;
+    TPureBool           isOcclusionTested() const;
+    void                SetOcclusionTested(TPureBool state);
     const PureObject3D* getBoundingBoxObject() const;
     void                ForceFinishOcclusionTest();
 
-    TPureuint getUsedSystemMemory() const; 
+    TPureUInt getUsedSystemMemory() const; 
 
-    TPureuint draw(
-        const TPure_RENDER_PASS& renderPass,
-        TPurebool bASyncQuery,
-        TPurebool bRenderIfQueryPending);
+    TPureUInt draw(
+        const TPURE_RENDER_PASS& renderPass,
+        TPureBool bASyncQuery,
+        TPureBool bRenderIfQueryPending);
 
     // ---------------------------------------------------------------------------
 
@@ -114,9 +114,9 @@ protected:
     
     PureObject3DImpl(
         PureObject3D* owner,
-        const TPure_VERTEX_MODIFYING_HABIT& vmod = Pure_VMOD_STATIC,
-        const TPure_VERTEX_REFERENCING_MODE& vref = Pure_VREF_DIRECT,
-        TPurebool bForceUseClientMemory = false);
+        const TPURE_VERTEX_MODIFYING_HABIT& vmod = PURE_VMOD_STATIC,
+        const TPURE_VERTEX_REFERENCING_MODE& vref = PURE_VREF_DIRECT,
+        TPureBool bForceUseClientMemory = false);
     
     PureObject3DImpl(const PureObject3DImpl&);
     PureObject3DImpl& operator=(const PureObject3DImpl&);
@@ -128,40 +128,40 @@ private:
 
     PureVector vAngle;              /**< 3D Angle. */
     PureVector vScaling;            /**< 3D Scaling. */
-    TPurefloat fBiggestAreaScaled;  /**< Biggest area of object on either plane (XY, XZ or YZ), scaled by current scaling factor. */
-    TPurebool bVisible;             /**< Visible state. */
-    TPurebool bAffectedByLights;    /**< State of lit. */
-    TPurebool bDoubleSided;         /**< Double sided. */
-    TPurebool bWireframe;           /**< Wireframe mode. */
-    TPurebool bWireframedCull;      /**< Wireframed culling. */
-    TPurebool bAffectZBuffer;       /**< Writes to Z-Buffer. */
-    TPurebool bAllowZTesting;       /**< Tests to Z-Buffer. */
-    TPurebool bStickedToScreen;     /**< Sticked to screen. */
-    TPure_ROTATION_ORDER rotation;  /**< Rotation order. */
-    TPurebool bParentInitiatedOperation;   /**< Parent objects set this to true at the beginning of draw, subobjects ignore draw if this is not true in parent. */
+    TPureFloat fBiggestAreaScaled;  /**< Biggest area of object on either plane (XY, XZ or YZ), scaled by current scaling factor. */
+    TPureBool bVisible;             /**< Visible state. */
+    TPureBool bAffectedByLights;    /**< State of lit. */
+    TPureBool bDoubleSided;         /**< Double sided. */
+    TPureBool bWireframe;           /**< Wireframe mode. */
+    TPureBool bWireframedCull;      /**< Wireframed culling. */
+    TPureBool bAffectZBuffer;       /**< Writes to Z-Buffer. */
+    TPureBool bAllowZTesting;       /**< Tests to Z-Buffer. */
+    TPureBool bStickedToScreen;     /**< Sticked to screen. */
+    TPURE_ROTATION_ORDER rotation;  /**< Rotation order. */
+    TPureBool bParentInitiatedOperation;   /**< Parent objects set this to true at the beginning of draw, subobjects ignore draw if this is not true in parent. */
 
-    TPurebool bColliding;           /**< Colliding state. DEPRECATED: to be removed ... */
+    TPureBool bColliding;           /**< Colliding state. DEPRECATED: to be removed ... */
 
-    TPure_TRANSFORMED_VERTEX* pVerticesTransf;    /**< Pointer to transformed vertices. NULL for level 1. Only for level 2. */
+    TPURE_TRANSFORMED_VERTEX* pVerticesTransf;    /**< Pointer to transformed vertices. NULL for level 1. Only for level 2. */
     GLfloat*                  pFbBuffer;          /**< Feedback buffer. NULL for level 1. Only for level 2. */
     GLsizei                   nFbBuffer_h;        /**< Size of feedback buffer. 0 for level 1. Only for level 2. */
 
-    TPurebool     bOccluder;                                 /**< Should renderer treat this as occluder in occlusion culling tests? */   
+    TPureBool     bOccluder;                                 /**< Should renderer treat this as occluder in occlusion culling tests? */   
     // following variables are for the sync occlusion query
     GLuint        nOcclusionQuery;                           /**< OpenGL Occlusion query id. Can stay 0 if occlusion query will never be run for this object. */
     PureObject3D* pBoundingBox;                              /**< Box to be rendered for occlusion testing. Stays NULL when nOcclusionQuery also stays 0. */
     // following variables extend the previous variables for the async occlusion query
-    TPurebool     bOccluded;                                 /**< True if occlusion query resulted in it is occluded, false otherwise. Default value is false. */
-    TPurebool     bOcclusionQueryStarted;                    /**< Is nOcclusionQuery currently running? */
+    TPureBool     bOccluded;                                 /**< True if occlusion query resulted in it is occluded, false otherwise. Default value is false. */
+    TPureBool     bOcclusionQueryStarted;                    /**< Is nOcclusionQuery currently running? */
     PFL::timeval  timeLongestWaitForSyncQueryFinish;         /**< Sync: Maximum time we had to wait for the query to finish. */
-    TPureuint     nFramesWithoutOcclusionTest;               /**< Async: How many frames elapsed without testing if the object is occluded? */
-    TPureuint     nFramesWaitedForOcclusionTestResult;       /**< Async: Counting frames elapsed since query start until we finally had result; always reset to 0 when we have a result. */
-    TPureuint     nFramesWaitedForOcclusionTestResultMin;    /**< Async: Minimum number of frames elapsed since query start until we finally had result. */
-    TPureuint     nFramesWaitedForOcclusionTestResultMax;    /**< Async: Maximum number of frames elapsed since query start until we finally had result. */
+    TPureUInt     nFramesWithoutOcclusionTest;               /**< Async: How many frames elapsed without testing if the object is occluded? */
+    TPureUInt     nFramesWaitedForOcclusionTestResult;       /**< Async: Counting frames elapsed since query start until we finally had result; always reset to 0 when we have a result. */
+    TPureUInt     nFramesWaitedForOcclusionTestResultMin;    /**< Async: Minimum number of frames elapsed since query start until we finally had result. */
+    TPureUInt     nFramesWaitedForOcclusionTestResultMax;    /**< Async: Maximum number of frames elapsed since query start until we finally had result. */
 
     // ---------------------------------------------------------------------------
 
-    void      Draw_LoadTextureIntoTMU(const PureTexture* tex, TPureuint iTMU = 0) const;   /**< Loads the given texture into the texture mapping unit. */
+    void      Draw_LoadTextureIntoTMU(const PureTexture* tex, TPureUInt iTMU = 0) const;   /**< Loads the given texture into the texture mapping unit. */
     void      Draw_LoadTexturesAndSetBlendState() const;                                   /**< Loads all textures into all texture mapping units and sets blending if needed. */
     void      Draw_FeedbackBuffer_Start();                                                 /**< Set render mode to feedback and allocate buffer for transformed vertices. */
     void      Draw_FeedbackBuffer_Finish();                                                /**< Set render mode to default render. */
@@ -169,10 +169,10 @@ private:
     void      Draw_PrepareGLBeforeDrawNormal(bool bLighting) const;
     void      glBeginOcclusionQuery() const;
     void      glEndOcclusionQuery() const;
-    TPureuint draw_RenderBoundingBox() const;
-    TPureuint draw_OcclusionQuery_Start(TPurebool async);
-    TPurebool draw_OcclusionQuery_Finish(TPurebool async, TPurebool bRenderIfQueryPending);
-    TPureuint draw_DrawSW();
+    TPureUInt draw_RenderBoundingBox() const;
+    TPureUInt draw_OcclusionQuery_Start(TPureBool async);
+    TPureBool draw_OcclusionQuery_Finish(TPureBool async, TPureBool bRenderIfQueryPending);
+    TPureUInt draw_DrawSW();
 
     friend class PureObject3D;
     friend class PureObject3DManager;

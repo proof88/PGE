@@ -42,20 +42,20 @@ protected:
     virtual void Initialize()
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureSharedSettings::getLoggerModuleName(), true);
-        screensvrOrig = ss.get(Pure_SSET_SCREENSAVER_ALLOWED);
-        monitorpwrOrig = ss.get(Pure_SSET_MONITORPOWERSAVE_ALLOWED);
-        standbyOrig = ss.get(Pure_SSET_STANDBY_ALLOWED);
-        vsyncOrig = ss.get(Pure_SSET_VSYNC_SUPPORTED);
+        screensvrOrig = ss.get(PURE_SSET_SCREENSAVER_ALLOWED);
+        monitorpwrOrig = ss.get(PURE_SSET_MONITORPOWERSAVE_ALLOWED);
+        standbyOrig = ss.get(PURE_SSET_STANDBY_ALLOWED);
+        vsyncOrig = ss.get(PURE_SSET_VSYNC_SUPPORTED);
         AddSubTest("testCtor", (PFNUNITSUBTEST) &PureSharedSettingsTest::testCtor);
         AddSubTest("testSet", (PFNUNITSUBTEST) &PureSharedSettingsTest::testSet);
     }
 
     virtual void Finalize()
     {
-        ss.Set(Pure_SSET_MONITORPOWERSAVE_ALLOWED, monitorpwrOrig);
-        ss.Set(Pure_SSET_SCREENSAVER_ALLOWED, screensvrOrig);
-        ss.Set(Pure_SSET_STANDBY_ALLOWED, standbyOrig);
-        ss.Set(Pure_SSET_VSYNC_SUPPORTED, vsyncOrig);
+        ss.Set(PURE_SSET_MONITORPOWERSAVE_ALLOWED, monitorpwrOrig);
+        ss.Set(PURE_SSET_SCREENSAVER_ALLOWED, screensvrOrig);
+        ss.Set(PURE_SSET_STANDBY_ALLOWED, standbyOrig);
+        ss.Set(PURE_SSET_VSYNC_SUPPORTED, vsyncOrig);
         CConsole::getConsoleInstance().SetLoggingState(PureSharedSettings::getLoggerModuleName(), false);
     }
 
@@ -79,23 +79,23 @@ private:
 
     bool testCtor()
     {
-        return assertTrue(ss.get(Pure_SSET_MONITORPOWERSAVE_ALLOWED), "monitorpwrsave") &  /* should be True as defined in Screen */
-            assertFalse(ss.get(Pure_SSET_SCREENSAVER_ALLOWED), "screensvr") &           /* should be False as defined in Screen */
-            assertFalse(ss.get(Pure_SSET_STANDBY_ALLOWED), "standby") &                 /* should be False as defined in Screen */
-            assertFalse(ss.get(Pure_SSET_VSYNC_SUPPORTED), "vsync");                      /* should be False as defined in Screen */
+        return assertTrue(ss.get(PURE_SSET_MONITORPOWERSAVE_ALLOWED), "monitorpwrsave") &  /* should be True as defined in Screen */
+            assertFalse(ss.get(PURE_SSET_SCREENSAVER_ALLOWED), "screensvr") &           /* should be False as defined in Screen */
+            assertFalse(ss.get(PURE_SSET_STANDBY_ALLOWED), "standby") &                 /* should be False as defined in Screen */
+            assertFalse(ss.get(PURE_SSET_VSYNC_SUPPORTED), "vsync");                      /* should be False as defined in Screen */
     }
 
     bool testSet()
     {
-        ss.Set(Pure_SSET_MONITORPOWERSAVE_ALLOWED, false);
-        ss.Set(Pure_SSET_SCREENSAVER_ALLOWED, true);
-        ss.Set(Pure_SSET_STANDBY_ALLOWED, true);
-        ss.Set(Pure_SSET_VSYNC_SUPPORTED, true);
+        ss.Set(PURE_SSET_MONITORPOWERSAVE_ALLOWED, false);
+        ss.Set(PURE_SSET_SCREENSAVER_ALLOWED, true);
+        ss.Set(PURE_SSET_STANDBY_ALLOWED, true);
+        ss.Set(PURE_SSET_VSYNC_SUPPORTED, true);
 
-        return assertFalse(ss.get(Pure_SSET_MONITORPOWERSAVE_ALLOWED)) &
-            assertTrue(ss.get(Pure_SSET_SCREENSAVER_ALLOWED)) &
-            assertTrue(ss.get(Pure_SSET_STANDBY_ALLOWED)) &
-            assertTrue(ss.get(Pure_SSET_VSYNC_SUPPORTED));
+        return assertFalse(ss.get(PURE_SSET_MONITORPOWERSAVE_ALLOWED)) &
+            assertTrue(ss.get(PURE_SSET_SCREENSAVER_ALLOWED)) &
+            assertTrue(ss.get(PURE_SSET_STANDBY_ALLOWED)) &
+            assertTrue(ss.get(PURE_SSET_VSYNC_SUPPORTED));
     }
     
 }; // class PureSharedSettingsTest

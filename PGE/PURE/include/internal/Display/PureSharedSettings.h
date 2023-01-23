@@ -17,13 +17,13 @@
 /**
     Shared settings enumerator.
 */
-enum TPure_SHARED_SETTINGS
+enum TPURE_SHARED_SETTINGS
 {
-    Pure_SSET_MONITORPOWERSAVE_ALLOWED,
-    Pure_SSET_SCREENSAVER_ALLOWED,
-    Pure_SSET_STANDBY_ALLOWED,
-    Pure_SSET_VSYNC_SUPPORTED
-}; // TPure_SHARED_SETTINGS
+    PURE_SSET_MONITORPOWERSAVE_ALLOWED,
+    PURE_SSET_SCREENSAVER_ALLOWED,
+    PURE_SSET_STANDBY_ALLOWED,
+    PURE_SSET_VSYNC_SUPPORTED
+}; // TPURE_SHARED_SETTINGS
 
 
 /**
@@ -40,7 +40,7 @@ enum TPure_SHARED_SETTINGS
 */
 class PureSharedSettings
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureSharedSettings is included")
 #endif
 
@@ -60,13 +60,13 @@ public:
     /**
         Gets the specified shared setting.
     */
-    TPurebool get(TPure_SHARED_SETTINGS s) const;
+    TPureBool get(TPURE_SHARED_SETTINGS s) const;
 
 
     /**
         Sets the specified shared setting.
     */
-    void Set(TPure_SHARED_SETTINGS s, TPurebool value);
+    void Set(TPURE_SHARED_SETTINGS s, TPureBool value);
 
 protected:
 
@@ -76,10 +76,10 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    TPurebool bMonitorPowerSave;      /**< Is monitor powersaving enabled? Used by Window, accessed through Screen from outside. */
-    TPurebool bScreenSaver;           /**< Is screensaver enabled? Used by Window, accessed through Screen from outside. */
-    TPurebool bStandby;               /**< Is computer standby allowed? Used by Window, accessed through Screen from outside. */
-    TPurebool bVSyncSupported;        /**< Is VSync supported? Set by HWInfo, accessed through Screen from outside. */
+    TPureBool bMonitorPowerSave;      /**< Is monitor powersaving enabled? Used by Window, accessed through Screen from outside. */
+    TPureBool bScreenSaver;           /**< Is screensaver enabled? Used by Window, accessed through Screen from outside. */
+    TPureBool bStandby;               /**< Is computer standby allowed? Used by Window, accessed through Screen from outside. */
+    TPureBool bVSyncSupported;        /**< Is VSync supported? Set by HWInfo, accessed through Screen from outside. */
 
     // ---------------------------------------------------------------------------
 

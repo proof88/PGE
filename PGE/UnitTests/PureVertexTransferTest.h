@@ -26,9 +26,9 @@ class SampleDescendantFromVertexTransfer : public PureVertexTransfer
 public:
     SampleDescendantFromVertexTransfer(
         PureMaterialManager& matMgr,
-        TPure_VERTEX_MODIFYING_HABIT vmod = Pure_VMOD_STATIC,
-        TPure_VERTEX_REFERENCING_MODE vref = Pure_VREF_DIRECT,
-        TPurebool bForceUseClientMemory = false) : PureVertexTransfer(matMgr, vmod, vref, bForceUseClientMemory)
+        TPURE_VERTEX_MODIFYING_HABIT vmod = PURE_VMOD_STATIC,
+        TPURE_VERTEX_REFERENCING_MODE vref = PURE_VREF_DIRECT,
+        TPureBool bForceUseClientMemory = false) : PureVertexTransfer(matMgr, vmod, vref, bForceUseClientMemory)
     {};
 
     virtual ~SampleDescendantFromVertexTransfer()
@@ -38,13 +38,13 @@ public:
         This is a sample draw logic for a drawable level-1 derived object, just for unit test.
         A real implementation is obviously the PureObject3D::draw() function.
     */
-    TPureuint dummyDraw()
+    TPureUInt dummyDraw()
     {
         assert(isLevel1());
         ResetLastTransferredCounts();
 
-        TPureuint nRetSum = 0;
-        for (TPureint i = 0; i < getCount(); i++)
+        TPureUInt nRetSum = 0;
+        for (TPureInt i = 0; i < getCount(); i++)
         {
             nRetSum += ((SampleDescendantFromVertexTransfer*)(getAttachedAt(i)))->transferVertices();
         }
@@ -76,10 +76,10 @@ public:
     }
   
     SampleDescendantFromVertexTransfer* createBox(
-        TPurefloat a, TPurefloat b, TPurefloat c,
-        TPure_VERTEX_MODIFYING_HABIT vmod = Pure_VMOD_STATIC,
-        TPure_VERTEX_REFERENCING_MODE vref = Pure_VREF_DIRECT,
-        TPurebool bForceUseClientMemory = false)
+        TPureFloat a, TPureFloat b, TPureFloat c,
+        TPURE_VERTEX_MODIFYING_HABIT vmod = PURE_VMOD_STATIC,
+        TPURE_VERTEX_REFERENCING_MODE vref = PURE_VREF_DIRECT,
+        TPureBool bForceUseClientMemory = false)
     {
         getConsole().OLnOI("PureObject3DManager::createBox(%f, %f, %f)", a, b, c);
 
@@ -113,9 +113,9 @@ public:
 
     SampleDescendantFromVertexTransfer* createFromFile(
         const char* filename,
-        TPure_VERTEX_MODIFYING_HABIT vmod,
-        TPure_VERTEX_REFERENCING_MODE vref,
-        TPurebool bForceUseClientMemory = false)
+        TPURE_VERTEX_MODIFYING_HABIT vmod,
+        TPURE_VERTEX_REFERENCING_MODE vref,
+        TPureBool bForceUseClientMemory = false)
     {
         getConsole().OLnOI("SampleManagerForDescendantFromVertexTransfer::createFromFile(\"%s\")", filename);
 
@@ -134,7 +134,7 @@ public:
         bool b = ((PureMesh3D*)obj)->pImpl->cannibalize(*tmpMesh);
         assert(b);
 
-        for (TPureint i = 0; i < tmpMesh->getCount(); i++) 
+        for (TPureInt i = 0; i < tmpMesh->getCount(); i++) 
         {
             SampleDescendantFromVertexTransfer* const subobject = new SampleDescendantFromVertexTransfer(materialMgr, vmod, vref, bForceUseClientMemory);
             assert(subobject);
@@ -211,7 +211,7 @@ protected:
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3D::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureVertexTransfer::getLoggerModuleName(), true);
         engine = &PR00FsReducedRenderingEngine::createAndGet();
-        engine->initialize(Pure_RENDERER_HW_FP, 800, 600, Pure_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
+        engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         vtm = new SampleManagerForDescendantFromVertexTransfer(engine->getMaterialManager()); 
         mesh = NULL;
         meshFromFile = NULL;
@@ -237,7 +237,7 @@ protected:
     virtual bool setUp()
     {
         mesh = vtm->createBox(1.0f, 2.0f, 3.0f);
-        meshFromFile = vtm->createFromFile("_res/models/snail_proofps/snail.obj", Pure_VMOD_STATIC, Pure_VREF_DIRECT);
+        meshFromFile = vtm->createFromFile("_res/models/snail_proofps/snail.obj", PURE_VMOD_STATIC, PURE_VREF_DIRECT);
         return assertNotNull(mesh, "mesh null") &
             assertNotNull(meshFromFile, "meshFromFile null");
     }
@@ -299,12 +299,12 @@ private:
     bool testIsVertexTransferModeSelectable()
     {
         // only testing HW-independent values
-        return assertTrue( PureVertexTransfer::isVertexTransferModeSelectable(Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT), "Pure_VT_DYN_DIR_1_BY_1" ) &
-               assertTrue( PureVertexTransfer::isVertexTransferModeSelectable(Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT | BIT(Pure_VT_VA_BIT)), "Pure_VT_DYN_DIR_RVA" ) &
-               assertTrue( PureVertexTransfer::isVertexTransferModeSelectable(Pure_VMOD_DYNAMIC | Pure_VREF_INDEXED), "Pure_VT_DYN_IND_1_BY_1" ) &
-               assertTrue( PureVertexTransfer::isVertexTransferModeSelectable(Pure_VMOD_DYNAMIC | Pure_VREF_INDEXED | BIT(Pure_VT_VA_BIT)), "Pure_VT_DYN_IND_RVA" ) &
-               assertTrue( PureVertexTransfer::isVertexTransferModeSelectable(Pure_VMOD_STATIC  | Pure_VREF_DIRECT), "Pure_VT_STA_DIR_DL" ) &
-               assertTrue( PureVertexTransfer::isVertexTransferModeSelectable(Pure_VMOD_STATIC  | Pure_VREF_INDEXED), "Pure_VT_STA_IND_DL" );
+        return assertTrue( PureVertexTransfer::isVertexTransferModeSelectable(PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT), "PURE_VT_DYN_DIR_1_BY_1" ) &
+               assertTrue( PureVertexTransfer::isVertexTransferModeSelectable(PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT | BIT(PURE_VT_VA_BIT)), "PURE_VT_DYN_DIR_RVA" ) &
+               assertTrue( PureVertexTransfer::isVertexTransferModeSelectable(PURE_VMOD_DYNAMIC | PURE_VREF_INDEXED), "PURE_VT_DYN_IND_1_BY_1" ) &
+               assertTrue( PureVertexTransfer::isVertexTransferModeSelectable(PURE_VMOD_DYNAMIC | PURE_VREF_INDEXED | BIT(PURE_VT_VA_BIT)), "PURE_VT_DYN_IND_RVA" ) &
+               assertTrue( PureVertexTransfer::isVertexTransferModeSelectable(PURE_VMOD_STATIC  | PURE_VREF_DIRECT), "PURE_VT_STA_DIR_DL" ) &
+               assertTrue( PureVertexTransfer::isVertexTransferModeSelectable(PURE_VMOD_STATIC  | PURE_VREF_INDEXED), "PURE_VT_STA_IND_DL" );
     }
 
     bool testIsVertexReferencingIndexed()
@@ -321,41 +321,41 @@ private:
 
     bool testSelectVertexTransferMode()
     {
-        const TPure_VERTEX_TRANSFER_MODE vtransStaDirHost = PureVertexTransfer::selectVertexTransferMode(Pure_VMOD_STATIC, Pure_VREF_DIRECT, false);
-        const TPure_VERTEX_TRANSFER_MODE vtransStaIndHost = PureVertexTransfer::selectVertexTransferMode(Pure_VMOD_STATIC, Pure_VREF_INDEXED, false);
-        const TPure_VERTEX_TRANSFER_MODE vtransDynDirHost = PureVertexTransfer::selectVertexTransferMode(Pure_VMOD_DYNAMIC, Pure_VREF_DIRECT, false);
-        const TPure_VERTEX_TRANSFER_MODE vtransDynIndHost = PureVertexTransfer::selectVertexTransferMode(Pure_VMOD_DYNAMIC, Pure_VREF_INDEXED, false);
+        const TPURE_VERTEX_TRANSFER_MODE vtransStaDirHost = PureVertexTransfer::selectVertexTransferMode(PURE_VMOD_STATIC, PURE_VREF_DIRECT, false);
+        const TPURE_VERTEX_TRANSFER_MODE vtransStaIndHost = PureVertexTransfer::selectVertexTransferMode(PURE_VMOD_STATIC, PURE_VREF_INDEXED, false);
+        const TPURE_VERTEX_TRANSFER_MODE vtransDynDirHost = PureVertexTransfer::selectVertexTransferMode(PURE_VMOD_DYNAMIC, PURE_VREF_DIRECT, false);
+        const TPURE_VERTEX_TRANSFER_MODE vtransDynIndHost = PureVertexTransfer::selectVertexTransferMode(PURE_VMOD_DYNAMIC, PURE_VREF_INDEXED, false);
 
-        const TPure_VERTEX_TRANSFER_MODE vtransStaDirClient = PureVertexTransfer::selectVertexTransferMode(Pure_VMOD_STATIC, Pure_VREF_DIRECT, true);
-        const TPure_VERTEX_TRANSFER_MODE vtransStaIndClient = PureVertexTransfer::selectVertexTransferMode(Pure_VMOD_STATIC, Pure_VREF_INDEXED, true);
-        const TPure_VERTEX_TRANSFER_MODE vtransDynDirClient = PureVertexTransfer::selectVertexTransferMode(Pure_VMOD_DYNAMIC, Pure_VREF_DIRECT, true);
-        const TPure_VERTEX_TRANSFER_MODE vtransDynIndClient = PureVertexTransfer::selectVertexTransferMode(Pure_VMOD_DYNAMIC, Pure_VREF_INDEXED, true);
+        const TPURE_VERTEX_TRANSFER_MODE vtransStaDirClient = PureVertexTransfer::selectVertexTransferMode(PURE_VMOD_STATIC, PURE_VREF_DIRECT, true);
+        const TPURE_VERTEX_TRANSFER_MODE vtransStaIndClient = PureVertexTransfer::selectVertexTransferMode(PURE_VMOD_STATIC, PURE_VREF_INDEXED, true);
+        const TPURE_VERTEX_TRANSFER_MODE vtransDynDirClient = PureVertexTransfer::selectVertexTransferMode(PURE_VMOD_DYNAMIC, PURE_VREF_DIRECT, true);
+        const TPURE_VERTEX_TRANSFER_MODE vtransDynIndClient = PureVertexTransfer::selectVertexTransferMode(PURE_VMOD_DYNAMIC, PURE_VREF_INDEXED, true);
 
         
         // vtransDynDirClient and vtransDynIndClient should be clientside since habit is dynamic and bForceUseClientMemory is true
 
         const bool bVTransDynDirClientIsClientside = assertTrue( PureVertexTransfer::isVertexModifyingDynamic(vtransDynDirClient), "vtransDynDirClient dyn" ) &
             assertFalse( PureVertexTransfer::isVertexReferencingIndexed(vtransDynDirClient), "vtransDynDirClient ind" ) &
-            assertTrue(BIT_READ(vtransDynDirClient,Pure_VT_VA_BIT), "vtransDynDirClient VA") &
-            assertFalse(BIT_READ(vtransDynDirClient,Pure_VT_SVA_BIT), "vtransDynDirClient RVA"); // CVA and RNG bits are not checked here
+            assertTrue(BIT_READ(vtransDynDirClient,PURE_VT_VA_BIT), "vtransDynDirClient VA") &
+            assertFalse(BIT_READ(vtransDynDirClient,PURE_VT_SVA_BIT), "vtransDynDirClient RVA"); // CVA and RNG bits are not checked here
 
         const bool bVTransDynIndClientIsClientside = assertTrue( PureVertexTransfer::isVertexModifyingDynamic(vtransDynIndClient), "vtransDynIndClient dyn" ) &
             assertTrue( PureVertexTransfer::isVertexReferencingIndexed(vtransDynIndClient), "vtransDynIndClient ind" ) &
-            assertTrue(BIT_READ(vtransDynIndClient,Pure_VT_VA_BIT), "vtransDynIndClient VA") &
-            assertFalse(BIT_READ(vtransDynIndClient,Pure_VT_SVA_BIT), "vtransDynIndClient RVA"); // CVA and RNG bits are not checked here
+            assertTrue(BIT_READ(vtransDynIndClient,PURE_VT_VA_BIT), "vtransDynIndClient VA") &
+            assertFalse(BIT_READ(vtransDynIndClient,PURE_VT_SVA_BIT), "vtransDynIndClient RVA"); // CVA and RNG bits are not checked here
 
         
         // vtransStaDirClient and vtransStaIndClient should be serverside since habit is static hence bForceUseClientMemory is ignored
 
         const bool bVTransStaDirClientIsServerside = assertFalse( PureVertexTransfer::isVertexModifyingDynamic(vtransStaDirHost), "vtransStaDirHost dyn" ) &
             assertFalse( PureVertexTransfer::isVertexReferencingIndexed(vtransStaDirHost), "vtransStaDirHost ind" ) &
-            assertTrue(BIT_READ(vtransStaDirHost,Pure_VT_VA_BIT), "vtransStaDirHost VA") &
-            assertTrue(BIT_READ(vtransStaDirHost,Pure_VT_SVA_BIT), "vtransStaDirHost SVA"); // CVA and RNG bits are not checked here
+            assertTrue(BIT_READ(vtransStaDirHost,PURE_VT_VA_BIT), "vtransStaDirHost VA") &
+            assertTrue(BIT_READ(vtransStaDirHost,PURE_VT_SVA_BIT), "vtransStaDirHost SVA"); // CVA and RNG bits are not checked here
 
         const bool bVTransStaIndClientIsServerside = assertFalse( PureVertexTransfer::isVertexModifyingDynamic(vtransStaIndHost), "vtransStaIndHost dyn" ) &
             assertTrue( PureVertexTransfer::isVertexReferencingIndexed(vtransStaIndHost), "vtransStaIndHost ind" ) &
-            assertTrue(BIT_READ(vtransStaIndHost,Pure_VT_VA_BIT), "vtransStaIndHost VA") &
-            assertTrue(BIT_READ(vtransStaIndHost,Pure_VT_SVA_BIT), "vtransStaIndHost SVA"); // CVA and RNG bits are not checked here
+            assertTrue(BIT_READ(vtransStaIndHost,PURE_VT_VA_BIT), "vtransStaIndHost VA") &
+            assertTrue(BIT_READ(vtransStaIndHost,PURE_VT_SVA_BIT), "vtransStaIndHost SVA"); // CVA and RNG bits are not checked here
 
         return 
             assertFalse( PureVertexTransfer::isVertexReferencingIndexed( vtransDynDirHost ), "indexed ? vtransDynDirHost" ) &
@@ -374,68 +374,68 @@ private:
 
     bool testIsVideoMemoryUsed()
     {
-        return assertFalse(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_DIR_1_BY_1    ), "Pure_VT_DYN_DIR_1_BY_1") &
-        assertFalse(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_DIR_RVA              ), "Pure_VT_DYN_DIR_RVA") &
-        assertFalse(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_DIR_RVA_CVA          ), "Pure_VT_DYN_DIR_RVA_CVA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_DIR_SVA_GEN           ), "Pure_VT_DYN_DIR_SVA_GEN") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_DIR_SVA_ATI           ), "Pure_VT_DYN_DIR_SVA_ATI") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_DIR_SVA_ATI_CVA       ), "Pure_VT_DYN_DIR_SVA_ATI_CVA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_DIR_SVA_NV            ), "Pure_VT_DYN_DIR_SVA_NV") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_DIR_SVA_NV_CVA        ), "Pure_VT_DYN_DIR_SVA_NV_CVA") &
-        assertFalse(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_1_BY_1           ), "Pure_VT_DYN_IND_1_BY_1") &
-        assertFalse(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_RVA              ), "Pure_VT_DYN_IND_RVA") &
-        assertFalse(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_RVA_RNG          ), "Pure_VT_DYN_IND_RVA_RNG") &
-        assertFalse(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_RVA_CVA          ), "Pure_VT_DYN_IND_RVA_CVA") &
-        assertFalse(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_RVA_CVA_RNG      ), "Pure_VT_DYN_IND_RVA_CVA_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_GEN           ), "Pure_VT_DYN_IND_SVA_GEN") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_ATI           ), "Pure_VT_DYN_IND_SVA_ATI") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_ATI_RNG       ), "Pure_VT_DYN_IND_SVA_ATI_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_ATI_CVA       ), "Pure_VT_DYN_IND_SVA_ATI_CVA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_ATI_CVA_RNG   ), "Pure_VT_DYN_IND_SVA_ATI_CVA_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_ATI_EA        ), "Pure_VT_DYN_IND_SVA_ATI_EA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_ATI_EA_RNG    ), "Pure_VT_DYN_IND_SVA_ATI_EA_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_ATI_EA_CVA    ), "Pure_VT_DYN_IND_SVA_ATI_EA_CVA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_ATI_EA_CVA_RNG), "Pure_VT_DYN_IND_SVA_ATI_EA_CVA_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_NV            ), "Pure_VT_DYN_IND_SVA_NV") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_NV_RNG        ), "Pure_VT_DYN_IND_SVA_NV_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_NV_CVA        ), "Pure_VT_DYN_IND_SVA_NV_CVA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_NV_CVA_RNG    ), "Pure_VT_DYN_IND_SVA_NV_CVA_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_NV_EA         ), "Pure_VT_DYN_IND_SVA_NV_EA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_NV_EA_RNG     ), "Pure_VT_DYN_IND_SVA_NV_EA_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_NV_EA_CVA     ), "Pure_VT_DYN_IND_SVA_NV_EA_CVA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_DYN_IND_SVA_NV_EA_CVA_RNG ), "Pure_VT_DYN_IND_SVA_NV_EA_CVA_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_DIR_DL                ), "Pure_VT_STA_DIR_DL") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_DIR_SVA_GEN           ), "Pure_VT_STA_DIR_SVA_GEN") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_DIR_SVA_ATI           ), "Pure_VT_STA_DIR_SVA_ATI") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_DIR_SVA_ATI_CVA       ), "Pure_VT_STA_DIR_SVA_ATI_CVA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_DIR_SVA_NV            ), "Pure_VT_STA_DIR_SVA_NV") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_DIR_SVA_NV_CVA        ), "Pure_VT_STA_DIR_SVA_NV_CVA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_DL                ), "Pure_VT_STA_IND_DL") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_GEN           ), "Pure_VT_STA_IND_SVA_GEN") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_ATI           ), "Pure_VT_STA_IND_SVA_ATI") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_ATI_RNG       ), "Pure_VT_STA_IND_SVA_ATI_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_ATI_CVA       ), "Pure_VT_STA_IND_SVA_ATI_CVA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_ATI_CVA_RNG   ), "Pure_VT_STA_IND_SVA_ATI_CVA_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_ATI_EA        ), "Pure_VT_STA_IND_SVA_ATI_EA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_ATI_EA_RNG    ), "Pure_VT_STA_IND_SVA_ATI_EA_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_ATI_EA_CVA    ), "Pure_VT_STA_IND_SVA_ATI_EA_CVA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_ATI_EA_CVA_RNG), "Pure_VT_STA_IND_SVA_ATI_EA_CVA_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_NV            ), "Pure_VT_STA_IND_SVA_NV") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_NV_RNG        ), "Pure_VT_STA_IND_SVA_NV_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_NV_CVA        ), "Pure_VT_STA_IND_SVA_NV_CVA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_NV_CVA_RNG    ), "Pure_VT_STA_IND_SVA_NV_CVA_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_NV_EA         ), "Pure_VT_STA_IND_SVA_NV_EA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_NV_EA_RNG     ), "Pure_VT_STA_IND_SVA_NV_EA_RNG") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_NV_EA_CVA     ), "Pure_VT_STA_IND_SVA_NV_EA_CVA") &
-        assertTrue(PureVertexTransfer::isVideoMemoryUsed(Pure_VT_STA_IND_SVA_NV_EA_CVA_RNG ), "Pure_VT_STA_IND_SVA_NV_EA_CVA_RNG");
+        return assertFalse(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_DIR_1_BY_1    ), "PURE_VT_DYN_DIR_1_BY_1") &
+        assertFalse(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_DIR_RVA              ), "PURE_VT_DYN_DIR_RVA") &
+        assertFalse(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_DIR_RVA_CVA          ), "PURE_VT_DYN_DIR_RVA_CVA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_DIR_SVA_GEN           ), "PURE_VT_DYN_DIR_SVA_GEN") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_DIR_SVA_ATI           ), "PURE_VT_DYN_DIR_SVA_ATI") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_DIR_SVA_ATI_CVA       ), "PURE_VT_DYN_DIR_SVA_ATI_CVA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_DIR_SVA_NV            ), "PURE_VT_DYN_DIR_SVA_NV") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_DIR_SVA_NV_CVA        ), "PURE_VT_DYN_DIR_SVA_NV_CVA") &
+        assertFalse(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_1_BY_1           ), "PURE_VT_DYN_IND_1_BY_1") &
+        assertFalse(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_RVA              ), "PURE_VT_DYN_IND_RVA") &
+        assertFalse(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_RVA_RNG          ), "PURE_VT_DYN_IND_RVA_RNG") &
+        assertFalse(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_RVA_CVA          ), "PURE_VT_DYN_IND_RVA_CVA") &
+        assertFalse(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_RVA_CVA_RNG      ), "PURE_VT_DYN_IND_RVA_CVA_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_GEN           ), "PURE_VT_DYN_IND_SVA_GEN") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_ATI           ), "PURE_VT_DYN_IND_SVA_ATI") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_ATI_RNG       ), "PURE_VT_DYN_IND_SVA_ATI_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_ATI_CVA       ), "PURE_VT_DYN_IND_SVA_ATI_CVA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_ATI_CVA_RNG   ), "PURE_VT_DYN_IND_SVA_ATI_CVA_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_ATI_EA        ), "PURE_VT_DYN_IND_SVA_ATI_EA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_ATI_EA_RNG    ), "PURE_VT_DYN_IND_SVA_ATI_EA_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_ATI_EA_CVA    ), "PURE_VT_DYN_IND_SVA_ATI_EA_CVA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_ATI_EA_CVA_RNG), "PURE_VT_DYN_IND_SVA_ATI_EA_CVA_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_NV            ), "PURE_VT_DYN_IND_SVA_NV") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_NV_RNG        ), "PURE_VT_DYN_IND_SVA_NV_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_NV_CVA        ), "PURE_VT_DYN_IND_SVA_NV_CVA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_NV_CVA_RNG    ), "PURE_VT_DYN_IND_SVA_NV_CVA_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_NV_EA         ), "PURE_VT_DYN_IND_SVA_NV_EA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_NV_EA_RNG     ), "PURE_VT_DYN_IND_SVA_NV_EA_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_NV_EA_CVA     ), "PURE_VT_DYN_IND_SVA_NV_EA_CVA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_DYN_IND_SVA_NV_EA_CVA_RNG ), "PURE_VT_DYN_IND_SVA_NV_EA_CVA_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_DIR_DL                ), "PURE_VT_STA_DIR_DL") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_DIR_SVA_GEN           ), "PURE_VT_STA_DIR_SVA_GEN") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_DIR_SVA_ATI           ), "PURE_VT_STA_DIR_SVA_ATI") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_DIR_SVA_ATI_CVA       ), "PURE_VT_STA_DIR_SVA_ATI_CVA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_DIR_SVA_NV            ), "PURE_VT_STA_DIR_SVA_NV") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_DIR_SVA_NV_CVA        ), "PURE_VT_STA_DIR_SVA_NV_CVA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_DL                ), "PURE_VT_STA_IND_DL") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_GEN           ), "PURE_VT_STA_IND_SVA_GEN") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_ATI           ), "PURE_VT_STA_IND_SVA_ATI") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_ATI_RNG       ), "PURE_VT_STA_IND_SVA_ATI_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_ATI_CVA       ), "PURE_VT_STA_IND_SVA_ATI_CVA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_ATI_CVA_RNG   ), "PURE_VT_STA_IND_SVA_ATI_CVA_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_ATI_EA        ), "PURE_VT_STA_IND_SVA_ATI_EA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_ATI_EA_RNG    ), "PURE_VT_STA_IND_SVA_ATI_EA_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_ATI_EA_CVA    ), "PURE_VT_STA_IND_SVA_ATI_EA_CVA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_ATI_EA_CVA_RNG), "PURE_VT_STA_IND_SVA_ATI_EA_CVA_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_NV            ), "PURE_VT_STA_IND_SVA_NV") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_NV_RNG        ), "PURE_VT_STA_IND_SVA_NV_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_NV_CVA        ), "PURE_VT_STA_IND_SVA_NV_CVA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_NV_CVA_RNG    ), "PURE_VT_STA_IND_SVA_NV_CVA_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_NV_EA         ), "PURE_VT_STA_IND_SVA_NV_EA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_NV_EA_RNG     ), "PURE_VT_STA_IND_SVA_NV_EA_RNG") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_NV_EA_CVA     ), "PURE_VT_STA_IND_SVA_NV_EA_CVA") &
+        assertTrue(PureVertexTransfer::isVideoMemoryUsed(PURE_VT_STA_IND_SVA_NV_EA_CVA_RNG ), "PURE_VT_STA_IND_SVA_NV_EA_CVA_RNG");
     }
 
     bool testCtor()
     {
         SampleDescendantFromVertexTransfer* vtJust1Param = new SampleDescendantFromVertexTransfer(engine->getMaterialManager());
-        SampleDescendantFromVertexTransfer* vtVmod = new SampleDescendantFromVertexTransfer(engine->getMaterialManager(), Pure_VMOD_DYNAMIC);
-        SampleDescendantFromVertexTransfer* vtVref = new SampleDescendantFromVertexTransfer(engine->getMaterialManager(), Pure_VMOD_DYNAMIC, Pure_VREF_INDEXED);
-        SampleDescendantFromVertexTransfer* vtForceClientMemory = new SampleDescendantFromVertexTransfer(engine->getMaterialManager(), Pure_VMOD_DYNAMIC, Pure_VREF_INDEXED, true);
+        SampleDescendantFromVertexTransfer* vtVmod = new SampleDescendantFromVertexTransfer(engine->getMaterialManager(), PURE_VMOD_DYNAMIC);
+        SampleDescendantFromVertexTransfer* vtVref = new SampleDescendantFromVertexTransfer(engine->getMaterialManager(), PURE_VMOD_DYNAMIC, PURE_VREF_INDEXED);
+        SampleDescendantFromVertexTransfer* vtForceClientMemory = new SampleDescendantFromVertexTransfer(engine->getMaterialManager(), PURE_VMOD_DYNAMIC, PURE_VREF_INDEXED, true);
 
         if ( assertNotNull(vtJust1Param, "null vtJust1Param") &
             assertNotNull(vtVmod, "null vtVmod") &
@@ -443,12 +443,12 @@ private:
             assertNotNull(vtForceClientMemory, "null vtForceClientMemory") )
         {
             // TODO: also add a check for the ForceUseClientMemory ... that could be public function of VertexTransfer, tells is using client or server memory!
-            return assertEquals(Pure_VMOD_STATIC, vtJust1Param->getVertexModifyingHabit() & Pure_VMOD_STATIC, "vtJust1Param vmod") &
-                assertEquals(Pure_VREF_DIRECT, vtJust1Param->getVertexReferencingMode() & Pure_VREF_DIRECT, "vtJust1Param vref") &
-                assertEquals(Pure_VMOD_DYNAMIC, vtVmod->getVertexModifyingHabit() & Pure_VMOD_DYNAMIC, "vtVmod vmod") &
-                assertEquals(Pure_VREF_DIRECT, vtVmod->getVertexReferencingMode() & Pure_VREF_DIRECT, "vtVmod vref") &
-                assertEquals(Pure_VMOD_DYNAMIC, vtVref->getVertexModifyingHabit() & Pure_VMOD_DYNAMIC, "vtVref vmod") &
-                assertEquals(Pure_VREF_INDEXED, vtVref->getVertexReferencingMode() & Pure_VREF_INDEXED, "vtVref vref");
+            return assertEquals(PURE_VMOD_STATIC, vtJust1Param->getVertexModifyingHabit() & PURE_VMOD_STATIC, "vtJust1Param vmod") &
+                assertEquals(PURE_VREF_DIRECT, vtJust1Param->getVertexReferencingMode() & PURE_VREF_DIRECT, "vtJust1Param vref") &
+                assertEquals(PURE_VMOD_DYNAMIC, vtVmod->getVertexModifyingHabit() & PURE_VMOD_DYNAMIC, "vtVmod vmod") &
+                assertEquals(PURE_VREF_DIRECT, vtVmod->getVertexReferencingMode() & PURE_VREF_DIRECT, "vtVmod vref") &
+                assertEquals(PURE_VMOD_DYNAMIC, vtVref->getVertexModifyingHabit() & PURE_VMOD_DYNAMIC, "vtVref vmod") &
+                assertEquals(PURE_VREF_INDEXED, vtVref->getVertexReferencingMode() & PURE_VREF_INDEXED, "vtVref vref");
         }
         else
             return false;
@@ -457,21 +457,21 @@ private:
      bool testGetVertexModifyingHabit()
     {
         return 
-            assertEquals(Pure_VMOD_STATIC, meshFromFile->getVertexModifyingHabit(), "meshFromFile") &
-            assertEquals(Pure_VMOD_STATIC, mesh->getVertexModifyingHabit(), "box");
+            assertEquals(PURE_VMOD_STATIC, meshFromFile->getVertexModifyingHabit(), "meshFromFile") &
+            assertEquals(PURE_VMOD_STATIC, mesh->getVertexModifyingHabit(), "box");
     }
 
     bool testSetVertexModifyingHabit()
     {
-        bool b = assertTrue(meshFromFile->setVertexModifyingHabit(Pure_VMOD_DYNAMIC), "set meshFromFile");
-        b &= assertTrue(mesh->setVertexModifyingHabit(Pure_VMOD_DYNAMIC), "set mesh");
+        bool b = assertTrue(meshFromFile->setVertexModifyingHabit(PURE_VMOD_DYNAMIC), "set meshFromFile");
+        b &= assertTrue(mesh->setVertexModifyingHabit(PURE_VMOD_DYNAMIC), "set mesh");
 
         // subobjects must reject this when called by user
         PureVertexTransfer* const submesh1Mesh = (PureVertexTransfer*)(mesh->getAttachedAt(0));
-        b &= assertFalse(submesh1Mesh->setVertexModifyingHabit( Pure_VMOD_STATIC ), "set submesh1Mesh");
+        b &= assertFalse(submesh1Mesh->setVertexModifyingHabit( PURE_VMOD_STATIC ), "set submesh1Mesh");
 
         PureVertexTransfer* const submesh1MeshFromFile = (PureVertexTransfer*)(meshFromFile->getAttachedAt(0));
-        b &= assertFalse(submesh1MeshFromFile->setVertexModifyingHabit( Pure_VMOD_STATIC ), "set submesh1MeshFromFile");
+        b &= assertFalse(submesh1MeshFromFile->setVertexModifyingHabit( PURE_VMOD_STATIC ), "set submesh1MeshFromFile");
 
         return b &
             assertTrue( PureVertexTransfer::isVertexModifyingDynamic(mesh->getVertexTransferMode()), "mesh" ) &
@@ -482,21 +482,21 @@ private:
 
     bool testGetVertexReferencingMode()
     {
-        return assertEquals(Pure_VREF_DIRECT, meshFromFile->getVertexReferencingMode(), "meshFromFile") &
-            assertEquals(Pure_VREF_DIRECT, mesh->getVertexReferencingMode(), "box");
+        return assertEquals(PURE_VREF_DIRECT, meshFromFile->getVertexReferencingMode(), "meshFromFile") &
+            assertEquals(PURE_VREF_DIRECT, mesh->getVertexReferencingMode(), "box");
     }
 
     bool testSetVertexReferencingMode()
     {
-        bool b = assertTrue(mesh->setVertexReferencingMode(Pure_VREF_INDEXED), "mesh");
-        b &= assertTrue(meshFromFile->setVertexReferencingMode(Pure_VREF_DIRECT), "meshFromFile");
+        bool b = assertTrue(mesh->setVertexReferencingMode(PURE_VREF_INDEXED), "mesh");
+        b &= assertTrue(meshFromFile->setVertexReferencingMode(PURE_VREF_DIRECT), "meshFromFile");
 
         // subobjects must reject this when called by user
         PureVertexTransfer* const submesh1Mesh = (PureVertexTransfer*)(mesh->getAttachedAt(0));
-        b &= assertFalse(submesh1Mesh->setVertexReferencingMode( Pure_VREF_DIRECT ), "submesh1Mesh");
+        b &= assertFalse(submesh1Mesh->setVertexReferencingMode( PURE_VREF_DIRECT ), "submesh1Mesh");
 
         PureVertexTransfer* const submesh1MeshFromFile = (PureVertexTransfer*)(meshFromFile->getAttachedAt(0));
-        b &= assertFalse(submesh1MeshFromFile->setVertexReferencingMode( Pure_VREF_INDEXED ), "submesh1MeshFromFile");
+        b &= assertFalse(submesh1MeshFromFile->setVertexReferencingMode( PURE_VREF_INDEXED ), "submesh1MeshFromFile");
 
         return b &
             assertTrue( PureVertexTransfer::isVertexReferencingIndexed(mesh->getVertexTransferMode()), "mesh" ) &
@@ -508,111 +508,111 @@ private:
     bool testGetVertexTransferMode()
     {
         // Generic server-side vertex array should be selected, main test machine supports it
-        const TPure_VERTEX_TRANSFER_MODE vtExpected = Pure_VMOD_STATIC | Pure_VREF_DIRECT | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpected = PURE_VMOD_STATIC | PURE_VREF_DIRECT | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
 
         return assertEquals(vtExpected, meshFromFile->getVertexTransferMode() & vtExpected, "meshFromFile 1") &
-            assertEquals(0u, BITF_READ(meshFromFile->getVertexTransferMode(), Pure_VT_VENDOR_BITS, 3), "meshFromFile 2") &
+            assertEquals(0u, BITF_READ(meshFromFile->getVertexTransferMode(), PURE_VT_VENDOR_BITS, 3), "meshFromFile 2") &
             assertEquals(vtExpected, mesh->getVertexTransferMode() & vtExpected, "box 1") &
-            assertEquals(0u, BITF_READ(mesh->getVertexTransferMode(), Pure_VT_VENDOR_BITS, 3), "box 2");
+            assertEquals(0u, BITF_READ(mesh->getVertexTransferMode(), PURE_VT_VENDOR_BITS, 3), "box 2");
     }
 
     bool testSetVertexTransferMode()
     {
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedObj = mesh->getVertexTransferMode();
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedObj = mesh->getVertexTransferMode();
         bool l = assertTrue(mesh->setVertexTransferMode( mesh->getVertexTransferMode() ), "set sva mesh 1"); // intentionally testing setting to the same
         l &= assertEquals(vtExpectedObj, mesh->getVertexTransferMode(), "sva mesh 1");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedObjFromFile = meshFromFile->getVertexTransferMode();
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedObjFromFile = meshFromFile->getVertexTransferMode();
         l &= assertTrue(meshFromFile->setVertexTransferMode( meshFromFile->getVertexTransferMode() ), "set sva meshFromFile 1"); // intentionally testing setting to the same
         l &= assertEquals(vtExpectedObjFromFile, meshFromFile->getVertexTransferMode(), "sva meshFromFile 1");
 
-        // make sure the mode of the 2 meshes is not just basic (Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT) (1by1 immediate mode)
-        l &= assertNotEquals(Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT, mesh->getVertexTransferMode(), "mesh not dir 1by1");
-        l &= assertNotEquals(Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT, meshFromFile->getVertexTransferMode(), "meshFromFile not dir 1by1");
+        // make sure the mode of the 2 meshes is not just basic (PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT) (1by1 immediate mode)
+        l &= assertNotEquals(PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT, mesh->getVertexTransferMode(), "mesh not dir 1by1");
+        l &= assertNotEquals(PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT, meshFromFile->getVertexTransferMode(), "meshFromFile not dir 1by1");
 
         // subobjects must reject this when called by user
-        // by default the selected transfer mode is NOT Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT hence we try set that but expect no change!
+        // by default the selected transfer mode is NOT PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT hence we try set that but expect no change!
         PureVertexTransfer* const submesh1Mesh = (PureVertexTransfer*)(mesh->getAttachedAt(0));
-        l &= assertFalse(submesh1Mesh->setVertexTransferMode( Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT ), "set dir mesh subobject");
+        l &= assertFalse(submesh1Mesh->setVertexTransferMode( PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT ), "set dir mesh subobject");
         l &= assertEquals(vtExpectedObj, submesh1Mesh->getVertexTransferMode(), "dir mesh subobject");
 
         PureVertexTransfer* const submesh1MeshFromFile = (PureVertexTransfer*)(meshFromFile->getAttachedAt(0));
-        l &= assertFalse(submesh1MeshFromFile->setVertexTransferMode( Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT ), "set dir meshFromFile subobject");
+        l &= assertFalse(submesh1MeshFromFile->setVertexTransferMode( PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT ), "set dir meshFromFile subobject");
         l &= assertEquals(vtExpectedObjFromFile, submesh1MeshFromFile->getVertexTransferMode(), "dir meshFromFile subobject");
 
         // Generic server-side vertex arrays are supported by main test machine
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedStaIndSVAobj = Pure_VMOD_STATIC  | Pure_VREF_INDEXED | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedStaIndSVAobj = PURE_VMOD_STATIC  | PURE_VREF_INDEXED | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
         l &= assertTrue(mesh->setVertexTransferMode( vtExpectedStaIndSVAobj ), "set sva mesh 2");
         l &= assertEquals(vtExpectedStaIndSVAobj, mesh->getVertexTransferMode(), "sva mesh 2");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedStaIndSVAobjFromFile = Pure_VMOD_STATIC  | Pure_VREF_INDEXED | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedStaIndSVAobjFromFile = PURE_VMOD_STATIC  | PURE_VREF_INDEXED | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
         l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedStaIndSVAobjFromFile ), "set sva meshFromFile 2");
         l &= assertEquals(vtExpectedStaIndSVAobjFromFile, meshFromFile->getVertexTransferMode(), "sva meshFromFile 2");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynIndSVAobj = Pure_VMOD_DYNAMIC  | Pure_VREF_INDEXED | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynIndSVAobj = PURE_VMOD_DYNAMIC  | PURE_VREF_INDEXED | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
         l &= assertTrue(mesh->setVertexTransferMode( vtExpectedDynIndSVAobj ), "set sva mesh 3");
         l &= assertEquals(vtExpectedDynIndSVAobj, mesh->getVertexTransferMode(), "sva mesh 3");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynIndSVAobjFromFile = Pure_VMOD_DYNAMIC  | Pure_VREF_INDEXED | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynIndSVAobjFromFile = PURE_VMOD_DYNAMIC  | PURE_VREF_INDEXED | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
         l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedDynIndSVAobjFromFile ), "set sva meshFromFile 3");
         l &= assertEquals(vtExpectedDynIndSVAobjFromFile, meshFromFile->getVertexTransferMode(), "sva meshFromFile 3");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynDirSVAobj = Pure_VMOD_DYNAMIC  | Pure_VREF_DIRECT | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynDirSVAobj = PURE_VMOD_DYNAMIC  | PURE_VREF_DIRECT | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
         l &= assertTrue(mesh->setVertexTransferMode( vtExpectedDynDirSVAobj ), "set sva mesh 4");
         l &= assertEquals(vtExpectedDynDirSVAobj, mesh->getVertexTransferMode(), "sva mesh 4");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynDirSVAobjFromFile = Pure_VMOD_DYNAMIC  | Pure_VREF_DIRECT | BIT(Pure_VT_VA_BIT) | BIT(Pure_VT_SVA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynDirSVAobjFromFile = PURE_VMOD_DYNAMIC  | PURE_VREF_DIRECT | BIT(PURE_VT_VA_BIT) | BIT(PURE_VT_SVA_BIT);
         l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedDynDirSVAobjFromFile ), "set sva meshFromFile 4");
         l &= assertEquals(vtExpectedDynDirSVAobjFromFile, meshFromFile->getVertexTransferMode(), "sva meshFromFile 4");
 
         // following modes must be supported on every machine
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynDir1by1obj = Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynDir1by1obj = PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT;
         l &= assertTrue(mesh->setVertexTransferMode( vtExpectedDynDir1by1obj ), "set dir mesh 1b1");
         l &= assertEquals(vtExpectedDynDir1by1obj, mesh->getVertexTransferMode(), "dir mesh 1b1");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynDir1by1objFromFile = Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynDir1by1objFromFile = PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT;
         l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedDynDir1by1objFromFile ), "set dir meshFromFile 1b1");
         l &= assertEquals(vtExpectedDynDir1by1objFromFile, meshFromFile->getVertexTransferMode(), "dir meshFromFile 1b1");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynDirVAobj = Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT | BIT(Pure_VT_VA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynDirVAobj = PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT | BIT(PURE_VT_VA_BIT);
         l &= assertTrue(mesh->setVertexTransferMode( vtExpectedDynDirVAobj ), "set dir mesh rva");
         l &= assertEquals(vtExpectedDynDirVAobj, mesh->getVertexTransferMode(), "dir mesh rva");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynDirVAobjFromFile = Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT | BIT(Pure_VT_VA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynDirVAobjFromFile = PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT | BIT(PURE_VT_VA_BIT);
         l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedDynDirVAobjFromFile ), "set dir meshFromFile rva");
         l &= assertEquals(vtExpectedDynDirVAobjFromFile, meshFromFile->getVertexTransferMode(), "dir meshFromFile rva");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynInd1by1obj = Pure_VMOD_DYNAMIC | Pure_VREF_INDEXED;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynInd1by1obj = PURE_VMOD_DYNAMIC | PURE_VREF_INDEXED;
         l &= assertTrue(mesh->setVertexTransferMode( vtExpectedDynInd1by1obj ), "set ind mesh 1b1");
         l &= assertEquals(vtExpectedDynInd1by1obj, mesh->getVertexTransferMode(), "ind mesh 1b1");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynInd1by1objFromFile = Pure_VMOD_DYNAMIC | Pure_VREF_INDEXED;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynInd1by1objFromFile = PURE_VMOD_DYNAMIC | PURE_VREF_INDEXED;
         l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedDynInd1by1objFromFile ), "set ind meshFromFile 1b1");
         l &= assertEquals(vtExpectedDynInd1by1objFromFile, meshFromFile->getVertexTransferMode(), "ind meshFromFile 1b1");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynIndVAobj = Pure_VMOD_DYNAMIC | Pure_VREF_INDEXED | BIT(Pure_VT_VA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynIndVAobj = PURE_VMOD_DYNAMIC | PURE_VREF_INDEXED | BIT(PURE_VT_VA_BIT);
         l &= assertTrue(mesh->setVertexTransferMode( vtExpectedDynIndVAobj ), "set ind mesh rva");
         l &= assertEquals(vtExpectedDynIndVAobj, mesh->getVertexTransferMode(), "ind mesh rva");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedDynIndVAobjFromFile = Pure_VMOD_DYNAMIC | Pure_VREF_INDEXED | BIT(Pure_VT_VA_BIT);
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedDynIndVAobjFromFile = PURE_VMOD_DYNAMIC | PURE_VREF_INDEXED | BIT(PURE_VT_VA_BIT);
         l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedDynIndVAobjFromFile ), "set ind meshFromFile rva");
         l &= assertEquals(vtExpectedDynIndVAobjFromFile, meshFromFile->getVertexTransferMode(), "ind meshFromFile rva");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedStaDirDLobj = Pure_VMOD_STATIC | Pure_VREF_DIRECT;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedStaDirDLobj = PURE_VMOD_STATIC | PURE_VREF_DIRECT;
         l &= assertTrue(mesh->setVertexTransferMode( vtExpectedStaDirDLobj ), "set dir mesh DL");
         l &= assertEquals(vtExpectedStaDirDLobj, mesh->getVertexTransferMode(), "dir mesh DL");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedStaDirDLobjFromFile = Pure_VMOD_STATIC | Pure_VREF_DIRECT;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedStaDirDLobjFromFile = PURE_VMOD_STATIC | PURE_VREF_DIRECT;
         l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedStaDirDLobjFromFile ), "set dir meshFromFile DL");
         l &= assertEquals(vtExpectedStaDirDLobjFromFile, meshFromFile->getVertexTransferMode(), "dir meshFromFile DL");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedStaIndDLobj = Pure_VMOD_STATIC | Pure_VREF_INDEXED;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedStaIndDLobj = PURE_VMOD_STATIC | PURE_VREF_INDEXED;
         l &= assertTrue(mesh->setVertexTransferMode( vtExpectedStaIndDLobj ), "set ind mesh DL");
         l &= assertEquals(vtExpectedStaIndDLobj, mesh->getVertexTransferMode(), "ind mesh DL");
 
-        const TPure_VERTEX_TRANSFER_MODE vtExpectedStaIndDLobjFromFile = Pure_VMOD_STATIC | Pure_VREF_INDEXED;
+        const TPURE_VERTEX_TRANSFER_MODE vtExpectedStaIndDLobjFromFile = PURE_VMOD_STATIC | PURE_VREF_INDEXED;
         l &= assertTrue(meshFromFile->setVertexTransferMode( vtExpectedStaIndDLobjFromFile ), "set ind meshFromFile DL");
         l &= assertEquals(vtExpectedStaIndDLobjFromFile, meshFromFile->getVertexTransferMode(), "ind meshFromFile DL");
 
@@ -623,8 +623,8 @@ private:
     {
         // public dummyDraw() invokes protected transferVertices() straightforward for us to test it
 
-        TPureuint nMeshLastTransferredVertices = mesh->dummyDraw();
-        TPureuint nMeshFromFileLastTransferredVertices = meshFromFile->dummyDraw();
+        TPureUInt nMeshLastTransferredVertices = mesh->dummyDraw();
+        TPureUInt nMeshFromFileLastTransferredVertices = meshFromFile->dummyDraw();
 
         return assertEquals(mesh->getVertexIndicesCount(), mesh->getLastTransferredVertexCount(), "mesh 1") &
             assertEquals(meshFromFile->getVertexIndicesCount(), meshFromFile->getLastTransferredVertexCount(), "meshFromFile 1") &
@@ -637,15 +637,15 @@ private:
     bool testGetLastTransferredVertexCount()
     {
         // non-initial values are checked in testTransferVertices()
-        return assertEquals((TPureuint)0, mesh->getLastTransferredVertexCount(), "mesh") &
-            assertEquals((TPureuint)0, meshFromFile->getLastTransferredVertexCount(), "meshFromFile");
+        return assertEquals((TPureUInt)0, mesh->getLastTransferredVertexCount(), "mesh") &
+            assertEquals((TPureUInt)0, meshFromFile->getLastTransferredVertexCount(), "meshFromFile");
     }
 
     bool testGetLastTransferredTriangleCount()
     {
         // non-initial values are checked in testTransferVertices()
-        return assertEquals((TPureuint)0, mesh->getLastTransferredTriangleCount(), "mesh") &
-            assertEquals((TPureuint)0, meshFromFile->getLastTransferredTriangleCount(), "meshFromFile");
+        return assertEquals((TPureUInt)0, mesh->getLastTransferredTriangleCount(), "mesh") &
+            assertEquals((TPureUInt)0, meshFromFile->getLastTransferredTriangleCount(), "meshFromFile");
     }
 
     bool testGetUsedSystemMemory()
@@ -656,8 +656,8 @@ private:
 
     bool testGetUsedVideoMemory()
     {
-        TPureuint meshMinMemUsage = 0;
-        for (TPureint i = 0; i < mesh->getCount(); i++)
+        TPureUInt meshMinMemUsage = 0;
+        for (TPureInt i = 0; i < mesh->getCount(); i++)
         {
             const PureVertexTransfer* const submesh = (PureVertexTransfer*) mesh->getAttachedAt(i);
             meshMinMemUsage += submesh->getVerticesCount() * sizeof(TXYZ) * 2 /* *2 because of we have normals too */ +
@@ -665,8 +665,8 @@ private:
                 submesh->getMaterial(false).getTexcoordsCount() * sizeof(TUVW);
         }
 
-        TPureuint meshFromFileMinMemUsage = 0;
-        for (TPureint i = 0; i < meshFromFile->getCount(); i++)
+        TPureUInt meshFromFileMinMemUsage = 0;
+        for (TPureInt i = 0; i < meshFromFile->getCount(); i++)
         {
             const PureVertexTransfer* const submesh = (PureVertexTransfer*) meshFromFile->getAttachedAt(i);
             meshFromFileMinMemUsage += submesh->getVerticesCount() * sizeof(TXYZ) * 2 /* *2 because of we have normals too */ +
@@ -678,8 +678,8 @@ private:
         bool l = assertGreater(mesh->getUsedVideoMemory(),    meshMinMemUsage, "mesh") &
             assertGreater(meshFromFile->getUsedVideoMemory(), meshFromFileMinMemUsage, "meshFromFile");
         
-        l &= assertTrue(mesh->setVertexTransferMode( Pure_VMOD_DYNAMIC | Pure_VREF_DIRECT ), "set mesh basic");
-        l &= assertEquals(mesh->getUsedVideoMemory(), (TPureuint) 0, "mesh after set");
+        l &= assertTrue(mesh->setVertexTransferMode( PURE_VMOD_DYNAMIC | PURE_VREF_DIRECT ), "set mesh basic");
+        l &= assertEquals(mesh->getUsedVideoMemory(), (TPureUInt) 0, "mesh after set");
 
         return l;
     }

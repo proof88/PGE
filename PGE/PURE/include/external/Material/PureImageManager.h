@@ -19,23 +19,23 @@
 /**
     Pixel component orders.
 */
-enum TPure_PIXEL_COMPONENT_ORDER
+enum TPURE_PIXEL_COMPONENT_ORDER
 {
-    Pure_RGB,
-    Pure_RGBA,
-    Pure_RBG,
-    Pure_RBGA,
-    Pure_BRG,
-    Pure_BRGA,
-    Pure_BGR,
-    Pure_BGRA,
-    Pure_GRB,
-    Pure_GRBA,
-    Pure_GBR,
-    Pure_GBRA
-}; // TPure_PIXEL_COMPONENT_ORDER
+    PURE_RGB,
+    PURE_RGBA,
+    PURE_RBG,
+    PURE_RBGA,
+    PURE_BRG,
+    PURE_BRGA,
+    PURE_BGR,
+    PURE_BGRA,
+    PURE_GRB,
+    PURE_GRBA,
+    PURE_GBR,
+    PURE_GBRA
+}; // TPURE_PIXEL_COMPONENT_ORDER
 
-typedef TPure_PIXEL_COMPONENT_ORDER TPIXCOMPORD;
+typedef TPURE_PIXEL_COMPONENT_ORDER TPIXCOMPORD;
 
 
 
@@ -47,7 +47,7 @@ class PureImageManager;
 class PureImage :
     public PureFiledManaged
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureImage is included")
 #endif
 
@@ -60,36 +60,36 @@ public:
 
     CConsole&   getManagedConsole() const;            /**< Returns access to console preset with logger module name as this class. */
     
-    TPureuint getWidth() const;            /**< Gets the width of the image. */
-    TPureuint getHeight() const;           /**< Gets the height of the image. */
-    TPureuint getBitsPerPixels() const;    /**< Gets the bit depth of the image. */
+    TPureUInt getWidth() const;            /**< Gets the width of the image. */
+    TPureUInt getHeight() const;           /**< Gets the height of the image. */
+    TPureUInt getBitsPerPixels() const;    /**< Gets the bit depth of the image. */
     
-    TPure_PIXEL_COMPONENT_ORDER
+    TPURE_PIXEL_COMPONENT_ORDER
         getPixelComponentOrder() const;          /**< Gets the actual color component order. */
-    TPure_PIXEL_COMPONENT_ORDER
+    TPURE_PIXEL_COMPONENT_ORDER
         getOriginalPixelComponentOrder() const;  /**< Gets the original color component order. */
-	TPurebool
+	TPureBool
         setPixelComponentOrder(
-            TPure_PIXEL_COMPONENT_ORDER corder); /**< Transforms the color component order of the image to the given color component order. */
+            TPURE_PIXEL_COMPONENT_ORDER corder); /**< Transforms the color component order of the image to the given color component order. */
 
-    PureColor getPixel(TPureuint x, TPureuint y);        /**< Gets the color of the pixel at the given (x,y) coordinate. */
-    PureColor getPixel(TPureuint x, TPureuint y) const;  /**< Gets the color of the pixel at the given (x,y) coordinate. */
+    PureColor getPixel(TPureUInt x, TPureUInt y);        /**< Gets the color of the pixel at the given (x,y) coordinate. */
+    PureColor getPixel(TPureUInt x, TPureUInt y) const;  /**< Gets the color of the pixel at the given (x,y) coordinate. */
 
-    TPurebool setPixel(TPureuint x, TPureuint y,
-                  TPureubyte r, TPureubyte g, TPureubyte b,
-                  TPureubyte a = 0);                             /**< Sets the color of the pixel at the given (x,y) coordinate. */
+    TPureBool setPixel(TPureUInt x, TPureUInt y,
+                  TPureUByte r, TPureUByte g, TPureUByte b,
+                  TPureUByte a = 0);                             /**< Sets the color of the pixel at the given (x,y) coordinate. */
                              
-    TPurebool setPixel(TPureuint x, TPureuint y, PureColor clr); /**< Sets the color of the pixel at the given (x,y) coordinate. */
+    TPureBool setPixel(TPureUInt x, TPureUInt y, PureColor clr); /**< Sets the color of the pixel at the given (x,y) coordinate. */
 
-    TPurebool isChanged() const;              /**< True if the pixel data has been changed since loading it from file. */
+    TPureBool isChanged() const;              /**< True if the pixel data has been changed since loading it from file. */
 
-    const TPureubyte* getPixels() const;      /**< Gets the pointer to the array of pixels, giving direct access to pixels. */
-    TPureubyte*       getPixels();            /**< Gets the pointer to the array of pixels, giving direct access to pixels. */
-    TPureuint         getPixelsSize() const;  /**< Gets the size of the array of pixels. */
+    const TPureUByte* getPixels() const;      /**< Gets the pointer to the array of pixels, giving direct access to pixels. */
+    TPureUByte*       getPixels();            /**< Gets the pointer to the array of pixels, giving direct access to pixels. */
+    TPureUInt         getPixelsSize() const;  /**< Gets the size of the array of pixels. */
 
     virtual void FlushResources();           /**< This can be used if you don't need the pixels of the image to be in the system memory anymore. */
     
-    virtual TPureuint getUsedSystemMemory() const;   /**< Gets the amount of allocated system memory for this image. */
+    virtual TPureUInt getUsedSystemMemory() const;   /**< Gets the amount of allocated system memory for this image. */
 
 protected:
 
@@ -117,12 +117,12 @@ private:
 class PureImageManager :
     public PureFiledManager
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureImageManager is included")
 #endif
 
 public:
-    static TPureuint   getColorConversionSwapCount(
+    static TPureUInt   getColorConversionSwapCount(
         TPIXCOMPORD from, TPIXCOMPORD to);                                  /**< Calculates the number of swaps needed from the given color component order to the other. */
     static TPIXCOMPORD getMirroredPixelComponentOrder(TPIXCOMPORD corder);  /**< Transforms the given color component order to its mirrored form. */
     
@@ -136,7 +136,7 @@ public:
     CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
     virtual PureImage* createFromFile(const char* filename);                    /**< Creates an Image object from the given file. */
-    PureImage* createBlank(TPureuint width, TPureuint height, TPureuint bpp);   /**< Creates a blank Image object as specified. */
+    PureImage* createBlank(TPureUInt width, TPureUInt height, TPureUInt bpp);   /**< Creates a blank Image object as specified. */
 
     virtual void WriteList() const;                   /**< From PureFiledManager, adding logging image size data. */
 

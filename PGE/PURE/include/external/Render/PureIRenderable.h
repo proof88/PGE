@@ -23,7 +23,7 @@
 
 class PureIRenderable
 {
-#ifdef Pure_CLASS_IS_INCLUDED_NOTIFICATION
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureIRenderable is included")
 #endif
 
