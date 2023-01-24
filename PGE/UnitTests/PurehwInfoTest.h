@@ -2,7 +2,7 @@
 
 /*
     ###################################################################################
-    PurehwInfoTest.h
+    PureHwInfoTest.h
     Unit test for PureHwInfo.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
@@ -17,19 +17,19 @@
 #define E 0.0001f
 #endif // EPSILON
 
-class PurehwInfoTest :
+class PureHwInfoTest :
     public UnitTest
 {
 public:
 
-    PurehwInfoTest() :
+    PureHwInfoTest() :
         UnitTest( __FILE__ ),
         hw( PureHwInfo::get() )
     {
         engine = NULL;
     }
 
-    virtual ~PurehwInfoTest()
+    virtual ~PureHwInfoTest()
     {
         Finalize();
     }
@@ -40,10 +40,10 @@ protected:
     {
         //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         engine = NULL;
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PurehwInfoTest::testCtor);
-        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PurehwInfoTest::testInitialize);
-        AddSubTest("testDeinitialize", (PFNUNITSUBTEST) &PurehwInfoTest::testDeinitialize);
-        AddSubTest("testWriteStats", (PFNUNITSUBTEST) &PurehwInfoTest::testWriteStats);
+        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureHwInfoTest::testCtor);
+        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PureHwInfoTest::testInitialize);
+        AddSubTest("testDeinitialize", (PFNUNITSUBTEST) &PureHwInfoTest::testDeinitialize);
+        AddSubTest("testWriteStats", (PFNUNITSUBTEST) &PureHwInfoTest::testWriteStats);
     }
 
     virtual bool setUp()
@@ -78,11 +78,11 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PurehwInfoTest(const PurehwInfoTest&) :
+    PureHwInfoTest(const PureHwInfoTest&) :
         hw( PureHwInfo::get() )
     {};         
 
-    PurehwInfoTest& operator=(const PurehwInfoTest&)
+    PureHwInfoTest& operator=(const PureHwInfoTest&)
     {
         return *this;
     };
@@ -124,4 +124,4 @@ private:
         return true;
     }
     
-}; // class PurehwInfoTest
+}; // class PureHwInfoTest

@@ -1,6 +1,6 @@
 /*
     ###################################################################################
-    PurehwAudio.cpp
+    PureHwAudio.cpp
     This file is part of PURE.
     Pure audio capabilities class.
     Made by PR00F88
@@ -9,26 +9,26 @@
 */
 
 
-#include "PurebaseIncludes.h"  // PCH
-#include "../../include/external/Hardware/PurehwAudio.h"
-#include "../../include/internal/Purepragmas.h"
+#include "PureBaseIncludes.h"  // PCH
+#include "../../include/external/Hardware/PureHwAudio.h"
+#include "../../include/internal/PurePragmas.h"
 
 
 using namespace std;
 
 
 /*
-   PurehwAudioImpl
+   PureHwAudioImpl
    ###########################################################################
 */
 
-class PurehwAudioImpl :
-    public PurehwAudio
+class PureHwAudioImpl :
+    public PureHwAudio
 {
 
 public:
 
-    static PurehwAudioImpl& get();
+    static PureHwAudioImpl& get();
 
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
@@ -41,16 +41,16 @@ public:
 protected:
 
 private:
-    static PurehwAudioImpl hwAudioInstance;
+    static PureHwAudioImpl hwAudioInstance;
 
     // ---------------------------------------------------------------------------
 
-    PurehwAudioImpl();                /**< Sets members to default values. */
+    PureHwAudioImpl();                /**< Sets members to default values. */
 
-    PurehwAudioImpl(const PurehwAudioImpl&);
-    PurehwAudioImpl& operator=(const PurehwAudioImpl&);
+    PureHwAudioImpl(const PureHwAudioImpl&);
+    PureHwAudioImpl& operator=(const PureHwAudioImpl&);
 
-    virtual ~PurehwAudioImpl();
+    virtual ~PureHwAudioImpl();
 
     void      PreInitialize();     /**< Preinitializes members. */
     TPureBool initializeBase();    /**< Does the real initializations. */
@@ -65,7 +65,7 @@ private:
 /** 
     Gets the singleton instance.
 */
-PurehwAudioImpl& PurehwAudioImpl::get()
+PureHwAudioImpl& PureHwAudioImpl::get()
 {
     return hwAudioInstance;
 } // get()
@@ -77,7 +77,7 @@ PurehwAudioImpl& PurehwAudioImpl::get()
 
     @return Console instance used by this class.
 */
-CConsole& PurehwAudioImpl::getConsole() const
+CConsole& PureHwAudioImpl::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
 } // getConsole()
@@ -90,18 +90,18 @@ CConsole& PurehwAudioImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PurehwAudioImpl::getLoggerModuleName()
+const char* PureHwAudioImpl::getLoggerModuleName()
 {
-    return "PurehwAudio";
+    return "PureHwAudio";
 } // getLoggerModuleName()
 
 
 /**
     Writes statistics to the console.
 */
-void PurehwAudioImpl::WriteStats()
+void PureHwAudioImpl::WriteStats()
 {
-    getConsole().OLn("PurehwAudio::WriteStats()");
+    getConsole().OLn("PureHwAudio::WriteStats()");
     getConsole().L();
 } // WriteStats()
 
@@ -112,40 +112,40 @@ void PurehwAudioImpl::WriteStats()
 // ############################### PRIVATE ###############################
 
 
-PurehwAudioImpl PurehwAudioImpl::hwAudioInstance;
+PureHwAudioImpl PureHwAudioImpl::hwAudioInstance;
 
 
 /** 
     Sets members to default values.
 */
-PurehwAudioImpl::PurehwAudioImpl()
+PureHwAudioImpl::PureHwAudioImpl()
 {
     PreInitialize();
 } // PureHwInfo()
 
 
-PurehwAudioImpl::PurehwAudioImpl(const PurehwAudioImpl&)
+PureHwAudioImpl::PureHwAudioImpl(const PureHwAudioImpl&)
 {
 
 }
 
 
-PurehwAudioImpl& PurehwAudioImpl::operator=(const PurehwAudioImpl&)
+PureHwAudioImpl& PureHwAudioImpl::operator=(const PureHwAudioImpl&)
 {
     return *this;
 }
                                              
 
-PurehwAudioImpl::~PurehwAudioImpl()
+PureHwAudioImpl::~PureHwAudioImpl()
 {
     Deinitialize();
-} // ~PurehwAudio
+} // ~PureHwAudio
 
 
 /**
     Preinitializes members.
 */
-void PurehwAudioImpl::PreInitialize()
+void PureHwAudioImpl::PreInitialize()
 {
 
 } // PreInitialize()
@@ -154,7 +154,7 @@ void PurehwAudioImpl::PreInitialize()
 /**
     Does the real initialization.
 */
-TPureBool PurehwAudioImpl::initializeBase()
+TPureBool PureHwAudioImpl::initializeBase()
 {
     return true;
 } // initializeBase()
@@ -163,7 +163,7 @@ TPureBool PurehwAudioImpl::initializeBase()
 /**
     Does the real deinitialization.
 */
-void PurehwAudioImpl::DeinitializeBase()
+void PureHwAudioImpl::DeinitializeBase()
 {
 
 } // deinitializeBase()
@@ -172,7 +172,7 @@ void PurehwAudioImpl::DeinitializeBase()
 
 
 /*
-   PurehwAudio
+   PureHwAudio
    ###########################################################################
 */
 
@@ -183,9 +183,9 @@ void PurehwAudioImpl::DeinitializeBase()
 /** 
     Gets the singleton instance.
 */
-PurehwAudio& PurehwAudio::get()
+PureHwAudio& PureHwAudio::get()
 {
-    return PurehwAudioImpl::get();
+    return PureHwAudioImpl::get();
 } // get()
 
 

@@ -12,13 +12,13 @@
 */
 
 #include "../PureAllHeaders.h"
-#include "PurehwBase.h"
+#include "PureHwBase.h"
 
 /**
     Pure video capabilities class.
 */
 class PureHwVideo :
-    public PurehwBase
+    public PureHwBase
 {
 #ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PureHwVideo is included")

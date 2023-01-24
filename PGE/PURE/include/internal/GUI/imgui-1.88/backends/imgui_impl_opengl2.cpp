@@ -35,7 +35,7 @@
 //  2016-09-10: OpenGL: Uploading font texture as RGBA32 to increase compatibility with users shaders (not ideal).
 //  2016-09-05: OpenGL: Fixed save and restore of current scissor rectangle.
 
-//#include "PurebaseIncludes.h"  // PCH
+//#include "PureBaseIncludes.h"  // PCH
 
 #include "imgui.h"
 #include "imgui_impl_opengl2.h"

@@ -591,9 +591,6 @@
     <ClInclude Include="PURE\include\internal\Hardware\PureHwVideoDiscoverOpenGLbase.h">
       <Filter>Header Files\PURE\include\internal\Hardware</Filter>
     </ClInclude>
-    <ClInclude Include="PURE\include\external\PR00FsReducedRenderingEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PURE\include\external\PR00FsUltimateRenderingEngine.h">
       <Filter>Header Files\PURE\include\external</Filter>
     </ClInclude>
@@ -680,25 +677,25 @@
     <ClCompile Include="PURE\source\Display\PureWindow.cpp">
       <Filter>Source Files\PURE\Display</Filter>
     </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PurehwAudio.cpp">
+    <ClCompile Include="PURE\source\Hardware\PureHwAudio.cpp">
       <Filter>Source Files\PURE\Hardware</Filter>
     </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PurehwBase.cpp">
+    <ClCompile Include="PURE\source\Hardware\PureHwBase.cpp">
       <Filter>Source Files\PURE\Hardware</Filter>
     </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PurehwCentralProcessor.cpp">
+    <ClCompile Include="PURE\source\Hardware\PureHwCentralProcessor.cpp">
       <Filter>Source Files\PURE\Hardware</Filter>
     </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PurehwInfo.cpp">
+    <ClCompile Include="PURE\source\Hardware\PureHwInfo.cpp">
       <Filter>Source Files\PURE\Hardware</Filter>
     </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PurehwSystemMemory.cpp">
+    <ClCompile Include="PURE\source\Hardware\PureHwSystemMemory.cpp">
       <Filter>Source Files\PURE\Hardware</Filter>
     </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PurehwVideo.cpp">
+    <ClCompile Include="PURE\source\Hardware\PureHwVideo.cpp">
       <Filter>Source Files\PURE\Hardware</Filter>
     </ClCompile>
-    <ClCompile Include="PURE\source\Hardware\PurehwVideoDiscoverOpenGLbase.cpp">
+    <ClCompile Include="PURE\source\Hardware\PureHwVideoDiscoverOpenGLbase.cpp">
       <Filter>Source Files\PURE\Hardware</Filter>
     </ClCompile>
     <ClCompile Include="PURE\source\Material\PureColor.cpp">

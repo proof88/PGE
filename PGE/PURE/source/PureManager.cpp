@@ -8,11 +8,11 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include <stdexcept>
 #include "../include/external/PureManager.h"
 #include "../include/internal/PureManagedImpl.h"
-#include "../include/internal/Purepragmas.h"
+#include "../include/internal/PurePragmas.h"
 
 
 /*

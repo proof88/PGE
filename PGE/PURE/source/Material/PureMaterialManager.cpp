@@ -8,10 +8,10 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../../include/external/Material/PureMaterialManager.h"
 #include "../../include/internal/Material/PureMaterialImpl.h"
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 #include "../../include/external/Hardware/PureHwInfo.h"
 
 using namespace std;

@@ -8,7 +8,7 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../../include/external/Object3D/PureMesh3DManager.h"
 #include "../../include/internal/Object3D/PureMesh3DImpl.h"
 #include "../../include/internal/Object3D/PureMesh3DManagerImpl.h"
@@ -18,7 +18,7 @@
 #include "../../include/external/Hardware/PureHwInfo.h"
 #include "../../include/internal/PureGLextensionFuncs.h"
 #include "../../include/internal/PureGLsnippets.h"
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 
 using namespace std;
 

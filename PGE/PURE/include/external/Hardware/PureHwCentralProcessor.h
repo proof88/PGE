@@ -2,7 +2,7 @@
 
 /*
     ###################################################################################
-    PurehwCentralProcessor.h
+    PureHwCentralProcessor.h
     This file is part of PURE.
     External header.
     Pure central processor capabilities class.
@@ -12,21 +12,21 @@
 */
 
 #include "../PureAllHeaders.h"
-#include "PurehwBase.h"
+#include "PureHwBase.h"
 
 
 /**
     Pure central processor capabilities class.
 */
-class PurehwCentralProcessor :
-    public PurehwBase
+class PureHwCentralProcessor :
+    public PureHwBase
 {
 #ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
-#pragma message("  PurehwCentralProcessor is included")
+#pragma message("  PureHwCentralProcessor is included")
 #endif
 
 public:
-    static PurehwCentralProcessor& get();  /**< Gets the singleton instance. */
+    static PureHwCentralProcessor& get();  /**< Gets the singleton instance. */
 
     // ---------------------------------------------------------------------------
 

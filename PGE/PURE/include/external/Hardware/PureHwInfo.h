@@ -12,9 +12,9 @@
 */
 
 #include "../PureAllHeaders.h"
-#include "PurehwCentralProcessor.h"
-#include "PurehwSystemMemory.h"
-#include "PurehwAudio.h"
+#include "PureHwCentralProcessor.h"
+#include "PureHwSystemMemory.h"
+#include "PureHwAudio.h"
 #include "PureHwVideo.h"
 
 
@@ -41,10 +41,10 @@ public:
     virtual void      Deinitialize() = 0;         /**< Deinitializes the singleton instance. */
     virtual TPureBool isInitialized() const = 0;  /**< Returns whether the singleton instance is successfully initialized. */
 
-    virtual PurehwCentralProcessor& getCentralProcessor() const = 0;  /**< Gives access to PurehwCentralProcessor instance. */
-    virtual PurehwSystemMemory&     getMemory() const = 0;            /**< Gives access to PurehwSystemMemory instance. */
+    virtual PureHwCentralProcessor& getCentralProcessor() const = 0;  /**< Gives access to PureHwCentralProcessor instance. */
+    virtual PureHwSystemMemory&     getMemory() const = 0;            /**< Gives access to PureHwSystemMemory instance. */
     virtual PureHwVideo&            getVideo() const = 0;             /**< Gives access to PureHwVideo instance. */
-    virtual PurehwAudio&            getAudio() const = 0;             /**< Gives access to PurehwAudio instance. */
+    virtual PureHwAudio&            getAudio() const = 0;             /**< Gives access to PureHwAudio instance. */
 
     virtual void WriteStats() = 0;    /**< Writes statistics to the console. */
 

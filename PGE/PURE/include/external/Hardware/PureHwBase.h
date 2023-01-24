@@ -2,7 +2,7 @@
 
 /*
     ###################################################################################
-    PurehwBase.h
+    PureHwBase.h
     This file is part of PURE.
     External header.
     Base class for Pure hardware classes.
@@ -17,10 +17,10 @@
 /**
     Base class for Pure hardware classes.
 */
-class PurehwBase
+class PureHwBase
 {
 #ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
-#pragma message("  PurehwBase is included")
+#pragma message("  PureHwBase is included")
 #endif
 
 public:
@@ -37,12 +37,12 @@ protected:
 
     // ---------------------------------------------------------------------------
 
-    PurehwBase();                  /**< Sets members to default values. */
+    PureHwBase();                  /**< Sets members to default values. */
 
-    PurehwBase(const PurehwBase&);
-    PurehwBase& operator=(const PurehwBase&);
+    PureHwBase(const PureHwBase&);
+    PureHwBase& operator=(const PureHwBase&);
 
-    virtual ~PurehwBase();
+    virtual ~PureHwBase();
 
     virtual void      PreInitialize();         /**< Preinitializes members.
                                                     Being called from ctor and Deinitialize(). */

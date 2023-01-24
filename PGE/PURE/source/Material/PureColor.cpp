@@ -4,16 +4,16 @@
     ###################################################################################
     PureColor.h
     This file is part of PURE.
-    Pure color class.
+    PureColor class.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../../include/external/Material/PureColor.h"
 #include <sstream>
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 
 
 // ############################### PUBLIC ################################

@@ -9,7 +9,7 @@
 */
 
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 
 #include "../include/internal/GUI/imgui-1.88/imgui.h"
 
@@ -18,7 +18,7 @@
 #include "../include/external/Render/PureRendererSWincremental.h"
 #include "../include/internal/PureGLsnippets.h"
 #include "../include/internal/PureGLextensionFuncs.h"
-#include "../include/internal/Purepragmas.h"
+#include "../include/internal/PurePragmas.h"
 #include "../include/internal/Display/PureSharedSettings.h"
 
 

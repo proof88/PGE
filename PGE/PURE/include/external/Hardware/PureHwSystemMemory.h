@@ -2,7 +2,7 @@
 
 /*
     ###################################################################################
-    PurehwSystemMemory.h
+    PureHwSystemMemory.h
     This file is part of PURE.
     External header.
     Pure system memory info class.
@@ -12,21 +12,21 @@
 */
 
 #include "../PureAllHeaders.h"
-#include "PurehwBase.h"
+#include "PureHwBase.h"
 
 
 /**
     Pure system memory info class.
 */
-class PurehwSystemMemory :
-    public PurehwBase
+class PureHwSystemMemory :
+    public PureHwBase
 {
 #ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
-#pragma message("  PurehwSystemMemory is included")
+#pragma message("  PureHwSystemMemory is included")
 #endif
 
 public:
-    static PurehwSystemMemory& get();        /**< Gets the singleton instance. */
+    static PureHwSystemMemory& get();        /**< Gets the singleton instance. */
 
     // ---------------------------------------------------------------------------
 

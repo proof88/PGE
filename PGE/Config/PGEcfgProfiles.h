@@ -5,7 +5,7 @@
     PGEcfgProfiles.h
     This file is part of PGE.
     External header.
-    PR00F's Game Engine cfg file handler
+    PR00F's Game Engine profile config handler
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
@@ -18,7 +18,7 @@
 
 
 /**
-    PR00F's Game Engine cfg file handler class.
+    PR00F's Game Engine profile config handler class.
 */
 class PGEcfgProfiles : public PGEcfgFile
 {

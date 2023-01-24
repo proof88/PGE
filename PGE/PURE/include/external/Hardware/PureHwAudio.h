@@ -2,7 +2,7 @@
 
 /*
     ###################################################################################
-    PurehwAudio.h
+    PureHwAudio.h
     This file is part of PURE.
     External header.
     Pure audio capabilities class.
@@ -12,22 +12,22 @@
 */
 
 #include "../PureAllHeaders.h"
-#include "PurehwBase.h"
+#include "PureHwBase.h"
 
 
 /**
     Pure audio capabilities class.
 */
-class PurehwAudio :
-    public PurehwBase
+class PureHwAudio :
+    public PureHwBase
 {
 #ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
-#pragma message("  PurehwAudio is included")
+#pragma message("  PureHwAudio is included")
 #endif
 
 public:
 
-    static PurehwAudio& get();        /**< Gets the singleton instance. */
+    static PureHwAudio& get();        /**< Gets the singleton instance. */
 
     // ---------------------------------------------------------------------------
 

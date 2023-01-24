@@ -2,7 +2,7 @@
 
 /*
     ###################################################################################
-    include/internal/Purepragmas.h
+    include/internal/PurePragmas.h
     This file is part of PURE.
     Internal header.
     Pure pragmas.

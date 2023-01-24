@@ -423,4 +423,4 @@ private:
         return true;
     }
     
-}; // class PurehwInfoTest
+}; // class PureHwInfoTest

@@ -1,6 +1,6 @@
 /*
     ###################################################################################
-    PurehwSystemMemory.cpp
+    PureHwSystemMemory.cpp
     This file is part of PURE.
     Pure system memory info class.
     Made by PR00F88
@@ -9,25 +9,25 @@
 */
 
 
-#include "PurebaseIncludes.h"  // PCH
-#include "../../include/external/Hardware/PurehwSystemMemory.h"
-#include "../../include/internal/Purepragmas.h"
+#include "PureBaseIncludes.h"  // PCH
+#include "../../include/external/Hardware/PureHwSystemMemory.h"
+#include "../../include/internal/PurePragmas.h"
 
 
 using namespace std;
 
 
 /*
-   PurehwSystemMemoryImpl
+   PureHwSystemMemoryImpl
    ###########################################################################
 */
 
-class PurehwSystemMemoryImpl :
-    public PurehwSystemMemory
+class PureHwSystemMemoryImpl :
+    public PureHwSystemMemory
 {
 
 public:
-    static PurehwSystemMemoryImpl& get();
+    static PureHwSystemMemoryImpl& get();
 
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
@@ -45,18 +45,18 @@ protected:
     // ---------------------------------------------------------------------------  
 
 private:
-    static PurehwSystemMemoryImpl hwMemoryInstance;
+    static PureHwSystemMemoryImpl hwMemoryInstance;
 
     // ---------------------------------------------------------------------------
 
     MEMORYSTATUS ms;  /**< To query memory. */   
 
-    PurehwSystemMemoryImpl();                /**< Sets members to default values. */
+    PureHwSystemMemoryImpl();                /**< Sets members to default values. */
 
-    PurehwSystemMemoryImpl(const PurehwSystemMemoryImpl&);
-    PurehwSystemMemoryImpl& operator=(const PurehwSystemMemoryImpl&);
+    PureHwSystemMemoryImpl(const PureHwSystemMemoryImpl&);
+    PureHwSystemMemoryImpl& operator=(const PureHwSystemMemoryImpl&);
 
-    virtual ~PurehwSystemMemoryImpl();
+    virtual ~PureHwSystemMemoryImpl();
 
     void      PreInitialize();     /**< Preinitializes members. */
     TPureBool initializeBase();    /**< Does the real initializations. */
@@ -71,7 +71,7 @@ private:
 /** 
     Gets the singleton instance.
 */
-PurehwSystemMemoryImpl& PurehwSystemMemoryImpl::get()
+PureHwSystemMemoryImpl& PureHwSystemMemoryImpl::get()
 {
     return hwMemoryInstance;
 } // get()
@@ -83,7 +83,7 @@ PurehwSystemMemoryImpl& PurehwSystemMemoryImpl::get()
 
     @return Console instance used by this class.
 */
-CConsole& PurehwSystemMemoryImpl::getConsole() const
+CConsole& PureHwSystemMemoryImpl::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
 } // getConsole()
@@ -96,9 +96,9 @@ CConsole& PurehwSystemMemoryImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PurehwSystemMemoryImpl::getLoggerModuleName()
+const char* PureHwSystemMemoryImpl::getLoggerModuleName()
 {
-    return "PurehwSystemMemory";
+    return "PureHwSystemMemory";
 } // getLoggerModuleName()
 
 
@@ -106,7 +106,7 @@ const char* PurehwSystemMemoryImpl::getLoggerModuleName()
     Gets the amount of free physical memory.
     @return The amount of free physical memory in Bytes.
 */
-TPureULong PurehwSystemMemoryImpl::getFreeSystemMemory() 
+TPureULong PureHwSystemMemoryImpl::getFreeSystemMemory() 
 {
     GlobalMemoryStatus(&ms);
     return ms.dwAvailPhys;
@@ -117,7 +117,7 @@ TPureULong PurehwSystemMemoryImpl::getFreeSystemMemory()
     Gets the total amount of physical memory.
     @return The amount of total physical memory in Bytes.
 */
-TPureULong PurehwSystemMemoryImpl::getTotalSystemMemory() const
+TPureULong PureHwSystemMemoryImpl::getTotalSystemMemory() const
 {
     return ms.dwTotalPhys;
 } // getTotalSystemMemory()
@@ -126,9 +126,9 @@ TPureULong PurehwSystemMemoryImpl::getTotalSystemMemory() const
 /**
     Writes statistics to the console.
 */
-void PurehwSystemMemoryImpl::WriteStats()
+void PureHwSystemMemoryImpl::WriteStats()
 {
-    getConsole().OLn("PurehwSystemMemory::WriteStats()");
+    getConsole().OLn("PureHwSystemMemory::WriteStats()");
     getConsole().L();
 } // WriteStats()
 
@@ -139,40 +139,40 @@ void PurehwSystemMemoryImpl::WriteStats()
 // ############################### PRIVATE ###############################
 
 
-PurehwSystemMemoryImpl PurehwSystemMemoryImpl::hwMemoryInstance;
+PureHwSystemMemoryImpl PureHwSystemMemoryImpl::hwMemoryInstance;
 
 
 /** 
     Sets members to default values.
 */
-PurehwSystemMemoryImpl::PurehwSystemMemoryImpl()
+PureHwSystemMemoryImpl::PureHwSystemMemoryImpl()
 {
     PreInitialize();
-} // PurehwSystemMemory()
+} // PureHwSystemMemory()
 
 
-PurehwSystemMemoryImpl::PurehwSystemMemoryImpl(const PurehwSystemMemoryImpl&)
+PureHwSystemMemoryImpl::PureHwSystemMemoryImpl(const PureHwSystemMemoryImpl&)
 {
 
 }
 
     
-PurehwSystemMemoryImpl& PurehwSystemMemoryImpl::operator=(const PurehwSystemMemoryImpl&)
+PureHwSystemMemoryImpl& PureHwSystemMemoryImpl::operator=(const PureHwSystemMemoryImpl&)
 {
     return *this;
 }
 
 
-PurehwSystemMemoryImpl::~PurehwSystemMemoryImpl()
+PureHwSystemMemoryImpl::~PureHwSystemMemoryImpl()
 {
     Deinitialize();
-} // ~PurehwSystemMemory
+} // ~PureHwSystemMemory
 
 
 /**
     Preinitializes members.
 */
-void PurehwSystemMemoryImpl::PreInitialize()
+void PureHwSystemMemoryImpl::PreInitialize()
 {
     memset(&ms, 0, sizeof(ms));
     ms.dwLength = sizeof(ms);
@@ -182,7 +182,7 @@ void PurehwSystemMemoryImpl::PreInitialize()
 /**
     Does the real initialization.
 */
-TPureBool PurehwSystemMemoryImpl::initializeBase()
+TPureBool PureHwSystemMemoryImpl::initializeBase()
 {
     getFreeSystemMemory();
 
@@ -199,7 +199,7 @@ TPureBool PurehwSystemMemoryImpl::initializeBase()
 /**
     Does the real deinitialization.
 */
-void PurehwSystemMemoryImpl::DeinitializeBase()
+void PureHwSystemMemoryImpl::DeinitializeBase()
 {
 
 } // deinitializeBase()
@@ -207,7 +207,7 @@ void PurehwSystemMemoryImpl::DeinitializeBase()
 
 
 /*
-   PurehwSystemMemory
+   PureHwSystemMemory
    ###########################################################################
 */
 
@@ -218,9 +218,9 @@ void PurehwSystemMemoryImpl::DeinitializeBase()
 /** 
     Gets the singleton instance.
 */
-PurehwSystemMemory& PurehwSystemMemory::get()
+PureHwSystemMemory& PureHwSystemMemory::get()
 {
-    return PurehwSystemMemoryImpl::get();
+    return PureHwSystemMemoryImpl::get();
 } // get()
 
 

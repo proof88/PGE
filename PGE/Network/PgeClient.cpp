@@ -8,7 +8,7 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 
 #include "PgeClient.h"
 #include "PGESysNET.h"

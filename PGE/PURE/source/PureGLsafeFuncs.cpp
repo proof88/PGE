@@ -8,11 +8,11 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../include/internal/PureGLsafeFuncs.h"
 #include "../include/internal/PureGLextensionFuncs.h"
 #include "../include/internal/PureGLsnippets.h"
-#include "../include/internal/Purepragmas.h"
+#include "../include/internal/PurePragmas.h"
 
 // Note that since GL 4.3 there is callback mechanism that can be set up with glDebugMessageCallback().
 // We don't use it that though, mostly because our implementation is not at GL 4.3 level, and it would

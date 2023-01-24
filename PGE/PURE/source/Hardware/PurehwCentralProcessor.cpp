@@ -1,6 +1,6 @@
 /*
     ###################################################################################
-    PurehwCentralProcessor.cpp
+    PureHwCentralProcessor.cpp
     This file is part of PURE.
     Pure central processor capabilities class.
     Made by PR00F88
@@ -9,11 +9,11 @@
 */
 
 
-#include "PurebaseIncludes.h"  // PCH
-#include "../../include/external/Hardware/PurehwCentralProcessor.h"
+#include "PureBaseIncludes.h"  // PCH
+#include "../../include/external/Hardware/PureHwCentralProcessor.h"
 #include <climits>
 #include <cstdint>
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 
 using namespace std;
 
@@ -24,7 +24,7 @@ using namespace std;
 
 
 class PurehwCentralProcessorImpl :
-    public PurehwCentralProcessor
+    public PureHwCentralProcessor
 {
 
 public:
@@ -96,7 +96,7 @@ CConsole& PurehwCentralProcessorImpl::getConsole() const
 */
 const char* PurehwCentralProcessorImpl::getLoggerModuleName()
 {
-    return "PurehwCentralProcessor";
+    return "PureHwCentralProcessor";
 } // getLoggerModuleName()
 
 
@@ -122,7 +122,7 @@ bool PurehwCentralProcessorImpl::isMachineBigEndian()
 */
 void PurehwCentralProcessorImpl::WriteStats()
 {
-    getConsole().OLn("PurehwCentralProcessor::WriteStats()");
+    getConsole().OLn("PureHwCentralProcessor::WriteStats()");
     getConsole().L();
 } // WriteStats()
 
@@ -142,7 +142,7 @@ PurehwCentralProcessorImpl PurehwCentralProcessorImpl::hwCentralProcessorInstanc
 PurehwCentralProcessorImpl::PurehwCentralProcessorImpl()
 {
     PreInitialize();
-} // PurehwCentralProcessor()
+} // PureHwCentralProcessor()
 
 
 PurehwCentralProcessorImpl::PurehwCentralProcessorImpl(const PurehwCentralProcessorImpl&)
@@ -160,7 +160,7 @@ PurehwCentralProcessorImpl& PurehwCentralProcessorImpl::operator=(const PurehwCe
 PurehwCentralProcessorImpl::~PurehwCentralProcessorImpl()
 {
     Deinitialize();
-} // ~PurehwCentralProcessor
+} // ~PureHwCentralProcessor
 
 
 /**
@@ -219,7 +219,7 @@ void PurehwCentralProcessorImpl::DeinitializeBase()
 
 
 /*
-   PurehwCentralProcessor
+   PureHwCentralProcessor
    ###########################################################################
 */
 
@@ -230,7 +230,7 @@ void PurehwCentralProcessorImpl::DeinitializeBase()
 /** 
     Gets the singleton instance.
 */
-PurehwCentralProcessor& PurehwCentralProcessor::get()
+PureHwCentralProcessor& PureHwCentralProcessor::get()
 {
     return PurehwCentralProcessorImpl::get();
 } // get()

@@ -3,7 +3,7 @@
 /*
     ###################################################################################
     PurehwCentralProcessorTest.h
-    Unit test for PurehwCentralProcessor.
+    Unit test for PureHwCentralProcessor.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
@@ -25,7 +25,7 @@ public:
     PurehwCentralProcessorTest() :
         UnitTest( __FILE__ ),
         hw( PureHwInfo::get() ),
-        proc( PurehwCentralProcessor::get() )
+        proc( PureHwCentralProcessor::get() )
     {
         engine = NULL;
     }
@@ -77,13 +77,13 @@ private:
 
     PR00FsUltimateRenderingEngine* engine;
     PureHwInfo& hw;
-    PurehwCentralProcessor& proc;
+    PureHwCentralProcessor& proc;
 
     // ---------------------------------------------------------------------------
 
     PurehwCentralProcessorTest(const PurehwCentralProcessorTest&) :
         hw( PureHwInfo::get() ),
-        proc( PurehwCentralProcessor::get() )
+        proc( PureHwCentralProcessor::get() )
     {};         
 
     PurehwCentralProcessorTest& operator=(const PurehwCentralProcessorTest&)

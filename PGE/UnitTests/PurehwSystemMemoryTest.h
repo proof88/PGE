@@ -2,8 +2,8 @@
 
 /*
     ###################################################################################
-    PurehwSystemMemoryTest.h
-    Unit test for PurehwSystemMemory.
+    PureHwSystemMemoryTest.h
+    Unit test for PureHwSystemMemory.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
@@ -17,20 +17,20 @@
 #define E 0.0001f
 #endif // EPSILON
 
-class PurehwSystemMemoryTest :
+class PureHwSystemMemoryTest :
     public UnitTest
 {
 public:
 
-    PurehwSystemMemoryTest() :
+    PureHwSystemMemoryTest() :
         UnitTest( __FILE__ ),
         hw( PureHwInfo::get() ),
-        mem( PurehwSystemMemory::get() )
+        mem( PureHwSystemMemory::get() )
     {
         engine = NULL;
     }
 
-    virtual ~PurehwSystemMemoryTest()
+    virtual ~PureHwSystemMemoryTest()
     {
         Finalize();   
     }
@@ -41,13 +41,13 @@ protected:
     {
         //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         engine = NULL;
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PurehwSystemMemoryTest::testCtor);
-        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PurehwSystemMemoryTest::testInitialize);
-        AddSubTest("testDeinitialize", (PFNUNITSUBTEST) &PurehwSystemMemoryTest::testDeinitialize);
-        AddSubTest("testGetFreeSystemMemory", (PFNUNITSUBTEST) &PurehwSystemMemoryTest::testGetFreeSystemMemory);
-        AddSubTest("testGetTotalSystemMemory", (PFNUNITSUBTEST) &PurehwSystemMemoryTest::testGetTotalSystemMemory);
-        AddSubTest("testFreeTotalSystemMemoryRelation", (PFNUNITSUBTEST) &PurehwSystemMemoryTest::testFreeTotalSystemMemoryRelation);
-        AddSubTest("testWriteStats", (PFNUNITSUBTEST) &PurehwSystemMemoryTest::testWriteStats);
+        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testCtor);
+        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testInitialize);
+        AddSubTest("testDeinitialize", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testDeinitialize);
+        AddSubTest("testGetFreeSystemMemory", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testGetFreeSystemMemory);
+        AddSubTest("testGetTotalSystemMemory", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testGetTotalSystemMemory);
+        AddSubTest("testFreeTotalSystemMemoryRelation", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testFreeTotalSystemMemoryRelation);
+        AddSubTest("testWriteStats", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testWriteStats);
     }
 
     virtual bool setUp()
@@ -80,16 +80,16 @@ private:
 
     PR00FsUltimateRenderingEngine* engine;
     PureHwInfo& hw;
-    PurehwSystemMemory& mem;
+    PureHwSystemMemory& mem;
 
     // ---------------------------------------------------------------------------
 
-    PurehwSystemMemoryTest(const PurehwSystemMemoryTest&) :
+    PureHwSystemMemoryTest(const PureHwSystemMemoryTest&) :
         hw( PureHwInfo::get() ),
-        mem( PurehwSystemMemory::get() )
+        mem( PureHwSystemMemory::get() )
     {};         
 
-    PurehwSystemMemoryTest& operator=(const PurehwSystemMemoryTest&)
+    PureHwSystemMemoryTest& operator=(const PureHwSystemMemoryTest&)
     {
         return *this;
     };
@@ -138,4 +138,4 @@ private:
         return true;
     }
     
-}; // class PurehwAudioTest
+}; // class PureHwAudioTest

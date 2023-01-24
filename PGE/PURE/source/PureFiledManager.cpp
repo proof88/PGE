@@ -10,9 +10,9 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../include/external/PureFiledManager.h"
-#include "../include/internal/Purepragmas.h"
+#include "../include/internal/PurePragmas.h"
 
 using namespace std;
 

@@ -33,10 +33,10 @@
 #include "PureColorTest.h"
 #include "PureFiledManagedTest.h"
 #include "PureFiledManagerTest.h"
-#include "PurehwAudioTest.h"
+#include "PureHwAudioTest.h"
 #include "PurehwCentralProcessorTest.h"
-#include "PurehwInfoTest.h"
-#include "PurehwSystemMemoryTest.h"
+#include "PureHwInfoTest.h"
+#include "PureHwSystemMemoryTest.h"
 #include "PureHwVideoTest.h"
 #include "PureImageTest.h"
 #include "PureImageManagerTest.h"
@@ -110,10 +110,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PureManagedTest                 testPureManaged;
     PureFiledManagerTest            testPureFiledManager;
     PureFiledManagedTest            testPureFiledManaged;
-    PurehwInfoTest                  testPurehwInfo;
+    PureHwInfoTest                  testPureHwInfo;
     PurehwCentralProcessorTest      testPurehwCentralProcessor;
-    PurehwSystemMemoryTest          testPurehwSystemMemory;
-    PurehwAudioTest                 testPurehwAudio;
+    PureHwSystemMemoryTest          testPureHwSystemMemory;
+    PureHwAudioTest                 testPureHwAudio;
     PureHwVideoTest                 testPureHwVideo;
     PureImageManagerTest            testPureImageManager;
     PureImageTest                   testPureImage;
@@ -169,10 +169,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPureFiledManager);
     tests.push_back(&testPureFiledManaged);
       
-    tests.push_back(&testPurehwInfo);
+    tests.push_back(&testPureHwInfo);
     tests.push_back(&testPurehwCentralProcessor);
-    tests.push_back(&testPurehwSystemMemory);
-    tests.push_back(&testPurehwAudio);
+    tests.push_back(&testPureHwSystemMemory);
+    tests.push_back(&testPureHwAudio);
     tests.push_back(&testPureHwVideo); 
     
     tests.push_back(&testPureImageManager);

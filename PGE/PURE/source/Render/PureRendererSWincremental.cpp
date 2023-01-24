@@ -15,7 +15,7 @@
 #include "../../include/external/Math/PureTransformMatrix.h"
 #include "../../include/external/Object3D/PureObject3DManager.h"
 #include "../../include/internal/PureGLsnippets.h"
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 #include "../../include/internal/Math/PUREScissor.h"
 #include "../../../../../PFL/PFL/PFL.h"
 

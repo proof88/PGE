@@ -10,10 +10,10 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../include/external/PureCamera.h"
 #include "../include/external/Math/PureMatrix.h"
-#include "../include/internal/Purepragmas.h"
+#include "../include/internal/PurePragmas.h"
 
 /*
     http://nehe.gamedev.net/article/replacement_for_gluperspective/21002/

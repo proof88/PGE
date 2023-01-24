@@ -9,25 +9,25 @@
 */
 
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../../include/external/Hardware/PureHwInfo.h"
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 
 
 using namespace std;
 
 
 /*
-   PurehwInfoImpl
+   PureHwInfoImpl
    ###########################################################################
 */
 
-class PurehwInfoImpl :
+class PureHwInfoImpl :
     public PureHwInfo
 {
 
 public:
-    static PurehwInfoImpl& get();
+    static PureHwInfoImpl& get();
 
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
@@ -43,33 +43,33 @@ public:
     void      Deinitialize();
     TPureBool isInitialized() const;
 
-    PurehwCentralProcessor& getCentralProcessor() const;
-    PurehwSystemMemory&     getMemory() const;
+    PureHwCentralProcessor& getCentralProcessor() const;
+    PureHwSystemMemory&     getMemory() const;
     PureHwVideo&            getVideo() const;
-    PurehwAudio&            getAudio() const;
+    PureHwAudio&            getAudio() const;
 
     void WriteStats();
 
 private:
 
-    static PurehwInfoImpl hwInfoInstance;
+    static PureHwInfoImpl hwInfoInstance;
     static TPureBool  bInitialized;       /**< Is the singleton instance initialized? */
 
     // ---------------------------------------------------------------------------
 
-    PurehwCentralProcessor& hwCentralProcessor;
-    PurehwSystemMemory&     hwMemory;
+    PureHwCentralProcessor& hwCentralProcessor;
+    PureHwSystemMemory&     hwMemory;
     PureHwVideo&            hwVideo;
-    PurehwAudio&            hwAudio;
+    PureHwAudio&            hwAudio;
 
     // ---------------------------------------------------------------------------
 
-    PurehwInfoImpl();                  /**< Sets members to default values. */
+    PureHwInfoImpl();                  /**< Sets members to default values. */
 
-    PurehwInfoImpl(const PurehwInfoImpl&);
-    PurehwInfoImpl& operator=(const PurehwInfoImpl&);
+    PureHwInfoImpl(const PureHwInfoImpl&);
+    PureHwInfoImpl& operator=(const PureHwInfoImpl&);
 
-    virtual ~PurehwInfoImpl();
+    virtual ~PureHwInfoImpl();
 
     /** Preinitializes members. */
     void PreInitialize();   
@@ -83,7 +83,7 @@ private:
 /**
     Gets the singleton instance.
 */
-PurehwInfoImpl& PurehwInfoImpl::get()
+PureHwInfoImpl& PureHwInfoImpl::get()
 {
     return hwInfoInstance;
 } // get()
@@ -95,7 +95,7 @@ PurehwInfoImpl& PurehwInfoImpl::get()
 
     @return Console instance used by this class.
 */
-CConsole& PurehwInfoImpl::getConsole() const
+CConsole& PureHwInfoImpl::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
 } // getConsole()
@@ -108,7 +108,7 @@ CConsole& PurehwInfoImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PurehwInfoImpl::getLoggerModuleName()
+const char* PureHwInfoImpl::getLoggerModuleName()
 {
     return "PureHwInfo";
 } // getLoggerModuleName()
@@ -116,9 +116,9 @@ const char* PurehwInfoImpl::getLoggerModuleName()
 
 /**
     Sets members to real values within the singleton instance.
-    Initializes PurehwCentralProcessor, PurehwMemory, PureHwVideo and PurehwAudio instances.
+    Initializes PureHwCentralProcessor, PurehwMemory, PureHwVideo and PureHwAudio instances.
 */
-void PurehwInfoImpl::Initialize(
+void PureHwInfoImpl::Initialize(
     HGLRC rc, HDC wnd_dc,
     TPureUInt nResX, TPureUInt nResY,
     TPureInt nColorBits, TPureInt nDepthBits,
@@ -167,9 +167,9 @@ void PurehwInfoImpl::Initialize(
 
 /**
     Deinitializes the singleton instance.
-    Deinitializes PurehwCentralProcessor, PurehwMemory, PureHwVideo and PurehwAudio instances.
+    Deinitializes PureHwCentralProcessor, PurehwMemory, PureHwVideo and PureHwAudio instances.
 */
-void PurehwInfoImpl::Deinitialize()
+void PureHwInfoImpl::Deinitialize()
 {
     if ( !bInitialized )
         return;
@@ -186,25 +186,25 @@ void PurehwInfoImpl::Deinitialize()
 /**
     Returns whether the singleton instance is successfully initialized.
 */
-TPureBool PurehwInfoImpl::isInitialized() const
+TPureBool PureHwInfoImpl::isInitialized() const
 {
     return bInitialized;
 } // isInitialized()
 
 
 /**
-    Gives access to PurehwCentralProcessor instance.
+    Gives access to PureHwCentralProcessor instance.
 */
-PurehwCentralProcessor& PurehwInfoImpl::getCentralProcessor() const
+PureHwCentralProcessor& PureHwInfoImpl::getCentralProcessor() const
 {
     return hwCentralProcessor;
 } // getCentralProcessor()
 
 
 /**
-    Gives access to PurehwSystemMemory instance.
+    Gives access to PureHwSystemMemory instance.
 */
-PurehwSystemMemory& PurehwInfoImpl::getMemory() const
+PureHwSystemMemory& PureHwInfoImpl::getMemory() const
 {
     return hwMemory;
 } // getMemory()
@@ -213,16 +213,16 @@ PurehwSystemMemory& PurehwInfoImpl::getMemory() const
 /**
     Gives access to PureHwVideo instance.
 */
-PureHwVideo& PurehwInfoImpl::getVideo() const
+PureHwVideo& PureHwInfoImpl::getVideo() const
 {
     return hwVideo;
 } // getVideo()
 
 
 /**
-    Gives access to PurehwAudio instance.
+    Gives access to PureHwAudio instance.
 */
-PurehwAudio& PurehwInfoImpl::getAudio() const
+PureHwAudio& PureHwInfoImpl::getAudio() const
 {
     return hwAudio;
 } // getAudio()
@@ -231,7 +231,7 @@ PurehwAudio& PurehwInfoImpl::getAudio() const
 /**
     Writes statistics to the console.
 */
-void PurehwInfoImpl::WriteStats()
+void PureHwInfoImpl::WriteStats()
 {
     getConsole().OLn("PureHwInfo::WriteStats()");
     getConsole().L();
@@ -276,40 +276,40 @@ void PurehwInfoImpl::WriteStats()
 // ############################### PRIVATE ###############################
 
 
-PurehwInfoImpl PurehwInfoImpl::hwInfoInstance;
-TPureBool PurehwInfoImpl::bInitialized = false;
+PureHwInfoImpl PureHwInfoImpl::hwInfoInstance;
+TPureBool PureHwInfoImpl::bInitialized = false;
 
 
 /** 
     Sets members to default values.
 */
-PurehwInfoImpl::PurehwInfoImpl() :
-    hwCentralProcessor( PurehwCentralProcessor::get() ),
-    hwMemory( PurehwSystemMemory::get() ),
+PureHwInfoImpl::PureHwInfoImpl() :
+    hwCentralProcessor( PureHwCentralProcessor::get() ),
+    hwMemory( PureHwSystemMemory::get() ),
     hwVideo( PureHwVideo::get() ),
-    hwAudio( PurehwAudio::get() )
+    hwAudio( PureHwAudio::get() )
 {
     PreInitialize();
 } // PureHwInfo()
 
 
-PurehwInfoImpl::PurehwInfoImpl(const PurehwInfoImpl&) :
-    hwCentralProcessor( PurehwCentralProcessor::get() ),
-    hwMemory( PurehwSystemMemory::get() ),
+PureHwInfoImpl::PureHwInfoImpl(const PureHwInfoImpl&) :
+    hwCentralProcessor( PureHwCentralProcessor::get() ),
+    hwMemory( PureHwSystemMemory::get() ),
     hwVideo( PureHwVideo::get() ),
-    hwAudio( PurehwAudio::get() )
+    hwAudio( PureHwAudio::get() )
 {
 
 }
 
 
-PurehwInfoImpl& PurehwInfoImpl::operator=(const PurehwInfoImpl&)
+PureHwInfoImpl& PureHwInfoImpl::operator=(const PureHwInfoImpl&)
 {
     return *this;
 }
 
 
-PurehwInfoImpl::~PurehwInfoImpl()
+PureHwInfoImpl::~PureHwInfoImpl()
 {
     Deinitialize();
 } // ~PureHwInfo
@@ -318,7 +318,7 @@ PurehwInfoImpl::~PurehwInfoImpl()
 /**
     Preinitializes members.
 */
-void PurehwInfoImpl::PreInitialize()
+void PureHwInfoImpl::PreInitialize()
 {
     bInitialized = false;
 }
@@ -338,7 +338,7 @@ void PurehwInfoImpl::PreInitialize()
 */
 PureHwInfo& PureHwInfo::get()
 {
-    return PurehwInfoImpl::get();
+    return PureHwInfoImpl::get();
 } // get()
 
 

@@ -9,11 +9,11 @@
 */
 
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../../include/external/Hardware/PureHwVideo.h"
 #include "../../include/internal/PureGLsnippets.h"
 #include "../../include/internal/PureGLextensionFuncs.h"
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 #include "../../include/internal/Display/PureSharedSettings.h"
 #include "../../include/internal/Hardware/PureHwVideoDiscoverOpenGL_1_1.h"
 #include "../../include/internal/Hardware/PureHwVideoDiscoverOpenGL_1_2.h"
@@ -283,7 +283,7 @@ void PureHwVideoImpl::Initialize(
     }
 
     PreInitialize(rc, wnd_dc, nResX, nResY, nColorBits, nDepthBits, nStencilBits, nFSAAlevel);
-    PurehwBase::Initialize();  // here we trigger initializeBase()
+    PureHwBase::Initialize();  // here we trigger initializeBase()
     
 } // Initialize(...)
 

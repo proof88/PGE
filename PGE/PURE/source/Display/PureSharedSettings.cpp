@@ -10,9 +10,9 @@
     ########################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../../include/internal/Display/PureSharedSettings.h"
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 
 
 #define PURE_DEF_MONITORPWRSAVE_ON true     /**< Default state of monitor power save enabled. */

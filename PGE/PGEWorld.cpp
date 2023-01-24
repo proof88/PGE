@@ -10,7 +10,7 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "PGEWorld.h"
 #include "PGEincludes.h"
 #include "PGEpragmas.h"

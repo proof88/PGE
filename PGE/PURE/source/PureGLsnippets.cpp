@@ -8,13 +8,13 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../include/internal/PureGLsnippets.h"
 
 #include <cassert>
 
 #include "../include/internal/PureGLextensionFuncs.h"
-#include "../include/internal/Purepragmas.h"
+#include "../include/internal/PurePragmas.h"
 #include "../include/external/Hardware/PureHwInfo.h"
 
 static const char* const sLoggerModuleName = "PureGLsnippets";

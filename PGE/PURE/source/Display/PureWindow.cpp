@@ -8,14 +8,14 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 
 #include "../../include/internal/GUI/imgui-1.88/imgui.h"
 #include "../../include/internal/GUI/imgui-1.88/backends/imgui_impl_opengl2.h"
 #include "../../include/internal/GUI/imgui-1.88/backends/imgui_impl_win32.h"
 
 #include "../../include/external/Display/PureWindow.h"
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 #include "../../include/internal/Display/PureSharedSettings.h"
 #include "../../../PGEInputHandler.h"
 #include "../../../../../g3t/g3t/g3t.h"

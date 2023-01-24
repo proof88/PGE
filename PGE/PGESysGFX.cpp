@@ -8,7 +8,7 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "PGESysGFX.h"
 #include "PGEincludes.h"
 #include "PGEpragmas.h"

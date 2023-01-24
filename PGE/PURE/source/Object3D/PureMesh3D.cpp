@@ -8,11 +8,11 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../../include/external/Object3D/PureMesh3DManager.h"
 #include "../../include/internal/Object3D/PureMesh3DImpl.h"
 #include "../../include/internal/PureGLsnippets.h"
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 #include "../../../../../PFL/PFL/PFL.h"
 
 using namespace std;

@@ -8,12 +8,12 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../../include/external/Material/PureTextureManager.h"
 #include "../../include/internal/Material/PureTextureImpl.h"
 #include "../../include/internal/PureGLsafeFuncs.h"
 #include "../../include/internal/PureGLsnippets.h"
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 #include "../../include/external/Hardware/PureHwInfo.h"
 
 using namespace std;

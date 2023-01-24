@@ -8,10 +8,10 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../../include/external/Math/PurePosUpTarget.h"
 #include "../../include/external/Math/PureTransformMatrix.h"
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 
 
 // ############################### PUBLIC ################################

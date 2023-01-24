@@ -1,6 +1,6 @@
 /*
     ###################################################################################
-    PurehwBase.cpp
+    PureHwBase.cpp
     This file is part of PURE.
     Base class for Pure hardware classes.
     Made by PR00F88
@@ -8,20 +8,20 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
-#include "../../include/external/Hardware/PurehwBase.h"
-#include "../../include/internal/Purepragmas.h"
+#include "PureBaseIncludes.h"  // PCH
+#include "../../include/external/Hardware/PureHwBase.h"
+#include "../../include/internal/PurePragmas.h"
 
 
 using namespace std;
 
 
 /*
-   PurehwBase::PurehwBaseImpl
+   PureHwBase::PurehwBaseImpl
    ###########################################################################
 */
 
-class PurehwBase::PurehwBaseImpl
+class PureHwBase::PurehwBaseImpl
 {
 
 public:
@@ -47,15 +47,15 @@ private:
                                        Will be true if initializeBase() of descendant class succeeds.
                                        Will be false again if Deinitialize() gets called. */
 
-    PurehwBase* _parent;
+    PureHwBase* _parent;
 
     // ---------------------------------------------------------------------------
 
-    explicit PurehwBaseImpl(PurehwBase* parent);
+    explicit PurehwBaseImpl(PureHwBase* parent);
     PurehwBaseImpl(const PurehwBaseImpl&);
     PurehwBaseImpl& operator=(const PurehwBaseImpl&);
 
-    friend class PurehwBase;
+    friend class PureHwBase;
 
 };
 
@@ -69,7 +69,7 @@ private:
 
     @return Console instance used by this class.
 */
-CConsole& PurehwBase::PurehwBaseImpl::getConsole() const
+CConsole& PureHwBase::PurehwBaseImpl::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
 } // getConsole()
@@ -82,18 +82,18 @@ CConsole& PurehwBase::PurehwBaseImpl::getConsole() const
 
     @return The logger module name of this class.
 */
-const char* PurehwBase::PurehwBaseImpl::getLoggerModuleName()
+const char* PureHwBase::PurehwBaseImpl::getLoggerModuleName()
 {
-    return "PurehwBase";
+    return "PureHwBase";
 } // getLoggerModuleName()
 
 
 /**
     Initializes the instance.
 */
-void PurehwBase::PurehwBaseImpl::Initialize()
+void PureHwBase::PurehwBaseImpl::Initialize()
 {
-    getConsole().OIOLn("PurehwBase::Initialize() ...");
+    getConsole().OIOLn("PureHwBase::Initialize() ...");
     getConsole().OI();
     if ( bInitialized )
     {
@@ -120,7 +120,7 @@ void PurehwBase::PurehwBaseImpl::Initialize()
 /**
     Deinitializes the instance.
 */
-void PurehwBase::PurehwBaseImpl::Deinitialize()
+void PureHwBase::PurehwBaseImpl::Deinitialize()
 {
     if ( !bInitialized )
         return;
@@ -134,7 +134,7 @@ void PurehwBase::PurehwBaseImpl::Deinitialize()
 /**
     Returns whether the instance is successfully initialized.
 */
-TPureBool PurehwBase::PurehwBaseImpl::isInitialized() const
+TPureBool PureHwBase::PurehwBaseImpl::isInitialized() const
 {
     return bInitialized;
 } // isInitialized()
@@ -152,39 +152,39 @@ TPureBool PurehwBase::PurehwBaseImpl::isInitialized() const
 
     @param parent Public class instance owning this pimpl object.
 */
-PurehwBase::PurehwBaseImpl::PurehwBaseImpl(PurehwBase* parent)
+PureHwBase::PurehwBaseImpl::PurehwBaseImpl(PureHwBase* parent)
 {
     bInitialized = false;
     if ( _parent = parent )
     {
         _parent->PreInitialize();
     }
-} // PurehwBase()
+} // PureHwBase()
 
 
-PurehwBase::PurehwBaseImpl::PurehwBaseImpl(const PurehwBaseImpl&)
+PureHwBase::PurehwBaseImpl::PurehwBaseImpl(const PurehwBaseImpl&)
 {
 
 } 
 
 
-PurehwBase::PurehwBaseImpl& PurehwBase::PurehwBaseImpl::operator=(const PurehwBaseImpl&)
+PureHwBase::PurehwBaseImpl& PureHwBase::PurehwBaseImpl::operator=(const PurehwBaseImpl&)
 {
     return *this;
 }
                                              
 
-PurehwBase::PurehwBaseImpl::~PurehwBaseImpl()
+PureHwBase::PurehwBaseImpl::~PurehwBaseImpl()
 {
     Deinitialize();
     _parent = NULL;
-} // ~PurehwBase
+} // ~PureHwBase
 
 
 
 
 /*
-   PurehwBase
+   PureHwBase
    ###########################################################################
 */
 
@@ -195,7 +195,7 @@ PurehwBase::PurehwBaseImpl::~PurehwBaseImpl()
 /**
     Initializes the instance.
 */
-void PurehwBase::Initialize()
+void PureHwBase::Initialize()
 {
     pImpl->Initialize();
 } // Initialize()
@@ -204,7 +204,7 @@ void PurehwBase::Initialize()
 /**
     Deinitializes the instance.
 */
-void PurehwBase::Deinitialize()
+void PureHwBase::Deinitialize()
 {
     pImpl->Deinitialize();
 } // Deinitialize()
@@ -213,7 +213,7 @@ void PurehwBase::Deinitialize()
 /**
     Returns whether the instance is successfully initialized.
 */
-TPureBool PurehwBase::isInitialized() const
+TPureBool PureHwBase::isInitialized() const
 {
     return pImpl->isInitialized();
 } // isInitialized()
@@ -225,36 +225,36 @@ TPureBool PurehwBase::isInitialized() const
 /** 
     Sets members to default values.
 */
-PurehwBase::PurehwBase()
+PureHwBase::PureHwBase()
 {
-    pImpl = new PurehwBase::PurehwBaseImpl(this);
-} // PurehwBase()
+    pImpl = new PureHwBase::PurehwBaseImpl(this);
+} // PureHwBase()
 
 
-PurehwBase::PurehwBase(const PurehwBase&)
+PureHwBase::PureHwBase(const PureHwBase&)
 {
 
 } 
 
 
-PurehwBase& PurehwBase::operator=(const PurehwBase&)
+PureHwBase& PureHwBase::operator=(const PureHwBase&)
 {
     return *this;
 }
                                              
 
-PurehwBase::~PurehwBase()
+PureHwBase::~PureHwBase()
 {
     delete pImpl;
     pImpl = NULL;
-} // ~PurehwBase
+} // ~PureHwBase
 
 
 /**
     Preinitializes members.
     Being called from ctor and Deinitialize().
 */
-void PurehwBase::PreInitialize()
+void PureHwBase::PreInitialize()
 {
 
 }      

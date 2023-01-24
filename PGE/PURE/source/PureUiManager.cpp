@@ -10,13 +10,13 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../include/external/PureUiManager.h"
 
 #include <cassert>
 
 #include "../include/external/Hardware/PureHwInfo.h"
-#include "../include/internal/Purepragmas.h"
+#include "../include/internal/PurePragmas.h"
 #include "../include/internal/PureUiFontWin.h"
 #include "../include/internal/PureGLextensionFuncs.h"
 

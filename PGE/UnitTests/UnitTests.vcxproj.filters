@@ -219,16 +219,16 @@
     <ClInclude Include="PureHardwareInfoTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PurehwAudioTest.h">
+    <ClInclude Include="PureHwAudioTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PurehwCentralProcessorTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PurehwInfoTest.h">
+    <ClInclude Include="PureHwInfoImplTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PurehwSystemMemoryTest.h">
+    <ClInclude Include="PureHwSystemMemoryTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PurehwVideoTest.h">

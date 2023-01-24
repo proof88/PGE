@@ -10,9 +10,9 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../include/internal/PureUiFontWin.h"
-#include "../include/internal/Purepragmas.h"
+#include "../include/internal/PurePragmas.h"
 #include "../include/external/Hardware/PureHwInfo.h"
 
 

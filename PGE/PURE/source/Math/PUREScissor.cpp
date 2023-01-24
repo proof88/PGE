@@ -10,7 +10,7 @@
 
 #include "PureBaseIncludes.h"  // PCH
 #include "../../include/internal/Math/PUREScissor.h"
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 
 
 // ############################### PUBLIC ################################

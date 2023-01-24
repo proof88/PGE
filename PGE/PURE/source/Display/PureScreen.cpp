@@ -10,10 +10,10 @@
     ###################################################################################
 */
 
-#include "PurebaseIncludes.h"  // PCH
+#include "PureBaseIncludes.h"  // PCH
 #include "../../include/external/Display/PureScreen.h"
 #include "../../include/internal/PureGLextensionFuncs.h"
-#include "../../include/internal/Purepragmas.h"
+#include "../../include/internal/PurePragmas.h"
 #include "../../include/internal/Display/PureSharedSettings.h"
 
 

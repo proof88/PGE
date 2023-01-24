@@ -2,8 +2,8 @@
 
 /*
     ###################################################################################
-    PurehwAudioTest.h
-    Unit test for PurehwAudio.
+    PureHwAudioTest.h
+    Unit test for PureHwAudio.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
@@ -17,20 +17,20 @@
 #define E 0.0001f
 #endif // EPSILON
 
-class PurehwAudioTest :
+class PureHwAudioTest :
     public UnitTest
 {
 public:
 
-    PurehwAudioTest() :
+    PureHwAudioTest() :
         UnitTest( __FILE__ ),
         hw( PureHwInfo::get() ), 
-        audio( PurehwAudio::get() )
+        audio( PureHwAudio::get() )
     {
         engine = NULL;
     }
 
-    virtual ~PurehwAudioTest()
+    virtual ~PureHwAudioTest()
     {
         Finalize();   
     }
@@ -41,10 +41,10 @@ protected:
     {
         //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         engine = NULL;
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PurehwAudioTest::testCtor);
-        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PurehwAudioTest::testInitialize);
-        AddSubTest("testDeinitialize", (PFNUNITSUBTEST) &PurehwAudioTest::testDeinitialize);
-        AddSubTest("testWriteStats", (PFNUNITSUBTEST) &PurehwAudioTest::testWriteStats);
+        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureHwAudioTest::testCtor);
+        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PureHwAudioTest::testInitialize);
+        AddSubTest("testDeinitialize", (PFNUNITSUBTEST) &PureHwAudioTest::testDeinitialize);
+        AddSubTest("testWriteStats", (PFNUNITSUBTEST) &PureHwAudioTest::testWriteStats);
     }
 
     virtual bool setUp()
@@ -77,16 +77,16 @@ private:
 
     PR00FsUltimateRenderingEngine* engine;
     PureHwInfo& hw;
-    PurehwAudio& audio;
+    PureHwAudio& audio;
 
     // ---------------------------------------------------------------------------
 
-    PurehwAudioTest(const PurehwAudioTest&) :
+    PureHwAudioTest(const PureHwAudioTest&) :
         hw( PureHwInfo::get() ),
-        audio( PurehwAudio::get() )
+        audio( PureHwAudio::get() )
     {};         
 
-    PurehwAudioTest& operator=(const PurehwAudioTest&)
+    PureHwAudioTest& operator=(const PureHwAudioTest&)
     {
         return *this;
     };
@@ -120,4 +120,4 @@ private:
         return true;
     }
     
-}; // class PurehwAudioTest
+}; // class PureHwAudioTest
