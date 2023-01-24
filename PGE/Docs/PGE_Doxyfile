@@ -982,7 +982,7 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = ../PRRE \
+EXCLUDE                = ../PURE \
                          ../Network/GameNetworkingSockets-1.4.0 \
                          ../Audio/soloud-RELEASE_20200207
 
