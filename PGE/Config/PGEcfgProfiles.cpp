@@ -432,42 +432,6 @@ void PGEcfgProfiles::SetProfile(int nIndex)
 
 
 /**
-    Gets a cvar by the given name.
-    If the given name doesn't exist, the function also creates it.
-    Works only if an active profile is selected.
-    If you change the value of the cvar, it will be changed only in memory.
-    To save changes made to the current profile, use writeConfiguration().
-
-    @return The cvar specified by the given name or a default empty cvar if no profile is selected.
-*/
-PGEcfgVariable& PGEcfgProfiles::getVar(const char* varName)
-{
-    if ( getProfile() > -1 )
-    {
-        PGEcfgVariable& cvar = m_vars[varName];
-        return cvar;
-    }
-    else
-        return cvarWrong;
-} // getVar()
-
-
-/**
-    Gets a cvar by the given name.
-    If the given name doesn't exist, the function won't create it.
-    @return The cvar specified by the given name or a default empty cvar if doesn't exist.
-*/
-const PGEcfgVariable& PGEcfgProfiles::getVar(const char* varName) const
-{
-    map<string, PGEcfgVariable>::const_iterator it = m_vars.find(varName);
-    if ( (m_vars.end() == it) || (getProfile() == -1) )
-        return cvarWrong;
-    else
-        return it->second;
-} // getVar()
-
-
-/**
     Deletes a cvar by the given name.
     You cannot delete the cvar holding the name of the player because it would invalidate the profile.
     If you delete a cvar from the current profile, it will be deleted only on memory-level.
@@ -483,16 +447,6 @@ void PGEcfgProfiles::DeleteVar(const char* varName)
 
     m_vars.erase(varName);
 } // DeleteVar()
-
-
-/**
-    Gets the number of cvars.
-    @return The number of cvars for the active profile. Always 0 if no profile is selected.
-*/
-int PGEcfgProfiles::getVarsCount() const
-{
-    return m_vars.size();
-} // getVarsCount()
 
 
 /**

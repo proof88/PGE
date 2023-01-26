@@ -51,8 +51,6 @@ protected:
         AddSubTest("testDeleteProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testDeleteProfile);
         AddSubTest("testGetProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfile);
         AddSubTest("testSetProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testSetProfile);
-        AddSubTest("testGetVar1", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetVar1);
-        AddSubTest("testGetVar2", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetVar2);
         AddSubTest("testDeleteVar", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testDeleteVar);
         AddSubTest("testGetVarsCount", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetVarsCount);
         AddSubTest("testReadConfiguration", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testReadConfiguration);
@@ -197,7 +195,7 @@ private:
         PGEcfgProfiles cfg("game title");
         cfg.SetProfile( 3 );  // proof88.cfg
         const int nOriginalUsersCount = cfg.getProfilesCount();
-        int nOriginalVarsCount = cfg.getVarsCount();
+        size_t nOriginalVarsCount = cfg.getVars().size();
 
         int iNewProfile = cfg.addProfile("testusername?", "testnickname");
         bool b = assertEquals(nOriginalUsersCount, cfg.getProfilesCount(), "wrongname1 1");
@@ -215,7 +213,7 @@ private:
         b &= assertEquals(nOriginalUsersCount+1, cfg.getProfilesCount(), "trysameagain 1");
         b &= assertEquals(-1, iNewProfile2, "trysameagain 2");
 
-        b &= assertEquals(nOriginalVarsCount, cfg.getVarsCount(), "varscount");
+        b &= assertEquals(nOriginalVarsCount, cfg.getVars().size(), "varscount");
         b &= assertEquals(3, cfg.getProfile(), "getprofile 1");
 
         if ( iNewProfile > -1 )
@@ -225,13 +223,13 @@ private:
             b &= assertEquals(iNewProfile, cfg.getProfile(), "getprofile 3");
             b &= assertTrue(std::string("testnickname") == *(cfg.getProfilePlayersList()[iNewProfile]), "playername 1");
             b &= assertTrue(std::string("testusername") == *(cfg.getProfilesList()[iNewProfile]), "username 1");
-            nOriginalVarsCount = cfg.getVarsCount();
+            nOriginalVarsCount = cfg.getVars().size();
         }
 
         // adding a profile that should change current profile index
         int iNewProfile3 = cfg.addProfile("01234", "test");
         // check if we are still currently at the last profile
-        b &= assertEquals(nOriginalVarsCount, cfg.getVarsCount(), "varscount 2");
+        b &= assertEquals(nOriginalVarsCount, cfg.getVars().size(), "varscount 2");
         b &= assertEquals(cfg.getProfilesCount()-1, cfg.getProfile(), "getprofile 2");
 
         if ( iNewProfile3 > -1 )
@@ -256,7 +254,7 @@ private:
         PGEcfgProfiles cfg("game title");
         cfg.SetProfile( 3 );  // proof88.cfg
         const int nOriginalUsersCount = cfg.getProfilesCount();
-        int nOriginalVarsCount = cfg.getVarsCount();
+        size_t nOriginalVarsCount = cfg.getVars().size();
 
         bool b = assertEquals(-1, cfg.deleteProfile(nOriginalUsersCount+1), "delete non-existing profile");
 
@@ -267,7 +265,7 @@ private:
         if ( b )
         {
             b &= assertEquals(0, cfg.deleteProfile(iNewProfile), "delete 1");
-            b &= assertEquals(nOriginalVarsCount, cfg.getVarsCount(), "varscount 1");
+            b &= assertEquals(nOriginalVarsCount, cfg.getVars().size(), "varscount 1");
             b &= assertEquals(3, cfg.getProfile(), "getprofile 1");
         }
 
@@ -280,7 +278,7 @@ private:
         {
             cfg.SetProfile(iNewProfile);
             b &= assertEquals(0, cfg.deleteProfile(iNewProfile), "delete 2");
-            b &= assertEquals(0, cfg.getVarsCount(), "varscount 2");
+            b &= assertEquals(0u, cfg.getVars().size(), "varscount 2");
             b &= assertEquals(-1, cfg.getProfile(), "getprofile 2");
         }
 
@@ -306,51 +304,17 @@ private:
 
         cfg.SetProfile( 3 );  // proof88.cfg
         b &= assertEquals(3, cfg.getProfile(), "3");
-        b &= assertGreater(cfg.getVarsCount(), 0, "getVarsCount() 1st");
+        b &= assertGreater(cfg.getVars().size(), 0u, "getVarsCount() 1st");
 
         cfg.SetProfile( -5 );
         b &= assertEquals(3, cfg.getProfile(), "3 2nd");
-        b &= assertGreater(cfg.getVarsCount(), 0, "getVarsCount() 2nd");
+        b &= assertGreater(cfg.getVars().size(), 0u, "getVarsCount() 2nd");
 
         cfg.SetProfile( -1 );
         b &= assertEquals(-1, cfg.getProfile(), "-1 2nd");
-        b &= assertEquals(0, cfg.getVarsCount(), "getVarsCount() 3rd");
+        b &= assertEquals(0u, cfg.getVars().size(), "getVarsCount() 3rd");
 
         return b;
-    }
-
-    bool testGetVar1()
-    {
-        // non-const version
-        PGEcfgProfiles cfg("game title");
-        bool b = true;
-
-        cfg.getVar("cl_alma") = 2;
-        b &= assertEquals(0, cfg.getVarsCount(), "getVarsCount() 1");
-
-        cfg.SetProfile( 3 );  // proof88.cfg
-        const int nVarCountOriginal = cfg.getVarsCount();
-
-        cfg.getVar("cl_alma") = 2;
-        b &= assertEquals(nVarCountOriginal+1, cfg.getVarsCount(), "getVarsCount() 2");
-
-        cfg.getVar("cl_alma") = 3;
-        b &= assertEquals(nVarCountOriginal+1, cfg.getVarsCount(), "getVarsCount() 3");
-        b &= assertTrue(std::string("PR00F88") == cfg.getVar("cl_name"), "name");
-
-        return b;
-    }
-
-    bool testGetVar2()
-    {
-        // const version
-        const PGEcfgProfiles cfg("game title");
-
-        PGEcfgVariable cvar = cfg.getVar("cl_alma");
-
-        return assertFalse(cvar.getAsBool(), "b1") &
-               assertEquals(0, cvar.getAsInt(), "b2") &
-               assertTrue(cvar.getAsString().empty(), "b3");
     }
 
     bool testDeleteVar()
@@ -358,19 +322,19 @@ private:
         PGEcfgProfiles cfg("game title");
         bool b = true;
 
-        b &= assertEquals(0, cfg.getVarsCount(), "getVarsCount() 1");
+        b &= assertEquals(0u, cfg.getVars().size(), "getVarsCount() 1");
         cfg.DeleteVar("cl_alma");  // try to remove anything without current profile
-        b &= assertEquals(0, cfg.getVarsCount(), "getVarsCount() 2");
+        b &= assertEquals(0u, cfg.getVars().size(), "getVarsCount() 2");
 
         cfg.SetProfile( 3 );  // proof88.cfg
-        const int nVarCountOriginal = cfg.getVarsCount();
-        cfg.getVar("cl_alma") = 2;
-        b &= assertEquals(nVarCountOriginal+1, cfg.getVarsCount(), "getVarsCount() 3");
+        const size_t nVarCountOriginal = cfg.getVars().size();
+        cfg.getVars()["cl_alma"] = 2;
+        b &= assertEquals(nVarCountOriginal+1, cfg.getVars().size(), "getVarsCount() 3");
         cfg.DeleteVar("cl_alma");  // try to remove legally
-        b &= assertEquals(nVarCountOriginal, cfg.getVarsCount(), "getVarsCount() 4");
+        b &= assertEquals(nVarCountOriginal, cfg.getVars().size(), "getVarsCount() 4");
         
         cfg.DeleteVar("cl_name");  // try to remove protected cvar
-        b &= assertEquals(nVarCountOriginal, cfg.getVarsCount(), "getVarsCount() 5");
+        b &= assertEquals(nVarCountOriginal, cfg.getVars().size(), "getVarsCount() 5");
 
         return b;
     }
@@ -379,10 +343,10 @@ private:
     {
         PGEcfgProfiles cfg("game title");
 
-        bool b = assertEquals(0, cfg.getVarsCount(), "1");
+        bool b = assertEquals(0u, cfg.getVars().size(), "1");
 
         cfg.SetProfile( 3 );  // proof88.cfg
-        b &= assertNotEquals(0, cfg.getVarsCount(), "2");
+        b &= assertNotEquals(0u, cfg.getVars().size(), "2");
         
         return b;
     }
@@ -395,13 +359,13 @@ private:
         b &= assertFalse(cfg.readConfiguration(), "1");
 
         cfg.SetProfile( 3 );  // proof88.cfg; this implies a readConfiguration(), but we call it anyway ...
-        const int nOriginalCount1 = cfg.getVarsCount();
-        cfg.getVar("cl_alma");
-        const int nOriginalCount2 = cfg.getVarsCount();
+        const size_t nOriginalCount1 = cfg.getVars().size();
+        cfg.getVars()["cl_alma"];
+        const size_t nOriginalCount2 = cfg.getVars().size();
         //cfg.readConfiguration();
 
-        b &= assertEquals(nOriginalCount1, cfg.getVarsCount()-1, "count 1");
-        b &= assertEquals(nOriginalCount2, cfg.getVarsCount(), "count 2");
+        b &= assertEquals(nOriginalCount1, cfg.getVars().size()-1, "count 1");
+        b &= assertEquals(nOriginalCount2, cfg.getVars().size(), "count 2");
 
         cfg.SetProfile( -1 );
         b &= assertFalse(cfg.readConfiguration(), "2");
@@ -422,7 +386,7 @@ private:
             return b;
 
         cfg.SetProfile( iNewProfile );
-        cfg.getVar("cl_alma") = 15.6f;
+        cfg.getVars()["cl_alma"] = 15.6f;
         b &= assertTrue(cfg.writeConfiguration(), "writecfg 2");
         
         if ( !b )
@@ -432,8 +396,8 @@ private:
         cfg.SetProfile( iNewProfile );
 
         b &= assertEquals(iNewProfile, cfg.getProfile(), "addprofile 2");
-        b &= assertEquals(2, cfg.getVarsCount(), "varscount");
-        b &= assertEquals(15.6f, cfg.getVar("cl_alma").getAsFloat(), E, "alma");
+        b &= assertEquals(2u, cfg.getVars().size(), "varscount");
+        b &= assertEquals(15.6f, cfg.getVars()["cl_alma"].getAsFloat(), E, "alma");
 
         cfg.deleteProfile( iNewProfile );
 

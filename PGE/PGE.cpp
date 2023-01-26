@@ -654,8 +654,11 @@ int PGE::initializeGame()
     getConsole().OI();
     getConsole().OLn(PGE_NAME);
     getConsole().OLn(PGE_VERSION);
+
     onGameInitializing();
+
     getConsole().OLn("Game Title: %s", p->sGameTitle.c_str());
+
     getConsole().OLn("Documents Folder: %s", p->m_cfgProfiles.getMyDocsFolder().c_str());
     p->nLangTable = p->m_cfgProfiles.readLanguageData( p->pLangTable );
     getConsole().OLn("Lang Table with %d rows from %s.", p->nLangTable, p->m_cfgProfiles.getLangFileName().c_str());
@@ -664,6 +667,7 @@ int PGE::initializeGame()
         getConsole().EOLnOO("ERROR: Failed to read language data, exiting!");
         return 99;
     }
+
     getConsole().OLn("Profiles stored in Documents: %b", p->m_cfgProfiles.areProfilesInMyDocs());
     getConsole().OLn("Profiles: %s", p->m_cfgProfiles.getPathToProfiles().c_str());
     getConsole().OIOLn("Count: %d", p->m_cfgProfiles.getProfilesCount());
@@ -671,6 +675,7 @@ int PGE::initializeGame()
     {
         getConsole().OLn("%s.cfg ~ %s", p->m_cfgProfiles.getProfilesList()[i]->c_str(), p->m_cfgProfiles.getProfilePlayersList()[i]->c_str());
     }
+    p->m_cfgProfiles.SetProfile(0);
     getConsole().OO();
 
     getConsole().L();

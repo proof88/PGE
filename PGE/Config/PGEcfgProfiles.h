@@ -55,10 +55,7 @@ public:
     // ---------------------------------------------------------------------------
     int  getProfile() const;        /**< Gets index of active profile. */
     void SetProfile(int nIndex);    /**< Sets index of active profile. */
-    PGEcfgVariable& getVar(const char* varName);              /**< Gets a cvar by the given name. */
-    const PGEcfgVariable& getVar(const char* varName) const;  /**< Gets a cvar by the given name. */
     void DeleteVar(const char* varName);  /** Deletes a cvar by the given name. */
-    int  getVarsCount() const;      /**< Gets the number of cvars. */
     bool readConfiguration();       /**< Loads configuration for current profile from file. */
     bool writeConfiguration();      /**< Saves configuration for current profile to file. */
     
