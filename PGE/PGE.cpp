@@ -1,5 +1,3 @@
-#include "PGE.h"
-#include "PGE.h"
 /*
     ###################################################################################
     PGE.cpp
@@ -85,8 +83,8 @@ private:
 
     PGE*      _pOwner;                  /**< The owner public object who creates this pimpl object. */
 
-    PGEcfgProfiles  SysCFG;
-    PGESysGFX  SysGFX;
+    PGEcfgProfiles m_cfgProfiles;
+    PGESysGFX SysGFX;
     pge_network::PgeNetwork& m_PgeNetwork;
     PGESysSFX  SysSFX;
     
@@ -233,7 +231,7 @@ int PGE::PGEimpl::destroyGame()
     SysGFX.destroySysGFX();
     SysSFX.destroySysSFX();
     getNetwork().shutdown();
-    // SysCFG doesnt have any shutdown
+    // m_cfgProfiles doesnt have any shutdown
 
     getConsole().Deinitialize();
 
@@ -294,7 +292,7 @@ PGE::PGEimpl::PGEimpl() :
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsUltimateRenderingEngine::createAndGet() ),
     m_PgeNetwork(pge_network::PgeNetwork::createAndGet()),
-    SysCFG("") ,
+    m_cfgProfiles("") ,
     wpnMgr(GFX),
     m_nTargetGameLoopFreq(0),
     m_minFrameTimeMicrosecs(0.0)
@@ -308,7 +306,7 @@ PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsUltimateRenderingEngine::createAndGet() ),
     m_PgeNetwork(pge_network::PgeNetwork::createAndGet() ),
-    SysCFG(""),
+    m_cfgProfiles(""),
     wpnMgr(GFX),
     m_nTargetGameLoopFreq(0),
     m_minFrameTimeMicrosecs(0.0)
@@ -332,7 +330,7 @@ PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     world( PGEWorld::createAndGet() ),
     GFX( PR00FsUltimateRenderingEngine::createAndGet() ),
     m_PgeNetwork(pge_network::PgeNetwork::createAndGet()),
-    SysCFG(gameTitle),
+    m_cfgProfiles(gameTitle),
     wpnMgr(GFX),
     m_nTargetGameLoopFreq(0),
     m_minFrameTimeMicrosecs(0.0)
@@ -658,20 +656,20 @@ int PGE::initializeGame()
     getConsole().OLn(PGE_VERSION);
     onGameInitializing();
     getConsole().OLn("Game Title: %s", p->sGameTitle.c_str());
-    getConsole().OLn("Documents Folder: %s", p->SysCFG.getMyDocsFolder().c_str());
-    p->nLangTable = p->SysCFG.readLanguageData( p->pLangTable );
-    getConsole().OLn("Lang Table with %d rows from %s.", p->nLangTable, p->SysCFG.getLangFileName().c_str());
+    getConsole().OLn("Documents Folder: %s", p->m_cfgProfiles.getMyDocsFolder().c_str());
+    p->nLangTable = p->m_cfgProfiles.readLanguageData( p->pLangTable );
+    getConsole().OLn("Lang Table with %d rows from %s.", p->nLangTable, p->m_cfgProfiles.getLangFileName().c_str());
     if ( p->nLangTable == 0 )
     {
         getConsole().EOLnOO("ERROR: Failed to read language data, exiting!");
         return 99;
     }
-    getConsole().OLn("Profiles stored in Documents: %b", p->SysCFG.areProfilesInMyDocs());
-    getConsole().OLn("Profiles: %s", p->SysCFG.getPathToProfiles().c_str());
-    getConsole().OIOLn("Count: %d", p->SysCFG.getProfilesCount());
-    for (int i = 0; i < p->SysCFG.getProfilesCount(); i++)
+    getConsole().OLn("Profiles stored in Documents: %b", p->m_cfgProfiles.areProfilesInMyDocs());
+    getConsole().OLn("Profiles: %s", p->m_cfgProfiles.getPathToProfiles().c_str());
+    getConsole().OIOLn("Count: %d", p->m_cfgProfiles.getProfilesCount());
+    for (int i = 0; i < p->m_cfgProfiles.getProfilesCount(); i++)
     {
-        getConsole().OLn("%s.cfg ~ %s", p->SysCFG.getProfilesList()[i]->c_str(), p->SysCFG.getProfilePlayersList()[i]->c_str());
+        getConsole().OLn("%s.cfg ~ %s", p->m_cfgProfiles.getProfilesList()[i]->c_str(), p->m_cfgProfiles.getProfilePlayersList()[i]->c_str());
     }
     getConsole().OO();
 
