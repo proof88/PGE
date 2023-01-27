@@ -20,6 +20,7 @@
 #include "../../../CConsole/CConsole/src/CConsole.h"
 
 #include "../PGEallHeaders.h"
+#include "../Config/PGEcfgProfiles.h"
 #include "PgeClient.h"
 #include "PgePacket.h"
 #include "PgeServer.h"

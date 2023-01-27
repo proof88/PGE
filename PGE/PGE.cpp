@@ -68,8 +68,8 @@ protected:
 
 private:
 
-    static std::string** pLangTable;      /**< Language-dependent strings. */
-    static int           nLangTable;      /**< Length of pLangTable. */
+    static std::string** m_pLangTable;      /**< Language-dependent strings. */
+    static int           m_nLangTable;      /**< Length of m_pLangTable. */
 
     // ---------------------------------------------------------------------------
 
@@ -81,23 +81,21 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PGE*      _pOwner;                  /**< The owner public object who creates this pimpl object. */
+    PGE*      m_pOwner;                  /**< The owner public object who creates this pimpl object. */
 
     PGEcfgProfiles m_cfgProfiles;
-    PGESysGFX SysGFX;
-    pge_network::PgeNetwork& m_PgeNetwork;
-    PGESysSFX  SysSFX;
-    
-    PR00FsUltimateRenderingEngine& GFX; 
-    void* pSFX;
-    PGEInputHandler& inputHandler;
-    PGEWorld& world;
-    WeaponManager wpnMgr;
+    PGEInputHandler& m_inputHandler;
+    PGEWorld& m_world;
+    PR00FsUltimateRenderingEngine& m_gfx;
+    PGESysGFX m_sysGFX;
+    pge_network::PgeNetwork& m_network;
+    PGESysSFX  m_sysSFX;
+    WeaponManager m_wpnMgr;
 
-    bool        bIsGameRunning;         /**< Is the game running (true after successful init and before initiating shutdown)? */
-    std::string sGameTitle;             /**< Simplified name of the game, used in paths too, so can't contain joker chars. */
-    int         nInactiveSleep;         /**< Amount of sleep in millisecs when inactive, 0 means no sleep. */
-    bool        bInactiveLikeActive;    /**< If true, runGame() will act the same way in inactive state as in active state. */
+    bool        m_bIsGameRunning;         /**< Is the game running (true after successful init and before initiating shutdown)? */
+    std::string m_sGameTitle;             /**< Simplified name of the game, used in paths too, so can't contain joker chars. */
+    int         m_nInactiveSleep;         /**< Amount of sleep in millisecs when inactive, 0 means no sleep. */
+    bool        m_bInactiveLikeActive;    /**< If true, runGame() will act the same way in inactive state as in active state. */
 
     unsigned int m_nTargetGameLoopFreq; /**< Frequency for the main game engine loop, 0 means no target frequency. */
     double m_minFrameTimeMicrosecs;
@@ -125,7 +123,7 @@ private:
 
 PGE::PGEimpl::~PGEimpl()
 {
-    _pOwner = NULL;
+    m_pOwner = NULL;
 } // ~PGE()
 
 
@@ -143,22 +141,22 @@ const char* PGE::PGEimpl::getLoggerModuleName()
 
 const string& PGE::PGEimpl::getGameTitle() const
 {
-    return sGameTitle;
+    return m_sGameTitle;
 } // getGameTitle()
 
 
 void PGE::PGEimpl::SetGameTitle(const char* gameTitle)
 {
-    if ( !bIsGameRunning )
+    if ( !m_bIsGameRunning )
     {
-        sGameTitle = gameTitle;
+        m_sGameTitle = gameTitle;
     }
 } // SetGameTitle()
 
 
 int  PGE::PGEimpl::getWaitingWhileInactive() const
 {
-    return nInactiveSleep;    
+    return m_nInactiveSleep;    
 } // getWaitingWhileInactive()
 
 
@@ -166,70 +164,70 @@ void PGE::PGEimpl::SetWaitingWhileInactive(int msecs)
 {
     if ( msecs < -1 )
         return;
-    nInactiveSleep = msecs;
+    m_nInactiveSleep = msecs;
 } // setWaitingWhileInactive()
 
 
 bool PGE::PGEimpl::isInactiveLikeActive() const
 {
-    return bInactiveLikeActive;
+    return m_bInactiveLikeActive;
 } // isInactiveLikeActive()
 
 
 void PGE::PGEimpl::SetInactiveLikeActive(bool value)
 {
-    bInactiveLikeActive = value;
+    m_bInactiveLikeActive = value;
 } // setInactiveLikeActive()
 
 
 PGEInputHandler& PGE::PGEimpl::getInput() const
 {
-    return inputHandler;
+    return m_inputHandler;
 } // getInput()
 
 
 PGEWorld& PGE::PGEimpl::getWorld() const
 {
-    return world;
+    return m_world;
 } // getWorld()
 
 
 PR00FsUltimateRenderingEngine& PGE::PGEimpl::getPure() const
 {
-    return GFX;
+    return m_gfx;
 }
 
 pge_network::PgeNetwork& PGE::PGEimpl::getNetwork() const
 {
-    return m_PgeNetwork;
+    return m_network;
 }
 
 SoLoud::Soloud& PGE::PGEimpl::getAudio()
 {
-    return SysSFX.getAudioCore();
+    return m_sysSFX.getAudioCore();
 }
 
 WeaponManager& PGE::PGEimpl::getWeaponManager()
 {
-    return wpnMgr;
+    return m_wpnMgr;
 }
 
 
 bool PGE::PGEimpl::isGameRunning() const
 {
-    return bIsGameRunning;
+    return m_bIsGameRunning;
 } // isGameRunning()
 
 
 int PGE::PGEimpl::destroyGame()
 {
     // make sure that everything is destructed in REVERSE order compared to initializeGame()
-    // first things to shutdown are instances that are NOT even initialized by initializeGame(), such as wpnMgr
-    wpnMgr.Clear();
-    world.Shutdown();
-    // inputHandler doesnt have any shutdown
-    SysGFX.destroySysGFX();
-    SysSFX.destroySysSFX();
+    // first things to shutdown are instances that are NOT even initialized by initializeGame(), such as m_wpnMgr
+    m_wpnMgr.Clear();
+    m_world.Shutdown();
+    // m_inputHandler doesnt have any shutdown
+    m_sysGFX.destroySysGFX();
+    m_sysSFX.destroySysSFX();
     getNetwork().shutdown();
     // m_cfgProfiles doesnt have any shutdown
 
@@ -245,8 +243,8 @@ int PGE::PGEimpl::destroyGame()
 // ############################### PRIVATE ###############################
 
 
-string** PGE::PGEimpl::pLangTable = NULL;
-int      PGE::PGEimpl::nLangTable = 0;
+string** PGE::PGEimpl::m_pLangTable = NULL;
+int      PGE::PGEimpl::m_nLangTable = 0;
 
 /**
     Transforms a message ID into a lang ID.
@@ -283,41 +281,45 @@ int PGE::PGEimpl::showWindowsMessageDialogWin32(const char* msg, const char* cpt
 */
 int PGE::PGEimpl::showWindowsMessageDialogWin32(PGE_MSG_ID msg_id, PGE_MSG_ID cpt_id, UINT type) 
 {
-    return ( MessageBox(0, pLangTable[getLangFromMSG_ID(msg_id)]->c_str(), pLangTable[getLangFromMSG_ID(cpt_id)]->c_str(), type) );
+    return ( MessageBox(0, m_pLangTable[getLangFromMSG_ID(msg_id)]->c_str(), m_pLangTable[getLangFromMSG_ID(cpt_id)]->c_str(), type) );
 } // showWindowsMessageDialogWindows()
 
 
 PGE::PGEimpl::PGEimpl() :
-    inputHandler( PGEInputHandler::createAndGet() ),
-    world( PGEWorld::createAndGet() ),
-    GFX( PR00FsUltimateRenderingEngine::createAndGet() ),
-    m_PgeNetwork(pge_network::PgeNetwork::createAndGet()),
-    m_cfgProfiles("") ,
-    wpnMgr(GFX),
+    m_pOwner(NULL),  // currently not used
+    m_cfgProfiles(""),
+    m_inputHandler( PGEInputHandler::createAndGet() ),
+    m_world( PGEWorld::createAndGet() ),
+    m_gfx( PR00FsUltimateRenderingEngine::createAndGet() ),
+    m_network( pge_network::PgeNetwork::createAndGet() ),
+    m_wpnMgr(m_gfx),
+    m_bIsGameRunning(false),
     m_nTargetGameLoopFreq(0),
     m_minFrameTimeMicrosecs(0.0)
 {
-    _pOwner = NULL;  // currently not used
+    
 }
 
 
 PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
-    inputHandler( PGEInputHandler::createAndGet() ),
-    world( PGEWorld::createAndGet() ),
-    GFX( PR00FsUltimateRenderingEngine::createAndGet() ),
-    m_PgeNetwork(pge_network::PgeNetwork::createAndGet() ),
+    m_pOwner(NULL),  // currently not used
     m_cfgProfiles(""),
-    wpnMgr(GFX),
+    m_inputHandler( PGEInputHandler::createAndGet() ),
+    m_world( PGEWorld::createAndGet() ),
+    m_gfx( PR00FsUltimateRenderingEngine::createAndGet() ),
+    m_network( pge_network::PgeNetwork::createAndGet() ),
+    m_wpnMgr(m_gfx),
+    m_bIsGameRunning(false),
     m_nTargetGameLoopFreq(0),
     m_minFrameTimeMicrosecs(0.0)
 {
-    _pOwner = NULL;  // currently not used
+
 }  
 
 
 PGE::PGEimpl& PGE::PGEimpl::operator=(const PGE::PGEimpl&)
 {
-    _pOwner = NULL;  // currently not used
+    m_pOwner = NULL;  // currently not used
     return *this;
 }
 
@@ -326,20 +328,21 @@ PGE::PGEimpl& PGE::PGEimpl::operator=(const PGE::PGEimpl&)
     This is the only usable ctor, this is used by the static createAndGet().
 */
 PGE::PGEimpl::PGEimpl(const char* gameTitle) :
-    inputHandler( PGEInputHandler::createAndGet() ),
-    world( PGEWorld::createAndGet() ),
-    GFX( PR00FsUltimateRenderingEngine::createAndGet() ),
-    m_PgeNetwork(pge_network::PgeNetwork::createAndGet()),
+    m_pOwner(NULL),  // currently not used
     m_cfgProfiles(gameTitle),
-    wpnMgr(GFX),
+    m_inputHandler( PGEInputHandler::createAndGet() ),
+    m_world( PGEWorld::createAndGet() ),
+    m_gfx( PR00FsUltimateRenderingEngine::createAndGet() ),
+    m_network(pge_network::PgeNetwork::createAndGet()),
+    m_wpnMgr(m_gfx),
+    m_bIsGameRunning(false),
+    m_sGameTitle(gameTitle),
+    m_nInactiveSleep(PGE_INACTIVE_SLEEP),
+    m_bInactiveLikeActive(PGE_INACTIVE_AS_ACTIVE),
     m_nTargetGameLoopFreq(0),
     m_minFrameTimeMicrosecs(0.0)
 {
-    _pOwner = NULL;  // currently not used
-    sGameTitle = gameTitle;
-    bIsGameRunning = false;
-    nInactiveSleep = PGE_INACTIVE_SLEEP;
-    bInactiveLikeActive = PGE_INACTIVE_AS_ACTIVE;
+    
 } // PGE(...)
 
 static void busyWait(double microsecsToWait)
@@ -575,7 +578,7 @@ PGEInputHandler& PGE::getInput() const
 
 
 /**
-    Returns the world object.
+    Returns the m_world object.
 
     @return World simulated by the game engine.
 */
@@ -646,7 +649,7 @@ int PGE::initializeGame()
 #endif
 
     getConsole().OLn("PGE::initializeGame()");
-    if ( p->bIsGameRunning )
+    if ( p->m_bIsGameRunning )
     {
         getConsole().OLn("  already initialized!");
         return 0;
@@ -657,12 +660,12 @@ int PGE::initializeGame()
 
     onGameInitializing();
 
-    getConsole().OLn("Game Title: %s", p->sGameTitle.c_str());
+    getConsole().OLn("Game Title: %s", p->m_sGameTitle.c_str());
 
     getConsole().OLn("Documents Folder: %s", p->m_cfgProfiles.getMyDocsFolder().c_str());
-    p->nLangTable = p->m_cfgProfiles.readLanguageData( p->pLangTable );
-    getConsole().OLn("Lang Table with %d rows from %s.", p->nLangTable, p->m_cfgProfiles.getLangFileName().c_str());
-    if ( p->nLangTable == 0 )
+    p->m_nLangTable = p->m_cfgProfiles.readLanguageData( p->m_pLangTable );
+    getConsole().OLn("Lang Table with %d rows from %s.", p->m_nLangTable, p->m_cfgProfiles.getLangFileName().c_str());
+    if ( p->m_nLangTable == 0 )
     {
         getConsole().EOLnOO("ERROR: Failed to read language data, exiting!");
         return 99;
@@ -680,7 +683,7 @@ int PGE::initializeGame()
 
     getConsole().L();
     getConsole().OLnOI("Initializing Networking ...");
-    if (!(p->m_PgeNetwork.initialize()))
+    if (!(p->m_network.initialize()))
     {
         getConsole().EOLnOO("Failed!");
         getConsole().OLn("");
@@ -695,7 +698,7 @@ int PGE::initializeGame()
         
     getConsole().L();
     getConsole().OLnOI("Initializing Audio ...");
-    if ( !(p->SysSFX.initSysSFX()) )
+    if ( !(p->m_sysSFX.initSysSFX()) )
     {
         getConsole().EOLnOO("Failed!");
         getConsole().OLn("");
@@ -712,9 +715,9 @@ int PGE::initializeGame()
     getConsole().OLnOI("Initializing Graphics ...");
     bool bGFXinit;
     if ( MessageBox(0, "Fullscreen?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES )
-        bGFXinit = p->SysGFX.initSysGFX(0, 0, PURE_FULLSCREEN, 0, 32, 24, 0, 0);
+        bGFXinit = p->m_sysGFX.initSysGFX(0, 0, PURE_FULLSCREEN, 0, 32, 24, 0, 0);
     else
-        bGFXinit = p->SysGFX.initSysGFX(1024, 768, PURE_WINDOWED, 0, 32, 24, 0, 0);
+        bGFXinit = p->m_sysGFX.initSysGFX(1024, 768, PURE_WINDOWED, 0, 32, 24, 0, 0);
 
     if ( !bGFXinit )
     {
@@ -729,17 +732,17 @@ int PGE::initializeGame()
     }
     getConsole().L();
 
-    PureWindow& window = p->GFX.getWindow();
+    PureWindow& window = p->m_gfx.getWindow();
     window.SetAutoCleanupOnQuitOn(false);
-    window.SetCaption( p->sGameTitle );
+    window.SetCaption( p->m_sGameTitle );
     window.ShowFull();
     window.WriteSettings();
     //window.SetCursorVisible(false);
-    p->GFX.getScreen().SetVSyncEnabled(true);
+    p->m_gfx.getScreen().SetVSyncEnabled(true);
 
     getConsole().L();
     getConsole().OLnOI("Initializing Input ...");
-    if ( p->inputHandler.initialize( window.getWndHandle() ) )
+    if ( p->m_inputHandler.initialize( window.getWndHandle() ) )
     {
         getConsole().SOLnOO("Done!");
         getConsole().OLn("");
@@ -753,7 +756,7 @@ int PGE::initializeGame()
 
     getConsole().L();
     getConsole().OLnOI("Initializing World ...");
-    if ( p->world.initialize() )
+    if ( p->m_world.initialize() )
     {
         getConsole().SOLnOO("Done!");
         getConsole().OLn("");
@@ -765,7 +768,7 @@ int PGE::initializeGame()
     }
     getConsole().L();
 
-    p->bIsGameRunning = true;
+    p->m_bIsGameRunning = true;
 
     onGameInitialized();
     getConsole().OO();
@@ -783,7 +786,7 @@ int PGE::runGame()
     std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::steady_clock::now();
     std::chrono::time_point<std::chrono::steady_clock> timeLastTime = timeNow;
 
-    PureWindow& window = p->GFX.getWindow();
+    PureWindow& window = p->m_gfx.getWindow();
     window.ProcessMessages();
     getInput().getMouse().getWheel();  // trigger zeroing out any possibly accumulated wheel rotation so onGameRunning() won't see any
 
@@ -792,7 +795,7 @@ int PGE::runGame()
         onGameFrameBegin();
         
         window.ProcessMessages();
-        p->bIsGameRunning = !window.hasCloseRequest();
+        p->m_bIsGameRunning = !window.hasCloseRequest();
 
         getNetwork().Update();  // this may also inject packet(s) to SysNET.queuePackets
         std::deque<pge_network::PgePacket>& pktQueue =
@@ -807,11 +810,11 @@ int PGE::runGame()
         }
 
         // TODO: on the long run, bullet movement and collision handling could be put here ...       
-        if ( window.isActive() || p->bInactiveLikeActive )
+        if ( window.isActive() || p->m_bInactiveLikeActive )
         {
             PGEInputHandler::createAndGet().getMouse().ApplyRelativeInput();
             onGameRunning();
-            p->GFX.getRenderer()->RenderScene();
+            p->m_gfx.getRenderer()->RenderScene();
             p->frameFrameLimit(timeNow, timeLastTime);
         }
         //else
@@ -823,9 +826,9 @@ int PGE::runGame()
         //    // But at the same time, even server should also stick to some update rate in the future ...
         //    // 
         //    // TODO: change this condition: in case of multiplayer, do not sleep.
-        //    //if ( !isServer() && (p->nInactiveSleep > 0) )
+        //    //if ( !isServer() && (p->m_nInactiveSleep > 0) )
         //    //{
-        //    //    Sleep( p->nInactiveSleep );
+        //    //    Sleep( p->m_nInactiveSleep );
         //    //}
         //    // in inactive state, even though RenderScene() doesn't get called from here,
         //    // the scene may be re-rendered from WndProc(), if wnd repaint is needed ...
