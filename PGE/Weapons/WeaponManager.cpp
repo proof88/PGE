@@ -948,7 +948,8 @@ void Weapon::UpdateGraphics()
 // ############################### PUBLIC ################################
 
 
-WeaponManager::WeaponManager(PR00FsUltimateRenderingEngine& gfx) :
+WeaponManager::WeaponManager(PGEcfgProfiles& cfgProfiles, PR00FsUltimateRenderingEngine& gfx) :
+    m_cfgProfiles(cfgProfiles),
     m_gfx(gfx)
 {
 

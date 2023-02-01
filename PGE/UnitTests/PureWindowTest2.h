@@ -31,7 +31,9 @@ public:
 
     PureWindowTest2() :
         UnitTest(__FILE__, "inited"),
-        wnd( PureWindow::createAndGet() )
+        wnd( PureWindow::createAndGet(cfgProfiles, inputHandler) ),
+        cfgProfiles(""),
+        inputHandler(PGEInputHandler::createAndGet(cfgProfiles))
     {
         
     }
@@ -114,11 +116,15 @@ protected:
 
 private:
     PureWindow& wnd;
+    PGEcfgProfiles cfgProfiles;
+    PGEInputHandler& inputHandler;
 
     // ---------------------------------------------------------------------------
 
     PureWindowTest2(const PureWindowTest2&) :
-        wnd( PureWindow::createAndGet() )
+        wnd( PureWindow::createAndGet(cfgProfiles, inputHandler) ),
+        cfgProfiles(""),
+        inputHandler(PGEInputHandler::createAndGet(cfgProfiles))
     {};         
 
     PureWindowTest2& operator=(const PureWindowTest2&)

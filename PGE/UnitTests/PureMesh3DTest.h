@@ -34,7 +34,8 @@ class PureMesh3DTest :
 public:
 
     PureMesh3DTest() :
-        UnitTest( __FILE__ )
+        UnitTest( __FILE__ ),
+        cfgProfiles("")
     {
         engine = NULL;
         mesh = NULL;
@@ -55,7 +56,9 @@ protected:
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3D::getLoggerModuleName(), true);
-        engine = &PR00FsUltimateRenderingEngine::createAndGet();
+
+        PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+        engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         mm = &engine->getMesh3DManager();
         mesh = NULL;
@@ -154,10 +157,12 @@ private:
     const PureMesh3D* meshPlane,
                       *meshBox,
                       *meshCube;
+    PGEcfgProfiles cfgProfiles;
 
     // ---------------------------------------------------------------------------
 
-    PureMesh3DTest(const PureMesh3DTest&)
+    PureMesh3DTest(const PureMesh3DTest&) :
+        cfgProfiles("")
     {};         
 
     PureMesh3DTest& operator=(const PureMesh3DTest&)

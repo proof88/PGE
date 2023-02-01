@@ -24,7 +24,8 @@ class PureMaterialManagerTest :
 public:
 
     PureMaterialManagerTest() :
-        UnitTest(__FILE__)
+        UnitTest(__FILE__),
+        cfgProfiles("")
     {
         engine = NULL;
         im = NULL;
@@ -63,7 +64,8 @@ protected:
         bool ret = true;
         if ( engine == NULL )
         {
-            engine = &PR00FsUltimateRenderingEngine::createAndGet();
+            PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+            engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
             ret &= assertEquals((TPureUInt)0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine" );  // pretty standard display mode, should work on most systems
             im = &engine->getImageManager();
             tm = &engine->getTextureManager();
@@ -105,10 +107,12 @@ private:
     PureImageManager* im;
     PureTextureManager* tm;
     PureMaterialManager* mm;
+    PGEcfgProfiles cfgProfiles;
 
     // ---------------------------------------------------------------------------
 
-    PureMaterialManagerTest(const PureMaterialManagerTest&)
+    PureMaterialManagerTest(const PureMaterialManagerTest&) :
+        cfgProfiles("")
     {};         
 
     PureMaterialManagerTest& operator=(const PureMaterialManagerTest&)

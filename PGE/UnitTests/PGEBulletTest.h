@@ -19,7 +19,8 @@ class PGEBulletTest :
 public:
 
     PGEBulletTest() :
-        UnitTest(__FILE__)
+        UnitTest(__FILE__),
+        cfgProfiles("")
     {
         engine = NULL;
     }
@@ -30,7 +31,9 @@ protected:
     {
         CConsole::getConsoleInstance().SetLoggingState(Bullet::getLoggerModuleName(), true);
 
-        engine = &PR00FsUltimateRenderingEngine::createAndGet();
+        PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+
+        engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
 
         AddSubTest("test_bullet_ctor_server_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_good);
@@ -64,10 +67,12 @@ protected:
 private:
 
     PR00FsUltimateRenderingEngine* engine;
+    PGEcfgProfiles cfgProfiles;
 
     // ---------------------------------------------------------------------------
 
-    PGEBulletTest(const PGEBulletTest&)
+    PGEBulletTest(const PGEBulletTest&) :
+        cfgProfiles("")
     {};
 
     PGEBulletTest& operator=(const PGEBulletTest&)

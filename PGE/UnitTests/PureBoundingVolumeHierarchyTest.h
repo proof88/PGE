@@ -18,7 +18,8 @@ class PureBoundingVolumeHierarchyTest :
 public:
 
     PureBoundingVolumeHierarchyTest() :
-        UnitTest( __FILE__ )
+        UnitTest( __FILE__ ),
+        cfgProfiles("")
     {
     } // PureBoundingVolumeHierarchyTest()
 
@@ -37,7 +38,8 @@ protected:
         bool ret = true;
         if ( engine == NULL )
         {
-            engine = &PR00FsUltimateRenderingEngine::createAndGet();
+            PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+            engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
             ret &= assertEquals((TPureUInt)0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
             om = &engine->getObject3DManager();
             ret &= assertNotNull(om, "om null");
@@ -63,10 +65,12 @@ protected:
 private:
     PR00FsUltimateRenderingEngine* engine; // need the engine for creating Object3D instances
     PureObject3DManager* om;
+    PGEcfgProfiles cfgProfiles;
 
     // ---------------------------------------------------------------------------
 
-    PureBoundingVolumeHierarchyTest(const PureBoundingVolumeHierarchyTest&)
+    PureBoundingVolumeHierarchyTest(const PureBoundingVolumeHierarchyTest&) :
+        cfgProfiles("")
     {}         
 
     PureBoundingVolumeHierarchyTest& operator=(const PureBoundingVolumeHierarchyTest&)

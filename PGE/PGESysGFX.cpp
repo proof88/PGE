@@ -23,8 +23,12 @@
  // ############################### PUBLIC ################################
 
 
-PGESysGFX::PGESysGFX() :
-    engine( PR00FsUltimateRenderingEngine::createAndGet() )
+PGESysGFX::PGESysGFX(
+    PGEcfgProfiles& cfgProfiles,
+    PGEInputHandler& inputHandler) :
+    m_cfgProfiles(cfgProfiles),
+    m_inputHandler(inputHandler),
+    engine( PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler) )
 {
 
 } // PGESysGFX()
@@ -57,8 +61,10 @@ bool PGESysGFX::destroySysGFX(void)
 // ############################### PRIVATE ###############################
 
 
-PGESysGFX::PGESysGFX(const PGESysGFX&) :
-    engine( PR00FsUltimateRenderingEngine::createAndGet() )
+PGESysGFX::PGESysGFX(const PGESysGFX& other) :
+    m_cfgProfiles(other.m_cfgProfiles),
+    m_inputHandler(other.m_inputHandler),
+    engine( PR00FsUltimateRenderingEngine::createAndGet(other.m_cfgProfiles, other.m_inputHandler) )
 {
 
 }

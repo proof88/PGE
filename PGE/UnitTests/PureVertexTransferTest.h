@@ -189,7 +189,8 @@ class PureVertexTransferTest :
 public:
 
     PureVertexTransferTest() :
-        UnitTest( __FILE__ )
+        UnitTest( __FILE__ ),
+        cfgProfiles("")
     {
         engine = NULL;
         vtm = NULL;
@@ -210,7 +211,9 @@ protected:
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3D::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureVertexTransfer::getLoggerModuleName(), true);
-        engine = &PR00FsUltimateRenderingEngine::createAndGet();
+
+        PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+        engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         vtm = new SampleManagerForDescendantFromVertexTransfer(engine->getMaterialManager()); 
         mesh = NULL;
@@ -285,10 +288,12 @@ private:
     SampleManagerForDescendantFromVertexTransfer* vtm;
     SampleDescendantFromVertexTransfer* mesh;
     SampleDescendantFromVertexTransfer* meshFromFile;
+    PGEcfgProfiles cfgProfiles;
 
     // ---------------------------------------------------------------------------
 
-    PureVertexTransferTest(const PureVertexTransferTest&)
+    PureVertexTransferTest(const PureVertexTransferTest&) :
+        cfgProfiles("")
     {};         
 
     PureVertexTransferTest& operator=(const PureVertexTransferTest&)

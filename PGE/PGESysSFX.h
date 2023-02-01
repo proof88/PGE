@@ -12,6 +12,7 @@
 */
 
 #include "PGEallHeaders.h"
+#include "Config/PGEcfgProfiles.h"
 
 // backends for SoLoud: https://sol.gfxile.net/soloud/backends.html
 // in case of problem with MiniAudio, try PortAudio!
@@ -29,7 +30,7 @@ class PGESysSFX
 #endif
 
 public:
-    PGESysSFX();
+    explicit PGESysSFX(PGEcfgProfiles& cfgProfiles);
     virtual ~PGESysSFX();
 
     bool initSysSFX(void);
@@ -38,6 +39,7 @@ public:
     SoLoud::Soloud& getAudioCore();
 
 private:
+    PGEcfgProfiles& m_cfgProfiles;
     SoLoud::Soloud gSoloud;
 
     // ---------------------------------------------------------------------------

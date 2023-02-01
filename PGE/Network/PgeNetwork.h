@@ -39,7 +39,8 @@ namespace pge_network
 #endif
 
     public:
-        static PgeNetwork& createAndGet();          /**< Creates and gets the singleton implementation instance. */
+        static PgeNetwork& createAndGet(
+            PGEcfgProfiles& cfgProfiles);           /**< Creates and gets the singleton implementation instance. */
 
         static const char* getLoggerModuleName();   /**< Returns the logger module name of this class. */
 

@@ -11,9 +11,13 @@
     ###################################################################################
 */
 
+#include "../../../../../CConsole/CConsole/src/CConsole.h"
+
+#include "../../../Config/PGEcfgProfiles.h"
+#include "../../../PGEInputHandler.h"
+
 #include "PureAllHeaders.h"
 #include "PureTypes.h"
-#include "../../../../../CConsole/CConsole/src/CConsole.h"
 #include "Display/PureScreen.h"
 #include "Display/PureWindow.h"
 #include "Hardware/PureHwInfo.h"
@@ -49,7 +53,9 @@ class PR00FsUltimateRenderingEngine
 #endif
 
 public:
-    static PR00FsUltimateRenderingEngine& createAndGet();    /**< Creates and gets the singleton implementation instance. */
+    static PR00FsUltimateRenderingEngine& createAndGet(
+        PGEcfgProfiles& cfgProfiles,
+        PGEInputHandler& inputHandler);                /**< Creates and gets the singleton implementation instance. */
 
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 

@@ -52,9 +52,10 @@ private:
 
     // ---------------------------------------------------------------------------
 
+    PGEcfgProfiles& m_cfgProfiles;
     PGESysNET& m_PgeSysNET;
 
-    PgeClientImpl();                /**< NULLs members only. */
+    explicit PgeClientImpl(PGEcfgProfiles& cfgProfiles);                /**< NULLs members only. */
     PgeClientImpl(const PgeClientImpl&);
     PgeClientImpl& operator=(const PgeClientImpl&);
 
@@ -218,15 +219,17 @@ void PgeClientImpl::WriteList() const
 /**
     NULLs members only.
 */
-PgeClientImpl::PgeClientImpl() :
-    m_PgeSysNET(PGESysNET::createAndGet())
+PgeClientImpl::PgeClientImpl(PGEcfgProfiles& cfgProfiles) :
+    m_cfgProfiles(cfgProfiles),
+    m_PgeSysNET(PGESysNET::createAndGet(cfgProfiles))
 {
     m_PgeSysNET.getBlackListedPgeMessages().insert(pge_network::MsgUserConnected::id);
 } // PgeClientImpl(...)
 
 
-PgeClientImpl::PgeClientImpl(const PgeClientImpl&) :
-    m_PgeSysNET(PGESysNET::createAndGet())
+PgeClientImpl::PgeClientImpl(const PgeClientImpl& other) :
+    m_cfgProfiles(other.m_cfgProfiles),
+    m_PgeSysNET(PGESysNET::createAndGet(other.m_cfgProfiles))
 {
 }
 
@@ -249,9 +252,9 @@ PgeClientImpl& PgeClientImpl::operator=(const PgeClientImpl&)
 /**
     Creates and gets the singleton instance.
 */
-pge_network::PgeClient& pge_network::PgeClient::createAndGet()
+pge_network::PgeClient& pge_network::PgeClient::createAndGet(PGEcfgProfiles& cfgProfiles)
 {
-    static PgeClientImpl clientInst;
+    static PgeClientImpl clientInst(cfgProfiles);
     return clientInst;
 } // createAndGet()
 

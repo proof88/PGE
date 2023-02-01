@@ -18,6 +18,7 @@
 #include <map>
 #include <string>
 
+#include "../Config/PGEcfgProfiles.h"
 #include "PgePacket.h"
 
 // this idea of building include paths is coming from:
@@ -57,7 +58,7 @@ class PGESysNET
 public:
     static const uint16 DEFAULT_SERVER_PORT = 27020;
 
-    static PGESysNET& createAndGet();           /**< Creates and gets the singleton implementation instance. */
+    static PGESysNET& createAndGet(PGEcfgProfiles& cfgProfiles);   /**< Creates and gets the singleton implementation instance. */
 
     static bool isServer();
 
@@ -98,6 +99,7 @@ private:
     static PGESysNET* s_pCallbackInstance;
     static bool s_bServer;
 
+    PGEcfgProfiles& m_cfgProfiles;
     uint16 m_nPort;
     SteamNetworkingIPAddr m_addrServer;  // used by client only
     char m_szAddr[SteamNetworkingIPAddr::k_cchMaxString];  // used by client only
@@ -132,7 +134,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PGESysNET();
+    explicit PGESysNET(PGEcfgProfiles& cfgProfiles);
     PGESysNET(const PGESysNET&); 
     PGESysNET& operator=(const PGESysNET&);
 

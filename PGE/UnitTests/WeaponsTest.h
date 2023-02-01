@@ -19,7 +19,8 @@ class WeaponsTest :
 public:
 
     WeaponsTest() :
-        UnitTest( __FILE__ )
+        UnitTest( __FILE__ ),
+        cfgProfiles("")
     {
         engine = NULL;
     }
@@ -33,8 +34,10 @@ protected:
         //CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(WeaponManager::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(Weapon::getLoggerModuleName(), true);
+
+        PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
         
-        engine = &PR00FsUltimateRenderingEngine::createAndGet();
+        engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
 
         AddSubTest("test_wpn_load_weapon_bad_assignment", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_bad_assignment);
@@ -128,10 +131,11 @@ protected:
 private:
 
     PR00FsUltimateRenderingEngine* engine;
+    PGEcfgProfiles cfgProfiles;
 
     // ---------------------------------------------------------------------------
 
-    WeaponsTest(const WeaponsTest&)
+    WeaponsTest(const WeaponsTest&) : cfgProfiles("")
     {};         
 
     WeaponsTest& operator=(const WeaponsTest&)
@@ -1513,14 +1517,14 @@ private:
 
     bool test_wm_initially_empty()
     {
-        WeaponManager wm(*engine);
+        WeaponManager wm(cfgProfiles, *engine);
         return assertTrue(wm.getWeapons().empty(), "weapons") & assertTrue(wm.getBullets().empty(), "bullets") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
     }
 
     bool test_wm_clear_weapons()
     {
-        WeaponManager wm(*engine);
+        WeaponManager wm(cfgProfiles, *engine);
         bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         b &= assertTrue(wm.setDefaultAvailableWeaponByFilename("sample_good_wpn_automatic.txt"), "setDefaultAvailable");
         wm.Clear();
@@ -1531,7 +1535,7 @@ private:
 
     bool test_wm_set_default_available_weapon()
     {
-        WeaponManager wm(*engine);
+        WeaponManager wm(cfgProfiles, *engine);
         bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         
         b &= assertFalse(wm.setDefaultAvailableWeaponByFilename("xxx"), "setDefaultAvailable 1");
@@ -1545,7 +1549,7 @@ private:
 
     bool test_wm_load_weapon_bad_assignment()
     {
-        WeaponManager wm(*engine);
+        WeaponManager wm(cfgProfiles, *engine);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_bad_assignment.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
@@ -1555,7 +1559,7 @@ private:
 
     bool test_wm_load_weapon_unaccepted_var()
     {
-        WeaponManager wm(*engine);
+        WeaponManager wm(cfgProfiles, *engine);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_unaccepted_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
@@ -1565,7 +1569,7 @@ private:
 
     bool test_wm_load_weapon_missing_var()
     {
-        WeaponManager wm(*engine);
+        WeaponManager wm(cfgProfiles, *engine);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_missing_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
@@ -1575,7 +1579,7 @@ private:
 
     bool test_wm_load_weapon_double_defined_var()
     {
-        WeaponManager wm(*engine);
+        WeaponManager wm(cfgProfiles, *engine);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_double_defined_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
@@ -1585,7 +1589,7 @@ private:
 
     bool test_wm_load_weapon_good()
     {
-        WeaponManager wm(*engine);
+        WeaponManager wm(cfgProfiles, *engine);
         bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         b &= assertFalse(wm.getWeapons().empty(), "not empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");

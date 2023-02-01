@@ -23,7 +23,8 @@ class PureObject3DTest :
 public:
 
     PureObject3DTest() :
-        UnitTest( __FILE__ )
+        UnitTest( __FILE__ ),
+        cfgProfiles("")
     {
         engine = NULL;
         obj = NULL;
@@ -49,7 +50,9 @@ protected:
         //CConsole::getConsoleInstance().SetLoggingState(PureVertexTransfer::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureObject3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureObject3D::getLoggerModuleName(), true);
-        engine = &PR00FsUltimateRenderingEngine::createAndGet();
+
+        PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+        engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         om = &engine->getObject3DManager();
         obj = NULL;
@@ -232,10 +235,12 @@ private:
     const PureObject3D* objPlane,
                       * objBox,
                       * objCube;
+    PGEcfgProfiles cfgProfiles;
 
     // ---------------------------------------------------------------------------
 
-    PureObject3DTest(const PureObject3DTest&)
+    PureObject3DTest(const PureObject3DTest&) :
+        cfgProfiles("")
     {};         
 
     PureObject3DTest& operator=(const PureObject3DTest&)

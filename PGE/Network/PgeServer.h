@@ -20,6 +20,7 @@
 #include "../../../CConsole/CConsole/src/CConsole.h"
 
 #include "../PGEallHeaders.h"
+#include "../Config/PGEcfgProfiles.h"
 #include "PgePacket.h"
 
 namespace pge_network
@@ -36,7 +37,8 @@ namespace pge_network
 #endif
 
     public:
-        static PgeServer& createAndGet();           /**< Creates and gets the singleton implementation instance. */
+        static PgeServer& createAndGet(
+            PGEcfgProfiles& cfgProfiles);           /**< Creates and gets the singleton implementation instance. */
 
         static const char* getLoggerModuleName();   /**< Returns the logger module name of this class. */
 

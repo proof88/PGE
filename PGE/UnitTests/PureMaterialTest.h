@@ -94,7 +94,8 @@ class PureMaterialTest :
 public:
 
     PureMaterialTest() :
-        UnitTest(__FILE__)
+        UnitTest(__FILE__),
+        cfgProfiles("")
     {
         engine = NULL;
         tm = NULL;
@@ -118,7 +119,8 @@ protected:
         CConsole::getConsoleInstance().SetLoggingState(PureImage::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(PureImageManager::getLoggerModuleName(), true);
         */
-        engine = &PR00FsUltimateRenderingEngine::createAndGet();
+        PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+        engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         tm = &engine->getTextureManager();
         mm = &engine->getMaterialManager();
@@ -177,10 +179,12 @@ private:
     PureTextureManager* tm;
     PureMaterialManager* mm;
     PureMaterial* mat;
+    PGEcfgProfiles cfgProfiles;
 
     // ---------------------------------------------------------------------------
 
-    PureMaterialTest(const PureMaterialTest&)
+    PureMaterialTest(const PureMaterialTest&) :
+        cfgProfiles("")
     {};         
 
     PureMaterialTest& operator=(const PureMaterialTest&)
@@ -274,7 +278,8 @@ private:
 
     bool testSetTexture()
     {
-        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
+        PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler).getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
 
@@ -292,7 +297,8 @@ private:
 
     bool testGetTextureCount()
     {
-        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
+        PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler).getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
 
@@ -313,7 +319,8 @@ private:
 
     bool testIsTextured()
     {
-        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
+        PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler).getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
 
@@ -331,7 +338,8 @@ private:
 
     bool testIsSingleTextured()
     {
-        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
+        PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler).getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
 
@@ -352,7 +360,8 @@ private:
 
     bool testIsMultiTextured()
     {
-        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet().getTextureManager().createFromFile(BMP128x128x24);
+        PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+        PureTexture* tex128x128x24 = PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler).getTextureManager().createFromFile(BMP128x128x24);
         if ( !tex128x128x24 )
             return assertNotNull(tex128x128x24, "tex");
 

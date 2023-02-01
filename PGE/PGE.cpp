@@ -288,11 +288,13 @@ int PGE::PGEimpl::showWindowsMessageDialogWin32(PGE_MSG_ID msg_id, PGE_MSG_ID cp
 PGE::PGEimpl::PGEimpl() :
     m_pOwner(NULL),  // currently not used
     m_cfgProfiles(""),
-    m_inputHandler( PGEInputHandler::createAndGet() ),
+    m_inputHandler( PGEInputHandler::createAndGet(m_cfgProfiles) ),
     m_world( PGEWorld::createAndGet() ),
-    m_gfx( PR00FsUltimateRenderingEngine::createAndGet() ),
-    m_network( pge_network::PgeNetwork::createAndGet() ),
-    m_wpnMgr(m_gfx),
+    m_gfx( PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler) ),
+    m_sysGFX(m_cfgProfiles, m_inputHandler),
+    m_network( pge_network::PgeNetwork::createAndGet(m_cfgProfiles) ),
+    m_sysSFX(m_cfgProfiles),
+    m_wpnMgr(m_cfgProfiles, m_gfx),
     m_bIsGameRunning(false),
     m_nTargetGameLoopFreq(0),
     m_minFrameTimeMicrosecs(0.0)
@@ -304,11 +306,13 @@ PGE::PGEimpl::PGEimpl() :
 PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     m_pOwner(NULL),  // currently not used
     m_cfgProfiles(""),
-    m_inputHandler( PGEInputHandler::createAndGet() ),
+    m_inputHandler( PGEInputHandler::createAndGet(m_cfgProfiles) ),
     m_world( PGEWorld::createAndGet() ),
-    m_gfx( PR00FsUltimateRenderingEngine::createAndGet() ),
-    m_network( pge_network::PgeNetwork::createAndGet() ),
-    m_wpnMgr(m_gfx),
+    m_gfx( PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler) ),
+    m_sysGFX(m_cfgProfiles, m_inputHandler),
+    m_network( pge_network::PgeNetwork::createAndGet(m_cfgProfiles) ),
+    m_sysSFX(m_cfgProfiles),
+    m_wpnMgr(m_cfgProfiles, m_gfx),
     m_bIsGameRunning(false),
     m_nTargetGameLoopFreq(0),
     m_minFrameTimeMicrosecs(0.0)
@@ -330,11 +334,13 @@ PGE::PGEimpl& PGE::PGEimpl::operator=(const PGE::PGEimpl&)
 PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     m_pOwner(NULL),  // currently not used
     m_cfgProfiles(gameTitle),
-    m_inputHandler( PGEInputHandler::createAndGet() ),
+    m_inputHandler( PGEInputHandler::createAndGet(m_cfgProfiles) ),
     m_world( PGEWorld::createAndGet() ),
-    m_gfx( PR00FsUltimateRenderingEngine::createAndGet() ),
-    m_network(pge_network::PgeNetwork::createAndGet()),
-    m_wpnMgr(m_gfx),
+    m_gfx( PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler) ),
+    m_sysGFX(m_cfgProfiles, m_inputHandler),
+    m_network(pge_network::PgeNetwork::createAndGet(m_cfgProfiles)),
+    m_sysSFX(m_cfgProfiles),
+    m_wpnMgr(m_cfgProfiles, m_gfx),
     m_bIsGameRunning(false),
     m_sGameTitle(gameTitle),
     m_nInactiveSleep(PGE_INACTIVE_SLEEP),
@@ -812,7 +818,7 @@ int PGE::runGame()
         // TODO: on the long run, bullet movement and collision handling could be put here ...       
         if ( window.isActive() || p->m_bInactiveLikeActive )
         {
-            PGEInputHandler::createAndGet().getMouse().ApplyRelativeInput();
+            p->m_inputHandler.getMouse().ApplyRelativeInput();
             onGameRunning();
             p->m_gfx.getRenderer()->RenderScene();
             p->frameFrameLimit(timeNow, timeLastTime);

@@ -19,6 +19,7 @@
 
 #include "../PGEallHeaders.h"
 #include "../Config/PGEcfgFile.h"
+#include "../Config/PGEcfgProfiles.h"
 #include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
 #include "../Network/PgePacket.h"
 
@@ -317,7 +318,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    WeaponManager(PR00FsUltimateRenderingEngine& gfx);
+    WeaponManager(PGEcfgProfiles& cfgProfiles, PR00FsUltimateRenderingEngine& gfx);
     virtual ~WeaponManager();
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
@@ -336,6 +337,7 @@ public:
 protected:
 
     WeaponManager(const WeaponManager&) :
+        m_cfgProfiles(m_cfgProfiles),
         m_gfx(m_gfx)
     {}
 
@@ -346,6 +348,7 @@ protected:
 
 private:
 
+    PGEcfgProfiles& m_cfgProfiles;
     PR00FsUltimateRenderingEngine& m_gfx;
     std::vector<Weapon*> m_weapons;
     std::list<Bullet> m_bullets;

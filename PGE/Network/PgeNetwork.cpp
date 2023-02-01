@@ -40,11 +40,12 @@ private:
 
     // ---------------------------------------------------------------------------
 
+    PGEcfgProfiles& m_cfgProfiles;
     PGESysNET& m_PgeSysNET;
     pge_network::PgeClient& m_client;
     pge_network::PgeServer& m_server;
 
-    PgeNetworkImpl();                /**< NULLs members only. */
+    explicit PgeNetworkImpl(PGEcfgProfiles& cfgProfiles);   /**< NULLs members only. */
     PgeNetworkImpl(const PgeNetworkImpl&);
     PgeNetworkImpl& operator=(const PgeNetworkImpl&);
 
@@ -182,19 +183,21 @@ void PgeNetworkImpl::WriteList() const
 /**
     NULLs members only.
 */
-PgeNetworkImpl::PgeNetworkImpl() :
-    m_PgeSysNET(PGESysNET::createAndGet()),
-    m_client(pge_network::PgeClient::createAndGet()),
-    m_server(pge_network::PgeServer::createAndGet())
+PgeNetworkImpl::PgeNetworkImpl(PGEcfgProfiles& cfgProfiles) :
+    m_cfgProfiles(cfgProfiles),
+    m_PgeSysNET(PGESysNET::createAndGet(cfgProfiles)),
+    m_client(pge_network::PgeClient::createAndGet(cfgProfiles)),
+    m_server(pge_network::PgeServer::createAndGet(cfgProfiles))
 {
 
 } // PgeNetworkImpl(...)
 
 
-PgeNetworkImpl::PgeNetworkImpl(const PgeNetworkImpl&) :
-    m_PgeSysNET(PGESysNET::createAndGet()),
-    m_client(pge_network::PgeClient::createAndGet()),
-    m_server(pge_network::PgeServer::createAndGet())
+PgeNetworkImpl::PgeNetworkImpl(const PgeNetworkImpl& other) :
+    m_cfgProfiles(other.m_cfgProfiles),
+    m_PgeSysNET(PGESysNET::createAndGet(other.m_cfgProfiles)),
+    m_client(pge_network::PgeClient::createAndGet(other.m_cfgProfiles)),
+    m_server(pge_network::PgeServer::createAndGet(other.m_cfgProfiles))
 {
 }
 
@@ -217,9 +220,9 @@ PgeNetworkImpl& PgeNetworkImpl::operator=(const PgeNetworkImpl&)
 /**
     Creates and gets the singleton instance.
 */
-pge_network::PgeNetwork& pge_network::PgeNetwork::createAndGet()
+pge_network::PgeNetwork& pge_network::PgeNetwork::createAndGet(PGEcfgProfiles& cfgProfiles)
 {
-    static PgeNetworkImpl inst;
+    static PgeNetworkImpl inst(cfgProfiles);
     return inst;
 } // createAndGet()
 

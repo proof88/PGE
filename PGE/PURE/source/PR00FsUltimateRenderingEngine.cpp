@@ -72,6 +72,8 @@ public:
     void SetAutoWriteStatsAtShutdown(TPureBool state);
 
 private:
+    PGEcfgProfiles&      m_cfgProfiles;
+    PGEInputHandler&     m_inputHandler;
     PureSharedSettings&  ssets;        /**< Shared settings, singleton. */
     PureWindow&          wnd;          /**< Our window, where we draw to, singleton. */
     PureHwInfo&          hwInfo;       /**< Hardware infos, singleton. */
@@ -88,7 +90,9 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PR00FsUltimateRenderingEngineImpl();                /**< NULLs members only. */
+    explicit PR00FsUltimateRenderingEngineImpl(
+        PGEcfgProfiles& cfgProfiles,
+        PGEInputHandler& inputHandler);                /**< NULLs members only. */
     PR00FsUltimateRenderingEngineImpl(const PR00FsUltimateRenderingEngineImpl&);
     PR00FsUltimateRenderingEngineImpl& operator=(const PR00FsUltimateRenderingEngineImpl&);
 
@@ -747,9 +751,11 @@ void PR00FsUltimateRenderingEngineImpl::CopyScreenToTexture(PureTexture& tex)
 /**
     NULLs members only.
 */                                                                         
-PR00FsUltimateRenderingEngineImpl::PR00FsUltimateRenderingEngineImpl() :
+PR00FsUltimateRenderingEngineImpl::PR00FsUltimateRenderingEngineImpl(PGEcfgProfiles& cfgProfiles, PGEInputHandler& inputHandler) :
+    m_cfgProfiles(cfgProfiles),
+    m_inputHandler(inputHandler),
     ssets( PureSharedSettings::createAndGet() ),
-    wnd( PureWindow::createAndGet() ),
+    wnd( PureWindow::createAndGet(cfgProfiles, inputHandler) ),
     hwInfo( PureHwInfo::get() ),
     screen( PureScreen::createAndGet() ),
     uiMgr( PureUiManager::createAndGet() ),
@@ -762,9 +768,11 @@ PR00FsUltimateRenderingEngineImpl::PR00FsUltimateRenderingEngineImpl() :
 } // PR00FsUltimateRenderingEngineImpl(...)
 
 
-PR00FsUltimateRenderingEngineImpl::PR00FsUltimateRenderingEngineImpl(const PR00FsUltimateRenderingEngineImpl&) :
+PR00FsUltimateRenderingEngineImpl::PR00FsUltimateRenderingEngineImpl(const PR00FsUltimateRenderingEngineImpl& other) :
+    m_cfgProfiles(other.m_cfgProfiles),
+    m_inputHandler(other.m_inputHandler),
     ssets( PureSharedSettings::createAndGet() ),
-    wnd( PureWindow::createAndGet() ),
+    wnd( PureWindow::createAndGet(other.m_cfgProfiles, other.m_inputHandler) ),
     hwInfo( PureHwInfo::get() ),
     screen( PureScreen::createAndGet() ),
     uiMgr( PureUiManager::createAndGet() ),
@@ -791,10 +799,10 @@ PR00FsUltimateRenderingEngineImpl& PR00FsUltimateRenderingEngineImpl::operator=(
 /**
     Creates and gets the singleton instance.
 */
-PR00FsUltimateRenderingEngine& PR00FsUltimateRenderingEngine::createAndGet()
+PR00FsUltimateRenderingEngine& PR00FsUltimateRenderingEngine::createAndGet(PGEcfgProfiles& cfgProfiles, PGEInputHandler& inputHandler)
 {
-    static PR00FsUltimateRenderingEngineImpl Pureinstance;
-    return Pureinstance;
+    static PR00FsUltimateRenderingEngineImpl pureInstance(cfgProfiles, inputHandler);
+    return pureInstance;
 } // createAndGet()
 
 

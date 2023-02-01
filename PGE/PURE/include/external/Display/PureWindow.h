@@ -11,7 +11,6 @@
     ###################################################################################
 */
 
-#include "../PureAllHeaders.h"
 #include <string>
 
 // todo:
@@ -28,6 +27,10 @@
 #include <WinUser.h>
 #include <windowsx.h>
 
+#include "../PureAllHeaders.h"
+#include "../../../../Config/PGEcfgProfiles.h"
+#include "../../../../PGEInputHandler.h"
+
 
 /**
     Our main window, this is where we render to.
@@ -41,7 +44,9 @@ class PureWindow
 
 public:
 
-    static PureWindow& createAndGet();               /**< Creates and gets the singleton instance. */
+    static PureWindow& createAndGet(
+        PGEcfgProfiles& cfgProfiles,
+        PGEInputHandler& inputHandler);               /**< Creates and gets the singleton instance. */
 
     // ---------------------------------------------------------------------------
 

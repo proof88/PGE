@@ -969,8 +969,8 @@ PureRendererHWfixedPipeImpl::PureRendererHWfixedPipeImpl(
 } // PureRendererHWfixedPipeImpl(...)
 
 
-PureRendererHWfixedPipeImpl::PureRendererHWfixedPipeImpl(const PureRendererHWfixedPipeImpl&) :
-    wnd( PureWindow::createAndGet() ),
+PureRendererHWfixedPipeImpl::PureRendererHWfixedPipeImpl(const PureRendererHWfixedPipeImpl& other) :
+    wnd( other.wnd ),
     hwInfo( PureHwInfo::get() ),
     screen( PureScreen::createAndGet() ),
     pUImgr( NULL ),

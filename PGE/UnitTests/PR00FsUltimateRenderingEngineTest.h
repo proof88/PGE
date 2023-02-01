@@ -18,7 +18,8 @@ class PR00FsUltimateRenderingEngineTest :
 public:
 
     PR00FsUltimateRenderingEngineTest() :
-        UnitTest( __FILE__, "not inited" )
+        UnitTest( __FILE__, "not inited" ),
+        cfgProfiles("")
     {
         
     }
@@ -65,7 +66,9 @@ protected:
 
     virtual bool setUp()
     {
-        engine = &PR00FsUltimateRenderingEngine::createAndGet();
+        PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+
+        engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         return assertNotNull(engine, "engine null");
     }
 
@@ -86,10 +89,12 @@ protected:
 private:
 
     PR00FsUltimateRenderingEngine* engine;
+    PGEcfgProfiles cfgProfiles;
 
     // ---------------------------------------------------------------------------
 
-    PR00FsUltimateRenderingEngineTest(const PR00FsUltimateRenderingEngineTest&)
+    PR00FsUltimateRenderingEngineTest(const PR00FsUltimateRenderingEngineTest&) :
+        cfgProfiles("")
     {};         
 
     PR00FsUltimateRenderingEngineTest& operator=(const PR00FsUltimateRenderingEngineTest&)

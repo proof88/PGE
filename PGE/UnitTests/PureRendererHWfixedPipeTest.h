@@ -24,7 +24,9 @@ class PureRendererHWfixedPipeTest :
 public:
 
     PureRendererHWfixedPipeTest() :
-        UnitTest( __FILE__ )
+        UnitTest( __FILE__ ),
+        cfgProfiles(""),
+        inputHandler(PGEInputHandler::createAndGet(cfgProfiles))
     {
     };
 
@@ -63,7 +65,7 @@ protected:
         bool ret = true;
         if ( engine == NULL )
         {
-            engine = &PR00FsUltimateRenderingEngine::createAndGet();
+            engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
             ret &= assertEquals((TPureUInt)0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
             renderer = engine->getRenderer();
             ret &= assertNotNull(renderer, "renderer null");
@@ -99,10 +101,14 @@ private:
     PR00FsUltimateRenderingEngine* engine;
     PureIRenderer* renderer;
     PureObject3DManager* om;
+    PGEcfgProfiles cfgProfiles;
+    PGEInputHandler& inputHandler;
 
     // ---------------------------------------------------------------------------
 
-    PureRendererHWfixedPipeTest(const PureRendererHWfixedPipeTest&)
+    PureRendererHWfixedPipeTest(const PureRendererHWfixedPipeTest&) :
+        cfgProfiles(""),
+        inputHandler(PGEInputHandler::createAndGet(cfgProfiles))
     {};         
 
     PureRendererHWfixedPipeTest& operator=(const PureRendererHWfixedPipeTest&)

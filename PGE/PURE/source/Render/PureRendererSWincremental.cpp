@@ -473,9 +473,9 @@ PureRendererSWincrementalImpl::PureRendererSWincrementalImpl(
 } // PureRendererSWincrementalImpl(...)
 
 
-PureRendererSWincrementalImpl::PureRendererSWincrementalImpl(const PureRendererSWincrementalImpl&) :
+PureRendererSWincrementalImpl::PureRendererSWincrementalImpl(const PureRendererSWincrementalImpl& other) :
     renderHints(DefaultHints),
-    wnd( PureWindow::createAndGet() ),
+    wnd( other.wnd ),
     hwInfo( PureHwInfo::get() ),
     screen( PureScreen::createAndGet() ),
     pUImgr( NULL ),

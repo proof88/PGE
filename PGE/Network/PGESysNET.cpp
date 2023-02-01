@@ -32,9 +32,9 @@ const uint16 PGESysNET::DEFAULT_SERVER_PORT;
 /**
     Creates and gets the singleton instance.
 */
-PGESysNET& PGESysNET::createAndGet()
+PGESysNET& PGESysNET::createAndGet(PGEcfgProfiles& cfgProfiles)
 {
-    static PGESysNET inst;
+    static PGESysNET inst(cfgProfiles);
     return inst;
 } // createAndGet()
 
@@ -536,7 +536,8 @@ void PGESysNET::WriteServerClientList()
 PGESysNET* PGESysNET::s_pCallbackInstance = nullptr;
 bool PGESysNET::s_bServer = false;
 
-PGESysNET::PGESysNET() :
+PGESysNET::PGESysNET(PGEcfgProfiles& cfgProfiles) :
+    m_cfgProfiles(cfgProfiles),
     m_nPort(DEFAULT_SERVER_PORT),
     m_hConnection(k_HSteamNetConnection_Invalid),
     m_hConnectionServerSide(k_HSteamNetConnection_Invalid),
@@ -548,7 +549,8 @@ PGESysNET::PGESysNET() :
     memset(&m_connRtStatus, 0, sizeof(m_connRtStatus));
 } // PGESysNET()
 
-PGESysNET::PGESysNET(const PGESysNET&)
+PGESysNET::PGESysNET(const PGESysNET& other) :
+    m_cfgProfiles(other.m_cfgProfiles)
 {
 
 }

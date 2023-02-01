@@ -18,7 +18,8 @@ class PR00FsUltimateRenderingEngineTest2 :
 public:
 
     PR00FsUltimateRenderingEngineTest2() :
-        UnitTest( __FILE__, "inited" )
+        UnitTest( __FILE__, "inited" ),
+        cfgProfiles("")
     {
         
     }
@@ -54,7 +55,9 @@ protected:
 
     virtual bool setUp()
     {
-        engine = &PR00FsUltimateRenderingEngine::createAndGet();
+        PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+
+        engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         return assertEquals((TPureUInt) 0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
     }
 
@@ -75,10 +78,12 @@ protected:
 private:
 
     PR00FsUltimateRenderingEngine* engine;
+    PGEcfgProfiles cfgProfiles;
 
     // ---------------------------------------------------------------------------
 
-    PR00FsUltimateRenderingEngineTest2(const PR00FsUltimateRenderingEngineTest2&)
+    PR00FsUltimateRenderingEngineTest2(const PR00FsUltimateRenderingEngineTest2&) :
+        cfgProfiles("")
     {};         
 
     PR00FsUltimateRenderingEngineTest2& operator=(const PR00FsUltimateRenderingEngineTest2&)

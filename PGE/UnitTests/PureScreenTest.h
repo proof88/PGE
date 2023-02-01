@@ -26,7 +26,9 @@ public:
     PureScreenTest() :
         UnitTest( __FILE__ ),
         scr( PureScreen::createAndGet() ),
-        wnd( PureWindow::createAndGet() )
+        wnd( PureWindow::createAndGet(cfgProfiles, inputHandler) ),
+        cfgProfiles(""),
+        inputHandler(PGEInputHandler::createAndGet(cfgProfiles))
     {
         engine = NULL;
         screensvrOrig = false;
@@ -101,12 +103,16 @@ private:
     bool monitorpwrOrig;
     bool standbyOrig;
     bool vsyncOrig;
+    PGEcfgProfiles cfgProfiles;
+    PGEInputHandler& inputHandler;
 
     // ---------------------------------------------------------------------------
 
     PureScreenTest(const PureScreenTest&) :
         scr( PureScreen::createAndGet() ),
-        wnd( PureWindow::createAndGet() )
+        wnd( PureWindow::createAndGet(cfgProfiles, inputHandler) ),
+        cfgProfiles(""),
+        inputHandler(PGEInputHandler::createAndGet(cfgProfiles))
     {};         
 
     PureScreenTest& operator=(const PureScreenTest&)
@@ -382,7 +388,7 @@ private:
 
     bool testSetVSyncEnabled2()
     {
-        engine = &PR00FsUltimateRenderingEngine::createAndGet();
+        engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         
         scr.SetVSyncEnabled(true);
@@ -417,7 +423,7 @@ private:
 
     bool testSetFSAAlevel3()
     {
-        engine = &PR00FsUltimateRenderingEngine::createAndGet();
+        engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 2); // FSAA 2x
 
         const bool b1 = scr.isFSAAready();

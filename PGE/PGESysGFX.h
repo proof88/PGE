@@ -12,6 +12,9 @@
 */
 
 #include "PGEallHeaders.h"
+#include "Config/PGEcfgProfiles.h"
+#include "PGEInputHandler.h"
+
 #include "PURE/include/external/PR00FsUltimateRenderingEngine.h"
 // #include "PURE/PURE.h"
 
@@ -25,7 +28,7 @@ class PGESysGFX
 #endif
 
 public:
-    PGESysGFX();
+    explicit PGESysGFX(PGEcfgProfiles& cfgProfiles, PGEInputHandler& inputHandler);
     virtual ~PGESysGFX();
 
     bool initSysGFX(
@@ -35,6 +38,8 @@ public:
     bool destroySysGFX(void);
 
 private:
+    PGEcfgProfiles& m_cfgProfiles;
+    PGEInputHandler& m_inputHandler;
     PR00FsUltimateRenderingEngine& engine;
 
     // ---------------------------------------------------------------------------

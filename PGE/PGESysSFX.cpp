@@ -23,7 +23,8 @@
  // ############################### PUBLIC ################################
 
 
-PGESysSFX::PGESysSFX()
+PGESysSFX::PGESysSFX(PGEcfgProfiles& cfgProfiles) :
+    m_cfgProfiles(cfgProfiles)
 {
 
 } // PGESysSFX()
@@ -79,7 +80,8 @@ SoLoud::Soloud& PGESysSFX::getAudioCore()
 // ############################### PRIVATE ###############################
 
 
-PGESysSFX::PGESysSFX(const PGESysSFX&)
+PGESysSFX::PGESysSFX(const PGESysSFX& other) :
+    m_cfgProfiles(other.m_cfgProfiles)
 {
 
 }

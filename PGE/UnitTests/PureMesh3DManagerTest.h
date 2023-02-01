@@ -23,7 +23,8 @@ class PureMesh3DManagerTest :
 public:
 
     PureMesh3DManagerTest() :
-        UnitTest( __FILE__ )
+        UnitTest( __FILE__ ),
+        cfgProfiles("")
     {
         
     };
@@ -58,7 +59,8 @@ protected:
         bool ret = true;
         if ( engine == NULL )
         {
-            engine = &PR00FsUltimateRenderingEngine::createAndGet();
+            PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
+            engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
             ret &= assertEquals((TPureUInt)0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
             mm = &engine->getMesh3DManager();
             ret &= assertNotNull(mm, "mm null");
@@ -87,10 +89,12 @@ protected:
 private:
     PR00FsUltimateRenderingEngine* engine;
     PureMesh3DManager* mm;
+    PGEcfgProfiles cfgProfiles;
 
     // ---------------------------------------------------------------------------
 
-    PureMesh3DManagerTest(const PureMesh3DManagerTest&)
+    PureMesh3DManagerTest(const PureMesh3DManagerTest&) :
+        cfgProfiles("")
     {};         
 
     PureMesh3DManagerTest& operator=(const PureMesh3DManagerTest&)

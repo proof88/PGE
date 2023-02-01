@@ -40,13 +40,9 @@ class PGEInputMouseImpl :
 
 public:
 
-    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
-
     // ---------------------------------------------------------------------------
 
     virtual ~PGEInputMouseImpl();
-
-    CConsole&   getConsole() const;            /**< Returns access to console preset with logger module name as this class. */
 
     bool initialize(HWND hWindow = NULL);
 
@@ -75,6 +71,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
+    PGEcfgProfiles& m_cfgProfiles;
     std::map<MouseButton, bool> mapButtonsPressed;
     RAWINPUTDEVICE Rid[1];
     int  mx, my;
@@ -85,7 +82,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PGEInputMouseImpl();
+    explicit PGEInputMouseImpl(PGEcfgProfiles& cfgProfiles);
 
     PGEInputMouseImpl(const PGEInputMouseImpl&);
     PGEInputMouseImpl& operator=(const PGEInputMouseImpl&);
@@ -102,31 +99,6 @@ PGEInputMouseImpl::~PGEInputMouseImpl()
 {
 
 }
-
-
-/**
-    Returns access to console preset with logger module name as this class.
-    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
-
-    @return Console instance used by this class.
-*/
-CConsole& PGEInputMouseImpl::getConsole() const
-{
-    return CConsole::getConsoleInstance(getLoggerModuleName());
-} // getConsole()
-
-
-/**
-    Returns the logger module name of this class.
-    Intentionally not virtual, so derived class should hide this instead of overriding.
-    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
-
-    @return The logger module name of this class.
-*/
-const char* PGEInputMouseImpl::getLoggerModuleName()
-{
-    return "PGEInputMouse";
-} // getLoggerModuleName()
 
 
 /**
@@ -292,7 +264,8 @@ void PGEInputMouseImpl::SetButtonPressed(MouseButton mbtn, bool pressed)
 // ############################### PRIVATE ###############################
 
 
-PGEInputMouseImpl::PGEInputMouseImpl()
+PGEInputMouseImpl::PGEInputMouseImpl(PGEcfgProfiles& cfgProfiles) :
+    m_cfgProfiles(cfgProfiles)
 {
     mapButtonsPressed[MBTN_LEFT] = false;
     mapButtonsPressed[MBTN_MIDDLE] = false;
@@ -306,7 +279,8 @@ PGEInputMouseImpl::PGEInputMouseImpl()
 }
 
 
-PGEInputMouseImpl::PGEInputMouseImpl(const PGEInputMouseImpl&)
+PGEInputMouseImpl::PGEInputMouseImpl(const PGEInputMouseImpl& other) :
+    m_cfgProfiles(other.m_cfgProfiles)
 {
 
 } 
@@ -331,9 +305,9 @@ PGEInputMouseImpl& PGEInputMouseImpl::operator=(const PGEInputMouseImpl&)
 /**
     Creates and gets the singleton instance.
 */
-PGEInputMouse& PGEInputMouse::createAndGet()
+PGEInputMouse& PGEInputMouse::createAndGet(PGEcfgProfiles& cfgProfiles)
 {
-    static PGEInputMouseImpl inMouseInstance;
+    static PGEInputMouseImpl inMouseInstance(cfgProfiles);
     return inMouseInstance;
 } // createAndGet()
 
@@ -344,12 +318,9 @@ PGEInputMouse& PGEInputMouse::createAndGet()
 
     @return Console instance used by this class.
 */
-// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
-#pragma warning(disable:4717)
 CConsole& PGEInputMouse::getConsole() const
 {
-    return createAndGet().getConsole();
-    #pragma warning(default:4717)
+    return CConsole::getConsoleInstance(getLoggerModuleName());
 } // getConsole()
 
 
@@ -360,12 +331,9 @@ CConsole& PGEInputMouse::getConsole() const
 
     @return The logger module name of this class.
 */
-// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
-#pragma warning(disable:4717)
 const char* PGEInputMouse::getLoggerModuleName()
 {
-    return createAndGet().getLoggerModuleName();
-    #pragma warning(default:4717)
+    return "PGEInputMouse";
 } // getLoggerModuleName()
 
 
@@ -388,13 +356,9 @@ class PGEInputKeyboardImpl :
 
 public:
 
-    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
-
     // ---------------------------------------------------------------------------
 
     virtual ~PGEInputKeyboardImpl();
-
-    CConsole&   getConsole() const;            /**< Returns access to console preset with logger module name as this class. */
 
     bool isKeyPressed(unsigned char key) const;
     void SetKeyPressed(unsigned char key, bool state);
@@ -405,11 +369,12 @@ private:
 
     // ---------------------------------------------------------------------------
 
+    PGEcfgProfiles& m_cfgProfiles;
     bool bKeys[256];
 
     // ---------------------------------------------------------------------------
 
-    PGEInputKeyboardImpl();
+    explicit PGEInputKeyboardImpl(PGEcfgProfiles& cfgProfiles);
 
     PGEInputKeyboardImpl(const PGEInputKeyboardImpl&);     
     PGEInputKeyboardImpl& operator=(const PGEInputKeyboardImpl&);
@@ -429,31 +394,6 @@ PGEInputKeyboardImpl::~PGEInputKeyboardImpl()
 }
 
 
-/**
-    Returns access to console preset with logger module name as this class.
-    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
-
-    @return Console instance used by this class.
-*/
-CConsole& PGEInputKeyboardImpl::getConsole() const
-{
-    return CConsole::getConsoleInstance(getLoggerModuleName());
-} // getConsole()
-
-
-/**
-    Returns the logger module name of this class.
-    Intentionally not virtual, so derived class should hide this instead of overriding.
-    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
-
-    @return The logger module name of this class.
-*/
-const char* PGEInputKeyboardImpl::getLoggerModuleName()
-{
-    return "PGEInputKeyboard";
-} // getLoggerModuleName()
-
-
 bool PGEInputKeyboardImpl::isKeyPressed(unsigned char key) const
 {
     return bKeys[key];
@@ -471,14 +411,16 @@ void PGEInputKeyboardImpl::SetKeyPressed(unsigned char key, bool state)
 // ############################### PRIVATE ###############################
 
 
-PGEInputKeyboardImpl::PGEInputKeyboardImpl()
+PGEInputKeyboardImpl::PGEInputKeyboardImpl(PGEcfgProfiles& cfgProfiles) :
+    m_cfgProfiles(cfgProfiles)
 {
     for (int i = 0; i < 256; i++)
         bKeys[i] = false;    
 }
 
 
-PGEInputKeyboardImpl::PGEInputKeyboardImpl(const PGEInputKeyboardImpl&)
+PGEInputKeyboardImpl::PGEInputKeyboardImpl(const PGEInputKeyboardImpl& other) :
+    m_cfgProfiles(other.m_cfgProfiles)
 {
 
 }         
@@ -503,9 +445,9 @@ PGEInputKeyboardImpl& PGEInputKeyboardImpl::operator=(const PGEInputKeyboardImpl
 /**
     Creates and gets the singleton instance.
 */
-PGEInputKeyboard& PGEInputKeyboard::createAndGet()
+PGEInputKeyboard& PGEInputKeyboard::createAndGet(PGEcfgProfiles& cfgProfiles)
 {
-    static PGEInputKeyboardImpl inKeyboardInstance;
+    static PGEInputKeyboardImpl inKeyboardInstance(cfgProfiles);
     return inKeyboardInstance;
 } // createAndGet()
 
@@ -516,12 +458,9 @@ PGEInputKeyboard& PGEInputKeyboard::createAndGet()
 
     @return Console instance used by this class.
 */
-// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
-#pragma warning(disable:4717)
 CConsole& PGEInputKeyboard::getConsole() const
 {
-    return createAndGet().getConsole();
-    #pragma warning(default:4717)
+    return CConsole::getConsoleInstance(getLoggerModuleName());
 } // getConsole()
 
 
@@ -532,12 +471,9 @@ CConsole& PGEInputKeyboard::getConsole() const
 
     @return The logger module name of this class.
 */
-// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
-#pragma warning(disable:4717)
 const char* PGEInputKeyboard::getLoggerModuleName()
 {
-    return createAndGet().getLoggerModuleName();
-    #pragma warning(default:4717)
+    return "PGEInputKeyboard";
 } // getLoggerModuleName()
 
 
@@ -564,13 +500,9 @@ class PGEInputHandlerImpl :
 
 public:
 
-    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
-
     // ---------------------------------------------------------------------------
 
     virtual ~PGEInputHandlerImpl();
-
-    CConsole&   getConsole() const;            /**< Returns access to console preset with logger module name as this class. */
 
     bool initialize(HWND hWindow = PGENULL);
 
@@ -583,12 +515,13 @@ private:
 
     // ---------------------------------------------------------------------------
 
+    PGEcfgProfiles& m_cfgProfiles;
     PGEInputKeyboard& keyboard;
     PGEInputMouse&    mouse;
 
     // ---------------------------------------------------------------------------
 
-    PGEInputHandlerImpl();
+    explicit PGEInputHandlerImpl(PGEcfgProfiles& cfgProfiles);
 
     PGEInputHandlerImpl(const PGEInputHandlerImpl&);   
     PGEInputHandlerImpl& operator=(const PGEInputHandlerImpl&);
@@ -606,31 +539,6 @@ PGEInputHandlerImpl::~PGEInputHandlerImpl()
 {
 
 }
-
-
-/**
-    Returns access to console preset with logger module name as this class.
-    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
-
-    @return Console instance used by this class.
-*/
-CConsole& PGEInputHandlerImpl::getConsole() const
-{
-    return CConsole::getConsoleInstance(getLoggerModuleName());
-} // getConsole()
-
-
-/**
-    Returns the logger module name of this class.
-    Intentionally not virtual, so derived class should hide this instead of overriding.
-    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
-
-    @return The logger module name of this class.
-*/
-const char* PGEInputHandlerImpl::getLoggerModuleName()
-{
-    return "PGEInputHandler";
-} // getLoggerModuleName()
 
 
 /**
@@ -668,17 +576,19 @@ PGEInputMouse& PGEInputHandlerImpl::getMouse() const
 // ############################### PRIVATE ###############################
 
 
-PGEInputHandlerImpl::PGEInputHandlerImpl() :
-    keyboard( PGEInputKeyboard::createAndGet() ),
-    mouse( PGEInputMouse::createAndGet() )
+PGEInputHandlerImpl::PGEInputHandlerImpl(PGEcfgProfiles& cfgProfiles) :
+    m_cfgProfiles(cfgProfiles),
+    keyboard( PGEInputKeyboard::createAndGet(cfgProfiles) ),
+    mouse( PGEInputMouse::createAndGet(cfgProfiles) )
 {
 
 };
 
 
-PGEInputHandlerImpl::PGEInputHandlerImpl(const PGEInputHandlerImpl&) :
-    keyboard( PGEInputKeyboard::createAndGet() ),
-    mouse( PGEInputMouse::createAndGet() )
+PGEInputHandlerImpl::PGEInputHandlerImpl(const PGEInputHandlerImpl& other) :
+    m_cfgProfiles(other.m_cfgProfiles),
+    keyboard( PGEInputKeyboard::createAndGet(other.m_cfgProfiles) ),
+    mouse( PGEInputMouse::createAndGet(other.m_cfgProfiles) )
 {};     
 
 
@@ -699,9 +609,9 @@ PGEInputHandlerImpl& PGEInputHandlerImpl::operator=(const PGEInputHandlerImpl&)
 
 
 /** Creates and gets the singleton instance. */
-PGEInputHandler& PGEInputHandler::createAndGet()
+PGEInputHandler& PGEInputHandler::createAndGet(PGEcfgProfiles& cfgProfiles)
 {
-    static PGEInputHandlerImpl inHndlrInstance;
+    static PGEInputHandlerImpl inHndlrInstance(cfgProfiles);
     return inHndlrInstance;
 } // createAndGet()
 
@@ -712,12 +622,9 @@ PGEInputHandler& PGEInputHandler::createAndGet()
 
     @return Console instance used by this class.
 */
-// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
-#pragma warning(disable:4717)
 CConsole& PGEInputHandler::getConsole() const
 {
-    return createAndGet().getConsole();
-    #pragma warning(default:4717)
+    return CConsole::getConsoleInstance(getLoggerModuleName());
 } // getConsole()
 
 
@@ -728,12 +635,9 @@ CConsole& PGEInputHandler::getConsole() const
 
     @return The logger module name of this class.
 */
-// temporarily disabling the "recursive on all control paths" warning since createAndGet() will actually return the impl instance!
-#pragma warning(disable:4717)
 const char* PGEInputHandler::getLoggerModuleName()
 {
-    return createAndGet().getLoggerModuleName();
-    #pragma warning(default:4717)
+    return "PGEInputHandler";
 } // getLoggerModuleName()
 
 

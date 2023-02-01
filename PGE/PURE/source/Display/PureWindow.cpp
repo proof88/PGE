@@ -138,6 +138,7 @@ private:
 
     const PureSharedSettings& sharedSettings;  /**< Pointer to shared settings, const because we just reading it. */
 
+    PGEcfgProfiles&  m_cfgProfiles;
     PGEInputHandler& input;         /**< Our source of input. */
     RAWINPUT         rawInput;      /**< For raw mouse input. */
     UINT             rawInputSize;  /**< Size of RAWINPUT. */
@@ -174,7 +175,9 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PureWindowImpl();
+    explicit PureWindowImpl(
+        PGEcfgProfiles& cfgProfiles,
+        PGEInputHandler& inputHandler);
     PureWindowImpl(const PureWindowImpl&);
     PureWindowImpl& operator=(const PureWindowImpl&);
 
@@ -1425,17 +1428,21 @@ void PureWindowImpl::WriteSettings()
 // ############################### PRIVATE ###############################
 
 
-PureWindowImpl::PureWindowImpl() :
-    input( PGEInputHandler::createAndGet() ),
-    sharedSettings( PureSharedSettings::createAndGet() )
+PureWindowImpl::PureWindowImpl(
+    PGEcfgProfiles& cfgProfiles,
+    PGEInputHandler& inputHandler) :
+    sharedSettings(PureSharedSettings::createAndGet()),
+    m_cfgProfiles(cfgProfiles),
+    input(inputHandler)
 {
     SetPropertiesBeforeInitialize();
 } // PureWindow()
 
 
-PureWindowImpl::PureWindowImpl(const PureWindowImpl&) :
-    input( PGEInputHandler::createAndGet() ),
-    sharedSettings( PureSharedSettings::createAndGet() )
+PureWindowImpl::PureWindowImpl(const PureWindowImpl& other) :
+    sharedSettings(PureSharedSettings::createAndGet()),
+    m_cfgProfiles(other.m_cfgProfiles),
+    input( other.input )
 {
 }
 
@@ -1780,9 +1787,11 @@ LRESULT PureWindowImpl::onG3tCommand(UINT wmsg, WPARAM wParam, LPARAM lParam)
     Creates and gets the singleton instance.
     @return Window instance.
 */
-PureWindow& PureWindow::createAndGet()
+PureWindow& PureWindow::createAndGet(
+    PGEcfgProfiles& cfgProfiles,
+    PGEInputHandler& inputHandler)
 {
-    static PureWindowImpl windowInstance;
+    static PureWindowImpl windowInstance(cfgProfiles, inputHandler);
     return windowInstance;
 } // get()
 

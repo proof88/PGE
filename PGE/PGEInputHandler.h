@@ -14,6 +14,8 @@
 
 #include "PGEallHeaders.h"
 
+#include "Config/PGEcfgProfiles.h"
+
 /**
     PGE mouse handling class.
 */
@@ -32,7 +34,8 @@ public:
     };
 
     /** Creates and gets the singleton instance. */
-    static PGEInputMouse& createAndGet();
+    static PGEInputMouse& createAndGet(
+        PGEcfgProfiles& cfgProfiles);
 
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
@@ -101,7 +104,8 @@ class PGEInputKeyboard
 
 public:
     /** Creates and gets the singleton instance. */
-    static PGEInputKeyboard& createAndGet();
+    static PGEInputKeyboard& createAndGet(
+        PGEcfgProfiles& cfgProfiles);
 
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
@@ -126,7 +130,7 @@ class PGEInputHandler
 
 public:
     /** Creates and gets the singleton instance. */
-    static PGEInputHandler& createAndGet();
+    static PGEInputHandler& createAndGet(PGEcfgProfiles& m_cfgProfiles);
 
     // ---------------------------------------------------------------------------
 
