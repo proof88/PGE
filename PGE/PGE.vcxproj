@@ -151,7 +151,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Network\GameNetworkingSockets-1.4.0\build\src\;$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>soloud_static_x86_d.lib;GameNetworkingSockets.lib</AdditionalDependencies>
+      <AdditionalDependencies>CConsole.lib;soloud_static_x86_d.lib;GameNetworkingSockets.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -182,7 +182,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Network\GameNetworkingSockets-1.4.0\build\src\;$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>soloud_static_x86_d.lib;GameNetworkingSockets.lib</AdditionalDependencies>
+      <AdditionalDependencies>CConsole.lib;soloud_static_x86_d.lib;GameNetworkingSockets.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -213,7 +213,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Network\GameNetworkingSockets-1.4.0\build\src\;$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>soloud_static_x86_d.lib;GameNetworkingSockets.lib</AdditionalDependencies>
+      <AdditionalDependencies>CConsole.lib;soloud_static_x86_d.lib;GameNetworkingSockets.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -244,7 +244,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Network\GameNetworkingSockets-1.4.0\build\src\;$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>soloud_static_x86_d.lib;GameNetworkingSockets.lib</AdditionalDependencies>
+      <AdditionalDependencies>CConsole.lib;soloud_static_x86_d.lib;GameNetworkingSockets.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -281,7 +281,7 @@
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Network\GameNetworkingSockets-1.4.0\build\src\;$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
-      <AdditionalDependencies>soloud_static_x86.lib;GameNetworkingSockets.lib</AdditionalDependencies>
+      <AdditionalDependencies>CConsole.lib;soloud_static_x86.lib;GameNetworkingSockets.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -318,7 +318,7 @@
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Network\GameNetworkingSockets-1.4.0\build\src\;$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
-      <AdditionalDependencies>soloud_static_x86.lib;GameNetworkingSockets.lib</AdditionalDependencies>
+      <AdditionalDependencies>CConsole.lib;soloud_static_x86.lib;GameNetworkingSockets.lib</AdditionalDependencies>
     </Lib>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -350,7 +350,7 @@
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(ProjectDir)Network\GameNetworkingSockets-1.4.0\build\src\;$(ProjectDir)Audio\soloud-RELEASE_20200207\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>soloud_static_x86.lib;GameNetworkingSockets.lib</AdditionalDependencies>
+      <AdditionalDependencies>CConsole.lib;soloud_static_x86.lib;GameNetworkingSockets.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -392,6 +392,7 @@
     <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_waveshaperfilter.h" />
     <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_wavstream.h" />
     <ClInclude Include="Config\PGEcfgFile.h" />
+    <ClInclude Include="Config\PGEcfgIHandler.h" />
     <ClInclude Include="Config\PGEcfgVariable.h" />
     <ClInclude Include="Config\PGEcfgProfiles.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingmessages.h" />

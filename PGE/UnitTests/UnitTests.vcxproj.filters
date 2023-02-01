@@ -225,9 +225,6 @@
     <ClInclude Include="PurehwCentralProcessorTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PureHwInfoImplTest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PureHwSystemMemoryTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -308,6 +305,9 @@
     </ClInclude>
     <ClInclude Include="..\PURE\include\external\PR00FsUltimateRenderingEngine.h">
       <Filter>Header Files\PGE\PURE</Filter>
+    </ClInclude>
+    <ClInclude Include="PurehwInfoTest.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
