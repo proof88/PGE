@@ -67,6 +67,7 @@ public:
 private:
     TPURE_RENDER_HINT    renderHints;  /**< Render hints. */
     TPureBool            bInited;
+    PGEcfgProfiles&      m_cfgProfiles;
     PureWindow&          wnd;          /**< Our window, where we draw to, singleton. */
     PureHwInfo&          hwInfo;       /**< Hardware infos, singleton. */
     PureScreen&          screen;       /**< Our screen, singleton. */
@@ -86,6 +87,7 @@ private:
 
     PureRendererSWincrementalImpl();                /**< NULLs members only. */
     PureRendererSWincrementalImpl(
+        PGEcfgProfiles& cfgProfiles,
         PureWindow& _wnd,
         PureScreen& _scr,
         PureHwInfo& _hwinfo );
@@ -438,6 +440,7 @@ void PureRendererSWincrementalImpl::CheckConsistency() const
 */                                                                         
 PureRendererSWincrementalImpl::PureRendererSWincrementalImpl() :
     renderHints(DefaultHints),
+    m_cfgProfiles(m_cfgProfiles),
     wnd( wnd ),
     hwInfo( hwInfo ),
     screen( screen ),
@@ -454,10 +457,12 @@ PureRendererSWincrementalImpl::PureRendererSWincrementalImpl() :
 
 
 PureRendererSWincrementalImpl::PureRendererSWincrementalImpl(
+    PGEcfgProfiles& cfgProfiles,
     PureWindow& _wnd,
     PureScreen& _scr,
     PureHwInfo& _hwinfo ) :
     renderHints(DefaultHints),
+    m_cfgProfiles(cfgProfiles),
     wnd( _wnd ),
     hwInfo( _hwinfo ),
     screen( _scr ),
@@ -475,6 +480,7 @@ PureRendererSWincrementalImpl::PureRendererSWincrementalImpl(
 
 PureRendererSWincrementalImpl::PureRendererSWincrementalImpl(const PureRendererSWincrementalImpl& other) :
     renderHints(DefaultHints),
+    m_cfgProfiles(other.m_cfgProfiles),
     wnd( other.wnd ),
     hwInfo( PureHwInfo::get() ),
     screen( PureScreen::createAndGet() ),
@@ -1021,11 +1027,12 @@ void PureRendererSWincrementalImpl::FinishRendering()
     Creates and gets the singleton instance.
 */
 PureRendererSWincremental& PureRendererSWincremental::createAndGet(
+    PGEcfgProfiles& cfgProfiles,
     PureWindow& _wnd,
     PureScreen& _scr,
     PureHwInfo& _hwinfo )
 {
-    static PureRendererSWincrementalImpl inst(_wnd, _scr, _hwinfo);
+    static PureRendererSWincrementalImpl inst(cfgProfiles, _wnd, _scr, _hwinfo);
     return inst;
 } // createAndGet()
 

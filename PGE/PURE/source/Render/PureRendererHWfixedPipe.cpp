@@ -26,6 +26,8 @@
 
 using namespace std;
 
+static constexpr char* CVAR_GFX_VSYNC = "gfx_vsync";
+
 /*
    PureRendererHWfixedPipeImpl
    ###########################################################################
@@ -133,6 +135,7 @@ public:
     TPureUInt getLastFrameTransferredTriangles() const;
 
 private:
+    PGEcfgProfiles&      m_cfgProfiles;
     PureWindow&          wnd;          /**< Our window, where we draw to, singleton. */
     PureHwInfo&          hwInfo;       /**< Hardware infos, singleton. */
     PureScreen&          screen;       /**< Our screen, singleton. */
@@ -150,6 +153,7 @@ private:
 
     PureRendererHWfixedPipeImpl();                /**< NULLs members only. */
     PureRendererHWfixedPipeImpl(
+        PGEcfgProfiles& cfgProfiles,
         PureWindow& _wnd,
         PureScreen& _scr,
         PureHwInfo& _hwinfo );
@@ -482,8 +486,18 @@ TPureUInt PureRendererHWfixedPipeImpl::initialize(
         timeDurationStart.tv_sec = 0;
         timeDurationStart.tv_usec = 0;
 
-        // GFX card drivers' default setting in 2015: off (if undefined by application), so we also set it to false initially
-        screen.SetVSyncEnabled(false);
+        if (m_cfgProfiles.getVars()[CVAR_GFX_VSYNC].getAsString().empty())
+        {
+            // GFX card drivers' default setting in 2015: off (if undefined by application), so we also set it to false initially
+            getConsole().OLn("V-Sync default: %b", false);
+            screen.SetVSyncEnabled(false);
+        }
+        else
+        {
+            const bool bVSyncConfig = m_cfgProfiles.getVars()[CVAR_GFX_VSYNC].getAsBool();
+            getConsole().OLn("V-Sync from config: %b", bVSyncConfig);
+            screen.SetVSyncEnabled(bVSyncConfig);
+        }
 
         IMGUI_CHECKVERSION();
         if (!ImGui::CreateContext())
@@ -903,6 +917,7 @@ TPureUInt PureRendererHWfixedPipeImpl::getLastFrameTransferredTriangles() const
     NULLs members only.
 */                                                                         
 PureRendererHWfixedPipeImpl::PureRendererHWfixedPipeImpl() :
+    m_cfgProfiles(m_cfgProfiles),
     wnd( wnd ),
     hwInfo( hwInfo ),
     screen( screen ),
@@ -935,9 +950,11 @@ PureRendererHWfixedPipeImpl::PureRendererHWfixedPipeImpl() :
 
 
 PureRendererHWfixedPipeImpl::PureRendererHWfixedPipeImpl(
+    PGEcfgProfiles& cfgProfiles,
     PureWindow& _wnd,
     PureScreen& _scr,
     PureHwInfo& _hwinfo ) :
+    m_cfgProfiles(cfgProfiles),
     wnd( _wnd ),
     hwInfo( _hwinfo ),
     screen( _scr ),
@@ -970,6 +987,7 @@ PureRendererHWfixedPipeImpl::PureRendererHWfixedPipeImpl(
 
 
 PureRendererHWfixedPipeImpl::PureRendererHWfixedPipeImpl(const PureRendererHWfixedPipeImpl& other) :
+    m_cfgProfiles(other.m_cfgProfiles),
     wnd( other.wnd ),
     hwInfo( PureHwInfo::get() ),
     screen( PureScreen::createAndGet() ),
@@ -1629,11 +1647,12 @@ void PureRendererHWfixedPipeImpl::FinishRendering()
     Creates and gets the singleton instance.
 */
 PureRendererHWfixedPipe& PureRendererHWfixedPipe::createAndGet(
+    PGEcfgProfiles& cfgProfiles,
     PureWindow& _wnd,
     PureScreen& _scr,
     PureHwInfo& _hwinfo )
 {
-    static PureRendererHWfixedPipeImpl inst(_wnd, _scr, _hwinfo);
+    static PureRendererHWfixedPipeImpl inst(cfgProfiles, _wnd, _scr, _hwinfo);
     return inst;
 } // createAndGet()
 

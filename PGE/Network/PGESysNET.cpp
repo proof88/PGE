@@ -27,6 +27,8 @@
 
 // ############################### PUBLIC ################################
 
+static constexpr char* CVAR_NET_SERVER = "net_server";
+
 const uint16 PGESysNET::DEFAULT_SERVER_PORT;
 
 /**
@@ -78,7 +80,15 @@ bool PGESysNET::initSysNET(void)
         return false;
     }
 
-    s_bServer = (IDYES == MessageBox(0, "Want to be a Server?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND));
+    if (m_cfgProfiles.getVars()[CVAR_NET_SERVER].getAsString().empty())
+    {
+        s_bServer = (IDYES == MessageBox(0, "Want to be a Server?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND));
+    }
+    else
+    {
+        s_bServer = m_cfgProfiles.getVars()[CVAR_NET_SERVER].getAsBool();
+        CConsole::getConsoleInstance("PGESysNET").OLn("s_bServer from config: %b", s_bServer);
+    }
 
     SteamNetworkingUtils()->SetDebugOutputFunction(k_ESteamNetworkingSocketsDebugOutputType_Msg, NetworkDbg);
 

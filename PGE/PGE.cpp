@@ -28,6 +28,8 @@
 
 using namespace std;
 
+static constexpr char* CVAR_GFX_WINDOWED = "gfx_windowed";
+
 /*
    PGE::PGEimpl
    ###########################################################################
@@ -54,6 +56,7 @@ public:
     bool isInactiveLikeActive() const;       
     void SetInactiveLikeActive(bool value);  
 
+    PGEcfgProfiles& getConfigProfiles();
     PGEInputHandler& getInput() const;       
     PGEWorld& getWorld() const;             
     PR00FsUltimateRenderingEngine& getPure() const;
@@ -178,6 +181,12 @@ void PGE::PGEimpl::SetInactiveLikeActive(bool value)
 {
     m_bInactiveLikeActive = value;
 } // setInactiveLikeActive()
+
+
+PGEcfgProfiles& PGE::PGEimpl::getConfigProfiles()
+{
+    return m_cfgProfiles;
+}
 
 
 PGEInputHandler& PGE::PGEimpl::getInput() const
@@ -573,6 +582,17 @@ void PGE::SetInactiveLikeActive(bool value)
 
 
 /**
+    Returns the config handler object.
+
+    @return Game engine config handler.
+*/
+PGEcfgProfiles& PGE::getConfigProfiles() const
+{
+    return p->getConfigProfiles();
+}
+
+
+/**
     Returns the input handler object.
 
     @return Game engine input handler.
@@ -720,7 +740,20 @@ int PGE::initializeGame()
     getConsole().L();
     getConsole().OLnOI("Initializing Graphics ...");
     bool bGFXinit;
-    if ( MessageBox(0, "Fullscreen?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES )
+    bool bFullScreen;
+
+    if (getConfigProfiles().getVars()[CVAR_GFX_WINDOWED].getAsString().empty())
+    {
+        bFullScreen = MessageBox(0, "Fullscreen?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND) == IDYES;
+        getConsole().OLn("Full screen override: %b", bFullScreen);
+    }
+    else
+    {
+        bFullScreen = !getConfigProfiles().getVars()[CVAR_GFX_WINDOWED].getAsBool();
+        getConsole().OLn("Full screen from config: %b", bFullScreen);
+    }
+
+    if ( bFullScreen )
         bGFXinit = p->m_sysGFX.initSysGFX(0, 0, PURE_FULLSCREEN, 0, 32, 24, 0, 0);
     else
         bGFXinit = p->m_sysGFX.initSysGFX(1024, 768, PURE_WINDOWED, 0, 32, 24, 0, 0);

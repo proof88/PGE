@@ -12,6 +12,7 @@
 */
 
 #include "../../../../../../CConsole/CConsole/src/CConsole.h"
+#include "../../../../Config/PGEcfgProfiles.h"
 #include "PureIRenderer.h"
 #include "../Display/PureScreen.h"
 #include "../Display/PureWindow.h"
@@ -34,6 +35,7 @@ public:
     static const TPURE_RENDER_HINT DefaultHints = 0;
 
     static PureRendererSWincremental& createAndGet(
+        PGEcfgProfiles& cfgProfiles,
         PureWindow& _wnd,
         PureScreen& _scr,
         PureHwInfo& _hwinfo );    /**< Creates and gets the singleton implementation instance. */

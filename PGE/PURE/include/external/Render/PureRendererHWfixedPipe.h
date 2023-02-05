@@ -13,6 +13,7 @@
 
 #include "../../../../../../CConsole/CConsole/src/CConsole.h"
 #include "../../../../../../PFL/PFL/PFL.h"
+#include "../../../../Config/PGEcfgProfiles.h"
 #include "PureIRenderer.h"
 #include "../Display/PureScreen.h"
 #include "../Display/PureWindow.h"
@@ -76,6 +77,7 @@ public:
             PURE_RH_ORDERING_BY_DISTANCE_ON;
 
     static PureRendererHWfixedPipe& createAndGet(
+        PGEcfgProfiles& cfgProfiles,
         PureWindow& _wnd,
         PureScreen& _scr,
         PureHwInfo& _hwinfo );    /**< Creates and gets the singleton implementation instance. */

@@ -155,10 +155,10 @@ TPureUInt PR00FsUltimateRenderingEngineImpl::initialize(
     switch (rndr)
     {
     case PURE_RENDERER_SW:
-        pRenderer = &PureRendererSWincremental::createAndGet(wnd, screen, hwInfo);
+        pRenderer = &PureRendererSWincremental::createAndGet(m_cfgProfiles, wnd, screen, hwInfo);
         break;
     case PURE_RENDERER_HW_FP:
-        pRenderer = &PureRendererHWfixedPipe::createAndGet(wnd, screen, hwInfo);
+        pRenderer = &PureRendererHWfixedPipe::createAndGet(m_cfgProfiles, wnd, screen, hwInfo);
         break;
     default:
         getConsole().EOLnOO("ERROR: invalid renderer specified!");
