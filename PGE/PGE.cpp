@@ -704,7 +704,10 @@ int PGE::initializeGame()
     {
         getConsole().OLn("%s.cfg ~ %s", p->m_cfgProfiles.getProfilesList()[i]->c_str(), p->m_cfgProfiles.getProfilePlayersList()[i]->c_str());
     }
-    p->m_cfgProfiles.SetProfile(0);
+    if (p->m_cfgProfiles.getProfilesCount() > 0)
+    {
+        p->m_cfgProfiles.SetProfile(0);
+    }
     getConsole().OO();
 
     getConsole().L();
