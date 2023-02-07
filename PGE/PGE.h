@@ -84,10 +84,10 @@ public:
     
     WeaponManager& getWeaponManager();         /**< Returns the weapon manager object. */
 
-    int  initializeGame();                     /**< Initializes the game engine. */
-    int  runGame();                            /**< Runs the game. */
-    bool isGameRunning() const;                /**< Gets the running state of the game. */
-    int  destroyGame();                        /**< Destroys the game engine. */
+    int  initializeGame(const char* szCmdLine);  /**< Initializes the game engine. */
+    int  runGame();                              /**< Runs the game. */
+    bool isGameRunning() const;                  /**< Gets the running state of the game. */
+    int  destroyGame();                          /**< Destroys the game engine. */
 
     unsigned int getGameRunningFrequency() const;      /**< Gets the frequency for the main game engine loop. */
     void setGameRunningFrequency(unsigned int freq);   /**< Sets the frequency for the main game engine loop. */

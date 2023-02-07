@@ -661,7 +661,7 @@ WeaponManager& PGE::getWeaponManager()
 
     @return 0 on success, 1 on failure.
 */
-int PGE::initializeGame()
+int PGE::initializeGame(const char* szCmdLine)
 {
 
 #ifdef PGE_CCONSOLE_IS_ENABLED
@@ -687,6 +687,7 @@ int PGE::initializeGame()
     onGameInitializing();
 
     getConsole().OLn("Game Title: %s", p->m_sGameTitle.c_str());
+    getConsole().OLn("Command Line Args: %s", szCmdLine);
 
     getConsole().OLn("Documents Folder: %s", p->m_cfgProfiles.getMyDocsFolder().c_str());
     p->m_nLangTable = p->m_cfgProfiles.readLanguageData( p->m_pLangTable );
@@ -704,6 +705,7 @@ int PGE::initializeGame()
     {
         getConsole().OLn("%s.cfg ~ %s", p->m_cfgProfiles.getProfilesList()[i]->c_str(), p->m_cfgProfiles.getProfilePlayersList()[i]->c_str());
     }
+    p->m_cfgProfiles.ProcessCommandLine(szCmdLine);
     if (p->m_cfgProfiles.getProfilesCount() > 0)
     {
         p->m_cfgProfiles.SetProfile(0);

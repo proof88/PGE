@@ -55,6 +55,9 @@ protected:
         AddSubTest("testGetVarsCount", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetVarsCount);
         AddSubTest("testReadConfiguration", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testReadConfiguration);
         AddSubTest("testWriteConfiguration", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testWriteConfiguration);
+        AddSubTest("testProcessEmptyCommandLine", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessEmptyCommandLine);
+        AddSubTest("testProcessIrrelevantCommandLine", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessIrrelevantCommandLine);
+        AddSubTest("testProcessRelevantCommandLine", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessRelevantCommandLine);
     }
 
     virtual bool setUp()
@@ -360,15 +363,28 @@ private:
 
         cfg.SetProfile( 3 );  // proof88.cfg; this implies a readConfiguration(), but we call it anyway ...
         const size_t nOriginalCount1 = cfg.getVars().size();
-        cfg.getVars()["cl_alma"];
-        const size_t nOriginalCount2 = cfg.getVars().size();
-        //cfg.readConfiguration();
 
-        b &= assertEquals(nOriginalCount1, cfg.getVars().size()-1, "count 1");
-        b &= assertEquals(nOriginalCount2, cfg.getVars().size(), "count 2");
+        b &= assertTrue(cfg.readConfiguration(), "readconf 1");
+        b &= assertEquals(nOriginalCount1, cfg.getVars().size(), "count 0");
+
+        // check if added cvar is deleted upon re-reading config
+        cfg.getVars()["cl_alma"];
+        b &= assertTrue(cfg.readConfiguration(), "readconf 2");
+        b &= assertEquals(nOriginalCount1, cfg.getVars().size(), "count 1");
+
+        // check if command line vars are overriding read config
+        cfg.ProcessCommandLine("    --cl_server_ip=168.1.2.3   --new_cvar=5.0    ");
+        b &= assertTrue(cfg.readConfiguration(), "readconf 3");
+        b &= assertEquals(nOriginalCount1 + 1, cfg.getVars().size(), "count 2"); // new_cvar is new variable that is why we add 1
+
+        if (b)
+        {
+            b = assertEquals("168.1.2.3", cfg.getVars()["cl_server_ip"].getAsString(), "cl_server_ip value 1") &
+                assertEquals("5.0", cfg.getVars()["new_cvar"].getAsString(), "new_cvar value 1");
+        }
 
         cfg.SetProfile( -1 );
-        b &= assertFalse(cfg.readConfiguration(), "2");
+        b &= assertFalse(cfg.readConfiguration(), "readconf 4");
 
         return b;
     }
@@ -400,6 +416,70 @@ private:
         b &= assertEquals(15.6f, cfg.getVars()["cl_alma"].getAsFloat(), E, "alma");
 
         cfg.deleteProfile( iNewProfile );
+
+        return b;
+    }
+
+    bool testProcessEmptyCommandLine()
+    {
+        PGEcfgProfiles cfg("game title");
+
+        cfg.ProcessCommandLine("");
+
+        bool b = assertTrue(cfg.getVars().empty(), "cvars empty") &
+            assertTrue(cfg.getCommandLineVars().empty(), "cl cvars empty");
+
+        return b;
+    }
+
+    bool testProcessIrrelevantCommandLine()
+    {
+        PGEcfgProfiles cfg("game title");
+
+        cfg.ProcessCommandLine("aghhahade gaghagih --asg ijag i = df -- --=");
+
+        bool b = assertTrue(cfg.getVars().empty(), "cvars empty") &
+            assertTrue(cfg.getCommandLineVars().empty(), "cl cvars empty");
+
+        return b;
+    }
+
+    bool testProcessRelevantCommandLine()
+    {
+        PGEcfgProfiles cfg("game title");
+
+        cfg.SetProfile(3);  // proof88.cfg
+        const size_t nOriginalVarsCount = cfg.getVars().size();
+
+        cfg.ProcessCommandLine("    --cl_server_ip=168.1.2.3   --new_cvar=5.0    ");
+
+        bool b = assertFalse(cfg.getVars().empty(), "cvars not empty") &
+            assertFalse(cfg.getCommandLineVars().empty(), "cl cvars not empty") &
+            assertEquals(2u, cfg.getCommandLineVars().size(), "cl cvars size") &
+            assertEquals(nOriginalVarsCount + 1u, cfg.getVars().size(), "cvars size") /* only new_cvar should be new variable */ &
+            assertTrue(cfg.getVars().find("cl_server_ip") != cfg.getVars().end(), "cl_server_ip found 1") &
+            assertTrue(cfg.getVars().find("new_cvar") != cfg.getVars().end(), "new_cvar found 1");
+
+        if (b)
+        {
+            b = assertEquals("168.1.2.3", cfg.getVars()["cl_server_ip"].getAsString(), "cl_server_ip value 1") &
+                assertEquals("5.0", cfg.getVars()["new_cvar"].getAsString(), "new_cvar value 1") &
+                assertEquals("168.1.2.3", cfg.getCommandLineVars()["cl_server_ip"].getAsString(), "cl_server_ip value 2") &
+                assertEquals("5.0", cfg.getCommandLineVars()["new_cvar"].getAsString(), "new_cvar value 2");
+        }
+
+        // check if command line vars are automatically re-applied after loading another profile config file
+        cfg.SetProfile(-1);
+        cfg.SetProfile(2);  // loller.cfg
+
+        b &= assertTrue(cfg.getVars().find("cl_server_ip") != cfg.getVars().end(), "cl_server_ip found 2") &
+            assertTrue(cfg.getVars().find("new_cvar") != cfg.getVars().end(), "new_cvar found 2");
+
+        if (b)
+        {
+            b = assertEquals("168.1.2.3", cfg.getVars()["cl_server_ip"].getAsString(), "cl_server_ip value 3") &
+                assertEquals("5.0", cfg.getVars()["new_cvar"].getAsString(), "new_cvar value 3");
+        }
 
         return b;
     }

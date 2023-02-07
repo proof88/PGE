@@ -51,6 +51,10 @@ public:
                                    const char* sNick);         /**< Creates a new profile. */
     int                 deleteProfile(int nIndex);             /**< Deletes the specified profile. */
 
+    void ProcessCommandLine(const char* szCmdLine);               /**< Application can pass command line to be parsed for extra one-time configuration. */
+    std::map<std::string, PGEcfgVariable>& getCommandLineVars();
+    const std::map<std::string, PGEcfgVariable>& getCommandLineVars() const;
+
     // Active profile-dependent
     // ---------------------------------------------------------------------------
     int  getProfile() const;        /**< Gets index of active profile. */
@@ -76,6 +80,8 @@ private:
     std::string** sFoundProfilePlayerNames;  /**< Found profile names (player names). */
     int           nActiveProfile;    /**< Filename of active profile. */
     PGEcfgVariable cvarWrong;        /**< This is returned when trying to access an invalid cvar. */
+
+    std::map<std::string, PGEcfgVariable> m_commandLineVars;  /**< Any added variables parsed by ProcessCommandLine(). */
 
     // ---------------------------------------------------------------------------
 

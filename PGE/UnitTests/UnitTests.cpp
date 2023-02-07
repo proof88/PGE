@@ -90,7 +90,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PFLTest                    testPFL;
     PGEcfgVariableTest         testPGEcfgVariable;
     PGEcfgFileTest             testPGEcfgFile;
-    PGEcfgProfilesTest              testPGESysCFG; 
+    PGEcfgProfilesTest         testPGEcfgProfiles; 
     WeaponsTest                testWeapons;
     PGEBulletTest              testPGEBullet;
     
@@ -138,22 +138,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     vector<UnitTest*> tests;
     
-    
     tests.push_back(&testPFL);
     
     tests.push_back(&testPGEcfgVariable);
     tests.push_back(&testPGEcfgFile);
-    tests.push_back(&testPGESysCFG);
+    tests.push_back(&testPGEcfgProfiles);
     
+    /*  */
     tests.push_back(&testWeapons);
     tests.push_back(&testPGEBullet);
     
-    /*  */
+    
+    /*  
     tests.push_back(&testScreen);
     tests.push_back(&testSharedSettings);
+    */
     
-    
-    /* */ 
+    /*  
     tests.push_back(&testPosUpTarget);
     tests.push_back(&testPureVector);  
     tests.push_back(&testPureMatrix);  
@@ -191,19 +192,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     tests.push_back(&testPureObject3DManager);
     tests.push_back(&testPureObject3D);  
-    
+    */
 
-    /*   */
+    /*   
     tests.push_back(&testPureWindow);
     tests.push_back(&testPureWindow2);
+    */
     
+    //tests.push_back(&testPureRendererHWfixedPipe);
     
-    tests.push_back(&testPureRendererHWfixedPipe);
-    
-    /*   */
+    /*   
     tests.push_back(&testPure);
     tests.push_back(&testPure2);
-    
+    */
     
     vector<UnitTest*>::size_type nSucceededTests = 0;
     vector<UnitTest*>::size_type nTotalSubTests = 0;

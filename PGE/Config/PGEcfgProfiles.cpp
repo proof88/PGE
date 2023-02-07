@@ -1,3 +1,4 @@
+#include "PGEcfgProfiles.h"
 /*
     ###################################################################################
     PGEcfgProfiles.cpp
@@ -381,6 +382,58 @@ int PGEcfgProfiles::deleteProfile(int nIndex)
 
 
 /**
+    Application can pass command line to be parsed for extra one-time configuration.
+*/
+void PGEcfgProfiles::ProcessCommandLine(const char* szCmdLine)
+{
+    const std::string sCmdLine(szCmdLine);
+    
+    size_t nDoubleDashPos = sCmdLine.find("--", 0);
+    size_t nAssignmentPos = sCmdLine.find('=', nDoubleDashPos);
+    size_t nNextSpacePos = sCmdLine.find(' ', nAssignmentPos);
+
+    while ((nDoubleDashPos != std::string::npos) && (nAssignmentPos != std::string::npos))
+    {
+        if ((nAssignmentPos > (nDoubleDashPos + 2)) &&
+            ((nNextSpacePos == std::string::npos) || (nNextSpacePos > (nAssignmentPos + 1))))
+        {   // --a=2
+            const std::string sAssignmentExpression =
+                sCmdLine.substr(
+                    nDoubleDashPos + 2,
+                    ((nNextSpacePos == std::string::npos) ? nNextSpacePos : nNextSpacePos - (nDoubleDashPos + 2))
+                );
+
+            if (sAssignmentExpression.find(' ') == std::string::npos)
+            {
+                const std::string sVar = sCmdLine.substr(nDoubleDashPos + 2, nAssignmentPos - (nDoubleDashPos+2));
+                const std::string sValue = sCmdLine.substr(
+                    nAssignmentPos + 1,
+                    (nNextSpacePos == std::string::npos) ? nNextSpacePos : (nNextSpacePos - nAssignmentPos - 1)
+                );
+                getVars()[sVar] = sValue.c_str();
+                m_commandLineVars[sVar] = sValue.c_str();
+            }
+        }
+
+        nDoubleDashPos = sCmdLine.find("--", nAssignmentPos);
+        nAssignmentPos = sCmdLine.find('=', nDoubleDashPos);
+        nNextSpacePos = sCmdLine.find(' ', nAssignmentPos);
+    }
+}
+
+
+std::map<std::string, PGEcfgVariable>& PGEcfgProfiles::getCommandLineVars()
+{
+    return m_commandLineVars;
+}
+
+const std::map<std::string, PGEcfgVariable>& PGEcfgProfiles::getCommandLineVars() const
+{
+    return m_commandLineVars;
+}
+
+
+/**
     Gets index of active profile.
 */
 int PGEcfgProfiles::getProfile() const
@@ -393,6 +446,10 @@ int PGEcfgProfiles::getProfile() const
     Sets index of active profile.
     This also implies reading the configuration data for the given profile.
     The active profile index will be -1 if the given index is valid but an error occured while reading config data.
+    Note that config variables parsed earlier by ProcessCommandLine() will overwrite the variables read from profile config file.
+
+    @param nIndex A valid profile index in [0..getProfilesCount()-1] range.
+                  Specifying -1 will not load anything but erase all previously loaded config variables.
 */
 void PGEcfgProfiles::SetProfile(int nIndex)
 {
@@ -427,6 +484,7 @@ void PGEcfgProfiles::SetProfile(int nIndex)
         getConsole().EOLnOO("ERROR: readConfiguration() failed!");
         nActiveProfile = -1;
     }
+
     getConsole().SOLnOO("> done!");
 } // SetActiveProfile()
 
@@ -451,6 +509,8 @@ void PGEcfgProfiles::DeleteVar(const char* varName)
 
 /**
     Loads configuration for current profile from file.
+    Note that config variables parsed earlier by ProcessCommandLine() will overwrite the variables read from profile config file.
+
     @return True on success, false on failure.
 */
 bool PGEcfgProfiles::readConfiguration()
@@ -468,6 +528,12 @@ bool PGEcfgProfiles::readConfiguration()
     {
         getConsole().EOLnOO("ERROR: failed to load file: %s! ", sFile.c_str());
         return false;
+    }
+
+    for (const auto& clCvarPair : m_commandLineVars)
+    {
+        getConsole().OLn("CL CVAR overriding CVAR %s with value %s", clCvarPair.first.c_str(), clCvarPair.second.getAsString().c_str());
+        getVars()[clCvarPair.first] = clCvarPair.second;
     }
 
     getConsole().SOLnOO("> done!");
