@@ -52,7 +52,7 @@ public:
     int                 deleteProfile(int nIndex);             /**< Deletes the specified profile. */
 
     void ProcessCommandLine(const char* szCmdLine);               /**< Application can pass command line to be parsed for extra one-time configuration. */
-    std::map<std::string, PGEcfgVariable>& getCommandLineVars();
+    
     const std::map<std::string, PGEcfgVariable>& getCommandLineVars() const;
 
     // Active profile-dependent
@@ -65,6 +65,8 @@ public:
     
 protected:
     virtual bool validateOnLoad(std::ifstream& f) const /* override */;
+
+    std::map<std::string, PGEcfgVariable>& getCommandLineVars();
 
 private:
     #define PGE_SYS_CFG_FILE_MAGIC_START "!PNGGECFG"

@@ -388,6 +388,11 @@ void PGEcfgProfiles::ProcessCommandLine(const char* szCmdLine)
 {
     const std::string sCmdLine(szCmdLine);
     
+    // I wanted this function to be less complex, using ancestor class PGEcfgFile's
+    // lineIsValueAssignment() and lineHandleAssignment() functions, but they contain
+    // some extra logic not fitting here ... anyway, maybe in the future some refactor
+    // could make them usable here too.
+
     size_t nDoubleDashPos = sCmdLine.find("--", 0);
     size_t nAssignmentPos = sCmdLine.find('=', nDoubleDashPos);
     size_t nNextSpacePos = sCmdLine.find(' ', nAssignmentPos);
@@ -410,22 +415,27 @@ void PGEcfgProfiles::ProcessCommandLine(const char* szCmdLine)
                     nAssignmentPos + 1,
                     (nNextSpacePos == std::string::npos) ? nNextSpacePos : (nNextSpacePos - nAssignmentPos - 1)
                 );
-                getVars()[sVar] = sValue.c_str();
-                m_commandLineVars[sVar] = sValue.c_str();
+                // this looks to be a valid assignment
+                if (sVar == PGE_SYS_CFG_PLAYER_NAME_CVAR)
+                {   // except for user name, which is not allowed to be overridden from command line, because
+                    // it might cause some nasty bugs, for example, if a config file is also loaded, this would
+                    // override the name, and then the config file would be saved with this new name ...
+                    getConsole().EOLn("WARNING: %s is NOT allowed to be present in command line, skipping it!", PGE_SYS_CFG_PLAYER_NAME_CVAR);
+                }
+                else
+                {
+                    getVars()[sVar] = sValue.c_str();
+                    m_commandLineVars[sVar] = sValue.c_str();
+                }
             }
         }
-
+        
         nDoubleDashPos = sCmdLine.find("--", nAssignmentPos);
         nAssignmentPos = sCmdLine.find('=', nDoubleDashPos);
         nNextSpacePos = sCmdLine.find(' ', nAssignmentPos);
     }
 }
 
-
-std::map<std::string, PGEcfgVariable>& PGEcfgProfiles::getCommandLineVars()
-{
-    return m_commandLineVars;
-}
 
 const std::map<std::string, PGEcfgVariable>& PGEcfgProfiles::getCommandLineVars() const
 {
@@ -579,6 +589,11 @@ bool PGEcfgProfiles::validateOnLoad(std::ifstream& f) const
     string tmp;
     f >> tmp;
     return tmp == PGE_SYS_CFG_FILE_MAGIC_START;
+}
+
+std::map<std::string, PGEcfgVariable>& PGEcfgProfiles::getCommandLineVars()
+{
+    return m_commandLineVars;
 }
 
 
