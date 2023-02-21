@@ -86,6 +86,7 @@ public:
     std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages();
 
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
+    std::string getDetailedStatus() const;
 
     bool connectToServer(const std::string& sServerAddress); /* temporal, now I dont have better idea in this time */
     bool DisconnectClient();

@@ -71,6 +71,7 @@ namespace pge_network
         virtual float getRxByteRate(bool bForceUpdate) = 0;
         virtual float getTxByteRate(bool bForceUpdate) = 0;
         virtual int64_t getInternalQueueTimeUSecs(bool bForceUpdate) = 0;
+        virtual std::string getDetailedStatus() const = 0;
 
         virtual void WriteList() const = 0;    /**< Writes statistics to console. */
     }; // class PgeClient

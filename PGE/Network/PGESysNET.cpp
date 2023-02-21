@@ -115,6 +115,8 @@ bool PGESysNET::destroySysNET(void)
     }
     else
     {
+        CConsole::getConsoleInstance("PGESysNET").OLn("Detailed Connection Status:");
+        CConsole::getConsoleInstance("PGESysNET").OLn("%s", getDetailedStatus().c_str());
         DisconnectClient();
     }
     m_pInterface = nullptr;
@@ -377,6 +379,35 @@ const SteamNetConnectionRealTimeStatus_t& PGESysNET::getRealTimeStatus(bool bFor
     }
 
     return m_connRtStatus;
+}
+
+std::string PGESysNET::getDetailedStatus() const
+{
+    if (isServer())
+    {
+        // I cannot retrieve such info for server
+        return "";
+    }
+
+    if (m_hConnection == k_HSteamNetConnection_Invalid)
+    {
+        CConsole::getConsoleInstance("PGESysNET").EOLn("%s invalid connection handle!", __func__);
+        assert(false);
+        return "";
+    }
+
+    char szDetailedStatus[4096];
+    const int nRes = m_pInterface->GetDetailedConnectionStatus(m_hConnection, szDetailedStatus, sizeof(szDetailedStatus));
+    if (nRes == 0)
+    {
+        // only in this case szDetailedStatus is null-terminated and perfect!
+        return std::string(szDetailedStatus);
+    }
+    else
+    {
+        CConsole::getConsoleInstance("PGESysNET").EOLn("%s GetDetailedConnectionStatus() returned %d!", __func__, nRes);
+        return "";
+    }
 }
 
 bool PGESysNET::connectToServer(const std::string& sServerAddress)
