@@ -36,6 +36,9 @@ public:
     std::set<pge_network::PgePktId>& getBlackListedPgeMessages() override;
     std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages() override;
 
+    uint32_t getRxPacketCount() const override;
+    uint32_t getTxPacketCount() const override;
+
     void WriteList() const override;
 
 private:
@@ -131,6 +134,16 @@ std::set<pge_network::PgePktId>& PgeServerImpl::getBlackListedPgeMessages()
 std::set<pge_network::TPgeMsgAppMsgId>& PgeServerImpl::getBlackListedAppMessages()
 {
     return m_PgeSysNET.getBlackListedAppMessages();
+}
+
+uint32_t PgeServerImpl::getRxPacketCount() const
+{
+    return m_PgeSysNET.getRxPacketCount();
+}
+
+uint32_t PgeServerImpl::getTxPacketCount() const
+{
+    return m_PgeSysNET.getTxPacketCount();
 }
 
 /**

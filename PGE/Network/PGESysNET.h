@@ -93,6 +93,9 @@ public:
     bool startListening();
     bool stopListening();
 
+    uint32_t getRxPacketCount() const;
+    uint32_t getTxPacketCount() const;
+
     void WriteServerClientList();
 
 private:
@@ -130,6 +133,9 @@ private:
     std::deque<pge_network::PgePacket> m_queuePackets;  // used by both client and server
     std::set<pge_network::PgePktId> m_blackListedPgeMessages;  // used by both client and server
     std::set<pge_network::TPgeMsgAppMsgId> m_blackListedAppMessages;  // used by both client and server
+
+    uint32_t m_nRxPktCount;
+    uint32_t m_nTxPktCount;
 
     static void SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
 

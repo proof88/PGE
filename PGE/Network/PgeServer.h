@@ -58,6 +58,9 @@ namespace pge_network
         virtual std::set<pge_network::PgePktId>& getBlackListedPgeMessages() = 0;
         virtual std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages() = 0;
 
+        virtual uint32_t getRxPacketCount() const = 0;
+        virtual uint32_t getTxPacketCount() const = 0;
+
         virtual void WriteList() const = 0;    /**< Writes statistics to console. */
     }; // class PgeServer
 

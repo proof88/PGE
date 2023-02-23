@@ -47,6 +47,9 @@ public:
     int64_t getInternalQueueTimeUSecs(bool bForceUpdate) override;
     std::string getDetailedStatus() const override;
 
+    uint32_t getRxPacketCount() const override;
+    uint32_t getTxPacketCount() const override;
+
     void WriteList() const override;
 
 private:
@@ -186,6 +189,16 @@ int64_t PgeClientImpl::getInternalQueueTimeUSecs(bool bForceUpdate)
 std::string PgeClientImpl::getDetailedStatus() const
 {
     return m_PgeSysNET.getDetailedStatus();
+}
+
+uint32_t PgeClientImpl::getRxPacketCount() const
+{
+    return m_PgeSysNET.getRxPacketCount();
+}
+
+uint32_t PgeClientImpl::getTxPacketCount() const
+{
+    return m_PgeSysNET.getTxPacketCount();
 }
 
 /**

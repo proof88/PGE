@@ -73,6 +73,9 @@ namespace pge_network
         virtual int64_t getInternalQueueTimeUSecs(bool bForceUpdate) = 0;
         virtual std::string getDetailedStatus() const = 0;
 
+        virtual uint32_t getRxPacketCount() const = 0;
+        virtual uint32_t getTxPacketCount() const = 0;
+
         virtual void WriteList() const = 0;    /**< Writes statistics to console. */
     }; // class PgeClient
 

@@ -120,6 +120,10 @@ bool PGESysNET::destroySysNET(void)
         DisconnectClient();
     }
     m_pInterface = nullptr;
+
+    CConsole::getConsoleInstance("PGESysNET").OLn("");
+    CConsole::getConsoleInstance("PGESysNET").OLn("Total Tx'd Pkt Count: %u", getTxPacketCount());
+    CConsole::getConsoleInstance("PGESysNET").OLn("Total Rx'd Pkt Count: %u", getRxPacketCount());
     
     GameNetworkingSockets_Kill();  // hopefully this can be invoked even if GNS has been already killed
     return true;
@@ -220,7 +224,9 @@ bool PGESysNET::PollIncomingMessages()
             }
 
             m_queuePackets.push_back(pkt);
-        }
+        } // for i
+
+        m_nRxPktCount += numMsgs;
 
         return true;
     }
@@ -288,7 +294,9 @@ bool PGESysNET::PollIncomingMessages()
             }
 
             m_queuePackets.push_back(pkt);
-        }
+        } // for i
+
+        m_nRxPktCount += numMsgs;
 
         return true;
     }
@@ -310,6 +318,7 @@ void PGESysNET::SendPacketToClient(HSteamNetConnection conn, const pge_network::
         return;
     }
     m_pInterface->SendMessageToConnection(conn, &pkt, (uint32)sizeof(pkt), k_nSteamNetworkingSend_Reliable, nullptr);
+    m_nTxPktCount++;
 }
 
 void PGESysNET::SendPacketToAllClients(const pge_network::PgePacket& pkt, HSteamNetConnection except)
@@ -341,6 +350,7 @@ void PGESysNET::SendToServer(const pge_network::PgePacket& pkt)
     }
 
     m_pInterface->SendMessageToConnection(m_hConnection, &pkt, (uint32)sizeof(pkt), k_nSteamNetworkingSend_Reliable, nullptr);
+    m_nTxPktCount++;
 }
 
 std::deque<pge_network::PgePacket>& PGESysNET::getPacketQueue()
@@ -547,6 +557,16 @@ bool PGESysNET::stopListening()
     return true;
 }
 
+uint32_t PGESysNET::getRxPacketCount() const
+{
+    return m_nRxPktCount;
+}
+
+uint32_t PGESysNET::getTxPacketCount() const
+{
+    return m_nTxPktCount;
+}
+
 void PGESysNET::WriteServerClientList()
 {
     CConsole::getConsoleInstance("PGESysNET").OLnOI("Listing Clients:");
@@ -584,7 +604,9 @@ PGESysNET::PGESysNET(PGEcfgProfiles& cfgProfiles) :
     m_hConnectionServerSide(k_HSteamNetConnection_Invalid),
     m_pInterface(nullptr),
     m_hListenSock(k_HSteamListenSocket_Invalid),
-    m_hPollGroup(k_HSteamNetPollGroup_Invalid)
+    m_hPollGroup(k_HSteamNetPollGroup_Invalid),
+    m_nRxPktCount(0),
+    m_nTxPktCount(0)
 {
     m_addrServer.Clear();
     memset(&m_connRtStatus, 0, sizeof(m_connRtStatus));
