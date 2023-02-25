@@ -13,6 +13,7 @@
 
 #include "../PGEallHeaders.h"
 
+#include <chrono>  // requires cpp11
 #include <cstdint>
 #include <deque>
 #include <map>
@@ -140,6 +141,10 @@ private:
     uint32_t m_nRxPktCount;
     uint32_t m_nTxPktCount;
     uint32_t m_nInjectPktCount;
+
+    std::chrono::time_point<std::chrono::steady_clock> m_time1stRxPkt;
+    std::chrono::time_point<std::chrono::steady_clock> m_time1stTxPkt;
+    std::chrono::time_point<std::chrono::steady_clock> m_time1stInjectPkt;
 
     static void SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
 
