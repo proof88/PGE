@@ -844,6 +844,7 @@ int PGE::runGame()
         getNetwork().Update();  // this may also inject packet(s) to SysNET.queuePackets
         while (getNetwork().getPacketQueueSize() > 0)
         {
+            // as far as we check for packet queue size before pop, exception won't be thrown
             onPacketReceived(getNetwork().popFrontPacket());
         }
 

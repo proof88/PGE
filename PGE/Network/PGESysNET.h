@@ -82,7 +82,7 @@ public:
     void SendToServer(const pge_network::PgePacket& pkt);
     void InjectPacket(const pge_network::PgePacket& pkt);
     std::size_t getPacketQueueSize() const;
-    pge_network::PgePacket popFrontPacket();
+    pge_network::PgePacket popFrontPacket() noexcept(false);
 
     std::set<pge_network::PgePktId>& getBlackListedPgeMessages();
     std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages();

@@ -63,7 +63,7 @@ namespace pge_network
 
         virtual void SendToServer(const pge_network::PgePacket& pkt) = 0;
         virtual std::size_t getPacketQueueSize() const = 0;
-        virtual pge_network::PgePacket popFrontPacket() = 0;
+        virtual pge_network::PgePacket popFrontPacket() noexcept(false) = 0;
 
         virtual std::set<pge_network::PgePktId>& getBlackListedPgeMessages() = 0;
         virtual std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages() = 0;

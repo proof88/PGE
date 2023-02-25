@@ -59,7 +59,7 @@ namespace pge_network
         virtual PgeServer& getServer() = 0;
 
         virtual std::size_t getPacketQueueSize() const = 0;
-        virtual pge_network::PgePacket popFrontPacket() = 0;
+        virtual pge_network::PgePacket popFrontPacket() noexcept(false) = 0;
 
         //virtual int getIpAddress() = 0;
 

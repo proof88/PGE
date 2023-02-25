@@ -365,9 +365,8 @@ std::size_t PGESysNET::getPacketQueueSize() const
     return m_queuePackets.size();
 }
 
-pge_network::PgePacket PGESysNET::popFrontPacket()
+pge_network::PgePacket PGESysNET::popFrontPacket() noexcept(false)
 {
-    // TODO: throw exception if queue is empty!
     pge_network::PgePacket pkt = m_queuePackets.front();
     m_queuePackets.pop_front();
     return pkt;

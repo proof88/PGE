@@ -57,7 +57,7 @@ namespace pge_network
         virtual void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) = 0;
         virtual void InjectPacket(const pge_network::PgePacket& pkt) = 0;
         virtual std::size_t getPacketQueueSize() const = 0;
-        virtual pge_network::PgePacket popFrontPacket() = 0;
+        virtual pge_network::PgePacket popFrontPacket() noexcept(false) = 0;
 
         virtual std::set<pge_network::PgePktId>& getBlackListedPgeMessages() = 0;
         virtual std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages() = 0;

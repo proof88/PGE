@@ -35,7 +35,7 @@ public:
     void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
     void InjectPacket(const pge_network::PgePacket& pkt) override;
     std::size_t getPacketQueueSize() const override;
-    pge_network::PgePacket popFrontPacket() override;
+    pge_network::PgePacket popFrontPacket() noexcept(false) override;
 
     std::set<pge_network::PgePktId>& getBlackListedPgeMessages() override;
     std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages() override;
@@ -136,7 +136,7 @@ std::size_t PgeServerImpl::getPacketQueueSize() const
     return m_PgeSysNET.getPacketQueueSize();
 }
 
-pge_network::PgePacket PgeServerImpl::popFrontPacket()
+pge_network::PgePacket PgeServerImpl::popFrontPacket() noexcept(false)
 {
     return m_PgeSysNET.popFrontPacket();
 }

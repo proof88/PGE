@@ -35,7 +35,7 @@ public:
     pge_network::PgeServer& getServer() override;
 
     std::size_t getPacketQueueSize() const override;
-    pge_network::PgePacket popFrontPacket() override;
+    pge_network::PgePacket popFrontPacket() noexcept(false) override;
 
     void WriteList() const override;
 
@@ -154,7 +154,7 @@ std::size_t PgeNetworkImpl::getPacketQueueSize() const
     return isServer() ? m_server.getPacketQueueSize() : m_client.getPacketQueueSize();
 }
 
-pge_network::PgePacket PgeNetworkImpl::popFrontPacket()
+pge_network::PgePacket PgeNetworkImpl::popFrontPacket() noexcept(false)
 {
     return isServer() ? m_server.popFrontPacket() : m_client.popFrontPacket();
 }
