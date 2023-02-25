@@ -353,9 +353,22 @@ void PGESysNET::SendToServer(const pge_network::PgePacket& pkt)
     m_nTxPktCount++;
 }
 
-std::deque<pge_network::PgePacket>& PGESysNET::getPacketQueue()
+void PGESysNET::InjectPacket(const pge_network::PgePacket& pkt)
 {
-    return m_queuePackets;
+    m_queuePackets.push_back(pkt);
+}
+
+std::size_t PGESysNET::getPacketQueueSize() const
+{
+    return m_queuePackets.size();
+}
+
+pge_network::PgePacket PGESysNET::popFrontPacket()
+{
+    // TODO: throw exception if queue is empty!
+    pge_network::PgePacket pkt = m_queuePackets.front();
+    m_queuePackets.pop_front();
+    return pkt;
 }
 
 std::set<pge_network::PgePktId>& PGESysNET::getBlackListedPgeMessages()

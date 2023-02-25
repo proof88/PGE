@@ -842,15 +842,9 @@ int PGE::runGame()
         p->m_bIsGameRunning = !window.hasCloseRequest();
 
         getNetwork().Update();  // this may also inject packet(s) to SysNET.queuePackets
-        std::deque<pge_network::PgePacket>& pktQueue =
-            getNetwork().isServer() ?
-            getNetwork().getServer().getPacketQueue() :
-            getNetwork().getClient().getPacketQueue();
-        while (pktQueue.size() > 0)
+        while (getNetwork().getPacketQueueSize() > 0)
         {
-            pge_network::PgePacket pkt = pktQueue.front();
-            pktQueue.pop_front();
-            onPacketReceived(pkt.m_connHandleServerSide, pkt);
+            onPacketReceived(getNetwork().popFrontPacket());
         }
 
         // TODO: on the long run, bullet movement and collision handling could be put here ...       

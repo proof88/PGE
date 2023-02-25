@@ -110,8 +110,7 @@ protected:
     virtual void onGameFrameBegin() {}    /**< Called at the beginning of a new frame. */
     virtual void onGameRunning() {}       /**< Called while running the engine. */
     virtual void onPacketReceived(
-        pge_network::PgeNetworkConnectionHandle,
-        const pge_network::PgePacket&) {}      /**< Called when a new network packet is received. */
+        const pge_network::PgePacket&) {} /**< Called when a new network packet is received. */
     virtual void onGameDestroying() {}    /**< Called before stopping the engine. */
     virtual void onGameDestroyed() {}     /**< Called after stopping the engine. */
 

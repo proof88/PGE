@@ -34,6 +34,9 @@ public:
     pge_network::PgeClient& getClient() override;
     pge_network::PgeServer& getServer() override;
 
+    std::size_t getPacketQueueSize() const override;
+    pge_network::PgePacket popFrontPacket() override;
+
     void WriteList() const override;
 
 private:
@@ -144,6 +147,16 @@ pge_network::PgeClient& PgeNetworkImpl::getClient()
 pge_network::PgeServer& PgeNetworkImpl::getServer()
 {
     return m_server;
+}
+
+std::size_t PgeNetworkImpl::getPacketQueueSize() const
+{
+    return isServer() ? m_server.getPacketQueueSize() : m_client.getPacketQueueSize();
+}
+
+pge_network::PgePacket PgeNetworkImpl::popFrontPacket()
+{
+    return isServer() ? m_server.popFrontPacket() : m_client.popFrontPacket();
 }
 
 /**

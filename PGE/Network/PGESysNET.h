@@ -80,8 +80,10 @@ public:
     void SendPacketToClient(HSteamNetConnection conn, const pge_network::PgePacket& pkt);
     void SendPacketToAllClients(const pge_network::PgePacket& pkt, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
     void SendToServer(const pge_network::PgePacket& pkt);
+    void InjectPacket(const pge_network::PgePacket& pkt);
+    std::size_t getPacketQueueSize() const;
+    pge_network::PgePacket popFrontPacket();
 
-    std::deque<pge_network::PgePacket>& getPacketQueue();  // TODO: TEMPORAL: obviously we should not allow this kind of access
     std::set<pge_network::PgePktId>& getBlackListedPgeMessages();
     std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages();
 

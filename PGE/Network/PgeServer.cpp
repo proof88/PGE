@@ -30,9 +30,13 @@ public:
 
     void Update() override;
     bool startListening();
+
     void SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) override;
     void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
-    std::deque<pge_network::PgePacket>& getPacketQueue() override;  // TODO: TEMPORAL: obviously we should not allow this kind of access
+    void InjectPacket(const pge_network::PgePacket& pkt) override;
+    std::size_t getPacketQueueSize() const override;
+    pge_network::PgePacket popFrontPacket() override;
+
     std::set<pge_network::PgePktId>& getBlackListedPgeMessages() override;
     std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages() override;
 
@@ -121,9 +125,19 @@ void PgeServerImpl::SendPacketToAllClients(const pge_network::PgePacket& pkt, pg
     m_PgeSysNET.SendPacketToAllClients(pkt, exceptConnHandle);
 }
 
-std::deque<pge_network::PgePacket>& PgeServerImpl::getPacketQueue()
+void PgeServerImpl::InjectPacket(const pge_network::PgePacket& pkt)
 {
-    return m_PgeSysNET.getPacketQueue();
+    m_PgeSysNET.InjectPacket(pkt);
+}
+
+std::size_t PgeServerImpl::getPacketQueueSize() const
+{
+    return m_PgeSysNET.getPacketQueueSize();
+}
+
+pge_network::PgePacket PgeServerImpl::popFrontPacket()
+{
+    return m_PgeSysNET.popFrontPacket();
 }
 
 std::set<pge_network::PgePktId>& PgeServerImpl::getBlackListedPgeMessages()

@@ -58,6 +58,9 @@ namespace pge_network
         virtual PgeClient& getClient() = 0;
         virtual PgeServer& getServer() = 0;
 
+        virtual std::size_t getPacketQueueSize() const = 0;
+        virtual pge_network::PgePacket popFrontPacket() = 0;
+
         //virtual int getIpAddress() = 0;
 
         virtual void WriteList() const = 0;    /**< Writes statistics to console. */

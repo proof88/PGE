@@ -34,8 +34,11 @@ public:
 
     void Update() override;
     bool connectToServer(const std::string& sServerAddress) override; /* temporal */
+
     void SendToServer(const pge_network::PgePacket& pkt) override;
-    std::deque<pge_network::PgePacket>& getPacketQueue() override;  // TODO: TEMPORAL: obviously we should not allow this kind of access
+    std::size_t getPacketQueueSize() const override;
+    pge_network::PgePacket popFrontPacket() override;
+
     std::set<pge_network::PgePktId>& getBlackListedPgeMessages();
     std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages();
 
@@ -141,9 +144,14 @@ void PgeClientImpl::SendToServer(const pge_network::PgePacket& pkt)
     m_PgeSysNET.SendToServer(pkt);
 }
 
-std::deque<pge_network::PgePacket>& PgeClientImpl::getPacketQueue()
+std::size_t PgeClientImpl::getPacketQueueSize() const
 {
-    return m_PgeSysNET.getPacketQueue();
+    return m_PgeSysNET.getPacketQueueSize();
+}
+
+pge_network::PgePacket PgeClientImpl::popFrontPacket()
+{
+    return m_PgeSysNET.popFrontPacket();
 }
 
 std::set<pge_network::PgePktId>& PgeClientImpl::getBlackListedPgeMessages()
