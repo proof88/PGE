@@ -97,6 +97,7 @@ public:
 
     uint32_t getRxPacketCount() const;
     uint32_t getTxPacketCount() const;
+    uint32_t getInjectPacketCount() const;
 
     void WriteServerClientList();
 
@@ -138,6 +139,7 @@ private:
 
     uint32_t m_nRxPktCount;
     uint32_t m_nTxPktCount;
+    uint32_t m_nInjectPktCount;
 
     static void SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
 

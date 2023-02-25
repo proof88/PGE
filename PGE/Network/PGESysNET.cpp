@@ -122,8 +122,9 @@ bool PGESysNET::destroySysNET(void)
     m_pInterface = nullptr;
 
     CConsole::getConsoleInstance("PGESysNET").OLn("");
-    CConsole::getConsoleInstance("PGESysNET").OLn("Total Tx'd Pkt Count: %u", getTxPacketCount());
-    CConsole::getConsoleInstance("PGESysNET").OLn("Total Rx'd Pkt Count: %u", getRxPacketCount());
+    CConsole::getConsoleInstance("PGESysNET").OLn("Total Tx'd Pkt Count : %u", getTxPacketCount());
+    CConsole::getConsoleInstance("PGESysNET").OLn("Total Rx'd Pkt Count : %u", getRxPacketCount());
+    CConsole::getConsoleInstance("PGESysNET").OLn("Total Inj'd Pkt Count: %u", getInjectPacketCount());
     
     GameNetworkingSockets_Kill();  // hopefully this can be invoked even if GNS has been already killed
     return true;
@@ -356,6 +357,7 @@ void PGESysNET::SendToServer(const pge_network::PgePacket& pkt)
 void PGESysNET::InjectPacket(const pge_network::PgePacket& pkt)
 {
     m_queuePackets.push_back(pkt);
+    m_nInjectPktCount++;
 }
 
 std::size_t PGESysNET::getPacketQueueSize() const
@@ -580,6 +582,11 @@ uint32_t PGESysNET::getTxPacketCount() const
     return m_nTxPktCount;
 }
 
+uint32_t PGESysNET::getInjectPacketCount() const
+{
+    return m_nInjectPktCount;
+}
+
 void PGESysNET::WriteServerClientList()
 {
     CConsole::getConsoleInstance("PGESysNET").OLnOI("Listing Clients:");
@@ -619,7 +626,8 @@ PGESysNET::PGESysNET(PGEcfgProfiles& cfgProfiles) :
     m_hListenSock(k_HSteamListenSocket_Invalid),
     m_hPollGroup(k_HSteamNetPollGroup_Invalid),
     m_nRxPktCount(0),
-    m_nTxPktCount(0)
+    m_nTxPktCount(0),
+    m_nInjectPktCount(0)
 {
     m_addrServer.Clear();
     memset(&m_connRtStatus, 0, sizeof(m_connRtStatus));

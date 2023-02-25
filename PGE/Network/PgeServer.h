@@ -64,6 +64,7 @@ namespace pge_network
 
         virtual uint32_t getRxPacketCount() const = 0;
         virtual uint32_t getTxPacketCount() const = 0;
+        virtual uint32_t getInjectPacketCount() const = 0;
 
         virtual void WriteList() const = 0;    /**< Writes statistics to console. */
     }; // class PgeServer
