@@ -340,8 +340,8 @@
     <ClInclude Include="..\..\..\CConsole\CConsole\src\CConsole.h" />
     <ClInclude Include="..\..\..\PFL\PFL\PFL.h" />
     <ClInclude Include="..\Config\PGEcfgFile.h" />
+    <ClInclude Include="..\Config\PGEcfgProfiles.h" />
     <ClInclude Include="..\Config\PGEcfgVariable.h" />
-    <ClInclude Include="..\Config\PGESysCFG.h" />
     <ClInclude Include="..\PGE.h" />
     <ClInclude Include="..\PGEallHeaders.h" />
     <ClInclude Include="..\PGEInputHandler.h" />

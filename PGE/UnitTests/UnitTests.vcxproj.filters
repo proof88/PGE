@@ -99,9 +99,6 @@
     <ClInclude Include="..\Config\PGEcfgVariable.h">
       <Filter>Header Files\PGE\Config</Filter>
     </ClInclude>
-    <ClInclude Include="..\Config\PGESysCFG.h">
-      <Filter>Header Files\PGE\Config</Filter>
-    </ClInclude>
     <ClInclude Include="..\PURE\include\external\PureAllHeaders.h">
       <Filter>Header Files\PGE\PURE</Filter>
     </ClInclude>
@@ -308,6 +305,9 @@
     </ClInclude>
     <ClInclude Include="PurehwInfoTest.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Config\PGEcfgProfiles.h">
+      <Filter>Header Files\PGE\Config</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

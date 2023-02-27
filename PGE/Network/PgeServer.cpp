@@ -44,6 +44,10 @@ public:
     uint32_t getTxPacketCount() const override;
     uint32_t getInjectPacketCount() const override;
 
+    uint32_t getRxPacketPerSecondCount() const override;
+    uint32_t getTxPacketPerSecondCount() const override;
+    uint32_t getInjectPacketPerSecondCount() const override;
+
     void WriteList() const override;
 
 private:
@@ -164,6 +168,21 @@ uint32_t PgeServerImpl::getTxPacketCount() const
 uint32_t PgeServerImpl::getInjectPacketCount() const
 {
     return m_PgeSysNET.getInjectPacketCount();
+}
+
+uint32_t PgeServerImpl::getRxPacketPerSecondCount() const
+{
+    return m_PgeSysNET.getRxPacketPerSecondCount();
+}
+
+uint32_t PgeServerImpl::getTxPacketPerSecondCount() const
+{
+    return m_PgeSysNET.getTxPacketPerSecondCount();
+}
+
+uint32_t PgeServerImpl::getInjectPacketPerSecondCount() const
+{
+    return m_PgeSysNET.getInjectPacketPerSecondCount();
 }
 
 /**

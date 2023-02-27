@@ -100,6 +100,10 @@ public:
     uint32_t getTxPacketCount() const;
     uint32_t getInjectPacketCount() const;
 
+    uint32_t getRxPacketPerSecondCount() const;
+    uint32_t getTxPacketPerSecondCount() const;
+    uint32_t getInjectPacketPerSecondCount() const;
+
     void WriteServerClientList();
 
 private:

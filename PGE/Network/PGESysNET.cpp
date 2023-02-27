@@ -121,17 +121,10 @@ bool PGESysNET::destroySysNET(void)
     }
     m_pInterface = nullptr;
 
-    const auto nSecsSince1stTxPkt =
-        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_time1stTxPkt).count();
-    const auto nSecsSince1stRxPkt =
-        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_time1stRxPkt).count();
-    const auto nSecsSince1stInjectPkt =
-        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_time1stInjectPkt).count();
-
     CConsole::getConsoleInstance("PGESysNET").OLn("");
-    CConsole::getConsoleInstance("PGESysNET").OLn("Total Tx'd Pkt Count : %u, %u pkt/s", getTxPacketCount(), getTxPacketCount() / nSecsSince1stTxPkt);
-    CConsole::getConsoleInstance("PGESysNET").OLn("Total Rx'd Pkt Count : %u, %u pkt/s", getRxPacketCount(), getRxPacketCount() / nSecsSince1stRxPkt);
-    CConsole::getConsoleInstance("PGESysNET").OLn("Total Inj'd Pkt Count: %u, %u pkt/s", getInjectPacketCount(), getInjectPacketCount() / nSecsSince1stInjectPkt);
+    CConsole::getConsoleInstance("PGESysNET").OLn("Total Tx'd Pkt Count : %u, %u pkt/s", getTxPacketCount(), getTxPacketPerSecondCount());
+    CConsole::getConsoleInstance("PGESysNET").OLn("Total Rx'd Pkt Count : %u, %u pkt/s", getRxPacketCount(), getRxPacketPerSecondCount());
+    CConsole::getConsoleInstance("PGESysNET").OLn("Total Inj'd Pkt Count: %u, %u pkt/s", getInjectPacketCount(), getInjectPacketPerSecondCount());
 
     GameNetworkingSockets_Kill();  // hopefully this can be invoked even if GNS has been already killed
     return true;
@@ -611,6 +604,30 @@ uint32_t PGESysNET::getTxPacketCount() const
 uint32_t PGESysNET::getInjectPacketCount() const
 {
     return m_nInjectPktCount;
+}
+
+uint32_t PGESysNET::getRxPacketPerSecondCount() const
+{
+    const auto nSecsSince1stRxPkt =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_time1stRxPkt).count();
+
+    return static_cast<uint32_t>(nSecsSince1stRxPkt != 0 ? (getRxPacketCount() / nSecsSince1stRxPkt) : 0);
+}
+
+uint32_t PGESysNET::getTxPacketPerSecondCount() const
+{
+    const auto nSecsSince1stTxPkt =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_time1stTxPkt).count();
+
+    return static_cast<uint32_t>(nSecsSince1stTxPkt != 0 ? (getTxPacketCount() / nSecsSince1stTxPkt) : 0);
+}
+
+uint32_t PGESysNET::getInjectPacketPerSecondCount() const
+{
+    const auto nSecsSince1stInjectPkt =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_time1stInjectPkt).count();
+
+    return static_cast<uint32_t>(nSecsSince1stInjectPkt != 0 ? (getInjectPacketCount() / nSecsSince1stInjectPkt) : 0);
 }
 
 void PGESysNET::WriteServerClientList()
