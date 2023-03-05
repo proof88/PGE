@@ -2369,6 +2369,7 @@ TPureBool PureObject3D::isOccluder() const
      - not affecting z-buffer;
      - sticked-to-screen.
     Setting occluder state to true will be ignored when an Object3D already has any of the above properties.
+    
     Note that renderer might invoke PureObject3DManager::UpdateOccluderStates() that can override your manual setting.
     This function is mostly for the engine to switch occluder state, not for the user. In the future this might change though.
 
@@ -2423,7 +2424,9 @@ TPureBool PureObject3D::isOcclusionTested() const
     The result can be obtained with isOccluded() member function after rendering at least a few frames.
     The renderer can optimize scene rendering by not skipping occluded objects, however occlusion testing is needed to decide if an
     object is occluded or not. Too many occlusion tests might also impact performance negatively, hence it is not recommended to turn occlusion testing on for every
-    single objects in the scene. By default this property is decided based on the geometric complexity of the object.
+    single objects in the scene.
+    
+    By default this property is decided based on the geometric complexity of the object.
     
     Occlusion tests are curently based on hardware occlusion queries, so this is not available on all hardware.
     Usually it is available since 2003 on desktop computers.
