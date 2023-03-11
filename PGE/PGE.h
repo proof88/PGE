@@ -109,8 +109,11 @@ protected:
     virtual bool onGameInitialized() { return true; }   /**< Called after initializing the engine. */
     virtual void onGameFrameBegin() {}    /**< Called at the beginning of a new frame. */
     virtual void onGameRunning() {}       /**< Called while running the engine. */
-    virtual void onPacketReceived(
-        const pge_network::PgePacket&) {} /**< Called when a new network packet is received. */
+    virtual bool onPacketReceived(
+        const pge_network::PgePacket&) {
+        return true; 
+    }                                     /**< Called when a new network packet is received. 
+                                               @return True on success, false on serious error that should result in terminating the application. */
     virtual void onGameDestroying() {}    /**< Called before stopping the engine. */
     virtual void onGameDestroyed() {}     /**< Called after stopping the engine. */
 

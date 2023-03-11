@@ -856,7 +856,12 @@ int PGE::runGame()
         while (getNetwork().getPacketQueueSize() > 0)
         {
             // as far as we check for packet queue size before pop, exception won't be thrown
-            onPacketReceived(getNetwork().popFrontPacket());
+            if (!onPacketReceived(getNetwork().popFrontPacket()))
+            {
+                getConsole().EOLn("ERROR: onPacketReceived() failed, closing window ...");
+                window.Close();
+                break;
+            }
         }
 
         // TODO: on the long run, bullet movement and collision handling could be put here ...       
