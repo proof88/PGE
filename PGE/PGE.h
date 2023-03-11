@@ -105,8 +105,8 @@ protected:
     virtual ~PGE();
 
     // Event handlers to be overridden.
-    virtual void onGameInitializing() {}  /**< Called before initializing the engine. */
-    virtual void onGameInitialized() {}   /**< Called after initializing the engine. */
+    virtual bool onGameInitializing() { return true; }  /**< Called before initializing the engine. */
+    virtual bool onGameInitialized() { return true; }   /**< Called after initializing the engine. */
     virtual void onGameFrameBegin() {}    /**< Called at the beginning of a new frame. */
     virtual void onGameRunning() {}       /**< Called while running the engine. */
     virtual void onPacketReceived(

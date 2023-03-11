@@ -684,7 +684,12 @@ int PGE::initializeGame(const char* szCmdLine)
     getConsole().OLn(PGE_NAME);
     getConsole().OLn(PGE_VERSION);
 
-    onGameInitializing();
+    if (!onGameInitializing())
+    {
+        getConsole().EOLnOO("onGameInitializing() failed!");
+        getConsole().OLn("");
+        return 1;
+    }
 
     getConsole().OLn("Game Title: %s", p->m_sGameTitle.c_str());
     getConsole().OLn("Command Line Args: %s", szCmdLine);
@@ -814,7 +819,13 @@ int PGE::initializeGame(const char* szCmdLine)
 
     p->m_bIsGameRunning = true;
 
-    onGameInitialized();
+    if (!onGameInitialized())
+    {
+        getConsole().EOLnOO("onGameInitialized() failed!");
+        getConsole().OLn("");
+        return 1;
+    }
+
     getConsole().OO();
 
     return 0;
