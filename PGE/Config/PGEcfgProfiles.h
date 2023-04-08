@@ -12,8 +12,10 @@
 */
 
 #include "../PGEallHeaders.h"
+
 #include <map>
 #include <shlobj.h>
+
 #include "PGEcfgFile.h"
 
 

@@ -9,7 +9,10 @@
 */
 
 #include "PureBaseIncludes.h"  // PCH
-#include "PGEcfgProfiles.h"
+#include "PGEcfgVariable.h"
+
+#include <type_traits>  // Cpp11 std::underlying_type
+
 #include "../PGEincludes.h"
 #include "../PGEpragmas.h"
 
@@ -18,6 +21,12 @@ using namespace std;
 
 // ############################### PUBLIC ################################
 
+
+std::ostream& operator<< (std::ostream& os, const TPGE_CFG_VARIABLE_TYPE& obj)
+{
+    os << static_cast<std::underlying_type<TPGE_CFG_VARIABLE_TYPE>::type>(obj);
+    return os;
+}
 
 /**
     Constructs a string-typed cvar.
@@ -33,6 +42,14 @@ PGEcfgVariable::PGEcfgVariable()
 PGEcfgVariable::PGEcfgVariable(const int& value)
 {
     Set( value );
+}
+
+/**
+    Constructs an unsigned integer-typed cvar.
+*/
+PGEcfgVariable::PGEcfgVariable(const unsigned int& value)
+{
+    Set(value);
 }
 
 /**
@@ -59,38 +76,86 @@ PGEcfgVariable::PGEcfgVariable(const char* value)
     Set( value );
 }
 
+/**
+    Constructs a string-typed cvar.
+*/
+PGEcfgVariable::PGEcfgVariable(const std::string& value)
+{
+    Set(value);
+}
+
 PGEcfgVariable::~PGEcfgVariable()
 {
 
 }
-
 
 /**
     Tries to return the value of the cvar as an integer.
 
     @return If the type of the cvar is bool or the cvar can be converted to bool, true value results in 1, and
             false value results in 0.
-            If the type of the cvar is float or string, the result will be the same as calling atoi() with the float or string.
+            If the type of the cvar is float or string, the result will be the same as calling std::stol() with the float or string,
+            except that this function doesn't throw exception but silently returns 0 in case of error.
 */
-int PGEcfgVariable::getAsInt() const
+int PGEcfgVariable::getAsInt() const noexcept(true)
 {
-    if ( getType() == PGE_CVAR_BOOL )
-        return getAsBool() ? 1 : 0;
-    return atoi( sValue.c_str() );    
+    try {
+        if (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL)
+        {
+            return getAsBool() ? 1 : 0;
+        }
+        return static_cast<int>(std::stol(sValue));
+    }
+    catch (const std::exception&)
+    {
+        return 0;
+    }
+}
+
+/**
+    Tries to return the value of the cvar as an unsigned integer.
+
+    @return If the type of the cvar is bool or the cvar can be converted to bool, true value results in 1, and
+            false value results in 0.
+            If the type of the cvar is float or string, the result will be the same as calling std::stoul() with the float or string,
+            except that this function doesn't throw exception but silently returns 0 in case of error.
+*/
+unsigned int PGEcfgVariable::getAsUInt() const noexcept(true)
+{
+    try {
+        if (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL)
+        {
+            return getAsBool() ? 1u : 0u;
+        }
+        return static_cast<unsigned int>(std::stoul(sValue));
+    }
+    catch (const std::exception&)
+    {
+        return 0u;
+    }
 }
 
 /**
     Tries to return the value of the cvar as a floating point number.
 
-    @return If the type of the cvar is bool or the cvar can be converted to bool, true value results in 1, and
-            false value results in 0.
-            If the type of the cvar is string, the result will be the same as calling atof() with the string.
+    @return If the type of the cvar is bool or the cvar can be converted to bool, true value results in 1.f, and
+            false value results in 0.f.
+            If the type of the cvar is float or string, the result will be the same as calling std::stof() with the float or string,
+            except that this function doesn't throw exception but silently returns 0.f in case of error.
 */
-float PGEcfgVariable::getAsFloat() const
+float PGEcfgVariable::getAsFloat() const noexcept(true)
 {
-    if ( getType() == PGE_CVAR_BOOL )
-        return getAsBool() ? 1.0f : 0.0f;
-    return (float)atof( sValue.c_str() );
+    try {
+        if (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL)
+        {
+            return getAsBool() ? 1.f : 0.f;
+        }
+        return std::stof(sValue);
+    }
+    catch (const std::exception&)
+    {
+        return 0.f;
+    }
 }
 
 /**
@@ -103,20 +168,30 @@ float PGEcfgVariable::getAsFloat() const
              - type of cvar is bool and value is true (trivial case)
             False in any other cases.
 */
-bool PGEcfgVariable::getAsBool() const
+bool PGEcfgVariable::getAsBool() const noexcept(true)
 {
-    string tmpValue = sValue;
+    try {
+        string tmpValue = sValue;
 #pragma warning(disable:4244)  /* int-char conversion in std::transform */
-    transform(tmpValue.begin(), tmpValue.end(), tmpValue.begin(), ::toupper);
+        transform(tmpValue.begin(), tmpValue.end(), tmpValue.begin(), ::toupper);
 #pragma warning(default:4244)
 
-    if ( tmpValue == "TRUE" )
-        return true;
+        if (tmpValue == "TRUE")
+        {
+            return true;
+        }
 
-    if ( tmpValue == "FALSE" )
+        if (tmpValue == "FALSE")
+        {
+            return false;
+        }
+
+        return (getAsInt() != 0);
+    }
+    catch (const std::exception&)
+    {
         return false;
-
-    return ( getAsInt() != 0 );
+    }
 }
 
 /**
@@ -124,11 +199,10 @@ bool PGEcfgVariable::getAsBool() const
 
     @return The value of the cvar as it is as a string.
 */
-std::string PGEcfgVariable::getAsString() const
+const std::string& PGEcfgVariable::getAsString() const noexcept(true)
 {
     return sValue;
 }
-
 
 /**
     Returns the type of the cvar.
@@ -136,38 +210,51 @@ std::string PGEcfgVariable::getAsString() const
     @return The type of the cvar.
             See detailed description at the description of TPGE_CFG_VARIABLE_TYPE.
 */
-TPGE_CFG_VARIABLE_TYPE PGEcfgVariable::getType() const
+const TPGE_CFG_VARIABLE_TYPE& PGEcfgVariable::getType() const noexcept(true)
 {
     return type;
 }
 
+void PGEcfgVariable::Set(const int& value)
+{
+    std::stringstream str;
+    str << value;
+    sValue = str.str();
+    type = TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_INT;
+}
 
-void PGEcfgVariable::Set(bool value)
+void PGEcfgVariable::Set(const unsigned int& value)
+{
+    std::stringstream str;
+    str << value;
+    sValue = str.str();
+    type = TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT;
+}
+
+void PGEcfgVariable::Set(const float& value)
+{
+    std::stringstream str;
+    str << value;
+    sValue = str.str();
+    type = TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT;
+}
+
+void PGEcfgVariable::Set(const bool& value)
 {
     sValue = value ? "true" : "false";
-    type = PGE_CVAR_BOOL;
-}
-
-void PGEcfgVariable::Set(float value)
-{
-    std::stringstream str;
-    str << value;
-    sValue = str.str();
-    type = PGE_CVAR_FLOAT;
-}
-
-void PGEcfgVariable::Set(int value)
-{
-    std::stringstream str;
-    str << value;
-    sValue = str.str();
-    type = PGE_CVAR_INT;
+    type = TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL;
 }
 
 void PGEcfgVariable::Set(const char* value)
 {
     sValue = value;
-    type = PGE_CVAR_STRING;
+    type = TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING;
+}
+
+void PGEcfgVariable::Set(const std::string& value)
+{
+    sValue = value;
+    type = TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING;
 }
 
 /**
@@ -177,7 +264,7 @@ void PGEcfgVariable::Set(const char* value)
 */
 bool PGEcfgVariable::operator==(const int& other) const 
 {
-    if ( getType() == PGE_CVAR_BOOL )
+    if ( getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL )
     {
         if ( other == 0 )
             return (getAsBool() == false);
@@ -188,12 +275,28 @@ bool PGEcfgVariable::operator==(const int& other) const
 
 /**
     Equals to.
+    @return True if the cvar can be interpreted as the same unsigned int as the given unsigned int, false otherwise.
+            If the cvar is bool-typed, the result will depend on whether value is true or false and the unsigned int is 0u or non-0u.
+*/
+bool PGEcfgVariable::operator==(const unsigned int& other) const
+{
+    if (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL)
+    {
+        if (other == 0u)
+            return (getAsBool() == false);
+        return (getAsBool() == true);
+    }
+    return getAsUInt() == other;
+}
+
+/**
+    Equals to.
     @return True if the cvar can be interpreted as the same float as the given float, false otherwise.
             If the cvar is bool-typed, the result will depend on whether value is true or false and the float is 0 or non-0.
 */
 bool PGEcfgVariable::operator==(const float& other) const 
 {
-    if ( getType() == PGE_CVAR_BOOL )
+    if ( getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL )
     {
         if ( other == 0.0f )
             return (getAsBool() == false);
@@ -218,7 +321,7 @@ bool PGEcfgVariable::operator==(const bool& other) const
 */
 bool PGEcfgVariable::operator==(const std::string& other) const 
 {
-    if ( getType() == PGE_CVAR_BOOL )
+    if ( getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL )
     {
         const PGEcfgVariable tmp(other.c_str());
         return ( tmp.getAsBool() == getAsBool() );
@@ -242,6 +345,14 @@ bool PGEcfgVariable::operator!=(const int& other) const
 {
     return !( *this == other );
 } 
+
+/**
+    Not equals to.
+*/
+bool PGEcfgVariable::operator!=(const unsigned int& other) const
+{
+    return !(*this == other);
+}
 
 /**
     Not equals to.
@@ -289,26 +400,30 @@ PGEcfgVariable& PGEcfgVariable::operator=(const PGEcfgVariable& other)
 /**
     Addition.
     Addition of bool-typed cvars is not supported.
-    Addition is supported for int-, float- and string-typed cvars.
+    Addition is supported for int-, unsigned int-, float- and string-typed cvars.
 
     @return The returned cvar highly depends on the type of the operands and is determined in the following order:
             If the type of at least one of the cvars is bool, the result will be a copy of the first cvar.
             If the type of at least one of the cvars is string, the result will be a concatenated string form
             of the 2 cvars.
             If the type of at least one of the cvars is float, the result will be float-typed.
+            If the type of at least one of the cvars is unsigned int, the result will be unsigned int-typed.
             Otherwise, the result will be int-typed.
 
 */
 PGEcfgVariable PGEcfgVariable::operator+(const PGEcfgVariable& other) const 
 {
-    if ( (getType() == PGE_CVAR_BOOL) || (other.getType() == PGE_CVAR_BOOL) )
+    if ( (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) )
         return *this;
 
-    if ( (getType() == PGE_CVAR_STRING) || (other.getType() == PGE_CVAR_STRING) )
-        return PGEcfgVariable( getAsString().append(other.getAsString()).c_str() );
+    if ( (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING) )
+        return PGEcfgVariable( std::string(getAsString()).append(other.getAsString()).c_str() );
     
-    if ( (getType() == PGE_CVAR_FLOAT) || (other.getType() == PGE_CVAR_FLOAT) )
+    if ( (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT) )
         return PGEcfgVariable( getAsFloat() + other.getAsFloat() );
+
+    if ((getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT))
+        return PGEcfgVariable(getAsUInt() + other.getAsUInt());
 
     return PGEcfgVariable( getAsInt() + other.getAsInt() );
 }  
@@ -326,23 +441,27 @@ PGEcfgVariable& PGEcfgVariable::operator+=(const PGEcfgVariable& other)
 /**
     Subtraction.
     Subtraction of bool-typed and string-typed cvars is not supported.
-    Subtraction is supported for int- and float-typed cvars.
+    Subtraction is supported for int-, unsigned int- and float-typed cvars.
 
     @return The returned cvar highly depends on the type of the operands and is determined in the following order:
             If the type of at least one of the cvars is bool or string, the result will be a copy of the first cvar.
             If the type of at least one of the cvars is float, the result will be float-typed.
+            If the type of at least one of the cvars is unsigned int, the result will be unsigned int-typed.
             Otherwise, the result will be int-typed.
 */
 PGEcfgVariable PGEcfgVariable::operator-(const PGEcfgVariable& other) const 
 {
-    if ( (getType() == PGE_CVAR_BOOL) || (other.getType() == PGE_CVAR_BOOL) )
+    if ( (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) )
         return *this;
 
-    if ( (getType() == PGE_CVAR_STRING) || (other.getType() == PGE_CVAR_STRING) )
+    if ( (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING) )
         return *this;
     
-    if ( (getType() == PGE_CVAR_FLOAT) || (other.getType() == PGE_CVAR_FLOAT) )
+    if ( (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT) )
         return PGEcfgVariable( getAsFloat() - other.getAsFloat() );
+
+    if ((getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT))
+        return PGEcfgVariable(getAsUInt() - other.getAsUInt());
 
     return PGEcfgVariable( getAsInt() - other.getAsInt() );
 }  
@@ -360,23 +479,27 @@ PGEcfgVariable& PGEcfgVariable::operator-=(const PGEcfgVariable& other)
 /**
     Multiplication by scalar.
     Multiplication of bool-typed and string-typed cvars is not supported.
-    Multiplication is supported for int- and float-typed cvars.
+    Multiplication is supported for int-, unsigned int- and float-typed cvars.
 
     @return The returned cvar highly depends on the type of the operands and is determined in the following order:
             If the type of at least one of the cvars is bool or string, the result will be a copy of the first cvar.
             If the type of at least one of the cvars is float, the result will be float-typed.
+            If the type of at least one of the cvars is unsigned int, the result will be unsigned int-typed.
             Otherwise, the result will be int-typed.
 */
 PGEcfgVariable PGEcfgVariable::operator*(const PGEcfgVariable& other) const 
 {
-    if ( (getType() == PGE_CVAR_BOOL) || (other.getType() == PGE_CVAR_BOOL) )
+    if ( (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) )
         return *this;
 
-    if ( (getType() == PGE_CVAR_STRING) || (other.getType() == PGE_CVAR_STRING) )
+    if ( (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING) )
         return *this;
     
-    if ( (getType() == PGE_CVAR_FLOAT) || (other.getType() == PGE_CVAR_FLOAT) )
+    if ( (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT) )
         return PGEcfgVariable( getAsFloat() * other.getAsFloat() );
+
+    if ((getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT))
+        return PGEcfgVariable(getAsUInt() * other.getAsUInt());
 
     return PGEcfgVariable( getAsInt() * other.getAsInt() );
 }  
@@ -394,27 +517,31 @@ PGEcfgVariable& PGEcfgVariable::operator*=(const PGEcfgVariable& other)
 /**
     Division by scalar.
     Division of bool-typed and string-typed cvars is not supported.
-    Division is supported for int- and float-typed cvars.
+    Division is supported for int-, unsigned int- and float-typed cvars.
 
     @return The returned cvar highly depends on the type of the operands and is determined in the following order:
             If the type of at least one of the cvars is bool or string, the result will be a copy of the first cvar.
             If the divider is 0, the result will be a copy of the first cvar.
             If the type of at least one of the cvars is float, the result will be float-typed.
+            If the type of at least one of the cvars is unsigned int, the result will be unsigned int-typed.
             Otherwise, the result will be int-typed.
 */
 PGEcfgVariable PGEcfgVariable::operator/(const PGEcfgVariable& other) const 
 {
-    if ( (getType() == PGE_CVAR_BOOL) || (other.getType() == PGE_CVAR_BOOL) )
+    if ( (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) )
         return *this;
 
-    if ( (getType() == PGE_CVAR_STRING) || (other.getType() == PGE_CVAR_STRING) )
+    if ( (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING) )
         return *this;
 
     if ( other.getAsFloat() == 0.0f )
         return *this;
     
-    if ( (getType() == PGE_CVAR_FLOAT) || (other.getType() == PGE_CVAR_FLOAT) )
+    if ( (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT) )
          return PGEcfgVariable( getAsFloat() / other.getAsFloat() );
+
+    if ((getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT))
+        return PGEcfgVariable(getAsUInt() / other.getAsUInt());
 
     return PGEcfgVariable( getAsInt() / other.getAsInt() );
 }  
@@ -431,18 +558,41 @@ PGEcfgVariable& PGEcfgVariable::operator/=(const PGEcfgVariable& other)
 
 /**
     Modulo division by scalar.
-    Modulo division is supported for int-typed cvars only.
+    Modulo division is supported for int-typed and unsigned int-typed cvars only.
 
     @return The returned cvar highly depends on the type of the operands and is determined in the following order:
-            If the type of at least one of the operands is not int, the result will be a copy of the first cvar.
+            If the type of at least one of the operands is not int or unsigned int, the result will be a copy of the first cvar.
             If the divider is 0, the result will be a copy of the first cvar.
+            If any of the operands is unsigned int, the result will be unsigned int-typed.
             Otherwise, the result will be int-typed.
 */
 PGEcfgVariable PGEcfgVariable::operator%(const PGEcfgVariable& other) const 
 {
-    if ( (getType() == PGE_CVAR_INT) && (other.getType() == PGE_CVAR_INT) )
-        if ( other.getAsInt() != 0 )
-            return PGEcfgVariable( getAsInt() % other.getAsInt() );
+    if ((getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL))
+        return *this;
+
+    if ((getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING))
+        return *this;
+
+    if ((getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT))
+    {
+        return *this;
+    }
+    
+    if (other.getAsInt() == 0)
+    {
+        return *this;
+    }
+
+    if ((getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT))
+    {
+        return PGEcfgVariable(getAsUInt() % other.getAsUInt());
+    }
+
+    if ((getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_INT) || (other.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_INT))
+    {
+        return PGEcfgVariable(getAsInt() % other.getAsInt());
+    }
 
     return *this;
 }  
@@ -459,25 +609,37 @@ PGEcfgVariable& PGEcfgVariable::operator%=(const PGEcfgVariable& other)
 
 /**
     Prefix increment.
-    This only works if the type of the cvar is int.
+    This only works if the type of the cvar is int or unsigned int.
 */
 PGEcfgVariable& PGEcfgVariable::operator++() 
 {
-    if ( getType() == PGE_CVAR_INT )
-        Set( getAsInt()+1 );
+    if (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_INT)
+    {
+        Set(getAsInt() + 1);
+    }
+    else if (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT)
+    {
+        Set(getAsUInt() + 1u);
+    }
     return *this;
 }
 
 /**
     Postfix increment.
-    This only works if the type of the cvar is int.
+    This only works if the type of the cvar is int or unsigned int.
 */
 PGEcfgVariable PGEcfgVariable::operator++(int) 
 {
-    if ( getType() == PGE_CVAR_INT )
+    if ( getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_INT )
     {
         PGEcfgVariable result = *this;
         Set( getAsInt()+1 );
+        return result;
+    }
+    else if (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT)
+    {
+        PGEcfgVariable result = *this;
+        Set(getAsUInt() + 1u);
         return result;
     }
     return *this;
@@ -485,25 +647,37 @@ PGEcfgVariable PGEcfgVariable::operator++(int)
 
 /**
     Prefix decrement.
-    This only works if the type of the cvar is int.
+    This only works if the type of the cvar is int or unsigned int.
 */
 PGEcfgVariable& PGEcfgVariable::operator--() 
 {
-    if ( getType() == PGE_CVAR_INT )
-        Set( getAsInt()-1 );
+    if (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_INT)
+    {
+        Set(getAsInt() - 1);
+    }
+    else if (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT)
+    {
+        Set(getAsUInt() - 1u);
+    }
     return *this;
 }
 
 /**
     Postfix decrement.
-    This only works if the type of the cvar is int.
+    This only works if the type of the cvar is int or unsigned int.
 */
 PGEcfgVariable PGEcfgVariable::operator--(int) 
 {
-    if ( getType() == PGE_CVAR_INT )
+    if ( getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_INT )
     {
         PGEcfgVariable result = *this;
         Set( getAsInt()-1 );
+        return result;
+    }
+    else if (getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT)
+    {
+        PGEcfgVariable result = *this;
+        Set(getAsUInt() - 1u);
         return result;
     }
     return *this;
@@ -516,9 +690,10 @@ PGEcfgVariable PGEcfgVariable::operator--(int)
 */
 bool operator==(const int& other, const PGEcfgVariable& value)
 {
-    if ( value.getType() == PGE_CVAR_FLOAT )
+    if ( value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT )
         return other == value.getAsFloat();
-    if ( value.getType() == PGE_CVAR_BOOL )
+
+    if ( value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL )
     {
         if ( other == 0 )
             return (value.getAsBool() == false);
@@ -531,9 +706,27 @@ bool operator==(const int& other, const PGEcfgVariable& value)
     Equals to.
     @return See details at the class-member operator==().
 */
+bool operator==(const unsigned int& other, const PGEcfgVariable& value)
+{
+    if (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT)
+        return other == value.getAsFloat();
+
+    if (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL)
+    {
+        if (other == 0u)
+            return (value.getAsBool() == false);
+        return (value.getAsBool() == true);
+    }
+    return other == value.getAsUInt();
+}
+
+/**
+    Equals to.
+    @return See details at the class-member operator==().
+*/
 bool operator==(const float& other, const PGEcfgVariable& value)
 {
-    if ( value.getType() == PGE_CVAR_BOOL )
+    if ( value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL )
     {
         if ( other == 0.0f )
             return (value.getAsBool() == false);
@@ -557,7 +750,7 @@ bool operator==(const bool& other, const PGEcfgVariable& value)
 */
 bool operator==(const string& other, const PGEcfgVariable& value)
 {
-    if ( value.getType() == PGE_CVAR_BOOL )
+    if ( value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL )
     {
         const PGEcfgVariable tmp(other.c_str());
         return ( tmp.getAsBool() == value.getAsBool() );
@@ -571,6 +764,15 @@ bool operator==(const string& other, const PGEcfgVariable& value)
     @return See details at the class-member operator!=().
 */
 bool operator!=(const int& other, const PGEcfgVariable& value)
+{
+    return !(other == value);
+}
+
+/**
+    Not equals to.
+    @return See details at the class-member operator!=().
+*/
+bool operator!=(const unsigned int& other, const PGEcfgVariable& value)
 {
     return !(other == value);
 }
@@ -609,7 +811,7 @@ bool operator!=(const string& other, const PGEcfgVariable& value)
 */
 PGEcfgVariable operator-(const PGEcfgVariable& var)
 {
-    if ( (var.getType() == PGE_CVAR_INT) || (var.getType() == PGE_CVAR_FLOAT) )
+    if ( (var.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_INT) || (var.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT) )
     {
         return PGEcfgVariable( 0 - var );
     }
@@ -623,7 +825,22 @@ PGEcfgVariable operator-(const PGEcfgVariable& var)
 */
 PGEcfgVariable operator+(const int& other, const PGEcfgVariable& value)
 {
-    if ( value.getType() == PGE_CVAR_STRING )
+    if ( value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING )
+    {
+        PGEcfgVariable result(other);
+        result += value;
+        return result;
+    }
+    return value + other;
+}
+
+/**
+    Addition to scalar.
+    @return See class-member operator+() for details.
+*/
+PGEcfgVariable operator+(const unsigned int& other, const PGEcfgVariable& value)
+{
+    if (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING)
     {
         PGEcfgVariable result(other);
         result += value;
@@ -638,7 +855,7 @@ PGEcfgVariable operator+(const int& other, const PGEcfgVariable& value)
 */
 PGEcfgVariable operator+(const float& other, const PGEcfgVariable& value)
 {
-    if ( value.getType() == PGE_CVAR_STRING )
+    if ( value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING )
     {
         PGEcfgVariable result(other);
         result += value;
@@ -665,10 +882,10 @@ PGEcfgVariable operator+(const string& other, const PGEcfgVariable& value)
 */
 PGEcfgVariable operator-(const int& other, const PGEcfgVariable& value)
 {
-    if ( (value.getType() == PGE_CVAR_BOOL) || (value.getType() == PGE_CVAR_STRING) )
+    if ( (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) || (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING) )
         return other;
     
-    if ( value.getType() == PGE_CVAR_FLOAT )
+    if ( value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT )
         return PGEcfgVariable( other - value.getAsFloat() );
 
     return PGEcfgVariable( other - value.getAsInt() );
@@ -678,9 +895,24 @@ PGEcfgVariable operator-(const int& other, const PGEcfgVariable& value)
     Subtraction from scalar.
     @return See class-member operator-() for details.
 */
+PGEcfgVariable operator-(const unsigned int& other, const PGEcfgVariable& value)
+{
+    if ((value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) || (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING))
+        return other;
+
+    if (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT)
+        return PGEcfgVariable(other - value.getAsFloat());
+
+    return PGEcfgVariable(other - value.getAsUInt());
+}
+
+/**
+    Subtraction from scalar.
+    @return See class-member operator-() for details.
+*/
 PGEcfgVariable operator-(const float& other, const PGEcfgVariable& value)
 {
-    if ( (value.getType() == PGE_CVAR_BOOL) || (value.getType() == PGE_CVAR_STRING) )
+    if ( (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) || (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING) )
         return other;
 
     return PGEcfgVariable( other - value.getAsFloat() );
@@ -692,6 +924,15 @@ PGEcfgVariable operator-(const float& other, const PGEcfgVariable& value)
     @return See class-member operator*() for details.
 */
 PGEcfgVariable operator*(const int& other, const PGEcfgVariable& value)
+{
+    return value * other;
+}
+
+/**
+    Multiplicating scalar.
+    @return See class-member operator*() for details.
+*/
+PGEcfgVariable operator*(const unsigned int& other, const PGEcfgVariable& value)
 {
     return value * other;
 }
@@ -712,14 +953,14 @@ PGEcfgVariable operator*(const float& other, const PGEcfgVariable& value)
 */
 PGEcfgVariable operator/(const int& other, const PGEcfgVariable& value)
 {
-    if ( (value.getType() == PGE_CVAR_BOOL) || (value.getType() == PGE_CVAR_STRING) )
+    if ( (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) || (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING) )
         return other;
 
     const float fDivider = value.getAsFloat();
     if ( fDivider == 0.0f )
         return other;
     
-    if ( value.getType() == PGE_CVAR_FLOAT )
+    if ( value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT )
         return PGEcfgVariable( other / fDivider );
 
     return PGEcfgVariable( other / value.getAsInt() );
@@ -729,9 +970,28 @@ PGEcfgVariable operator/(const int& other, const PGEcfgVariable& value)
     Dividing scalar.
     @return See class-member operator/() for details.
 */
+PGEcfgVariable operator/(const unsigned int& other, const PGEcfgVariable& value)
+{
+    if ((value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) || (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING))
+        return other;
+
+    const float fDivider = value.getAsFloat();
+    if (fDivider == 0.0f)
+        return other;
+
+    if (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_FLOAT)
+        return PGEcfgVariable(other / fDivider);
+
+    return PGEcfgVariable(other / value.getAsUInt());
+}
+
+/**
+    Dividing scalar.
+    @return See class-member operator/() for details.
+*/
 PGEcfgVariable operator/(const float& other, const PGEcfgVariable& value)
 {
-    if ( (value.getType() == PGE_CVAR_BOOL) || (value.getType() == PGE_CVAR_STRING) )
+    if ( (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_BOOL) || (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING) )
         return other;
 
     const float fDivider = value.getAsFloat();
@@ -748,8 +1008,20 @@ PGEcfgVariable operator/(const float& other, const PGEcfgVariable& value)
 */
 PGEcfgVariable operator%(const int& other, const PGEcfgVariable& value)
 {
-    if ( (value.getType() == PGE_CVAR_INT) && (value.getAsInt() != 0) )
+    if ( (value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_INT) && (value.getAsInt() != 0) )
         return PGEcfgVariable( other % value.getAsInt() );
+
+    return other;
+}
+
+/**
+    Modulo dividing scalar.
+    @return See class-member operator%() for details.
+*/
+PGEcfgVariable operator%(const unsigned int& other, const PGEcfgVariable& value)
+{
+    if ((value.getType() == TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_UINT) && (value.getAsUInt() != 0))
+        return PGEcfgVariable(other % value.getAsUInt());
 
     return other;
 }
