@@ -22,6 +22,7 @@
 #include "PGEcfgVariableTest.h"
 #include "PGEcfgFileTest.h"
 #include "PGEcfgProfilesTest.h"
+#include "PgeOldNewValueTest.h"
 #include "WeaponsTest.h"
 #include "PGEBulletTest.h"
 #include "PR00FsUltimateRenderingEngineTest.h"
@@ -91,6 +92,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     PGEcfgVariableTest         testPGEcfgVariable;
     PGEcfgFileTest             testPGEcfgFile;
     PGEcfgProfilesTest         testPGEcfgProfiles; 
+    PgeOldNewValueTest         testPgeOldNewValue;
     WeaponsTest                testWeapons;
     PGEBulletTest              testPGEBullet;
     
@@ -143,11 +145,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(&testPGEcfgVariable);
     tests.push_back(&testPGEcfgFile);
     tests.push_back(&testPGEcfgProfiles);
+    tests.push_back(&testPgeOldNewValue);
     
-    /*  */
+    /*  
     tests.push_back(&testWeapons);
     tests.push_back(&testPGEBullet);
-    
+    */
     
     /*  
     tests.push_back(&testScreen);

@@ -342,6 +342,7 @@
     <ClInclude Include="..\Config\PGEcfgFile.h" />
     <ClInclude Include="..\Config\PGEcfgProfiles.h" />
     <ClInclude Include="..\Config\PGEcfgVariable.h" />
+    <ClInclude Include="..\Config\PgeOldNewValue.h" />
     <ClInclude Include="..\PGE.h" />
     <ClInclude Include="..\PGEallHeaders.h" />
     <ClInclude Include="..\PGEInputHandler.h" />
@@ -380,6 +381,7 @@
     <ClInclude Include="..\PURE\include\external\Render\PureRendererHWfixedPipe.h" />
     <ClInclude Include="..\PURE\include\external\Render\PureRendererSWincremental.h" />
     <ClInclude Include="PGEBulletTest.h" />
+    <ClInclude Include="PgeOldNewValueTest.h" />
     <ClInclude Include="PR00FsUltimateRenderingEngineTest.h" />
     <ClInclude Include="PR00FsUltimateRenderingEngineTest2.h" />
     <ClInclude Include="PureAxisAlignedBoundingBoxTest.h" />
