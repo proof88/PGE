@@ -163,9 +163,20 @@ inline const T& PgeOldNewValue<T>::getNew() const
 template <typename T>
 bool PgeOldNewValue<T>::set(const T& value)
 {
-    m_newValue = value;
-    if (m_newValue != m_oldValue)
+    if (value != m_newValue)
     {
+        m_newValue = value;
+        m_bDirty = true;
+    }
+    return m_bDirty;
+}
+
+template <>
+inline bool PgeOldNewValue<float>::set(const float& value)
+{
+    if ((value != m_newValue) && (abs(value - m_newValue) > 0.00001f))
+    {
+        m_newValue = value;
         m_bDirty = true;
     }
     return m_bDirty;

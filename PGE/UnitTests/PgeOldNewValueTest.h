@@ -90,6 +90,7 @@ private:
     bool testSet()
     {
         PgeOldNewValue<int> ov(2);
+        PgeOldNewValue<float> ovFloat(2.5f);
 
         bool b = assertFalse(ov.set(2), "set 1");
         b &= assertFalse(ov.isDirty(), "dirty 1");
@@ -97,6 +98,24 @@ private:
         b &= assertTrue(ov.set(4), "set 2");
         b &= assertTrue(ov.isDirty(), "dirty 2");
         b &= assertNotEquals(ov.getOld(), ov.getNew(), "old vs new");
+
+        b &= assertTrue(ovFloat.set(2.6f), "set float 1");
+        b &= assertTrue(ovFloat.isDirty(), "float dirty 1");
+        ovFloat.commit();
+        b &= assertTrue(ovFloat.set(2.61f), "set float 2");
+        b &= assertTrue(ovFloat.isDirty(), "float dirty 2");
+        ovFloat.commit();
+        b &= assertTrue(ovFloat.set(2.611f), "set float 3");
+        b &= assertTrue(ovFloat.isDirty(), "float dirty 3");
+        ovFloat.commit();
+        b &= assertTrue(ovFloat.set(2.6111f), "set float 4");
+        b &= assertTrue(ovFloat.isDirty(), "float dirty 4");
+        ovFloat.commit();
+        b &= assertTrue(ovFloat.set(2.61111f), "set float 5");
+        b &= assertTrue(ovFloat.isDirty(), "float dirty 5");
+        ovFloat.commit();
+        b &= assertFalse(ovFloat.set(2.611111f), "set float 6");
+        b &= assertFalse(ovFloat.isDirty(), "float dirty 6");
 
         return b;
     }
