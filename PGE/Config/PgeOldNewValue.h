@@ -15,6 +15,8 @@
 
 #include <ostream>
 
+#include "../PURE/include/external/Math/PureVector.h"  // for specialization of PgeOldNewValue::set()
+
 /**
     PR00F's Game Engine old-new variable class.
     This class can remember its old (previous) value.
@@ -111,7 +113,6 @@ protected:
 private:
     T m_newValue;
     T m_oldValue;
-    bool m_bDirty;
 };
 
 template <typename T>
@@ -137,15 +138,13 @@ PgeOldNewValue<T> operator%(const T& other, const PgeOldNewValue<T>& value);  /*
 template <typename T>
 PgeOldNewValue<T>::PgeOldNewValue() :
     m_oldValue{},
-    m_newValue{},
-    m_bDirty(false)
+    m_newValue{}
 {}
 
 template <typename T>
 PgeOldNewValue<T>::PgeOldNewValue(const T& value) :
     m_oldValue(value),
-    m_newValue(value),
-    m_bDirty(false)
+    m_newValue(value)
 {}
 
 template <typename T>
@@ -166,40 +165,51 @@ bool PgeOldNewValue<T>::set(const T& value)
     if (value != m_newValue)
     {
         m_newValue = value;
-        m_bDirty = true;
+        return isDirty();
     }
-    return m_bDirty;
+    return false;
 }
 
 template <>
 inline bool PgeOldNewValue<float>::set(const float& value)
 {
-    if ((value != m_newValue) && (abs(value - m_newValue) > 0.00001f))
+    if (abs(value - m_newValue) > 0.00001f)
     {
         m_newValue = value;
-        m_bDirty = true;
+        return isDirty();
     }
-    return m_bDirty;
+    return false;
+}
+
+template <>
+inline bool PgeOldNewValue<PureVector>::set(const PureVector& value)
+{
+    if ((abs(value.getX() - m_newValue.getX()) > 0.00001f) ||
+        (abs(value.getY() - m_newValue.getY()) > 0.00001f) ||
+        (abs(value.getZ() - m_newValue.getZ()) > 0.00001f))
+    {
+        m_newValue = value;
+        return isDirty();
+    }
+    return false;
 }
 
 template <typename T>
 inline bool PgeOldNewValue<T>::isDirty() const
 {
-    return m_bDirty;
+    return (m_oldValue != m_newValue);
 }
 
 template <typename T>
 void PgeOldNewValue<T>::revert()
 {
     m_newValue = m_oldValue;
-    m_bDirty = false;
 }
 
 template <typename T>
 void PgeOldNewValue<T>::commit()
 {
     m_oldValue = m_newValue;
-    m_bDirty = false;
 }
 
 /**
