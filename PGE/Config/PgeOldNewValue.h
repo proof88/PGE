@@ -83,6 +83,7 @@ public:
     bool operator!=(const T& other) const;                                /**< Not equals to value-type. */
     bool operator!=(const PgeOldNewValue<T>& other) const;                /**< Not equals to. */
     PgeOldNewValue<T>& PgeOldNewValue<T>::operator=(const T& other);      /**< Assignment to value-type. */
+    operator T() const;                                                   /**< Conversion to value-type. */
     PgeOldNewValue<T>  operator+ (const T& other) const;                  /**< Addition. */
     PgeOldNewValue<T>  operator+ (const PgeOldNewValue<T>& other) const;  /**< Addition. */
     PgeOldNewValue<T>& operator+=(const T& other);                        /**< Addition assignment. */
@@ -261,6 +262,16 @@ inline PgeOldNewValue<T>& PgeOldNewValue<T>::operator=(const T& other)
 {
     set(other);
     return *this;
+}
+
+/**
+    Conversion to value-type.
+    @return The current (new) value of this object.
+*/
+template<typename T>
+inline PgeOldNewValue<T>::operator T() const
+{
+    return getNew();
 }
 
 /**

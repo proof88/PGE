@@ -29,6 +29,7 @@ public:
         AddSubTest("testOperatorEquals", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorEquals);
         AddSubTest("testOperatorNotEquals", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorNotEquals);
         AddSubTest("testOperatorAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorAssignment);
+        AddSubTest("testOperatorConversionToValueType", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorConversionToValueType);
         AddSubTest("testOperatorAddition", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorAddition);
         AddSubTest("testOperatorAdditionAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorAdditionAssignment);
         AddSubTest("testOperatorSubtraction", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorSubtraction);
@@ -196,6 +197,14 @@ private:
             assertEquals(vecReference, ov2.getOld(), "old") &
             assertEquals(vecReference, ov2.getNew(), "new") &
             assertEquals(ov1.isDirty(), ov3.isDirty(), "dirty");
+    }
+
+    bool testOperatorConversionToValueType()
+    {
+        const PgeOldNewValue<int> ov1(4);
+        const int nv1 = ov1;
+
+        return assertEquals(ov1.getNew(), nv1);
     }
 
     bool testOperatorAddition()
