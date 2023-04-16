@@ -361,6 +361,7 @@ public:
     virtual ~PGEInputKeyboardImpl();
 
     bool isKeyPressed(unsigned char key) const;
+    bool isKeyPressedOnce(unsigned char key);
     void SetKeyPressed(unsigned char key, bool state);
 
 protected:
@@ -370,7 +371,8 @@ private:
     // ---------------------------------------------------------------------------
 
     PGEcfgProfiles& m_cfgProfiles;
-    bool bKeys[256];
+    bool m_bKeysDown[256];
+    bool m_bKeysReleasedSinceLastRead[256];
 
     // ---------------------------------------------------------------------------
 
@@ -396,12 +398,26 @@ PGEInputKeyboardImpl::~PGEInputKeyboardImpl()
 
 bool PGEInputKeyboardImpl::isKeyPressed(unsigned char key) const
 {
-    return bKeys[key];
+    return m_bKeysDown[key];
+}
+
+bool PGEInputKeyboardImpl::isKeyPressedOnce(unsigned char key)
+{
+    const bool bPressedOnce = m_bKeysDown[key] && m_bKeysReleasedSinceLastRead[key];
+    if (bPressedOnce)
+    {
+        m_bKeysReleasedSinceLastRead[key] = false;
+    }
+    return bPressedOnce;
 }
 
 void PGEInputKeyboardImpl::SetKeyPressed(unsigned char key, bool state)
 {
-    bKeys[key] = state;
+    m_bKeysDown[key] = state;
+    if (!state)
+    {
+        m_bKeysReleasedSinceLastRead[key] = true;
+    }
 }
 
 
@@ -414,8 +430,14 @@ void PGEInputKeyboardImpl::SetKeyPressed(unsigned char key, bool state)
 PGEInputKeyboardImpl::PGEInputKeyboardImpl(PGEcfgProfiles& cfgProfiles) :
     m_cfgProfiles(cfgProfiles)
 {
+    // bKeysDown could be initialized in class definition this way too: bKeysDown = {false}, however
+    // I cannot initialize bKeysReleasedSinceLastRead elements to true in similar way, so I keep
+    // setting both here:
     for (int i = 0; i < 256; i++)
-        bKeys[i] = false;    
+    {
+        m_bKeysDown[i] = false;
+        m_bKeysReleasedSinceLastRead[i] = true;
+    }
 }
 
 

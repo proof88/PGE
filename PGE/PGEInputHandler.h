@@ -113,7 +113,23 @@ public:
 
     CConsole&   getConsole() const;                   /**< Returns access to console preset with logger module name as this class. */
 
+    /**
+    * @return True if given key is pressed, false otherwise.
+    */
     virtual bool isKeyPressed(unsigned char key) const = 0;
+
+    /**
+    * Useful if we want to distinguish between different keypresses of the same key.
+    * Unlike isKeyPressed(), this function also keeps track of the last released state of the key,
+    * and will return true only if the state has just changed from released to pressed.
+    * @return True if given key has just been changed to pressed state, false otherwise.
+    */
+    virtual bool isKeyPressedOnce(unsigned char key) = 0;
+    
+    /**
+    * Sets the pressed state of the given key to the given value.
+    * This is used by the message handler callback function of the game window.
+    */
     virtual void SetKeyPressed(unsigned char key, bool state) = 0;
 
 }; // class PGEInputKeyboard
