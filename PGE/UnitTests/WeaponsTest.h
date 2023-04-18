@@ -1517,14 +1517,16 @@ private:
 
     bool test_wm_initially_empty()
     {
-        WeaponManager wm(cfgProfiles, *engine);
+        std::list<Bullet> bullets;
+        WeaponManager wm(cfgProfiles, *engine, bullets);
         return assertTrue(wm.getWeapons().empty(), "weapons") & assertTrue(wm.getBullets().empty(), "bullets") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
     }
 
     bool test_wm_clear_weapons()
     {
-        WeaponManager wm(cfgProfiles, *engine);
+        std::list<Bullet> bullets;
+        WeaponManager wm(cfgProfiles, *engine, bullets);
         bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         b &= assertTrue(wm.setDefaultAvailableWeaponByFilename("sample_good_wpn_automatic.txt"), "setDefaultAvailable");
         wm.Clear();
@@ -1535,7 +1537,8 @@ private:
 
     bool test_wm_set_default_available_weapon()
     {
-        WeaponManager wm(cfgProfiles, *engine);
+        std::list<Bullet> bullets;
+        WeaponManager wm(cfgProfiles, *engine, bullets);
         bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         
         b &= assertFalse(wm.setDefaultAvailableWeaponByFilename("xxx"), "setDefaultAvailable 1");
@@ -1549,7 +1552,8 @@ private:
 
     bool test_wm_load_weapon_bad_assignment()
     {
-        WeaponManager wm(cfgProfiles, *engine);
+        std::list<Bullet> bullets;
+        WeaponManager wm(cfgProfiles, *engine, bullets);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_bad_assignment.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
@@ -1559,7 +1563,8 @@ private:
 
     bool test_wm_load_weapon_unaccepted_var()
     {
-        WeaponManager wm(cfgProfiles, *engine);
+        std::list<Bullet> bullets;
+        WeaponManager wm(cfgProfiles, *engine, bullets);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_unaccepted_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
@@ -1569,7 +1574,8 @@ private:
 
     bool test_wm_load_weapon_missing_var()
     {
-        WeaponManager wm(cfgProfiles, *engine);
+        std::list<Bullet> bullets;
+        WeaponManager wm(cfgProfiles, *engine, bullets);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_missing_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
@@ -1579,7 +1585,8 @@ private:
 
     bool test_wm_load_weapon_double_defined_var()
     {
-        WeaponManager wm(cfgProfiles, *engine);
+        std::list<Bullet> bullets;
+        WeaponManager wm(cfgProfiles, *engine, bullets);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_double_defined_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
@@ -1589,7 +1596,8 @@ private:
 
     bool test_wm_load_weapon_good()
     {
-        WeaponManager wm(cfgProfiles, *engine);
+        std::list<Bullet> bullets;
+        WeaponManager wm(cfgProfiles, *engine, bullets);
         bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         b &= assertFalse(wm.getWeapons().empty(), "not empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");

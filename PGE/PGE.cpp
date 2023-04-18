@@ -62,7 +62,7 @@ public:
     PR00FsUltimateRenderingEngine& getPure() const;
     pge_network::PgeNetwork& getNetwork() const;
     SoLoud::Soloud& getAudio();
-    WeaponManager& getWeaponManager();
+    std::list<Bullet>& getBullets();
                     
     bool isGameRunning() const;               
     int  destroyGame();                        
@@ -93,7 +93,7 @@ private:
     PGESysGFX m_sysGFX;
     pge_network::PgeNetwork& m_network;
     PGESysSFX  m_sysSFX;
-    WeaponManager m_wpnMgr;
+    std::list<Bullet> m_bullets;
 
     bool        m_bIsGameRunning;         /**< Is the game running (true after successful init and before initiating shutdown)? */
     std::string m_sGameTitle;             /**< Simplified name of the game, used in paths too, so can't contain joker chars. */
@@ -216,9 +216,9 @@ SoLoud::Soloud& PGE::PGEimpl::getAudio()
     return m_sysSFX.getAudioCore();
 }
 
-WeaponManager& PGE::PGEimpl::getWeaponManager()
+std::list<Bullet>& PGE::PGEimpl::getBullets()
 {
-    return m_wpnMgr;
+    return m_bullets;
 }
 
 
@@ -232,7 +232,6 @@ int PGE::PGEimpl::destroyGame()
 {
     // make sure that everything is destructed in REVERSE order compared to initializeGame()
     // first things to shutdown are instances that are NOT even initialized by initializeGame(), such as m_wpnMgr
-    m_wpnMgr.Clear();
     m_world.Shutdown();
     // m_inputHandler doesnt have any shutdown
     m_sysGFX.destroySysGFX();
@@ -303,7 +302,6 @@ PGE::PGEimpl::PGEimpl() :
     m_sysGFX(m_cfgProfiles, m_inputHandler),
     m_network( pge_network::PgeNetwork::createAndGet(m_cfgProfiles) ),
     m_sysSFX(m_cfgProfiles),
-    m_wpnMgr(m_cfgProfiles, m_gfx),
     m_bIsGameRunning(false),
     m_nTargetGameLoopFreq(0),
     m_minFrameTimeMicrosecs(0.0)
@@ -321,7 +319,6 @@ PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     m_sysGFX(m_cfgProfiles, m_inputHandler),
     m_network( pge_network::PgeNetwork::createAndGet(m_cfgProfiles) ),
     m_sysSFX(m_cfgProfiles),
-    m_wpnMgr(m_cfgProfiles, m_gfx),
     m_bIsGameRunning(false),
     m_nTargetGameLoopFreq(0),
     m_minFrameTimeMicrosecs(0.0)
@@ -349,7 +346,6 @@ PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     m_sysGFX(m_cfgProfiles, m_inputHandler),
     m_network(pge_network::PgeNetwork::createAndGet(m_cfgProfiles)),
     m_sysSFX(m_cfgProfiles),
-    m_wpnMgr(m_cfgProfiles, m_gfx),
     m_bIsGameRunning(false),
     m_sGameTitle(gameTitle),
     m_nInactiveSleep(PGE_INACTIVE_SLEEP),
@@ -393,7 +389,6 @@ void PGE::PGEimpl::frameFrameLimit(
     }
     timeLastTime = std::chrono::steady_clock::now();
 }
-
 
 
 /*
@@ -648,11 +643,11 @@ SoLoud::Soloud& PGE::getAudio()
 
 
 /**
-    Returns the weapon manager object.
+    Returns the bullets simulated by the engine.
 */
-WeaponManager& PGE::getWeaponManager()
+std::list<Bullet>& PGE::getBullets()
 {
-    return p->getWeaponManager();
+    return p->getBullets();
 }
 
 

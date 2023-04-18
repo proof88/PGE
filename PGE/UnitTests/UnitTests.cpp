@@ -145,12 +145,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     //tests.push_back(&testPGEcfgVariable);
     //tests.push_back(&testPGEcfgFile);
     //tests.push_back(&testPGEcfgProfiles);
-    tests.push_back(&testPgeOldNewValue);
+    //tests.push_back(&testPgeOldNewValue);
     
-    /*  
+    /*  */
     tests.push_back(&testWeapons);
     tests.push_back(&testPGEBullet);
-    */
+    
     
     /*  
     tests.push_back(&testScreen);

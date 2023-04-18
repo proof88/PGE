@@ -318,7 +318,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    WeaponManager(PGEcfgProfiles& cfgProfiles, PR00FsUltimateRenderingEngine& gfx);
+    WeaponManager(PGEcfgProfiles& cfgProfiles, PR00FsUltimateRenderingEngine& gfx, std::list<Bullet>& bullets);
     virtual ~WeaponManager();
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
@@ -338,7 +338,8 @@ protected:
 
     WeaponManager(const WeaponManager&) :
         m_cfgProfiles(m_cfgProfiles),
-        m_gfx(m_gfx)
+        m_gfx(m_gfx),
+        m_bullets(m_bullets)
     {}
 
     WeaponManager& operator=(const WeaponManager&)
@@ -351,7 +352,7 @@ private:
     PGEcfgProfiles& m_cfgProfiles;
     PR00FsUltimateRenderingEngine& m_gfx;
     std::vector<Weapon*> m_weapons;
-    std::list<Bullet> m_bullets;
+    std::list<Bullet>& m_bullets;
     std::string m_sDefaultAvailableWeapon;
 
     // ---------------------------------------------------------------------------

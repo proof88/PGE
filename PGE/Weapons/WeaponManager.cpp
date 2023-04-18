@@ -948,9 +948,10 @@ void Weapon::UpdateGraphics()
 // ############################### PUBLIC ################################
 
 
-WeaponManager::WeaponManager(PGEcfgProfiles& cfgProfiles, PR00FsUltimateRenderingEngine& gfx) :
+WeaponManager::WeaponManager(PGEcfgProfiles& cfgProfiles, PR00FsUltimateRenderingEngine& gfx, std::list<Bullet>& bullets) :
     m_cfgProfiles(cfgProfiles),
-    m_gfx(gfx)
+    m_gfx(gfx),
+    m_bullets(bullets)
 {
 
 }
@@ -1036,7 +1037,6 @@ void WeaponManager::Clear()
         delete pWpn;
     }
     m_weapons.clear();
-    m_bullets.clear();
     m_sDefaultAvailableWeapon.clear();
 }
 
