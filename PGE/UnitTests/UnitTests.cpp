@@ -9,6 +9,7 @@
 
 #include "UnitTest.h"  // PCH
 
+#include <memory>  // for std::unique_ptr; requires cpp11
 #include <vector>
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -87,132 +88,80 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     getConsole().OLn(CON_TITLE);
     getConsole().L();
     getConsole().OLn("");
-
-    PFLTest                    testPFL;
-    PGEcfgVariableTest         testPGEcfgVariable;
-    PGEcfgFileTest             testPGEcfgFile;
-    PGEcfgProfilesTest         testPGEcfgProfiles; 
-    PgeOldNewValueTest         testPgeOldNewValue;
-    WeaponsTest                testWeapons;
-    PGEBulletTest              testPGEBullet;
     
-    PureScreenTest                  testScreen;
-    PureSharedSettingsTest          testSharedSettings;
-
-    PureVectorTest                  testPureVector;
-    PurePosUpTargetTest             testPosUpTarget;
-    PureMatrixTest                  testPureMatrix;
-    PureTransformMatrixTest         testPureTransformMatrix;
-    PureAxisAlignedBoundingBoxTest  testAABB;
-    PureOctreeTest                  testOctree;
-    PureBoundingVolumeHierarchyTest testBVH;
-    PureScissorTest                 testPureScissor;
-    PureColorTest                   testPureColor;
-    PureManagerTest                 testPureManager;
-    PureManagedTest                 testPureManaged;
-    PureFiledManagerTest            testPureFiledManager;
-    PureFiledManagedTest            testPureFiledManaged;
-    PureHwInfoTest                  testPureHwInfo;
-    PurehwCentralProcessorTest      testPurehwCentralProcessor;
-    PureHwSystemMemoryTest          testPureHwSystemMemory;
-    PureHwAudioTest                 testPureHwAudio;
-    PureHwVideoTest                 testPureHwVideo;
-    PureImageManagerTest            testPureImageManager;
-    PureImageTest                   testPureImage;
-    PureTextureManagerTest          testPureTextureManager;
-    PureTextureTest                 testPureTexture; 
-    PureMaterialManagerTest         testPureMaterialManager;
-    PureMaterialTest                testPureMaterial;
-
-    PureCameraTest                  testPureCamera;
-    PureMesh3DManagerTest           testPureMesh3DManager;
-    PureMesh3DTest                  testPureMesh3D;
-    PureVertexTransferTest          testPureVertexTransfer;
-    PureObject3DManagerTest         testPureObject3DManager;
-    PureObject3DTest                testPureObject3D;
-    PureWindowTest                  testPureWindow;
-    PureWindowTest2                 testPureWindow2;
-
-    PureRendererHWfixedPipeTest     testPureRendererHWfixedPipe;
+    vector<std::unique_ptr<UnitTest>> tests;
     
-    PR00FsUltimateRenderingEngineTest  testPure;
-    PR00FsUltimateRenderingEngineTest2 testPure2;
+    tests.push_back(std::unique_ptr<UnitTest>(new PFLTest));
     
-    vector<UnitTest*> tests;
+    tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgVariableTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgFileTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgProfilesTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PgeOldNewValueTest));
     
-    //tests.push_back(&testPFL);
-    //
-    //tests.push_back(&testPGEcfgVariable);
-    //tests.push_back(&testPGEcfgFile);
-    //tests.push_back(&testPGEcfgProfiles);
-    //tests.push_back(&testPgeOldNewValue);
-    
-    /*  */
-    tests.push_back(&testWeapons);
-    tests.push_back(&testPGEBullet);
+    /* */ 
+    tests.push_back(std::unique_ptr<UnitTest>(new WeaponsTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PGEBulletTest));
     
     
     /*  
-    tests.push_back(&testScreen);
-    tests.push_back(&testSharedSettings);
+    tests.push_back(std::unique_ptr<UnitTest>(new PureScreenTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureSharedSettingsTest));
     */
     
     /*  
-    tests.push_back(&testPosUpTarget);
-    tests.push_back(&testPureVector);  
-    tests.push_back(&testPureMatrix);  
-    tests.push_back(&testPureTransformMatrix);
-    tests.push_back(&testAABB);
-    tests.push_back(&testOctree);
-    tests.push_back(&testBVH);
-    tests.push_back(&testPureScissor);
-         
-    tests.push_back(&testPureColor);
-    tests.push_back(&testPureManager);
-    tests.push_back(&testPureManaged);
-    tests.push_back(&testPureFiledManager);
-    tests.push_back(&testPureFiledManaged);
-      
-    tests.push_back(&testPureHwInfo);
-    tests.push_back(&testPurehwCentralProcessor);
-    tests.push_back(&testPureHwSystemMemory);
-    tests.push_back(&testPureHwAudio);
-    tests.push_back(&testPureHwVideo); 
-    
-    tests.push_back(&testPureImageManager);
-    tests.push_back(&testPureImage); 
-    tests.push_back(&testPureTextureManager);
-    tests.push_back(&testPureTexture);
-    tests.push_back(&testPureMaterialManager);
-    tests.push_back(&testPureMaterial);
-    
-    tests.push_back(&testPureCamera);  
-       
-    tests.push_back(&testPureMesh3DManager);
-    tests.push_back(&testPureMesh3D);
-    
-    tests.push_back(&testPureVertexTransfer);
-    
-    tests.push_back(&testPureObject3DManager);
-    tests.push_back(&testPureObject3D);  
+    tests.push_back(std::unique_ptr<UnitTest>(new PurePosUpTargetTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureVectorTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureMatrixTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureTransformMatrixTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureAxisAlignedBoundingBoxTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureOctreeTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureBoundingVolumeHierarchyTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureScissorTest));
+
+    tests.push_back(std::unique_ptr<UnitTest>(new PureColorTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureManagerTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureManagedTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureFiledManagerTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureFiledManagedTest));
+
+    tests.push_back(std::unique_ptr<UnitTest>(new PureHwInfoTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PurehwCentralProcessorTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureHwSystemMemoryTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureHwAudioTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureHwVideoTest));
+
+    tests.push_back(std::unique_ptr<UnitTest>(new PureImageManagerTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureImageTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureTextureManagerTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureTextureTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureMaterialManagerTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureMaterialTest));
+
+    tests.push_back(std::unique_ptr<UnitTest>(new PureCameraTest));
+
+    tests.push_back(std::unique_ptr<UnitTest>(new PureMesh3DManagerTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureMesh3DTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureVertexTransferTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureObject3DManagerTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureObject3DTest));
     */
 
     /*   
-    tests.push_back(&testPureWindow);
-    tests.push_back(&testPureWindow2);
+    tests.push_back(std::unique_ptr<UnitTest>(new PureWindowTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PureWindowTest2));
     */
-    
-    //tests.push_back(&testPureRendererHWfixedPipe);
+
+    //tests.push_back(std::unique_ptr<UnitTest>(new PureRendererHWfixedPipeTest));
     
     /*   
-    tests.push_back(&testPure);
-    tests.push_back(&testPure2);
+    tests.push_back(std::unique_ptr<UnitTest>(new PR00FsUltimateRenderingEngineTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PR00FsUltimateRenderingEngineTest2));
     */
-    
-    vector<UnitTest*>::size_type nSucceededTests = 0;
-    vector<UnitTest*>::size_type nTotalSubTests = 0;
-    vector<UnitTest*>::size_type nTotalPassedSubTests = 0;
-    for (vector<UnitTest*>::size_type i = 0; i < tests.size(); ++i)
+
+    vector<std::unique_ptr<UnitTest>>::size_type nSucceededTests = 0;
+    vector<std::unique_ptr<UnitTest>>::size_type nTotalSubTests = 0;
+    vector<std::unique_ptr<UnitTest>>::size_type nTotalPassedSubTests = 0;
+    for (vector<std::unique_ptr<UnitTest>>::size_type i = 0; i < tests.size(); ++i)
     {
         getConsole().OLn("Running test %d / %d ... ", i+1, tests.size());
         tests[i]->run();
@@ -220,7 +169,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     // summarizing
     getConsole().OLn("");
-    for (vector<UnitTest*>::size_type i = 0; i < tests.size(); ++i)
+    for (vector<std::unique_ptr<UnitTest>>::size_type i = 0; i < tests.size(); ++i)
     {
         if ( tests[i]->isPassed() )
         {
