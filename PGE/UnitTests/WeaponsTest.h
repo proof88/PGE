@@ -1530,7 +1530,7 @@ private:
     {
         std::list<Bullet> bullets;
         WeaponManager wm(cfgProfiles, *engine, bullets);
-        bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
+        bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         b &= assertTrue(wm.setDefaultAvailableWeaponByFilename("sample_good_wpn_automatic.txt"), "setDefaultAvailable");
         b &= assertTrue(wm.setCurrentWeapon(wm.getWeapons()[0], true, false), "setCurrentWeapon");
 
@@ -1546,7 +1546,7 @@ private:
     {
         std::list<Bullet> bullets;
         WeaponManager wm(cfgProfiles, *engine, bullets);
-        bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
+        bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         
         b &= assertFalse(wm.setDefaultAvailableWeaponByFilename("xxx"), "setDefaultAvailable 1");
         b &= assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon 1");
@@ -1605,7 +1605,7 @@ private:
     {
         std::list<Bullet> bullets;
         WeaponManager wm(cfgProfiles, *engine, bullets);
-        bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
+        bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         b &= assertFalse(wm.getWeapons().empty(), "not empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
 
@@ -1616,8 +1616,8 @@ private:
     {
         std::list<Bullet> bullets;
         WeaponManager wm(cfgProfiles, *engine, bullets);
-        bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
-        b &= assertTrue(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
+        bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
+        b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
 
         if (b)
         {

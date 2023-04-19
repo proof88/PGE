@@ -972,24 +972,24 @@ const char* WeaponManager::getLoggerModuleName()
     return "WeaponManager";
 }
 
-bool WeaponManager::load(const char* fname, pge_network::PgeNetworkConnectionHandle connHandleServerSide)
+Weapon* WeaponManager::load(const char* fname, pge_network::PgeNetworkConnectionHandle connHandleServerSide)
 {
     try
     {
         Weapon* const wpn = new Weapon(fname, m_bullets, m_gfx, connHandleServerSide);
         if (!wpn)
         {
-            return false;
+            return nullptr;
         }
 
         m_weapons.push_back(wpn);
         wpn->getObject3D().SetName(wpn->getObject3D().getName() + " (WeaponManager-loaded " + fname + ")");
-        return true;
+        return wpn;
     }
     catch (const std::exception& e)
     {
         getConsole().EOLn("WeaponManager::load(%s) failed due to exception: %s", fname, e.what());
-        return false;
+        return nullptr;
     }
 }
 
