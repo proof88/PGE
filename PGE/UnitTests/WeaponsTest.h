@@ -102,6 +102,7 @@ protected:
         AddSubTest("test_wm_load_weapon_missing_var", (PFNUNITSUBTEST) &WeaponsTest::test_wm_load_weapon_missing_var);
         AddSubTest("test_wm_load_weapon_double_defined_var", (PFNUNITSUBTEST) &WeaponsTest::test_wm_load_weapon_double_defined_var);
         AddSubTest("test_wm_load_weapon_good", (PFNUNITSUBTEST) &WeaponsTest::test_wm_load_weapon_good);
+        AddSubTest("test_wm_get_set_current_weapon", (PFNUNITSUBTEST)&WeaponsTest::test_wm_get_set_current_weapon);
     }
 
     virtual bool setUp()
@@ -1520,7 +1521,9 @@ private:
         std::list<Bullet> bullets;
         WeaponManager wm(cfgProfiles, *engine, bullets);
         return assertTrue(wm.getWeapons().empty(), "weapons") & assertTrue(wm.getBullets().empty(), "bullets") &
-            assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
+            assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon") &
+            assertNull(wm.getCurrentWeapon(), "currentWeapon") &
+            assertEquals(0, wm.getTimeLastWeaponSwitch().time_since_epoch().count(), "last wpn switch");
     }
 
     bool test_wm_clear_weapons()
@@ -1529,10 +1532,14 @@ private:
         WeaponManager wm(cfgProfiles, *engine, bullets);
         bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         b &= assertTrue(wm.setDefaultAvailableWeaponByFilename("sample_good_wpn_automatic.txt"), "setDefaultAvailable");
+        b &= assertTrue(wm.setCurrentWeapon(wm.getWeapons()[0], true, false), "setCurrentWeapon");
+
         wm.Clear();
 
         return b & assertTrue(wm.getWeapons().empty(), "empty") &
-            assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
+            assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon") &
+            assertNull(wm.getCurrentWeapon(), "currentWeapon") &
+            assertEquals(0, wm.getTimeLastWeaponSwitch().time_since_epoch().count(), "last wpn switch");
     }
 
     bool test_wm_set_default_available_weapon()
@@ -1601,6 +1608,45 @@ private:
         bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         b &= assertFalse(wm.getWeapons().empty(), "not empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
+
+        return b;
+    }
+
+    bool test_wm_get_set_current_weapon()
+    {
+        std::list<Bullet> bullets;
+        WeaponManager wm(cfgProfiles, *engine, bullets);
+        bool b = assertTrue(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
+        b &= assertTrue(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
+
+        if (b)
+        {
+            b &= assertNull(wm.getCurrentWeapon(), "current 1");
+            b &= assertFalse(wm.setCurrentWeapon(wm.getWeapons()[0], true, true /*server*/), "try switch to non-avail 1 server should not work");
+            b &= assertNull(wm.getCurrentWeapon(), "current 2");
+            b &= assertEquals(0, wm.getTimeLastWeaponSwitch().time_since_epoch().count(), "last switch time should not change 1");
+
+            b &= assertFalse(wm.setCurrentWeapon(wm.getWeapons()[0], true, true /*server*/), "try switch to non-avail 2 server should not work");
+            b &= assertNull(wm.getCurrentWeapon(), "current 3");
+            b &= assertEquals(0, wm.getTimeLastWeaponSwitch().time_since_epoch().count(), "last switch time should not change 2");
+
+            wm.getWeapons()[0]->SetAvailable(true);
+            b &= assertTrue(wm.setCurrentWeapon(wm.getWeapons()[0], true, true /*server*/), "try switch to avail 1 server");
+            b &= assertEquals(wm.getWeapons()[0], wm.getCurrentWeapon(), "current 4");
+            b &= assertEquals(0, wm.getTimeLastWeaponSwitch().time_since_epoch().count(), "last switch time should not change when this is our first used weapon");
+
+            b &= assertTrue(wm.setCurrentWeapon(wm.getWeapons()[1], true, false /*client*/), "try switch to non-avail 2 client should work");
+            b &= assertEquals(wm.getWeapons()[1], wm.getCurrentWeapon(), "current 4");
+            const auto nLastSwitchTimeSinceEpoch = wm.getTimeLastWeaponSwitch().time_since_epoch().count();
+            b &= assertNotEquals(0, nLastSwitchTimeSinceEpoch, "last switch time should change 2");
+
+            b &= assertFalse(wm.setCurrentWeapon(nullptr, true, false), "switch to null should not work");
+            b &= assertEquals(nLastSwitchTimeSinceEpoch, wm.getTimeLastWeaponSwitch().time_since_epoch().count(), "last switch time should not change 4");
+
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 10);
+            b &= assertFalse(wm.setCurrentWeapon(&wpn, true, false), "switch to not owned wpn should not work");
+            b &= assertEquals(nLastSwitchTimeSinceEpoch, wm.getTimeLastWeaponSwitch().time_since_epoch().count(), "last switch time should not change 5");
+        }
 
         return b;
     }

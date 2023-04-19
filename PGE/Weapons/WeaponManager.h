@@ -11,6 +11,7 @@
     ###################################################################################
 */
 
+#include <chrono> // requires cpp11
 #include <list>
 #include <map>
 #include <set>
@@ -327,9 +328,16 @@ public:
     std::vector<Weapon*>& getWeapons();
 
     Weapon* getWeaponByFilename(const std::string& wpnName);
+    const Weapon* getWeaponByFilename(const std::string& wpnName) const;
 
     const std::string& getDefaultAvailableWeaponFilename() const;
     bool setDefaultAvailableWeaponByFilename(const std::string& sFilename);
+
+    const Weapon* getCurrentWeapon() const;
+    Weapon* getCurrentWeapon();
+    bool setCurrentWeapon(Weapon* wpn, bool bRecordSwitchTime, bool bServer);
+
+    const std::chrono::time_point<std::chrono::steady_clock>& getTimeLastWeaponSwitch() const;
 
     void Clear();
     std::list<Bullet>& getBullets();
@@ -339,6 +347,7 @@ protected:
     WeaponManager(const WeaponManager&) :
         m_cfgProfiles(m_cfgProfiles),
         m_gfx(m_gfx),
+        m_pCurrentWpn(nullptr),
         m_bullets(m_bullets)
     {}
 
@@ -352,6 +361,8 @@ private:
     PGEcfgProfiles& m_cfgProfiles;
     PR00FsUltimateRenderingEngine& m_gfx;
     std::vector<Weapon*> m_weapons;
+    Weapon* m_pCurrentWpn;
+    std::chrono::time_point<std::chrono::steady_clock> m_timeLastWeaponSwitch;
     std::list<Bullet>& m_bullets;
     std::string m_sDefaultAvailableWeapon;
 

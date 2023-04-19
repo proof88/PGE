@@ -951,6 +951,7 @@ void Weapon::UpdateGraphics()
 WeaponManager::WeaponManager(PGEcfgProfiles& cfgProfiles, PR00FsUltimateRenderingEngine& gfx, std::list<Bullet>& bullets) :
     m_cfgProfiles(cfgProfiles),
     m_gfx(gfx),
+    m_pCurrentWpn(nullptr),
     m_bullets(bullets)
 {
 
@@ -999,18 +1000,24 @@ std::vector<Weapon*>& WeaponManager::getWeapons()
 
 Weapon* WeaponManager::getWeaponByFilename(const std::string& wpnName)
 {    
-    for (const auto pWpn : m_weapons)
-    {
-        if (pWpn)
-        {
-            if (pWpn->getFilename() == wpnName)
-            {
-                return pWpn;
-            }
-        }
-    }
+    const auto it = std::find_if(
+        m_weapons.begin(),
+        m_weapons.end(),
+        [&wpnName](Weapon* pwpn) { return pwpn && pwpn->getFilename() == wpnName; }
+    );
 
-    return nullptr;
+    return it == m_weapons.end() ? nullptr : *it;
+}
+
+const Weapon* WeaponManager::getWeaponByFilename(const std::string& wpnName) const
+{
+    const auto it = std::find_if(
+        m_weapons.begin(),
+        m_weapons.end(),
+        [&wpnName](Weapon* pwpn) { return pwpn && pwpn->getFilename() == wpnName; }
+    );
+
+    return it == m_weapons.end() ? nullptr : *it;
 }
 
 const std::string& WeaponManager::getDefaultAvailableWeaponFilename() const
@@ -1030,6 +1037,60 @@ bool WeaponManager::setDefaultAvailableWeaponByFilename(const std::string& sFile
     return false;
 }
 
+const Weapon* WeaponManager::getCurrentWeapon() const
+{
+    return m_pCurrentWpn;
+}
+
+Weapon* WeaponManager::getCurrentWeapon()
+{
+    return m_pCurrentWpn;
+}
+
+bool WeaponManager::setCurrentWeapon(Weapon* wpn, bool bRecordSwitchTime, bool bServer)
+{
+    if (!wpn)
+    {
+        getConsole().EOLn("Player::%s(): CANNOT set nullptr!", __func__);
+        return false;
+    }
+
+    if (bServer /* client should not do availability check since it is not aware of wpn availability of the players */ &&
+        !wpn->isAvailable())
+    {
+        //getConsole().EOLn(
+        //    "Player::%s(): wpn %s is NOT available!", __func__, wpn->getFilename().c_str());
+        return false;
+    }
+
+    if (m_pCurrentWpn && (m_pCurrentWpn != wpn))
+    {
+        if (m_weapons.end() == std::find(m_weapons.begin(), m_weapons.end(), wpn))
+        {
+            getConsole().EOLn("WeaponManager::%s(): CANNOT HAPPEN: wpn %s is NOT owned by us!", __func__, wpn->getFilename().c_str());
+            return false;
+        }
+
+        // we already have a current different weapon, so this will be a weapon switch
+        m_pCurrentWpn->getObject3D().Hide();
+        wpn->getObject3D().getAngleVec() = m_pCurrentWpn->getObject3D().getAngleVec();
+
+        if (bRecordSwitchTime)
+        {
+            m_timeLastWeaponSwitch = std::chrono::steady_clock::now();
+        }
+    }
+    wpn->getObject3D().Show();
+    m_pCurrentWpn = wpn;
+
+    return true;
+}
+
+const std::chrono::time_point<std::chrono::steady_clock>& WeaponManager::getTimeLastWeaponSwitch() const
+{
+    return m_timeLastWeaponSwitch;
+}
+
 void WeaponManager::Clear()
 {
     for (auto& pWpn : m_weapons)
@@ -1038,6 +1099,8 @@ void WeaponManager::Clear()
     }
     m_weapons.clear();
     m_sDefaultAvailableWeapon.clear();
+    m_pCurrentWpn = nullptr;
+    m_timeLastWeaponSwitch = {};
 }
 
 std::list<Bullet>& WeaponManager::getBullets()
