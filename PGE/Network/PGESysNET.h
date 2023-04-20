@@ -85,8 +85,8 @@ public:
     std::size_t getPacketQueueSize() const;
     pge_network::PgePacket popFrontPacket() noexcept(false);
 
-    std::set<pge_network::PgePktId>& getBlackListedPgeMessages();
-    std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages();
+    std::set<pge_network::PgePktId>& getAllowListedPgeMessages();
+    std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages();
 
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
     std::string getDetailedStatus() const;
@@ -139,8 +139,8 @@ private:
     
 
     std::deque<pge_network::PgePacket> m_queuePackets;  // used by both client and server
-    std::set<pge_network::PgePktId> m_blackListedPgeMessages;  // used by both client and server
-    std::set<pge_network::TPgeMsgAppMsgId> m_blackListedAppMessages;  // used by both client and server
+    std::set<pge_network::PgePktId> m_allowListedPgeMessages;  // used by both client and server
+    std::set<pge_network::TPgeMsgAppMsgId> m_allowListedAppMessages;  // used by both client and server
 
     uint32_t m_nRxPktCount;
     uint32_t m_nTxPktCount;

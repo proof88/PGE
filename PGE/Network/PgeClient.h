@@ -65,8 +65,8 @@ namespace pge_network
         virtual std::size_t getPacketQueueSize() const = 0;
         virtual pge_network::PgePacket popFrontPacket() noexcept(false) = 0;
 
-        virtual std::set<pge_network::PgePktId>& getBlackListedPgeMessages() = 0;
-        virtual std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages() = 0;
+        virtual std::set<pge_network::PgePktId>& getAllowListedPgeMessages() = 0;
+        virtual std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() = 0;
 
         virtual int getPing(bool bForceUpdate) = 0;
         virtual float getQualityLocal(bool bForceUpdate) = 0;

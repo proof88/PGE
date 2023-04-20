@@ -37,8 +37,8 @@ public:
     std::size_t getPacketQueueSize() const override;
     pge_network::PgePacket popFrontPacket() noexcept(false) override;
 
-    std::set<pge_network::PgePktId>& getBlackListedPgeMessages() override;
-    std::set<pge_network::TPgeMsgAppMsgId>& getBlackListedAppMessages() override;
+    std::set<pge_network::PgePktId>& getAllowListedPgeMessages() override;
+    std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() override;
 
     uint32_t getRxPacketCount() const override;
     uint32_t getTxPacketCount() const override;
@@ -145,14 +145,14 @@ pge_network::PgePacket PgeServerImpl::popFrontPacket() noexcept(false)
     return m_PgeSysNET.popFrontPacket();
 }
 
-std::set<pge_network::PgePktId>& PgeServerImpl::getBlackListedPgeMessages()
+std::set<pge_network::PgePktId>& PgeServerImpl::getAllowListedPgeMessages()
 {
-    return m_PgeSysNET.getBlackListedPgeMessages();
+    return m_PgeSysNET.getAllowListedPgeMessages();
 }
 
-std::set<pge_network::TPgeMsgAppMsgId>& PgeServerImpl::getBlackListedAppMessages()
+std::set<pge_network::TPgeMsgAppMsgId>& PgeServerImpl::getAllowListedAppMessages()
 {
-    return m_PgeSysNET.getBlackListedAppMessages();
+    return m_PgeSysNET.getAllowListedAppMessages();
 }
 
 uint32_t PgeServerImpl::getRxPacketCount() const
@@ -220,7 +220,7 @@ PgeServerImpl::PgeServerImpl(PGEcfgProfiles& cfgProfiles) :
     m_cfgProfiles(cfgProfiles),
     m_PgeSysNET(PGESysNET::createAndGet(cfgProfiles))
 {
-    m_PgeSysNET.getBlackListedPgeMessages().insert(pge_network::MsgUserConnected::id);
+    m_PgeSysNET.getAllowListedPgeMessages().insert(pge_network::MsgApp::id);
 } // PgeServerImpl(...)
 
 
