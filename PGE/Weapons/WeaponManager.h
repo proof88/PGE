@@ -319,13 +319,7 @@ class WeaponManager
 #endif
 
 public:
-    struct KeyReleasedAndWeaponFilenamePair
-    {
-        bool m_bReleased;
-        std::string m_sWpnFilename;
-    };
-
-    typedef std::map<unsigned char, KeyReleasedAndWeaponFilenamePair> KeypressToWeaponMap;
+    typedef std::map<unsigned char, std::string> KeypressToWeaponMap;
 
     static const char* getLoggerModuleName();              /**< Returns the logger module name of this class. */
 
