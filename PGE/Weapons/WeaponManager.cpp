@@ -11,6 +11,8 @@
 #include "PureBaseIncludes.h"  // PCH
 #include "WeaponManager.h"
 
+#include <cmath>
+
 
 /*
    Bullet
@@ -331,6 +333,12 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsUltimateRend
     {
         getConsole().EOLnOO("reload_whole_mag is true but reload_per_mag is false in %s! ", fname);
         throw std::runtime_error("reload_whole_mag is true but reload_per_mag is false in " + std::string(fname));
+    }
+
+    if (getVars()["firing_cooldown"].getAsInt() < 1)
+    {
+        getConsole().EOLnOO("firing_cooldown must be a positive value in %s! ", fname);
+        throw std::runtime_error("firing_cooldown must be a positive value in " + std::string(fname));
     }
 
     if ( getVars()["recoil_m"].getAsFloat() > 1.f )
@@ -902,6 +910,30 @@ bool Weapon::isAvailable() const
 void Weapon::SetAvailable(bool bAvail)
 {
     m_bAvailable = bAvail;
+}
+
+/**
+* Returns a calculated rating of damage caused by a single shot fired: DPFR.
+* This is a positive number usually in range [0.01, 100], rarely even bigger.
+* 
+* @return DPFR (Damage per Fire Rating) caused by a single shot fired, calculated as: damage_hp * damage_ap / 100.f.
+*/
+const float Weapon::getDamagePerFireRating() const
+{
+    // later we can also add damage_area_size to this calculation
+    return (getVars().at("damage_hp").getAsInt() * getVars().at("damage_ap").getAsInt()) / 100.f;
+}
+
+/**
+* Returns a calculated rating of total damage per 1 second: DPSR.
+* This is used by WeaponManager to put Weapons into order based on their power.
+* Always positive.
+* 
+* @return DPSR (Damage per Second Rating), calculated as: (1000.f/firing_cooldown * DPFR)^2.
+*/
+const float Weapon::getDamagePerSecondRating() const
+{
+    return std::powf(1000.f / getVars().at("firing_cooldown").getAsInt() * getDamagePerFireRating(), 2.f);
 }
 
 

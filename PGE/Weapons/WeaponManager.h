@@ -211,6 +211,9 @@ public:
     bool isAvailable() const;          /**< Returns if this weapon is available for the player. */
     void SetAvailable(bool bAvail);    /**< Changes the availability of this weapon for the player. */
 
+    const float getDamagePerFireRating() const;    /**< Returns a calculated rating of damage caused by a single shot fired. */
+    const float getDamagePerSecondRating() const;  /**< Returns a calculated rating of total damage per 1 second. */
+
     Weapon(const Weapon& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
         PGEcfgFile(other),
         m_bullets(other.m_bullets),

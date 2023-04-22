@@ -13,6 +13,8 @@
 #include "UnitTest.h"  // PCH
 #include "../Weapons/WeaponManager.h"
 
+#include <cmath>
+
 class WeaponsTest :
     public UnitTest
 {
@@ -51,7 +53,8 @@ protected:
         AddSubTest("test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag);
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown);
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control);
-        AddSubTest("wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled", (PFNUNITSUBTEST) &WeaponsTest::wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled);
+        AddSubTest("test_wpn_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled);
+        AddSubTest("test_wpn_firing_cooldown_must_be_positive", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_firing_cooldown_must_be_positive);
         AddSubTest("test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
         AddSubTest("test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse);
         AddSubTest("test_wpn_firing_mode_max_cannot_be_less_than_default", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_firing_mode_max_cannot_be_less_than_default);
@@ -93,6 +96,9 @@ protected:
         AddSubTest("test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop);
         AddSubTest("test_wpn_reload_doesnt_reload_during_shooting", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_reload_doesnt_reload_during_shooting);
         AddSubTest("test_wpn_reset_sets_defaults", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_reset_sets_defaults);
+
+        AddSubTest("test_wpn_get_damage_per_fire_rating", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_get_damage_per_fire_rating);
+        AddSubTest("test_wpn_get_damage_per_second_rating", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_get_damage_per_second_rating);
         
         AddSubTest("test_wm_initially_empty", (PFNUNITSUBTEST) &WeaponsTest::test_wm_initially_empty);
         AddSubTest("test_wm_clear_weapons", (PFNUNITSUBTEST) &WeaponsTest::test_wm_clear_weapons);
@@ -320,13 +326,29 @@ private:
         return b;
     }
 
-    bool wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled()
+    bool test_wpn_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled()
     {
         bool b = false;
         try
         {
             std::list<Bullet> bullets;
             Weapon wpn("gamedata/weapons/wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled.txt", bullets, *engine, 0);
+        }
+        catch (const std::exception)
+        {
+            b = true;
+        }
+
+        return b;
+    }
+
+    bool test_wpn_firing_cooldown_must_be_positive()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/wpn_test_firing_cooldown_must_be_positive.txt", bullets, *engine, 0);
         }
         catch (const std::exception)
         {
@@ -1317,6 +1339,46 @@ private:
             b &= assertFalse(wpn.isAvailable(), "available");
             b &= assertTrue(wpn.isTriggerReleased(), "trigger");
 
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_get_damage_per_fire_rating()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+
+            b = assertEquals((wpn.getVars().at("damage_hp").getAsInt() * wpn.getVars().at("damage_ap").getAsInt()) / 100.f,
+                wpn.getDamagePerFireRating(), 0.001f, "1");
+            b &= assertBetween(0.01f, 100.f, wpn.getDamagePerFireRating(), 0.001f, "2");
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_get_damage_per_second_rating()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+
+            b = assertEquals(std::powf(1000.f / wpn.getVars().at("firing_cooldown").getAsInt() * wpn.getDamagePerFireRating(), 2.f),
+                wpn.getDamagePerSecondRating(), 0.001f, "1");
+            b &= assertGreater(wpn.getDamagePerSecondRating(), 0.f, "2");
         }
         catch (const std::exception& e)
         {
