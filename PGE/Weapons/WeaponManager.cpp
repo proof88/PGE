@@ -1004,6 +1004,19 @@ const char* WeaponManager::getLoggerModuleName()
     return "WeaponManager";
 }
 
+/**
+    Returns the only instance of KeypressToWeaponMap.
+    This map allows the user to define keyboard key mapping to weapons.
+    Currently it is still the user's responsibility to handle these keypresses in game code, however
+    this map is also used by WeaponManager's getPrev/NextWeapon() functions since this map
+    defines the desired logical order of the weapons.
+    Note that this logical order is independent from the power order which is based on the DPFR value of weapons.
+*/
+WeaponManager::KeypressToWeaponMap& WeaponManager::getKeypressToWeaponMap()
+{
+    return m_mapKeypressToWeapon;
+}
+
 Weapon* WeaponManager::load(const char* fname, pge_network::PgeNetworkConnectionHandle connHandleServerSide)
 {
     try
@@ -1148,3 +1161,4 @@ std::list<Bullet>& WeaponManager::getBullets()
 // ############################### PRIVATE ###############################
 
 
+WeaponManager::KeypressToWeaponMap WeaponManager::m_mapKeypressToWeapon;

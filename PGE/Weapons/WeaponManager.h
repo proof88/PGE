@@ -308,6 +308,7 @@ private:
 
 }; // class Weapon
 
+
 /**
     PR00F's Game Engine Weapon Manager
 */
@@ -318,7 +319,17 @@ class WeaponManager
 #endif
 
 public:
-    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+    struct KeyReleasedAndWeaponFilenamePair
+    {
+        bool m_bReleased;
+        std::string m_sWpnFilename;
+    };
+
+    typedef std::map<unsigned char, KeyReleasedAndWeaponFilenamePair> KeypressToWeaponMap;
+
+    static const char* getLoggerModuleName();              /**< Returns the logger module name of this class. */
+
+    static KeypressToWeaponMap& getKeypressToWeaponMap();  /**< Returns the only instance of KeypressToWeaponMap. */
 
     // ---------------------------------------------------------------------------
 
@@ -360,6 +371,7 @@ protected:
     }
 
 private:
+    static KeypressToWeaponMap m_mapKeypressToWeapon;
 
     PGEcfgProfiles& m_cfgProfiles;
     PR00FsUltimateRenderingEngine& m_gfx;
