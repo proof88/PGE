@@ -333,7 +333,7 @@ public:
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
     Weapon* load(const char* fname, pge_network::PgeNetworkConnectionHandle connHandle);
-    std::vector<Weapon*>& getWeapons();
+    const std::vector<Weapon*>& getWeapons() const;
 
     Weapon* getWeaponByFilename(const std::string& wpnName);
     const Weapon* getWeaponByFilename(const std::string& wpnName) const;

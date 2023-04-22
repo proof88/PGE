@@ -1017,6 +1017,14 @@ WeaponManager::KeypressToWeaponMap& WeaponManager::getKeypressToWeaponMap()
     return m_mapKeypressToWeapon;
 }
 
+/**
+* Loads the given weapon file and returns the created Weapon instance.
+* 
+* @param fname                Weapon file name.
+* @param connHandleServerSide The server-side connection handle of the owner of the loaded weapon.
+*                             Basically this connects the weapon to the user of the weapon.
+* @return Nullptr on error loading the file, otherwise pointer to the created Weapon instance.
+*/
 Weapon* WeaponManager::load(const char* fname, pge_network::PgeNetworkConnectionHandle connHandleServerSide)
 {
     try
@@ -1038,7 +1046,7 @@ Weapon* WeaponManager::load(const char* fname, pge_network::PgeNetworkConnection
     }
 }
 
-std::vector<Weapon*>& WeaponManager::getWeapons()
+const std::vector<Weapon*>& WeaponManager::getWeapons() const
 {
     return m_weapons;
 }
@@ -1048,7 +1056,7 @@ Weapon* WeaponManager::getWeaponByFilename(const std::string& wpnName)
     const auto it = std::find_if(
         m_weapons.begin(),
         m_weapons.end(),
-        [&wpnName](Weapon* pwpn) { return pwpn && pwpn->getFilename() == wpnName; }
+        [&wpnName](const Weapon* pwpn) { return pwpn && pwpn->getFilename() == wpnName; }
     );
 
     return it == m_weapons.end() ? nullptr : *it;
@@ -1059,17 +1067,24 @@ const Weapon* WeaponManager::getWeaponByFilename(const std::string& wpnName) con
     const auto it = std::find_if(
         m_weapons.begin(),
         m_weapons.end(),
-        [&wpnName](Weapon* pwpn) { return pwpn && pwpn->getFilename() == wpnName; }
+        [&wpnName](const Weapon* pwpn) { return pwpn && pwpn->getFilename() == wpnName; }
     );
 
     return it == m_weapons.end() ? nullptr : *it;
 }
 
+/**
+* @return Default available weapon that was previously set by setDefaultAvailableWeaponByFilename().
+*/
 const std::string& WeaponManager::getDefaultAvailableWeaponFilename() const
 {
     return m_sDefaultAvailableWeapon;
 }
 
+/**
+* Sets default available weapon that should be by default available for any new/respawning player.
+* Note that WeaponManager doesn't know about any player entity, you need to connect this logic with your player entity.
+*/
 bool WeaponManager::setDefaultAvailableWeaponByFilename(const std::string& sFilename)
 {
     Weapon* wpn = getWeaponByFilename(sFilename);
@@ -1082,16 +1097,40 @@ bool WeaponManager::setDefaultAvailableWeaponByFilename(const std::string& sFile
     return false;
 }
 
+/**
+* Gets the current weapon.
+* Useful for a player object for tracking player's current weapon.
+* Note that WeaponManager doesn't know about any player entity, you need to connect this logic with your player entity.
+* 
+* @return Current weapon. Can be null if setCurrentWeapon() was not yet called.
+*/
 const Weapon* WeaponManager::getCurrentWeapon() const
 {
     return m_pCurrentWpn;
 }
 
+/**
+* Gets the current weapon.
+* Useful for a player object for tracking player's current weapon.
+* Note that WeaponManager doesn't know about any player entity, you need to connect this logic with your player entity.
+* 
+* @return Current weapon. Can be null if setCurrentWeapon() was not yet called.
+*/
 Weapon* WeaponManager::getCurrentWeapon()
 {
     return m_pCurrentWpn;
 }
 
+/**
+* Sets the current weapon. 
+* Useful for a player object for tracking player's current weapon.
+* Note that WeaponManager doesn't know about any player entity, you need to connect this logic with your player entity.
+* 
+* @param wpn               The weapon you want to set to be current. Cannot be null.
+* @param bRecordSwitchTime Set it to true if you want the timestamp of this change to be saved for later query by getTimeLastWeaponSwitch().
+* @param bServer           Set it to true if we are server instance, false if we are client.
+* @return True if current weapon has been set to the given weapon, false otherwise.
+*/
 bool WeaponManager::setCurrentWeapon(Weapon* wpn, bool bRecordSwitchTime, bool bServer)
 {
     if (!wpn)
@@ -1131,11 +1170,17 @@ bool WeaponManager::setCurrentWeapon(Weapon* wpn, bool bRecordSwitchTime, bool b
     return true;
 }
 
+/**
+* @return Timestamp of last successful setCurrentWeapon() with bRecordSwitchTime as true.
+*/
 const std::chrono::time_point<std::chrono::steady_clock>& WeaponManager::getTimeLastWeaponSwitch() const
 {
     return m_timeLastWeaponSwitch;
 }
 
+/**
+* Deletes all loaded weapons, sets current weapon to null and clears default available weapon and last weapon switch timestamp.
+*/
 void WeaponManager::Clear()
 {
     for (auto& pWpn : m_weapons)
@@ -1148,6 +1193,9 @@ void WeaponManager::Clear()
     m_timeLastWeaponSwitch = {};
 }
 
+/**
+* @return Reference to the list storing bullets created by firing any weapon managed by this WeaponManager instance.
+*/
 std::list<Bullet>& WeaponManager::getBullets()
 {
     return m_bullets;
