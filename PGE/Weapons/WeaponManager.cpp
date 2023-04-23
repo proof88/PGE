@@ -1122,7 +1122,9 @@ Weapon* WeaponManager::getCurrentWeapon()
 * 
 * @param wpn               The weapon you want to set to be current. Cannot be null.
 * @param bRecordSwitchTime Set it to true if you want the timestamp of this change to be saved for later query by getTimeLastWeaponSwitch().
+*                          Ignored if this is the very first time you invoke this function, since that won't be a real switch at all.
 * @param bServer           Set it to true if we are server instance, false if we are client.
+*                          Only server does availability check because clients might not be up-to-date about weapon availability.
 * 
 * @return True if current weapon has been set to the given weapon, false otherwise.
 */
@@ -1166,10 +1168,16 @@ bool WeaponManager::setCurrentWeapon(Weapon* wpn, bool bRecordSwitchTime, bool b
 }
 
 /**
-* @param cTargetWeapon The key associated to the previous weapon in KeypressToWeaponMap will be set in this output argument.
+* Gets the previous available weapon.
+* Typically you need this function when the user is browsing their weapons backwards e.g. scrolling mousewheel backward.
+* 
+* @param cTargetWeapon Output argument, the key associated to the previous available weapon in KeypressToWeaponMap will be set in this output argument.
+*                      Will be set to '\0' (null-char) if no current weapon is set or the file name of the current weapon is not present in KeypressToWeaponMap.
+*                      Will be set to the key of the current weapon if we could not find another available weapon.
 * 
 * @return The previous available weapon based on logical order defined by KeypressToWeaponMap.
 *         Nullptr if there is no current weapon set or the file name of the current weapon is not present in KeypressToWeaponMap.
+*         Same weapon as current weapon if we could not find another available weapon.
 *         Note that owner of weapon is not taken into consideration, because the idea is that
 *         each player entity has their own WeaponManager, storing only their owned weapons.
 */
@@ -1179,10 +1187,16 @@ Weapon* WeaponManager::getPrevAvailableWeapon(unsigned char& cTargetWeapon)
 }
 
 /**
-* @param cTargetWeapon The key associated to the previous weapon in KeypressToWeaponMap will be set in this output argument
+* Gets the previous available weapon.
+* Typically you need this function when the user is browsing their weapons backwards e.g. scrolling mousewheel backward.
+* 
+* @param cTargetWeapon Output argument, the key associated to the previous available weapon in KeypressToWeaponMap will be set in this output argument.
+*                      Will be set to '\0' (null-char) if no current weapon is set or the file name of the current weapon is not present in KeypressToWeaponMap.
+*                      Will be set to the key of the current weapon if we could not find another available weapon.
 * 
 * @return The previous available weapon based on logical order defined by KeypressToWeaponMap.
 *         Nullptr if there is no current weapon set or the file name of the current weapon is not present in KeypressToWeaponMap.
+*         Same weapon as current weapon if we could not find another available weapon.
 *         Note that owner of weapon is not taken into consideration, because the idea is that
 *         each player entity has their own WeaponManager, storing only their owned weapons.
 */
@@ -1248,10 +1262,16 @@ const Weapon* WeaponManager::getPrevAvailableWeapon(unsigned char& cTargetWeapon
 }
 
 /**
-* @param cTargetWeapon The key associated to the next weapon in KeypressToWeaponMap will be set in this output argument
+* Gets the next available weapon.
+* Typically you need this function when the user is browsing their weapons forward e.g. scrolling mousewheel forward.
+* 
+* @param cTargetWeapon Output argument, the key associated to the next available weapon in KeypressToWeaponMap will be set in this output argument.
+*                      Will be set to '\0' (null-char) if no current weapon is set or the file name of the current weapon is not present in KeypressToWeaponMap.
+*                      Will be set to the key of the current weapon if we could not find another available weapon.
 * 
 * @return The next available weapon based on logical order defined by KeypressToWeaponMap.
 *         Nullptr if there is no current weapon set or the file name of the current weapon is not present in KeypressToWeaponMap.
+*         Same weapon as current weapon if we could not find another available weapon.
 *         Note that owner of weapon is not taken into consideration, because the idea is that
 *         each player entity has their own WeaponManager, storing only their owned weapons.
 */
@@ -1261,10 +1281,16 @@ Weapon* WeaponManager::getNextAvailableWeapon(unsigned char& cTargetWeapon)
 }
 
 /**
-* @param cTargetWeapon The key associated to the next weapon in KeypressToWeaponMap will be set in this output argument
+* Gets the next available weapon.
+* Typically you need this function when the user is browsing their weapons forward e.g. scrolling mousewheel forward.
+* 
+* @param cTargetWeapon Output argument, the key associated to the next available weapon in KeypressToWeaponMap will be set in this output argument.
+*                      Will be set to '\0' (null-char) if no current weapon is set or the file name of the current weapon is not present in KeypressToWeaponMap.
+*                      Will be set to the key of the current weapon if we could not find another available weapon.
 * 
 * @return The next available weapon based on logical order defined by KeypressToWeaponMap.
 *         Nullptr if there is no current weapon set or the file name of the current weapon is not present in KeypressToWeaponMap.
+*         Same weapon as current weapon if we could not find another available weapon.
 *         Note that owner of weapon is not taken into consideration, because the idea is that
 *         each player entity has their own WeaponManager, storing only their owned weapons.
 */
@@ -1322,6 +1348,90 @@ const Weapon* WeaponManager::getNextAvailableWeapon(unsigned char& cTargetWeapon
                 __func__, itKeypressToWeaponMap->second.c_str());
         }
     } while (itKeypressToWeaponMap != itKeypressToWeaponMapStart);
+
+    return pRetWeapon;
+}
+
+/**
+* Gets the next best available weapon.
+* Typically you need this when you run out of ammo of your current weapon and want to switch to another most useful weapon.
+* Unlike the getPrev/NextAvailableWeapon() functions, here we follow the power order of available weapons defined by their DPSR value, and
+* we don't consider weapons for which we don't have any ammo.
+* 
+* @param cTargetWeapon Output argument, the key associated to the next best available weapon.
+*
+* @return The next best available weapon based on power order defined by DPSR value of weapons.
+*         Nullptr if there is no current weapon set or the file name of the next best available weapon is not present in KeypressToWeaponMap.
+*         Same weapon as current weapon if we could not find a best next available weapon.
+*         Note that owner of weapon is not taken into consideration, because the idea is that
+*         each player entity has their own WeaponManager, storing only their owned weapons.
+*/
+Weapon* WeaponManager::getNextBestAvailableWeapon(unsigned char& cTargetWeapon)
+{
+    return const_cast<Weapon*>(const_cast<const WeaponManager*>(this)->getNextBestAvailableWeapon(cTargetWeapon));
+}
+
+/**
+* Gets the next best available weapon.
+* Typically you need this when you run out of ammo of your current weapon and want to switch to another most useful weapon.
+* Unlike the getPrev/NextAvailableWeapon() functions, here we follow the power order of available weapons defined by their DPSR value, and
+* we don't consider weapons for which we don't have any ammo.
+*
+* @param cTargetWeapon Output argument, the key associated to the next best available weapon.
+*
+* @return The next best available weapon based on power order defined by DPSR value of weapons.
+*         Nullptr if there is no current weapon set or the file name of the next best available weapon is not present in KeypressToWeaponMap.
+*         Same weapon as current weapon if we could not find a best next available weapon.
+*         Note that owner of weapon is not taken into consideration, because the idea is that
+*         each player entity has their own WeaponManager, storing only their owned weapons.
+*/
+const Weapon* WeaponManager::getNextBestAvailableWeapon(unsigned char& cTargetWeapon) const
+{
+    const Weapon* pRetWeapon = getCurrentWeapon();
+    cTargetWeapon = '\0';
+    if (!pRetWeapon)
+    {
+        getConsole().EOLn("PRooFPSddPGE::%s(): CurrentWeapon null!", __func__);
+        return nullptr;
+    }
+
+    const auto itKeypressToWeaponMapCurrentWeapon = std::find_if(
+        getKeypressToWeaponMap().begin(),
+        getKeypressToWeaponMap().end(),
+        [this](const auto& keyWpnPair) { return keyWpnPair.second == this->getCurrentWeapon()->getFilename(); });
+
+    if (itKeypressToWeaponMapCurrentWeapon == getKeypressToWeaponMap().end())
+    {
+        getConsole().EOLn("PRooFPSddPGE::%s(): could not set cCurrentWeaponKeyChar based on %s!",
+            __func__, getCurrentWeapon()->getFilename().c_str());
+        return nullptr;
+    }
+
+    cTargetWeapon = itKeypressToWeaponMapCurrentWeapon->first;
+
+    float fMaxDpsr = 0.f;
+    for (const auto& keyWpnPair : getKeypressToWeaponMap())
+    {
+        const Weapon* const pTargetWeapon = getWeaponByFilename(keyWpnPair.second);
+        if (pTargetWeapon)
+        {
+            if ((pTargetWeapon != getCurrentWeapon()) &&
+                 pTargetWeapon->isAvailable() &&
+                (pTargetWeapon->getDamagePerSecondRating() > fMaxDpsr) &&
+                ((pTargetWeapon->getMagBulletCount() > 0) || (pTargetWeapon->getUnmagBulletCount() > 0)))
+            {
+                // it is also ok if bullets are not yet loaded into the weapon, but we should have ammo at least unloaded
+                cTargetWeapon = keyWpnPair.first;
+                pRetWeapon = pTargetWeapon;
+                fMaxDpsr = pRetWeapon->getDamagePerSecondRating();
+            }
+        }
+        else
+        {
+            getConsole().EOLn("PRooFPSddPGE::%s(): SHOULD NOT HAPPEN: found a not loaded weapon file name in KeypressToWeaponMap: %s!",
+                __func__, keyWpnPair.second.c_str());
+        }
+    }
 
     return pRetWeapon;
 }

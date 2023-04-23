@@ -80,7 +80,7 @@ firing_mode_max = burst
 
 # Time needed to elapse between 2 shots, in millisecs.
 # Cannot be 0.
-firing_cooldown = 300
+firing_cooldown = 500
 
 #####################
 #                   #
@@ -158,7 +158,7 @@ bullet_fragile = true
 
 # Damage to health when hit directly.
 # If firing mode is "proj" or "burst", each hitting bullet or projectile takes this amount of damage.
-damage_hp = 20
+damage_hp = 40
 
 # Damage to armor when hit directly.
 # If firing mode is "proj" or "burst", each hitting bullet or projectile takes this amount of damage.

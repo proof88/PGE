@@ -109,10 +109,12 @@ protected:
         AddSubTest("test_wm_load_weapon_double_defined_var", (PFNUNITSUBTEST) &WeaponsTest::test_wm_load_weapon_double_defined_var);
         AddSubTest("test_wm_load_weapon_good", (PFNUNITSUBTEST) &WeaponsTest::test_wm_load_weapon_good);
         AddSubTest("test_wm_get_set_current_weapon", (PFNUNITSUBTEST)&WeaponsTest::test_wm_get_set_current_weapon);
-        AddSubTest("test_wm_get_prev_weapon", (PFNUNITSUBTEST)&WeaponsTest::test_wm_get_prev_weapon);
-        AddSubTest("test_wm_get_prev_weapon_not_in_keytoweaponmap", (PFNUNITSUBTEST)&WeaponsTest::test_wm_get_prev_weapon_not_in_keytoweaponmap);
-        AddSubTest("test_wm_get_next_weapon", (PFNUNITSUBTEST)&WeaponsTest::test_wm_get_next_weapon);
-        AddSubTest("test_wm_get_next_weapon_not_in_keytoweaponmap", (PFNUNITSUBTEST)&WeaponsTest::test_wm_get_next_weapon_not_in_keytoweaponmap);
+        AddSubTest("test_wm_get_prev_avail_weapon", (PFNUNITSUBTEST)&WeaponsTest::test_wm_get_prev_avail_weapon);
+        AddSubTest("test_wm_get_prev_avail_weapon_not_in_keytoweaponmap", (PFNUNITSUBTEST)&WeaponsTest::test_wm_get_prev_avail_weapon_not_in_keytoweaponmap);
+        AddSubTest("test_wm_get_next_avail_weapon", (PFNUNITSUBTEST)&WeaponsTest::test_wm_get_next_avail_weapon);
+        AddSubTest("test_wm_get_next_avail_weapon_not_in_keytoweaponmap", (PFNUNITSUBTEST)&WeaponsTest::test_wm_get_next_avail_weapon_not_in_keytoweaponmap);
+        AddSubTest("test_wm_get_next_best_avail_weapon", (PFNUNITSUBTEST)&WeaponsTest::test_wm_get_next_best_avail_weapon);
+        AddSubTest("test_wm_get_next_best_avail_weapon_not_in_keytoweaponmap", (PFNUNITSUBTEST)&WeaponsTest::test_wm_get_next_best_avail_weapon_not_in_keytoweaponmap);
     }
 
     virtual bool setUp()
@@ -450,7 +452,7 @@ private:
                 assertEquals(1500, wpn.getVars()["reload_time"].getAsInt(), "reload_time") &
                 assertEquals("auto", wpn.getVars()["firing_mode_def"].getAsString(), "firing_mode_def") &
                 assertEquals("auto", wpn.getVars()["firing_mode_max"].getAsString(), "firing_mode_max") &
-                assertEquals(300, wpn.getVars()["firing_cooldown"].getAsInt(), "firing_cooldown") &
+                assertEquals(150, wpn.getVars()["firing_cooldown"].getAsInt(), "firing_cooldown") &
                 assertEquals(5.f, wpn.getVars()["acc_angle"].getAsFloat(), "acc_angle") &
                 assertEquals(1.2f, wpn.getVars()["acc_m_walk"].getAsFloat(), "acc_m_walk") &
                 assertEquals(3.0f, wpn.getVars()["acc_m_run"].getAsFloat(), "acc_m_run") &
@@ -1717,7 +1719,7 @@ private:
         return b;
     }
 
-    bool test_wm_get_prev_weapon()
+    bool test_wm_get_prev_avail_weapon()
     {
         // Which key should switch to which weapon, this defines logical order
         WeaponManager::getKeypressToWeaponMap() = {
@@ -1787,7 +1789,7 @@ private:
         return b;
     }
 
-    bool test_wm_get_prev_weapon_not_in_keytoweaponmap()
+    bool test_wm_get_prev_avail_weapon_not_in_keytoweaponmap()
     {
         // Which key should switch to which weapon, this defines logical order
         WeaponManager::getKeypressToWeaponMap() = {
@@ -1821,7 +1823,7 @@ private:
         return b;
     }
 
-    bool test_wm_get_next_weapon()
+    bool test_wm_get_next_avail_weapon()
     {
         // Which key should switch to which weapon, this defines logical order
         WeaponManager::getKeypressToWeaponMap() = {
@@ -1885,7 +1887,7 @@ private:
         return b;
     }
 
-    bool test_wm_get_next_weapon_not_in_keytoweaponmap()
+    bool test_wm_get_next_avail_weapon_not_in_keytoweaponmap()
     {
         // Which key should switch to which weapon, this defines logical order
         WeaponManager::getKeypressToWeaponMap() = {
@@ -1898,6 +1900,7 @@ private:
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
 
+        constexpr int iMchgun = 0;
         constexpr int iPistol = 1;
 
         if (b)
@@ -1909,6 +1912,7 @@ private:
 
             // both loaded weapons become available and pistol becomes current
             wm.getWeapons()[iPistol]->SetAvailable(true);
+            wm.getWeapons()[iMchgun]->SetAvailable(true);
             b &= assertTrue(wm.setCurrentWeapon(wm.getWeapons()[iPistol], false, true /*server*/), "try switch to avail 1 server");
 
             pWpnTarget = wm.getNextAvailableWeapon(cWpnTarget);
@@ -1918,4 +1922,135 @@ private:
 
         return b;
     }
+
+    bool test_wm_get_next_best_avail_weapon()
+    {
+        // Which key should switch to which weapon, this defines logical order
+        WeaponManager::getKeypressToWeaponMap() = {
+            {'2', "sample_good_wpn_semi_with_burst.txt"},
+            {'3', "sample_good_wpn_automatic.txt"},
+            {'4', "sample_good_wpn_railgun.txt"},
+        };
+
+        std::list<Bullet> bullets;
+        WeaponManager wm(cfgProfiles, *engine, bullets);
+        bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
+        b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
+        b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_railgun.txt", 0), "load 3");
+
+        constexpr int iMchgun = 0;
+        constexpr int iPistol = 1;
+        constexpr int iRailgun = 2;
+
+        b &= assertGreater(
+            wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
+            wm.getWeapons()[iPistol]->getDamagePerSecondRating(),
+            "DPSR of mchgun should be greater than pistol");
+        b &= assertGreater(
+            wm.getWeapons()[iRailgun]->getDamagePerSecondRating(),
+            wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
+            "DPSR of railgun should be greater than mchgun");
+
+        if (b)
+        {
+            unsigned char cWpnTarget;
+            Weapon* pWpnTarget = wm.getNextBestAvailableWeapon(cWpnTarget);
+            b &= assertEquals('\0', cWpnTarget, "cWpnTarget should stay null due to no current weapon");
+            b &= assertNull(pWpnTarget, "pWpnTarget should be null due to no current weapon");
+
+            // only pistol is available and becomes current
+            wm.getWeapons()[iPistol]->SetAvailable(true);
+            b &= assertTrue(wm.setCurrentWeapon(wm.getWeapons()[iPistol], false, true /*server*/), "try switch to avail 1 server");
+
+            pWpnTarget = wm.getNextBestAvailableWeapon(cWpnTarget);
+            b &= assertEquals('2', cWpnTarget, "cWpnTarget should stay as current due to no other available");
+            b &= assertEquals(wm.getCurrentWeapon(), pWpnTarget, "pWpnTarget should be current wpn due to no other available");
+
+            // machinegun becomes available
+            wm.getWeapons()[iMchgun]->SetAvailable(true);
+
+            pWpnTarget = wm.getNextBestAvailableWeapon(cWpnTarget);
+            b &= assertEquals('3', cWpnTarget, "cWpnTarget should change to mchgun");
+            b &= assertEquals(wm.getWeapons()[iMchgun], pWpnTarget, "pWpnTarget should change to mchgun");
+
+            // machinegun becomes current
+            b &= assertTrue(wm.setCurrentWeapon(wm.getWeapons()[iMchgun], false, true /*server*/), "try switch to avail 2 server");
+
+            pWpnTarget = wm.getNextBestAvailableWeapon(cWpnTarget);
+            b &= assertEquals('2', cWpnTarget, "cWpnTarget should change to pistol since current is mchgun");
+            b &= assertEquals(wm.getWeapons()[iPistol], pWpnTarget, "pWpnTarget should change to pistol since current is mchgun");
+
+            // railgun becomes available
+            wm.getWeapons()[iRailgun]->SetAvailable(true);
+            pWpnTarget = wm.getNextBestAvailableWeapon(cWpnTarget);
+            b &= assertEquals('4', cWpnTarget, "cWpnTarget should change to railgun");
+            b &= assertEquals(wm.getWeapons()[iRailgun], pWpnTarget, "pWpnTarget should change to railgun");
+
+            // railgun becomes current
+            b &= assertTrue(wm.setCurrentWeapon(wm.getWeapons()[iRailgun], false, true /*server*/), "try switch to avail 3 server");
+            pWpnTarget = wm.getNextBestAvailableWeapon(cWpnTarget);
+            b &= assertEquals('3', cWpnTarget, "cWpnTarget should change to mchgun since current is railgun");
+            b &= assertEquals(wm.getWeapons()[iMchgun], pWpnTarget, "pWpnTarget should change to mchgun since current is railgun");
+
+            // machinegun becomes empty
+            wm.getWeapons()[iMchgun]->SetUnmagBulletCount(0);
+            wm.getWeapons()[iMchgun]->SetMagBulletCount(0);
+
+            pWpnTarget = wm.getNextBestAvailableWeapon(cWpnTarget);
+            b &= assertEquals('2', cWpnTarget, "cWpnTarget should change to pistol due to mchgun empty");
+            b &= assertEquals(wm.getWeapons()[iPistol], pWpnTarget, "pWpnTarget should change to pistol due to mchgun empty");
+
+            // pistol becomes empty
+            wm.getWeapons()[iPistol]->SetUnmagBulletCount(0);
+            wm.getWeapons()[iPistol]->SetMagBulletCount(0);
+
+            pWpnTarget = wm.getNextBestAvailableWeapon(cWpnTarget);
+            b &= assertEquals('4', cWpnTarget, "cWpnTarget should stay railgun becomes no better option is available");
+            b &= assertEquals(wm.getWeapons()[iRailgun], pWpnTarget, "pWpnTarget should stay railgun becomes no better option is available");
+        }
+
+        return b;
+    }
+
+    bool test_wm_get_next_best_avail_weapon_not_in_keytoweaponmap()
+    {
+        // Which key should switch to which weapon, this defines logical order
+        WeaponManager::getKeypressToWeaponMap() = {
+            {'2', "sample_good_wpn_semi_with_burst.txt"},
+            {'3', "asdasd.txt"}
+        };
+
+        std::list<Bullet> bullets;
+        WeaponManager wm(cfgProfiles, *engine, bullets);
+        bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
+        b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
+
+        constexpr int iMchgun = 0;
+        constexpr int iPistol = 1;
+
+        b &= assertGreater(
+            wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
+            wm.getWeapons()[iPistol]->getDamagePerSecondRating(),
+            "DPSR of mchgun should be greater than pistol");
+
+        if (b)
+        {
+            unsigned char cWpnTarget;
+            Weapon* pWpnTarget = wm.getNextBestAvailableWeapon(cWpnTarget);
+            b &= assertEquals('\0', cWpnTarget, "cWpnTarget should stay null due to no current weapon");
+            b &= assertNull(pWpnTarget, "pWpnTarget should be null due to no current weapon");
+
+            // both loaded weapons become available and pistol becomes current
+            wm.getWeapons()[iPistol]->SetAvailable(true);
+            wm.getWeapons()[iMchgun]->SetAvailable(true);
+            b &= assertTrue(wm.setCurrentWeapon(wm.getWeapons()[iPistol], false, true /*server*/), "try switch to avail 1 server");
+
+            pWpnTarget = wm.getNextBestAvailableWeapon(cWpnTarget);
+            b &= assertEquals('2', cWpnTarget, "cWpnTarget should stay as current due to other weapon added to KeypressToWeaponMap is unknown weapon");
+            b &= assertEquals(wm.getCurrentWeapon(), pWpnTarget, "pWpnTarget should be current wpn due to other weapon added to KeypressToWeaponMap is unknown weapon");
+        }
+
+        return b;
+    }
+
 }; 
