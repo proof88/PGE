@@ -1061,7 +1061,7 @@ const Weapon* WeaponManager::getWeaponByFilename(const std::string& wpnName) con
     const auto it = std::find_if(
         m_weapons.begin(),
         m_weapons.end(),
-        [&wpnName](const Weapon* pwpn) { return pwpn && pwpn->getFilename() == wpnName; }
+        [&wpnName](const Weapon* pwpn) { return pwpn && (pwpn->getFilename() == wpnName); }
     );
 
     return it == m_weapons.end() ? nullptr : *it;
@@ -1196,26 +1196,21 @@ const Weapon* WeaponManager::getPrevAvailableWeapon(unsigned char& cTargetWeapon
         return nullptr;
     }
 
-    // TODO: rewrite this search to use lambda, then cCurrentWeaponKeyChar can be const
-    unsigned char cCurrentWeaponKeyChar = '\0';
-    auto itKeypressToWeaponMap = getKeypressToWeaponMap().begin();
-    while (itKeypressToWeaponMap != getKeypressToWeaponMap().end())
-    {
-        if (itKeypressToWeaponMap->second == getCurrentWeapon()->getFilename())
-        {
-            cCurrentWeaponKeyChar = itKeypressToWeaponMap->first;
-            break;
-        }
-        ++itKeypressToWeaponMap;
-    }
-    if (cCurrentWeaponKeyChar == '\0')
+    const auto itKeypressToWeaponMapStart = std::find_if(
+        getKeypressToWeaponMap().begin(),
+        getKeypressToWeaponMap().end(),
+        [this](const auto& keyWpnPair) { return keyWpnPair.second == this->getCurrentWeapon()->getFilename(); });
+
+    if (itKeypressToWeaponMapStart == getKeypressToWeaponMap().end())
     {
         getConsole().EOLn("PRooFPSddPGE::%s(): could not set cCurrentWeaponKeyChar based on %s!",
             __func__, getCurrentWeapon()->getFilename().c_str());
         return nullptr;
     }
 
+    const unsigned char cCurrentWeaponKeyChar = itKeypressToWeaponMapStart->first;
     cTargetWeapon = cCurrentWeaponKeyChar;
+    auto itKeypressToWeaponMap = itKeypressToWeaponMapStart;
     // Now we have to decrement 'itKeypressToWeaponMap' until:
     // - we find an available weapon;
     // - we reach back to the current weapon.
@@ -1223,13 +1218,13 @@ const Weapon* WeaponManager::getPrevAvailableWeapon(unsigned char& cTargetWeapon
     // a double linked list or similar, so it is easier to go in the list until we end up at the starting element or find an available wpn.
     do
     {
-        if (itKeypressToWeaponMap != getKeypressToWeaponMap().begin())
-        {
-            --itKeypressToWeaponMap;
+        if (itKeypressToWeaponMap == getKeypressToWeaponMap().begin())
+        {                           
+            itKeypressToWeaponMap = --getKeypressToWeaponMap().end();
         }
         else
         {
-            break;
+            --itKeypressToWeaponMap;
         }
         const Weapon* const pTargetWeapon = getWeaponByFilename(itKeypressToWeaponMap->second);
         if (pTargetWeapon)
@@ -1247,33 +1242,7 @@ const Weapon* WeaponManager::getPrevAvailableWeapon(unsigned char& cTargetWeapon
             getConsole().EOLn("PRooFPSddPGE::%s(): SHOULD NOT HAPPEN: found a not loaded weapon file name in KeypressToWeaponMap: %s!",
                 __func__, itKeypressToWeaponMap->second.c_str());
         }
-    } while (true);
-    if (cTargetWeapon == cCurrentWeaponKeyChar)
-    {
-        // try itKeypressToWeaponMap from the end ...
-        itKeypressToWeaponMap = getKeypressToWeaponMap().end();
-        --itKeypressToWeaponMap;
-        while (itKeypressToWeaponMap->first != cCurrentWeaponKeyChar)
-        {
-            const Weapon* const pTargetWeapon = getWeaponByFilename(itKeypressToWeaponMap->second);
-            if (pTargetWeapon)
-            {
-                if (pTargetWeapon->isAvailable())
-                {
-                    // we dont care about if bullets are loaded, if available then let this one be the target!
-                    cTargetWeapon = itKeypressToWeaponMap->first;
-                    pRetWeapon = pTargetWeapon;
-                    break;
-                }
-            }
-            else
-            {
-                getConsole().EOLn("PRooFPSddPGE::%s(): SHOULD NOT HAPPEN: found a not loaded weapon file name in KeypressToWeaponMap: %s!",
-                    __func__, itKeypressToWeaponMap->second.c_str());
-            }
-            --itKeypressToWeaponMap;
-        }
-    }
+    } while (itKeypressToWeaponMap != itKeypressToWeaponMapStart);
 
     return pRetWeapon;
 }
@@ -1309,34 +1278,33 @@ const Weapon* WeaponManager::getNextAvailableWeapon(unsigned char& cTargetWeapon
         return nullptr;
     }
 
-    // TODO: rewrite this search to use lambda, then cCurrentWeaponKeyChar can be const
-    unsigned char cCurrentWeaponKeyChar = '\0';
-    auto itKeypressToWeaponMap = getKeypressToWeaponMap().begin();
-    while (itKeypressToWeaponMap != getKeypressToWeaponMap().end())
-    {
-        if (itKeypressToWeaponMap->second == getCurrentWeapon()->getFilename())
-        {
-            cCurrentWeaponKeyChar = itKeypressToWeaponMap->first;
-            break;
-        }
-        ++itKeypressToWeaponMap;
-    }
-    if (cCurrentWeaponKeyChar == '\0')
+    const auto itKeypressToWeaponMapStart = std::find_if(
+        getKeypressToWeaponMap().begin(),
+        getKeypressToWeaponMap().end(),
+        [this](const auto& keyWpnPair) { return keyWpnPair.second == this->getCurrentWeapon()->getFilename(); });
+
+    if (itKeypressToWeaponMapStart == getKeypressToWeaponMap().end())
     {
         getConsole().EOLn("PRooFPSddPGE::%s(): could not set cCurrentWeaponKeyChar based on %s!",
             __func__, getCurrentWeapon()->getFilename().c_str());
         return nullptr;
     }
 
+    const unsigned char cCurrentWeaponKeyChar = itKeypressToWeaponMapStart->first;
     cTargetWeapon = cCurrentWeaponKeyChar;
+    auto itKeypressToWeaponMap = itKeypressToWeaponMapStart;
     // Now we have to increment 'itKeypressToWeaponMap' until:
     // - we find an available weapon;
     // - we reach back to the current weapon.
     // This is very ugly as I have to iterate in a map forth ... on the long run I will need
     // a double linked list or similar, so it is easier to go in the list until we end up at the starting element or find an available wpn.
-    itKeypressToWeaponMap++;
-    while (itKeypressToWeaponMap != getKeypressToWeaponMap().end())
+    do
     {
+        ++itKeypressToWeaponMap;
+        if (itKeypressToWeaponMap == getKeypressToWeaponMap().end())
+        {
+            itKeypressToWeaponMap = getKeypressToWeaponMap().begin();
+        }
         const Weapon* const pTargetWeapon = getWeaponByFilename(itKeypressToWeaponMap->second);
         if (pTargetWeapon)
         {
@@ -1353,33 +1321,7 @@ const Weapon* WeaponManager::getNextAvailableWeapon(unsigned char& cTargetWeapon
             getConsole().EOLn("PRooFPSddPGE::%s(): SHOULD NOT HAPPEN: found a not loaded weapon file name in KeypressToWeaponMap: %s!",
                 __func__, itKeypressToWeaponMap->second.c_str());
         }
-        ++itKeypressToWeaponMap;
-    }
-    if (itKeypressToWeaponMap == getKeypressToWeaponMap().end())
-    {
-        // try itKeypressToWeaponMap from the beginning ...
-        itKeypressToWeaponMap = getKeypressToWeaponMap().begin();
-        while (itKeypressToWeaponMap->first != cCurrentWeaponKeyChar)
-        {
-            const Weapon* const pTargetWeapon = getWeaponByFilename(itKeypressToWeaponMap->second);
-            if (pTargetWeapon)
-            {
-                if (pTargetWeapon->isAvailable())
-                {
-                    // we dont care about if bullets are loaded, if available then let this one be the target!
-                    cTargetWeapon = itKeypressToWeaponMap->first;
-                    pRetWeapon = pTargetWeapon;
-                    break;
-                }
-            }
-            else
-            {
-                getConsole().EOLn("PRooFPSddPGE::%s(): SHOULD NOT HAPPEN: found a not loaded weapon file name in KeypressToWeaponMap: %s!",
-                    __func__, itKeypressToWeaponMap->second.c_str());
-            }
-            ++itKeypressToWeaponMap;
-        }
-    }
+    } while (itKeypressToWeaponMap != itKeypressToWeaponMapStart);
 
     return pRetWeapon;
 }
