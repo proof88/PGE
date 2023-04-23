@@ -345,6 +345,12 @@ public:
     Weapon* getCurrentWeapon();
     bool setCurrentWeapon(Weapon* wpn, bool bRecordSwitchTime, bool bServer);
 
+    Weapon* getPrevAvailableWeapon(unsigned char& cTargetWeapon);
+    const Weapon* getPrevAvailableWeapon(unsigned char& cTargetWeapon) const;
+    
+    Weapon* getNextAvailableWeapon(unsigned char& cTargetWeapon);
+    const Weapon* getNextAvailableWeapon(unsigned char& cTargetWeapon) const;
+
     const std::chrono::time_point<std::chrono::steady_clock>& getTimeLastWeaponSwitch() const;
 
     void Clear();

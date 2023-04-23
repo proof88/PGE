@@ -230,7 +230,22 @@ public:
     */
     bool assertEquals(unsigned char expected, unsigned char checked, const char* msg = NULL)
     {
-        return assertEquals((int) expected, (int) checked, msg);
+        return assertEquals(static_cast<int>(expected), static_cast<int>(checked), msg);
+    }
+
+    bool assertEquals(char expected, unsigned char checked, const char* msg = NULL)
+    {
+        return assertEquals(static_cast<int>(expected), static_cast<int>(checked), msg);
+    }
+
+    bool assertEquals(unsigned char expected, char checked, const char* msg = NULL)
+    {
+        return assertEquals(static_cast<int>(expected), static_cast<int>(checked), msg);
+    }
+
+    bool assertEquals(char expected, char checked, const char* msg = NULL)
+    {
+        return assertEquals(static_cast<int>(expected), static_cast<int>(checked), msg);
     }
 
 
