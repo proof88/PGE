@@ -91,26 +91,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     vector<std::unique_ptr<UnitTest>> tests;
     
-    /*
+    /*   */
     tests.push_back(std::unique_ptr<UnitTest>(new PFLTest));
     
     tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgVariableTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgFileTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgProfilesTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PgeOldNewValueTest));
-    */
+    
     
     /* */ 
     tests.push_back(std::unique_ptr<UnitTest>(new WeaponsTest));
     //tests.push_back(std::unique_ptr<UnitTest>(new PGEBulletTest));
     
     
-    /*  
+    /* */ 
     tests.push_back(std::unique_ptr<UnitTest>(new PureScreenTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PureSharedSettingsTest));
-    */
     
-    /*  
+    
+    /* */ 
     tests.push_back(std::unique_ptr<UnitTest>(new PurePosUpTargetTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PureVectorTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PureMatrixTest));
@@ -146,19 +146,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(std::unique_ptr<UnitTest>(new PureVertexTransferTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PureObject3DManagerTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PureObject3DTest));
-    */
+    
 
-    /*   
+    /*  */ 
     tests.push_back(std::unique_ptr<UnitTest>(new PureWindowTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PureWindowTest2));
-    */
-
-    //tests.push_back(std::unique_ptr<UnitTest>(new PureRendererHWfixedPipeTest));
     
-    /*   
+
+    tests.push_back(std::unique_ptr<UnitTest>(new PureRendererHWfixedPipeTest));
+    
+    /*  */ 
     tests.push_back(std::unique_ptr<UnitTest>(new PR00FsUltimateRenderingEngineTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PR00FsUltimateRenderingEngineTest2));
-    */
+    
 
     vector<std::unique_ptr<UnitTest>>::size_type nSucceededTests = 0;
     vector<std::unique_ptr<UnitTest>>::size_type nTotalSubTests = 0;

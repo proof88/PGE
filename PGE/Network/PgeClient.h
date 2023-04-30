@@ -21,6 +21,7 @@
 
 #include "../PGEallHeaders.h"
 #include "../Config/PGEcfgProfiles.h"
+#include "PgeIServerClient.h"
 #include "PgePacket.h"
 
 namespace pge_network
@@ -30,7 +31,7 @@ namespace pge_network
         The primary interface to client networking functionality.
         Singleton, can be instantiated with static createAndGet().
     */
-    class PgeClient
+    class PgeClient : public PgeIServerClient
     {
 #ifdef PGE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PgeClient is included")   
@@ -46,9 +47,9 @@ namespace pge_network
 
         CConsole& getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
-        virtual bool initialize() = 0;                   /**< Initialize the client subsystem. */
-        virtual bool shutdown() = 0;                     /**< This stops the client subsystem. */
-        virtual bool isInitialized() const = 0;          /**< Gets the state of the client subsystem. */
+        /* all abstract functions from PgeIServerClient are overrid by hidden implementation */
+
+        virtual bool connectToServer(const std::string& sServerAddress) = 0; /* temporal */
 
         /** Returns client's handle to the connection opened towards the server. */
         virtual const pge_network::PgeNetworkConnectionHandle& getConnectionHandle() const = 0;
@@ -58,15 +59,7 @@ namespace pge_network
 
         virtual const char* getServerAddress() const = 0;
 
-        virtual void Update() = 0;
-        virtual bool connectToServer(const std::string& sServerAddress) = 0; /* temporal */
-
         virtual void SendToServer(const pge_network::PgePacket& pkt) = 0;
-        virtual std::size_t getPacketQueueSize() const = 0;
-        virtual pge_network::PgePacket popFrontPacket() noexcept(false) = 0;
-
-        virtual std::set<pge_network::PgePktId>& getAllowListedPgeMessages() = 0;
-        virtual std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() = 0;
 
         virtual int getPing(bool bForceUpdate) = 0;
         virtual float getQualityLocal(bool bForceUpdate) = 0;
@@ -75,16 +68,6 @@ namespace pge_network
         virtual float getTxByteRate(bool bForceUpdate) = 0;
         virtual int64_t getInternalQueueTimeUSecs(bool bForceUpdate) = 0;
         virtual std::string getDetailedStatus() const = 0;
-
-        virtual uint32_t getRxPacketCount() const = 0;
-        virtual uint32_t getTxPacketCount() const = 0;
-        virtual uint32_t getInjectPacketCount() const = 0;
-
-        virtual uint32_t getRxPacketPerSecondCount() const = 0;
-        virtual uint32_t getTxPacketPerSecondCount() const = 0;
-        virtual uint32_t getInjectPacketPerSecondCount() const = 0;
-
-        virtual void WriteList() const = 0;    /**< Writes statistics to console. */
     }; // class PgeClient
 
 } // namespace pge_network

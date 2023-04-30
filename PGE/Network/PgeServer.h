@@ -21,6 +21,7 @@
 
 #include "../PGEallHeaders.h"
 #include "../Config/PGEcfgProfiles.h"
+#include "PgeIServerClient.h"
 #include "PgePacket.h"
 
 namespace pge_network
@@ -30,7 +31,7 @@ namespace pge_network
         The primary interface to server networking functionality.
         Singleton, can be instantiated with static createAndGet().
     */
-    class PgeServer
+    class PgeServer : public PgeIServerClient
     {
 #ifdef PGE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PgeServer is included")   
@@ -46,31 +47,13 @@ namespace pge_network
 
         CConsole& getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
-        virtual bool initialize() = 0;                   /**< Initialize the server subsystem. */
-        virtual bool shutdown() = 0;                     /**< This stops the server subsystem. */
-        virtual bool isInitialized() const = 0;          /**< Gets the state of the server subsystem. */
+        /* all abstract functions from PgeIServerClient are overrid by hidden implementation */
 
-        virtual void Update() = 0;
         virtual bool startListening() = 0;
 
         virtual void SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) = 0;
         virtual void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) = 0;
         virtual void InjectPacket(const pge_network::PgePacket& pkt) = 0;
-        virtual std::size_t getPacketQueueSize() const = 0;
-        virtual pge_network::PgePacket popFrontPacket() noexcept(false) = 0;
-
-        virtual std::set<pge_network::PgePktId>& getAllowListedPgeMessages() = 0;
-        virtual std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() = 0;
-
-        virtual uint32_t getRxPacketCount() const = 0;
-        virtual uint32_t getTxPacketCount() const = 0;
-        virtual uint32_t getInjectPacketCount() const = 0;
-
-        virtual uint32_t getRxPacketPerSecondCount() const = 0;
-        virtual uint32_t getTxPacketPerSecondCount() const = 0;
-        virtual uint32_t getInjectPacketPerSecondCount() const = 0;
-
-        virtual void WriteList() const = 0;    /**< Writes statistics to console. */
     }; // class PgeServer
 
 } // namespace pge_network

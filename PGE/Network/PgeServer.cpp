@@ -11,7 +11,7 @@
 #include "PureBaseIncludes.h"  // PCH
 
 #include "PgeServer.h"
-#include "PGESysNET.h"
+#include "PgeGsnServer.h"
 
 /*
    PgeServerImpl
@@ -24,16 +24,17 @@ class PgeServerImpl :
 public:
     virtual ~PgeServerImpl();       /**< Calls shutdown(). */
 
+    /* implement stuff from PgeIServerClient start */
+
     bool initialize() override;
     bool shutdown() override;
     bool isInitialized() const override;
 
     void Update() override;
-    bool startListening();
 
-    void SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) override;
-    void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
-    void InjectPacket(const pge_network::PgePacket& pkt) override;
+    bool PollIncomingMessages() override;
+    void PollConnectionStateChanges() override;
+
     std::size_t getPacketQueueSize() const override;
     pge_network::PgePacket popFrontPacket() noexcept(false) override;
 
@@ -50,14 +51,25 @@ public:
 
     void WriteList() const override;
 
+    /* implement stuff from PgeIServerClient end */
+
+    /* implement stuff from PgeServer start */
+
+    bool startListening() override;
+    void SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) override;
+    void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
+    void InjectPacket(const pge_network::PgePacket& pkt) override;
+
+    /* implement stuff from PgeServer end */
+
 private:
 
     // ---------------------------------------------------------------------------
 
     PGEcfgProfiles& m_cfgProfiles;
-    PGESysNET& m_PgeSysNET;
+    PgeGsnServer& m_gsnServer;
 
-    explicit PgeServerImpl(PGEcfgProfiles& cfgProfiles);                /**< NULLs members only. */
+    explicit PgeServerImpl(PGEcfgProfiles& cfgProfiles);
     PgeServerImpl(const PgeServerImpl&);
     PgeServerImpl& operator=(const PgeServerImpl&);
 
@@ -83,7 +95,7 @@ PgeServerImpl::~PgeServerImpl()
 */
 bool PgeServerImpl::initialize()
 {
-    return true;
+    return m_gsnServer.init();
 } // initialize()
 
 
@@ -96,7 +108,8 @@ bool PgeServerImpl::initialize()
 */
 bool PgeServerImpl::shutdown()
 {
-    return m_PgeSysNET.stopListening();
+    // TODO: this is not symmetric, it should call destroy() because initialize() calls init().
+    return m_gsnServer.stopListening();
 } // shutdown()
 
 /**
@@ -105,98 +118,84 @@ bool PgeServerImpl::shutdown()
 */
 bool PgeServerImpl::isInitialized() const
 {
-    return m_PgeSysNET.isInitialized();
+    return m_gsnServer.isInitialized();
 } // isInitialized()
 
 void PgeServerImpl::Update()
 {
-    m_PgeSysNET.PollIncomingMessages();
-    m_PgeSysNET.PollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
+    m_gsnServer.PollIncomingMessages();
+    m_gsnServer.PollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
 }
 
-bool PgeServerImpl::startListening()
+bool PgeServerImpl::PollIncomingMessages()
 {
-    return m_PgeSysNET.startListening();
+    return m_gsnServer.PollIncomingMessages();
 }
 
-void PgeServerImpl::SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt)
+void PgeServerImpl::PollConnectionStateChanges()
 {
-    // TODO add check: connHandle cannot be 0!
-    m_PgeSysNET.SendPacketToClient(static_cast<HSteamNetConnection>(connHandle), pkt);
-}
-
-void PgeServerImpl::SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle)
-{
-    m_PgeSysNET.SendPacketToAllClients(pkt, exceptConnHandle);
-}
-
-void PgeServerImpl::InjectPacket(const pge_network::PgePacket& pkt)
-{
-    m_PgeSysNET.InjectPacket(pkt);
+    return m_gsnServer.PollConnectionStateChanges();
 }
 
 std::size_t PgeServerImpl::getPacketQueueSize() const
 {
-    return m_PgeSysNET.getPacketQueueSize();
+    return m_gsnServer.getPacketQueueSize();
 }
 
 pge_network::PgePacket PgeServerImpl::popFrontPacket() noexcept(false)
 {
-    return m_PgeSysNET.popFrontPacket();
+    return m_gsnServer.popFrontPacket();
 }
 
 std::set<pge_network::PgePktId>& PgeServerImpl::getAllowListedPgeMessages()
 {
-    return m_PgeSysNET.getAllowListedPgeMessages();
+    return m_gsnServer.getAllowListedPgeMessages();
 }
 
 std::set<pge_network::TPgeMsgAppMsgId>& PgeServerImpl::getAllowListedAppMessages()
 {
-    return m_PgeSysNET.getAllowListedAppMessages();
+    return m_gsnServer.getAllowListedAppMessages();
 }
 
 uint32_t PgeServerImpl::getRxPacketCount() const
 {
-    return m_PgeSysNET.getRxPacketCount();
+    return m_gsnServer.getRxPacketCount();
 }
 
 uint32_t PgeServerImpl::getTxPacketCount() const
 {
-    return m_PgeSysNET.getTxPacketCount();
+    return m_gsnServer.getTxPacketCount();
 }
 
 uint32_t PgeServerImpl::getInjectPacketCount() const
 {
-    return m_PgeSysNET.getInjectPacketCount();
+    return m_gsnServer.getInjectPacketCount();
 }
 
 uint32_t PgeServerImpl::getRxPacketPerSecondCount() const
 {
-    return m_PgeSysNET.getRxPacketPerSecondCount();
+    return m_gsnServer.getRxPacketPerSecondCount();
 }
 
 uint32_t PgeServerImpl::getTxPacketPerSecondCount() const
 {
-    return m_PgeSysNET.getTxPacketPerSecondCount();
+    return m_gsnServer.getTxPacketPerSecondCount();
 }
 
 uint32_t PgeServerImpl::getInjectPacketPerSecondCount() const
 {
-    return m_PgeSysNET.getInjectPacketPerSecondCount();
+    return m_gsnServer.getInjectPacketPerSecondCount();
 }
 
-/**
-    Writes statistics to console.
-*/
 void PgeServerImpl::WriteList() const
 {
     getConsole().OLnOI("PgeServer::WriteList() start");
     if (isInitialized())
     {
         getConsole().OLn("Role: Server");
-        // TODO: PGESysNET will obviously use PGESysNET as module name when writing to console, so it is recommended now
-        // to always turn on PGESysNET logging as well together with PgeServer
-        m_PgeSysNET.WriteServerClientList();
+        // TODO: PgeGsnWrapper will obviously use PgeGsnWrapper as module name when writing to console, so it is recommended now
+        // to always turn on PgeGsnWrapper logging as well together with PgeServer
+        m_gsnServer.WriteServerClientList();
     }
     else
     {
@@ -206,6 +205,27 @@ void PgeServerImpl::WriteList() const
     getConsole().OOOLn("PgeServer::WriteList() end");
 } // WriteList()
 
+bool PgeServerImpl::startListening()
+{
+    return m_gsnServer.startListening();
+}
+
+void PgeServerImpl::SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt)
+{
+    // TODO add check: connHandle cannot be 0!
+    m_gsnServer.SendPacketToClient(static_cast<HSteamNetConnection>(connHandle), pkt);
+}
+
+void PgeServerImpl::SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle)
+{
+    m_gsnServer.SendPacketToAllClients(pkt, exceptConnHandle);
+}
+
+void PgeServerImpl::InjectPacket(const pge_network::PgePacket& pkt)
+{
+    m_gsnServer.InjectPacket(pkt);
+}
+
 
 // ############################## PROTECTED ##############################
 
@@ -213,23 +233,18 @@ void PgeServerImpl::WriteList() const
 // ############################### PRIVATE ###############################
 
 
-/**
-    NULLs members only.
-*/
 PgeServerImpl::PgeServerImpl(PGEcfgProfiles& cfgProfiles) :
     m_cfgProfiles(cfgProfiles),
-    m_PgeSysNET(PGESysNET::createAndGet(cfgProfiles))
+    m_gsnServer(PgeGsnServer::createAndGet(cfgProfiles))
 {
-    m_PgeSysNET.getAllowListedPgeMessages().insert(pge_network::MsgApp::id);
+    m_gsnServer.getAllowListedPgeMessages().insert(pge_network::MsgApp::id);
 } // PgeServerImpl(...)
-
 
 PgeServerImpl::PgeServerImpl(const PgeServerImpl& other) :
     m_cfgProfiles(other.m_cfgProfiles),
-    m_PgeSysNET(PGESysNET::createAndGet(other.m_cfgProfiles))
+    m_gsnServer(PgeGsnServer::createAndGet(other.m_cfgProfiles))
 {
 }
-
 
 PgeServerImpl& PgeServerImpl::operator=(const PgeServerImpl&)
 {

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\PGE-misc\src\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props" Condition="Exists('..\..\PGE-misc\src\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="DebugPR00FPS|Win32">
       <Configuration>DebugPR00FPS</Configuration>
@@ -408,10 +409,13 @@
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamuniverse.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steam_api_common.h" />
     <ClInclude Include="Network\PgeClient.h" />
+    <ClInclude Include="Network\PgeGsnClient.h" />
+    <ClInclude Include="Network\PgeGsnServer.h" />
+    <ClInclude Include="Network\PgeIServerClient.h" />
     <ClInclude Include="Network\PgeNetwork.h" />
     <ClInclude Include="Network\PgePacket.h" />
     <ClInclude Include="Network\PgeServer.h" />
-    <ClInclude Include="Network\PGESysNET.h" />
+    <ClInclude Include="Network\PgeGsnWrapper.h" />
     <ClInclude Include="PGE.h" />
     <ClInclude Include="PGEallHeaders.h" />
     <ClInclude Include="PGEconsts.h" />
@@ -513,10 +517,12 @@
     <ClCompile Include="Config\PGEcfgVariable.cpp" />
     <ClCompile Include="Config\PGEcfgProfiles.cpp" />
     <ClCompile Include="Network\PgeClient.cpp" />
+    <ClCompile Include="Network\PgeGsnClient.cpp" />
+    <ClCompile Include="Network\PgeGsnServer.cpp" />
     <ClCompile Include="Network\PgeNetwork.cpp" />
     <ClCompile Include="Network\PgePacket.cpp" />
     <ClCompile Include="Network\PgeServer.cpp" />
-    <ClCompile Include="Network\PGESysNET.cpp" />
+    <ClCompile Include="Network\PgeGsnWrapper.cpp" />
     <ClCompile Include="PGE.cpp" />
     <ClCompile Include="PGEInputHandler.cpp" />
     <ClCompile Include="PGESysGFX.cpp" />
@@ -647,7 +653,18 @@
     <ClCompile Include="PURE\source\SpatialStructures\PureOctree.cpp" />
     <ClCompile Include="Weapons\WeaponManager.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\PGE-misc\src\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\..\PGE-misc\src\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\PGE-misc\src\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\PGE-misc\src\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
+    <Error Condition="!Exists('..\..\PGE-misc\src\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\PGE-misc\src\packages\Microsoft.Windows.CppWinRT.2.0.210806.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+  </Target>
 </Project>

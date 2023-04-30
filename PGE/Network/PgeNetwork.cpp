@@ -11,7 +11,9 @@
 #include "PureBaseIncludes.h"  // PCH
 
 #include "PgeNetwork.h"
-#include "PGESysNET.h"
+#include "PgeGsnWrapper.h"
+
+static constexpr char* CVAR_NET_SERVER = "net_server";
 
 /*
    PgeNetworkImpl
@@ -31,11 +33,11 @@ public:
     bool isServer() const override;
     void Update() override;
 
-    pge_network::PgeClient& getClient() override;
-    pge_network::PgeServer& getServer() override;
-
     std::size_t getPacketQueueSize() const override;
     pge_network::PgePacket popFrontPacket() noexcept(false) override;
+
+    pge_network::PgeClient& getClient() override;
+    pge_network::PgeServer& getServer() override;
 
     void WriteList() const override;
 
@@ -44,9 +46,10 @@ private:
     // ---------------------------------------------------------------------------
 
     PGEcfgProfiles& m_cfgProfiles;
-    PGESysNET& m_PgeSysNET;
-    pge_network::PgeClient& m_client;
-    pge_network::PgeServer& m_server;
+    pge_network::PgeIServerClient* m_pServerClient;
+    pge_network::PgeClient& m_pClient;
+    pge_network::PgeServer& m_pServer;
+    bool m_bServer;
 
     explicit PgeNetworkImpl(PGEcfgProfiles& cfgProfiles);   /**< NULLs members only. */
     PgeNetworkImpl(const PgeNetworkImpl&);
@@ -74,31 +77,32 @@ PgeNetworkImpl::~PgeNetworkImpl()
 */
 bool PgeNetworkImpl::initialize()
 {
-    bool b = m_PgeSysNET.initSysNET();
-    if (!b)
+    if (m_cfgProfiles.getVars()[CVAR_NET_SERVER].getAsString().empty())
     {
-        getConsole().EOLn("PgeSysNET has FAILED to initialize!");
-        return false;
-    }
-
-    if (m_PgeSysNET.isServer())
-    {
-        b = m_server.initialize();
-        if (!b)
-        {
-            getConsole().EOLn("PgeServer has FAILED to initialize!");
-        }
+        m_bServer = (IDYES == MessageBox(0, "Want to be a Server?", ":)", MB_YESNO | MB_ICONQUESTION | MB_SETFOREGROUND));
     }
     else
     {
-        b = m_client.initialize();
-        if (!b)
-        {
-            getConsole().EOLn("PgeClient has FAILED to initialize!");
-        }
+        m_bServer = m_cfgProfiles.getVars()[CVAR_NET_SERVER].getAsBool();
+        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("s_bServer from config: %b", m_bServer);
     }
 
-    return b;
+    if (m_bServer)
+    {
+        m_pServerClient = &m_pServer;
+    }
+    else
+    {
+        m_pServerClient = &m_pClient;
+    }
+
+    if (!m_pServerClient->initialize())
+    {
+        getConsole().EOLn("ServerClient has FAILED to initialize!");
+        return false;
+    }
+
+    return true;
 } // initialize()
 
 
@@ -111,7 +115,13 @@ bool PgeNetworkImpl::initialize()
 */
 bool PgeNetworkImpl::shutdown()
 {
-    return m_PgeSysNET.destroySysNET();
+    if (m_pServerClient)
+    {
+        const bool bRet = m_pServerClient->shutdown();
+        m_pServerClient = nullptr;
+        return bRet;
+    }
+    return false;
 } // shutdown()
 
 /**
@@ -120,12 +130,12 @@ bool PgeNetworkImpl::shutdown()
 */
 bool PgeNetworkImpl::isInitialized() const
 {
-    return m_PgeSysNET.isInitialized();
+    return m_pServerClient != nullptr;
 } // isInitialized()
 
 bool PgeNetworkImpl::isServer() const
 {
-    return m_PgeSysNET.isServer();
+    return m_bServer;
 }
 
 void PgeNetworkImpl::Update()
@@ -135,28 +145,29 @@ void PgeNetworkImpl::Update()
         return;
     }
 
-    while (m_PgeSysNET.PollIncomingMessages()) {}
-    m_PgeSysNET.PollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
-}
-
-pge_network::PgeClient& PgeNetworkImpl::getClient()
-{
-    return m_client;
-}
-
-pge_network::PgeServer& PgeNetworkImpl::getServer()
-{
-    return m_server;
+    while (m_pServerClient->PollIncomingMessages())
+    {}
+    m_pServerClient->PollConnectionStateChanges();  // this may also add packet(s) to m_pServerClient.queuePackets
 }
 
 std::size_t PgeNetworkImpl::getPacketQueueSize() const
 {
-    return isServer() ? m_server.getPacketQueueSize() : m_client.getPacketQueueSize();
+    return m_pServerClient->getPacketQueueSize();
 }
 
-pge_network::PgePacket PgeNetworkImpl::popFrontPacket() noexcept(false)
+pge_network::PgePacket PgeNetworkImpl::popFrontPacket() noexcept(false) 
 {
-    return isServer() ? m_server.popFrontPacket() : m_client.popFrontPacket();
+    return m_pServerClient->popFrontPacket();
+}
+
+pge_network::PgeClient& PgeNetworkImpl::getClient()
+{
+    return m_pClient;
+}
+
+pge_network::PgeServer& PgeNetworkImpl::getServer()
+{
+    return m_pServer;
 }
 
 /**
@@ -167,15 +178,7 @@ void PgeNetworkImpl::WriteList() const
     getConsole().OLnOI("PgeNetwork::WriteList() start");
     if (isInitialized())
     {
-        // m_server and m_client always exist but only one of them is initialized at a time
-        if (isServer())
-        {
-            m_server.WriteList();
-        }
-        else
-        {
-            m_client.WriteList();
-        }
+        m_pServerClient->WriteList();
     }
     else
     {
@@ -198,9 +201,10 @@ void PgeNetworkImpl::WriteList() const
 */
 PgeNetworkImpl::PgeNetworkImpl(PGEcfgProfiles& cfgProfiles) :
     m_cfgProfiles(cfgProfiles),
-    m_PgeSysNET(PGESysNET::createAndGet(cfgProfiles)),
-    m_client(pge_network::PgeClient::createAndGet(cfgProfiles)),
-    m_server(pge_network::PgeServer::createAndGet(cfgProfiles))
+    m_pServerClient(nullptr),
+    m_pClient(pge_network::PgeClient::createAndGet(m_cfgProfiles)),
+    m_pServer(pge_network::PgeServer::createAndGet(m_cfgProfiles)),
+    m_bServer(false)
 {
 
 } // PgeNetworkImpl(...)
@@ -208,9 +212,10 @@ PgeNetworkImpl::PgeNetworkImpl(PGEcfgProfiles& cfgProfiles) :
 
 PgeNetworkImpl::PgeNetworkImpl(const PgeNetworkImpl& other) :
     m_cfgProfiles(other.m_cfgProfiles),
-    m_PgeSysNET(PGESysNET::createAndGet(other.m_cfgProfiles)),
-    m_client(pge_network::PgeClient::createAndGet(other.m_cfgProfiles)),
-    m_server(pge_network::PgeServer::createAndGet(other.m_cfgProfiles))
+    m_pServerClient(nullptr),
+    m_pClient(pge_network::PgeClient::createAndGet(m_cfgProfiles)),
+    m_pServer(pge_network::PgeServer::createAndGet(m_cfgProfiles)),
+    m_bServer(false)
 {
 }
 

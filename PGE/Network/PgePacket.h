@@ -42,7 +42,7 @@ namespace pge_network
         char szIpAddress[nIpAddressMaxLength];
         // TODO: server always knows IP address of clients, but doesn't know its own IP address used by the clients to connect.
         // It should be grabbed from the first connecting client.
-        // See if remote server address logged is the good server address in: PGESysNET::OnSteamNetConnectionStatusChanged(),
+        // See if remote server address logged is the good server address in: PgeGsnWrapper::OnSteamNetConnectionStatusChanged(),
         // client code, when client reaches k_ESteamNetworkingConnectionState_Connected. Jump there by searching for "KEKEKEKEKE"
     };
 

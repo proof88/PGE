@@ -11,7 +11,7 @@
 #include "PureBaseIncludes.h"  // PCH
 
 #include "PgeClient.h"
-#include "PGESysNET.h"
+#include "PgeGsnClient.h"
 
 /*
    PgeClientImpl
@@ -24,31 +24,22 @@ class PgeClientImpl :
 public:
     virtual ~PgeClientImpl();       /**< Calls shutdown(). */
 
+    /* implement stuff from PgeIServerClient start */
+
     bool initialize() override;
     bool shutdown() override;
     bool isInitialized() const override;
 
-    const pge_network::PgeNetworkConnectionHandle& getConnectionHandle() const;
-    const pge_network::PgeNetworkConnectionHandle& getConnectionHandleServerSide() const;
-    const char* getServerAddress() const;
-
     void Update() override;
-    bool connectToServer(const std::string& sServerAddress) override; /* temporal */
 
-    void SendToServer(const pge_network::PgePacket& pkt) override;
+    bool PollIncomingMessages() override;
+    void PollConnectionStateChanges() override;
+
     std::size_t getPacketQueueSize() const override;
     pge_network::PgePacket popFrontPacket() noexcept(false) override;
 
-    std::set<pge_network::PgePktId>& getAllowListedPgeMessages();
-    std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages();
-
-    int getPing(bool bForceUpdate) override;
-    float getQualityLocal(bool bForceUpdate) override;
-    float getQualityRemote(bool bForceUpdate) override;
-    float getRxByteRate(bool bForceUpdate) override;
-    float getTxByteRate(bool bForceUpdate) override;
-    int64_t getInternalQueueTimeUSecs(bool bForceUpdate) override;
-    std::string getDetailedStatus() const override;
+    std::set<pge_network::PgePktId>& getAllowListedPgeMessages() override;
+    std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() override;
 
     uint32_t getRxPacketCount() const override;
     uint32_t getTxPacketCount() const override;
@@ -60,14 +51,33 @@ public:
 
     void WriteList() const override;
 
+    /* implement stuff from PgeIServerClient end */
+
+    /* implement stuff from PgeClient start */
+
+    bool connectToServer(const std::string& sServerAddress) override; /* temporal */
+    const pge_network::PgeNetworkConnectionHandle& getConnectionHandle() const override;
+    const pge_network::PgeNetworkConnectionHandle& getConnectionHandleServerSide() const override;
+    const char* getServerAddress() const override;  
+    void SendToServer(const pge_network::PgePacket& pkt) override;
+    int getPing(bool bForceUpdate) override;
+    float getQualityLocal(bool bForceUpdate) override;
+    float getQualityRemote(bool bForceUpdate) override;
+    float getRxByteRate(bool bForceUpdate) override;
+    float getTxByteRate(bool bForceUpdate) override;
+    int64_t getInternalQueueTimeUSecs(bool bForceUpdate) override;
+    std::string getDetailedStatus() const override;
+
+    /* implement stuff from PgeClient end */
+
 private:
 
     // ---------------------------------------------------------------------------
 
     PGEcfgProfiles& m_cfgProfiles;
-    PGESysNET& m_PgeSysNET;
+    PgeGsnClient& m_gsnClient;
 
-    explicit PgeClientImpl(PGEcfgProfiles& cfgProfiles);                /**< NULLs members only. */
+    explicit PgeClientImpl(PGEcfgProfiles& cfgProfiles);
     PgeClientImpl(const PgeClientImpl&);
     PgeClientImpl& operator=(const PgeClientImpl&);
 
@@ -93,9 +103,8 @@ PgeClientImpl::~PgeClientImpl()
 */
 bool PgeClientImpl::initialize()
 {
-    return true;
+    return m_gsnClient.init();
 } // initialize()
-
 
 /**
     This stops the client subsystem.
@@ -106,7 +115,7 @@ bool PgeClientImpl::initialize()
 */
 bool PgeClientImpl::shutdown()
 {
-    return m_PgeSysNET.DisconnectClient();
+    return m_gsnClient.DisconnectClient();
 } // shutdown()
 
 /**
@@ -115,128 +124,75 @@ bool PgeClientImpl::shutdown()
 */
 bool PgeClientImpl::isInitialized() const
 {
-    return m_PgeSysNET.isInitialized();
+    return m_gsnClient.isInitialized();
 } // isInitialized()
-
-const pge_network::PgeNetworkConnectionHandle& PgeClientImpl::getConnectionHandle() const
-{
-    return static_cast<pge_network::PgeNetworkConnectionHandle>(m_PgeSysNET.getConnectionHandle());
-}
-
-const pge_network::PgeNetworkConnectionHandle& PgeClientImpl::getConnectionHandleServerSide() const
-{
-    return static_cast<pge_network::PgeNetworkConnectionHandle>(m_PgeSysNET.getConnectionHandleServerSide());
-}
-
-const char* PgeClientImpl::getServerAddress() const
-{
-    return m_PgeSysNET.getServerAddress();
-}
 
 void PgeClientImpl::Update()
 {
-    m_PgeSysNET.PollIncomingMessages();
-    m_PgeSysNET.PollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
+    m_gsnClient.PollIncomingMessages();
+    m_gsnClient.PollConnectionStateChanges();  // this may also add packet(s) to m_gsnClient.queuePackets
 }
 
-bool PgeClientImpl::connectToServer(const std::string& sServerAddress)
+bool PgeClientImpl::PollIncomingMessages()
 {
-    return m_PgeSysNET.connectToServer(sServerAddress);
+    return m_gsnClient.PollIncomingMessages();
 }
 
-void PgeClientImpl::SendToServer(const pge_network::PgePacket& pkt)
+void PgeClientImpl::PollConnectionStateChanges()
 {
-    m_PgeSysNET.SendToServer(pkt);
+    return m_gsnClient.PollConnectionStateChanges();
 }
 
 std::size_t PgeClientImpl::getPacketQueueSize() const
 {
-    return m_PgeSysNET.getPacketQueueSize();
+    return m_gsnClient.getPacketQueueSize();
 }
 
 pge_network::PgePacket PgeClientImpl::popFrontPacket() noexcept(false)
 {
-    return m_PgeSysNET.popFrontPacket();
+    return m_gsnClient.popFrontPacket();
 }
 
 std::set<pge_network::PgePktId>& PgeClientImpl::getAllowListedPgeMessages()
 {
-    return m_PgeSysNET.getAllowListedPgeMessages();
+    return m_gsnClient.getAllowListedPgeMessages();
 }
 
 std::set<pge_network::TPgeMsgAppMsgId>& PgeClientImpl::getAllowListedAppMessages()
 {
-    return m_PgeSysNET.getAllowListedAppMessages();
-}
-
-int PgeClientImpl::getPing(bool bForceUpdate)
-{
-    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_nPing;
-}
-
-float PgeClientImpl::getQualityLocal(bool bForceUpdate)
-{
-    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_flConnectionQualityLocal;
-}
-
-float PgeClientImpl::getQualityRemote(bool bForceUpdate)
-{
-    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_flConnectionQualityRemote;
-}
-
-float PgeClientImpl::getRxByteRate(bool bForceUpdate)
-{
-    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_flInBytesPerSec;
-}
-
-float PgeClientImpl::getTxByteRate(bool bForceUpdate)
-{
-    return m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_flOutBytesPerSec;
-}
-
-int64_t PgeClientImpl::getInternalQueueTimeUSecs(bool bForceUpdate)
-{
-    return static_cast<int64_t>(m_PgeSysNET.getRealTimeStatus(bForceUpdate).m_usecQueueTime);
-}
-
-std::string PgeClientImpl::getDetailedStatus() const
-{
-    return m_PgeSysNET.getDetailedStatus();
+    return m_gsnClient.getAllowListedAppMessages();
 }
 
 uint32_t PgeClientImpl::getRxPacketCount() const
 {
-    return m_PgeSysNET.getRxPacketCount();
+    return m_gsnClient.getRxPacketCount();
 }
 
 uint32_t PgeClientImpl::getTxPacketCount() const
 {
-    return m_PgeSysNET.getTxPacketCount();
+    return m_gsnClient.getTxPacketCount();
 }
 
 uint32_t PgeClientImpl::getInjectPacketCount() const
 {
-    return m_PgeSysNET.getInjectPacketCount();
+    return m_gsnClient.getInjectPacketCount();
 }
 
 uint32_t PgeClientImpl::getRxPacketPerSecondCount() const
 {
-    return m_PgeSysNET.getRxPacketPerSecondCount();
+    return m_gsnClient.getRxPacketPerSecondCount();
 }
 
 uint32_t PgeClientImpl::getTxPacketPerSecondCount() const
 {
-    return m_PgeSysNET.getTxPacketPerSecondCount();
+    return m_gsnClient.getTxPacketPerSecondCount();
 }
 
 uint32_t PgeClientImpl::getInjectPacketPerSecondCount() const
 {
-    return m_PgeSysNET.getInjectPacketPerSecondCount();
+    return m_gsnClient.getInjectPacketPerSecondCount();
 }
 
-/**
-    Writes statistics to console.
-*/
 void PgeClientImpl::WriteList() const
 {
     getConsole().OLnOI("PgeClient::WriteList() start");
@@ -261,6 +217,66 @@ void PgeClientImpl::WriteList() const
     getConsole().OOOLn("PgeClient::WriteList() end");
 } // WriteList()
 
+const pge_network::PgeNetworkConnectionHandle& PgeClientImpl::getConnectionHandle() const
+{
+    return static_cast<pge_network::PgeNetworkConnectionHandle>(m_gsnClient.getConnectionHandle());
+}
+
+const pge_network::PgeNetworkConnectionHandle& PgeClientImpl::getConnectionHandleServerSide() const
+{
+    return static_cast<pge_network::PgeNetworkConnectionHandle>(m_gsnClient.getConnectionHandleServerSide());
+}
+
+const char* PgeClientImpl::getServerAddress() const
+{
+    return m_gsnClient.getServerAddress();
+}
+
+bool PgeClientImpl::connectToServer(const std::string& sServerAddress)
+{
+    return m_gsnClient.connectToServer(sServerAddress);
+}
+
+void PgeClientImpl::SendToServer(const pge_network::PgePacket& pkt)
+{
+    m_gsnClient.SendToServer(pkt);
+}
+
+int PgeClientImpl::getPing(bool bForceUpdate)
+{
+    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_nPing;
+}
+
+float PgeClientImpl::getQualityLocal(bool bForceUpdate)
+{
+    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_flConnectionQualityLocal;
+}
+
+float PgeClientImpl::getQualityRemote(bool bForceUpdate)
+{
+    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_flConnectionQualityRemote;
+}
+
+float PgeClientImpl::getRxByteRate(bool bForceUpdate)
+{
+    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_flInBytesPerSec;
+}
+
+float PgeClientImpl::getTxByteRate(bool bForceUpdate)
+{
+    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_flOutBytesPerSec;
+}
+
+int64_t PgeClientImpl::getInternalQueueTimeUSecs(bool bForceUpdate)
+{
+    return static_cast<int64_t>(m_gsnClient.getRealTimeStatus(bForceUpdate).m_usecQueueTime);
+}
+
+std::string PgeClientImpl::getDetailedStatus() const
+{
+    return m_gsnClient.getDetailedStatus();
+}
+
 
 // ############################## PROTECTED ##############################
 
@@ -268,24 +284,19 @@ void PgeClientImpl::WriteList() const
 // ############################### PRIVATE ###############################
 
 
-/**
-    NULLs members only.
-*/
 PgeClientImpl::PgeClientImpl(PGEcfgProfiles& cfgProfiles) :
     m_cfgProfiles(cfgProfiles),
-    m_PgeSysNET(PGESysNET::createAndGet(cfgProfiles))
+    m_gsnClient(PgeGsnClient::createAndGet(cfgProfiles))
 {
-    m_PgeSysNET.getAllowListedPgeMessages().insert(pge_network::MsgUserDisconnected::id);
-    m_PgeSysNET.getAllowListedPgeMessages().insert(pge_network::MsgApp::id);
+    m_gsnClient.getAllowListedPgeMessages().insert(pge_network::MsgUserDisconnected::id);
+    m_gsnClient.getAllowListedPgeMessages().insert(pge_network::MsgApp::id);
 } // PgeClientImpl(...)
-
 
 PgeClientImpl::PgeClientImpl(const PgeClientImpl& other) :
     m_cfgProfiles(other.m_cfgProfiles),
-    m_PgeSysNET(PGESysNET::createAndGet(other.m_cfgProfiles))
+    m_gsnClient(PgeGsnClient::createAndGet(other.m_cfgProfiles))
 {
 }
-
 
 PgeClientImpl& PgeClientImpl::operator=(const PgeClientImpl&)
 {
