@@ -51,84 +51,6 @@ bool PgeGsnServer::isInitialized() const
     return m_hListenSock != k_HSteamListenSocket_Invalid;
 } // isInitialized()
 
-bool PgeGsnServer::PollIncomingMessages()
-{
-    static const int nIncomingMsgArraySize = 10; // TODO: make this configurable from outside
-    ISteamNetworkingMessage* pIncomingMsg[nIncomingMsgArraySize];
-
-    // ReceiveMessagesOnPollGroup() basically copies the pointers to messages from GNS's internal linked list,
-    // and unlinks these from the linked list
-    int numMsgs = m_pInterface->ReceiveMessagesOnPollGroup(m_hPollGroup, pIncomingMsg, nIncomingMsgArraySize);
-    if (numMsgs == 0)
-    {
-        return false;
-    }
-
-    if (numMsgs < 0)
-    {
-        CConsole::getConsoleInstance("PgeGsnServer").EOLn("%s: SERVER Error checking for messages!", __func__);
-        return false;
-    }
-
-    if (!pIncomingMsg)
-    {
-        CConsole::getConsoleInstance("PgeGsnServer").EOLn("%s: SERVER pIncomingMsg null!", __func__);
-        return false;
-    }
-
-    for (int i = 0; i < numMsgs; i++)
-    {
-        auto itClient = m_mapClients.find(pIncomingMsg[i]->m_conn);
-        if (itClient == m_mapClients.end())
-        {
-            CConsole::getConsoleInstance("PgeGsnServer").EOLn("%s: SERVER failed to find connection %u in m_mapClients!",
-                __func__, pIncomingMsg[i]->m_conn);
-            continue;
-        }
-
-        pge_network::PgePacket pkt;
-        assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
-        memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
-        pkt.m_connHandleServerSide = static_cast<pge_network::PgeNetworkConnectionHandle>(pIncomingMsg[i]->m_conn);
-
-        // We don't need this anymore.
-        // Note that we could even push pIncomingMsg to a queue, and process it later, and
-        // release it later, that could be a good speed optimization.
-        (pIncomingMsg[i])->Release();
-
-        if (pkt.pktId == pge_network::PgePktId::APP)
-        {
-            if (m_allowListedAppMessages.end() == m_allowListedAppMessages.find(pkt.msg.app.msgId))
-            {
-                CConsole::getConsoleInstance("PgeGsnServer").EOLn("%s: SERVER non-allowlisted app message received: %u from connection %u!",
-                    __func__, pkt.msg.app.msgId, pkt.m_connHandleServerSide);
-                assert(false);
-                continue;
-            }
-        }
-        else
-        {
-            if (m_allowListedPgeMessages.end() == m_allowListedPgeMessages.find(pkt.pktId))
-            {
-                CConsole::getConsoleInstance("PgeGsnServer").EOLn("%s: SERVER non-allowlisted pge message received: %u from connection %u!",
-                    __func__, pkt.pktId, pkt.m_connHandleServerSide);
-                assert(false);
-                continue;
-            }
-        }
-
-        m_queuePackets.push_back(pkt);
-    } // for i
-
-    if (m_nRxPktCount == 0)
-    {
-        m_time1stRxPkt = std::chrono::steady_clock::now();
-    }
-    m_nRxPktCount += numMsgs;
-
-    return true;
-}
-
 bool PgeGsnServer::startListening()
 {
     if (isInitialized())
@@ -307,6 +229,30 @@ PgeGsnServer::PgeGsnServer(const PgeGsnServer& other) :
 PgeGsnServer& PgeGsnServer::operator=(const PgeGsnServer&)
 {
     return *this;
+}
+
+int PgeGsnServer::receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize)
+{
+    // ReceiveMessagesOnPollGroup() basically copies the pointers to messages from GNS's internal linked list,
+    // and unlinks these from that internal linked list, so it is cheap copy to our array
+    return m_pInterface->ReceiveMessagesOnPollGroup(m_hPollGroup, pIncomingMsg, nIncomingMsgArraySize);
+}
+
+bool PgeGsnServer::validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const
+{
+    const auto itClient = m_mapClients.find(connHandle);
+    if (itClient == m_mapClients.end())
+    {
+        CConsole::getConsoleInstance("PgeGsnServer").EOLn("%s: SERVER failed to find connection %u in m_mapClients!",
+            __func__, static_cast<unsigned int>(connHandle));
+        return false;
+    }
+    return true;
+}
+
+void PgeGsnServer::updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const
+{
+    pkt.m_connHandleServerSide = static_cast<pge_network::PgeNetworkConnectionHandle>(connHandle);
 }
 
 void PgeGsnServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)

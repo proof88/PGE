@@ -18,7 +18,7 @@
    ###########################################################################
 */
 
-class PgeServerImpl :
+class PgeServerImpl final :
     public pge_network::PgeServer
 {
 public:

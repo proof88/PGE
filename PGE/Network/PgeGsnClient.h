@@ -27,7 +27,7 @@
 /**
     Client Wrapper for GameNetworkingSockets library
 */
-class PgeGsnClient : public PgeGsnWrapper
+class PgeGsnClient final : public PgeGsnWrapper
 {
 #ifdef PGE_CLASS_IS_INCLUDED_NOTIFICATION
 #pragma message("  PgeGsnClient is included")   
@@ -55,8 +55,6 @@ public:
     * @return True if initialized, false otherwise.
     */
     virtual bool isInitialized() const override;
-
-    virtual bool PollIncomingMessages() override;
 
     /* implement stuff from PgeGsnWrapper end */
 
@@ -86,6 +84,9 @@ public:
     std::string getDetailedStatus() const;
 
 protected:
+    virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) override;
+    virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const override;
+    virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const override;
     virtual void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) override;
 
 private:

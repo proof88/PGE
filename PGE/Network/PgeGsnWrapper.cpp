@@ -10,11 +10,10 @@
 
 #include "PureBaseIncludes.h"  // PCH
 
-#include <cassert>
-#include <filesystem>  // requires cpp17
-#include <set>
-
 #include "PgeGsnWrapper.h"
+
+#include <cassert>
+
 #include "../PGEincludes.h"
 #include "../PGEpragmas.h"
 
@@ -100,6 +99,85 @@ bool PgeGsnWrapper::destroy()
 bool PgeGsnWrapper::isInitialized() const
 {
     return m_pInterface != nullptr;
+}
+
+bool PgeGsnWrapper::PollIncomingMessages()
+{
+    static const int nIncomingMsgArraySize = 10; // TODO: make this configurable from outside
+    ISteamNetworkingMessage* pIncomingMsg[nIncomingMsgArraySize];
+
+    if (!isInitialized())
+    {
+        CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s not initialized!", __func__);
+        return false;
+    }
+
+    const int numMsgs = receiveMessages(pIncomingMsg, nIncomingMsgArraySize);
+    if (numMsgs == 0)
+    {
+        return false;
+    }
+
+    if (numMsgs < 0)
+    {
+        CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: Error checking for messages!", __func__);
+        return false;
+    }
+
+    if (!pIncomingMsg)
+    {
+        CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: pIncomingMsg null!", __func__);
+        return false;
+    }
+
+    for (int i = 0; i < numMsgs; i++)
+    {
+        if (!validateSteamNetworkingMessage(pIncomingMsg[i]->m_conn))
+        {
+            continue;
+        }
+
+        pge_network::PgePacket pkt;
+        assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
+        memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
+        updateIncomingPgePacket(pkt, pIncomingMsg[i]->m_conn);
+
+        // We don't need this anymore.
+        // Note that we could even push pIncomingMsg to a queue, and process it later, and
+        // release it later, that could be a good speed optimization.
+        (pIncomingMsg[i])->Release();
+
+        if (pkt.pktId == pge_network::PgePktId::APP)
+        {
+            if (m_allowListedAppMessages.end() == m_allowListedAppMessages.find(pkt.msg.app.msgId))
+            {
+                CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: non-allowlisted app message received: %u from connection %u!",
+                    __func__, pkt.msg.app.msgId, pkt.m_connHandleServerSide);
+                assert(false);
+                continue;
+            }
+        }
+        else
+        {
+            if (m_allowListedPgeMessages.end() == m_allowListedPgeMessages.find(pkt.pktId))
+            {
+                CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: non-allowlisted pge message received: %u from connection %u!",
+                    __func__, pkt.pktId, pkt.m_connHandleServerSide);
+                assert(false);
+                continue;
+            }
+        }
+
+        m_queuePackets.push_back(pkt);
+    } // for i
+
+    if (m_nRxPktCount == 0)
+    {
+        m_time1stRxPkt = std::chrono::steady_clock::now();
+    }
+    m_nRxPktCount += numMsgs;
+
+    return true;
 }
 
 void PgeGsnWrapper::PollConnectionStateChanges()

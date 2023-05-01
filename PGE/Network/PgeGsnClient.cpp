@@ -59,85 +59,6 @@ bool PgeGsnClient::isInitialized() const
     return m_hConnection != k_HSteamNetConnection_Invalid;
 } // isInitialized()
 
-bool PgeGsnClient::PollIncomingMessages()
-{
-    static const int nIncomingMsgArraySize = 10; // TODO: make this configurable from outside
-    ISteamNetworkingMessage* pIncomingMsg[nIncomingMsgArraySize];
-
-    if (!isInitialized())
-    {
-        CConsole::getConsoleInstance("PgeGsnClient").EOLn("%s not connected!", __func__);
-        return false;
-    }
-
-    // ReceiveMessagesOnConnection() basically copies the pointers to messages from GNS's internal linked list,
-    // and unlinks these from the linked list
-    const int numMsgs = m_pInterface->ReceiveMessagesOnConnection(m_hConnection, pIncomingMsg, nIncomingMsgArraySize);
-
-    // ### from here same as server code above
-    if (numMsgs == 0)
-    {
-        return false;
-    }
-
-    if (numMsgs < 0)
-    {
-        CConsole::getConsoleInstance("PgeGsnClient").EOLn("%s: CLIENT Error checking for messages!", __func__);
-        return false;
-    }
-
-    if (!pIncomingMsg)
-    {
-        CConsole::getConsoleInstance("PgeGsnClient").EOLn("%s: CLIENT pIncomingMsg null!", __func__);
-        return false;
-    }
-    // ### until here
-
-    for (int i = 0; i < numMsgs; i++)
-    {
-        pge_network::PgePacket pkt;
-        assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
-        memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
-        // here we are client, we don't set pkt.connHandle because we expect it to be already properly filled in by sender (server)!
-
-        // We don't need this anymore.
-        // Note that we could even push pIncomingMsg to a queue, and process it later, and
-        // release it later, that could be a good speed optimization.
-        (pIncomingMsg[i])->Release();
-
-        if (pkt.pktId == pge_network::PgePktId::APP)
-        {
-            if (m_allowListedAppMessages.end() == m_allowListedAppMessages.find(pkt.msg.app.msgId))
-            {
-                CConsole::getConsoleInstance("PgeGsnClient").EOLn("%s: CLIENT non-allowlisted app message received from server: %u with m_connHandleServerSide %u!",
-                    __func__, pkt.msg.app.msgId, pkt.m_connHandleServerSide);
-                assert(false);
-                continue;
-            }
-        }
-        else
-        {
-            if (m_allowListedPgeMessages.end() == m_allowListedPgeMessages.find(pkt.pktId))
-            {
-                CConsole::getConsoleInstance("PgeGsnClient").EOLn("%s: CLIENT non-allowlisted pge message received: %u from server with m_connHandleServerSide %u!",
-                    __func__, pkt.pktId, pkt.m_connHandleServerSide);
-                assert(false);
-                continue;
-            }
-        }
-
-        m_queuePackets.push_back(pkt);
-    } // for i
-
-    if (m_nRxPktCount == 0)
-    {
-        m_time1stRxPkt = std::chrono::steady_clock::now();
-    }
-    m_nRxPktCount += numMsgs;
-
-    return true;
-} // PollIncomingMessages()
-
 bool PgeGsnClient::connectToServer(const std::string& sServerAddress)
 {
     if (isInitialized())
@@ -301,6 +222,23 @@ PgeGsnClient& PgeGsnClient::operator=(const PgeGsnClient&)
     return *this;
 }
 
+int PgeGsnClient::receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize)
+{
+    // ReceiveMessagesOnConnection() basically copies the pointers to messages from GNS's internal linked list,
+    // and unlinks these from the linked list, so it is cheap copy to our array
+    return m_pInterface->ReceiveMessagesOnConnection(m_hConnection, pIncomingMsg, nIncomingMsgArraySize);
+}
+
+bool PgeGsnClient::validateSteamNetworkingMessage(const HSteamNetConnection&) const
+{
+    return true;
+}
+
+void PgeGsnClient::updateIncomingPgePacket(pge_network::PgePacket&, const HSteamNetConnection&) const
+{
+    // here we are client, we don't set pkt.connHandle because we expect it to be already properly filled in by sender (server)!
+}
+
 void PgeGsnClient::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
 {
     // This function is also invoked on main thread when I call PgeGsnClient.PollConnectionStateChanges() from PGE::runGame()
@@ -310,7 +248,6 @@ void PgeGsnClient::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
     // The problem related to CConsole not being threadsafe was not due to the logs within this function
     // but to the callback function I've set with SteamNetworkingUtils()->SetDebugOutputFunction(), as it can be called
     // in parallel by SteamNetworking thread.
-
 
     assert(pInfo->m_hConn == m_hConnection || m_hConnection == k_HSteamNetConnection_Invalid);
 

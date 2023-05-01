@@ -16,7 +16,7 @@
 #include <chrono>  // requires cpp11
 #include <cstdint>
 #include <deque>
-#include <map>
+#include <set>
 #include <string>
 
 #include "../Config/PGEcfgProfiles.h"
@@ -80,7 +80,13 @@ public:
     */
     virtual bool isInitialized() const;
     
-    virtual bool PollIncomingMessages() = 0;
+    /**
+    * Moves incoming SteamNetworkingMessages from GameNetworkingSockets layer to m_queuePackets as PgePackets.
+    * 
+    * @return True on success, false on error.
+    */
+    bool PollIncomingMessages();
+
     void PollConnectionStateChanges();
    
     std::size_t getPacketQueueSize() const;
@@ -130,6 +136,9 @@ protected:
     PgeGsnWrapper(const PgeGsnWrapper&); 
     PgeGsnWrapper& operator=(const PgeGsnWrapper&);
 
+    virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) = 0;
+    virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const = 0;
+    virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const = 0;
     virtual void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) = 0;
 
     friend class PGE;
