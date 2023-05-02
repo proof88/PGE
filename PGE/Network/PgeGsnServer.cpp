@@ -231,7 +231,7 @@ PgeGsnServer& PgeGsnServer::operator=(const PgeGsnServer&)
     return *this;
 }
 
-int PgeGsnServer::receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const
+int PgeGsnServer::receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize)
 {
     // ReceiveMessagesOnPollGroup() basically copies the pointers to messages from GNS's internal linked list,
     // and unlinks these from that internal linked list, so it is cheap copy to our array
@@ -261,6 +261,10 @@ void PgeGsnServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
     // so no need to utilize mutexes around here.
     // And the other function PollIncomingMessages() is also invoked by PGE::runGame().
     // So it is safe to do operations on m_queuePackets.
+    // The problem related to CConsole not being threadsafe was not due to the logs within this function
+    // but to the callback function I've set with SteamNetworkingUtils()->SetDebugOutputFunction(), as it can be called
+    // in parallel by SteamNetworking thread.
+
     char szTemp[1024];
 
     // What's the state of the connection?

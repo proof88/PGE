@@ -55,7 +55,9 @@ namespace pge_network
         virtual bool isServer() const = 0;
         virtual void Update() = 0;
 
-        virtual PgeIServerClient* getServerClientInstance() = 0;
+        virtual std::size_t getPacketQueueSize() const = 0;
+        virtual pge_network::PgePacket popFrontPacket() noexcept(false) = 0;
+
         virtual PgeClient& getClient() = 0;
         virtual PgeServer& getServer() = 0;
 

@@ -182,7 +182,8 @@ bool PgeGsnWrapper::PollIncomingMessages()
 
 void PgeGsnWrapper::PollConnectionStateChanges()
 {
-    m_pInterface->RunCallbacks(); // triggers SteamNetConnectionStatusChangedCallback()
+    s_pCallbackInstance = this; // TODO: this could be set only once somewhere in init or ctor
+    m_pInterface->RunCallbacks();
 }
 
 std::size_t PgeGsnWrapper::getPacketQueueSize() const
@@ -264,7 +265,6 @@ PgeGsnWrapper::PgeGsnWrapper(PGEcfgProfiles& cfgProfiles) :
     m_nTxPktCount(0),
     m_nInjectPktCount(0)
 {
-    s_pCallbackInstance = this;
 } // PgeGsnWrapper()
 
 PgeGsnWrapper::PgeGsnWrapper(const PgeGsnWrapper& other) :

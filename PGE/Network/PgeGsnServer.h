@@ -88,7 +88,7 @@ public:
     void WriteServerClientList();
 
 protected:
-    virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const override;
+    virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) override;
     virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const override;
     virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const override;
     virtual void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) override;
@@ -113,4 +113,7 @@ private:
     PgeGsnServer& operator=(const PgeGsnServer&);
 
     void SetClientNick(HSteamNetConnection hConn, const char* nick);
+
+    friend class PGE;
+
 }; // class PgeGsnServer
