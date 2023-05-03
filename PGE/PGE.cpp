@@ -848,10 +848,10 @@ int PGE::runGame()
         p->m_bIsGameRunning = !window.hasCloseRequest();
 
         getNetwork().Update();  // this may also inject packet(s) to SysNET.queuePackets
-        while (getNetwork().getPacketQueueSize() > 0)
+        while (getNetwork().getServerClientInstance()->getPacketQueueSize() > 0)
         {
             // as far as we check for packet queue size before pop, exception won't be thrown
-            if (!onPacketReceived(getNetwork().popFrontPacket()))
+            if (!onPacketReceived(getNetwork().getServerClientInstance()->popFrontPacket()))
             {
                 getConsole().EOLn("ERROR: onPacketReceived() failed, closing window ...");
                 window.Close();

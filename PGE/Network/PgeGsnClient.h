@@ -84,7 +84,7 @@ public:
     std::string getDetailedStatus() const;
 
 protected:
-    virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) override;
+    virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const override;
     virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const override;
     virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const override;
     virtual void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) override;
@@ -111,7 +111,4 @@ private:
     explicit PgeGsnClient(PGEcfgProfiles& cfgProfiles);
     PgeGsnClient(const PgeGsnClient&);
     PgeGsnClient& operator=(const PgeGsnClient&);
-
-    friend class PGE;
-
 }; // class PgeGsnClient

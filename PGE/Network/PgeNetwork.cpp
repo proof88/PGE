@@ -33,9 +33,7 @@ public:
     bool isServer() const override;
     void Update() override;
 
-    std::size_t getPacketQueueSize() const override;
-    pge_network::PgePacket popFrontPacket() noexcept(false) override;
-
+    pge_network::PgeIServerClient* getServerClientInstance() override;
     pge_network::PgeClient& getClient() override;
     pge_network::PgeServer& getServer() override;
 
@@ -150,14 +148,9 @@ void PgeNetworkImpl::Update()
     m_pServerClient->PollConnectionStateChanges();  // this may also add packet(s) to m_pServerClient.queuePackets
 }
 
-std::size_t PgeNetworkImpl::getPacketQueueSize() const
+pge_network::PgeIServerClient* PgeNetworkImpl::getServerClientInstance()
 {
-    return m_pServerClient->getPacketQueueSize();
-}
-
-pge_network::PgePacket PgeNetworkImpl::popFrontPacket() noexcept(false) 
-{
-    return m_pServerClient->popFrontPacket();
+    return m_pServerClient;
 }
 
 pge_network::PgeClient& PgeNetworkImpl::getClient()

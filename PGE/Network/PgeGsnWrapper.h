@@ -136,11 +136,8 @@ protected:
     PgeGsnWrapper(const PgeGsnWrapper&); 
     PgeGsnWrapper& operator=(const PgeGsnWrapper&);
 
-    virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) = 0;
+    virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const = 0;
     virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const = 0;
     virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const = 0;
     virtual void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) = 0;
-
-    friend class PGE;
-
 }; // class PgeGsnWrapper
