@@ -182,6 +182,10 @@ bool PgeGsnWrapper::PollIncomingMessages()
 
 void PgeGsnWrapper::PollConnectionStateChanges()
 {
+    // since this is also static, we cannot set it in ctor, because both PgeGsnServer and PgeGsnClient are instantiated, and
+    // their ctor would set this same static variable ... so it won't work to set it in the ctor.
+    // For now I'm just leaving this here so it is always set by the proper instance.
+    s_pCallbackInstance = this;
     m_pInterface->RunCallbacks(); // triggers SteamNetConnectionStatusChangedCallback()
 }
 
@@ -264,7 +268,6 @@ PgeGsnWrapper::PgeGsnWrapper(PGEcfgProfiles& cfgProfiles) :
     m_nTxPktCount(0),
     m_nInjectPktCount(0)
 {
-    s_pCallbackInstance = this;
 } // PgeGsnWrapper()
 
 PgeGsnWrapper::PgeGsnWrapper(const PgeGsnWrapper& other) :
