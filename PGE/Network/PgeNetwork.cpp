@@ -70,6 +70,7 @@ PgeNetworkImpl::~PgeNetworkImpl()
 
 /**
     Initialize the networking subsystem.
+    Either the server or a client instance will be initialized.
 
     @return The result of the initialization. True on success, false otherwise.
 */
@@ -105,7 +106,7 @@ bool PgeNetworkImpl::initialize()
 
 
 /**
-    This stops the networking subsystem.
+    Stops the networking subsystem.
     No effect before initialization.
     After shutdown, initialize() can be called again.
 
@@ -131,11 +132,21 @@ bool PgeNetworkImpl::isInitialized() const
     return m_pServerClient != nullptr;
 } // isInitialized()
 
+/**
+*   Returns whether the initialized network subsystem should be the server instance.
+*   Note: this has nothing to do with the actual initialization state of the network subsystem, this is just the desired configuration.
+* 
+*   @return True if initialized network subsystem should be the server instance, false if it should be the client instance.
+*/
 bool PgeNetworkImpl::isServer() const
 {
     return m_bServer;
 }
 
+/**
+*   Handles connection state changes and forwards messages to the application.
+*   Application can process these messages by overriding PGE::onPacketReceived().
+*/
 void PgeNetworkImpl::Update()
 {
     if (!isInitialized())
@@ -148,16 +159,41 @@ void PgeNetworkImpl::Update()
     m_pServerClient->PollConnectionStateChanges();  // this may also add packet(s) to m_pServerClient.queuePackets
 }
 
+/**
+*   Returns access to the initialized networking subsystem.
+*   This is either the server or the client instance, or none of them.
+* 
+*   @return Either the server or the client instance, depending on which is initialized.
+*           Nullptr if not yet initialized (when isInitialized() is false).
+*/
 pge_network::PgeIServerClient* PgeNetworkImpl::getServerClientInstance()
 {
     return m_pServerClient;
 }
 
+/**
+*   Returns the client instance.
+*   This is always a valid reference, even if getServerClientInstance() returns nullptr.
+*   This is because both client and server instances are always created, however neither of them might be initialized.
+*   This function is for convenience, since it is similar to:
+*     dynamic_cast<pge_network::PgeClient*>(getServerClientInstance())
+* 
+*   @return The client instance which might or might not be initialized.
+*/
 pge_network::PgeClient& PgeNetworkImpl::getClient()
 {
     return m_pClient;
 }
 
+/**
+*   Returns the server instance.
+*   This is always a valid reference, even if getServerClientInstance() returns nullptr.
+*   This is because both client and server instances are always created, however neither of them might be initialized.
+*   This function is for convenience, since it is similar to:
+*     dynamic_cast<pge_network::PgeServer*>(getServerClientInstance())
+*
+*   @return The server instance which might or might not be initialized.
+*/
 pge_network::PgeServer& PgeNetworkImpl::getServer()
 {
     return m_pServer;

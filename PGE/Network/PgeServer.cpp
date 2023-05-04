@@ -108,8 +108,7 @@ bool PgeServerImpl::initialize()
 */
 bool PgeServerImpl::shutdown()
 {
-    // TODO: this is not symmetric, it should call destroy() because initialize() calls init().
-    return m_gsnServer.stopListening();
+    return m_gsnServer.destroy();
 } // shutdown()
 
 /**

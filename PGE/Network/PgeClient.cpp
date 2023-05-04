@@ -115,7 +115,7 @@ bool PgeClientImpl::initialize()
 */
 bool PgeClientImpl::shutdown()
 {
-    return m_gsnClient.DisconnectClient();
+    return m_gsnClient.destroy();
 } // shutdown()
 
 /**

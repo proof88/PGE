@@ -49,19 +49,19 @@ namespace pge_network
         CConsole& getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
         virtual bool initialize() = 0;                   /**< Initialize the networking subsystem. */
-        virtual bool shutdown() = 0;                     /**< This stops the networking subsystem. */
+        virtual bool shutdown() = 0;                     /**< Stops the networking subsystem. */
         virtual bool isInitialized() const = 0;          /**< Gets the state of the networking subsystem. */
 
-        virtual bool isServer() const = 0;
-        virtual void Update() = 0;
+        virtual bool isServer() const = 0;               /**< Returns whether the initialized network subsystem should be the server instance. */
+        virtual void Update() = 0;                       /**< Handles connection state changes and forwards messages to the application. */
 
-        virtual PgeIServerClient* getServerClientInstance() = 0;
-        virtual PgeClient& getClient() = 0;
-        virtual PgeServer& getServer() = 0;
+        virtual PgeIServerClient* getServerClientInstance() = 0; /**< Returns access to the initialized networking subsystem. */
+        virtual PgeClient& getClient() = 0;                      /**< Returns the client instance. */
+        virtual PgeServer& getServer() = 0;                      /**< Returns the server instance. */
 
         //virtual int getIpAddress() = 0;
 
-        virtual void WriteList() const = 0;    /**< Writes statistics to console. */
+        virtual void WriteList() const = 0;              /**< Writes statistics to console. */
     }; // class PgeNetwork
 
 } // namespace pge_network
