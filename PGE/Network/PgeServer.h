@@ -53,7 +53,6 @@ namespace pge_network
 
         virtual void SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) = 0;
         virtual void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) = 0;
-        virtual void InjectPacket(const pge_network::PgePacket& pkt) = 0;
     }; // class PgeServer
 
 } // namespace pge_network

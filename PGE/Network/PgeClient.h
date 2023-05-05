@@ -59,8 +59,6 @@ namespace pge_network
 
         virtual const char* getServerAddress() const = 0;
 
-        virtual void SendToServer(const pge_network::PgePacket& pkt) = 0;
-
         virtual int getPing(bool bForceUpdate) = 0;
         virtual float getQualityLocal(bool bForceUpdate) = 0;
         virtual float getQualityRemote(bool bForceUpdate) = 0;

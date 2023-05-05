@@ -41,6 +41,8 @@ public:
     std::set<pge_network::PgePktId>& getAllowListedPgeMessages() override;
     std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() override;
 
+    void SendToServer(const pge_network::PgePacket& pkt) override;
+
     uint32_t getRxPacketCount() const override;
     uint32_t getTxPacketCount() const override;
     uint32_t getInjectPacketCount() const override;
@@ -58,7 +60,6 @@ public:
     bool startListening() override;
     void SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) override;
     void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
-    void InjectPacket(const pge_network::PgePacket& pkt) override;
 
     /* implement stuff from PgeServer end */
 
@@ -156,6 +157,11 @@ std::set<pge_network::TPgeMsgAppMsgId>& PgeServerImpl::getAllowListedAppMessages
     return m_gsnServer.getAllowListedAppMessages();
 }
 
+void PgeServerImpl::SendToServer(const pge_network::PgePacket& pkt)
+{
+    m_gsnServer.InjectPacket(pkt);
+}
+
 uint32_t PgeServerImpl::getRxPacketCount() const
 {
     return m_gsnServer.getRxPacketCount();
@@ -218,11 +224,6 @@ void PgeServerImpl::SendPacketToClient(pge_network::PgeNetworkConnectionHandle c
 void PgeServerImpl::SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle)
 {
     m_gsnServer.SendPacketToAllClients(pkt, exceptConnHandle);
-}
-
-void PgeServerImpl::InjectPacket(const pge_network::PgePacket& pkt)
-{
-    m_gsnServer.InjectPacket(pkt);
 }
 
 

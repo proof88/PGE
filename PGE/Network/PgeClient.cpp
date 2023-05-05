@@ -41,6 +41,8 @@ public:
     std::set<pge_network::PgePktId>& getAllowListedPgeMessages() override;
     std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() override;
 
+    void SendToServer(const pge_network::PgePacket& pkt) override;
+
     uint32_t getRxPacketCount() const override;
     uint32_t getTxPacketCount() const override;
     uint32_t getInjectPacketCount() const override;
@@ -59,7 +61,6 @@ public:
     const pge_network::PgeNetworkConnectionHandle& getConnectionHandle() const override;
     const pge_network::PgeNetworkConnectionHandle& getConnectionHandleServerSide() const override;
     const char* getServerAddress() const override;  
-    void SendToServer(const pge_network::PgePacket& pkt) override;
     int getPing(bool bForceUpdate) override;
     float getQualityLocal(bool bForceUpdate) override;
     float getQualityRemote(bool bForceUpdate) override;
@@ -163,6 +164,11 @@ std::set<pge_network::TPgeMsgAppMsgId>& PgeClientImpl::getAllowListedAppMessages
     return m_gsnClient.getAllowListedAppMessages();
 }
 
+void PgeClientImpl::SendToServer(const pge_network::PgePacket& pkt)
+{
+    m_gsnClient.SendToServer(pkt);
+}
+
 uint32_t PgeClientImpl::getRxPacketCount() const
 {
     return m_gsnClient.getRxPacketCount();
@@ -235,11 +241,6 @@ const char* PgeClientImpl::getServerAddress() const
 bool PgeClientImpl::connectToServer(const std::string& sServerAddress)
 {
     return m_gsnClient.connectToServer(sServerAddress);
-}
-
-void PgeClientImpl::SendToServer(const pge_network::PgePacket& pkt)
-{
-    m_gsnClient.SendToServer(pkt);
 }
 
 int PgeClientImpl::getPing(bool bForceUpdate)
