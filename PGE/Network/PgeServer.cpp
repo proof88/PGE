@@ -41,7 +41,7 @@ public:
     std::set<pge_network::PgePktId>& getAllowListedPgeMessages() override;
     std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() override;
 
-    void sendToServer(const pge_network::PgePacket& pkt) override;
+    void sendTo(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle) override;
 
     uint32_t getRxPacketCount() const override;
     uint32_t getTxPacketCount() const override;
@@ -58,7 +58,6 @@ public:
     /* implement stuff from PgeServer start */
 
     bool startListening() override;
-    void sendToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) override;
     void sendToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
 
     /* implement stuff from PgeServer end */
@@ -157,9 +156,16 @@ std::set<pge_network::TPgeMsgAppMsgId>& PgeServerImpl::getAllowListedAppMessages
     return m_gsnServer.getAllowListedAppMessages();
 }
 
-void PgeServerImpl::sendToServer(const pge_network::PgePacket& pkt)
+void PgeServerImpl::sendTo(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle)
 {
-    m_gsnServer.inject(pkt);
+    if (connHandle == 0)
+    {
+        m_gsnServer.inject(pkt);
+    }
+    else
+    {
+        m_gsnServer.sendToClient(static_cast<HSteamNetConnection>(connHandle), pkt);
+    }
 }
 
 uint32_t PgeServerImpl::getRxPacketCount() const
@@ -213,12 +219,6 @@ void PgeServerImpl::WriteList() const
 bool PgeServerImpl::startListening()
 {
     return m_gsnServer.startListening();
-}
-
-void PgeServerImpl::sendToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt)
-{
-    // TODO add check: connHandle cannot be 0!
-    m_gsnServer.sendToClient(static_cast<HSteamNetConnection>(connHandle), pkt);
 }
 
 void PgeServerImpl::sendToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle)
