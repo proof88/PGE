@@ -51,7 +51,7 @@ bool PgeGsnClient::destroy()
     CConsole::getConsoleInstance("PgeGsnClient").OLn("Detailed Connection Status:");
     CConsole::getConsoleInstance("PgeGsnClient").OLn("%s", getDetailedStatus().c_str());
     
-    return DisconnectClient() && PgeGsnWrapper::destroy();
+    return disconnectClient() && PgeGsnWrapper::destroy();
 } // destroy()
 
 bool PgeGsnClient::isInitialized() const
@@ -89,7 +89,7 @@ bool PgeGsnClient::connectToServer(const std::string& sServerAddress)
     CConsole::getConsoleInstance("PgeGsnClient").OLn("%s Connecting to server at %s", __func__, m_szAddr);
 
     SteamNetworkingConfigValue_t opt;
-    opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)SteamNetConnectionStatusChangedCallback);
+    opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallback);
 
     m_hConnection = m_pInterface->ConnectByIPAddress(m_addrServer, 1, &opt);
     if (m_hConnection == k_HSteamNetConnection_Invalid)
@@ -104,7 +104,7 @@ bool PgeGsnClient::connectToServer(const std::string& sServerAddress)
     return true;
 }
 
-bool PgeGsnClient::DisconnectClient()
+bool PgeGsnClient::disconnectClient()
 {
     if (!isInitialized())
     {
@@ -140,7 +140,7 @@ const char* PgeGsnClient::getServerAddress() const
     return m_szAddr;
 }
 
-void PgeGsnClient::SendToServer(const pge_network::PgePacket& pkt)
+void PgeGsnClient::sendToServer(const pge_network::PgePacket& pkt)
 {
     if (!isInitialized())
     {
@@ -239,11 +239,11 @@ void PgeGsnClient::updateIncomingPgePacket(pge_network::PgePacket&, const HSteam
     // here we are client, we don't set pkt.connHandle because we expect it to be already properly filled in by sender (server)!
 }
 
-void PgeGsnClient::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
+void PgeGsnClient::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
 {
-    // This function is also invoked on main thread when I call PgeGsnClient.PollConnectionStateChanges() from PGE::runGame()
+    // This function is also invoked on main thread when I call PgeGsnClient.pollConnectionStateChanges() from PGE::runGame()
     // so no need to utilize mutexes around here.
-    // And the other function PollIncomingMessages() is also invoked by PGE::runGame().
+    // And the other function pollIncomingMessages() is also invoked by PGE::runGame().
     // So it is safe to do operations on m_queuePackets.
 
     assert(pInfo->m_hConn == m_hConnection || m_hConnection == k_HSteamNetConnection_Invalid);

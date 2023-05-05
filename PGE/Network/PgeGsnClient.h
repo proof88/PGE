@@ -43,7 +43,7 @@ public:
     /* implement stuff from PgeGsnWrapper start */
 
     /**
-    * Calls DisconnectClient() and PgeGsnWrapper::destroy().
+    * Calls disconnectClient() and PgeGsnWrapper::destroy().
     *
     * @return True if uninitialization is successful or not initialized, false otherwise.
     */
@@ -72,13 +72,13 @@ public:
     *
     * @return Always true, even if client was not connected before calling this function.
     */
-    bool DisconnectClient();
+    bool disconnectClient();
 
     const HSteamNetConnection& getConnectionHandle() const;
     const HSteamNetConnection& getConnectionHandleServerSide() const;
     const char* getServerAddress() const;
 
-    void SendToServer(const pge_network::PgePacket& pkt);
+    void sendToServer(const pge_network::PgePacket& pkt);
 
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
     std::string getDetailedStatus() const;
@@ -87,7 +87,7 @@ protected:
     virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const override;
     virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const override;
     virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const override;
-    virtual void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) override;
+    virtual void onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) override;
 
 private:
 
@@ -95,7 +95,7 @@ private:
     char m_szAddr[SteamNetworkingIPAddr::k_cchMaxString];
     HSteamNetConnection m_hConnection;
 
-    // TODO: this is not set currently. Because Client code at this level in PollConnectionStateChanges() knows only about its local
+    // TODO: this is not set currently. Because Client code at this level in pollConnectionStateChanges() knows only about its local
     // connection handle. Server should send a specific Pge message back to client holding this info.
     // Even though it is filled as m_connHandleServerSide in most packets, those packets are only sent when APP level sends something.
     // Because currently there is pge_network level packet sent by server to client during connection buildup.

@@ -63,7 +63,7 @@ bool PgeGsnServer::startListening()
     serverLocalAddr.Clear();
     serverLocalAddr.m_port = m_nPort;
     SteamNetworkingConfigValue_t opt;
-    opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)SteamNetConnectionStatusChangedCallback);
+    opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallback);
 
     // GameNetworkingSockets - 1.4.0\tests\test_connection.cpp :: Test_Connection() contains example how to initiate connection to ourselves!
     m_hListenSock = m_pInterface->CreateListenSocketIP(serverLocalAddr, 1, &opt);
@@ -143,7 +143,7 @@ bool PgeGsnServer::stopListening()
     return true;
 }
 
-void PgeGsnServer::SendPacketToClient(HSteamNetConnection conn, const pge_network::PgePacket& pkt)
+void PgeGsnServer::sendToClient(HSteamNetConnection conn, const pge_network::PgePacket& pkt)
 {
     if (conn == k_HSteamNetConnection_Invalid)
     {
@@ -159,7 +159,7 @@ void PgeGsnServer::SendPacketToClient(HSteamNetConnection conn, const pge_networ
     }
 }
 
-void PgeGsnServer::SendPacketToAllClients(const pge_network::PgePacket& pkt, HSteamNetConnection except)
+void PgeGsnServer::sendToAllClients(const pge_network::PgePacket& pkt, HSteamNetConnection except)
 {
     for (auto& client : m_mapClients)
     {
@@ -171,12 +171,12 @@ void PgeGsnServer::SendPacketToAllClients(const pge_network::PgePacket& pkt, HSt
         }
         if (client.first != except)
         {
-            SendPacketToClient(client.first, pkt);
+            sendToClient(client.first, pkt);
         }
     }
 }
 
-void PgeGsnServer::InjectPacket(const pge_network::PgePacket& pkt)
+void PgeGsnServer::inject(const pge_network::PgePacket& pkt)
 {
     m_queuePackets.push_back(pkt);
     m_nInjectPktCount++;
@@ -255,7 +255,7 @@ void PgeGsnServer::updateIncomingPgePacket(pge_network::PgePacket& pkt, const HS
     pkt.m_connHandleServerSide = static_cast<pge_network::PgeNetworkConnectionHandle>(connHandle);
 }
 
-void PgeGsnServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
+void PgeGsnServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
 {
     // This function is also invoked on main thread when I call PgeGsnServer.PollConnectionStateChanges() from PGE::runGame()
     // so no need to utilize mutexes around here.
@@ -318,7 +318,7 @@ void PgeGsnServer::OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
 
             // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
             m_queuePackets.push_back(pkt);
-            SendPacketToAllClients(pkt);
+            sendToAllClients(pkt);
         }
         else
         {

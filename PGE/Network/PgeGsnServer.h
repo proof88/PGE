@@ -80,10 +80,10 @@ public:
     */
     bool stopListening();
 
-    void SendPacketToClient(HSteamNetConnection conn, const pge_network::PgePacket& pkt);
-    void SendPacketToAllClients(const pge_network::PgePacket& pkt, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
+    void sendToClient(HSteamNetConnection conn, const pge_network::PgePacket& pkt);
+    void sendToAllClients(const pge_network::PgePacket& pkt, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
 
-    void InjectPacket(const pge_network::PgePacket& pkt);
+    void inject(const pge_network::PgePacket& pkt);
 
     void WriteServerClientList();
 
@@ -91,7 +91,7 @@ protected:
     virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const override;
     virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const override;
     virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const override;
-    virtual void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) override;
+    virtual void onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) override;
 
 private:
 

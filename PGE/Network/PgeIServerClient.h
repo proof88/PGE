@@ -43,8 +43,8 @@ namespace pge_network
 
         virtual void Update() = 0;
 
-        virtual bool PollIncomingMessages() = 0;
-        virtual void PollConnectionStateChanges() = 0;
+        virtual bool pollIncomingMessages() = 0;
+        virtual void pollConnectionStateChanges() = 0;
 
         virtual std::size_t getPacketQueueSize() const = 0;
         virtual pge_network::PgePacket popFrontPacket() noexcept(false) = 0;
@@ -52,7 +52,7 @@ namespace pge_network
         virtual std::set<pge_network::PgePktId>& getAllowListedPgeMessages() = 0;
         virtual std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() = 0;
 
-        virtual void SendToServer(const pge_network::PgePacket& pkt) = 0;
+        virtual void sendToServer(const pge_network::PgePacket& pkt) = 0;
 
         virtual uint32_t getRxPacketCount() const = 0;
         virtual uint32_t getTxPacketCount() const = 0;

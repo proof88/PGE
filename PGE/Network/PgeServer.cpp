@@ -32,8 +32,8 @@ public:
 
     void Update() override;
 
-    bool PollIncomingMessages() override;
-    void PollConnectionStateChanges() override;
+    bool pollIncomingMessages() override;
+    void pollConnectionStateChanges() override;
 
     std::size_t getPacketQueueSize() const override;
     pge_network::PgePacket popFrontPacket() noexcept(false) override;
@@ -41,7 +41,7 @@ public:
     std::set<pge_network::PgePktId>& getAllowListedPgeMessages() override;
     std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() override;
 
-    void SendToServer(const pge_network::PgePacket& pkt) override;
+    void sendToServer(const pge_network::PgePacket& pkt) override;
 
     uint32_t getRxPacketCount() const override;
     uint32_t getTxPacketCount() const override;
@@ -58,8 +58,8 @@ public:
     /* implement stuff from PgeServer start */
 
     bool startListening() override;
-    void SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) override;
-    void SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
+    void sendToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt) override;
+    void sendToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
 
     /* implement stuff from PgeServer end */
 
@@ -123,18 +123,18 @@ bool PgeServerImpl::isInitialized() const
 
 void PgeServerImpl::Update()
 {
-    m_gsnServer.PollIncomingMessages();
-    m_gsnServer.PollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
+    m_gsnServer.pollIncomingMessages();
+    m_gsnServer.pollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
 }
 
-bool PgeServerImpl::PollIncomingMessages()
+bool PgeServerImpl::pollIncomingMessages()
 {
-    return m_gsnServer.PollIncomingMessages();
+    return m_gsnServer.pollIncomingMessages();
 }
 
-void PgeServerImpl::PollConnectionStateChanges()
+void PgeServerImpl::pollConnectionStateChanges()
 {
-    return m_gsnServer.PollConnectionStateChanges();
+    return m_gsnServer.pollConnectionStateChanges();
 }
 
 std::size_t PgeServerImpl::getPacketQueueSize() const
@@ -157,9 +157,9 @@ std::set<pge_network::TPgeMsgAppMsgId>& PgeServerImpl::getAllowListedAppMessages
     return m_gsnServer.getAllowListedAppMessages();
 }
 
-void PgeServerImpl::SendToServer(const pge_network::PgePacket& pkt)
+void PgeServerImpl::sendToServer(const pge_network::PgePacket& pkt)
 {
-    m_gsnServer.InjectPacket(pkt);
+    m_gsnServer.inject(pkt);
 }
 
 uint32_t PgeServerImpl::getRxPacketCount() const
@@ -215,15 +215,15 @@ bool PgeServerImpl::startListening()
     return m_gsnServer.startListening();
 }
 
-void PgeServerImpl::SendPacketToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt)
+void PgeServerImpl::sendToClient(pge_network::PgeNetworkConnectionHandle connHandle, const pge_network::PgePacket& pkt)
 {
     // TODO add check: connHandle cannot be 0!
-    m_gsnServer.SendPacketToClient(static_cast<HSteamNetConnection>(connHandle), pkt);
+    m_gsnServer.sendToClient(static_cast<HSteamNetConnection>(connHandle), pkt);
 }
 
-void PgeServerImpl::SendPacketToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle)
+void PgeServerImpl::sendToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle)
 {
-    m_gsnServer.SendPacketToAllClients(pkt, exceptConnHandle);
+    m_gsnServer.sendToAllClients(pkt, exceptConnHandle);
 }
 
 

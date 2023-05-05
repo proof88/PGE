@@ -32,8 +32,8 @@ public:
 
     void Update() override;
 
-    bool PollIncomingMessages() override;
-    void PollConnectionStateChanges() override;
+    bool pollIncomingMessages() override;
+    void pollConnectionStateChanges() override;
 
     std::size_t getPacketQueueSize() const override;
     pge_network::PgePacket popFrontPacket() noexcept(false) override;
@@ -41,7 +41,7 @@ public:
     std::set<pge_network::PgePktId>& getAllowListedPgeMessages() override;
     std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() override;
 
-    void SendToServer(const pge_network::PgePacket& pkt) override;
+    void sendToServer(const pge_network::PgePacket& pkt) override;
 
     uint32_t getRxPacketCount() const override;
     uint32_t getTxPacketCount() const override;
@@ -130,18 +130,18 @@ bool PgeClientImpl::isInitialized() const
 
 void PgeClientImpl::Update()
 {
-    m_gsnClient.PollIncomingMessages();
-    m_gsnClient.PollConnectionStateChanges();  // this may also add packet(s) to m_gsnClient.queuePackets
+    m_gsnClient.pollIncomingMessages();
+    m_gsnClient.pollConnectionStateChanges();  // this may also add packet(s) to m_gsnClient.queuePackets
 }
 
-bool PgeClientImpl::PollIncomingMessages()
+bool PgeClientImpl::pollIncomingMessages()
 {
-    return m_gsnClient.PollIncomingMessages();
+    return m_gsnClient.pollIncomingMessages();
 }
 
-void PgeClientImpl::PollConnectionStateChanges()
+void PgeClientImpl::pollConnectionStateChanges()
 {
-    return m_gsnClient.PollConnectionStateChanges();
+    return m_gsnClient.pollConnectionStateChanges();
 }
 
 std::size_t PgeClientImpl::getPacketQueueSize() const
@@ -164,9 +164,9 @@ std::set<pge_network::TPgeMsgAppMsgId>& PgeClientImpl::getAllowListedAppMessages
     return m_gsnClient.getAllowListedAppMessages();
 }
 
-void PgeClientImpl::SendToServer(const pge_network::PgePacket& pkt)
+void PgeClientImpl::sendToServer(const pge_network::PgePacket& pkt)
 {
-    m_gsnClient.SendToServer(pkt);
+    m_gsnClient.sendToServer(pkt);
 }
 
 uint32_t PgeClientImpl::getRxPacketCount() const

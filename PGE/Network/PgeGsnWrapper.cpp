@@ -68,7 +68,7 @@ bool PgeGsnWrapper::init()
     // But we could use SteamGameServerNetworkingSockets() on Steam.
     m_pInterface = SteamNetworkingSockets();
 
-    // now main engine loop can invoke PollIncomingMessages() and PollConnectionStateChanges()
+    // now main engine loop can invoke pollIncomingMessages() and pollConnectionStateChanges()
 
     return true;
 } // init()
@@ -101,7 +101,7 @@ bool PgeGsnWrapper::isInitialized() const
     return m_pInterface != nullptr;
 }
 
-bool PgeGsnWrapper::PollIncomingMessages()
+bool PgeGsnWrapper::pollIncomingMessages()
 {
     static const int nIncomingMsgArraySize = 10; // TODO: make this configurable from outside
     ISteamNetworkingMessage* pIncomingMsg[nIncomingMsgArraySize];
@@ -180,13 +180,13 @@ bool PgeGsnWrapper::PollIncomingMessages()
     return true;
 }
 
-void PgeGsnWrapper::PollConnectionStateChanges()
+void PgeGsnWrapper::pollConnectionStateChanges()
 {
     // since this is also static, we cannot set it in ctor, because both PgeGsnServer and PgeGsnClient are instantiated, and
     // their ctor would set this same static variable ... so it won't work to set it in the ctor.
     // For now I'm just leaving this here so it is always set by the proper instance.
     s_pCallbackInstance = this;
-    m_pInterface->RunCallbacks(); // triggers SteamNetConnectionStatusChangedCallback()
+    m_pInterface->RunCallbacks(); // triggers steamNetConnectionStatusChangedCallback()
 }
 
 std::size_t PgeGsnWrapper::getPacketQueueSize() const
@@ -256,9 +256,9 @@ uint32_t PgeGsnWrapper::getInjectPacketPerSecondCount() const
 
 PgeGsnWrapper* PgeGsnWrapper::s_pCallbackInstance = nullptr;
 
-void PgeGsnWrapper::SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo)
+void PgeGsnWrapper::steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo)
 {
-    s_pCallbackInstance->OnSteamNetConnectionStatusChanged(pInfo);
+    s_pCallbackInstance->onSteamNetConnectionStatusChanged(pInfo);
 }
 
 PgeGsnWrapper::PgeGsnWrapper(PGEcfgProfiles& cfgProfiles) :

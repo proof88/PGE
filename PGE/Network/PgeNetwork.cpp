@@ -154,9 +154,9 @@ void PgeNetworkImpl::Update()
         return;
     }
 
-    while (m_pServerClient->PollIncomingMessages())
+    while (m_pServerClient->pollIncomingMessages())
     {}
-    m_pServerClient->PollConnectionStateChanges();  // this may also add packet(s) to m_pServerClient.queuePackets
+    m_pServerClient->pollConnectionStateChanges();  // this may also add packet(s) to m_pServerClient.queuePackets
 }
 
 /**

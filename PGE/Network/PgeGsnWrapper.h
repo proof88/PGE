@@ -85,9 +85,9 @@ public:
     * 
     * @return True on success, false on error.
     */
-    bool PollIncomingMessages();
+    bool pollIncomingMessages();
 
-    void PollConnectionStateChanges();
+    void pollConnectionStateChanges();
    
     std::size_t getPacketQueueSize() const;
     pge_network::PgePacket popFrontPacket() noexcept(false);
@@ -96,7 +96,7 @@ public:
     std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages();
 
     bool connectToServer(const std::string& sServerAddress); /* temporal, now I dont have better idea in this time */
-    bool DisconnectClient();
+    bool disconnectClient();
     bool startListening();
     bool stopListening();
 
@@ -130,7 +130,7 @@ protected:
 
     // ---------------------------------------------------------------------------
 
-    static void SteamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
+    static void steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
 
     explicit PgeGsnWrapper(PGEcfgProfiles& cfgProfiles);
     PgeGsnWrapper(const PgeGsnWrapper&); 
@@ -139,5 +139,5 @@ protected:
     virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const = 0;
     virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const = 0;
     virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const = 0;
-    virtual void OnSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) = 0;
+    virtual void onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) = 0;
 }; // class PgeGsnWrapper
