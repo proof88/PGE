@@ -49,6 +49,13 @@ namespace pge_network
 
         /* all abstract functions from PgeIServerClient are overrid by hidden implementation */
 
+        /**
+        * Opens a connection to a server instance.
+        * If the function is successful, any call to the derived isInitialized() is expected to return true.
+        * Note: you can disconnect from server by invoking the derived shutdown() which is implemented already in hidden class.
+        *
+        * @return True on success, false otherwise or when it is already connected to server.
+        */
         virtual bool connectToServer(const std::string& sServerAddress) = 0; /* temporal */
 
         /** Returns client's handle to the connection opened towards the server. */

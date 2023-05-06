@@ -59,6 +59,7 @@ public:
 
     bool startListening() override;
     void sendToAllClientsExcept(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& exceptConnHandle = 0) override;
+    void sendToAll(const pge_network::PgePacket& pkt) override;
 
     /* implement stuff from PgeServer end */
 
@@ -224,6 +225,12 @@ bool PgeServerImpl::startListening()
 void PgeServerImpl::sendToAllClientsExcept(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& exceptConnHandle)
 {
     m_gsnServer.sendToAllClientsExcept(pkt, exceptConnHandle);
+}
+
+void PgeServerImpl::sendToAll(const pge_network::PgePacket& pkt)
+{
+    send(pkt);
+    sendToAllClientsExcept(pkt);
 }
 
 
