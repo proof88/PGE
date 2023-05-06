@@ -11,9 +11,11 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../Weapons/WeaponManager.h"
 
 #include <cmath>
+
+#include "../../../PFL/PFL/PFL.h"
+#include "../Weapons/WeaponManager.h"
 
 class WeaponsTest :
     public UnitTest
@@ -59,6 +61,8 @@ protected:
         AddSubTest("test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse);
         AddSubTest("test_wpn_firing_mode_max_cannot_be_less_than_default", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_firing_mode_max_cannot_be_less_than_default);
         AddSubTest("test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj);
+        AddSubTest("test_wpn_damage_hp_must_be_positive", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_damage_hp_must_be_positive);
+        AddSubTest("test_wpn_damage_ap_must_be_positive", (PFNUNITSUBTEST)&WeaponsTest::test_wpn_damage_ap_must_be_positive);
         
         AddSubTest("test_wpn_load_weapon_good", (PFNUNITSUBTEST) &WeaponsTest::test_wpn_load_weapon_good);
 
@@ -156,276 +160,162 @@ private:
         return *this;
     };
 
-    bool test_wpn_load_weapon_bad_assignment()
+    bool test_helper_wpn_load_and_expect_exception(const std::string& sFilename, const std::string& sExpectedExceptionString)
     {
+        if (!PFL::fileExists(sFilename.c_str()))
+        {
+            // these tests must throw exception due to invalid content of the file, not because the file is missing!
+            return assertTrue(false, (std::string("file doesnt exist: ") + sFilename).c_str());
+        }
+
         bool b = false;
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_bad_assignment.txt", bullets, *engine, 0);
+            Weapon wpn(sFilename.c_str(), bullets, *engine, 0);
         }
-        catch (const std::exception)
+        catch (const std::exception& e)
         {
-            b = true;
+            if (std::string(e.what()).find(sExpectedExceptionString) != std::string::npos)
+            {
+                b = true;
+            }
         }
 
         return b;
+    }
+
+    bool test_wpn_load_weapon_bad_assignment()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_bad_assignment.txt",
+            "");
     }
 
     bool test_wpn_load_weapon_unaccepted_var()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_unaccepted_var.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_unaccepted_var.txt",
+            "");
     }
 
     bool test_wpn_load_weapon_missing_var()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_missing_var.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_missing_var.txt",
+            "");
     }
 
     bool test_wpn_load_weapon_double_defined_var()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_double_defined_var.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_double_defined_var.txt",
+            "");
     }
 
     bool test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_not_reloadable_incompatible_with_reload_per_mag.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_not_reloadable_incompatible_with_reload_per_mag.txt",
+            "reloadable is 0 but reload_per_mag is true");
     }
 
     bool test_wpn_load_weapon_reloadable_cannot_be_greater_than_cap_max()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_reloadable_cannot_be_greater_than_cap_max.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_reloadable_cannot_be_greater_than_cap_max.txt",
+            "reloadable cannot be greater than cap_max");
     }
 
     bool test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable()
-    {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_bullets_default_cannot_be_greater_than_non_zero_reloadable.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+    {     
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_bullets_default_cannot_be_greater_than_non_zero_reloadable.txt",
+            "bullets_default cannot be greater than reloadable when the latter is non-zero");
     }
 
     bool test_wpn_load_weapon_bullets_default_cannot_be_greater_than_cap_max()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_bullets_default_cannot_be_greater_than_cap_max.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_bullets_default_cannot_be_greater_than_cap_max.txt",
+            "bullets_default cannot be greater than cap_max");
     }
 
     bool test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_reload_whole_mag_incompatible_with_no_reload_per_mag.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_reload_whole_mag_incompatible_with_no_reload_per_mag.txt",
+            "reload_whole_mag is true but reload_per_mag is false");
     }
 
     bool test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_no_recoil_incompatible_with_non_zero_recoil_cooldown.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_no_recoil_incompatible_with_non_zero_recoil_cooldown.txt",
+            "recoil_m is 1 but recoil_cooldown is non-zero");
     }
 
     bool test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_no_recoil_incompatible_with_recoil_control.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_no_recoil_incompatible_with_recoil_control.txt",
+            "recoil_m is 1 but recoil_control is not off");
     }
 
     bool test_wpn_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled.txt",
+            "recoil enabled, but recoil_cooldown is less than firing_cooldown");
     }
 
     bool test_wpn_firing_cooldown_must_be_positive()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_firing_cooldown_must_be_positive.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_firing_cooldown_must_be_positive.txt",
+            "firing_cooldown must be a positive value");
     }
 
     bool test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_max_bullet_speed_incompatible_with_non_zero_bullet_drag.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_max_bullet_speed_incompatible_with_non_zero_bullet_drag.txt",
+            "bullet_speed is 1000 but bullet_drag is non-zero");
     }
 
     bool test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse.txt",
+            "damage_area_size is 0 but damage_area_pulse is non-zero");
     }
 
     bool test_wpn_firing_mode_max_cannot_be_less_than_default()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_firing_mode_max_cannot_be_less_than_default.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
-
-        return b;
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_firing_mode_max_cannot_be_less_than_default.txt",
+            "wrong order of default and max firing modes: auto and semi");
     }
 
     bool test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj()
     {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/wpn_test_firing_modes_default_and_max_cannot_be_burst_and_proj.txt", bullets, *engine, 0);
-        }
-        catch (const std::exception)
-        {
-            b = true;
-        }
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_firing_modes_default_and_max_cannot_be_burst_and_proj.txt",
+            "incompatiable default and max firing modes: burst and proj");
+    }
 
-        return b;
+    bool test_wpn_damage_hp_must_be_positive()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_damage_hp_must_be_positive.txt",
+            "damage_hp and damage_ap must be positive values");
+    }
+
+    bool test_wpn_damage_ap_must_be_positive()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_damage_ap_must_be_positive.txt",
+            "damage_hp and damage_ap must be positive values");
     }
 
     bool test_wpn_load_weapon_good()

@@ -374,6 +374,12 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsUltimateRend
         throw std::runtime_error("damage_area_size is 0 but damage_area_pulse is non-zero in " + std::string(fname));
     }
 
+    if ((getVars()["damage_hp"].getAsInt() < 1) || (getVars()["damage_ap"].getAsInt() < 1))
+    {
+        getConsole().EOLnOO("damage_hp and damage_ap must be positive values in %s! ", fname);
+        throw std::runtime_error("damage_hp and damage_ap must be positive values in " + std::string(fname));
+    }
+
     Reset();
 
     // TODO: this is same as in copy ctor and operator=
