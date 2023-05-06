@@ -55,7 +55,7 @@ protected:
 
     }
 
-    virtual void Initialize()
+    virtual void Initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureCamera::getLoggerModuleName(), true);
     }

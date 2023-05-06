@@ -25,7 +25,7 @@ public:
 
 protected:
 
-    virtual void Initialize()
+    virtual void Initialize() override
     {
         engine = NULL;
         om = NULL;

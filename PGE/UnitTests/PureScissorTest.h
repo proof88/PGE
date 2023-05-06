@@ -33,7 +33,7 @@ public:
 
 protected:
 
-    virtual void Initialize()
+    virtual void Initialize() override
     {
         AddSubTest("testDoScissor", (PFNUNITSUBTEST) &PureScissorTest::testDoScissor);
     }

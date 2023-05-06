@@ -39,7 +39,7 @@ public:
 
 protected:
 
-    virtual void Initialize()
+    virtual void Initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureSharedSettings::getLoggerModuleName(), true);
         screensvrOrig = ss.get(PURE_SSET_SCREENSAVER_ALLOWED);

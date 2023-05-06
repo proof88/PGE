@@ -43,7 +43,7 @@ public:
 
 protected:
 
-    virtual void Initialize()
+    virtual void Initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3D::getLoggerModuleName(), true);

@@ -47,7 +47,7 @@ public:
 
 protected:
 
-    virtual void Initialize()
+    virtual void Initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PGEcfgProfiles::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), true);

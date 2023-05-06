@@ -46,7 +46,7 @@ public:
 
 protected:
 
-    virtual void Initialize()
+    virtual void Initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureFiledManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureManager::getLoggerModuleName(), true);

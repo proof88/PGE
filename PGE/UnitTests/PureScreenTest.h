@@ -45,7 +45,7 @@ public:
 
 protected:
 
-    virtual void Initialize()
+    virtual void Initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         screensvrOrig = scr.isScreensaverEnabled();

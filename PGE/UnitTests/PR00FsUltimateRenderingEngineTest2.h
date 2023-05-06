@@ -31,7 +31,7 @@ public:
 
 protected:
 
-    virtual void Initialize()
+    virtual void Initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PR00FsUltimateRenderingEngine::getLoggerModuleName(), true);
         engine = NULL;

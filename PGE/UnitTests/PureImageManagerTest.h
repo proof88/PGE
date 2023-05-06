@@ -34,7 +34,7 @@ public:
 
 protected:
 
-    virtual void Initialize()
+    virtual void Initialize() override
     {
         /*CConsole::getConsoleInstance().SetLoggingState(PureImage::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(PureImageManager::getLoggerModuleName(), true);*/

@@ -34,7 +34,7 @@ public:
 
 protected:
 
-    virtual void Initialize()
+    virtual void Initialize() override
     {
         AddSubTest("testGetTimeDiffInUs", (PFNUNITSUBTEST) &PFLTest::testGetTimeDiffInUs);    
         AddSubTest("testUpdateForMinDuration_1", (PFNUNITSUBTEST) &PFLTest::testUpdateForMinDuration_1);

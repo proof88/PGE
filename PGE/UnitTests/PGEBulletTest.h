@@ -27,7 +27,7 @@ public:
 
 protected:
 
-    virtual void Initialize()
+    virtual void Initialize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(Bullet::getLoggerModuleName(), true);
 

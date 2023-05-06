@@ -109,7 +109,7 @@ public:
 
 protected:
 
-    virtual void Initialize()
+    virtual void Initialize() override
     {
         /*
         CConsole::getConsoleInstance().SetLoggingState(PureMaterial::getLoggerModuleName(), true);
