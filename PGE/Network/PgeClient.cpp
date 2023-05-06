@@ -41,7 +41,7 @@ public:
     std::set<pge_network::PgePktId>& getAllowListedPgeMessages() override;
     std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() override;
 
-    void sendTo(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle = 0) override;
+    void send(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle = 0) override;
 
     uint32_t getRxPacketCount() const override;
     uint32_t getTxPacketCount() const override;
@@ -164,7 +164,7 @@ std::set<pge_network::TPgeMsgAppMsgId>& PgeClientImpl::getAllowListedAppMessages
     return m_gsnClient.getAllowListedAppMessages();
 }
 
-void PgeClientImpl::sendTo(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle)
+void PgeClientImpl::send(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle)
 {
     if (connHandle != 0)
     {

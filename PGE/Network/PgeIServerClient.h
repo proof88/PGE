@@ -52,7 +52,16 @@ namespace pge_network
         virtual std::set<pge_network::PgePktId>& getAllowListedPgeMessages() = 0;
         virtual std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() = 0;
 
-        virtual void sendTo(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle = 0) = 0;
+        /**
+        * Sends the given packet to the network instance specified.
+        * 
+        * @param pkt        The packet to be sent.
+        * @param connHandle The addressed network instance, that can be either a server or client instance.
+        *                   The default 0 parameter means the addressed instance is the server instance.
+        *                   If 0 is specified (server) and current instance is the server, the packet
+        *                   will be injected to self instead of actually sending it to the lower network level.
+        */
+        virtual void send(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle = 0) = 0;
 
         virtual uint32_t getRxPacketCount() const = 0;
         virtual uint32_t getTxPacketCount() const = 0;
