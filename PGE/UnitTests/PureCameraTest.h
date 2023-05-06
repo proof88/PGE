@@ -60,7 +60,7 @@ protected:
         //CConsole::getConsoleInstance().SetLoggingState(PureCamera::getLoggerModuleName(), true);
     }
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PureCamera::getLoggerModuleName(), false);    
     }

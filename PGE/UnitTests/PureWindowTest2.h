@@ -106,7 +106,7 @@ protected:
         Finalize();
     }
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
         wnd.Deinitialize();
         CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", false);

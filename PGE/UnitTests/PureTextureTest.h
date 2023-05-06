@@ -146,7 +146,7 @@ protected:
         }
     }
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
         tex128x128x32opaque = NULL;
         tex128x128x32transp = NULL;

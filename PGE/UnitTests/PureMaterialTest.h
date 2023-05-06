@@ -155,7 +155,7 @@ protected:
         mat = NULL;
     }
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
         tm = NULL;
         mm = NULL;

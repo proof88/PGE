@@ -107,7 +107,7 @@ protected:
         }
     }
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PureImage::getLoggerModuleName(), false);
         CConsole::getConsoleInstance().SetLoggingState(PureImageManager::getLoggerModuleName(), false);    

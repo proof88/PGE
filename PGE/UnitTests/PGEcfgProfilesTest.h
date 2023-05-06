@@ -82,7 +82,7 @@ protected:
     virtual void TearDown() override
     {}
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PGEcfgProfiles::getLoggerModuleName(), false);    
         CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), false);

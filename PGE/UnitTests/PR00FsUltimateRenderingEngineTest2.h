@@ -70,7 +70,7 @@ protected:
         }
     }
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PR00FsUltimateRenderingEngine::getLoggerModuleName(), false);    
     }

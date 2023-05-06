@@ -80,7 +80,7 @@ protected:
         AddSubTest("testSetFSAAlevel3", (PFNUNITSUBTEST) &PureScreenTest::testSetFSAAlevel3);
     }
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
         scr.SetScreensaverEnabled(screensvrOrig);
         scr.SetMonitorPowersaveEnabled(monitorpwrOrig);

@@ -199,7 +199,7 @@ protected:
         }
     }
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
         obj = NULL;
         objFromFile = NULL;

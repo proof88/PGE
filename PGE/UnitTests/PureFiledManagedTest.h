@@ -53,7 +53,7 @@ public:
         //CConsole::getConsoleInstance().SetLoggingState(PureManager::getLoggerModuleName(), true);
     }
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PureFiledManaged::getLoggerModuleName(), false);
         CConsole::getConsoleInstance().SetLoggingState(PureManaged::getLoggerModuleName(), false);

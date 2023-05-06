@@ -82,7 +82,7 @@ protected:
         om = NULL;
     }
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
         if ( engine )
         {

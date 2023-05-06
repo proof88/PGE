@@ -259,7 +259,7 @@ protected:
         }
     }
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
         mesh = NULL;
         meshFromFile = NULL;

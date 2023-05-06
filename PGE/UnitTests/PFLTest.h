@@ -68,7 +68,7 @@ protected:
         Finalize();
     }
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
     }
 

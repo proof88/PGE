@@ -50,7 +50,7 @@ protected:
         AddSubTest("testSet", (PFNUNITSUBTEST) &PureSharedSettingsTest::testSet);
     }
 
-    virtual void Finalize()
+    virtual void Finalize() override
     {
         ss.Set(PURE_SSET_MONITORPOWERSAVE_ALLOWED, monitorpwrOrig);
         ss.Set(PURE_SSET_SCREENSAVER_ALLOWED, screensvrOrig);
