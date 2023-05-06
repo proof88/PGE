@@ -51,7 +51,7 @@ namespace pge_network
 
         virtual bool startListening() = 0;
 
-        virtual void sendToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) = 0;
+        virtual void sendToAllClientsExcept(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& exceptConnHandle = 0) = 0;
     }; // class PgeServer
 
 } // namespace pge_network

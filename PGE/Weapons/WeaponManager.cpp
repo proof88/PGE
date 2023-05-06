@@ -920,7 +920,14 @@ void Weapon::SetAvailable(bool bAvail)
 */
 const float Weapon::getDamagePerFireRating() const
 {
-    // later we can also add damage_area_size to this calculation
+    /*
+      damage_hp       -> greater is better
+      damage_ap       -> greater is better
+      damage_area_size-> greater is better
+      bullet distance -> greater is better
+      firing_mode_def -> greater is better
+    */
+    // later we can also add damage_area_size and bullet distance and firing_mode_def to this calculation
     return (getVars().at("damage_hp").getAsInt() * getVars().at("damage_ap").getAsInt()) / 100.f;
 }
 
@@ -933,6 +940,11 @@ const float Weapon::getDamagePerFireRating() const
 */
 const float Weapon::getDamagePerSecondRating() const
 {
+    /*
+      reloadable      -> greater is better
+      reload_time     -> smaller is better
+      firing_cooldown -> smaller is better
+    */
     return std::powf(1000.f / getVars().at("firing_cooldown").getAsInt() * getDamagePerFireRating(), 2.f);
 }
 

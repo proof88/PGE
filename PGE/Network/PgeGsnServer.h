@@ -80,8 +80,8 @@ public:
     */
     bool stopListening();
 
-    void sendToClient(HSteamNetConnection conn, const pge_network::PgePacket& pkt);
-    void sendToAllClients(const pge_network::PgePacket& pkt, HSteamNetConnection except = k_HSteamNetConnection_Invalid);
+    void sendToClient(const HSteamNetConnection& conn, const pge_network::PgePacket& pkt);
+    void sendToAllClientsExcept(const pge_network::PgePacket& pkt, const HSteamNetConnection& except = k_HSteamNetConnection_Invalid);
 
     void inject(const pge_network::PgePacket& pkt);
 

@@ -20,7 +20,11 @@
 namespace pge_network
 {
 
-    typedef uint32_t PgeNetworkConnectionHandle; // 0 is considered as an invalid handle
+    typedef uint32_t PgeNetworkConnectionHandle;
+
+    // since 0 is considered as an invalid handle at GSN level, we use this to refer to server, since
+    // server never wants to send to this connection, or it automatically injects when this value is used.
+    constexpr PgeNetworkConnectionHandle ServerConnHandle = 0;
 
     enum class PgePktId : uint32_t
     {

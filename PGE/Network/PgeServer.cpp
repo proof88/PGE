@@ -41,7 +41,7 @@ public:
     std::set<pge_network::PgePktId>& getAllowListedPgeMessages() override;
     std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() override;
 
-    void send(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle = 0) override;
+    void send(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle = pge_network::ServerConnHandle) override;
 
     uint32_t getRxPacketCount() const override;
     uint32_t getTxPacketCount() const override;
@@ -58,7 +58,7 @@ public:
     /* implement stuff from PgeServer start */
 
     bool startListening() override;
-    void sendToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle = 0) override;
+    void sendToAllClientsExcept(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& exceptConnHandle = 0) override;
 
     /* implement stuff from PgeServer end */
 
@@ -158,13 +158,13 @@ std::set<pge_network::TPgeMsgAppMsgId>& PgeServerImpl::getAllowListedAppMessages
 
 void PgeServerImpl::send(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle)
 {
-    if (connHandle == 0)
+    if (connHandle == pge_network::ServerConnHandle)
     {
         m_gsnServer.inject(pkt);
     }
     else
     {
-        m_gsnServer.sendToClient(static_cast<HSteamNetConnection>(connHandle), pkt);
+        m_gsnServer.sendToClient(static_cast<const HSteamNetConnection&>(connHandle), pkt);
     }
 }
 
@@ -221,9 +221,9 @@ bool PgeServerImpl::startListening()
     return m_gsnServer.startListening();
 }
 
-void PgeServerImpl::sendToAllClients(const pge_network::PgePacket& pkt, pge_network::PgeNetworkConnectionHandle exceptConnHandle)
+void PgeServerImpl::sendToAllClientsExcept(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& exceptConnHandle)
 {
-    m_gsnServer.sendToAllClients(pkt, exceptConnHandle);
+    m_gsnServer.sendToAllClientsExcept(pkt, exceptConnHandle);
 }
 
 

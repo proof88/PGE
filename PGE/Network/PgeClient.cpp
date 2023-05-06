@@ -41,7 +41,7 @@ public:
     std::set<pge_network::PgePktId>& getAllowListedPgeMessages() override;
     std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() override;
 
-    void send(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle = 0) override;
+    void send(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle = pge_network::ServerConnHandle) override;
 
     uint32_t getRxPacketCount() const override;
     uint32_t getTxPacketCount() const override;
@@ -166,9 +166,9 @@ std::set<pge_network::TPgeMsgAppMsgId>& PgeClientImpl::getAllowListedAppMessages
 
 void PgeClientImpl::send(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle)
 {
-    if (connHandle != 0)
+    if (connHandle != pge_network::ServerConnHandle)
     {
-        getConsole().EOLn("%s: CLIENT connHandle is 0!", __func__);
+        getConsole().EOLn("%s: CLIENT target connHandle must be %u!", __func__, pge_network::ServerConnHandle);
         return;
     }
     m_gsnClient.sendToServer(pkt);
@@ -210,7 +210,7 @@ void PgeClientImpl::WriteList() const
     if (isInitialized())
     {
         getConsole().OLn("Role: Client");
-        if (getConnectionHandle() == 0)
+        if (getConnectionHandle() == pge_network::ServerConnHandle)
         {
             getConsole().EOLn("Connection Handle: Invalid");
         }

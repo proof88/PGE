@@ -143,8 +143,9 @@ bool PgeGsnServer::stopListening()
     return true;
 }
 
-void PgeGsnServer::sendToClient(HSteamNetConnection conn, const pge_network::PgePacket& pkt)
+void PgeGsnServer::sendToClient(const HSteamNetConnection& conn, const pge_network::PgePacket& pkt)
 {
+    static_assert(k_HSteamNetConnection_Invalid == 0U, "on upper layers we use connHandle 0 to identify server, so here k_HSteamNetConnection_Invalid must be 0");
     if (conn == k_HSteamNetConnection_Invalid)
     {
         // silent ignore, in the future maybe we will simply inject a message to ourselves' message queue
@@ -159,8 +160,9 @@ void PgeGsnServer::sendToClient(HSteamNetConnection conn, const pge_network::Pge
     }
 }
 
-void PgeGsnServer::sendToAllClients(const pge_network::PgePacket& pkt, HSteamNetConnection except)
+void PgeGsnServer::sendToAllClientsExcept(const pge_network::PgePacket& pkt, const HSteamNetConnection& except)
 {
+    static_assert(k_HSteamNetConnection_Invalid == 0U, "on upper layers we use connHandle 0 to identify server, so here k_HSteamNetConnection_Invalid must be 0");
     for (auto& client : m_mapClients)
     {
         if (client.first == k_HSteamNetConnection_Invalid)
@@ -318,7 +320,7 @@ void PgeGsnServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
 
             // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
             m_queuePackets.push_back(pkt);
-            sendToAllClients(pkt);
+            sendToAllClientsExcept(pkt);
         }
         else
         {
