@@ -143,13 +143,13 @@ protected:
 
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         mat = mm->createMaterial();
         return assertNotNull(mat, "mat null");
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         mm->DeleteAll();
         mat = NULL;

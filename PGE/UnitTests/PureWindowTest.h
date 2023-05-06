@@ -87,12 +87,12 @@ protected:
 
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         return true;    
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         Finalize();
     }

@@ -51,7 +51,7 @@ protected:
         AddSubTest("testWriteStats", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testWriteStats);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         bool ret = true;
         if ( engine == NULL )
@@ -63,7 +63,7 @@ protected:
         return ret;
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         
     }

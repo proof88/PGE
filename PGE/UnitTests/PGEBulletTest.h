@@ -44,12 +44,12 @@ protected:
         AddSubTest("test_bullet_update_updates_position", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_update_updates_position);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         return assertTrue(engine && engine->isInitialized());
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
     }
 

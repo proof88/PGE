@@ -109,7 +109,7 @@ protected:
         AddSubTest("testMaterialGetUtiliser", (PFNUNITSUBTEST) &PureMesh3DTest::testMaterialGetUtiliser);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         mesh = mm->createBox(1.0f, 2.0f, 3.0f);
         meshFromFile = mm->createFromFile("_res/models/snail_proofps/snail.obj");
@@ -120,7 +120,7 @@ protected:
             assertNotNull(meshCube, "meshCube = NULL" );
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         if ( mesh != PGENULL )
         {

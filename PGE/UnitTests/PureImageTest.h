@@ -92,13 +92,13 @@ protected:
         AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureImageTest::testGetUsedSystemMemory);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         img128x128x24 = im->createFromFile(BMP128x128x24);
         return assertNotNull(img128x128x24, "img128x128x24");
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         if ( img128x128x24 )
         {

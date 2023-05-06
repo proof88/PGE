@@ -37,7 +37,7 @@ protected:
         // getDepthLevel(), getMaxDepthLevel(), getNodeType(), getChildren() and getObjects() are tested within above functions
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         bool ret = true;
         if ( engine == NULL )
@@ -51,7 +51,7 @@ protected:
         return ret;
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         Finalize();
         om = NULL;

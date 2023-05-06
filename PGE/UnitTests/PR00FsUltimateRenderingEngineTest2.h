@@ -53,7 +53,7 @@ protected:
         AddSubTest("testSetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testSetAutoWriteStatsAtShutdown);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
 
@@ -61,7 +61,7 @@ protected:
         return assertEquals((TPureUInt) 0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         if ( engine )
         {

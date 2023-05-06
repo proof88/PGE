@@ -117,12 +117,12 @@ protected:
         AddSubTest("test_wm_get_next_best_avail_weapon_not_in_keytoweaponmap", (PFNUNITSUBTEST)&WeaponsTest::test_wm_get_next_best_avail_weapon_not_in_keytoweaponmap);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         return assertTrue(engine && engine->isInitialized());
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
     }
 

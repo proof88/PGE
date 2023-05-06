@@ -59,7 +59,7 @@ protected:
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PureMaterialManagerTest::testWriteList);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         bool ret = true;
         if ( engine == NULL )
@@ -77,7 +77,7 @@ protected:
         return ret;
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         Finalize();
         im = NULL;

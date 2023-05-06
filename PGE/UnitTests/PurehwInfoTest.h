@@ -47,7 +47,7 @@ protected:
         AddSubTest("testWriteStats", (PFNUNITSUBTEST) &PureHwInfoTest::testWriteStats);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         bool ret = true;
         if ( engine == NULL )
@@ -59,7 +59,7 @@ protected:
         return ret;
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", false);    
     }

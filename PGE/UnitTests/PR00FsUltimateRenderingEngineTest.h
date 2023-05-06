@@ -64,7 +64,7 @@ protected:
         AddSubTest("testSetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testSetAutoWriteStatsAtShutdown);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
 
@@ -72,7 +72,7 @@ protected:
         return assertNotNull(engine, "engine null");
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         if ( engine )
         {

@@ -51,12 +51,12 @@ protected:
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PureImageManagerTest::testWriteList);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         return true;
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {}
 
     virtual void Finalize()

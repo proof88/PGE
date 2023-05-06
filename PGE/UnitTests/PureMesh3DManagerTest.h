@@ -54,7 +54,7 @@ protected:
         AddSubTest("testWriteList", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testWriteList);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         bool ret = true;
         if ( engine == NULL )
@@ -68,7 +68,7 @@ protected:
         return ret;
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         Finalize();
         mm = NULL;

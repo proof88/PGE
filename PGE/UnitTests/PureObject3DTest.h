@@ -149,7 +149,7 @@ protected:
         AddSubTest("testDetachFrom", (PFNUNITSUBTEST) &PureObject3DTest::testDetachFrom);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         obj = om->createBox(1.0f, 2.0f, 3.0f);
         objFromFile = om->createFromFile("_res/models/snail_proofps/snail.obj");
@@ -175,7 +175,7 @@ protected:
             assertNotNull(objBox, "objBox null");
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         if ( obj )
         {

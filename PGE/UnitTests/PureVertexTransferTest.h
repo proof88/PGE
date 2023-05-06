@@ -237,7 +237,7 @@ protected:
         AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetUsedVideoMemory);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         mesh = vtm->createBox(1.0f, 2.0f, 3.0f);
         meshFromFile = vtm->createFromFile("_res/models/snail_proofps/snail.obj", PURE_VMOD_STATIC, PURE_VREF_DIRECT);
@@ -245,7 +245,7 @@ protected:
             assertNotNull(meshFromFile, "meshFromFile null");
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         if ( mesh )
         {

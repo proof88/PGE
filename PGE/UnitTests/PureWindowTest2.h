@@ -96,12 +96,12 @@ protected:
         AddSubTest("testWriteSettings", (PFNUNITSUBTEST) &PureWindowTest2::testWriteSettings);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         return assertTrue(wnd.initialize(WINDOW_WIDTH, WINDOW_HEIGHT, false, "alma"), "wnd initialize");
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         Finalize();
     }

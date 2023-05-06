@@ -118,7 +118,7 @@ protected:
         AddSubTest("testGetUsedTextureMemory", (PFNUNITSUBTEST) &PureTextureTest::testGetUsedTextureMemory);
     }
 
-    virtual bool setUp()
+    virtual bool setUp() override
     {
         tex128x128x24 = tm->createFromFile(BMP128x128x24);
         return assertNotNull(tex128x128x24, "BMP128x128x24 null") &
@@ -137,7 +137,7 @@ protected:
             assertNotNull(tex128x128x32_cmpAUTO, "tex128x128x32_cmpAUTO null");
     }
 
-    virtual void TearDown()
+    virtual void TearDown() override
     {
         if ( tex128x128x24 )
         {
