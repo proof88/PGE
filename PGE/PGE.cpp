@@ -955,19 +955,6 @@ PGE::PGE()
 }
 
 
-PGE::PGE(const PGE&)
-{
-    p = NULL;
-}  
-
-
-PGE& PGE::operator=(const PGE&)
-{
-    p = NULL;
-    return *this;
-}
-
-
 /** 
     This is the only usable ctor, this is used by the static createAndGet().
 */

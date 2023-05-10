@@ -96,14 +96,15 @@ public:
 protected:
     
     // ---------------------------------------------------------------------------
-    
-    PGE();
 
-    PGE(const PGE&); 
-    PGE& operator=(const PGE&);
-
+    PGE();                          /**< Kept for easier virtual inheritance by application, but not actually used. */
     PGE(const char* gametitle);     /**< This is the only usable ctor, this is used by the static createAndGet(). */
     virtual ~PGE();
+
+    PGE(const PGE&) = delete;
+    PGE& operator=(const PGE&) = delete;
+    PGE(PGE&&) = delete;
+    PGE&& operator=(PGE&&) = delete;
 
     // Event handlers to be overridden.
     virtual bool onGameInitializing() { return true; }  /**< Called before initializing the engine. */
