@@ -896,7 +896,7 @@ int PGE::runGame()
 */
 bool PGE::isGameRunning() const
 {
-    return p->isGameRunning();
+    return p ? p->isGameRunning() : false;
 } // isGameRunning()
 
 
