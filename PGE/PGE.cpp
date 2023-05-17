@@ -112,7 +112,7 @@ private:
 
     PGEimpl(const char* gametitle);
 
-    void frameFrameLimit(
+    void frameLimit(
         std::chrono::time_point<std::chrono::steady_clock>& timeNow,
         std::chrono::time_point<std::chrono::steady_clock>& timeLastTime);
 
@@ -371,7 +371,7 @@ static void busyWait(double microsecsToWait)
     }
 }
 
-void PGE::PGEimpl::frameFrameLimit(
+void PGE::PGEimpl::frameLimit(
     std::chrono::time_point<std::chrono::steady_clock>& timeNow,
     std::chrono::time_point<std::chrono::steady_clock>& timeLastTime)
 {
@@ -865,7 +865,7 @@ int PGE::runGame()
             p->m_inputHandler.getMouse().ApplyRelativeInput();
             onGameRunning();
             p->m_gfx.getRenderer()->RenderScene();
-            p->frameFrameLimit(timeNow, timeLastTime);
+            p->frameLimit(timeNow, timeLastTime);
         }
         //else
         //{
