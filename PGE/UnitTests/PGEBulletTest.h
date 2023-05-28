@@ -181,7 +181,7 @@ private:
                 4.f, 5.f, 0.f,
                 1000.f, 15.f, 25.f, true, 10);
         }
-        catch (const std::exception)
+        catch (const std::exception&)
         {
             b = true;
         }
@@ -199,7 +199,7 @@ private:
         put.Move(speed);
 
         Bullet bullet(*engine, 0, 0.f, 0.f, 0.f, angleVec.getX(), angleVec.getY(), angleVec.getZ(), 1.f, 1.f, 1.f, speed, 15.f, 25.f, true, 10);
-        bullet.Update();
+        bullet.Update(60.f);
 
         bool b = assertEquals(put.getPosVec(), bullet.getObject3D().getPosVec(), "pos");
 

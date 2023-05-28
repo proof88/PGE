@@ -78,7 +78,7 @@ public:
     TPureBool isFragile() const;
     int getDamageHp() const;
 
-    void Update();
+    void Update(const float& fps);
 
     PureObject3D& getObject3D();
     const PureObject3D& getObject3D() const;
