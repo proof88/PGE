@@ -93,6 +93,9 @@ public:
     unsigned int getGameRunningFrequency() const;      /**< Gets the frequency for the main game engine loop. */
     void setGameRunningFrequency(unsigned int freq);   /**< Sets the frequency for the main game engine loop. */
 
+    unsigned int getRenderExtraDelayMillisecs() const;
+    void setRenderExtraDelayMillisecs(unsigned int nMillisecs);
+
 protected:
     
     // ---------------------------------------------------------------------------

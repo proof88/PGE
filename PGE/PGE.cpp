@@ -100,8 +100,9 @@ private:
     int         m_nInactiveSleep;         /**< Amount of sleep in millisecs when inactive, 0 means no sleep. */
     bool        m_bInactiveLikeActive;    /**< If true, runGame() will act the same way in inactive state as in active state. */
 
-    unsigned int m_nTargetGameLoopFreq; /**< Frequency for the main game engine loop, 0 means no target frequency. */
+    unsigned int m_nTargetGameLoopFreq;   /**< Frequency for the main game engine loop, 0 means no target frequency. */
     double m_minFrameTimeMicrosecs;
+    unsigned int m_nRenderExtraDelayMillisecs;
 
     // ---------------------------------------------------------------------------
 
@@ -115,6 +116,8 @@ private:
     void frameLimit(
         std::chrono::time_point<std::chrono::steady_clock>& timeNow,
         std::chrono::time_point<std::chrono::steady_clock>& timeLastTime);
+
+    void updateMinFrameTime(unsigned int nTargetGameLoopFreq, unsigned int nMillisecs);
 
     friend class PGE;
 
@@ -304,7 +307,8 @@ PGE::PGEimpl::PGEimpl() :
     m_sysSFX(m_cfgProfiles),
     m_bIsGameRunning(false),
     m_nTargetGameLoopFreq(0),
-    m_minFrameTimeMicrosecs(0.0)
+    m_minFrameTimeMicrosecs(0.0),
+    m_nRenderExtraDelayMillisecs(0)
 {
     
 }
@@ -321,7 +325,8 @@ PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     m_sysSFX(m_cfgProfiles),
     m_bIsGameRunning(false),
     m_nTargetGameLoopFreq(0),
-    m_minFrameTimeMicrosecs(0.0)
+    m_minFrameTimeMicrosecs(0.0),
+    m_nRenderExtraDelayMillisecs(0)
 {
 
 }  
@@ -351,7 +356,8 @@ PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     m_nInactiveSleep(PGE_INACTIVE_SLEEP),
     m_bInactiveLikeActive(PGE_INACTIVE_AS_ACTIVE),
     m_nTargetGameLoopFreq(0),
-    m_minFrameTimeMicrosecs(0.0)
+    m_minFrameTimeMicrosecs(0.0),
+    m_nRenderExtraDelayMillisecs(0)
 {
     
 } // PGE(...)
@@ -388,6 +394,14 @@ void PGE::PGEimpl::frameLimit(
         busyWait(m_minFrameTimeMicrosecs - durElapsedMicrosecs);
     }
     timeLastTime = std::chrono::steady_clock::now();
+}
+
+void PGE::PGEimpl::updateMinFrameTime(unsigned int nTargetGameLoopFreq, unsigned int nMillisecs)
+{
+    m_nTargetGameLoopFreq = nTargetGameLoopFreq;
+    m_nRenderExtraDelayMillisecs = nMillisecs;
+    m_minFrameTimeMicrosecs = m_nRenderExtraDelayMillisecs * 1000;
+    m_minFrameTimeMicrosecs += m_nTargetGameLoopFreq > 0 ? (1000.0 * 1000.0 / m_nTargetGameLoopFreq) : 0;
 }
 
 
@@ -941,8 +955,17 @@ unsigned int PGE::getGameRunningFrequency() const
 */
 void PGE::setGameRunningFrequency(unsigned int freq)
 {
-    p->m_nTargetGameLoopFreq = freq;
-    p->m_minFrameTimeMicrosecs = freq > 0 ? (1000.0 * 1000.0 / freq) : 0;
+    p->updateMinFrameTime(freq, p->m_nRenderExtraDelayMillisecs);
+}
+
+unsigned int PGE::getRenderExtraDelayMillisecs() const
+{
+    return p->m_nRenderExtraDelayMillisecs;
+}
+
+void PGE::setRenderExtraDelayMillisecs(unsigned int nMillisecs)
+{
+    p->updateMinFrameTime(p->m_nTargetGameLoopFreq, nMillisecs);
 }
 
 
