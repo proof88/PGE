@@ -542,7 +542,7 @@ bool PGEcfgProfiles::readConfiguration()
 
     for (const auto& clCvarPair : m_commandLineVars)
     {
-        getConsole().OLn("CL CVAR overriding CVAR %s with value %s", clCvarPair.first.c_str(), clCvarPair.second.getAsString().c_str());
+        getConsole().OLn("Command Line overriding CVAR %s with value %s", clCvarPair.first.c_str(), clCvarPair.second.getAsString().c_str());
         getVars()[clCvarPair.first] = clCvarPair.second;
     }
 

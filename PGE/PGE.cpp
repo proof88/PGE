@@ -29,6 +29,8 @@
 using namespace std;
 
 static constexpr char* CVAR_GFX_WINDOWED = "gfx_windowed";
+static constexpr char* CVAR_CL_EXTRA_RENDER_DELAY = "cl_extra_render_delay";
+static constexpr char* CVAR_SV_EXTRA_RENDER_DELAY = "sv_extra_render_delay";
 
 /*
    PGE::PGEimpl
@@ -789,6 +791,17 @@ int PGE::initializeGame(const char* szCmdLine)
         getConsole().OLn("");
     }
     getConsole().L();
+
+    if (getNetwork().isServer() && !getConfigProfiles().getVars()[CVAR_SV_EXTRA_RENDER_DELAY].getAsString().empty())
+    {
+        getConsole().OLn("Server Extra Render Delay from config: %u ms", getConfigProfiles().getVars()[CVAR_SV_EXTRA_RENDER_DELAY].getAsUInt());
+        setRenderExtraDelayMillisecs(getConfigProfiles().getVars()[CVAR_SV_EXTRA_RENDER_DELAY].getAsUInt());
+    }
+    else if (!getNetwork().isServer() && !getConfigProfiles().getVars()[CVAR_CL_EXTRA_RENDER_DELAY].getAsString().empty())
+    {
+        getConsole().OLn("Client Extra Render Delay from config: %u ms", getConfigProfiles().getVars()[CVAR_CL_EXTRA_RENDER_DELAY].getAsUInt());
+        setRenderExtraDelayMillisecs(getConfigProfiles().getVars()[CVAR_CL_EXTRA_RENDER_DELAY].getAsUInt());
+    }
 
     PureWindow& window = p->m_gfx.getWindow();
     window.SetAutoCleanupOnQuitOn(false);
