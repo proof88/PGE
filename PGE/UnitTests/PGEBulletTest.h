@@ -199,7 +199,7 @@ private:
         put.Move(speed);
 
         Bullet bullet(*engine, 0, 0.f, 0.f, 0.f, angleVec.getX(), angleVec.getY(), angleVec.getZ(), 1.f, 1.f, 1.f, speed, 15.f, 25.f, true, 10);
-        bullet.Update(60.f);
+        bullet.Update();
 
         bool b = assertEquals(put.getPosVec(), bullet.getObject3D().getPosVec(), "pos");
 
