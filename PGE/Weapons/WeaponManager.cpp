@@ -623,7 +623,7 @@ bool Weapon::canIncBulletCount() const
  * Adds more bullets for this weapon.
  * Useful when we are picking up bullet pack for this weapon or same kind of weapon.
  * 
- * @param How many bullets we want to add. The actual increase value might be less. See more details at canIncBulletCount(). 
+ * @param count How many bullets we want to add. The actual increase value might be less. See more details at canIncBulletCount(). 
  */
 void Weapon::IncBulletCount(TPureUInt count)
 {

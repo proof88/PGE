@@ -207,7 +207,7 @@ int PGEcfgProfiles::readLanguageData(string** &langTable) const
 
 /**
     Returns whether player profiles are stored in user documents folder.
-    Example: if true, MyDocs\<GAMENAME>\profiles, otherwise program folder\gamedata\profiles.
+    Example: if true, MyDocs/\<GAMENAME\>/profiles, otherwise program folder/gamedata/profiles.
 */
 bool PGEcfgProfiles::areProfilesInMyDocs() const
 {
@@ -260,7 +260,7 @@ const string** PGEcfgProfiles::getProfilePlayersList() const
 
     @param sUser The username for the profile, which will be used primarily for the filename.
                  Thus some characters are restricted (?, *, etc ...).
-           sNick The nickname for the profile, which can hold any character.
+    @param sNick The nickname for the profile, which can hold any character.
 
     @return Non-negative index of the new profile on success.
             -1 if a profile already exists with the given user name.

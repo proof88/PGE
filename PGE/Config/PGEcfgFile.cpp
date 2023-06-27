@@ -21,6 +21,7 @@
 
 
 /**
+    @param bRequireAllAcceptedVarsDefineRequirement If true, all variables that are specified as accepted variables must be defined in the config file.
     @param bCaseSensitiveVars If true, all variables will be treated case sensitive, e.g. "Name =" will be different to "name =" or "NAME =".
     Note: it is your responsibility to define all accepted variables in their lowercafe form if you set case sensitivity to false!
 */
