@@ -14,4 +14,4 @@ https://proof88.github.io/pure-doc/
 Future versions will have project kanban board under this repo.
 
 The Visual Studio project file is included.<br/>
-However, if you want to see example of integration in other projects, you may be interested in the Visual Studio solution including other projects as well in [PGE-misc](https://github.com/proof88/PGE-misc) repo.
+However, if you want to **build** or see example of integration in other projects, you should have the Visual Studio solution file including other relevant projects as well in [PGE-misc](https://github.com/proof88/PGE-misc) repo. **Follow the build instructions** in [PGE-WoW.txt](https://github.com/proof88/PGE-misc/blob/master/src/PGE-WoW.txt).
