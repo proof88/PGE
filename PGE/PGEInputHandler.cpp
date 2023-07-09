@@ -15,7 +15,7 @@
 #include "PGEInputHandler.h"
 #include "PGEincludes.h"
 #include "PGEpragmas.h"
-#include "../../CConsole/CConsole/src/CConsole.h"
+#include "../../Console/CConsole/src/CConsole.h"
 
 
 // following 2 macros are for raw mouse input

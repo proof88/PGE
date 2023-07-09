@@ -17,7 +17,7 @@
 #include <set>
 #include <string>
 
-#include "../../../CConsole/CConsole/src/CConsole.h"
+#include "../../../Console/CConsole/src/CConsole.h"
 
 #include "../PGEallHeaders.h"
 #include "../Config/PGEcfgProfiles.h"

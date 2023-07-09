@@ -14,7 +14,7 @@
 #include "PGEallHeaders.h"
 #include <list>
 #include <string>
-#include "../../CConsole/CConsole/src/CConsole.h"
+#include "../../Console/CConsole/src/CConsole.h"
 #include "PURE/include/external/PR00FsUltimateRenderingEngine.h"
 #include "PGEInputHandler.h"
 #include "PGEWorld.h"

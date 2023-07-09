@@ -19,7 +19,7 @@
 #include "../gl/glext.h"
 #include "../gl/wglext.h"
 
-#include "../../../../../../CConsole/CConsole/src/CConsole.h"
+#include "../../../../../../Console/CConsole/src/CConsole.h"
 
 #include "../../external/PureAllHeaders.h"
 #include "../../external/PureTypes.h"

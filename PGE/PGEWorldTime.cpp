@@ -12,7 +12,7 @@
 #include "PGEWorldTime.h"
 #include "PGEincludes.h"
 #include "PGEpragmas.h"
-#include "../../CConsole/CConsole/src/CConsole.h"
+#include "../../Console/CConsole/src/CConsole.h"
 
 using namespace std;
 

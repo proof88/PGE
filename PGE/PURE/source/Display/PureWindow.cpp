@@ -18,7 +18,9 @@
 #include "../../include/internal/PurePragmas.h"
 #include "../../include/internal/Display/PureSharedSettings.h"
 #include "../../../PGEInputHandler.h"
-#include "../../../../../g3t/g3t/g3t.h"
+
+// For now, do not depend on g3t. In the future we might re-enable it.
+//#include "../../../../../g3t/g3t/g3t.h"
 
 using namespace std;
 
@@ -204,7 +206,7 @@ private:
     LRESULT onMouseDown(PGEInputMouse::MouseButton btn, WPARAM wParam, TPureInt x, TPureInt y);
     LRESULT onRedrawRequired();
     LRESULT onPosChanged(const LPWINDOWPOS newPos);
-    LRESULT onG3tCommand(UINT wmsg, WPARAM wParam, LPARAM lParam);
+    //LRESULT onG3tCommand(UINT wmsg, WPARAM wParam, LPARAM lParam);
 
     // ---------------------------------------------------------------------------
 
@@ -252,7 +254,7 @@ LRESULT __stdcall PuredefaultWindowProc(HWND hWindow, UINT wndMsg, WPARAM wParam
     case WM_RBUTTONUP  : return wnd->onMouseUp(PGEInputMouse::MouseButton::MBTN_RIGHT, wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
     case WM_REDRAW_REQUIRED:  return wnd->onRedrawRequired();
     case WM_WINDOWPOSCHANGED: return wnd->onPosChanged( (LPWINDOWPOS) lParam );
-    case WM_G3T_PING: return wnd->onG3tCommand(wndMsg, wParam, lParam);
+    //case WM_G3T_PING: return wnd->onG3tCommand(wndMsg, wParam, lParam);
     default: return DefWindowProc(hWindow, wndMsg, wParam, lParam);
     } // switch()
 
@@ -1756,6 +1758,8 @@ LRESULT PureWindowImpl::onPosChanged(const LPWINDOWPOS newPos)
 } // onPosChanged()
 
 
+// commented out for now due to g3t.h include is commented out
+/*
 LRESULT PureWindowImpl::onG3tCommand(UINT wmsg, WPARAM wParam, LPARAM lParam)
 {    
     switch ( wmsg )
@@ -1772,6 +1776,7 @@ LRESULT PureWindowImpl::onG3tCommand(UINT wmsg, WPARAM wParam, LPARAM lParam)
     getConsole().OLn("");
     return 0;
 }
+*/
 
 
 /*

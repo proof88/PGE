@@ -14,7 +14,7 @@
 */
 
 #include "PureAllHeaders.h"
-#include "../../../../../CConsole/CConsole/src/CConsole.h"
+#include "../../../../../Console/CConsole/src/CConsole.h"
 #include "PureManager.h"
 #include <string>
 

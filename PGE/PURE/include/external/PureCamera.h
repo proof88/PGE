@@ -12,7 +12,7 @@
 */
 
 #include "PureAllHeaders.h"
-#include "../../../../../CConsole/CConsole/src/CConsole.h"
+#include "../../../../../Console/CConsole/src/CConsole.h"
 #include "Math/PureVector.h"
 #include "Math/PurePosUpTarget.h"
 #include "Material/PureColor.h"

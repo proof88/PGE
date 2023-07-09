@@ -11,7 +11,7 @@
     ###################################################################################
 */
 
-#include "../../../../../../CConsole/CConsole/src/CConsole.h"
+#include "../../../../../../Console/CConsole/src/CConsole.h"
 #include "../../../../../../PFL/PFL/PFL.h"
 #include "../../../../Config/PGEcfgProfiles.h"
 #include "PureIRenderer.h"
