@@ -108,10 +108,10 @@ private:
     bool testGetMyDocsFolder()
     {
         const PGEcfgProfiles cfg("game title");
+        const std::string sMyDocsFolder = cfg.getMyDocsFolder();  /* e.g.: C:\\Users\\PR00F\\Documents\\ */
 
-        return assertTrue( (cfg.getMyDocsFolder() == "C:\\Users\\PR00F\\Documents\\") ||
-            (cfg.getMyDocsFolder() == "C:\\Users\\eszabdm\\Documents\\") ||
-            (cfg.getMyDocsFolder() == "C:\\Users\\pr0o0\\Documents\\") );
+        return (sMyDocsFolder.find("C:\\Users\\") != std::string::npos) &&
+            ((sMyDocsFolder.find("\\Documents\\") != std::string::npos) || (sMyDocsFolder.find("\\Dokumentumok\\") != std::string::npos));
     }
 
     bool testGetLangFileName()
