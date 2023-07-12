@@ -361,3 +361,4 @@ PGE/Samples/TransparentPlanes/gfxcore.dll
 *.exe
 PGE/Samples/EV2008P03_Legacy/tmcslog.txt
 *.bak
+PGE/Network/GameNetworkingSockets-1.4.0/vcpkg_compressed_to_speed_up_doxygen.zip

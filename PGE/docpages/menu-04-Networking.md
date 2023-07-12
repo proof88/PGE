@@ -138,16 +138,22 @@ So it is totally ok to have framerate 60 while having tickrate 20. This means th
 With the tickrate introduced, we successfully solved the problem of a slower machine might not be able to keep up with processing messages when faster machines are also present in the network.  
 The implementation changes like this:  
 In every tick (instead of every frame), player input is sampled and sent as a message to the server.  
-Alternatively, we don't even need to send message in every tick, we can just collect multiple messages into a single packet over multiple ticks, and send such packet at lower rate than tickrate, to further reduce required bandwidth.  
-This lower rate is called command rate, rule is: **tickrate >= command rate**.  
+It is important to understand that we should not only send out message when a button is pressed but also when it is released.
 Player is not moved in the moment of detected player input, because player is moved only when server responds with the updated coordinates.  
+
+Note: we don't even need to send messages in every tick, we can just further enqueue messages over multiple ticks, and send them at lower rate than tickrate, to further reduce required bandwidth.  
+This lower rate is called **command rate**, rule is: **tickrate >= command rate**.  
+However, this change is optional to be implemented.
+
+Note: we can send these client messages in 1 single packet to the server as an optimization, since sending each message in different packet would introduce too high overhead.  
+They say that the ["maximum safe UDP payload is 508 bytes"](https://stackoverflow.com/questions/1098897/what-is-the-largest-safe-udp-packet-size-on-the-internet).  
+As of June of 2023 (in PRooFPS-dd v0.1.2 Private Beta), size of PgePacket was 268 Bytes, room for application message (MsgApp struct) was 260 Bytes.  
+Size of a MsgUserCmdMove struct was 20 Bytes, which means that by implementing placing multiple messages into a single packet we could send more than 10 such messages in a single PgePacket.
+
 Due to the low tickrate (e.g. 50 ms, meaning 20 ticks per second), the **player movement can appear choppy and delayed**.  
 This is why we need some tricks here:
  - either client-side lerp (linear interpolation);
  - and/or client-side prediction.
-
-TODO: add debug CVAR that can show the cached/server position on client side of objects so we can see the delay compared to server.  
-I'm expecting the player object to be delayed relative to the debug box with the lerp, but ahead with the client-side prediction!
 
 With **client-side lerp**, the last received player coordinate (from server) is cached, the player object is NOT YET positioned to that coordinate.  
 Instead, the player object is moved between its current position and the cached position using linear interpolation. The object position is updated in every rendered frame.  
@@ -158,6 +164,9 @@ So it is better to do the interpolation fast to keep object position close to th
 
 Note that it might be a good idea to cache not only the latest but the 2 latest positions received from server, and set the lerp time to be as long as twice the delay between 2 updates received from server.  
 For example, if tickrate is 20 i.e. delay between updates from server is 50 ms, we can set lerp time cl_interp to 2x50ms, so if 1 update is dropped for any reason, the lerp can still continue as it is not yet finished anyway.
+
+TODO: add debug CVAR that can show the cached/server position on client side of objects so we can see the delay compared to server.  
+I'm expecting the player object to be delayed relative to the debug box with the lerp, but ahead with the client-side prediction!
 
 With **client-side prediction**, we don't need to use lerp for the current player, because **we don't wait for server response for the client's user input**.  
 We keep lerp only for other players' objects.  
