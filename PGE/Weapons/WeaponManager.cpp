@@ -142,7 +142,7 @@ int Bullet::getDamageHp() const
     return m_nDamageHp;
 }
 
-void Bullet::Update()
+void Bullet::Update(const unsigned int& nFactor)
 {
     /*
     * In the PR00FPS Promo flash game I did this:
@@ -161,7 +161,7 @@ void Bullet::Update()
     * Maybe this approach would be faster than using PUT.Move() like below.
     * However, collision check is the most expensive thing now anyway, so I don't think about this now.
     */
-    m_put.Move(m_speed);
+    m_put.Move(m_speed / nFactor);
     m_obj->getPosVec() = m_put.getPosVec();
 }
 

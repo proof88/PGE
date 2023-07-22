@@ -89,7 +89,7 @@ This can be done by adding the allowed custom messages to the container accessed
 \subsection multiplayer_cheating Cheating in Multiplayer
 
 There are many ways to cheat in multiplayer games, and PGE doesn't provide protection against it.  
-However, a good implementation in application level can overcome some of the forms of cheating.  
+However, a good implementation in application level can overcome some forms of cheating.  
 A common approach is to treat the **server as the only authorative instance** and make clients show only a replication of server state.  
 For example: player movement. When a player presses a button to move, it should send a request/command message to the server about the keypress, and the server calculates the actual movement of the player.  
 Then it replies back to the client(s) with the updated position of the player who requested the move, client(s) receive(s) the reply and move(s) the player to the position calculated by the server.  
@@ -130,22 +130,24 @@ So the **essence of moving away from the naive approach is to understand that we
  - **framerate**: frequency of frame rendering;
  - **tickrate**: frequency of ticks i.e. input sampling, game state update and messaging together.
  
-Another rule is that **framerate > tickrate**.  
+Another rule is that **framerate >= tickrate**.  
 So it is totally ok to have framerate 60 while having tickrate 20. This means that we maximize the number of iterations of main game loop at 60, we target 60 rendered frames every second, and we do 20 ticks every second.
 
 \subsection client_behavior New Client Behavior
 
-With the tickrate introduced, we successfully solved the problem of a slower machine might not be able to keep up with processing messages when faster machines are also present in the network.  
-The implementation changes like this:  
-In every tick (instead of every frame), player input is sampled and sent as a message to the server.  
-It is important to understand that we should not only send out message when a button is pressed but also when it is released.
-Player is not moved in the moment of detected player input, because player is moved only when server responds with the updated coordinates.  
+With the tickrate introduced, we successfully solved the problem of a slower machine not be able to keep up with processing messages when faster machines are also present in the network.  
+The implementation changes this way: in every tick (instead of every frame), player input is sampled and sent as a message to the server.  
+The rest of the implementation is not changed:  
+ - player is not moved in the moment of detected player input, because player is moved only when server responds with the updated coordinates.  
+ - player is repositioned on client side when server sends the new coordinates (this was same in the naive approach as well).
+
+It is important to understand that since there are commands that should be continuous operations e.g. running, for these we should not only send out message when a button is pressed but also when it is released.  
+This way the server can contiouously simulate running in every server tick until client explicitly requests stop, even if server and client tickrates are different.
 
 Note: we don't even need to send messages in every tick, we can just further enqueue messages over multiple ticks, and send them at lower rate than tickrate, to further reduce required bandwidth.  
 This lower rate is called **command rate**, rule is: **tickrate >= command rate**.  
-However, this change is optional to be implemented.
-
-Note: we can send these client messages in 1 single packet to the server as an optimization, since sending each message in different packet would introduce too high overhead.  
+However, this change is optional to be implemented, and PRooFPS-dd v0.1.3 does not implement it.
+As optimization, we could send these client messages in 1 single packet to the server, since sending each message in different packet introduces too high overhead.  
 They say that the ["maximum safe UDP payload is 508 bytes"](https://stackoverflow.com/questions/1098897/what-is-the-largest-safe-udp-packet-size-on-the-internet).  
 As of June of 2023 (in PRooFPS-dd v0.1.2 Private Beta), size of PgePacket was 268 Bytes, room for application message (MsgApp struct) was 260 Bytes.  
 Size of a MsgUserCmdMove struct was 20 Bytes, which means that by implementing placing multiple messages into a single packet we could send more than 10 such messages in a single PgePacket.
@@ -157,7 +159,7 @@ This is why we need some tricks here:
 
 With **client-side lerp**, the last received player coordinate (from server) is cached, the player object is NOT YET positioned to that coordinate.  
 Instead, the player object is moved between its current position and the cached position using linear interpolation. The object position is updated in every rendered frame.  
-This way the **movement of player object will be continuous even though we receive updated positions less frequently. This removes the choppiness but delay will remain.**
+This way the **movement of player object will be continuous even though we receive updated positions less frequently. This removes the choppiness but delay will remain.**  
 Note that we apply this technique for all player objects at client-side, and also at server-side.  
 We have to be careful though, because **this introduces a bit of lag**, due to player object position will be always some frames behind the cached server position.  
 So it is better to do the interpolation fast to keep object position close to the cached position i.e. keep interpolation time **cl_interp** as a small value.
@@ -193,7 +195,7 @@ Server dequeues all received messages at its next tick, and responses will be al
 Alternatively, we don't need to send out response/update messages with the tickrate frequency, we can have a separate frequency for that, called **cl_updaterate**.  
 Rule is: **tickrate >= cl_updaterate**. We can lower the required bandwidth if we set a lower value. The lower the value, the more we depend on client-side lerp and input-prediction to smooth out player movement experience.
 
-Interesting fact: the original Doom [used P2P lockstep mechanism multiplayer](https://www.gabrielgambetta.com/client-side-prediction-server-reconciliation.html), which at that time was not good to be player over the Internet.  
+Interesting fact: the original Doom [used P2P lockstep mechanism multiplayer](https://www.gabrielgambetta.com/client-side-prediction-server-reconciliation.html), which at that time was not good to be played over the Internet.  
 Then Quake introduced the client-server model with the client-side lerp, which was good for LAN, but less good on Internet with bigger distances between machines.  
 So they introduced client-side prediction in QuakeWorld.
 
