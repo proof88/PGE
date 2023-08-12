@@ -56,6 +56,7 @@ protected:
         AddSubTest("testDegToRad", (PFNUNITSUBTEST) &PFLTest::testDegToRad);
         AddSubTest("testRadToDeg", (PFNUNITSUBTEST) &PFLTest::testRadToDeg);
         AddSubTest("testRandom", (PFNUNITSUBTEST) &PFLTest::testRandom);
+        AddSubTest("testLerp", (PFNUNITSUBTEST)&PFLTest::testLerp);
     }
 
     virtual bool setUp() override
@@ -381,5 +382,14 @@ private:
 
         return assertTrue(stdset.empty(), "empty");
     }  
+
+    bool testLerp()
+    {
+        return assertEquals(1.f, PFL::lerp(1.f, 3.f, 0.f), "lower wall") &
+            assertEquals(3.f, PFL::lerp(1.f, 3.f, 1.f), "higher wall") &
+            assertEquals(1.f, PFL::lerp(1.f, 3.f, -10.f), "below lower wall") &
+            assertEquals(3.f, PFL::lerp(1.f, 3.f, 10.f), "above higher wall") &
+            assertEquals(2.f, PFL::lerp(1.f, 3.f, 0.5f), "center");
+    }
 
 }; // class PFLTest
