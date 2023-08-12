@@ -192,14 +192,14 @@ private:
     bool test_bullet_update_updates_position()
     {
         const PureVector angleVec(0.f, 90.f, 45.f);
-        const float speed = 60.f;
+        const int speed = 60;
 
         PurePosUpTarget put;
         put.SetRotation(angleVec.getX(), angleVec.getY(), angleVec.getZ());
         put.Move(speed);
 
         Bullet bullet(*engine, 0, 0.f, 0.f, 0.f, angleVec.getX(), angleVec.getY(), angleVec.getZ(), 1.f, 1.f, 1.f, speed, 15.f, 25.f, true, 10);
-        bullet.Update();
+        bullet.Update(1);
 
         bool b = assertEquals(put.getPosVec(), bullet.getObject3D().getPosVec(), "pos");
 
