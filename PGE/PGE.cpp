@@ -31,6 +31,7 @@ using namespace std;
 static constexpr char* CVAR_GFX_WINDOWED = "gfx_windowed";
 static constexpr char* CVAR_CL_EXTRA_RENDER_DELAY = "cl_extra_render_delay";
 static constexpr char* CVAR_SV_EXTRA_RENDER_DELAY = "sv_extra_render_delay";
+static constexpr int   CVAR_EXTRA_RENDER_DELAY_MAX = 2000;
 
 /*
    PGE::PGEimpl
@@ -794,13 +795,31 @@ int PGE::initializeGame(const char* szCmdLine)
 
     if (getNetwork().isServer() && !getConfigProfiles().getVars()[CVAR_SV_EXTRA_RENDER_DELAY].getAsString().empty())
     {
-        getConsole().OLn("Server Extra Render Delay from config: %u ms", getConfigProfiles().getVars()[CVAR_SV_EXTRA_RENDER_DELAY].getAsUInt());
-        setRenderExtraDelayMillisecs(getConfigProfiles().getVars()[CVAR_SV_EXTRA_RENDER_DELAY].getAsUInt());
+        if ((getConfigProfiles().getVars()[CVAR_SV_EXTRA_RENDER_DELAY].getAsInt() > 0) &&
+            (getConfigProfiles().getVars()[CVAR_SV_EXTRA_RENDER_DELAY].getAsInt() <= CVAR_EXTRA_RENDER_DELAY_MAX))
+        {
+            getConsole().OLn("Server Extra Render Delay from config: %u ms", getConfigProfiles().getVars()[CVAR_SV_EXTRA_RENDER_DELAY].getAsUInt());
+            setRenderExtraDelayMillisecs(getConfigProfiles().getVars()[CVAR_SV_EXTRA_RENDER_DELAY].getAsUInt());
+        }
+        else
+        {
+            getConsole().EOLn("ERROR: Ignoring Invalid Server Extra Render Delay in config: %s ms",
+                getConfigProfiles().getVars()[CVAR_SV_EXTRA_RENDER_DELAY].getAsString().c_str());
+        }
     }
     else if (!getNetwork().isServer() && !getConfigProfiles().getVars()[CVAR_CL_EXTRA_RENDER_DELAY].getAsString().empty())
     {
-        getConsole().OLn("Client Extra Render Delay from config: %u ms", getConfigProfiles().getVars()[CVAR_CL_EXTRA_RENDER_DELAY].getAsUInt());
-        setRenderExtraDelayMillisecs(getConfigProfiles().getVars()[CVAR_CL_EXTRA_RENDER_DELAY].getAsUInt());
+        if ((getConfigProfiles().getVars()[CVAR_CL_EXTRA_RENDER_DELAY].getAsInt() > 0) &&
+            (getConfigProfiles().getVars()[CVAR_CL_EXTRA_RENDER_DELAY].getAsInt() <= CVAR_EXTRA_RENDER_DELAY_MAX))
+        {
+            getConsole().OLn("Client Extra Render Delay from config: %u ms", getConfigProfiles().getVars()[CVAR_CL_EXTRA_RENDER_DELAY].getAsUInt());
+            setRenderExtraDelayMillisecs(getConfigProfiles().getVars()[CVAR_CL_EXTRA_RENDER_DELAY].getAsUInt());
+        }
+        else
+        {
+            getConsole().EOLn("ERROR: Ignoring Invalid Client Extra Render Delay in config: %s ms",
+                getConfigProfiles().getVars()[CVAR_CL_EXTRA_RENDER_DELAY].getAsString().c_str());
+        }
     }
 
     PureWindow& window = p->m_gfx.getWindow();
