@@ -199,6 +199,24 @@ Interesting fact: the original Doom [used P2P lockstep mechanism multiplayer](ht
 Then Quake introduced the client-server model with the client-side lerp, which was good for LAN, but less good on Internet with bigger distances between machines.  
 So they introduced client-side prediction in QuakeWorld.
 
+\section cs_1_6_rates_explained Counter-Strike 1.6 Rates Explained
+
+Following CVARs (config variables) are available for tweaking networking in CS 1.6:
+ - **tickrate** - rate at which the server is running simulation, e.g. 20 means 20 ticks per second i.e. in every 50 ms. This value is also used on client side, there this is the rate the client is processing user input.
+ - **rate** - ingress bandwidth of client (client tells this to server). Bytes/sec. Half-Life 1/CS actually has a maximum rate of 20000 Bytes/sec.
+ - **sv_lan_rate** - same as rate but on LAN.
+ - **cl_updaterate** - rate at which the server is sending snapshot updates to the client. It cannot be higher than **tickrate** and cannot exceed bandwith specified by **rate**.
+ - **cl_cmdrate** - rate at which client is sending user input packets to the server. Note that although user input is processed at **tickrate** rate, the command packets are sent out at **cl_cmdrate rate**, which means that multiple commands might be tied together into a single packet.
+ - **cl_interp** - client-side interpolation period: interpolating entity positions between 2 snapshots so that if there is too big time difference between 2 snapshots it will still look continuous.
+ - **cl_extrapolate** - extrapolation is used if interpolation cannot be done due to too many lost snapshots.
+ - **cl_predict** - turn on/off client input prediction.
+ - **cl_smooth** - turn on/off client-side input prediction error smoothing.
+ - **sv_showhitboxes** - if enabled, clients will draw the hitboxes used on server side. They are expected of ahead of the player by the lerp (linear interpolation) period.
+
+Details:
+ - https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking
+ - https://steamcommunity.com/sharedfiles/filedetails/?id=126383209
+
 \section networking_pages Web Pages about this Topic
 
 \subsection low_level_networking_pages Web Pages about Low-level Networking Topics
@@ -247,6 +265,7 @@ Client-side prediction, interpolation, latency mitigation, etc:
  - https://forum.unity.com/threads/tips-for-server-authoritative-player-movement.199538/
  - https://gamedev.stackexchange.com/questions/184334/how-does-a-server-receive-every-player-input-with-a-server-authoritative-structu
  - https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking
+ - CS 1.6 Rates: https://steamcommunity.com/sharedfiles/filedetails/?id=126383209
  - https://developer.valvesoftware.com/wiki/Latency_Compensating_Methods_in_Client/Server_In-game_Protocol_Design_and_Optimization
  - https://docs.unrealengine.com/udk/Three/NetworkingOverview.html
  - https://docs.unrealengine.com/udk/Three/NetworkingOverview.html#Player%20Movement%20and%20Prediction
