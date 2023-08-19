@@ -51,6 +51,10 @@ public:
     uint32_t getTxPacketPerSecondCount() const override;
     uint32_t getInjectPacketPerSecondCount() const override;
 
+    const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getRxMsgCount() const override;
+    const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getTxMsgCount() const override;
+    const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getInjectMsgCount() const override;
+
     void WriteList() const override;
 
     /* implement stuff from PgeIServerClient end */
@@ -197,6 +201,21 @@ uint32_t PgeServerImpl::getTxPacketPerSecondCount() const
 uint32_t PgeServerImpl::getInjectPacketPerSecondCount() const
 {
     return m_gsnServer.getInjectPacketPerSecondCount();
+}
+
+const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeServerImpl::getRxMsgCount() const
+{
+    return m_gsnServer.getRxMsgCount();
+}
+
+const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeServerImpl::getTxMsgCount() const
+{
+    return m_gsnServer.getTxMsgCount();
+}
+
+const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeServerImpl::getInjectMsgCount() const
+{
+    return m_gsnServer.getInjectMsgCount();
 }
 
 void PgeServerImpl::WriteList() const

@@ -94,7 +94,7 @@ bool PgeGsnServer::startListening()
         pkt,
         static_cast<pge_network::PgeNetworkConnectionHandle>(k_HSteamNetConnection_Invalid),
         true,
-        "" /* we dont know our IP address, later the 1st connecting client will tell us anyway */);
+        "" /* we dont know our own IP address, later the 1st connecting client will tell us anyway */);
 
     // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
     m_queuePackets.push_back(pkt);
@@ -158,6 +158,10 @@ void PgeGsnServer::sendToClient(const HSteamNetConnection& conn, const pge_netwo
     {
         m_time1stTxPkt = std::chrono::steady_clock::now();
     }
+    if (pkt.pktId == pge_network::PgePktId::APP)
+    {
+        ++m_nTxMsgCount[pkt.msg.app.msgId];
+    }
 }
 
 void PgeGsnServer::sendToAllClientsExcept(const pge_network::PgePacket& pkt, const HSteamNetConnection& except)
@@ -185,6 +189,10 @@ void PgeGsnServer::inject(const pge_network::PgePacket& pkt)
     if (m_nInjectPktCount == 1)
     {
         m_time1stInjectPkt = std::chrono::steady_clock::now();
+    }
+    if (pkt.pktId == pge_network::PgePktId::APP)
+    {
+        ++m_nInjectMsgCount[pkt.msg.app.msgId];
     }
 }
 

@@ -154,6 +154,11 @@ void PgeGsnClient::sendToServer(const pge_network::PgePacket& pkt)
     {
         m_time1stTxPkt = std::chrono::steady_clock::now();
     }
+    if (pkt.pktId == pge_network::PgePktId::APP)
+    {
+        ++m_nTxMsgCount[pkt.msg.app.msgId];
+    }
+
 }
 
 const SteamNetConnectionRealTimeStatus_t& PgeGsnClient::getRealTimeStatus(bool bForceUpdate)

@@ -108,6 +108,10 @@ public:
     uint32_t getTxPacketPerSecondCount() const;
     uint32_t getInjectPacketPerSecondCount() const;
 
+    const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getRxMsgCount() const;
+    const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getTxMsgCount() const;
+    const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getInjectMsgCount() const;
+
 protected:
 
     static PgeGsnWrapper* s_pCallbackInstance;
@@ -127,6 +131,10 @@ protected:
     std::chrono::time_point<std::chrono::steady_clock> m_time1stRxPkt;
     std::chrono::time_point<std::chrono::steady_clock> m_time1stTxPkt;
     std::chrono::time_point<std::chrono::steady_clock> m_time1stInjectPkt;
+
+    std::map<pge_network::TPgeMsgAppMsgId, uint32_t> m_nRxMsgCount;
+    std::map<pge_network::TPgeMsgAppMsgId, uint32_t> m_nTxMsgCount;
+    std::map<pge_network::TPgeMsgAppMsgId, uint32_t> m_nInjectMsgCount;
 
     // ---------------------------------------------------------------------------
 

@@ -91,6 +91,27 @@ bool PgeGsnWrapper::destroy()
     CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Tx'd Pkt Count : %u, %u pkt/s", getTxPacketCount(), getTxPacketPerSecondCount());
     CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Rx'd Pkt Count : %u, %u pkt/s", getRxPacketCount(), getRxPacketPerSecondCount());
     CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Inj'd Pkt Count: %u, %u pkt/s", getInjectPacketCount(), getInjectPacketPerSecondCount());
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Tx'd App Msg Count per AppMsgId:");
+    for (const auto& txMsgCount : m_nTxMsgCount)
+    {
+        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Id %u: %u", txMsgCount.first, txMsgCount.second);
+    }
+
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Rx'd App Msg Count per AppMsgId:");
+    for (const auto& rxMsgCount : m_nRxMsgCount)
+    {
+        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Id %u: %u", rxMsgCount.first, rxMsgCount.second);
+    }
+
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Inj'd App Msg Count per AppMsgId:");
+    for (const auto& injectMsgCount : m_nInjectMsgCount)
+    {
+        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Id %u: %u", injectMsgCount.first, injectMsgCount.second);
+    }
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
 
     GameNetworkingSockets_Kill();  // hopefully this can be invoked even if GNS has been already killed
     return true;
@@ -156,6 +177,7 @@ bool PgeGsnWrapper::pollIncomingMessages()
                 assert(false);
                 continue;
             }
+            ++m_nRxMsgCount[pkt.msg.app.msgId];
         }
         else
         {
@@ -248,6 +270,21 @@ uint32_t PgeGsnWrapper::getInjectPacketPerSecondCount() const
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_time1stInjectPkt).count();
 
     return static_cast<uint32_t>(nSecsSince1stInjectPkt != 0 ? (getInjectPacketCount() / nSecsSince1stInjectPkt) : 0);
+}
+
+const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeGsnWrapper::getRxMsgCount() const
+{
+    return m_nRxMsgCount;
+}
+
+const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeGsnWrapper::getTxMsgCount() const
+{
+    return m_nTxMsgCount;
+}
+
+const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeGsnWrapper::getInjectMsgCount() const
+{
+    return m_nInjectMsgCount;
 }
 
 
