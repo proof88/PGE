@@ -91,27 +91,30 @@ bool PgeGsnWrapper::destroy()
     CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Tx'd Pkt Count : %u, %u pkt/s", getTxPacketCount(), getTxPacketPerSecondCount());
     CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Rx'd Pkt Count : %u, %u pkt/s", getRxPacketCount(), getRxPacketPerSecondCount());
     CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Inj'd Pkt Count: %u, %u pkt/s", getInjectPacketCount(), getInjectPacketPerSecondCount());
+    
     CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Tx'd App Msg Count per AppMsgId:");
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLnOI("Total Tx'd App Msg Count per AppMsgId:");
     for (const auto& txMsgCount : m_nTxMsgCount)
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Id %u: %u", txMsgCount.first, txMsgCount.second);
+        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Id %u %s: %u", txMsgCount.first, getStringByMsgAppId(txMsgCount.first).c_str(), txMsgCount.second);
     }
+    CConsole::getConsoleInstance("PgeGsnWrapper").OO();
 
     CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Rx'd App Msg Count per AppMsgId:");
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLnOI("Total Rx'd App Msg Count per AppMsgId:");
     for (const auto& rxMsgCount : m_nRxMsgCount)
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Id %u: %u", rxMsgCount.first, rxMsgCount.second);
+        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Id %u %s: %u", rxMsgCount.first, getStringByMsgAppId(rxMsgCount.first).c_str(), rxMsgCount.second);
     }
+    CConsole::getConsoleInstance("PgeGsnWrapper").OO();
 
     CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Inj'd App Msg Count per AppMsgId:");
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLnOI("Total Inj'd App Msg Count per AppMsgId:");
     for (const auto& injectMsgCount : m_nInjectMsgCount)
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Id %u: %u", injectMsgCount.first, injectMsgCount.second);
+        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Id %u %s: %u", injectMsgCount.first, getStringByMsgAppId(injectMsgCount.first).c_str(), injectMsgCount.second);
     }
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLnOO("");
 
     GameNetworkingSockets_Kill();  // hopefully this can be invoked even if GNS has been already killed
     return true;
@@ -287,6 +290,11 @@ const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeGsnWrapper::getInject
     return m_nInjectMsgCount;
 }
 
+std::map<pge_network::TPgeMsgAppMsgId, std::string>& PgeGsnWrapper::getMsgAppId2StringMap()
+{
+    return m_mapMsgAppId2String;
+}
+
 
 // ############################## PROTECTED ##############################
 
@@ -316,6 +324,16 @@ PgeGsnWrapper::PgeGsnWrapper(const PgeGsnWrapper& other) :
 PgeGsnWrapper& PgeGsnWrapper::operator=(const PgeGsnWrapper&)
 {
     return *this;
+}
+
+std::string PgeGsnWrapper::getStringByMsgAppId(const pge_network::TPgeMsgAppMsgId& id) const
+{
+    const auto& it = m_mapMsgAppId2String.find(id);
+    if (it != m_mapMsgAppId2String.end())
+    {
+        return it->second;
+    }
+    return "UNKNOWN_MSG";
 }
 
 

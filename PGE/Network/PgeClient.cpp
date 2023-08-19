@@ -55,6 +55,8 @@ public:
     const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getTxMsgCount() const override;
     const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getInjectMsgCount() const override;
 
+    std::map<pge_network::TPgeMsgAppMsgId, std::string>& getMsgAppId2StringMap() override;
+
     void WriteList() const override;
 
     /* implement stuff from PgeIServerClient end */
@@ -221,6 +223,11 @@ const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeClientImpl::getTxMsgC
 const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeClientImpl::getInjectMsgCount() const
 {
     return m_gsnClient.getInjectMsgCount();
+}
+
+std::map<pge_network::TPgeMsgAppMsgId, std::string>& PgeClientImpl::getMsgAppId2StringMap()
+{
+    return m_gsnClient.getMsgAppId2StringMap();
 }
 
 void PgeClientImpl::WriteList() const

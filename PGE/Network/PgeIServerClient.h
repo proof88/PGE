@@ -75,6 +75,8 @@ namespace pge_network
         virtual const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getTxMsgCount() const = 0;
         virtual const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getInjectMsgCount() const = 0;
 
+        virtual std::map<pge_network::TPgeMsgAppMsgId, std::string>& getMsgAppId2StringMap() = 0;
+
         virtual void WriteList() const = 0;    /**< Writes statistics to console. */
     }; // class PgeIServerClient
 

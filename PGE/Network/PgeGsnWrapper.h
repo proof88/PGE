@@ -112,6 +112,8 @@ public:
     const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getTxMsgCount() const;
     const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getInjectMsgCount() const;
 
+    std::map<pge_network::TPgeMsgAppMsgId, std::string>& getMsgAppId2StringMap();
+
 protected:
 
     static PgeGsnWrapper* s_pCallbackInstance;
@@ -136,6 +138,8 @@ protected:
     std::map<pge_network::TPgeMsgAppMsgId, uint32_t> m_nTxMsgCount;
     std::map<pge_network::TPgeMsgAppMsgId, uint32_t> m_nInjectMsgCount;
 
+    std::map<pge_network::TPgeMsgAppMsgId, std::string> m_mapMsgAppId2String;
+
     // ---------------------------------------------------------------------------
 
     static void steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
@@ -148,4 +152,6 @@ protected:
     virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const = 0;
     virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const = 0;
     virtual void onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) = 0;
+
+    std::string getStringByMsgAppId(const pge_network::TPgeMsgAppMsgId& id) const;
 }; // class PgeGsnWrapper
