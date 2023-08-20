@@ -337,7 +337,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\CConsole\CConsole\src\CConsole.h" />
+    <ClInclude Include="..\..\..\Console\CConsole\src\CConsole.h" />
     <ClInclude Include="..\..\..\PFL\PFL\PFL.h" />
     <ClInclude Include="..\Config\PGEcfgFile.h" />
     <ClInclude Include="..\Config\PGEcfgProfiles.h" />

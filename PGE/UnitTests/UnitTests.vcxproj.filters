@@ -78,9 +78,6 @@
     <ClInclude Include="..\PGEallHeaders.h">
       <Filter>Header Files\PGE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\CConsole\CConsole\src\CConsole.h">
-      <Filter>Header Files\CConsole</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\PFL\PFL\PFL.h">
       <Filter>Header Files\PFL</Filter>
     </ClInclude>
@@ -314,6 +311,9 @@
     </ClInclude>
     <ClInclude Include="PgeOldNewValueTest.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Console\CConsole\src\CConsole.h">
+      <Filter>Header Files\CConsole</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
