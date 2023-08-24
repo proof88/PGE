@@ -114,6 +114,10 @@ public:
 
     std::map<pge_network::TPgeMsgAppMsgId, std::string>& getMsgAppId2StringMap();
 
+    uint32_t getRxByteCount() const;
+    uint32_t getTxByteCount() const;
+    uint32_t getInjectByteCount() const;
+
 protected:
 
     static PgeGsnWrapper* s_pCallbackInstance;
@@ -139,6 +143,10 @@ protected:
     std::map<pge_network::TPgeMsgAppMsgId, uint32_t> m_nInjectMsgCount;
 
     std::map<pge_network::TPgeMsgAppMsgId, std::string> m_mapMsgAppId2String;
+
+    uint32_t m_nRxByteCount;
+    uint32_t m_nTxByteCount;
+    uint32_t m_nInjectByteCount;
 
     // ---------------------------------------------------------------------------
 

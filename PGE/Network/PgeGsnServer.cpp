@@ -153,15 +153,16 @@ void PgeGsnServer::sendToClient(const HSteamNetConnection& conn, const pge_netwo
         return;
     }
     m_pInterface->SendMessageToConnection(conn, &pkt, (uint32)sizeof(pkt), k_nSteamNetworkingSend_Reliable, nullptr);
-    m_nTxPktCount++;
     if (m_nTxPktCount == 1)
     {
         m_time1stTxPkt = std::chrono::steady_clock::now();
     }
+    m_nTxPktCount++;
     if (pkt.pktId == pge_network::PgePktId::APP)
     {
         ++m_nTxMsgCount[pkt.msg.app.msgId];
     }
+    m_nTxByteCount += sizeof(pkt);
 }
 
 void PgeGsnServer::sendToAllClientsExcept(const pge_network::PgePacket& pkt, const HSteamNetConnection& except)
@@ -185,15 +186,16 @@ void PgeGsnServer::sendToAllClientsExcept(const pge_network::PgePacket& pkt, con
 void PgeGsnServer::inject(const pge_network::PgePacket& pkt)
 {
     m_queuePackets.push_back(pkt);
-    m_nInjectPktCount++;
     if (m_nInjectPktCount == 1)
     {
         m_time1stInjectPkt = std::chrono::steady_clock::now();
     }
+    m_nInjectPktCount++;
     if (pkt.pktId == pge_network::PgePktId::APP)
     {
         ++m_nInjectMsgCount[pkt.msg.app.msgId];
     }
+    m_nInjectByteCount += sizeof(pkt);
 }
 
 void PgeGsnServer::WriteServerClientList()

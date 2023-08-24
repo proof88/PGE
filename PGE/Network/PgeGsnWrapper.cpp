@@ -91,6 +91,11 @@ bool PgeGsnWrapper::destroy()
     CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Tx'd Pkt Count : %u, %u pkt/s", getTxPacketCount(), getTxPacketPerSecondCount());
     CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Rx'd Pkt Count : %u, %u pkt/s", getRxPacketCount(), getRxPacketPerSecondCount());
     CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Inj'd Pkt Count: %u, %u pkt/s", getInjectPacketCount(), getInjectPacketPerSecondCount());
+
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Tx'd Bytes : %u", getTxByteCount());
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Rx'd Bytes : %u", getRxByteCount());
+    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Inj'd Bytes: %u", getInjectByteCount());
     
     CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
     CConsole::getConsoleInstance("PgeGsnWrapper").OLnOI("Total Tx'd App Msg Count per AppMsgId:");
@@ -193,6 +198,7 @@ bool PgeGsnWrapper::pollIncomingMessages()
             }
         }
 
+        m_nRxByteCount += sizeof(pkt);
         m_queuePackets.push_back(pkt);
     } // for i
 
@@ -295,6 +301,21 @@ std::map<pge_network::TPgeMsgAppMsgId, std::string>& PgeGsnWrapper::getMsgAppId2
     return m_mapMsgAppId2String;
 }
 
+uint32_t PgeGsnWrapper::getRxByteCount() const
+{
+    return m_nRxByteCount;
+}
+
+uint32_t PgeGsnWrapper::getTxByteCount() const
+{
+    return m_nTxByteCount;
+}
+
+uint32_t PgeGsnWrapper::getInjectByteCount() const
+{
+    return m_nInjectByteCount;
+}
+
 
 // ############################## PROTECTED ##############################
 
@@ -311,7 +332,10 @@ PgeGsnWrapper::PgeGsnWrapper(PGEcfgProfiles& cfgProfiles) :
     m_pInterface(nullptr),
     m_nRxPktCount(0),
     m_nTxPktCount(0),
-    m_nInjectPktCount(0)
+    m_nInjectPktCount(0),
+    m_nRxByteCount(0),
+    m_nTxByteCount(0),
+    m_nInjectByteCount(0)
 {
 } // PgeGsnWrapper()
 

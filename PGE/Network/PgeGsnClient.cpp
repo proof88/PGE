@@ -149,16 +149,16 @@ void PgeGsnClient::sendToServer(const pge_network::PgePacket& pkt)
     }
 
     m_pInterface->SendMessageToConnection(m_hConnection, &pkt, (uint32)sizeof(pkt), k_nSteamNetworkingSend_Reliable, nullptr);
-    m_nTxPktCount++;
     if (m_nTxPktCount == 1)
     {
         m_time1stTxPkt = std::chrono::steady_clock::now();
     }
+    m_nTxPktCount++;
     if (pkt.pktId == pge_network::PgePktId::APP)
     {
         ++m_nTxMsgCount[pkt.msg.app.msgId];
     }
-
+    m_nTxByteCount += sizeof(pkt);
 }
 
 const SteamNetConnectionRealTimeStatus_t& PgeGsnClient::getRealTimeStatus(bool bForceUpdate)
