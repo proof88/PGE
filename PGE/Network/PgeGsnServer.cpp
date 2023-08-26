@@ -152,7 +152,34 @@ void PgeGsnServer::sendToClient(const HSteamNetConnection& conn, const pge_netwo
         // that is how server can handle itself as a client similar to any other client
         return;
     }
-    m_pInterface->SendMessageToConnection(conn, &pkt, (uint32)sizeof(pkt), k_nSteamNetworkingSend_Reliable, nullptr);
+
+    uint32_t nActualPktSize;
+    if (pkt.pktId == pge_network::PgePktId::APP)
+    {
+        // We need the real used memory size so we can truncate the sent pkt to that.
+        // We need to consider member padding and the actual message sizes to have a correct value.
+        // 'cData' is our point of view since from there we need to calculate.
+        const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.msg.app.cData);
+        const uint8_t* pMsgAppInByteSteps = pkt.msg.app.cData;  // we can step this ptr in Bytes
+        // Real offset in Bytes in memory of actual app data relative to beginning of MsgApp struct
+        // const size_t nByteDistanceOfMsgDataInMsgApp = (uint8_t*)(&(pMsgApp->cMsgData)) - (uint8_t*)(pMsgApp);
+        const size_t nByteDistanceOfMsgDataInMsgApp = offsetof(pge_network::MsgApp, cMsgData);
+        for (uint8_t i = 0; i < pkt.msg.app.m_nMessageCount; i++)
+        {
+            pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pMsgAppInByteSteps);
+            // moving pMsgAppInByteSteps by the _actual_ size of the current MsgApp struct (considering the actual app message size there)
+            pMsgAppInByteSteps += (nByteDistanceOfMsgDataInMsgApp + pMsgApp->nMsgSize);
+        }
+        // now pMsgAppInByteSteps points to RIGHT AFTER the 1st byte of the last application message
+        const uint8_t* pPkt = (const uint8_t*)(&pkt);
+        nActualPktSize = pMsgAppInByteSteps - pPkt;
+    }
+    else
+    {
+        nActualPktSize = static_cast<uint32_t>(sizeof(pkt));
+    }
+
+    m_pInterface->SendMessageToConnection(conn, &pkt, nActualPktSize, k_nSteamNetworkingSend_Reliable, nullptr);
     if (m_nTxPktCount == 1)
     {
         m_time1stTxPkt = std::chrono::steady_clock::now();
@@ -160,9 +187,14 @@ void PgeGsnServer::sendToClient(const HSteamNetConnection& conn, const pge_netwo
     m_nTxPktCount++;
     if (pkt.pktId == pge_network::PgePktId::APP)
     {
-        ++m_nTxMsgCount[pkt.msg.app.msgId];
+        const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.msg.app.cData);
+        for (uint8_t i = 0; i < pkt.msg.app.m_nMessageCount; i++)
+        {
+            // TODO: nooo, I need to properly iterate to next appmsg as I iterate in above loop!
+            ++m_nTxMsgCount[pMsgApp->msgId];
+        }
     }
-    m_nTxByteCount += sizeof(pkt);
+    m_nTxByteCount += nActualPktSize;
 }
 
 void PgeGsnServer::sendToAllClientsExcept(const pge_network::PgePacket& pkt, const HSteamNetConnection& except)
@@ -193,7 +225,12 @@ void PgeGsnServer::inject(const pge_network::PgePacket& pkt)
     m_nInjectPktCount++;
     if (pkt.pktId == pge_network::PgePktId::APP)
     {
-        ++m_nInjectMsgCount[pkt.msg.app.msgId];
+        const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.msg.app.cData);
+        for (uint8_t i = 0; i < pkt.msg.app.m_nMessageCount; i++)
+        {
+            // TODO: nooo, I need to properly iterate to next appmsg as I iterate in sendToClient()!
+            ++m_nInjectMsgCount[pMsgApp->msgId];
+        }
     }
     m_nInjectByteCount += sizeof(pkt);
 }

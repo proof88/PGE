@@ -133,7 +133,7 @@ bool PgeGsnWrapper::isInitialized() const
 bool PgeGsnWrapper::pollIncomingMessages()
 {
     static const int nIncomingMsgArraySize = 10; // TODO: make this configurable from outside
-    ISteamNetworkingMessage* pIncomingMsg[nIncomingMsgArraySize];
+    ISteamNetworkingMessage* pIncomingGnsMsg[nIncomingMsgArraySize];
 
     if (!isInitialized())
     {
@@ -141,51 +141,77 @@ bool PgeGsnWrapper::pollIncomingMessages()
         return false;
     }
 
-    const int numMsgs = receiveMessages(pIncomingMsg, nIncomingMsgArraySize);
-    if (numMsgs == 0)
+    // numGnsMsgs is actually the number of received PgePackets, however GNS talks about SteamNetworkingMessage,
+    // but PGE puts a PgePacket into such message, and a PgePacket can contain multiple MsgApps, so pls don't
+    // mix the MsgApps with SteamNetworkingMessages, they are not the same messages.
+    const int numGnsMsgs = receiveMessages(pIncomingGnsMsg, nIncomingMsgArraySize);
+    if (numGnsMsgs == 0)
     {
         return false;
     }
 
-    if (numMsgs < 0)
+    if (numGnsMsgs < 0)
     {
         CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: Error checking for messages!", __func__);
         return false;
     }
 
-    if (!pIncomingMsg)
+    if (!pIncomingGnsMsg)
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: pIncomingMsg null!", __func__);
+        CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: pIncomingGnsMsg null!", __func__);
         return false;
     }
 
-    for (int i = 0; i < numMsgs; i++)
+    for (int i = 0; i < numGnsMsgs; i++)
     {
-        if (!validateSteamNetworkingMessage(pIncomingMsg[i]->m_conn))
+        if (!validateSteamNetworkingMessage(pIncomingGnsMsg[i]->m_conn))
         {
             continue;
         }
 
+        // PgePacket is a fixed-size memory area, during sending we truncate it to actual size, which is this size:
+        const int nActualPktSize = (pIncomingGnsMsg[i])->m_cbSize;
         pge_network::PgePacket pkt;
-        assert((pIncomingMsg[i])->m_cbSize == sizeof(pkt));
-        memcpy(&pkt, (pIncomingMsg[i])->m_pData, (pIncomingMsg[i])->m_cbSize);
-        updateIncomingPgePacket(pkt, pIncomingMsg[i]->m_conn);
+        assert(nActualPktSize <= sizeof(pkt));
+        
+        memcpy(&pkt, (pIncomingGnsMsg[i])->m_pData, nActualPktSize);
+        updateIncomingPgePacket(pkt, pIncomingGnsMsg[i]->m_conn);
 
         // We don't need this anymore.
-        // Note that we could even push pIncomingMsg to a queue, and process it later, and
+        // Note that we could even push pIncomingGnsMsg to a queue, and process it later, and
         // release it later, that could be a good speed optimization.
-        (pIncomingMsg[i])->Release();
+        (pIncomingGnsMsg[i])->Release();
 
         if (pkt.pktId == pge_network::PgePktId::APP)
         {
-            if (m_allowListedAppMessages.end() == m_allowListedAppMessages.find(pkt.msg.app.msgId))
+            if (pkt.msg.app.m_nMessageCount == 0)
             {
-                CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: non-allowlisted app message received: %u from connection %u!",
-                    __func__, pkt.msg.app.msgId, pkt.m_connHandleServerSide);
+                CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: app message pkt with msg count 0 from connection %u!",
+                    __func__, pkt.m_connHandleServerSide);
                 assert(false);
                 continue;
             }
-            ++m_nRxMsgCount[pkt.msg.app.msgId];
+
+            // for now we support only 1 app msg / pkt
+            assert(pkt.msg.app.m_nMessageCount == 1);
+
+            const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.msg.app.cData);
+            for (uint8_t iAppMsg = 0; iAppMsg < pkt.msg.app.m_nMessageCount; iAppMsg++)
+            {
+                // TODO: nooo I need proper iteration for every msgId!
+                if (m_allowListedAppMessages.end() == m_allowListedAppMessages.find(pMsgApp->msgId))
+                {
+                    CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: non-allowlisted app message received: %u from connection %u!",
+                        __func__, pMsgApp->msgId, pkt.m_connHandleServerSide);
+                    assert(false);
+                    continue;
+                }
+                ++m_nRxMsgCount[pMsgApp->msgId];
+                
+                // we could also check if nMsgSize is non-zero, however we shouldnt: app is allowed to define zero-size AppMsg, it is
+                // not our business here to judge.
+                pMsgApp += pMsgApp->nMsgSize;
+            }
         }
         else
         {
@@ -198,7 +224,9 @@ bool PgeGsnWrapper::pollIncomingMessages()
             }
         }
 
-        m_nRxByteCount += sizeof(pkt);
+        m_nRxByteCount += nActualPktSize;
+        // TODO: would be nice if even the size of pushed packets would be the actual to copy less memory
+        // or at least use emplace_back()
         m_queuePackets.push_back(pkt);
     } // for i
 
@@ -206,7 +234,7 @@ bool PgeGsnWrapper::pollIncomingMessages()
     {
         m_time1stRxPkt = std::chrono::steady_clock::now();
     }
-    m_nRxPktCount += numMsgs;
+    m_nRxPktCount += numGnsMsgs;
 
     return true;
 }

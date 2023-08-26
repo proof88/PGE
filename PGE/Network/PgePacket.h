@@ -59,26 +59,54 @@ namespace pge_network
 
     typedef uint32_t TPgeMsgAppMsgId;
 
+    struct MsgAppArea
+    {
+        static const uint16_t nMessagesAreaLength = 256;
+
+        uint8_t m_nMessageCount;
+        /* This 'cData' memory area is for m_nMessageCount number of different app messages.
+           The C++ standard guarantees that the members of a class or struct appear in memory in the same order as they are declared.
+           This 'cData' member needs to be the LAST member of this struct.
+           When sending, we should send the actually used memory area and not the whole area.
+           We don't need to store the actually used size since GSN will tell the actual pkt size anyway on polling messages.
+           In 'cData' we store at least 1 variable-sized MsgApp.
+         */
+        uint8_t cData[nMessagesAreaLength];
+    };
+
     // application-specific message
     // server <-> client
+    // With allow listing, app messages can be separately allowed to be processed by clients and server based on TPgeMsgAppMsgId.
     struct MsgApp
     {
         static const PgePktId id = PgePktId::APP;
-        static const uint16_t nMessageMaxLength = 256;
-
-        TPgeMsgAppMsgId msgId;
-        char cData[nMessageMaxLength];
+        static const uint16_t nMaxMessageLength = 250;
+        
+        TPgeMsgAppMsgId msgId;  // this is checked by engine upon polling for new messages against the allowlists
+        uint8_t nMsgSize;
+        /* This 'cMsgData' memory area is for 1 application message defined at application level, not here.
+           So the application is responsible for copying the message here.
+           The C++ standard guarantees that the members of a class or struct appear in memory in the same order as they are declared.
+           This 'cMsgData' member needs to be the LAST member of this struct.
+           When packaging MsgApp into MsgAppArea, we should put the actually used memory area (nMsgSize) and not the whole area, and
+           increase MsgAppArea::m_nMessageCount by 1.
+         */
+        uint8_t cMsgData[nMaxMessageLength];
     };
+    static_assert(
+        sizeof(MsgApp) <= MsgAppArea::nMessagesAreaLength,
+        "At least 1 MsgApp should fit into MsgAppArea.cData!");
 
     struct PgePacket
     {
         PgePktId pktId;
         PgeNetworkConnectionHandle m_connHandleServerSide;
+
         union
         {
             MsgUserConnected userConnected;
             MsgUserDisconnected userDisconnected;
-            MsgApp app; // application should load/store its custom messages here
+            MsgAppArea app; // application should load/store its custom messages here
         } msg;
     };
 

@@ -38,6 +38,10 @@
 #include PATH3(GameNetworkingSockets-,GAMENETWORKINGSOCKETS_VER,/include/steam/steamnetworkingsockets.h)
 #include PATH3(GameNetworkingSockets-,GAMENETWORKINGSOCKETS_VER,/include/steam/isteamnetworkingutils.h)
 
+// https://stackoverflow.com/questions/1098897/what-is-the-largest-safe-udp-packet-size-on-the-internet
+static_assert(
+    (sizeof(SteamNetworkingMessage_t) + sizeof(pge_network::PgePacket)) <= 508,
+    "They say that the maximum safe UDP payload is 508 bytes");
 
 /**
     PR00F's Game Engine's wrapper for GameNetworkingSockets library.
