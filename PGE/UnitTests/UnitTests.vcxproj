@@ -343,6 +343,11 @@
     <ClInclude Include="..\Config\PGEcfgProfiles.h" />
     <ClInclude Include="..\Config\PGEcfgVariable.h" />
     <ClInclude Include="..\Config\PgeOldNewValue.h" />
+    <ClInclude Include="..\Network\PgeClient.h" />
+    <ClInclude Include="..\Network\PgeIServerClient.h" />
+    <ClInclude Include="..\Network\PgeNetwork.h" />
+    <ClInclude Include="..\Network\PgePacket.h" />
+    <ClInclude Include="..\Network\PgeServer.h" />
     <ClInclude Include="..\PGE.h" />
     <ClInclude Include="..\PGEallHeaders.h" />
     <ClInclude Include="..\PGEInputHandler.h" />
@@ -382,6 +387,7 @@
     <ClInclude Include="..\PURE\include\external\Render\PureRendererSWincremental.h" />
     <ClInclude Include="PGEBulletTest.h" />
     <ClInclude Include="PgeOldNewValueTest.h" />
+    <ClInclude Include="PgePacketTest.h" />
     <ClInclude Include="PR00FsUltimateRenderingEngineTest.h" />
     <ClInclude Include="PR00FsUltimateRenderingEngineTest2.h" />
     <ClInclude Include="PureAxisAlignedBoundingBoxTest.h" />

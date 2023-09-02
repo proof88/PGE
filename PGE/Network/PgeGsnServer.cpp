@@ -90,7 +90,7 @@ bool PgeGsnServer::startListening()
     // here we create a client connect pkt that will be injected to our queue so app level will process it and create
     // player object or whatever they want for the server itself, as it was a real client
     pge_network::PgePacket pkt;
-    pge_network::initPktPgeMsgUserConnected(
+    pge_network::PgePacket::initPktPgeMsgUserConnected(
         pkt,
         static_cast<pge_network::PgeNetworkConnectionHandle>(k_HSteamNetConnection_Invalid),
         true,
@@ -99,7 +99,7 @@ bool PgeGsnServer::startListening()
     // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
     m_queuePackets.push_back(pkt);
 
-    // TODOOO: network layer needs to set user name! SetClientNick(k_HSteamNetConnection_Invalid, pkt.msg.userConnected.sUserName);
+    // TODOOO: network layer needs to set user name! SetClientNick(k_HSteamNetConnection_Invalid, PgePacket::getMessageAsUserConnected(pkt).sUserName);
 
     return true;
 }
@@ -154,17 +154,17 @@ void PgeGsnServer::sendToClient(const HSteamNetConnection& conn, const pge_netwo
     }
 
     uint32_t nActualPktSize;
-    if (pkt.pktId == pge_network::PgePktId::APP)
+    if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::APP)
     {
         // We need the real used memory size so we can truncate the sent pkt to that.
         // We need to consider member padding and the actual message sizes to have a correct value.
         // 'cData' is our point of view since from there we need to calculate.
-        const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.msg.app.cData);
-        const uint8_t* pMsgAppInByteSteps = pkt.msg.app.cData;  // we can step this ptr in Bytes
+        const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
+        const uint8_t* pMsgAppInByteSteps = pge_network::PgePacket::getMessageAppArea(pkt).cData;  // we can step this ptr in Bytes
         // Real offset in Bytes in memory of actual app data relative to beginning of MsgApp struct
         // const size_t nByteDistanceOfMsgDataInMsgApp = (uint8_t*)(&(pMsgApp->cMsgData)) - (uint8_t*)(pMsgApp);
         const size_t nByteDistanceOfMsgDataInMsgApp = offsetof(pge_network::MsgApp, cMsgData);
-        for (uint8_t i = 0; i < pkt.msg.app.m_nMessageCount; i++)
+        for (uint8_t i = 0; i < pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount; i++)
         {
             pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pMsgAppInByteSteps);
             // moving pMsgAppInByteSteps by the _actual_ size of the current MsgApp struct (considering the actual app message size there)
@@ -185,10 +185,10 @@ void PgeGsnServer::sendToClient(const HSteamNetConnection& conn, const pge_netwo
         m_time1stTxPkt = std::chrono::steady_clock::now();
     }
     m_nTxPktCount++;
-    if (pkt.pktId == pge_network::PgePktId::APP)
+    if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::APP)
     {
-        const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.msg.app.cData);
-        for (uint8_t i = 0; i < pkt.msg.app.m_nMessageCount; i++)
+        const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
+        for (uint8_t i = 0; i < pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount; i++)
         {
             // TODO: nooo, I need to properly iterate to next appmsg as I iterate in above loop!
             ++m_nTxMsgCount[pMsgApp->msgId];
@@ -223,10 +223,10 @@ void PgeGsnServer::inject(const pge_network::PgePacket& pkt)
         m_time1stInjectPkt = std::chrono::steady_clock::now();
     }
     m_nInjectPktCount++;
-    if (pkt.pktId == pge_network::PgePktId::APP)
+    if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::APP)
     {
-        const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.msg.app.cData);
-        for (uint8_t i = 0; i < pkt.msg.app.m_nMessageCount; i++)
+        const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
+        for (uint8_t i = 0; i < pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount; i++)
         {
             // TODO: nooo, I need to properly iterate to next appmsg as I iterate in sendToClient()!
             ++m_nInjectMsgCount[pMsgApp->msgId];
@@ -301,7 +301,7 @@ bool PgeGsnServer::validateSteamNetworkingMessage(const HSteamNetConnection& con
 
 void PgeGsnServer::updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const
 {
-    pkt.m_connHandleServerSide = static_cast<pge_network::PgeNetworkConnectionHandle>(connHandle);
+    pge_network::PgePacket::getServerSideConnectionHandle(pkt) = static_cast<pge_network::PgeNetworkConnectionHandle>(connHandle);
 }
 
 void PgeGsnServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
@@ -359,9 +359,7 @@ void PgeGsnServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
             );
 
             pge_network::PgePacket pkt;
-            memset(&pkt, 0, sizeof(pkt));
-            pkt.pktId = pge_network::MsgUserDisconnected::id;
-            pkt.m_connHandleServerSide = static_cast<pge_network::PgeNetworkConnectionHandle>(pInfo->m_hConn);
+            pge_network::PgePacket::initPktPgeMsgUserDisconnected(pkt, pInfo->m_hConn);
 
             m_mapClients.erase(itClient);  // dont try to send anything to the disconnected client :)
 
@@ -417,7 +415,7 @@ void PgeGsnServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
         CConsole::getConsoleInstance("PgeGsnServer").OLn("%s: SERVER A client is connecting from %s ...", __func__, m_mapClients[pInfo->m_hConn].m_szAddr);
 
         pge_network::PgePacket pkt;
-        pge_network::initPktPgeMsgUserConnected(
+        pge_network::PgePacket::initPktPgeMsgUserConnected(
             pkt,
             static_cast<pge_network::PgeNetworkConnectionHandle>(pInfo->m_hConn),
             false,
@@ -426,7 +424,7 @@ void PgeGsnServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
         // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
         m_queuePackets.push_back(pkt);
 
-        // TODOOO: network layer needs to set user name! SetClientNick(pInfo->m_hConn, pkt.msg.userConnected.sUserName);
+        // TODOOO: network layer needs to set user name! SetClientNick(pInfo->m_hConn, PgePacket::getMessageAsUserConnected(pkt).sUserName);
 
         break;
     }

@@ -46,6 +46,9 @@
     <Filter Include="Header Files\PGE\PURE\Render">
       <UniqueIdentifier>{b690ff92-d9f4-4357-84cb-50a6afe215d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PGE\Network">
+      <UniqueIdentifier>{8c9a0a95-6bab-4b19-b70b-2c85b89435f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\PGE.h">
@@ -314,6 +317,24 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Console\CConsole\src\CConsole.h">
       <Filter>Header Files\CConsole</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\PgeClient.h">
+      <Filter>Header Files\PGE\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\PgeIServerClient.h">
+      <Filter>Header Files\PGE\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\PgeNetwork.h">
+      <Filter>Header Files\PGE\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\PgePacket.h">
+      <Filter>Header Files\PGE\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\PgeServer.h">
+      <Filter>Header Files\PGE\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="PgePacketTest.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

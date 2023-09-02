@@ -182,27 +182,27 @@ bool PgeGsnWrapper::pollIncomingMessages()
         // release it later, that could be a good speed optimization.
         (pIncomingGnsMsg[i])->Release();
 
-        if (pkt.pktId == pge_network::PgePktId::APP)
+        if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::APP)
         {
-            if (pkt.msg.app.m_nMessageCount == 0)
+            if (pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount == 0)
             {
                 CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: app message pkt with msg count 0 from connection %u!",
-                    __func__, pkt.m_connHandleServerSide);
+                    __func__, pge_network::PgePacket::getServerSideConnectionHandle(pkt));
                 assert(false);
                 continue;
             }
 
             // for now we support only 1 app msg / pkt
-            assert(pkt.msg.app.m_nMessageCount == 1);
+            assert(pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount == 1);
 
-            const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.msg.app.cData);
-            for (uint8_t iAppMsg = 0; iAppMsg < pkt.msg.app.m_nMessageCount; iAppMsg++)
+            const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
+            for (uint8_t iAppMsg = 0; iAppMsg < pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount; iAppMsg++)
             {
                 // TODO: nooo I need proper iteration for every msgId!
                 if (m_allowListedAppMessages.end() == m_allowListedAppMessages.find(pMsgApp->msgId))
                 {
                     CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: non-allowlisted app message received: %u from connection %u!",
-                        __func__, pMsgApp->msgId, pkt.m_connHandleServerSide);
+                        __func__, pMsgApp->msgId, pge_network::PgePacket::getServerSideConnectionHandle(pkt));
                     assert(false);
                     continue;
                 }
@@ -215,10 +215,10 @@ bool PgeGsnWrapper::pollIncomingMessages()
         }
         else
         {
-            if (m_allowListedPgeMessages.end() == m_allowListedPgeMessages.find(pkt.pktId))
+            if (m_allowListedPgeMessages.end() == m_allowListedPgeMessages.find(pge_network::PgePacket::getPacketId(pkt)))
             {
                 CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: non-allowlisted pge message received: %u from connection %u!",
-                    __func__, pkt.pktId, pkt.m_connHandleServerSide);
+                    __func__, pge_network::PgePacket::getPacketId(pkt), pge_network::PgePacket::getServerSideConnectionHandle(pkt));
                 assert(false);
                 continue;
             }

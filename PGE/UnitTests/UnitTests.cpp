@@ -24,6 +24,7 @@
 #include "PGEcfgFileTest.h"
 #include "PGEcfgProfilesTest.h"
 #include "PgeOldNewValueTest.h"
+#include "PgePacketTest.h"
 #include "WeaponsTest.h"
 #include "PGEBulletTest.h"
 #include "PR00FsUltimateRenderingEngineTest.h"
@@ -99,6 +100,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgProfilesTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PgeOldNewValueTest));
     */
+    
+    tests.push_back(std::unique_ptr<UnitTest>(new PgePacketTest));
     
     /* 
     tests.push_back(std::unique_ptr<UnitTest>(new WeaponsTest));

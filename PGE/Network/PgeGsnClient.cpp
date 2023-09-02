@@ -149,17 +149,17 @@ void PgeGsnClient::sendToServer(const pge_network::PgePacket& pkt)
     }
 
     uint32_t nActualPktSize;
-    if (pkt.pktId == pge_network::PgePktId::APP)
+    if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::APP)
     {
         // We need the real used memory size so we can truncate the sent pkt to that.
         // We need to consider member padding and the actual message sizes to have a correct value.
         // 'cData' is our point of view since from there we need to calculate.
-        const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.msg.app.cData);
-        const uint8_t* pMsgAppInByteSteps = pkt.msg.app.cData;  // we can step this ptr in Bytes
+        const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
+        const uint8_t* pMsgAppInByteSteps = pge_network::PgePacket::getMessageAppArea(pkt).cData;  // we can step this ptr in Bytes
         // Real offset in Bytes in memory of actual app data relative to beginning of MsgApp struct
         // const size_t nByteDistanceOfMsgDataInMsgApp = (uint8_t*)(&(pMsgApp->cMsgData)) - (uint8_t*)(pMsgApp);
         const size_t nByteDistanceOfMsgDataInMsgApp = offsetof(pge_network::MsgApp, cMsgData);
-        for (uint8_t i = 0; i < pkt.msg.app.m_nMessageCount; i++)
+        for (uint8_t i = 0; i < pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount; i++)
         {
             pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pMsgAppInByteSteps);
             // moving pMsgAppInByteSteps by the _actual_ size of the current MsgApp struct (considering the actual app message size there)
@@ -180,10 +180,10 @@ void PgeGsnClient::sendToServer(const pge_network::PgePacket& pkt)
         m_time1stTxPkt = std::chrono::steady_clock::now();
     }
     m_nTxPktCount++;
-    if (pkt.pktId == pge_network::PgePktId::APP)
+    if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::APP)
     {
-        const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.msg.app.cData);
-        for (uint8_t i = 0; i < pkt.msg.app.m_nMessageCount; i++)
+        const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
+        for (uint8_t i = 0; i < pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount; i++)
         {
             // TODO: nooo, I need to properly iterate to next appmsg as I iterate in above loop!
             ++m_nTxMsgCount[pMsgApp->msgId];
