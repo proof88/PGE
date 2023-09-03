@@ -1,6 +1,6 @@
 /*
     ###################################################################################
-    PgeGsnWrapper.cpp
+    PgeGnsWrapper.cpp
     This file is part of PGE.
     PR00F's Game Engine networking subsystem
     Made by PR00F88
@@ -10,7 +10,7 @@
 
 #include "PureBaseIncludes.h"  // PCH
 
-#include "PgeGsnWrapper.h"
+#include "PgeGnsWrapper.h"
 
 #include <cassert>
 
@@ -22,17 +22,17 @@ static void NetworkDbg(ESteamNetworkingSocketsDebugOutputType eType, const char*
 {
     if (eType == k_ESteamNetworkingSocketsDebugOutputType_Bug)
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: %s", __func__, pszMsg);
+        CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s: %s", __func__, pszMsg);
     }
     else
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("%s: %s", __func__, pszMsg);
+        CConsole::getConsoleInstance("PgeGnsWrapper").OLn("%s: %s", __func__, pszMsg);
     }
 }
 
 
 /*
-   PgeGsnWrapper
+   PgeGnsWrapper
    ###########################################################################
 */
 
@@ -40,13 +40,13 @@ static void NetworkDbg(ESteamNetworkingSocketsDebugOutputType eType, const char*
 // ############################### PUBLIC ################################
 
 
-const uint16 PgeGsnWrapper::DEFAULT_SERVER_PORT;
+const uint16 PgeGnsWrapper::DEFAULT_SERVER_PORT;
 
-bool PgeGsnWrapper::init()
+bool PgeGnsWrapper::init()
 {
     if (isInitialized())
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("ERROR: GameNetworkingSockets is already initialized!");
+        CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("ERROR: GameNetworkingSockets is already initialized!");
         return false;
     }
 
@@ -54,11 +54,11 @@ bool PgeGsnWrapper::init()
 
     if (GameNetworkingSockets_Init(nullptr, errMsg))
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").SOLn("Initialized GameNetworkingSockets %s!", GAMENETWORKINGSOCKETS_VER_STR);
+        CConsole::getConsoleInstance("PgeGnsWrapper").SOLn("Initialized GameNetworkingSockets %s!", GAMENETWORKINGSOCKETS_VER_STR);
     }
     else
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("Failed to initialize GameNetworkingSockets %s: %s!", GAMENETWORKINGSOCKETS_VER_STR, errMsg);
+        CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("Failed to initialize GameNetworkingSockets %s: %s!", GAMENETWORKINGSOCKETS_VER_STR, errMsg);
         return false;
     }
 
@@ -73,12 +73,12 @@ bool PgeGsnWrapper::init()
     return true;
 } // init()
 
-PgeGsnWrapper::~PgeGsnWrapper()
+PgeGnsWrapper::~PgeGnsWrapper()
 {
     destroy();
-} // ~PgeGsnWrapper()
+} // ~PgeGnsWrapper()
 
-bool PgeGsnWrapper::destroy()
+bool PgeGnsWrapper::destroy()
 {
     if (!m_pInterface)
     {
@@ -87,57 +87,57 @@ bool PgeGsnWrapper::destroy()
 
     m_pInterface = nullptr;
 
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Tx'd Pkt Count : %u, %u pkt/s", getTxPacketCount(), getTxPacketPerSecondCount());
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Rx'd Pkt Count : %u, %u pkt/s", getRxPacketCount(), getRxPacketPerSecondCount());
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Inj'd Pkt Count: %u, %u pkt/s", getInjectPacketCount(), getInjectPacketPerSecondCount());
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLn("");
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLn("Total Tx'd Pkt Count : %u, %u pkt/s", getTxPacketCount(), getTxPacketPerSecondCount());
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLn("Total Rx'd Pkt Count : %u, %u pkt/s", getRxPacketCount(), getRxPacketPerSecondCount());
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLn("Total Inj'd Pkt Count: %u, %u pkt/s", getInjectPacketCount(), getInjectPacketPerSecondCount());
 
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Tx'd Bytes : %u", getTxByteCount());
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Rx'd Bytes : %u", getRxByteCount());
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Total Inj'd Bytes: %u", getInjectByteCount());
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLn("");
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLn("Total Tx'd Bytes : %u", getTxByteCount());
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLn("Total Rx'd Bytes : %u", getRxByteCount());
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLn("Total Inj'd Bytes: %u", getInjectByteCount());
     
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLnOI("Total Tx'd App Msg Count per AppMsgId:");
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLn("");
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLnOI("Total Tx'd App Msg Count per AppMsgId:");
     for (const auto& txMsgCount : m_nTxMsgCount)
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Id %u %s: %u", txMsgCount.first, getStringByMsgAppId(txMsgCount.first).c_str(), txMsgCount.second);
+        CConsole::getConsoleInstance("PgeGnsWrapper").OLn("Id %u %s: %u", txMsgCount.first, getStringByMsgAppId(txMsgCount.first).c_str(), txMsgCount.second);
     }
-    CConsole::getConsoleInstance("PgeGsnWrapper").OO();
+    CConsole::getConsoleInstance("PgeGnsWrapper").OO();
 
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLnOI("Total Rx'd App Msg Count per AppMsgId:");
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLn("");
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLnOI("Total Rx'd App Msg Count per AppMsgId:");
     for (const auto& rxMsgCount : m_nRxMsgCount)
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Id %u %s: %u", rxMsgCount.first, getStringByMsgAppId(rxMsgCount.first).c_str(), rxMsgCount.second);
+        CConsole::getConsoleInstance("PgeGnsWrapper").OLn("Id %u %s: %u", rxMsgCount.first, getStringByMsgAppId(rxMsgCount.first).c_str(), rxMsgCount.second);
     }
-    CConsole::getConsoleInstance("PgeGsnWrapper").OO();
+    CConsole::getConsoleInstance("PgeGnsWrapper").OO();
 
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLn("");
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLnOI("Total Inj'd App Msg Count per AppMsgId:");
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLn("");
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLnOI("Total Inj'd App Msg Count per AppMsgId:");
     for (const auto& injectMsgCount : m_nInjectMsgCount)
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("Id %u %s: %u", injectMsgCount.first, getStringByMsgAppId(injectMsgCount.first).c_str(), injectMsgCount.second);
+        CConsole::getConsoleInstance("PgeGnsWrapper").OLn("Id %u %s: %u", injectMsgCount.first, getStringByMsgAppId(injectMsgCount.first).c_str(), injectMsgCount.second);
     }
-    CConsole::getConsoleInstance("PgeGsnWrapper").OLnOO("");
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLnOO("");
 
     GameNetworkingSockets_Kill();  // hopefully this can be invoked even if GNS has been already killed
     return true;
 } // destroy()
 
-bool PgeGsnWrapper::isInitialized() const
+bool PgeGnsWrapper::isInitialized() const
 {
     return m_pInterface != nullptr;
 }
 
-bool PgeGsnWrapper::pollIncomingMessages()
+bool PgeGnsWrapper::pollIncomingMessages()
 {
     static const int nIncomingMsgArraySize = 10; // TODO: make this configurable from outside
     ISteamNetworkingMessage* pIncomingGnsMsg[nIncomingMsgArraySize];
 
     if (!isInitialized())
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s not initialized!", __func__);
+        CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s not initialized!", __func__);
         return false;
     }
 
@@ -152,13 +152,13 @@ bool PgeGsnWrapper::pollIncomingMessages()
 
     if (numGnsMsgs < 0)
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: Error checking for messages!", __func__);
+        CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s: Error checking for messages!", __func__);
         return false;
     }
 
     if (!pIncomingGnsMsg)
     {
-        CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: pIncomingGnsMsg null!", __func__);
+        CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s: pIncomingGnsMsg null!", __func__);
         return false;
     }
 
@@ -182,11 +182,11 @@ bool PgeGsnWrapper::pollIncomingMessages()
         // release it later, that could be a good speed optimization.
         (pIncomingGnsMsg[i])->Release();
 
-        if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::APP)
+        if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::Application)
         {
             if (pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount == 0)
             {
-                CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: app message pkt with msg count 0 from connection %u!",
+                CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s: app message pkt with msg count 0 from connection %u!",
                     __func__, pge_network::PgePacket::getServerSideConnectionHandle(pkt));
                 assert(false);
                 continue;
@@ -201,7 +201,7 @@ bool PgeGsnWrapper::pollIncomingMessages()
                 // TODO: nooo I need proper iteration for every msgId!
                 if (m_allowListedAppMessages.end() == m_allowListedAppMessages.find(pMsgApp->msgId))
                 {
-                    CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: non-allowlisted app message received: %u from connection %u!",
+                    CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s: non-allowlisted app message received: %u from connection %u!",
                         __func__, pMsgApp->msgId, pge_network::PgePacket::getServerSideConnectionHandle(pkt));
                     assert(false);
                     continue;
@@ -217,7 +217,7 @@ bool PgeGsnWrapper::pollIncomingMessages()
         {
             if (m_allowListedPgeMessages.end() == m_allowListedPgeMessages.find(pge_network::PgePacket::getPacketId(pkt)))
             {
-                CConsole::getConsoleInstance("PgeGsnWrapper").EOLn("%s: non-allowlisted pge message received: %u from connection %u!",
+                CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s: non-allowlisted pge message received: %u from connection %u!",
                     __func__, pge_network::PgePacket::getPacketId(pkt), pge_network::PgePacket::getServerSideConnectionHandle(pkt));
                 assert(false);
                 continue;
@@ -239,53 +239,53 @@ bool PgeGsnWrapper::pollIncomingMessages()
     return true;
 }
 
-void PgeGsnWrapper::pollConnectionStateChanges()
+void PgeGnsWrapper::pollConnectionStateChanges()
 {
-    // since this is also static, we cannot set it in ctor, because both PgeGsnServer and PgeGsnClient are instantiated, and
+    // since this is also static, we cannot set it in ctor, because both PgeGnsServer and PgeGnsClient are instantiated, and
     // their ctor would set this same static variable ... so it won't work to set it in the ctor.
     // For now I'm just leaving this here so it is always set by the proper instance.
     s_pCallbackInstance = this;
     m_pInterface->RunCallbacks(); // triggers steamNetConnectionStatusChangedCallback()
 }
 
-std::size_t PgeGsnWrapper::getPacketQueueSize() const
+std::size_t PgeGnsWrapper::getPacketQueueSize() const
 {
     return m_queuePackets.size();
 }
 
-pge_network::PgePacket PgeGsnWrapper::popFrontPacket() noexcept(false)
+pge_network::PgePacket PgeGnsWrapper::popFrontPacket() noexcept(false)
 {
     pge_network::PgePacket pkt = m_queuePackets.front();
     m_queuePackets.pop_front();
     return pkt;
 }
 
-std::set<pge_network::PgePktId>& PgeGsnWrapper::getAllowListedPgeMessages()
+std::set<pge_network::PgePktId>& PgeGnsWrapper::getAllowListedPgeMessages()
 {
     return m_allowListedPgeMessages;
 }
 
-std::set<pge_network::TPgeMsgAppMsgId>& PgeGsnWrapper::getAllowListedAppMessages()
+std::set<pge_network::TPgeMsgAppMsgId>& PgeGnsWrapper::getAllowListedAppMessages()
 {
     return m_allowListedAppMessages;
 }
 
-uint32_t PgeGsnWrapper::getRxPacketCount() const
+uint32_t PgeGnsWrapper::getRxPacketCount() const
 {
     return m_nRxPktCount;
 }
 
-uint32_t PgeGsnWrapper::getTxPacketCount() const
+uint32_t PgeGnsWrapper::getTxPacketCount() const
 {
     return m_nTxPktCount;
 }
 
-uint32_t PgeGsnWrapper::getInjectPacketCount() const
+uint32_t PgeGnsWrapper::getInjectPacketCount() const
 {
     return m_nInjectPktCount;
 }
 
-uint32_t PgeGsnWrapper::getRxPacketPerSecondCount() const
+uint32_t PgeGnsWrapper::getRxPacketPerSecondCount() const
 {
     const auto nSecsSince1stRxPkt =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_time1stRxPkt).count();
@@ -293,7 +293,7 @@ uint32_t PgeGsnWrapper::getRxPacketPerSecondCount() const
     return static_cast<uint32_t>(nSecsSince1stRxPkt != 0 ? (getRxPacketCount() / nSecsSince1stRxPkt) : 0);
 }
 
-uint32_t PgeGsnWrapper::getTxPacketPerSecondCount() const
+uint32_t PgeGnsWrapper::getTxPacketPerSecondCount() const
 {
     const auto nSecsSince1stTxPkt =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_time1stTxPkt).count();
@@ -301,7 +301,7 @@ uint32_t PgeGsnWrapper::getTxPacketPerSecondCount() const
     return static_cast<uint32_t>(nSecsSince1stTxPkt != 0 ? (getTxPacketCount() / nSecsSince1stTxPkt) : 0);
 }
 
-uint32_t PgeGsnWrapper::getInjectPacketPerSecondCount() const
+uint32_t PgeGnsWrapper::getInjectPacketPerSecondCount() const
 {
     const auto nSecsSince1stInjectPkt =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_time1stInjectPkt).count();
@@ -309,37 +309,37 @@ uint32_t PgeGsnWrapper::getInjectPacketPerSecondCount() const
     return static_cast<uint32_t>(nSecsSince1stInjectPkt != 0 ? (getInjectPacketCount() / nSecsSince1stInjectPkt) : 0);
 }
 
-const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeGsnWrapper::getRxMsgCount() const
+const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeGnsWrapper::getRxMsgCount() const
 {
     return m_nRxMsgCount;
 }
 
-const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeGsnWrapper::getTxMsgCount() const
+const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeGnsWrapper::getTxMsgCount() const
 {
     return m_nTxMsgCount;
 }
 
-const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeGsnWrapper::getInjectMsgCount() const
+const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeGnsWrapper::getInjectMsgCount() const
 {
     return m_nInjectMsgCount;
 }
 
-std::map<pge_network::TPgeMsgAppMsgId, std::string>& PgeGsnWrapper::getMsgAppId2StringMap()
+std::map<pge_network::TPgeMsgAppMsgId, std::string>& PgeGnsWrapper::getMsgAppId2StringMap()
 {
     return m_mapMsgAppId2String;
 }
 
-uint32_t PgeGsnWrapper::getRxByteCount() const
+uint32_t PgeGnsWrapper::getRxByteCount() const
 {
     return m_nRxByteCount;
 }
 
-uint32_t PgeGsnWrapper::getTxByteCount() const
+uint32_t PgeGnsWrapper::getTxByteCount() const
 {
     return m_nTxByteCount;
 }
 
-uint32_t PgeGsnWrapper::getInjectByteCount() const
+uint32_t PgeGnsWrapper::getInjectByteCount() const
 {
     return m_nInjectByteCount;
 }
@@ -348,14 +348,14 @@ uint32_t PgeGsnWrapper::getInjectByteCount() const
 // ############################## PROTECTED ##############################
 
 
-PgeGsnWrapper* PgeGsnWrapper::s_pCallbackInstance = nullptr;
+PgeGnsWrapper* PgeGnsWrapper::s_pCallbackInstance = nullptr;
 
-void PgeGsnWrapper::steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo)
+void PgeGnsWrapper::steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo)
 {
     s_pCallbackInstance->onSteamNetConnectionStatusChanged(pInfo);
 }
 
-PgeGsnWrapper::PgeGsnWrapper(PGEcfgProfiles& cfgProfiles) :
+PgeGnsWrapper::PgeGnsWrapper(PGEcfgProfiles& cfgProfiles) :
     m_cfgProfiles(cfgProfiles),
     m_pInterface(nullptr),
     m_nRxPktCount(0),
@@ -365,20 +365,20 @@ PgeGsnWrapper::PgeGsnWrapper(PGEcfgProfiles& cfgProfiles) :
     m_nTxByteCount(0),
     m_nInjectByteCount(0)
 {
-} // PgeGsnWrapper()
+} // PgeGnsWrapper()
 
-PgeGsnWrapper::PgeGsnWrapper(const PgeGsnWrapper& other) :
+PgeGnsWrapper::PgeGnsWrapper(const PgeGnsWrapper& other) :
     m_cfgProfiles(other.m_cfgProfiles)
 {
 
 }
 
-PgeGsnWrapper& PgeGsnWrapper::operator=(const PgeGsnWrapper&)
+PgeGnsWrapper& PgeGnsWrapper::operator=(const PgeGnsWrapper&)
 {
     return *this;
 }
 
-std::string PgeGsnWrapper::getStringByMsgAppId(const pge_network::TPgeMsgAppMsgId& id) const
+std::string PgeGnsWrapper::getStringByMsgAppId(const pge_network::TPgeMsgAppMsgId& id) const
 {
     const auto& it = m_mapMsgAppId2String.find(id);
     if (it != m_mapMsgAppId2String.end())

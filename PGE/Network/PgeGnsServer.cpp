@@ -1,6 +1,6 @@
 /*
     ###################################################################################
-    PgeGsnServer.cpp
+    PgeGnsServer.cpp
     This file is part of PGE.
     Server Wrapper for GameNetworkingSockets library
     PR00F's Game Engine networking subsystem
@@ -13,13 +13,13 @@
 
 #include <cassert>
 
-#include "PgeGsnServer.h"
+#include "PgeGnsServer.h"
 #include "../PGEincludes.h"
 #include "../PGEpragmas.h"
 
 
 /*
-   PgeGsnServer
+   PgeGnsServer
    ###########################################################################
 */
 
@@ -30,32 +30,32 @@
 /**
     Creates and gets the singleton instance.
 */
-PgeGsnServer& PgeGsnServer::createAndGet(PGEcfgProfiles& cfgProfiles)
+PgeGnsServer& PgeGnsServer::createAndGet(PGEcfgProfiles& cfgProfiles)
 {
-    static PgeGsnServer inst(cfgProfiles);
+    static PgeGnsServer inst(cfgProfiles);
     return inst;
 } // createAndGet()
 
-PgeGsnServer::~PgeGsnServer()
+PgeGnsServer::~PgeGnsServer()
 {
     destroy();
-} // ~PgeGsnServer()
+} // ~PgeGnsServer()
 
-bool PgeGsnServer::destroy()
+bool PgeGnsServer::destroy()
 {
-    return stopListening() && PgeGsnWrapper::destroy();
+    return stopListening() && PgeGnsWrapper::destroy();
 } // destroy()
 
-bool PgeGsnServer::isInitialized() const
+bool PgeGnsServer::isInitialized() const
 {
     return m_hListenSock != k_HSteamListenSocket_Invalid;
 } // isInitialized()
 
-bool PgeGsnServer::startListening()
+bool PgeGnsServer::startListening()
 {
     if (isInitialized())
     {
-        CConsole::getConsoleInstance("PgeGsnServer").OLn("%s() ERROR: Server is already listening on port %d", __func__, m_nPort);
+        CConsole::getConsoleInstance("PgeGnsServer").OLn("%s() ERROR: Server is already listening on port %d", __func__, m_nPort);
         return false;
     }
 
@@ -69,18 +69,18 @@ bool PgeGsnServer::startListening()
     m_hListenSock = m_pInterface->CreateListenSocketIP(serverLocalAddr, 1, &opt);
     if (m_hListenSock == k_HSteamListenSocket_Invalid)
     {
-        CConsole::getConsoleInstance("PgeGsnServer").EOLn("%s() Failed to listen on port %d!", __func__, m_nPort);
+        CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s() Failed to listen on port %d!", __func__, m_nPort);
         return false;
     }
 
     m_hPollGroup = m_pInterface->CreatePollGroup();
     if (m_hPollGroup == k_HSteamNetPollGroup_Invalid)
     {
-        CConsole::getConsoleInstance("PgeGsnServer").EOLn("%s() Failed to create poll group!", __func__);
+        CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s() Failed to create poll group!", __func__);
         destroy();
         return false;
     }
-    CConsole::getConsoleInstance("PgeGsnServer").OLn("%s() Server listening on port %d", __func__, m_nPort);
+    CConsole::getConsoleInstance("PgeGnsServer").OLn("%s() Server listening on port %d", __func__, m_nPort);
 
     // Add ourselves to the client list, using std::map wacky syntax
     // k_HSteamNetConnection_Invalid will mean the server itself
@@ -104,16 +104,16 @@ bool PgeGsnServer::startListening()
     return true;
 }
 
-bool PgeGsnServer::stopListening()
+bool PgeGnsServer::stopListening()
 {
     if (!isInitialized())
     {
-        CConsole::getConsoleInstance("PgeGsnServer").OLn("%s() Server was not listening, no need to stop.", __func__);
+        CConsole::getConsoleInstance("PgeGnsServer").OLn("%s() Server was not listening, no need to stop.", __func__);
         return true;
     }
 
     // Close all the connections
-    CConsole::getConsoleInstance("PgeGsnServer").OLn("Server closing connections...");
+    CConsole::getConsoleInstance("PgeGnsServer").OLn("Server closing connections...");
     for (const auto& it : m_mapClients)
     {
         // Send them one more goodbye message.  Note that we also have the
@@ -124,7 +124,7 @@ bool PgeGsnServer::stopListening()
 
         // Close the connection.  We use "linger mode" to ask SteamNetworkingSockets
         // to flush this out and close gracefully.
-        m_pInterface->CloseConnection(it.first, k_ESteamNetConnectionEnd_App_Generic, "PgeGsnServer Server Graceful shutdown", true);
+        m_pInterface->CloseConnection(it.first, k_ESteamNetConnectionEnd_App_Generic, "PgeGnsServer Server Graceful shutdown", true);
     }
     m_mapClients.clear();
 
@@ -143,7 +143,7 @@ bool PgeGsnServer::stopListening()
     return true;
 }
 
-void PgeGsnServer::sendToClient(const HSteamNetConnection& conn, const pge_network::PgePacket& pkt)
+void PgeGnsServer::sendToClient(const HSteamNetConnection& conn, const pge_network::PgePacket& pkt)
 {
     static_assert(k_HSteamNetConnection_Invalid == 0U, "on upper layers we use connHandle 0 to identify server, so here k_HSteamNetConnection_Invalid must be 0");
     if (conn == k_HSteamNetConnection_Invalid)
@@ -154,7 +154,7 @@ void PgeGsnServer::sendToClient(const HSteamNetConnection& conn, const pge_netwo
     }
 
     uint32_t nActualPktSize;
-    if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::APP)
+    if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::Application)
     {
         // We need the real used memory size so we can truncate the sent pkt to that.
         // We need to consider member padding and the actual message sizes to have a correct value.
@@ -185,7 +185,7 @@ void PgeGsnServer::sendToClient(const HSteamNetConnection& conn, const pge_netwo
         m_time1stTxPkt = std::chrono::steady_clock::now();
     }
     m_nTxPktCount++;
-    if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::APP)
+    if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::Application)
     {
         const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
         for (uint8_t i = 0; i < pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount; i++)
@@ -197,7 +197,7 @@ void PgeGsnServer::sendToClient(const HSteamNetConnection& conn, const pge_netwo
     m_nTxByteCount += nActualPktSize;
 }
 
-void PgeGsnServer::sendToAllClientsExcept(const pge_network::PgePacket& pkt, const HSteamNetConnection& except)
+void PgeGnsServer::sendToAllClientsExcept(const pge_network::PgePacket& pkt, const HSteamNetConnection& except)
 {
     static_assert(k_HSteamNetConnection_Invalid == 0U, "on upper layers we use connHandle 0 to identify server, so here k_HSteamNetConnection_Invalid must be 0");
     for (auto& client : m_mapClients)
@@ -215,7 +215,7 @@ void PgeGsnServer::sendToAllClientsExcept(const pge_network::PgePacket& pkt, con
     }
 }
 
-void PgeGsnServer::inject(const pge_network::PgePacket& pkt)
+void PgeGnsServer::inject(const pge_network::PgePacket& pkt)
 {
     m_queuePackets.push_back(pkt);
     if (m_nInjectPktCount == 1)
@@ -223,7 +223,7 @@ void PgeGsnServer::inject(const pge_network::PgePacket& pkt)
         m_time1stInjectPkt = std::chrono::steady_clock::now();
     }
     m_nInjectPktCount++;
-    if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::APP)
+    if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::Application)
     {
         const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
         for (uint8_t i = 0; i < pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount; i++)
@@ -235,23 +235,23 @@ void PgeGsnServer::inject(const pge_network::PgePacket& pkt)
     m_nInjectByteCount += sizeof(pkt);
 }
 
-void PgeGsnServer::WriteServerClientList()
+void PgeGnsServer::WriteServerClientList()
 {
-    CConsole::getConsoleInstance("PgeGsnServer").OLnOI("Listing Clients:");
+    CConsole::getConsoleInstance("PgeGnsServer").OLnOI("Listing Clients:");
     for (const auto& client : m_mapClients)
     {
         if (client.first == k_HSteamNetConnection_Invalid)
         {
-            CConsole::getConsoleInstance("PgeGsnServer").OLn("connHandle: %u (this is me); Name: %s; Address: %s",
+            CConsole::getConsoleInstance("PgeGnsServer").OLn("connHandle: %u (this is me); Name: %s; Address: %s",
                 client.first, client.second.m_sCustomName.c_str(), client.second.m_szAddr);
         }
         else
         {
-            CConsole::getConsoleInstance("PgeGsnServer").OLn("connHandle: %u; Name: %s; Address: %s",
+            CConsole::getConsoleInstance("PgeGnsServer").OLn("connHandle: %u; Name: %s; Address: %s",
                 client.first, client.second.m_sCustomName.c_str(), client.second.m_szAddr);
         }
     }
-    CConsole::getConsoleInstance("PgeGsnServer").OO();
+    CConsole::getConsoleInstance("PgeGnsServer").OO();
 }
 
 
@@ -261,52 +261,52 @@ void PgeGsnServer::WriteServerClientList()
 // ############################### PRIVATE ###############################
 
 
-PgeGsnServer::PgeGsnServer(PGEcfgProfiles& cfgProfiles) :
-    PgeGsnWrapper(cfgProfiles),
+PgeGnsServer::PgeGnsServer(PGEcfgProfiles& cfgProfiles) :
+    PgeGnsWrapper(cfgProfiles),
     m_nPort(DEFAULT_SERVER_PORT),
     m_hListenSock(k_HSteamListenSocket_Invalid),
     m_hPollGroup(k_HSteamNetPollGroup_Invalid)
 {
-} // PgeGsnServer()
+} // PgeGnsServer()
 
-PgeGsnServer::PgeGsnServer(const PgeGsnServer& other) :
-    PgeGsnWrapper(other.m_cfgProfiles)
+PgeGnsServer::PgeGnsServer(const PgeGnsServer& other) :
+    PgeGnsWrapper(other.m_cfgProfiles)
 {
 
 }
 
-PgeGsnServer& PgeGsnServer::operator=(const PgeGsnServer&)
+PgeGnsServer& PgeGnsServer::operator=(const PgeGnsServer&)
 {
     return *this;
 }
 
-int PgeGsnServer::receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const
+int PgeGnsServer::receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const
 {
     // ReceiveMessagesOnPollGroup() basically copies the pointers to messages from GNS's internal linked list,
     // and unlinks these from that internal linked list, so it is cheap copy to our array
     return m_pInterface->ReceiveMessagesOnPollGroup(m_hPollGroup, pIncomingMsg, nIncomingMsgArraySize);
 }
 
-bool PgeGsnServer::validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const
+bool PgeGnsServer::validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const
 {
     const auto itClient = m_mapClients.find(connHandle);
     if (itClient == m_mapClients.end())
     {
-        CConsole::getConsoleInstance("PgeGsnServer").EOLn("%s: SERVER failed to find connection %u in m_mapClients!",
+        CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s: SERVER failed to find connection %u in m_mapClients!",
             __func__, static_cast<unsigned int>(connHandle));
         return false;
     }
     return true;
 }
 
-void PgeGsnServer::updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const
+void PgeGnsServer::updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const
 {
     pge_network::PgePacket::getServerSideConnectionHandle(pkt) = static_cast<pge_network::PgeNetworkConnectionHandle>(connHandle);
 }
 
-void PgeGsnServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
+void PgeGnsServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo)
 {
-    // This function is also invoked on main thread when I call PgeGsnServer.PollConnectionStateChanges() from PGE::runGame()
+    // This function is also invoked on main thread when I call PgeGnsServer.PollConnectionStateChanges() from PGE::runGame()
     // so no need to utilize mutexes around here.
     // And the other function PollIncomingMessages() is also invoked by PGE::runGame().
     // So it is safe to do operations on m_queuePackets.
@@ -350,7 +350,7 @@ void PgeGsnServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
             // Spew something to our own log.  Note that because we put their nick
             // as the connection description, it will show up, along with their
             // transport-specific data (e.g. their IP address)
-            CConsole::getConsoleInstance("PgeGsnServer").OLn("%s: SERVER Connection %s %s, reason %d: %s\n",
+            CConsole::getConsoleInstance("PgeGnsServer").OLn("%s: SERVER Connection %s %s, reason %d: %s\n",
                 __func__,
                 pInfo->m_info.m_szConnectionDescription,
                 pszDebugLogAction,
@@ -387,7 +387,7 @@ void PgeGsnServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
         // This must be a new connection
         assert(m_mapClients.find(pInfo->m_hConn) == m_mapClients.end());
 
-        CConsole::getConsoleInstance("PgeGsnServer").OLn("%s: SERVER Connection request from %s", __func__, pInfo->m_info.m_szConnectionDescription);
+        CConsole::getConsoleInstance("PgeGnsServer").OLn("%s: SERVER Connection request from %s", __func__, pInfo->m_info.m_szConnectionDescription);
 
         // A client is attempting to connect
         // Try to accept the connection.
@@ -397,7 +397,7 @@ void PgeGsnServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
             // disconnected, the connection may already be half closed.  Just
             // destroy whatever we have on our side.
             m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
-            CConsole::getConsoleInstance("PgeGsnServer").EOLn("%s: SERVER Can't accept connection. (It was already closed?)", __func__);
+            CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s: SERVER Can't accept connection. (It was already closed?)", __func__);
             break;
         }
 
@@ -405,14 +405,14 @@ void PgeGsnServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
         if (!m_pInterface->SetConnectionPollGroup(pInfo->m_hConn, m_hPollGroup))
         {
             m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
-            CConsole::getConsoleInstance("PgeGsnServer").EOLn("%s: SERVER Failed to set poll group!", __func__);
+            CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s: SERVER Failed to set poll group!", __func__);
             break;
         }
 
         // Add them to the client list, using std::map wacky syntax
         m_mapClients[pInfo->m_hConn];
         pInfo->m_info.m_addrRemote.ToString(m_mapClients[pInfo->m_hConn].m_szAddr, sizeof(m_mapClients[pInfo->m_hConn].m_szAddr), true);
-        CConsole::getConsoleInstance("PgeGsnServer").OLn("%s: SERVER A client is connecting from %s ...", __func__, m_mapClients[pInfo->m_hConn].m_szAddr);
+        CConsole::getConsoleInstance("PgeGnsServer").OLn("%s: SERVER A client is connecting from %s ...", __func__, m_mapClients[pInfo->m_hConn].m_szAddr);
 
         pge_network::PgePacket pkt;
         pge_network::PgePacket::initPktPgeMsgUserConnected(
@@ -437,13 +437,13 @@ void PgeGsnServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
         const auto itClient = m_mapClients.find(pInfo->m_hConn);
         if (itClient == m_mapClients.end())
         {
-            CConsole::getConsoleInstance("PgeGsnServer").EOLn("%s: SERVER Cannot happen: a client (%u) has reached state Connected but not present in clients map!",
+            CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s: SERVER Cannot happen: a client (%u) has reached state Connected but not present in clients map!",
                 __func__, pInfo->m_hConn);
             assert(false);
         }
         else
         {
-            CConsole::getConsoleInstance("PgeGsnServer").OLn("%s: SERVER Client with connHandle %u has reached state Connected!", __func__, pInfo->m_hConn);
+            CConsole::getConsoleInstance("PgeGnsServer").OLn("%s: SERVER Client with connHandle %u has reached state Connected!", __func__, pInfo->m_hConn);
         }
         break;
     }
@@ -454,7 +454,7 @@ void PgeGsnServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
     }
 }
 
-void PgeGsnServer::SetClientNick(HSteamNetConnection hConn, const char* nick)
+void PgeGnsServer::SetClientNick(HSteamNetConnection hConn, const char* nick)
 {
     // Remember their nick
     m_mapClients[hConn].m_sCustomName = nick;

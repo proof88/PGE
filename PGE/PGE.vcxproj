@@ -408,13 +408,13 @@
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steamuniverse.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\steam_api_common.h" />
     <ClInclude Include="Network\PgeClient.h" />
-    <ClInclude Include="Network\PgeGsnClient.h" />
-    <ClInclude Include="Network\PgeGsnServer.h" />
+    <ClInclude Include="Network\PgeGnsClient.h" />
+    <ClInclude Include="Network\PgeGnsServer.h" />
     <ClInclude Include="Network\PgeIServerClient.h" />
     <ClInclude Include="Network\PgeNetwork.h" />
     <ClInclude Include="Network\PgePacket.h" />
     <ClInclude Include="Network\PgeServer.h" />
-    <ClInclude Include="Network\PgeGsnWrapper.h" />
+    <ClInclude Include="Network\PgeGnsWrapper.h" />
     <ClInclude Include="PGE.h" />
     <ClInclude Include="PGEallHeaders.h" />
     <ClInclude Include="PGEconsts.h" />
@@ -516,15 +516,15 @@
     <ClCompile Include="Config\PGEcfgVariable.cpp" />
     <ClCompile Include="Config\PGEcfgProfiles.cpp" />
     <ClCompile Include="Network\PgeClient.cpp" />
-    <ClCompile Include="Network\PgeGsnClient.cpp" />
-    <ClCompile Include="Network\PgeGsnServer.cpp" />
+    <ClCompile Include="Network\PgeGnsClient.cpp" />
+    <ClCompile Include="Network\PgeGnsServer.cpp" />
     <ClCompile Include="Network\PgeNetwork.cpp" />
     <ClCompile Include="Network\PgePacket.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PureBaseIncludes.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="Network\PgeServer.cpp" />
-    <ClCompile Include="Network\PgeGsnWrapper.cpp" />
+    <ClCompile Include="Network\PgeGnsWrapper.cpp" />
     <ClCompile Include="PGE.cpp" />
     <ClCompile Include="PGEInputHandler.cpp" />
     <ClCompile Include="PGESysGFX.cpp" />

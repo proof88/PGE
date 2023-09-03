@@ -32,9 +32,9 @@ namespace pge_network
 
     enum class PgePktId : uint32_t
     {
-        USER_CONNECTED = 0,
-        USER_DISCONNECTED,
-        APP
+        UserConnectedServerSelf = 0,
+        UserDisconnectedFromServer,
+        Application
     };
 
     // server -> self (injection)
@@ -43,14 +43,14 @@ namespace pge_network
     // it is NOT allowlisted either for server app because server should not receive this over network, it just injects it for itself
     struct MsgUserConnected
     {
-        static const PgePktId id = PgePktId::USER_CONNECTED;
+        static const PgePktId id = PgePktId::UserConnectedServerSelf;
         static const uint8_t nIpAddressMaxLength = 48;
 
         bool bCurrentClient;
         char szIpAddress[nIpAddressMaxLength];
         // TODO: server always knows IP address of clients, but doesn't know its own IP address used by the clients to connect.
         // It should be grabbed from the first connecting client.
-        // See if remote server address logged is the good server address in: PgeGsnWrapper::onSteamNetConnectionStatusChanged(),
+        // See if remote server address logged is the good server address in: PgeGnsWrapper::onSteamNetConnectionStatusChanged(),
         // client code, when client reaches k_ESteamNetworkingConnectionState_Connected. Jump there by searching for "KEKEKEKEKE"
     };
 
@@ -58,7 +58,7 @@ namespace pge_network
     // it is NOT allowlisted for server app because server should not receive this over network, it just injects it for itself
     struct MsgUserDisconnected
     {
-        static const PgePktId id = PgePktId::USER_DISCONNECTED;
+        static const PgePktId id = PgePktId::UserDisconnectedFromServer;
     };
 
     typedef uint32_t TPgeMsgAppMsgId;
@@ -68,7 +68,7 @@ namespace pge_network
     // With allow listing, app messages can be separately allowed to be processed by clients and server based on TPgeMsgAppMsgId.
     struct MsgApp
     {
-        static const PgePktId id = PgePktId::APP;
+        static const PgePktId id = PgePktId::Application;
         static const uint8_t nMaxMessageLength = 240;
 
         static TPgeMsgAppMsgId& getMsgAppMsgId(MsgApp& msgApp);

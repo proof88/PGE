@@ -11,7 +11,7 @@
 #include "PureBaseIncludes.h"  // PCH
 
 #include "PgeNetwork.h"
-#include "PgeGsnWrapper.h"
+#include "PgeGnsWrapper.h"
 
 static constexpr char* CVAR_NET_SERVER = "net_server";
 
@@ -83,7 +83,7 @@ bool PgeNetworkImpl::initialize()
     else
     {
         m_bServer = m_cfgProfiles.getVars()[CVAR_NET_SERVER].getAsBool();
-        CConsole::getConsoleInstance("PgeGsnWrapper").OLn("s_bServer from config: %b", m_bServer);
+        CConsole::getConsoleInstance("PgeGnsWrapper").OLn("s_bServer from config: %b", m_bServer);
     }
 
     if (m_bServer)

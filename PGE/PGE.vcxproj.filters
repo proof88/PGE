@@ -489,7 +489,7 @@
     <ClInclude Include="Network\PgePacket.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
-    <ClInclude Include="Network\PgeGsnWrapper.h">
+    <ClInclude Include="Network\PgeGnsWrapper.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingmessages.h">
@@ -600,10 +600,10 @@
     <ClInclude Include="Config\PgeOldNewValue.h">
       <Filter>Header Files\Config</Filter>
     </ClInclude>
-    <ClInclude Include="Network\PgeGsnClient.h">
+    <ClInclude Include="Network\PgeGnsClient.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
-    <ClInclude Include="Network\PgeGsnServer.h">
+    <ClInclude Include="Network\PgeGnsServer.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
     <ClInclude Include="Network\PgeIServerClient.h">
@@ -659,7 +659,7 @@
     <ClCompile Include="PURE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.cpp">
       <Filter>Source Files\PURE\GUI\Backends</Filter>
     </ClCompile>
-    <ClCompile Include="Network\PgeGsnWrapper.cpp">
+    <ClCompile Include="Network\PgeGnsWrapper.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
     <ClCompile Include="Network\PgeNetwork.cpp">
@@ -809,10 +809,10 @@
     <ClCompile Include="PURE\source\PR00FsUltimateRenderingEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Network\PgeGsnClient.cpp">
+    <ClCompile Include="Network\PgeGnsClient.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
-    <ClCompile Include="Network\PgeGsnServer.cpp">
+    <ClCompile Include="Network\PgeGnsServer.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
   </ItemGroup>

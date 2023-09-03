@@ -11,7 +11,7 @@
 #include "PureBaseIncludes.h"  // PCH
 
 #include "PgeServer.h"
-#include "PgeGsnServer.h"
+#include "PgeGnsServer.h"
 
 /*
    PgeServerImpl
@@ -78,7 +78,7 @@ private:
     // ---------------------------------------------------------------------------
 
     PGEcfgProfiles& m_cfgProfiles;
-    PgeGsnServer& m_gsnServer;
+    PgeGnsServer& m_gsnServer;
 
     explicit PgeServerImpl(PGEcfgProfiles& cfgProfiles);
     PgeServerImpl(const PgeServerImpl&);
@@ -287,14 +287,14 @@ void PgeServerImpl::sendToAll(const pge_network::PgePacket& pkt)
 
 PgeServerImpl::PgeServerImpl(PGEcfgProfiles& cfgProfiles) :
     m_cfgProfiles(cfgProfiles),
-    m_gsnServer(PgeGsnServer::createAndGet(cfgProfiles))
+    m_gsnServer(PgeGnsServer::createAndGet(cfgProfiles))
 {
     m_gsnServer.getAllowListedPgeMessages().insert(pge_network::MsgApp::id);
 } // PgeServerImpl(...)
 
 PgeServerImpl::PgeServerImpl(const PgeServerImpl& other) :
     m_cfgProfiles(other.m_cfgProfiles),
-    m_gsnServer(PgeGsnServer::createAndGet(other.m_cfgProfiles))
+    m_gsnServer(PgeGnsServer::createAndGet(other.m_cfgProfiles))
 {
 }
 

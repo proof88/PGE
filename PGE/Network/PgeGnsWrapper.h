@@ -2,7 +2,7 @@
 
 /*
     ###################################################################################
-    PgeGsnWrapper.h
+    PgeGnsWrapper.h
     This file is part of PGE.
     Internal header.
     PR00F's Game Engine networking subsystem
@@ -46,10 +46,10 @@ static_assert(
 /**
     PR00F's Game Engine's wrapper for GameNetworkingSockets library.
 */
-class PgeGsnWrapper
+class PgeGnsWrapper
 {
 #ifdef PGE_CLASS_IS_INCLUDED_NOTIFICATION
-#pragma message("  PgeGsnWrapper is included")   
+#pragma message("  PgeGnsWrapper is included")   
 #endif
 
 public:
@@ -58,7 +58,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    virtual ~PgeGsnWrapper();
+    virtual ~PgeGnsWrapper();
 
     /**
     * Initializes the GameNetworkingSockets library.
@@ -124,7 +124,7 @@ public:
 
 protected:
 
-    static PgeGsnWrapper* s_pCallbackInstance;
+    static PgeGnsWrapper* s_pCallbackInstance;
 
     PGEcfgProfiles& m_cfgProfiles;
     
@@ -156,9 +156,9 @@ protected:
 
     static void steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
 
-    explicit PgeGsnWrapper(PGEcfgProfiles& cfgProfiles);
-    PgeGsnWrapper(const PgeGsnWrapper&); 
-    PgeGsnWrapper& operator=(const PgeGsnWrapper&);
+    explicit PgeGnsWrapper(PGEcfgProfiles& cfgProfiles);
+    PgeGnsWrapper(const PgeGnsWrapper&); 
+    PgeGnsWrapper& operator=(const PgeGnsWrapper&);
 
     virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const = 0;
     virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const = 0;
@@ -166,4 +166,4 @@ protected:
     virtual void onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) = 0;
 
     std::string getStringByMsgAppId(const pge_network::TPgeMsgAppMsgId& id) const;
-}; // class PgeGsnWrapper
+}; // class PgeGnsWrapper

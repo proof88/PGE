@@ -11,7 +11,7 @@
 #include "PureBaseIncludes.h"  // PCH
 
 #include "PgeClient.h"
-#include "PgeGsnClient.h"
+#include "PgeGnsClient.h"
 
 /*
    PgeClientImpl
@@ -86,7 +86,7 @@ private:
     // ---------------------------------------------------------------------------
 
     PGEcfgProfiles& m_cfgProfiles;
-    PgeGsnClient& m_gsnClient;
+    PgeGnsClient& m_gsnClient;
 
     explicit PgeClientImpl(PGEcfgProfiles& cfgProfiles);
     PgeClientImpl(const PgeClientImpl&);
@@ -337,7 +337,7 @@ std::string PgeClientImpl::getDetailedStatus() const
 
 PgeClientImpl::PgeClientImpl(PGEcfgProfiles& cfgProfiles) :
     m_cfgProfiles(cfgProfiles),
-    m_gsnClient(PgeGsnClient::createAndGet(cfgProfiles))
+    m_gsnClient(PgeGnsClient::createAndGet(cfgProfiles))
 {
     m_gsnClient.getAllowListedPgeMessages().insert(pge_network::MsgUserDisconnected::id);
     m_gsnClient.getAllowListedPgeMessages().insert(pge_network::MsgApp::id);
@@ -345,7 +345,7 @@ PgeClientImpl::PgeClientImpl(PGEcfgProfiles& cfgProfiles) :
 
 PgeClientImpl::PgeClientImpl(const PgeClientImpl& other) :
     m_cfgProfiles(other.m_cfgProfiles),
-    m_gsnClient(PgeGsnClient::createAndGet(other.m_cfgProfiles))
+    m_gsnClient(PgeGnsClient::createAndGet(other.m_cfgProfiles))
 {
 }
 

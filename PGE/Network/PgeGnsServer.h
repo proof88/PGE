@@ -2,7 +2,7 @@
 
 /*
     ###################################################################################
-    PgeGsnServer.h
+    PgeGnsServer.h
     This file is part of PGE.
     Internal header.
     Server Wrapper for GameNetworkingSockets library
@@ -22,7 +22,7 @@
 
 #include "../Config/PGEcfgProfiles.h"
 #include "PgePacket.h"
-#include "PgeGsnWrapper.h"
+#include "PgeGnsWrapper.h"
 
 struct TClient
 {
@@ -33,39 +33,39 @@ struct TClient
 /**
     Server Wrapper for GameNetworkingSockets library
 */
-class PgeGsnServer final : public PgeGsnWrapper
+class PgeGnsServer final : public PgeGnsWrapper
 {
 #ifdef PGE_CLASS_IS_INCLUDED_NOTIFICATION
-#pragma message("  PgeGsnServer is included")   
+#pragma message("  PgeGnsServer is included")   
 #endif
 
 public:
-    static PgeGsnServer& createAndGet(PGEcfgProfiles& cfgProfiles);   /**< Creates and gets the singleton implementation instance. */
+    static PgeGnsServer& createAndGet(PGEcfgProfiles& cfgProfiles);   /**< Creates and gets the singleton implementation instance. */
 
     // ---------------------------------------------------------------------------
 
-    virtual ~PgeGsnServer();
+    virtual ~PgeGnsServer();
 
-    /* implement stuff from PgeGsnWrapper start */
+    /* implement stuff from PgeGnsWrapper start */
 
     /**
-    * Calls stopListening() and PgeGsnWrapper::destroy().
+    * Calls stopListening() and PgeGnsWrapper::destroy().
     *
     * @return True if uninitialization is successful or not initialized, false otherwise.
     */
     virtual bool destroy() override;
 
     /**
-    * Gets the state of initialization of the PgeGsnServer instance i.e. if listening to incoming client connections.
+    * Gets the state of initialization of the PgeGnsServer instance i.e. if listening to incoming client connections.
     *
     * @return True if initialized, false otherwise.
     */
     virtual bool isInitialized() const override;
 
-    /* implement stuff from PgeGsnWrapper end */
+    /* implement stuff from PgeGnsWrapper end */
 
     /**
-    * Basically the initialization function for PgeGsnServer.
+    * Basically the initialization function for PgeGnsServer.
     * Initializes GameNetworkingSockets server listening.
     *
     * @return True on success, false on failure.
@@ -108,9 +108,9 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    explicit PgeGsnServer(PGEcfgProfiles& cfgProfiles);
-    PgeGsnServer(const PgeGsnServer&);
-    PgeGsnServer& operator=(const PgeGsnServer&);
+    explicit PgeGnsServer(PGEcfgProfiles& cfgProfiles);
+    PgeGnsServer(const PgeGnsServer&);
+    PgeGnsServer& operator=(const PgeGnsServer&);
 
     void SetClientNick(HSteamNetConnection hConn, const char* nick);
-}; // class PgeGsnServer
+}; // class PgeGnsServer
