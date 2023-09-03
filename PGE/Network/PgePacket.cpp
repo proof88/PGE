@@ -120,7 +120,7 @@ namespace pge_network {
             sIpAddress.length()) == 0);
     }
 
-    bool PgePacket::isMessageAppPktFull(const pge_network::PgePacket& pkt)
+    bool PgePacket::isMessageAppAreaFull(const pge_network::PgePacket& pkt)
     {
         return pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength == pge_network::MsgAppArea::nMessagesAreaLength;
     }

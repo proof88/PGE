@@ -145,7 +145,7 @@ namespace pge_network
         static uint8_t getMessageAppCount(const pge_network::PgePacket& pkt);
         static uint8_t getMessageAppsTotalActualLength(const pge_network::PgePacket& pkt);
 
-        static bool isMessageAppPktFull(const pge_network::PgePacket& pkt);
+        static bool isMessageAppAreaFull(const pge_network::PgePacket& pkt);
 
         // packet initializers
 

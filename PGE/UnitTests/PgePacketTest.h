@@ -208,6 +208,7 @@ private:
         return
             assertEquals(static_cast<uint32_t>(pge_network::MsgApp::id), static_cast<uint32_t>(pge_network::PgePacket::getPacketId(pkt)), "pktId 1") &
             assertEquals(connHandle, pge_network::PgePacket::getServerSideConnectionHandle(pkt), "connHandle 1") &
+            assertFalse(pge_network::PgePacket::isMessageAppAreaFull(pkt), "msg app area full 1") &
             assertEquals(0u, static_cast<uint32_t>(pge_network::PgePacket::getMessageAppCount(pkt)), "msg app count 1") &
             assertEquals(
                 0,
@@ -279,6 +280,7 @@ private:
         return b &
             assertEquals(static_cast<uint32_t>(pge_network::MsgApp::id), static_cast<uint32_t>(pge_network::PgePacket::getPacketId(pkt)), "pktId 1") &
             assertEquals(connHandle, pge_network::PgePacket::getServerSideConnectionHandle(pkt), "connHandle 1") &
+            assertFalse(pge_network::PgePacket::isMessageAppAreaFull(pkt), "msg app area full 1") &
             assertEquals(1u, static_cast<uint32_t>(pge_network::PgePacket::getMessageAppCount(pkt)), "msg app count 1") &
             assertEquals(
                 pge_network::MsgApp::getMsgAppTotalActualSize(myAppMsg),
