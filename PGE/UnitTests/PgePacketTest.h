@@ -14,6 +14,8 @@
 
 #include "../Network/PgePacket.h"
 
+#include <string.h>
+
 class PgePacketTest :
     public UnitTest
 {
@@ -43,8 +45,26 @@ protected:
         AddSubTest("test_initPktPgeMsgUserConnected_Bad", (PFNUNITSUBTEST)&PgePacketTest::test_initPktPgeMsgUserConnected_Bad);
         AddSubTest("test_initPktPgeMsgUserDisconnected", (PFNUNITSUBTEST)&PgePacketTest::test_initPktPgeMsgUserDisconnected);
         AddSubTest("test_initPktMsgApp", (PFNUNITSUBTEST)&PgePacketTest::test_initPktMsgApp);
+        AddSubTest("test_initPktMsgApp_NoZeroFill", (PFNUNITSUBTEST)&PgePacketTest::test_initPktMsgApp_NoZeroFill);
         AddSubTest("test_fillMsgApp", (PFNUNITSUBTEST)&PgePacketTest::test_fillMsgApp);
-        AddSubTest("test_addMsgApp", (PFNUNITSUBTEST)&PgePacketTest::test_addMsgApp);
+        AddSubTest("test_addPktMsgApp_Good", (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Good);
+        AddSubTest("test_addPktMsgApp_Bad_PktId", (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Bad_PktId);
+        AddSubTest("test_addPktMsgApp_Bad_MsgAppDataSizeTooBig", (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Bad_MsgAppDataSizeTooBig);
+        AddSubTest(
+            "test_addPktMsgApp_Bad_MsgAppAreaActualLengthAlreadyFilledTooMuch",
+            (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Bad_MsgAppAreaActualLengthAlreadyFilledTooMuch);
+        AddSubTest(
+            "test_addPktMsgApp_Bad_MaxMessageCountReached",
+            (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Bad_MaxMessageCountReached);
+        AddSubTest("test_preparePktMsgAppFill_Good", (PFNUNITSUBTEST)&PgePacketTest::test_preparePktMsgAppFill_Good);
+        AddSubTest("test_preparePktMsgAppFill_Bad_PktId", (PFNUNITSUBTEST)&PgePacketTest::test_preparePktMsgAppFill_Bad_PktId);
+        AddSubTest("test_preparePktMsgAppFill_Bad_MsgAppDataSizeTooBig", (PFNUNITSUBTEST)&PgePacketTest::test_preparePktMsgAppFill_Bad_MsgAppDataSizeTooBig);
+        AddSubTest(
+            "test_preparePktMsgAppFill_Bad_MsgAppAreaActualLengthAlreadyFilledTooMuch",
+            (PFNUNITSUBTEST)&PgePacketTest::test_preparePktMsgAppFill_Bad_MsgAppAreaActualLengthAlreadyFilledTooMuch);
+        AddSubTest(
+            "test_preparePktMsgAppFill_Bad_MaxMessageCountReached",
+            (PFNUNITSUBTEST)&PgePacketTest::test_preparePktMsgAppFill_Bad_MaxMessageCountReached);
         //AddSubTest("test_iterateAllMsgApp", (PFNUNITSUBTEST)&PgePacketTest::test_iterateAllMsgApp);
     }
 
@@ -138,7 +158,7 @@ private:
         constexpr size_t nBytesShouldBeZero = sizeof(pkt) - (offsetof(pge_network::PgePacket, msg.userConnected.szIpAddress) + sizeof(szIp));
 
         b = b &
-            assertEquals(static_cast<uint32_t>(pge_network::MsgUserConnected::id), static_cast<uint32_t>(pge_network::PgePacket::getPacketId(pkt)), "pktId 1") &
+            assertEquals(static_cast<uint32_t>(pge_network::MsgUserConnectedServerSelf::id), static_cast<uint32_t>(pge_network::PgePacket::getPacketId(pkt)), "pktId 1") &
             assertEquals(connHandle, pge_network::PgePacket::getServerSideConnectionHandle(pkt), "connHandle 1") &
             assertTrue(pge_network::PgePacket::getMessageAsUserConnected(pkt).bCurrentClient, "currentClient 1") &
             assertEquals(
@@ -164,7 +184,7 @@ private:
         pge_network::PgePacket pkt;
 
         // string too long case
-        char szTooLongIp[pge_network::MsgUserConnected::nIpAddressMaxLength + 2];
+        char szTooLongIp[pge_network::MsgUserConnectedServerSelf::nIpAddressMaxLength + 2];
         memset(szTooLongIp, 'A', sizeof(szTooLongIp) - 1);
         szTooLongIp[sizeof(szTooLongIp) - 1] = '\0';
         return assertFalse(pge_network::PgePacket::initPktPgeMsgUserConnected(pkt, connHandle, true, szTooLongIp), "ret 2");
@@ -183,7 +203,7 @@ private:
         constexpr size_t nBytesShouldBeZero = sizeof(pkt) - (offsetof(pge_network::PgePacket, msg.userDisconnected));
 
         return
-            assertEquals(static_cast<uint32_t>(pge_network::MsgUserDisconnected::id), static_cast<uint32_t>(pge_network::PgePacket::getPacketId(pkt)), "pktId 1") &
+            assertEquals(static_cast<uint32_t>(pge_network::MsgUserDisconnectedFromServer::id), static_cast<uint32_t>(pge_network::PgePacket::getPacketId(pkt)), "pktId 1") &
             assertEquals(connHandle, pge_network::PgePacket::getServerSideConnectionHandle(pkt), "connHandle 1") &
             assertEquals(
                 0,
@@ -219,6 +239,32 @@ private:
                 "remaining area is clean 1");
     }
 
+    bool test_initPktMsgApp_NoZeroFill()
+    {
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5;
+        const char szMsgAppData[] = "almafa";
+
+        pge_network::PgePacket pkt;
+
+        pge_network::MsgApp* const pMsgApp = reinterpret_cast<pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
+        bool b = assertEquals(
+            0,
+            strncpy_s(reinterpret_cast<char*>(pMsgApp->cMsgData), pge_network::MsgApp::nMaxMessageLength, szMsgAppData, sizeof(szMsgAppData)),
+            "strncpy");
+
+        pge_network::PgePacket::initPktMsgApp(pkt, connHandle, pge_network::PgePacket::AutoFill::NONE);
+
+        return b &
+            assertEquals(static_cast<uint32_t>(pge_network::MsgApp::id), static_cast<uint32_t>(pge_network::PgePacket::getPacketId(pkt)), "pktId 1") &
+            assertEquals(connHandle, pge_network::PgePacket::getServerSideConnectionHandle(pkt), "connHandle 1") &
+            assertFalse(pge_network::PgePacket::isMessageAppAreaFull(pkt), "msg app area full 1") &
+            assertEquals(0u, static_cast<uint32_t>(pge_network::PgePacket::getMessageAppCount(pkt)), "msg app count 1") &
+            assertEquals(
+                0,
+                strncmp(szMsgAppData, reinterpret_cast<const char*>(pMsgApp->cMsgData), sizeof(szMsgAppData)),
+                "remaining area is untouched 1");
+    }
+
     bool test_fillMsgApp()
     {
         constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
@@ -249,7 +295,7 @@ private:
                 "msg app data ok");
     }
 
-    bool test_addMsgApp()
+    bool test_addPktMsgApp_Good()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
         constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
@@ -300,6 +346,211 @@ private:
                     static_cast<void*>(&pktJustAFullZeroMemoryAreaOfPgePacketSize),
                     nBytesShouldBeZero),
                 "pkt remaining area is clean 1");
+    }
+
+    bool test_addPktMsgApp_Bad_PktId()
+    {
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
+        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr char msgAppMsgData[] = "almafa";
+
+        // intentionally initializing packet wrong
+        pge_network::PgePacket pkt;
+        pge_network::PgePacket::initPktPgeMsgUserDisconnected(pkt, connHandle);
+
+        pge_network::MsgApp myAppMsg;
+        bool b = assertTrue(
+            pge_network::MsgApp::fillMsgApp(
+                myAppMsg,
+                msgAppMsgId,
+                reinterpret_cast<const uint8_t*>(msgAppMsgData),
+                sizeof(msgAppMsgData)),
+            "fill msg app 1");
+
+        return b & assertFalse(pge_network::PgePacket::addPktMsgApp(pkt, myAppMsg), "add msg app 1");
+    }
+
+    bool test_addPktMsgApp_Bad_MsgAppDataSizeTooBig()
+    {
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
+        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr char msgAppMsgData[] = "almafa";
+
+        pge_network::PgePacket pkt;
+        pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
+
+        pge_network::MsgApp myAppMsg;
+        bool b = assertTrue(
+            pge_network::MsgApp::fillMsgApp(
+                myAppMsg,
+                msgAppMsgId,
+                reinterpret_cast<const uint8_t*>(msgAppMsgData),
+                sizeof(msgAppMsgData) /* here I'm still using correct size to avoid segfault */),
+            "fill msg app 1");
+        
+        // intentionally setting too big data size 
+        myAppMsg.nMsgSize = pge_network::MsgApp::nMaxMessageLength + 1;
+
+        return b & assertFalse(pge_network::PgePacket::addPktMsgApp(pkt, myAppMsg), "add msg app 1");
+    }
+
+    bool test_addPktMsgApp_Bad_MsgAppAreaActualLengthAlreadyFilledTooMuch()
+    {
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
+        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr char msgAppMsgData[] = "almafa";
+
+        pge_network::PgePacket pkt;
+        pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
+
+        pge_network::MsgApp myAppMsg;
+        bool b = assertTrue(
+            pge_network::MsgApp::fillMsgApp(
+                myAppMsg,
+                msgAppMsgId,
+                reinterpret_cast<const uint8_t*>(msgAppMsgData),
+                sizeof(msgAppMsgData)),
+            "fill msg app 1");
+
+        // intentionally setting message area to full
+        pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength = pge_network::MsgAppArea::nMessagesAreaLength;
+
+        return b & assertFalse(pge_network::PgePacket::addPktMsgApp(pkt, myAppMsg), "add msg app 1");
+    }
+
+    bool test_addPktMsgApp_Bad_MaxMessageCountReached()
+    {
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
+        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr char msgAppMsgData[] = "almafa";
+
+        pge_network::PgePacket pkt;
+        pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
+
+        pge_network::MsgApp myAppMsg;
+        bool b = assertTrue(
+            pge_network::MsgApp::fillMsgApp(
+                myAppMsg,
+                msgAppMsgId,
+                reinterpret_cast<const uint8_t*>(msgAppMsgData),
+                sizeof(msgAppMsgData)),
+            "fill msg app 1");
+
+        // intentionally setting message count to max
+        pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount = 255; /*TODO: max uint8_t*/
+
+        return b & assertFalse(pge_network::PgePacket::addPktMsgApp(pkt, myAppMsg), "add msg app 1");
+    }
+
+    bool test_preparePktMsgAppFill_Good()
+    {
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
+        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr char msgAppMsgData[] = "almafa";
+
+        pge_network::PgePacket pkt;
+        pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
+
+        uint8_t* const pMsgAppData =
+            pge_network::PgePacket::preparePktMsgAppFill(pkt, msgAppMsgId, sizeof(msgAppMsgData));
+
+        bool b = assertNotNull(pMsgAppData, "prepare msg app 1");
+
+        if (b)
+        {
+            b &= assertEquals(
+                0,
+                static_cast<int>(strncpy_s(reinterpret_cast<char*>(pMsgAppData), pge_network::MsgApp::nMaxMessageLength, msgAppMsgData, sizeof(msgAppMsgData))),
+                "strncpy");
+        }
+
+        pge_network::PgePacket pktJustAFullZeroMemoryAreaOfPgePacketSize;
+        memset(&pktJustAFullZeroMemoryAreaOfPgePacketSize, 0, sizeof(pktJustAFullZeroMemoryAreaOfPgePacketSize));
+        const size_t nOffsetOfMsgAppDataEndInPkt = (offsetof(pge_network::PgePacket, msg.app) +
+            offsetof(pge_network::MsgAppArea, cData) +
+            offsetof(pge_network::MsgApp, cMsgData) +
+            sizeof(msgAppMsgData));
+        const size_t nBytesShouldBeZero = sizeof(pkt) - nOffsetOfMsgAppDataEndInPkt;
+
+        const pge_network::MsgApp* const pMsgApp = reinterpret_cast<pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
+
+        return b &
+            assertEquals(static_cast<uint32_t>(pge_network::MsgApp::id), static_cast<uint32_t>(pge_network::PgePacket::getPacketId(pkt)), "pktId 1") &
+            assertEquals(connHandle, pge_network::PgePacket::getServerSideConnectionHandle(pkt), "connHandle 1") &
+            assertFalse(pge_network::PgePacket::isMessageAppAreaFull(pkt), "msg app area full 1") &
+            assertEquals(1u, static_cast<uint32_t>(pge_network::PgePacket::getMessageAppCount(pkt)), "msg app count 1") &
+            assertEquals(msgAppMsgId, pMsgApp->msgId, "msg app id 1") &
+            assertEquals(pMsgApp->nMsgSize, sizeof(msgAppMsgData), "msg app data size 1") &
+            assertEquals(
+                pge_network::MsgApp::getMsgAppTotalActualSize(*pMsgApp),
+                pge_network::PgePacket::getMessageAppsTotalActualLength(pkt),
+                "msg apps total length should be same now as the actual size of the only 1 msg app") &
+            assertEquals(
+                0,
+                memcmp(
+                    msgAppMsgData,
+                    pMsgApp->cMsgData,
+                    sizeof(msgAppMsgData)),
+                "pkt msg app data ok") &
+            assertEquals(
+                0,
+                memcmp(
+                    static_cast<void*>(reinterpret_cast<uint8_t*>(&pkt) + nOffsetOfMsgAppDataEndInPkt),
+                    static_cast<void*>(&pktJustAFullZeroMemoryAreaOfPgePacketSize),
+                    nBytesShouldBeZero),
+                "pkt remaining area is clean 1");
+    }
+
+    bool test_preparePktMsgAppFill_Bad_PktId()
+    {
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
+        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+
+        // intentionally initializing packet wrong
+        pge_network::PgePacket pkt;
+        pge_network::PgePacket::initPktPgeMsgUserDisconnected(pkt, connHandle);
+
+        return assertNull(pge_network::PgePacket::preparePktMsgAppFill(pkt, msgAppMsgId, 10u), "prepare msg app 1");
+    }
+
+    bool test_preparePktMsgAppFill_Bad_MsgAppDataSizeTooBig()
+    {
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
+        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+
+        pge_network::PgePacket pkt;
+        pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
+
+        // intentionally passing too big size
+        return assertNull(pge_network::PgePacket::preparePktMsgAppFill(pkt, msgAppMsgId, pge_network::MsgApp::nMaxMessageLength + 1), "prepare msg app 1");
+    }
+
+    bool test_preparePktMsgAppFill_Bad_MsgAppAreaActualLengthAlreadyFilledTooMuch()
+    {
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
+        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+
+        pge_network::PgePacket pkt;
+        pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
+
+        // intentionally setting message area to full
+        pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength = pge_network::MsgAppArea::nMessagesAreaLength;
+
+        return assertNull(pge_network::PgePacket::preparePktMsgAppFill(pkt, msgAppMsgId, 10u), "prepare msg app 1");
+    }
+
+    bool test_preparePktMsgAppFill_Bad_MaxMessageCountReached()
+    {
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
+        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+
+        pge_network::PgePacket pkt;
+        pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
+
+        // intentionally setting message count to max
+        pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount = 255; /*TODO: max uint8_t*/
+
+        return assertNull(pge_network::PgePacket::preparePktMsgAppFill(pkt, msgAppMsgId, 10u), "prepare msg app 1");
     }
 
     //bool test_iterateAllMsgApp()

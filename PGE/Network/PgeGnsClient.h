@@ -99,8 +99,8 @@ private:
     // connection handle. Server should send a specific Pge message back to client holding this info.
     // Even though it is filled as m_connHandleServerSide in most packets, those packets are only sent when APP level sends something.
     // Because currently there is pge_network level packet sent by server to client during connection buildup.
-    // I think the MsgUserConnected should contain this info and should be sent to clients by server upon establishing connection.
-    // I also think that IP address should be also part of this enhanced MsgUserConnected messages. This is part of APP level MsgUserSetup
+    // I think the MsgUserConnectedServerSelf should contain this info and should be sent to clients by server upon establishing connection.
+    // I also think that IP address should be also part of this enhanced MsgUserConnectedServerSelf messages. This is part of APP level MsgUserSetup
     // today.
     HSteamNetConnection m_hConnectionServerSide;
 

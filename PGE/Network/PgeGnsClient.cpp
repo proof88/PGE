@@ -336,7 +336,7 @@ void PgeGnsClient::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
         CConsole::getConsoleInstance("PgeGnsClient").OLn("%s: CLIENT Connected to server OK", __func__);
 
         // KEKEKEKEKE
-        // you jumped here from PgePacket.h MsgUserConnected.
+        // you jumped here from PgePacket.h MsgUserConnectedServerSelf.
         char szAddr[SteamNetworkingIPAddr::k_cchMaxString];
         pInfo->m_info.m_addrRemote.ToString(szAddr, sizeof(szAddr), true);
         CConsole::getConsoleInstance("PgeGnsClient").OLn("%s: CLIENT Remote address: %s", __func__, szAddr);

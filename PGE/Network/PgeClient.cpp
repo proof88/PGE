@@ -339,7 +339,7 @@ PgeClientImpl::PgeClientImpl(PGEcfgProfiles& cfgProfiles) :
     m_cfgProfiles(cfgProfiles),
     m_gsnClient(PgeGnsClient::createAndGet(cfgProfiles))
 {
-    m_gsnClient.getAllowListedPgeMessages().insert(pge_network::MsgUserDisconnected::id);
+    m_gsnClient.getAllowListedPgeMessages().insert(pge_network::MsgUserDisconnectedFromServer::id);
     m_gsnClient.getAllowListedPgeMessages().insert(pge_network::MsgApp::id);
 } // PgeClientImpl(...)
 
