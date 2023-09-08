@@ -528,8 +528,8 @@ TPureByte PureMatrix::ind(TPureByte row, TPureByte col)
 void PureMatrix::TransposeArray(TPureFloat* arr, TPureByte rows, TPureByte cols)
 {
     // although we are in 4x4 matrix class, this is a generalized transpose function for matrix with arbitrary rows and cols
-    const TPureByte maxdim = max(rows, cols);
-    const TPureByte mindim = min(rows, cols);
+    const TPureByte maxdim = std::max(rows, cols);
+    const TPureByte mindim = std::min(rows, cols);
 
     // no matter if rows or cols is bigger, we always let cols alias j run until max dimension since j is always bigger than i
     // j is always bigger than i to avoid extra swaps those silly transpose functions found on the internet are doing ...

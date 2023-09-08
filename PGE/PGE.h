@@ -12,17 +12,24 @@
 */
 
 #include "PGEallHeaders.h"
+
 #include <list>
 #include <string>
+
 #include "../../Console/CConsole/src/CConsole.h"
-#include "PURE/include/external/PR00FsUltimateRenderingEngine.h"
-#include "PGEInputHandler.h"
-#include "PGEWorld.h"
+
 // TODO: add "Audio/soloud-RELEASE_20200207/include/" to project include dirs, do not use that path here!
 #include "Audio/soloud-RELEASE_20200207/include/soloud.h"
 #include "Audio/soloud-RELEASE_20200207/include/soloud_wav.h"
+
 #include "Network/PgeNetwork.h"
+
+#include "PURE/include/external/PR00FsUltimateRenderingEngine.h"
+
 #include "Weapons/WeaponManager.h"
+
+#include "PGEInputHandler.h"
+#include "PGEWorld.h"
 
 
 /**

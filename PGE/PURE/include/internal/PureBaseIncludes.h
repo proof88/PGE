@@ -50,12 +50,40 @@
 #define _WIN32_IE 0x0600
 #endif
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
+#ifndef WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
+#define WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
 #endif
-#include <windows.h>
-//#include <WinUser.h>
-//#include <windowsx.h>
+#ifndef WINPROOF88_ALLOW_GDI
+#define WINPROOF88_ALLOW_GDI
+#endif
+#ifndef WINPROOF88_ALLOW_MESSAGEBOX
+#define WINPROOF88_ALLOW_MESSAGEBOX
+#endif
+#ifndef WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
+#define WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
+#endif
+#ifndef WINPROOF88_ALLOW_RASTERPOS
+#define WINPROOF88_ALLOW_RASTERPOS
+#endif
+#ifndef WINPROOF88_ALLOW_SHOWWINDOW
+#define WINPROOF88_ALLOW_SHOWWINDOW
+#endif
+#ifndef WINPROOF88_ALLOW_SOUND
+#define WINPROOF88_ALLOW_SOUND
+#endif
+#ifndef WINPROOF88_ALLOW_SYSCOMMANDS_E_G_SCREENSAVER
+#define WINPROOF88_ALLOW_SYSCOMMANDS_E_G_SCREENSAVER
+#endif
+#ifndef WINPROOF88_ALLOW_SYSMETRICS
+#define WINPROOF88_ALLOW_SYSMETRICS
+#endif
+#ifndef WINPROOF88_ALLOW_WINOFFSETS
+#define WINPROOF88_ALLOW_WINOFFSETS
+#endif
+#ifndef WINPROOF88_ALLOW_WINSTYLES
+#define WINPROOF88_ALLOW_WINSTYLES
+#endif
+#include "../../../../../../../PFL/PFL/winproof88.h"
 
 // GL headers, never changed
 #include "gl/gl.h"
@@ -67,5 +95,5 @@
 #include "../external/PureAllHeaders.h"
 #include "PureConsts.h"
 #include "../external/PureTypes.h"
-#include "../../../../PFL/PFL/PFL.h"
-#include "../../../../Console/CConsole/src/CConsole.h"
+#include "../../../../../PFL/PFL/PFL.h"
+#include "../../../../../Console/CConsole/src/CConsole.h"

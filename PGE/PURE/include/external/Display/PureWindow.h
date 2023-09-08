@@ -20,10 +20,7 @@
 // so at least 2 implementations will exist: Win and Linux
 // then Win-specific things will be moved to Win-implementation
 // the Pure main class will pass this class to Screen and any other class who needs values like HDC
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
+#include "../../../../../../PFL/PFL/winproof88.h"
 #include <WinUser.h>
 #include <windowsx.h>
 

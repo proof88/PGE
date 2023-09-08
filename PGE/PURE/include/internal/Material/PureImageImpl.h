@@ -16,10 +16,7 @@
 #include "gl/gl.h"  // for GLenum and similar, which should be removed from here soon ...
 
 // for HANDLE and etc, to be removed ...
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
+#include "../../../../../../PFL/PFL/winproof88.h"
 #include <WinUser.h>
 #include <windowsx.h>
 

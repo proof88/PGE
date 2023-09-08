@@ -629,12 +629,12 @@ void Weapon::IncBulletCount(TPureUInt count)
 {
     if (getVars()["reloadable"].getAsInt() > 0)
     {
-        m_nUnmagBulletCount = min(static_cast<TPureUInt>(getVars()["cap_max"].getAsInt()), (m_nUnmagBulletCount + count));
+        m_nUnmagBulletCount = std::min(static_cast<TPureUInt>(getVars()["cap_max"].getAsInt()), (m_nUnmagBulletCount + count));
     }
     else
     {
         // not reloadable has always zero m_nUnmagBulletCount, e.g. rail gun
-        m_nMagBulletCount = min(static_cast<TPureUInt>(getVars()["cap_max"].getAsInt()), (m_nMagBulletCount + count));
+        m_nMagBulletCount = std::min(static_cast<TPureUInt>(getVars()["cap_max"].getAsInt()), (m_nMagBulletCount + count));
     }
 }
 
@@ -779,11 +779,11 @@ TPureBool Weapon::reload()
     m_state = WPN_RELOADING;
     if ( getVars()["reload_whole_mag"].getAsBool() )
     {
-        m_nBulletsToReload = min(nCapMagazine, m_nUnmagBulletCount);
+        m_nBulletsToReload = std::min(nCapMagazine, m_nUnmagBulletCount);
     }
     else
     {
-        m_nBulletsToReload = min(nCapMagazine - m_nMagBulletCount, m_nUnmagBulletCount);
+        m_nBulletsToReload = std::min(nCapMagazine - m_nMagBulletCount, m_nUnmagBulletCount);
     }
     
     PFL::gettimeofday(&m_timeReloadStarted, 0);

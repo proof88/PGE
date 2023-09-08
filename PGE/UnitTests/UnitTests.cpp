@@ -12,10 +12,13 @@
 #include <memory>  // for std::unique_ptr; requires cpp11
 #include <vector>
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
+#ifndef WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
+#define WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
 #endif
-#include <windows.h>
+#ifndef WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
+#define WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
+#endif
+#include "../../../PFL/PFL/winproof88.h"
 
 #include "../../../Console/CConsole/src/CConsole.h"
 

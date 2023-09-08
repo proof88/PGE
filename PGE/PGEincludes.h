@@ -46,10 +46,7 @@
 #define _WIN32_IE 0x0600
 #endif
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
+#include "../../PFL/PFL/winproof88.h"
 
 
 // own headers

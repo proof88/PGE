@@ -14,10 +14,7 @@
 #include "../PureAllHeaders.h"
 
 // todo: see comment for this in PureWindow.h
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
+#include "../../../../../../PFL/PFL/winproof88.h"
 #include <WinUser.h>
 #include <windowsx.h>
 
