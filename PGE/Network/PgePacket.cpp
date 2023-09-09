@@ -165,8 +165,8 @@ namespace pge_network {
 
         /* use uint32_t instead of uint8_t here to avoid numeric overflow */
         const uint32_t nActualTotalAppMsgSize = offsetof(pge_network::MsgApp, cMsgData) + MsgApp::getMsgAppDataActualSize(msgApp);
-        assert(nActualTotalAppMsgSize <= 255u /* TODO: uint8_t MAX */);
-        if (nActualTotalAppMsgSize > 255u /* TODO: uint8_t MAX */)
+        assert(nActualTotalAppMsgSize <= std::numeric_limits<uint8_t>::max());
+        if (nActualTotalAppMsgSize > std::numeric_limits<uint8_t>::max())
         {
             // given nMsgAppDataSize indicates too big app msg data
             return false;
@@ -178,7 +178,7 @@ namespace pge_network {
             return false;
         }
 
-        if (pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount == 255 /* TODO: uint8_t max */)
+        if (pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount == std::numeric_limits<uint8_t>::max())
         {
             // already reached max app msg count
             return false;
@@ -214,8 +214,8 @@ namespace pge_network {
 
         /* use uint32_t instead of uint8_t here to avoid numeric overflow */
         const uint32_t nActualTotalAppMsgSize = offsetof(pge_network::MsgApp, cMsgData) + nMsgAppDataSize;
-        assert(nActualTotalAppMsgSize <= 255u /* TODO: uint8_t MAX */);
-        if (nActualTotalAppMsgSize > 255u /* TODO: uint8_t MAX */)
+        assert(nActualTotalAppMsgSize <= std::numeric_limits<uint8_t>::max());
+        if (nActualTotalAppMsgSize > std::numeric_limits<uint8_t>::max())
         {
             // given nMsgAppDataSize indicates too big app msg data
             return nullptr;
@@ -227,7 +227,7 @@ namespace pge_network {
             return nullptr;
         }
 
-        if (pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount == 255 /* TODO: uint8_t max */)
+        if (pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount == std::numeric_limits<uint8_t>::max())
         {
             // already reached max app msg count
             return nullptr;

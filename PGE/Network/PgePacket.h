@@ -101,13 +101,13 @@ namespace pge_network
         uint8_t cMsgData[nMaxMessageLength];
     };
 
-    static_assert(MsgApp::nMaxMessageLength <= 255 /*std::numeric_limits<uint8_t>::max()  TODO: #define NOMINMAX so using windows headers wont define min and max macros!*/,
+    static_assert(MsgApp::nMaxMessageLength <= std::numeric_limits<uint8_t>::max(),
         "Size of MsgApp data should fit in MsgApp::nMsgSize");
 
     // memory area within a PgePacket, used when we are sending app message(s) in the packet
     struct MsgAppArea
     {
-        static const uint8_t nMessagesAreaLength = 255 /*std::numeric_limits<uint8_t>::max()  TODO: #define NOMINMAX so using windows headers wont define min and max macros!*/;
+        static const uint8_t nMessagesAreaLength = std::numeric_limits<uint8_t>::max();
 
         uint8_t m_nMessageCount;              // should be readable only by application
         uint8_t m_nActualMessagesAreaLength;  // should be readable only by application

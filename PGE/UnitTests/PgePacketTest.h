@@ -437,7 +437,7 @@ private:
             "fill msg app 1");
 
         // intentionally setting message count to max
-        pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount = 255; /*TODO: max uint8_t*/
+        pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount = std::numeric_limits<uint8_t>::max();
 
         return b & assertFalse(pge_network::PgePacket::addPktMsgApp(pkt, myAppMsg), "add msg app 1");
     }
@@ -548,7 +548,7 @@ private:
         pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
 
         // intentionally setting message count to max
-        pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount = 255; /*TODO: max uint8_t*/
+        pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount = std::numeric_limits<uint8_t>::max();
 
         return assertNull(pge_network::PgePacket::preparePktMsgAppFill(pkt, msgAppMsgId, 10u), "prepare msg app 1");
     }
