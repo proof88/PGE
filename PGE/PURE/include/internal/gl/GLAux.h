@@ -53,7 +53,16 @@ Abstract:
  * OpenGL(TM) is a trademark of Silicon Graphics, Inc.
  */
 
-#include <windows.h>
+ // ===========================================
+ // PR00F88 (West Whiskhyll) change starts here
+#ifndef WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
+#define WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
+#endif
+#ifndef WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
+#define WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
+#endif
+#include "../../../../../../PFL/PFL/winproof88.h"
+// ===========================================
 #include <GL/gl.h>
 #include <GL/glu.h>
 

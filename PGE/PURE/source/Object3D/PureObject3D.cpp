@@ -992,7 +992,7 @@ void PureObject3D::PureObject3DImpl::Draw_FeedbackBuffer_Finish()
     if ( nFbBufferWritten_h > 0 )
     {
         // we are happy
-        for (int i = 0; i < min(500,nFbBufferWritten_h); i++)
+        for (int i = 0; i < std::min(500,nFbBufferWritten_h); i++)
             debugbuffer[i] = pFbBuffer[i];
         //Sleep(1); // suitable for placing breakpoint
         /*

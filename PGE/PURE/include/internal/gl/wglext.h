@@ -31,8 +31,16 @@ extern "C" {
 /* Function declaration macros - to move into glplatform.h */
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
-#define WIN32_LEAN_AND_MEAN 1
-#include <windows.h>
+// ===========================================
+// PR00F88 (West Whiskhyll) change starts here
+#ifndef WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
+#define WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
+#endif
+#ifndef WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
+#define WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
+#endif
+#include "../../../../../../PFL/PFL/winproof88.h"
+// ===========================================
 #endif
 
 #ifndef APIENTRY

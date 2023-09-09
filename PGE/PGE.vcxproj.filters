@@ -609,6 +609,9 @@
     <ClInclude Include="Network\PgeIServerClient.h">
       <Filter>Header Files\Network</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\PFL\PFL\winproof88.h">
+      <Filter>Header Files\PFL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">

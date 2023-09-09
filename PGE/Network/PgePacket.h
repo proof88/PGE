@@ -17,6 +17,13 @@
 
 #include <limits>
 
+// Make sure min/max weren't defined, even though now I'm including windows.h using winproof88.h that helps skip these definitions, and
+// added NOMINMAX macro defined to project settings, I want to be sure that these are not defined by accident anywhere!
+// Because it collides with std::min() / std::max() / std::numeric_limits<T>::max() !
+#if defined(min) || defined(max)
+#error "min or max are defined (maybe in windows.h)"
+#endif
+
 // These packet and message structs are sent between server and clients.
 // Different endianness is not considered as an issue because all machines expected to use this have same endianness for now.
 // In case this changes in the future, use a lib like cereal to easily solve endianness issue.
@@ -94,7 +101,7 @@ namespace pge_network
         uint8_t cMsgData[nMaxMessageLength];
     };
 
-    static_assert(MsgApp::nMaxMessageLength <= 255u /*std::numeric_limits<uint8_t>::max()  TODO: #define NOMINMAX so using windows headers wont define min and max macros! */,
+    static_assert(MsgApp::nMaxMessageLength <= 255 /*std::numeric_limits<uint8_t>::max()  TODO: #define NOMINMAX so using windows headers wont define min and max macros!*/,
         "Size of MsgApp data should fit in MsgApp::nMsgSize");
 
     // memory area within a PgePacket, used when we are sending app message(s) in the packet

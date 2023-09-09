@@ -36,10 +36,29 @@ freely, subject to the following restrictions:
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN
 #endif
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
+
+// ===========================================
+// PR00F88 (West Whiskhyll) change starts here
+#ifndef WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
+#define WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
 #endif
-#include <windows.h> // only needed for OutputDebugStringA, should be solved somehow.
+#ifndef WINPROOF88_ALLOW_GDI
+#define WINPROOF88_ALLOW_GDI
+#endif
+#ifndef WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
+#define WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
+#endif
+#ifndef WINPROOF88_ALLOW_NATIONAL_LANGUAGE_SUPPORT
+#define WINPROOF88_ALLOW_NATIONAL_LANGUAGE_SUPPORT
+#endif
+// otherwise SoLoud.h will have problem due to colliding macro NOSOUND!
+#ifndef WINPROOF88_ALLOW_SOUND
+#define WINPROOF88_ALLOW_SOUND
+#endif
+#include "../../../../../PFL/PFL/winproof88.h" // only needed for OutputDebugStringA, should be solved somehow.
+// PR00F88 (West Whiskhyll) change ends here
+// ===========================================
+
 #define SOLOUD_ASSERT(x) if (!(x)) { char temp[200]; sprintf(temp, "%s(%d): assert(%s) failed.\n", __FILE__, __LINE__, #x); OutputDebugStringA(temp); __debugbreak(); }
 #else
 #include <assert.h> // assert

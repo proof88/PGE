@@ -14,10 +14,23 @@
 
 #include "imgui.h"
 #include "imgui_impl_win32.h"
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
+// ===========================================
+// PR00F88 (West Whiskhyll) change starts here
+#ifndef WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
+#define WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
 #endif
-#include <windows.h>
+#ifndef WINPROOF88_ALLOW_GDI
+#define WINPROOF88_ALLOW_GDI
+#endif
+#ifndef WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
+#define WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
+#endif
+#ifndef WINPROOF88_ALLOW_VIRTUALKEYCODES
+#define WINPROOF88_ALLOW_VIRTUALKEYCODES
+#endif
+#include "../../../../../../../../PFL/PFL/winproof88.h"
+// PR00F88 (West Whiskhyll) change ends here
+// ===========================================
 #include <windowsx.h> // GET_X_LPARAM(), GET_Y_LPARAM()
 #include <tchar.h>
 #include <dwmapi.h>

@@ -23,7 +23,15 @@ freely, subject to the following restrictions:
 */
 
 #if defined(_WIN32)||defined(_WIN64)
-#include <windows.h>
+// ===========================================
+// PR00F88 (West Whiskhyll) change starts here
+// otherwise SoLoud.h will have problem due to colliding macro NOSOUND!
+#ifndef WINPROOF88_ALLOW_SOUND
+#define WINPROOF88_ALLOW_SOUND
+#endif
+#include "../../../../../../../PFL/PFL/winproof88.h"
+// PR00F88 (West Whiskhyll) change ends here
+// ===========================================
 #else
 #include <inttypes.h>
 #include <pthread.h>

@@ -460,7 +460,7 @@ TPureUInt PureTextureManager::getMIPmapCount(TPureUInt width, TPureUInt height)
     if ( width == 0 || height == 0 )
         return 0;
                                                    
-    TPureUInt value = max(width,height);
+    TPureUInt value = std::max(width,height);
     TPureUInt count = 1;
     while ( value > 1 )
     {
@@ -480,7 +480,7 @@ TPureUInt PureTextureManager::getWidthAtLevel(TPureUInt level, TPureUInt width, 
     if ( width == 0 || height == 0 )
         return 0;
 
-    TPureUInt value = max(width,height);
+    TPureUInt value = std::max(width,height);
     TPureUInt actlevel = 0;
     while ( (value > 1) && (actlevel != level) )
     {
@@ -501,7 +501,7 @@ TPureUInt PureTextureManager::getHeightAtLevel(TPureUInt level, TPureUInt width,
     if ( width == 0 || height == 0 )
         return 0;
 
-    TPureUInt value = max(width,height);
+    TPureUInt value = std::max(width,height);
     TPureUInt actlevel = 0;
     while ( (value > 1) && (actlevel != level) )
     {
@@ -521,7 +521,7 @@ TPureUInt PureTextureManager::getMIPmappedTexSize(TPureUInt basesize, TPureUInt 
 {
     if ( (basesize > 0) && (width > 0) && (height > 0) )
     {
-        TPureUInt value = max(width,height);
+        TPureUInt value = std::max(width,height);
         TPureUInt size = basesize;
         TPureUInt size2 = size;
         while ( value > 1 )
