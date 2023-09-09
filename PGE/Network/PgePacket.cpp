@@ -163,10 +163,10 @@ namespace pge_network {
             return false;
         }
 
-        /* use uint32_t instead of uint8_t here to avoid numeric overflow */
+        /* use uint32_t instead of uint8_t or TPgeMsgAppMsgSize here to avoid numeric overflow */
         const uint32_t nActualTotalAppMsgSize = offsetof(pge_network::MsgApp, cMsgData) + MsgApp::getMsgAppDataActualSize(msgApp);
-        assert(nActualTotalAppMsgSize <= std::numeric_limits<uint8_t>::max());
-        if (nActualTotalAppMsgSize > std::numeric_limits<uint8_t>::max())
+        assert(nActualTotalAppMsgSize <= std::numeric_limits<TPgeMsgAppMsgSize>::max());
+        if (nActualTotalAppMsgSize > std::numeric_limits<TPgeMsgAppMsgSize>::max())
         {
             // given nMsgAppDataSize indicates too big app msg data
             return false;
@@ -197,7 +197,7 @@ namespace pge_network {
     uint8_t* pge_network::PgePacket::preparePktMsgAppFill(
         pge_network::PgePacket& pkt,
         TPgeMsgAppMsgId msgAppId,
-        uint8_t nMsgAppDataSize
+        TPgeMsgAppMsgSize nMsgAppDataSize
     )
     {
         if (pge_network::PgePacket::getPacketId(pkt) != MsgApp::id)
@@ -212,10 +212,10 @@ namespace pge_network {
             return nullptr;
         }
 
-        /* use uint32_t instead of uint8_t here to avoid numeric overflow */
+        /* use uint32_t instead of uint8_t or TPgeMsgAppMsgSize here to avoid numeric overflow */
         const uint32_t nActualTotalAppMsgSize = offsetof(pge_network::MsgApp, cMsgData) + nMsgAppDataSize;
-        assert(nActualTotalAppMsgSize <= std::numeric_limits<uint8_t>::max());
-        if (nActualTotalAppMsgSize > std::numeric_limits<uint8_t>::max())
+        assert(nActualTotalAppMsgSize <= std::numeric_limits<TPgeMsgAppMsgSize>::max());
+        if (nActualTotalAppMsgSize > std::numeric_limits<TPgeMsgAppMsgSize>::max())
         {
             // given nMsgAppDataSize indicates too big app msg data
             return nullptr;
@@ -251,17 +251,17 @@ namespace pge_network {
         return msgApp.msgId;
     }
 
-    uint8_t& MsgApp::getMsgAppDataActualSize(MsgApp& msgApp)
+    TPgeMsgAppMsgSize& MsgApp::getMsgAppDataActualSize(MsgApp& msgApp)
     {
         return msgApp.nMsgSize;
     }
 
-    const uint8_t& MsgApp::getMsgAppDataActualSize(const MsgApp& msgApp)
+    const TPgeMsgAppMsgSize& MsgApp::getMsgAppDataActualSize(const MsgApp& msgApp)
     {
         return msgApp.nMsgSize;
     }
 
-    const uint8_t MsgApp::getMsgAppTotalActualSize(const MsgApp& msgApp)
+    const TPgeMsgAppMsgSize MsgApp::getMsgAppTotalActualSize(const MsgApp& msgApp)
     {
         return offsetof(MsgApp, cMsgData) + getMsgAppDataActualSize(msgApp);
     }
@@ -275,7 +275,7 @@ namespace pge_network {
         pge_network::MsgApp& myAppMsg,
         const pge_network::TPgeMsgAppMsgId& msgAppMsgId,
         const uint8_t* msgAppData,
-        uint8_t nMsgAppDataSize)
+        TPgeMsgAppMsgSize nMsgAppDataSize)
     {
         if (nMsgAppDataSize > pge_network::MsgApp::nMaxMessageLength)
         {

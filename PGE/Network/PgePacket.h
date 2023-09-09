@@ -69,28 +69,29 @@ namespace pge_network
     };
 
     typedef uint32_t TPgeMsgAppMsgId;
+    typedef uint8_t TPgeMsgAppMsgSize;
 
     // application-specific message
     // server <-> client
-    // With allow listing, app messages can be separately allowed to be processed by clients and server based on TPgeMsgAppMsgId.
+    // With allowlisting, app messages can be separately allowed to be processed by clients and server based on TPgeMsgAppMsgId.
     struct MsgApp
     {
         static const PgePktId id = PgePktId::Application;
-        static const uint8_t nMaxMessageLength = 240;
+        static const TPgeMsgAppMsgSize nMaxMessageLength = 240;
 
         static TPgeMsgAppMsgId& getMsgAppMsgId(MsgApp& msgApp);
-        static uint8_t&  getMsgAppDataActualSize(MsgApp& msgApp);  // TODO: delete this non-const version later when not needed
-        static const uint8_t& getMsgAppDataActualSize(const MsgApp& msgApp);
-        static const uint8_t getMsgAppTotalActualSize(const MsgApp& msgApp);
+        static TPgeMsgAppMsgSize&  getMsgAppDataActualSize(MsgApp& msgApp);  // TODO: delete this non-const version later when not needed
+        static const TPgeMsgAppMsgSize& getMsgAppDataActualSize(const MsgApp& msgApp);
+        static const TPgeMsgAppMsgSize getMsgAppTotalActualSize(const MsgApp& msgApp);
         static uint8_t* getMsgAppData(MsgApp& msgApp);
         static bool fillMsgApp(
             pge_network::MsgApp& myAppMsg,
             const pge_network::TPgeMsgAppMsgId& msgAppMsgId,
             const uint8_t* msgAppData,
-            uint8_t nMsgAppDataSize);
+            TPgeMsgAppMsgSize nMsgAppDataSize);
         
         TPgeMsgAppMsgId msgId;  // this is checked by engine upon polling for new messages against the allowlists
-        uint8_t nMsgSize;
+        TPgeMsgAppMsgSize nMsgSize;
         /* This 'cMsgData' memory area is for 1 application message defined at application level, not here.
            So the application is responsible for copying the message here.
            The C++ standard guarantees that the members of a class or struct appear in memory in the same order as they are declared.
@@ -101,7 +102,7 @@ namespace pge_network
         uint8_t cMsgData[nMaxMessageLength];
     };
 
-    static_assert(MsgApp::nMaxMessageLength <= std::numeric_limits<uint8_t>::max(),
+    static_assert(MsgApp::nMaxMessageLength <= std::numeric_limits<TPgeMsgAppMsgSize>::max(),
         "Size of MsgApp data should fit in MsgApp::nMsgSize");
 
     // memory area within a PgePacket, used when we are sending app message(s) in the packet
@@ -115,7 +116,6 @@ namespace pge_network
            The C++ standard guarantees that the members of a class or struct appear in memory in the same order as they are declared.
            This 'cData' member needs to be the LAST member of this struct.
            When sending, we should send the actually used memory area and not the whole area.
-           We don't need to store the actually used size since GSN will tell the actual pkt size anyway on polling messages.
            In 'cData' we store at least 1 variable-sized MsgApp.
          */
         uint8_t cData[nMessagesAreaLength];   // should be writable by application, but the pointer to it should be calculated by wrapper function
@@ -234,7 +234,7 @@ namespace pge_network
         static uint8_t* preparePktMsgAppFill(
             pge_network::PgePacket& pkt,
             TPgeMsgAppMsgId msgAppId,
-            uint8_t nMsgAppDataSize
+            TPgeMsgAppMsgSize nMsgAppDataSize
         );
 
         PgePktId pktId;
