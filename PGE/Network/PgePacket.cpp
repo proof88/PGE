@@ -266,6 +266,11 @@ namespace pge_network {
         return offsetof(MsgApp, cMsgData) + getMsgAppDataActualSizeBytes(msgApp);
     }
 
+    const TByte* MsgApp::getMsgAppData(const MsgApp& msgApp)
+    {
+        return msgApp.cMsgData;
+    }
+
     TByte* MsgApp::getMsgAppData(MsgApp& msgApp)
     {
         return msgApp.cMsgData;

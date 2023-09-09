@@ -47,6 +47,10 @@ protected:
         AddSubTest("test_initPktMsgApp", (PFNUNITSUBTEST)&PgePacketTest::test_initPktMsgApp);
         AddSubTest("test_initPktMsgApp_NoZeroFill", (PFNUNITSUBTEST)&PgePacketTest::test_initPktMsgApp_NoZeroFill);
         AddSubTest("test_fillMsgApp", (PFNUNITSUBTEST)&PgePacketTest::test_fillMsgApp);
+        AddSubTest("test_getMsgAppFromPkt", (PFNUNITSUBTEST)&PgePacketTest::test_getMsgAppFromPkt);
+        AddSubTest(
+            "test_getMsgAppData_and_getMsgAppDataFromPkt_returns_the_same",
+            (PFNUNITSUBTEST)&PgePacketTest::test_getMsgAppData_and_getMsgAppDataFromPkt_returns_the_same);
         AddSubTest("test_addPktMsgApp_Good", (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Good);
         AddSubTest("test_addPktMsgApp_Bad_PktId", (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Bad_PktId);
         AddSubTest("test_addPktMsgApp_Bad_MsgAppDataSizeTooBig", (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Bad_MsgAppDataSizeTooBig);
@@ -217,19 +221,30 @@ private:
     bool test_initPktMsgApp()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5;
+        constexpr pge_network::TPgeMsgAppMsgId nMsgAppId = 13u;
+        const char szMsgAppData[] = "almafa";
 
         pge_network::PgePacket pkt;
+
+        pge_network::MsgApp* const pMsgApp = reinterpret_cast<pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
+        pMsgApp->msgId = nMsgAppId;
+        bool b = assertEquals(
+            0,
+            strncpy_s(reinterpret_cast<char*>(pMsgApp->cMsgData), pge_network::MsgApp::nMaxMessageLengthBytes, szMsgAppData, sizeof(szMsgAppData)),
+            "strncpy");
+
         pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
 
         pge_network::PgePacket pktJustAFullZeroMemoryAreaOfPgePacketSize;
         memset(&pktJustAFullZeroMemoryAreaOfPgePacketSize, 0, sizeof(pktJustAFullZeroMemoryAreaOfPgePacketSize));
         constexpr size_t nBytesShouldBeZero = sizeof(pkt) - (offsetof(pge_network::PgePacket, msg.app));
 
-        return
+        return b &
             assertEquals(static_cast<uint32_t>(pge_network::MsgApp::id), static_cast<uint32_t>(pge_network::PgePacket::getPacketId(pkt)), "pktId 1") &
             assertEquals(connHandle, pge_network::PgePacket::getServerSideConnectionHandle(pkt), "connHandle 1") &
             assertFalse(pge_network::PgePacket::isMessageAppAreaFull(pkt), "msg app area full 1") &
             assertEquals(0u, static_cast<uint32_t>(pge_network::PgePacket::getMessageAppCount(pkt)), "msg app count 1") &
+            assertEquals(0u, pge_network::PgePacket::getMsgAppIdFromPkt(pkt), "msg app id 1") &
             assertEquals(
                 0,
                 memcmp(
@@ -242,11 +257,13 @@ private:
     bool test_initPktMsgApp_NoZeroFill()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5;
+        constexpr pge_network::TPgeMsgAppMsgId nMsgAppId = 13u;
         const char szMsgAppData[] = "almafa";
 
         pge_network::PgePacket pkt;
 
         pge_network::MsgApp* const pMsgApp = reinterpret_cast<pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
+        pMsgApp->msgId = nMsgAppId;
         bool b = assertEquals(
             0,
             strncpy_s(reinterpret_cast<char*>(pMsgApp->cMsgData), pge_network::MsgApp::nMaxMessageLengthBytes, szMsgAppData, sizeof(szMsgAppData)),
@@ -259,6 +276,7 @@ private:
             assertEquals(connHandle, pge_network::PgePacket::getServerSideConnectionHandle(pkt), "connHandle 1") &
             assertFalse(pge_network::PgePacket::isMessageAppAreaFull(pkt), "msg app area full 1") &
             assertEquals(0u, static_cast<uint32_t>(pge_network::PgePacket::getMessageAppCount(pkt)), "msg app count 1") &
+            assertEquals(nMsgAppId, pge_network::PgePacket::getMsgAppIdFromPkt(pkt), "msg app id 1") &
             assertEquals(
                 0,
                 strncmp(szMsgAppData, reinterpret_cast<const char*>(pMsgApp->cMsgData), sizeof(szMsgAppData)),
@@ -293,6 +311,23 @@ private:
                     static_cast<const void*>(msgAppMsgData),
                     sizeof(msgAppMsgData)),
                 "msg app data ok");
+    }
+
+    bool test_getMsgAppFromPkt()
+    {
+        pge_network::PgePacket pkt;
+        return assertEquals(
+            reinterpret_cast<pge_network::MsgApp*>(pkt.msg.app.cData),
+            pge_network::PgePacket::getMsgAppFromPkt(pkt));
+    }
+
+    bool test_getMsgAppData_and_getMsgAppDataFromPkt_returns_the_same()
+    {
+        pge_network::PgePacket pkt;
+        const pge_network::MsgApp* const pMsgApp = pge_network::PgePacket::getMsgAppFromPkt(pkt);
+        return assertEquals(
+            pge_network::MsgApp::getMsgAppData(*pMsgApp),
+            &pge_network::PgePacket::getMsgAppDataFromPkt<pge_network::TByte>(pkt));
     }
 
     bool test_addPktMsgApp_Good()

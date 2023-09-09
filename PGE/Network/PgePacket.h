@@ -15,6 +15,7 @@
 
 #include <stddef.h>  // offsetof()
 
+#include <cassert>
 #include <limits>
 
 // Make sure min/max weren't defined, even though now I'm including windows.h using winproof88.h that helps skip these definitions, and
@@ -84,6 +85,7 @@ namespace pge_network
         static TPgeMsgAppMsgSize&  getMsgAppDataActualSizeBytes(MsgApp& msgApp);  // TODO: delete this non-const version later when not needed
         static const TPgeMsgAppMsgSize& getMsgAppDataActualSizeBytes(const MsgApp& msgApp);
         static const TPgeMsgAppMsgSize getMsgAppTotalActualSizeBytes(const MsgApp& msgApp);
+        static const TByte* getMsgAppData(const MsgApp& msgApp);
         static TByte* getMsgAppData(MsgApp& msgApp);
         static bool fillMsgApp(
             pge_network::MsgApp& myAppMsg,
@@ -240,6 +242,29 @@ namespace pge_network
             TPgeMsgAppMsgSize nMsgAppDataSize
         );
 
+        static const pge_network::MsgApp* getMsgAppFromPkt(const pge_network::PgePacket& pkt)
+        {
+            const pge_network::MsgApp* const pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.msg.app.cData);
+            return pMsgApp;
+        }
+
+        static const pge_network::TPgeMsgAppMsgId& getMsgAppIdFromPkt(const pge_network::PgePacket& pkt)
+        {
+            return pge_network::PgePacket::getMsgAppFromPkt(pkt)->msgId;
+        }
+
+        template <class MsgAppDataType>
+        static const MsgAppDataType& getMsgAppDataFromPkt(const pge_network::PgePacket& pkt)
+        {
+            return reinterpret_cast<const MsgAppDataType&>(getMsgAppFromPkt(pkt)->cMsgData);
+        }
+
+        template <class MsgAppDataType>
+        static MsgAppDataType& getMsgAppDataFromPkt(pge_network::PgePacket& pkt)
+        {
+            return reinterpret_cast<MsgAppDataType&>(const_cast<pge_network::MsgApp*>(getMsgAppFromPkt(const_cast<pge_network::PgePacket&>(pkt)))->cMsgData);
+        }
+
         PgePktId pktId;
         PgeNetworkConnectionHandle m_connHandleServerSide;
 
@@ -249,6 +274,7 @@ namespace pge_network
             MsgUserDisconnectedFromServer userDisconnected;
             MsgAppArea app; // application should load/store its custom messages here
         } msg;
-    };
+
+    }; // struct PgePacket
 
 } // namespace pge_network
