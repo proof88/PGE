@@ -71,7 +71,7 @@ namespace pge_network {
         return getMessageAppArea(pkt).m_nMessageCount;
     }
 
-    TPgeMsgAppAreaLength pge_network::PgePacket::getMessageAppsTotalActualLength(const pge_network::PgePacket& pkt)
+    TPgeMsgAppAreaLength pge_network::PgePacket::getMessageAppsTotalActualLengthBytes(const pge_network::PgePacket& pkt)
     {
         return getMessageAppArea(pkt).m_nActualMessagesAreaLength;
     }
@@ -124,7 +124,7 @@ namespace pge_network {
 
     bool PgePacket::isMessageAppAreaFull(const pge_network::PgePacket& pkt)
     {
-        return pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength == pge_network::MsgAppArea::nMessagesAreaLength;
+        return pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength == pge_network::MsgAppArea::nMaxMessagesAreaLengthBytes;
     }
 
     void pge_network::PgePacket::initPktPgeMsgUserDisconnected(
@@ -157,14 +157,14 @@ namespace pge_network {
         }
 
         // we receive msgApp structure from outside, dont take the validity of its content granted!
-        if (MsgApp::getMsgAppDataActualSize(msgApp) > MsgApp::nMaxMessageLength)
+        if (MsgApp::getMsgAppDataActualSizeBytes(msgApp) > MsgApp::nMaxMessageLengthBytes)
         {
             // given nMsgAppDataSize indicates too big app msg data
             return false;
         }
 
         /* use uint32_t instead of uint8_t or TPgeMsgAppMsgSize here to avoid numeric overflow */
-        const uint32_t nActualTotalAppMsgSize = offsetof(pge_network::MsgApp, cMsgData) + MsgApp::getMsgAppDataActualSize(msgApp);
+        const uint32_t nActualTotalAppMsgSize = offsetof(pge_network::MsgApp, cMsgData) + MsgApp::getMsgAppDataActualSizeBytes(msgApp);
         assert(nActualTotalAppMsgSize <= std::numeric_limits<TPgeMsgAppMsgSize>::max());
         if (nActualTotalAppMsgSize > std::numeric_limits<TPgeMsgAppMsgSize>::max())
         {
@@ -172,7 +172,7 @@ namespace pge_network {
             return false;
         }
 
-        if (pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength + nActualTotalAppMsgSize > pge_network::MsgAppArea::nMessagesAreaLength)
+        if (pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength + nActualTotalAppMsgSize > pge_network::MsgAppArea::nMaxMessagesAreaLengthBytes)
         {
             // not enough space in this packet to store the given app msg
             return false;
@@ -194,7 +194,7 @@ namespace pge_network {
         return true;
     }
 
-    uint8_t* pge_network::PgePacket::preparePktMsgAppFill(
+    TByte* pge_network::PgePacket::preparePktMsgAppFill(
         pge_network::PgePacket& pkt,
         TPgeMsgAppMsgId msgAppId,
         TPgeMsgAppMsgSize nMsgAppDataSize
@@ -206,7 +206,7 @@ namespace pge_network {
             return nullptr;
         }
 
-        if (nMsgAppDataSize > MsgApp::nMaxMessageLength)
+        if (nMsgAppDataSize > MsgApp::nMaxMessageLengthBytes)
         {
             // given nMsgAppDataSize indicates too big app msg data
             return nullptr;
@@ -221,7 +221,7 @@ namespace pge_network {
             return nullptr;
         }
 
-        if (pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength + nActualTotalAppMsgSize > pge_network::MsgAppArea::nMessagesAreaLength)
+        if (pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength + nActualTotalAppMsgSize > pge_network::MsgAppArea::nMaxMessagesAreaLengthBytes)
         {
             // not enough space in this packet to store the given app msg
             return nullptr;
@@ -251,22 +251,22 @@ namespace pge_network {
         return msgApp.msgId;
     }
 
-    TPgeMsgAppMsgSize& MsgApp::getMsgAppDataActualSize(MsgApp& msgApp)
+    TPgeMsgAppMsgSize& MsgApp::getMsgAppDataActualSizeBytes(MsgApp& msgApp)
     {
         return msgApp.nMsgSize;
     }
 
-    const TPgeMsgAppMsgSize& MsgApp::getMsgAppDataActualSize(const MsgApp& msgApp)
+    const TPgeMsgAppMsgSize& MsgApp::getMsgAppDataActualSizeBytes(const MsgApp& msgApp)
     {
         return msgApp.nMsgSize;
     }
 
-    const TPgeMsgAppMsgSize MsgApp::getMsgAppTotalActualSize(const MsgApp& msgApp)
+    const TPgeMsgAppMsgSize MsgApp::getMsgAppTotalActualSizeBytes(const MsgApp& msgApp)
     {
-        return offsetof(MsgApp, cMsgData) + getMsgAppDataActualSize(msgApp);
+        return offsetof(MsgApp, cMsgData) + getMsgAppDataActualSizeBytes(msgApp);
     }
 
-    uint8_t* MsgApp::getMsgAppData(MsgApp& msgApp)
+    TByte* MsgApp::getMsgAppData(MsgApp& msgApp)
     {
         return msgApp.cMsgData;
     }
@@ -274,10 +274,10 @@ namespace pge_network {
     bool MsgApp::fillMsgApp(
         pge_network::MsgApp& myAppMsg,
         const pge_network::TPgeMsgAppMsgId& msgAppMsgId,
-        const uint8_t* msgAppData,
+        const TByte* msgAppData,
         TPgeMsgAppMsgSize nMsgAppDataSize)
     {
-        if (nMsgAppDataSize > pge_network::MsgApp::nMaxMessageLength)
+        if (nMsgAppDataSize > pge_network::MsgApp::nMaxMessageLengthBytes)
         {
             // given data cannot fit into target struct
             return false;
@@ -286,10 +286,10 @@ namespace pge_network {
         pge_network::MsgApp::getMsgAppMsgId(myAppMsg) = msgAppMsgId;
         memcpy_s(
             pge_network::MsgApp::getMsgAppData(myAppMsg),
-            pge_network::MsgApp::nMaxMessageLength,
+            pge_network::MsgApp::nMaxMessageLengthBytes,
             static_cast<const void*>(msgAppData),
             nMsgAppDataSize);
-        pge_network::MsgApp::getMsgAppDataActualSize(myAppMsg) = nMsgAppDataSize;
+        pge_network::MsgApp::getMsgAppDataActualSizeBytes(myAppMsg) = nMsgAppDataSize;
 
         return true;
     }

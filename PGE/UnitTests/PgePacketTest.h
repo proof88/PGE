@@ -249,7 +249,7 @@ private:
         pge_network::MsgApp* const pMsgApp = reinterpret_cast<pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
         bool b = assertEquals(
             0,
-            strncpy_s(reinterpret_cast<char*>(pMsgApp->cMsgData), pge_network::MsgApp::nMaxMessageLength, szMsgAppData, sizeof(szMsgAppData)),
+            strncpy_s(reinterpret_cast<char*>(pMsgApp->cMsgData), pge_network::MsgApp::nMaxMessageLengthBytes, szMsgAppData, sizeof(szMsgAppData)),
             "strncpy");
 
         pge_network::PgePacket::initPktMsgApp(pkt, connHandle, pge_network::PgePacket::AutoFill::NONE);
@@ -275,16 +275,16 @@ private:
             pge_network::MsgApp::fillMsgApp(
                 myAppMsg,
                 msgAppMsgId,
-                reinterpret_cast<const uint8_t*>(msgAppMsgData),
+                reinterpret_cast<const pge_network::TByte*>(msgAppMsgData),
                 sizeof(msgAppMsgData)),
             "fill msg app 1");
 
         return b &
             assertEquals(msgAppMsgId, pge_network::MsgApp::getMsgAppMsgId(myAppMsg), "msg app id") &
-            assertEquals(sizeof(msgAppMsgData), pge_network::MsgApp::getMsgAppDataActualSize(myAppMsg), "msg app data actual size") &
+            assertEquals(sizeof(msgAppMsgData), pge_network::MsgApp::getMsgAppDataActualSizeBytes(myAppMsg), "msg app data actual size") &
             assertEquals(
-                offsetof(pge_network::MsgApp, cMsgData) + pge_network::MsgApp::getMsgAppDataActualSize(myAppMsg),
-                pge_network::MsgApp::getMsgAppTotalActualSize(myAppMsg),
+                offsetof(pge_network::MsgApp, cMsgData) + pge_network::MsgApp::getMsgAppDataActualSizeBytes(myAppMsg),
+                pge_network::MsgApp::getMsgAppTotalActualSizeBytes(myAppMsg),
                 "msg app total actual size") &
             assertEquals(
                 0,
@@ -309,7 +309,7 @@ private:
             pge_network::MsgApp::fillMsgApp(
                 myAppMsg,
                 msgAppMsgId,
-                reinterpret_cast<const uint8_t*>(msgAppMsgData),
+                reinterpret_cast<const pge_network::TByte*>(msgAppMsgData),
                 sizeof(msgAppMsgData)),
             "fill msg app 1");
 
@@ -320,7 +320,7 @@ private:
         const size_t nOffsetOfMsgAppDataEndInPkt = (offsetof(pge_network::PgePacket, msg.app) +
             offsetof(pge_network::MsgAppArea, cData) +
             offsetof(pge_network::MsgApp, cMsgData) +
-            pge_network::MsgApp::getMsgAppDataActualSize(myAppMsg));
+            pge_network::MsgApp::getMsgAppDataActualSizeBytes(myAppMsg));
         const size_t nBytesShouldBeZero = sizeof(pkt) - nOffsetOfMsgAppDataEndInPkt;           
 
         return b &
@@ -329,20 +329,20 @@ private:
             assertFalse(pge_network::PgePacket::isMessageAppAreaFull(pkt), "msg app area full 1") &
             assertEquals(1u, static_cast<uint32_t>(pge_network::PgePacket::getMessageAppCount(pkt)), "msg app count 1") &
             assertEquals(
-                pge_network::MsgApp::getMsgAppTotalActualSize(myAppMsg),
-                pge_network::PgePacket::getMessageAppsTotalActualLength(pkt),
+                pge_network::MsgApp::getMsgAppTotalActualSizeBytes(myAppMsg),
+                pge_network::PgePacket::getMessageAppsTotalActualLengthBytes(pkt),
                 "msg apps total length should be same now as the actual size of the only 1 msg app") &
             assertEquals(
                 0,
                 memcmp(
                     static_cast<void*>(pge_network::PgePacket::getMessageAppArea(pkt).cData),
                     static_cast<void*>(&myAppMsg),
-                    pge_network::MsgApp::getMsgAppTotalActualSize(myAppMsg)),
+                    pge_network::MsgApp::getMsgAppTotalActualSizeBytes(myAppMsg)),
                 "pkt msg app area ok") &
             assertEquals(
                 0,
                 memcmp(
-                    static_cast<void*>(reinterpret_cast<uint8_t*>(&pkt) + nOffsetOfMsgAppDataEndInPkt),
+                    static_cast<void*>(reinterpret_cast<pge_network::TByte*>(&pkt) + nOffsetOfMsgAppDataEndInPkt),
                     static_cast<void*>(&pktJustAFullZeroMemoryAreaOfPgePacketSize),
                     nBytesShouldBeZero),
                 "pkt remaining area is clean 1");
@@ -363,7 +363,7 @@ private:
             pge_network::MsgApp::fillMsgApp(
                 myAppMsg,
                 msgAppMsgId,
-                reinterpret_cast<const uint8_t*>(msgAppMsgData),
+                reinterpret_cast<const pge_network::TByte*>(msgAppMsgData),
                 sizeof(msgAppMsgData)),
             "fill msg app 1");
 
@@ -384,12 +384,12 @@ private:
             pge_network::MsgApp::fillMsgApp(
                 myAppMsg,
                 msgAppMsgId,
-                reinterpret_cast<const uint8_t*>(msgAppMsgData),
+                reinterpret_cast<const pge_network::TByte*>(msgAppMsgData),
                 sizeof(msgAppMsgData) /* here I'm still using correct size to avoid segfault */),
             "fill msg app 1");
         
         // intentionally setting too big data size 
-        myAppMsg.nMsgSize = pge_network::MsgApp::nMaxMessageLength + 1;
+        myAppMsg.nMsgSize = pge_network::MsgApp::nMaxMessageLengthBytes + 1;
 
         return b & assertFalse(pge_network::PgePacket::addPktMsgApp(pkt, myAppMsg), "add msg app 1");
     }
@@ -408,12 +408,12 @@ private:
             pge_network::MsgApp::fillMsgApp(
                 myAppMsg,
                 msgAppMsgId,
-                reinterpret_cast<const uint8_t*>(msgAppMsgData),
+                reinterpret_cast<const pge_network::TByte*>(msgAppMsgData),
                 sizeof(msgAppMsgData)),
             "fill msg app 1");
 
         // intentionally setting message area to full
-        pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength = pge_network::MsgAppArea::nMessagesAreaLength;
+        pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength = pge_network::MsgAppArea::nMaxMessagesAreaLengthBytes;
 
         return b & assertFalse(pge_network::PgePacket::addPktMsgApp(pkt, myAppMsg), "add msg app 1");
     }
@@ -432,7 +432,7 @@ private:
             pge_network::MsgApp::fillMsgApp(
                 myAppMsg,
                 msgAppMsgId,
-                reinterpret_cast<const uint8_t*>(msgAppMsgData),
+                reinterpret_cast<const pge_network::TByte*>(msgAppMsgData),
                 sizeof(msgAppMsgData)),
             "fill msg app 1");
 
@@ -451,7 +451,7 @@ private:
         pge_network::PgePacket pkt;
         pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
 
-        uint8_t* const pMsgAppData =
+        pge_network::TByte* const pMsgAppData =
             pge_network::PgePacket::preparePktMsgAppFill(pkt, msgAppMsgId, sizeof(msgAppMsgData));
 
         bool b = assertNotNull(pMsgAppData, "prepare msg app 1");
@@ -460,7 +460,7 @@ private:
         {
             b &= assertEquals(
                 0,
-                static_cast<int>(strncpy_s(reinterpret_cast<char*>(pMsgAppData), pge_network::MsgApp::nMaxMessageLength, msgAppMsgData, sizeof(msgAppMsgData))),
+                static_cast<int>(strncpy_s(reinterpret_cast<char*>(pMsgAppData), pge_network::MsgApp::nMaxMessageLengthBytes, msgAppMsgData, sizeof(msgAppMsgData))),
                 "strncpy");
         }
 
@@ -482,8 +482,8 @@ private:
             assertEquals(msgAppMsgId, pMsgApp->msgId, "msg app id 1") &
             assertEquals(pMsgApp->nMsgSize, sizeof(msgAppMsgData), "msg app data size 1") &
             assertEquals(
-                pge_network::MsgApp::getMsgAppTotalActualSize(*pMsgApp),
-                pge_network::PgePacket::getMessageAppsTotalActualLength(pkt),
+                pge_network::MsgApp::getMsgAppTotalActualSizeBytes(*pMsgApp),
+                pge_network::PgePacket::getMessageAppsTotalActualLengthBytes(pkt),
                 "msg apps total length should be same now as the actual size of the only 1 msg app") &
             assertEquals(
                 0,
@@ -495,7 +495,7 @@ private:
             assertEquals(
                 0,
                 memcmp(
-                    static_cast<void*>(reinterpret_cast<uint8_t*>(&pkt) + nOffsetOfMsgAppDataEndInPkt),
+                    static_cast<void*>(reinterpret_cast<pge_network::TByte*>(&pkt) + nOffsetOfMsgAppDataEndInPkt),
                     static_cast<void*>(&pktJustAFullZeroMemoryAreaOfPgePacketSize),
                     nBytesShouldBeZero),
                 "pkt remaining area is clean 1");
@@ -522,7 +522,7 @@ private:
         pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
 
         // intentionally passing too big size
-        return assertNull(pge_network::PgePacket::preparePktMsgAppFill(pkt, msgAppMsgId, pge_network::MsgApp::nMaxMessageLength + 1), "prepare msg app 1");
+        return assertNull(pge_network::PgePacket::preparePktMsgAppFill(pkt, msgAppMsgId, pge_network::MsgApp::nMaxMessageLengthBytes + 1), "prepare msg app 1");
     }
 
     bool test_preparePktMsgAppFill_Bad_MsgAppAreaActualLengthAlreadyFilledTooMuch()
@@ -534,7 +534,7 @@ private:
         pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
 
         // intentionally setting message area to full
-        pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength = pge_network::MsgAppArea::nMessagesAreaLength;
+        pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength = pge_network::MsgAppArea::nMaxMessagesAreaLengthBytes;
 
         return assertNull(pge_network::PgePacket::preparePktMsgAppFill(pkt, msgAppMsgId, 10u), "prepare msg app 1");
     }

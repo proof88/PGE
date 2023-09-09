@@ -155,9 +155,9 @@ void PgeGnsClient::sendToServer(const pge_network::PgePacket& pkt)
         // We need to consider member padding and the actual message sizes to have a correct value.
         // 'cData' is our point of view since from there we need to calculate.
         const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
-        const uint8_t* pMsgAppInByteSteps = pge_network::PgePacket::getMessageAppArea(pkt).cData;  // we can step this ptr in Bytes
+        const pge_network::TByte* pMsgAppInByteSteps = pge_network::PgePacket::getMessageAppArea(pkt).cData;  // we can step this ptr in Bytes
         // Real offset in Bytes in memory of actual app data relative to beginning of MsgApp struct
-        // const size_t nByteDistanceOfMsgDataInMsgApp = (uint8_t*)(&(pMsgApp->cMsgData)) - (uint8_t*)(pMsgApp);
+        // const size_t nByteDistanceOfMsgDataInMsgApp = (pge_network::TByte*)(&(pMsgApp->cMsgData)) - (pge_network::TByte*)(pMsgApp);
         const size_t nByteDistanceOfMsgDataInMsgApp = offsetof(pge_network::MsgApp, cMsgData);
         for (uint8_t i = 0; i < pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount; i++)
         {
@@ -166,7 +166,7 @@ void PgeGnsClient::sendToServer(const pge_network::PgePacket& pkt)
             pMsgAppInByteSteps += (nByteDistanceOfMsgDataInMsgApp + pMsgApp->nMsgSize);
         }
         // now pMsgAppInByteSteps points to RIGHT AFTER the 1st byte of the last application message
-        const uint8_t* pPkt = (const uint8_t*)(&pkt);
+        const pge_network::TByte* pPkt = (const pge_network::TByte*)(&pkt);
         nActualPktSize = pMsgAppInByteSteps - pPkt;
     }
     else

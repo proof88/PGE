@@ -68,8 +68,9 @@ namespace pge_network
         static const PgePktId id = PgePktId::UserDisconnectedFromServer;
     };
 
-    typedef uint32_t TPgeMsgAppMsgId;
+    typedef uint32_t TPgeMsgAppMsgId;  // TODO: could be decreased to uint16_t
     typedef uint8_t TPgeMsgAppMsgSize;
+    typedef uint8_t TByte;
 
     // application-specific message
     // server <-> client
@@ -77,17 +78,17 @@ namespace pge_network
     struct MsgApp
     {
         static const PgePktId id = PgePktId::Application;
-        static const TPgeMsgAppMsgSize nMaxMessageLength = 240;
+        static const TPgeMsgAppMsgSize nMaxMessageLengthBytes = 240;
 
         static TPgeMsgAppMsgId& getMsgAppMsgId(MsgApp& msgApp);
-        static TPgeMsgAppMsgSize&  getMsgAppDataActualSize(MsgApp& msgApp);  // TODO: delete this non-const version later when not needed
-        static const TPgeMsgAppMsgSize& getMsgAppDataActualSize(const MsgApp& msgApp);
-        static const TPgeMsgAppMsgSize getMsgAppTotalActualSize(const MsgApp& msgApp);
-        static uint8_t* getMsgAppData(MsgApp& msgApp);
+        static TPgeMsgAppMsgSize&  getMsgAppDataActualSizeBytes(MsgApp& msgApp);  // TODO: delete this non-const version later when not needed
+        static const TPgeMsgAppMsgSize& getMsgAppDataActualSizeBytes(const MsgApp& msgApp);
+        static const TPgeMsgAppMsgSize getMsgAppTotalActualSizeBytes(const MsgApp& msgApp);
+        static TByte* getMsgAppData(MsgApp& msgApp);
         static bool fillMsgApp(
             pge_network::MsgApp& myAppMsg,
             const pge_network::TPgeMsgAppMsgId& msgAppMsgId,
-            const uint8_t* msgAppData,
+            const TByte* msgAppData,
             TPgeMsgAppMsgSize nMsgAppDataSize);
         
         TPgeMsgAppMsgId msgId;  // this is checked by engine upon polling for new messages against the allowlists
@@ -99,10 +100,10 @@ namespace pge_network
            When packaging MsgApp into MsgAppArea, we should put the actually used memory area (nMsgSize) and not the whole area, and
            increase MsgAppArea::m_nMessageCount by 1.
          */
-        uint8_t cMsgData[nMaxMessageLength];
+        TByte cMsgData[nMaxMessageLengthBytes];
     };
 
-    static_assert(MsgApp::nMaxMessageLength <= std::numeric_limits<TPgeMsgAppMsgSize>::max(),
+    static_assert(MsgApp::nMaxMessageLengthBytes <= std::numeric_limits<TPgeMsgAppMsgSize>::max(),
         "Size of MsgApp data should fit in MsgApp::nMsgSize");
 
     typedef uint8_t TPgeMsgAppAreaLength;
@@ -110,7 +111,7 @@ namespace pge_network
     // memory area within a PgePacket, used when we are sending app message(s) in the packet
     struct MsgAppArea
     {
-        static const TPgeMsgAppAreaLength nMessagesAreaLength = std::numeric_limits<TPgeMsgAppAreaLength>::max();
+        static const TPgeMsgAppAreaLength nMaxMessagesAreaLengthBytes = std::numeric_limits<TPgeMsgAppAreaLength>::max();
 
         uint8_t m_nMessageCount;                           // should be readable only by application
         TPgeMsgAppAreaLength m_nActualMessagesAreaLength;  // should be readable only by application
@@ -120,11 +121,11 @@ namespace pge_network
            When sending, we should send the actually used memory area and not the whole area.
            In 'cData' we store at least 1 variable-sized MsgApp.
          */
-        uint8_t cData[nMessagesAreaLength];   // should be writable by application, but the pointer to it should be calculated by wrapper function
+        TByte cData[nMaxMessagesAreaLengthBytes];   // should be writable by application, but the pointer to it should be calculated by wrapper function
     };
     
     static_assert(
-        sizeof(MsgApp) <= MsgAppArea::nMessagesAreaLength,
+        sizeof(MsgApp) <= MsgAppArea::nMaxMessagesAreaLengthBytes,
         "At least 1 full MsgApp should fit into MsgAppArea.cData!");
 
     struct PgePacket
@@ -152,7 +153,7 @@ namespace pge_network
         static const MsgAppArea& getMessageAppArea(const pge_network::PgePacket& pkt);
 
         static uint8_t getMessageAppCount(const pge_network::PgePacket& pkt);
-        static TPgeMsgAppAreaLength getMessageAppsTotalActualLength(const pge_network::PgePacket& pkt);
+        static TPgeMsgAppAreaLength getMessageAppsTotalActualLengthBytes(const pge_network::PgePacket& pkt);
 
         static bool isMessageAppAreaFull(const pge_network::PgePacket& pkt);
 
@@ -233,7 +234,7 @@ namespace pge_network
         * 
         * @return On success: a valid pointer pointing into the proper area of the given packet, nullptr otherwise.
         */
-        static uint8_t* preparePktMsgAppFill(
+        static TByte* preparePktMsgAppFill(
             pge_network::PgePacket& pkt,
             TPgeMsgAppMsgId msgAppId,
             TPgeMsgAppMsgSize nMsgAppDataSize
