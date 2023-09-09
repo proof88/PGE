@@ -105,13 +105,15 @@ namespace pge_network
     static_assert(MsgApp::nMaxMessageLength <= std::numeric_limits<TPgeMsgAppMsgSize>::max(),
         "Size of MsgApp data should fit in MsgApp::nMsgSize");
 
+    typedef uint8_t TPgeMsgAppAreaLength;
+    
     // memory area within a PgePacket, used when we are sending app message(s) in the packet
     struct MsgAppArea
     {
-        static const uint8_t nMessagesAreaLength = std::numeric_limits<uint8_t>::max();
+        static const TPgeMsgAppAreaLength nMessagesAreaLength = std::numeric_limits<TPgeMsgAppAreaLength>::max();
 
-        uint8_t m_nMessageCount;              // should be readable only by application
-        uint8_t m_nActualMessagesAreaLength;  // should be readable only by application
+        uint8_t m_nMessageCount;                           // should be readable only by application
+        TPgeMsgAppAreaLength m_nActualMessagesAreaLength;  // should be readable only by application
         /* This 'cData' memory area is for m_nMessageCount number of different app messages.
            The C++ standard guarantees that the members of a class or struct appear in memory in the same order as they are declared.
            This 'cData' member needs to be the LAST member of this struct.
@@ -150,7 +152,7 @@ namespace pge_network
         static const MsgAppArea& getMessageAppArea(const pge_network::PgePacket& pkt);
 
         static uint8_t getMessageAppCount(const pge_network::PgePacket& pkt);
-        static uint8_t getMessageAppsTotalActualLength(const pge_network::PgePacket& pkt);
+        static TPgeMsgAppAreaLength getMessageAppsTotalActualLength(const pge_network::PgePacket& pkt);
 
         static bool isMessageAppAreaFull(const pge_network::PgePacket& pkt);
 

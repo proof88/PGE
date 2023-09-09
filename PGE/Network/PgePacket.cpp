@@ -71,7 +71,7 @@ namespace pge_network {
         return getMessageAppArea(pkt).m_nMessageCount;
     }
 
-    uint8_t pge_network::PgePacket::getMessageAppsTotalActualLength(const pge_network::PgePacket& pkt)
+    TPgeMsgAppAreaLength pge_network::PgePacket::getMessageAppsTotalActualLength(const pge_network::PgePacket& pkt)
     {
         return getMessageAppArea(pkt).m_nActualMessagesAreaLength;
     }
@@ -189,7 +189,7 @@ namespace pge_network {
 
         memcpy(pge_network::PgePacket::getMessageAppArea(pkt).cData, &msgApp, nActualTotalAppMsgSize);
         pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount++;
-        pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength += static_cast<uint8_t>(nActualTotalAppMsgSize);
+        pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength += static_cast<TPgeMsgAppAreaLength>(nActualTotalAppMsgSize);
 
         return true;
     }
@@ -234,7 +234,7 @@ namespace pge_network {
         }
 
         pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount = 1; // TODO: increase
-        pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength += static_cast<uint8_t>(nActualTotalAppMsgSize);
+        pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength += static_cast<TPgeMsgAppAreaLength>(nActualTotalAppMsgSize);
 
         // TODO: find location for next app msg (separate function)
         // TODO: store the given app msg at the proper location
