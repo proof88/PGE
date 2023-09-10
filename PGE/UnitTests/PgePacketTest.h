@@ -193,7 +193,7 @@ private:
 
         pge_network::PgePacket pkt;
 
-        pge_network::MsgApp* const pMsgApp = reinterpret_cast<pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).m_cData);
+        pge_network::MsgApp* const pMsgApp = pge_network::PgePacket::getMsgAppFromPkt(pkt);
         pMsgApp->m_msgId = nMsgAppId;
         bool b = assertEquals(
             0,
@@ -229,7 +229,7 @@ private:
 
         pge_network::PgePacket pkt;
 
-        pge_network::MsgApp* const pMsgApp = reinterpret_cast<pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).m_cData);
+        pge_network::MsgApp* const pMsgApp = pge_network::PgePacket::getMsgAppFromPkt(pkt);
         pMsgApp->m_msgId = nMsgAppId;
         bool b = assertEquals(
             0,
@@ -337,7 +337,7 @@ private:
             assertEquals(
                 0,
                 memcmp(
-                    static_cast<void*>(pge_network::PgePacket::getMessageAppArea(pkt).m_cData),
+                    static_cast<void*>(pge_network::PgePacket::getMsgAppFromPkt(pkt)),
                     static_cast<void*>(&myAppMsg),
                     pge_network::MsgApp::getMsgAppTotalActualSizeBytes(myAppMsg)),
                 "pkt msg app area ok") &
@@ -415,7 +415,7 @@ private:
             "fill msg app 1");
 
         // intentionally setting message area to full
-        pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength = pge_network::MsgAppArea::nMaxMessagesAreaLengthBytes;
+        pge_network::PgePacket::getMessageAppsTotalActualLengthBytes(pkt) = pge_network::MsgAppArea::nMaxMessagesAreaLengthBytes;
 
         return b & assertFalse(pge_network::PgePacket::addPktMsgApp(pkt, myAppMsg), "add msg app 1");
     }
@@ -439,7 +439,7 @@ private:
             "fill msg app 1");
 
         // intentionally setting message count to max
-        pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount = std::numeric_limits<uint8_t>::max();
+        pge_network::PgePacket::getMessageAppCount(pkt) = std::numeric_limits<uint8_t>::max();
 
         return b & assertFalse(pge_network::PgePacket::addPktMsgApp(pkt, myAppMsg), "add msg app 1");
     }
@@ -474,7 +474,7 @@ private:
             sizeof(msgAppMsgData));
         const size_t nBytesShouldBeZero = sizeof(pkt) - nOffsetOfMsgAppDataEndInPkt;
 
-        const pge_network::MsgApp* const pMsgApp = reinterpret_cast<pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).m_cData);
+        const pge_network::MsgApp* const pMsgApp = pge_network::PgePacket::getMsgAppFromPkt(pkt);
 
         return b &
             assertEquals(static_cast<uint32_t>(pge_network::MsgApp::id), static_cast<uint32_t>(pge_network::PgePacket::getPacketId(pkt)), "pktId 1") &
@@ -536,7 +536,7 @@ private:
         pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
 
         // intentionally setting message area to full
-        pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength = pge_network::MsgAppArea::nMaxMessagesAreaLengthBytes;
+        pge_network::PgePacket::getMessageAppsTotalActualLengthBytes(pkt) = pge_network::MsgAppArea::nMaxMessagesAreaLengthBytes;
 
         return assertNull(pge_network::PgePacket::preparePktMsgAppFill(pkt, msgAppMsgId, 10u), "prepare msg app 1");
     }
@@ -550,7 +550,7 @@ private:
         pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
 
         // intentionally setting message count to max
-        pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount = std::numeric_limits<uint8_t>::max();
+        pge_network::PgePacket::getMessageAppCount(pkt) = std::numeric_limits<uint8_t>::max();
 
         return assertNull(pge_network::PgePacket::preparePktMsgAppFill(pkt, msgAppMsgId, 10u), "prepare msg app 1");
     }

@@ -182,27 +182,31 @@ bool PgeGnsWrapper::pollIncomingMessages()
         // release it later, that could be a good speed optimization.
         (pIncomingGnsMsg[i])->Release();
 
-        if (pge_network::PgePacket::getPacketId(pkt) == pge_network::PgePktId::Application)
+        const pge_network::PgePacket& pktAsConst = pkt;  // from now on we use this const version
+
+        if (pge_network::PgePacket::getPacketId(pktAsConst) == pge_network::PgePktId::Application)
         {
-            if (pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount == 0)
+            const uint8_t nMessageCount = pge_network::PgePacket::getMessageAppCount(pktAsConst);
+            if (nMessageCount == 0)
             {
                 CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s: app message pkt with msg count 0 from connection %u!",
-                    __func__, pge_network::PgePacket::getServerSideConnectionHandle(pkt));
+                    __func__, pge_network::PgePacket::getServerSideConnectionHandle(pktAsConst));
                 assert(false);
                 continue;
             }
 
             // for now we support only 1 app msg / pkt
-            assert(pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount == 1);
+            assert(nMessageCount == 1);
 
-            const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).m_cData);
-            for (uint8_t iAppMsg = 0; iAppMsg < pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount; iAppMsg++)
+            const pge_network::MsgApp* pMsgApp = pge_network::PgePacket::getMsgAppFromPkt(pktAsConst);
+            
+            for (uint8_t iAppMsg = 0; iAppMsg < nMessageCount; iAppMsg++)
             {
                 // TODO: nooo I need proper iteration for every msgId!
                 if (m_allowListedAppMessages.end() == m_allowListedAppMessages.find(pMsgApp->m_msgId))
                 {
                     CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s: non-allowlisted app message received: %u from connection %u!",
-                        __func__, pMsgApp->m_msgId, pge_network::PgePacket::getServerSideConnectionHandle(pkt));
+                        __func__, pMsgApp->m_msgId, pge_network::PgePacket::getServerSideConnectionHandle(pktAsConst));
                     assert(false);
                     continue;
                 }
@@ -215,10 +219,10 @@ bool PgeGnsWrapper::pollIncomingMessages()
         }
         else
         {
-            if (m_allowListedPgeMessages.end() == m_allowListedPgeMessages.find(pge_network::PgePacket::getPacketId(pkt)))
+            if (m_allowListedPgeMessages.end() == m_allowListedPgeMessages.find(pge_network::PgePacket::getPacketId(pktAsConst)))
             {
                 CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s: non-allowlisted pge message received: %u from connection %u!",
-                    __func__, pge_network::PgePacket::getPacketId(pkt), pge_network::PgePacket::getServerSideConnectionHandle(pkt));
+                    __func__, pge_network::PgePacket::getPacketId(pktAsConst), pge_network::PgePacket::getServerSideConnectionHandle(pktAsConst));
                 assert(false);
                 continue;
             }
@@ -227,7 +231,7 @@ bool PgeGnsWrapper::pollIncomingMessages()
         m_nRxByteCount += nActualPktSize;
         // TODO: would be nice if even the size of pushed packets would be the actual to copy less memory
         // or at least use emplace_back()
-        m_queuePackets.push_back(pkt);
+        m_queuePackets.push_back(pktAsConst);
     } // for i
 
     if (m_nRxPktCount == 0)

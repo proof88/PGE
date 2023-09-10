@@ -66,12 +66,22 @@ namespace pge_network {
         return pkt.m_msg.m_app;
     }
 
-    uint8_t pge_network::PgePacket::getMessageAppCount(const pge_network::PgePacket& pkt)
+    const uint8_t& pge_network::PgePacket::getMessageAppCount(const pge_network::PgePacket& pkt)
     {
         return getMessageAppArea(pkt).m_nMessageCount;
     }
 
-    TPgeMsgAppAreaLength pge_network::PgePacket::getMessageAppsTotalActualLengthBytes(const pge_network::PgePacket& pkt)
+    const TPgeMsgAppAreaLength& pge_network::PgePacket::getMessageAppsTotalActualLengthBytes(const pge_network::PgePacket& pkt)
+    {
+        return getMessageAppArea(pkt).m_nActualMessagesAreaLength;
+    }
+
+    uint8_t& pge_network::PgePacket::getMessageAppCount(pge_network::PgePacket& pkt)
+    {
+        return getMessageAppArea(pkt).m_nMessageCount;
+    }
+
+    TPgeMsgAppAreaLength& pge_network::PgePacket::getMessageAppsTotalActualLengthBytes(pge_network::PgePacket& pkt)
     {
         return getMessageAppArea(pkt).m_nActualMessagesAreaLength;
     }
@@ -131,6 +141,12 @@ namespace pge_network {
     {
         const pge_network::MsgApp* const pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.m_msg.m_app.m_cData);
         return pMsgApp;
+    }
+
+    pge_network::MsgApp* PgePacket::getMsgAppFromPkt(pge_network::PgePacket& pkt)
+    {
+        // simply invoke the const-version of getMsgAppDataFromPkt() above by const-casting:
+        return const_cast<pge_network::MsgApp*>(getMsgAppFromPkt(const_cast<const pge_network::PgePacket&>(pkt)));
     }
 
     const pge_network::TPgeMsgAppMsgId& PgePacket::getMsgAppIdFromPkt(const pge_network::PgePacket& pkt)

@@ -142,8 +142,13 @@ namespace pge_network
     // memory area within a PgePacket, used when we are sending app message(s) in the packet
     struct MsgAppArea
     {
+        friend class  PgePacketTest;
+        friend struct PgePacket;     // PgePacket should have full r/w access since basically this is part of it
+
+    public:
         static const TPgeMsgAppAreaLength nMaxMessagesAreaLengthBytes = std::numeric_limits<TPgeMsgAppAreaLength>::max();
 
+    private:
         uint8_t m_nMessageCount;                           // should be readable only by application
         TPgeMsgAppAreaLength m_nActualMessagesAreaLength;  // should be readable only by application
         /* This 'cData' memory area is for m_nMessageCount number of different app messages.
@@ -197,12 +202,13 @@ namespace pge_network
         static MsgAppArea& getMessageAppArea(pge_network::PgePacket& pkt);
         static const MsgAppArea& getMessageAppArea(const pge_network::PgePacket& pkt);
 
-        static uint8_t getMessageAppCount(const pge_network::PgePacket& pkt);
-        static TPgeMsgAppAreaLength getMessageAppsTotalActualLengthBytes(const pge_network::PgePacket& pkt);
+        static const uint8_t& getMessageAppCount(const pge_network::PgePacket& pkt);
+        static const TPgeMsgAppAreaLength& getMessageAppsTotalActualLengthBytes(const pge_network::PgePacket& pkt);
 
         static bool isMessageAppAreaFull(const pge_network::PgePacket& pkt);
 
         static const pge_network::MsgApp* getMsgAppFromPkt(const pge_network::PgePacket& pkt);
+        static pge_network::MsgApp* PgePacket::getMsgAppFromPkt(pge_network::PgePacket& pkt);
 
         static const pge_network::TPgeMsgAppMsgId& getMsgAppIdFromPkt(const pge_network::PgePacket& pkt);
 
@@ -316,6 +322,13 @@ namespace pge_network
             MsgUserDisconnectedFromServer m_userDisconnected;
             MsgAppArea m_app; // application should load/store its custom messages here
         } m_msg;
+
+        // private getters/setter
+
+        static uint8_t& getMessageAppCount(pge_network::PgePacket& pkt);
+        static TPgeMsgAppAreaLength& getMessageAppsTotalActualLengthBytes(pge_network::PgePacket& pkt);
+
+        // private initializers 
 
         static void initPktBasic(
             pge_network::PgePacket& pkt,
