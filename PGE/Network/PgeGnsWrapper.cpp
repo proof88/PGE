@@ -173,6 +173,7 @@ bool PgeGnsWrapper::pollIncomingMessages()
         const int nActualPktSize = (pIncomingGnsMsg[i])->m_cbSize;
         pge_network::PgePacket pkt;
         assert(nActualPktSize <= sizeof(pkt));
+        assert(nActualPktSize > 0);
         
         memcpy(&pkt, (pIncomingGnsMsg[i])->m_pData, nActualPktSize);
         updateIncomingPgePacket(pkt, pIncomingGnsMsg[i]->m_conn);
@@ -204,7 +205,7 @@ bool PgeGnsWrapper::pollIncomingMessages()
             for (uint8_t iAppMsg = 0; iAppMsg < nMessageCount; iAppMsg++)
             {
                 // TODO: nooo I need proper iteration for every msgId!
-                const pge_network::TPgeMsgAppMsgId& msgAppId = pge_network::MsgApp::getMsgAppMsgId(*pMsgApp);
+                const pge_network::MsgApp::TMsgId& msgAppId = pge_network::MsgApp::getMsgAppMsgId(*pMsgApp);
                 if (m_allowListedAppMessages.end() == m_allowListedAppMessages.find(msgAppId))
                 {
                     CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s: non-allowlisted app message received: %u from connection %u!",
@@ -271,7 +272,7 @@ std::set<pge_network::PgePktId>& PgeGnsWrapper::getAllowListedPgeMessages()
     return m_allowListedPgeMessages;
 }
 
-std::set<pge_network::TPgeMsgAppMsgId>& PgeGnsWrapper::getAllowListedAppMessages()
+std::set<pge_network::MsgApp::TMsgId>& PgeGnsWrapper::getAllowListedAppMessages()
 {
     return m_allowListedAppMessages;
 }
@@ -315,22 +316,22 @@ uint32_t PgeGnsWrapper::getInjectPacketPerSecondCount() const
     return static_cast<uint32_t>(nSecsSince1stInjectPkt != 0 ? (getInjectPacketCount() / nSecsSince1stInjectPkt) : 0);
 }
 
-const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeGnsWrapper::getRxMsgCount() const
+const std::map<pge_network::MsgApp::TMsgId, uint32_t>& PgeGnsWrapper::getRxMsgCount() const
 {
     return m_nRxMsgCount;
 }
 
-const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeGnsWrapper::getTxMsgCount() const
+const std::map<pge_network::MsgApp::TMsgId, uint32_t>& PgeGnsWrapper::getTxMsgCount() const
 {
     return m_nTxMsgCount;
 }
 
-const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeGnsWrapper::getInjectMsgCount() const
+const std::map<pge_network::MsgApp::TMsgId, uint32_t>& PgeGnsWrapper::getInjectMsgCount() const
 {
     return m_nInjectMsgCount;
 }
 
-std::map<pge_network::TPgeMsgAppMsgId, std::string>& PgeGnsWrapper::getMsgAppId2StringMap()
+std::map<pge_network::MsgApp::TMsgId, std::string>& PgeGnsWrapper::getMsgAppId2StringMap()
 {
     return m_mapMsgAppId2String;
 }
@@ -384,7 +385,7 @@ PgeGnsWrapper& PgeGnsWrapper::operator=(const PgeGnsWrapper&)
     return *this;
 }
 
-std::string PgeGnsWrapper::getStringByMsgAppId(const pge_network::TPgeMsgAppMsgId& id) const
+std::string PgeGnsWrapper::getStringByMsgAppId(const pge_network::MsgApp::TMsgId& id) const
 {
     const auto& it = m_mapMsgAppId2String.find(id);
     if (it != m_mapMsgAppId2String.end())

@@ -188,7 +188,7 @@ private:
     bool test_initPktMsgApp()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5;
-        constexpr pge_network::TPgeMsgAppMsgId nMsgAppId = 13u;
+        constexpr pge_network::MsgApp::TMsgId nMsgAppId = 13u;
         const char szMsgAppData[] = "almafa";
 
         pge_network::PgePacket pkt;
@@ -228,7 +228,7 @@ private:
     bool test_initPktMsgApp_NoZeroFill()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5;
-        constexpr pge_network::TPgeMsgAppMsgId nMsgAppId = 13u;
+        constexpr pge_network::MsgApp::TMsgId nMsgAppId = 13u;
         const char szMsgAppData[] = "almafa";
 
         pge_network::PgePacket pkt;
@@ -260,7 +260,7 @@ private:
 
     bool test_fillMsgApp()
     {
-        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr pge_network::MsgApp::TMsgId msgAppMsgId = 23u;
         constexpr char msgAppMsgData[] = "almafa";
 
         pge_network::MsgApp myAppMsg;
@@ -308,7 +308,7 @@ private:
     bool test_addPktMsgApp_Good()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
-        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr pge_network::MsgApp::TMsgId msgAppMsgId = 23u;
         constexpr char msgAppMsgData[] = "almafa";
 
         pge_network::PgePacket pkt;
@@ -361,7 +361,7 @@ private:
     bool test_addPktMsgApp_Bad_PktId()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
-        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr pge_network::MsgApp::TMsgId msgAppMsgId = 23u;
         constexpr char msgAppMsgData[] = "almafa";
 
         // intentionally initializing packet wrong
@@ -383,7 +383,7 @@ private:
     bool test_addPktMsgApp_Bad_MsgAppDataSizeTooBig()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
-        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr pge_network::MsgApp::TMsgId msgAppMsgId = 23u;
         constexpr char msgAppMsgData[] = "almafa";
 
         pge_network::PgePacket pkt;
@@ -407,7 +407,7 @@ private:
     bool test_addPktMsgApp_Bad_MsgAppAreaActualLengthAlreadyFilledTooMuch()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
-        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr pge_network::MsgApp::TMsgId msgAppMsgId = 23u;
         constexpr char msgAppMsgData[] = "almafa";
 
         pge_network::PgePacket pkt;
@@ -431,7 +431,7 @@ private:
     bool test_addPktMsgApp_Bad_MaxMessageCountReached()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
-        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr pge_network::MsgApp::TMsgId msgAppMsgId = 23u;
         constexpr char msgAppMsgData[] = "almafa";
 
         pge_network::PgePacket pkt;
@@ -455,7 +455,7 @@ private:
     bool test_preparePktMsgAppFill_Good()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
-        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr pge_network::MsgApp::TMsgId msgAppMsgId = 23u;
         constexpr char msgAppMsgData[] = "almafa";
 
         pge_network::PgePacket pkt;
@@ -514,7 +514,7 @@ private:
     bool test_preparePktMsgAppFill_Bad_PktId()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
-        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr pge_network::MsgApp::TMsgId msgAppMsgId = 23u;
 
         // intentionally initializing packet wrong
         pge_network::PgePacket pkt;
@@ -526,7 +526,7 @@ private:
     bool test_preparePktMsgAppFill_Bad_MsgAppDataSizeTooBig()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
-        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr pge_network::MsgApp::TMsgId msgAppMsgId = 23u;
 
         pge_network::PgePacket pkt;
         pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
@@ -538,7 +538,7 @@ private:
     bool test_preparePktMsgAppFill_Bad_MsgAppAreaActualLengthAlreadyFilledTooMuch()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
-        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr pge_network::MsgApp::TMsgId msgAppMsgId = 23u;
 
         pge_network::PgePacket pkt;
         pge_network::PgePacket::initPktMsgApp(pkt, connHandle);
@@ -552,7 +552,7 @@ private:
     bool test_preparePktMsgAppFill_Bad_MaxMessageCountReached()
     {
         constexpr pge_network::PgeNetworkConnectionHandle connHandle = 5u;
-        constexpr pge_network::TPgeMsgAppMsgId msgAppMsgId = 23u;
+        constexpr pge_network::MsgApp::TMsgId msgAppMsgId = 23u;
 
         pge_network::PgePacket pkt;
         pge_network::PgePacket::initPktMsgApp(pkt, connHandle);

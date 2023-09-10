@@ -50,7 +50,7 @@ namespace pge_network
         virtual pge_network::PgePacket popFrontPacket() noexcept(false) = 0;
 
         virtual std::set<pge_network::PgePktId>& getAllowListedPgeMessages() = 0;
-        virtual std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() = 0;
+        virtual std::set<pge_network::MsgApp::TMsgId>& getAllowListedAppMessages() = 0;
 
         /**
         * Sends the given packet to the network instance specified.
@@ -71,11 +71,11 @@ namespace pge_network
         virtual uint32_t getTxPacketPerSecondCount() const = 0;
         virtual uint32_t getInjectPacketPerSecondCount() const = 0;
 
-        virtual const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getRxMsgCount() const = 0;
-        virtual const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getTxMsgCount() const = 0;
-        virtual const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getInjectMsgCount() const = 0;
+        virtual const std::map<pge_network::MsgApp::TMsgId, uint32_t>& getRxMsgCount() const = 0;
+        virtual const std::map<pge_network::MsgApp::TMsgId, uint32_t>& getTxMsgCount() const = 0;
+        virtual const std::map<pge_network::MsgApp::TMsgId, uint32_t>& getInjectMsgCount() const = 0;
 
-        virtual std::map<pge_network::TPgeMsgAppMsgId, std::string>& getMsgAppId2StringMap() = 0;
+        virtual std::map<pge_network::MsgApp::TMsgId, std::string>& getMsgAppId2StringMap() = 0;
 
         virtual uint32_t getRxByteCount() const = 0;
         virtual uint32_t getTxByteCount() const = 0;

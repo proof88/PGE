@@ -95,38 +95,37 @@ namespace pge_network
     static_assert(std::is_trivially_copyable_v<MsgUserDisconnectedFromServer>);
     static_assert(std::is_standard_layout_v<MsgUserDisconnectedFromServer>);
 
-    typedef uint32_t TPgeMsgAppMsgId;  // TODO: could be decreased to uint16_t
-    typedef uint8_t TPgeMsgAppMsgSize;
     typedef uint8_t TByte;
 
     // application-specific message
     // server <-> client
-    // With allowlisting, app messages can be separately allowed to be processed by clients and server based on TPgeMsgAppMsgId.
+    // With allowlisting, app messages can be separately allowed to be processed by clients and server based on MsgApp::TMsgId.
     struct MsgApp
     {
         friend class  PgePacketTest;
         friend struct PgePacket;     // PgePacket should have full r/w access since basically this is part of it
 
     public:
-        static const PgePktId id = PgePktId::Application;
-        static const TPgeMsgAppMsgSize nMaxMessageLengthBytes = 240;
+        typedef uint32_t TMsgId;   // TODO: could be decreased to uint16_t
+        typedef uint8_t  TMsgSize;
 
-        static const TPgeMsgAppMsgId& getMsgAppMsgId(const MsgApp& msgApp);
-        static TPgeMsgAppMsgId& getMsgAppMsgId(MsgApp& msgApp);
-        static TPgeMsgAppMsgSize&  getMsgAppDataActualSizeBytes(MsgApp& msgApp);  // TODO: delete this non-const version later when not needed
-        static const TPgeMsgAppMsgSize& getMsgAppDataActualSizeBytes(const MsgApp& msgApp);
-        static const TPgeMsgAppMsgSize getMsgAppTotalActualSizeBytes(const MsgApp& msgApp);
+        static const PgePktId id = PgePktId::Application;
+        static const TMsgSize nMaxMessageLengthBytes = 240;
+
+        static const TMsgId& getMsgAppMsgId(const MsgApp& msgApp);
+        static const TMsgSize& getMsgAppDataActualSizeBytes(const MsgApp& msgApp);
+        static const TMsgSize getMsgAppTotalActualSizeBytes(const MsgApp& msgApp);
         static const TByte* getMsgAppData(const MsgApp& msgApp);
         static TByte* getMsgAppData(MsgApp& msgApp);
         static bool fillMsgApp(
-            pge_network::MsgApp& myAppMsg,
-            const pge_network::TPgeMsgAppMsgId& msgAppMsgId,
+            MsgApp& myAppMsg,
+            const TMsgId& msgAppMsgId,
             const TByte* msgAppData,
-            TPgeMsgAppMsgSize nMsgAppDataSize);
+            TMsgSize nMsgAppDataSize);
         
     private:
-        TPgeMsgAppMsgId m_msgId;  // this is checked by engine upon polling for new messages against the allowlists
-        TPgeMsgAppMsgSize m_nMsgSize;
+        TMsgId m_msgId;  // this is checked by engine upon polling for new messages against the allowlists
+        TMsgSize m_nMsgSize;
         /* This 'cMsgData' memory area is for 1 application message defined at application level, not here.
            So the application is responsible for copying the message here.
            The C++ standard guarantees that the members of a class or struct appear in memory in the same order as they are declared.
@@ -135,15 +134,16 @@ namespace pge_network
            increase MsgAppArea::m_nMessageCount by 1.
          */
         TByte m_cMsgData[nMaxMessageLengthBytes];
+
+        static TMsgId& getMsgAppMsgId(MsgApp& msgApp);
+        static TMsgSize& getMsgAppDataActualSizeBytes(MsgApp& msgApp);  // TODO: delete this non-const version later when not needed
     };
     static_assert(std::is_trivial_v<MsgApp>);
     static_assert(std::is_trivially_copyable_v<MsgApp>);
     static_assert(std::is_standard_layout_v<MsgApp>);
 
-    static_assert(MsgApp::nMaxMessageLengthBytes <= std::numeric_limits<TPgeMsgAppMsgSize>::max(),
+    static_assert(MsgApp::nMaxMessageLengthBytes <= std::numeric_limits<MsgApp::TMsgSize>::max(),
         "Size of MsgApp data should fit in MsgApp::nMsgSize");
-
-    typedef uint8_t TPgeMsgAppAreaLength;
     
     // memory area within a PgePacket, used when we are sending app message(s) in the packet
     struct MsgAppArea
@@ -152,11 +152,13 @@ namespace pge_network
         friend struct PgePacket;     // PgePacket should have full r/w access since basically this is part of it
 
     public:
-        static const TPgeMsgAppAreaLength nMaxMessagesAreaLengthBytes = std::numeric_limits<TPgeMsgAppAreaLength>::max();
+        typedef uint8_t TAreaLength;
+
+        static const TAreaLength nMaxMessagesAreaLengthBytes = std::numeric_limits<TAreaLength>::max();
 
     private:
         uint8_t m_nMessageCount;                           // should be readable only by application
-        TPgeMsgAppAreaLength m_nActualMessagesAreaLength;  // should be readable only by application
+        TAreaLength m_nActualMessagesAreaLength;  // should be readable only by application
         /* This 'cData' memory area is for m_nMessageCount number of different app messages.
            The C++ standard guarantees that the members of a class or struct appear in memory in the same order as they are declared.
            This 'cData' member needs to be the LAST member of this struct.
@@ -205,18 +207,15 @@ namespace pge_network
         static MsgUserDisconnectedFromServer& getMessageAsUserDisconnected(pge_network::PgePacket& pkt);
         static const MsgUserDisconnectedFromServer& getMessageAsUserDisconnected(const pge_network::PgePacket& pkt);
 
-        static MsgAppArea& getMessageAppArea(pge_network::PgePacket& pkt);
-        static const MsgAppArea& getMessageAppArea(const pge_network::PgePacket& pkt);
-
         static const uint8_t& getMessageAppCount(const pge_network::PgePacket& pkt);
-        static const TPgeMsgAppAreaLength& getMessageAppsTotalActualLengthBytes(const pge_network::PgePacket& pkt);
+        static const MsgAppArea::TAreaLength& getMessageAppsTotalActualLengthBytes(const pge_network::PgePacket& pkt);
 
         static bool isMessageAppAreaFull(const pge_network::PgePacket& pkt);
 
         static const pge_network::MsgApp* getMsgAppFromPkt(const pge_network::PgePacket& pkt);
         static pge_network::MsgApp* PgePacket::getMsgAppFromPkt(pge_network::PgePacket& pkt);
 
-        static const pge_network::TPgeMsgAppMsgId& getMsgAppIdFromPkt(const pge_network::PgePacket& pkt);
+        static const pge_network::MsgApp::TMsgId& getMsgAppIdFromPkt(const pge_network::PgePacket& pkt);
 
         /**
         * This convenient function is for the application: the custom application-defined message can
@@ -314,8 +313,8 @@ namespace pge_network
         */
         static TByte* preparePktMsgAppFill(
             pge_network::PgePacket& pkt,
-            TPgeMsgAppMsgId msgAppId,
-            TPgeMsgAppMsgSize nMsgAppDataSize
+            MsgApp::TMsgId msgAppId,
+            MsgApp::TMsgSize nMsgAppDataSize
         );
 
     private:
@@ -331,8 +330,11 @@ namespace pge_network
 
         // private getters/setter
 
+        static MsgAppArea& getMessageAppArea(pge_network::PgePacket& pkt);
+        static const MsgAppArea& getMessageAppArea(const pge_network::PgePacket& pkt);
+
         static uint8_t& getMessageAppCount(pge_network::PgePacket& pkt);
-        static TPgeMsgAppAreaLength& getMessageAppsTotalActualLengthBytes(pge_network::PgePacket& pkt);
+        static MsgAppArea::TAreaLength& getMessageAppsTotalActualLengthBytes(pge_network::PgePacket& pkt);
 
         // private initializers 
 

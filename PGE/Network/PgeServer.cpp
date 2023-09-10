@@ -39,7 +39,7 @@ public:
     pge_network::PgePacket popFrontPacket() noexcept(false) override;
 
     std::set<pge_network::PgePktId>& getAllowListedPgeMessages() override;
-    std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages() override;
+    std::set<pge_network::MsgApp::TMsgId>& getAllowListedAppMessages() override;
 
     void send(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle = pge_network::ServerConnHandle) override;
 
@@ -51,11 +51,11 @@ public:
     uint32_t getTxPacketPerSecondCount() const override;
     uint32_t getInjectPacketPerSecondCount() const override;
 
-    const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getRxMsgCount() const override;
-    const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getTxMsgCount() const override;
-    const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getInjectMsgCount() const override;
+    const std::map<pge_network::MsgApp::TMsgId, uint32_t>& getRxMsgCount() const override;
+    const std::map<pge_network::MsgApp::TMsgId, uint32_t>& getTxMsgCount() const override;
+    const std::map<pge_network::MsgApp::TMsgId, uint32_t>& getInjectMsgCount() const override;
 
-    std::map<pge_network::TPgeMsgAppMsgId, std::string>& getMsgAppId2StringMap() override;
+    std::map<pge_network::MsgApp::TMsgId, std::string>& getMsgAppId2StringMap() override;
 
     uint32_t getRxByteCount() const override;
     uint32_t getTxByteCount() const override;
@@ -162,7 +162,7 @@ std::set<pge_network::PgePktId>& PgeServerImpl::getAllowListedPgeMessages()
     return m_gsnServer.getAllowListedPgeMessages();
 }
 
-std::set<pge_network::TPgeMsgAppMsgId>& PgeServerImpl::getAllowListedAppMessages()
+std::set<pge_network::MsgApp::TMsgId>& PgeServerImpl::getAllowListedAppMessages()
 {
     return m_gsnServer.getAllowListedAppMessages();
 }
@@ -209,22 +209,22 @@ uint32_t PgeServerImpl::getInjectPacketPerSecondCount() const
     return m_gsnServer.getInjectPacketPerSecondCount();
 }
 
-const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeServerImpl::getRxMsgCount() const
+const std::map<pge_network::MsgApp::TMsgId, uint32_t>& PgeServerImpl::getRxMsgCount() const
 {
     return m_gsnServer.getRxMsgCount();
 }
 
-const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeServerImpl::getTxMsgCount() const
+const std::map<pge_network::MsgApp::TMsgId, uint32_t>& PgeServerImpl::getTxMsgCount() const
 {
     return m_gsnServer.getTxMsgCount();
 }
 
-const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& PgeServerImpl::getInjectMsgCount() const
+const std::map<pge_network::MsgApp::TMsgId, uint32_t>& PgeServerImpl::getInjectMsgCount() const
 {
     return m_gsnServer.getInjectMsgCount();
 }
 
-std::map<pge_network::TPgeMsgAppMsgId, std::string>& PgeServerImpl::getMsgAppId2StringMap()
+std::map<pge_network::MsgApp::TMsgId, std::string>& PgeServerImpl::getMsgAppId2StringMap()
 {
     return m_gsnServer.getMsgAppId2StringMap();
 }

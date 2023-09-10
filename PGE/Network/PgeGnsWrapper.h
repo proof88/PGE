@@ -97,7 +97,7 @@ public:
     pge_network::PgePacket popFrontPacket() noexcept(false);
 
     std::set<pge_network::PgePktId>& getAllowListedPgeMessages();
-    std::set<pge_network::TPgeMsgAppMsgId>& getAllowListedAppMessages();
+    std::set<pge_network::MsgApp::TMsgId>& getAllowListedAppMessages();
 
     bool connectToServer(const std::string& sServerAddress); /* temporal, now I dont have better idea in this time */
     bool disconnectClient();
@@ -112,11 +112,11 @@ public:
     uint32_t getTxPacketPerSecondCount() const;
     uint32_t getInjectPacketPerSecondCount() const;
 
-    const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getRxMsgCount() const;
-    const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getTxMsgCount() const;
-    const std::map<pge_network::TPgeMsgAppMsgId, uint32_t>& getInjectMsgCount() const;
+    const std::map<pge_network::MsgApp::TMsgId, uint32_t>& getRxMsgCount() const;
+    const std::map<pge_network::MsgApp::TMsgId, uint32_t>& getTxMsgCount() const;
+    const std::map<pge_network::MsgApp::TMsgId, uint32_t>& getInjectMsgCount() const;
 
-    std::map<pge_network::TPgeMsgAppMsgId, std::string>& getMsgAppId2StringMap();
+    std::map<pge_network::MsgApp::TMsgId, std::string>& getMsgAppId2StringMap();
 
     uint32_t getRxByteCount() const;
     uint32_t getTxByteCount() const;
@@ -132,7 +132,7 @@ protected:
 
     std::deque<pge_network::PgePacket> m_queuePackets;
     std::set<pge_network::PgePktId> m_allowListedPgeMessages;
-    std::set<pge_network::TPgeMsgAppMsgId> m_allowListedAppMessages;
+    std::set<pge_network::MsgApp::TMsgId> m_allowListedAppMessages;
 
     uint32_t m_nRxPktCount;
     uint32_t m_nTxPktCount;
@@ -142,11 +142,11 @@ protected:
     std::chrono::time_point<std::chrono::steady_clock> m_time1stTxPkt;
     std::chrono::time_point<std::chrono::steady_clock> m_time1stInjectPkt;
 
-    std::map<pge_network::TPgeMsgAppMsgId, uint32_t> m_nRxMsgCount;
-    std::map<pge_network::TPgeMsgAppMsgId, uint32_t> m_nTxMsgCount;
-    std::map<pge_network::TPgeMsgAppMsgId, uint32_t> m_nInjectMsgCount;
+    std::map<pge_network::MsgApp::TMsgId, uint32_t> m_nRxMsgCount;
+    std::map<pge_network::MsgApp::TMsgId, uint32_t> m_nTxMsgCount;
+    std::map<pge_network::MsgApp::TMsgId, uint32_t> m_nInjectMsgCount;
 
-    std::map<pge_network::TPgeMsgAppMsgId, std::string> m_mapMsgAppId2String;
+    std::map<pge_network::MsgApp::TMsgId, std::string> m_mapMsgAppId2String;
 
     uint32_t m_nRxByteCount;
     uint32_t m_nTxByteCount;
@@ -165,5 +165,5 @@ protected:
     virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const = 0;
     virtual void onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) = 0;
 
-    std::string getStringByMsgAppId(const pge_network::TPgeMsgAppMsgId& id) const;
+    std::string getStringByMsgAppId(const pge_network::MsgApp::TMsgId& id) const;
 }; // class PgeGnsWrapper
