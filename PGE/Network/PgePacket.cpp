@@ -151,7 +151,7 @@ namespace pge_network {
 
     const pge_network::TPgeMsgAppMsgId& PgePacket::getMsgAppIdFromPkt(const pge_network::PgePacket& pkt)
     {
-        return pge_network::PgePacket::getMsgAppFromPkt(pkt)->m_msgId;
+        return pge_network::MsgApp::getMsgAppMsgId(*pge_network::PgePacket::getMsgAppFromPkt(pkt));
     }
 
     void pge_network::PgePacket::initPktPgeMsgUserDisconnected(
@@ -267,10 +267,15 @@ namespace pge_network {
         // TODO: store the given app msg at the proper location
 
         pge_network::MsgApp* pMsgApp = reinterpret_cast<pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).m_cData);
-        pMsgApp->m_msgId = static_cast<pge_network::TPgeMsgAppMsgId>(msgAppId);
-        pMsgApp->m_nMsgSize = nMsgAppDataSize;
+        pge_network::MsgApp::getMsgAppMsgId(*pMsgApp) = static_cast<pge_network::TPgeMsgAppMsgId>(msgAppId);
+        pge_network::MsgApp::getMsgAppDataActualSizeBytes(*pMsgApp) = nMsgAppDataSize;
 
-        return pMsgApp->m_cMsgData;
+        return pge_network::MsgApp::getMsgAppData(*pMsgApp);
+    }
+
+    const TPgeMsgAppMsgId& MsgApp::getMsgAppMsgId(const MsgApp& msgApp)
+    {
+        return msgApp.m_msgId;
     }
 
     TPgeMsgAppMsgId& MsgApp::getMsgAppMsgId(MsgApp& msgApp)

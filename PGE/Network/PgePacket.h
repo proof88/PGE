@@ -104,9 +104,14 @@ namespace pge_network
     // With allowlisting, app messages can be separately allowed to be processed by clients and server based on TPgeMsgAppMsgId.
     struct MsgApp
     {
+        friend class  PgePacketTest;
+        friend struct PgePacket;     // PgePacket should have full r/w access since basically this is part of it
+
+    public:
         static const PgePktId id = PgePktId::Application;
         static const TPgeMsgAppMsgSize nMaxMessageLengthBytes = 240;
 
+        static const TPgeMsgAppMsgId& getMsgAppMsgId(const MsgApp& msgApp);
         static TPgeMsgAppMsgId& getMsgAppMsgId(MsgApp& msgApp);
         static TPgeMsgAppMsgSize&  getMsgAppDataActualSizeBytes(MsgApp& msgApp);  // TODO: delete this non-const version later when not needed
         static const TPgeMsgAppMsgSize& getMsgAppDataActualSizeBytes(const MsgApp& msgApp);
@@ -119,6 +124,7 @@ namespace pge_network
             const TByte* msgAppData,
             TPgeMsgAppMsgSize nMsgAppDataSize);
         
+    private:
         TPgeMsgAppMsgId m_msgId;  // this is checked by engine upon polling for new messages against the allowlists
         TPgeMsgAppMsgSize m_nMsgSize;
         /* This 'cMsgData' memory area is for 1 application message defined at application level, not here.

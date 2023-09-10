@@ -160,18 +160,16 @@ void PgeGnsServer::sendToClient(const HSteamNetConnection& conn, const pge_netwo
         // We need to consider member padding and the actual message sizes to have a correct value.
         // 'cData' is our point of view since from there we need to calculate.
         const pge_network::MsgApp* pMsgApp = pge_network::PgePacket::getMsgAppFromPkt(pkt);
+        assert(pMsgApp);  // never null since it points into pkt
         const pge_network::TByte* pMsgAppInByteSteps = reinterpret_cast<const pge_network::TByte*>(pMsgApp);  // we can step this ptr in Bytes
 
-        // Real offset in Bytes in memory of actual app data relative to beginning of MsgApp struct
-        // const size_t nByteDistanceOfMsgDataInMsgApp = (pge_network::TByte*)(&(pMsgApp->cMsgData)) - (pge_network::TByte*)(pMsgApp);
-        const size_t nByteDistanceOfMsgDataInMsgApp = offsetof(pge_network::MsgApp, m_cMsgData);
         const uint8_t nMessageCount = pge_network::PgePacket::getMessageAppCount(pkt);
         assert(nMessageCount == 1); // for now only 1 msg/pkt
         for (uint8_t i = 0; i < nMessageCount; i++)
         {
             pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pMsgAppInByteSteps);
             // moving pMsgAppInByteSteps by the _actual_ size of the current MsgApp struct (considering the actual app message size there)
-            pMsgAppInByteSteps += (nByteDistanceOfMsgDataInMsgApp + pMsgApp->m_nMsgSize);
+            pMsgAppInByteSteps += pge_network::MsgApp::getMsgAppTotalActualSizeBytes(*pMsgApp);
         }
         // now pMsgAppInByteSteps points to RIGHT AFTER the 1st byte of the last application message
         const pge_network::TByte* pPkt = (const pge_network::TByte*)(&pkt);
@@ -195,7 +193,7 @@ void PgeGnsServer::sendToClient(const HSteamNetConnection& conn, const pge_netwo
         for (uint8_t i = 0; i < nMessageCount; i++)
         {
             // TODO: nooo, I need to properly iterate to next appmsg as I iterate in above loop!
-            ++m_nTxMsgCount[pMsgApp->m_msgId];
+            ++m_nTxMsgCount[pge_network::MsgApp::getMsgAppMsgId(*pMsgApp)];
         }
     }
     m_nTxByteCount += nActualPktSize;
@@ -235,7 +233,7 @@ void PgeGnsServer::inject(const pge_network::PgePacket& pkt)
         for (uint8_t i = 0; i < nMessageCount; i++)
         {
             // TODO: nooo, I need to properly iterate to next appmsg as I iterate in sendToClient()!
-            ++m_nInjectMsgCount[pMsgApp->m_msgId];
+            ++m_nInjectMsgCount[pge_network::MsgApp::getMsgAppMsgId(*pMsgApp)];
         }
     }
     m_nInjectByteCount += sizeof(pkt);

@@ -199,22 +199,24 @@ bool PgeGnsWrapper::pollIncomingMessages()
             assert(nMessageCount == 1);
 
             const pge_network::MsgApp* pMsgApp = pge_network::PgePacket::getMsgAppFromPkt(pktAsConst);
+            assert(pMsgApp);  // never null since it points into pkt
             
             for (uint8_t iAppMsg = 0; iAppMsg < nMessageCount; iAppMsg++)
             {
                 // TODO: nooo I need proper iteration for every msgId!
-                if (m_allowListedAppMessages.end() == m_allowListedAppMessages.find(pMsgApp->m_msgId))
+                const pge_network::TPgeMsgAppMsgId& msgAppId = pge_network::MsgApp::getMsgAppMsgId(*pMsgApp);
+                if (m_allowListedAppMessages.end() == m_allowListedAppMessages.find(msgAppId))
                 {
                     CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s: non-allowlisted app message received: %u from connection %u!",
-                        __func__, pMsgApp->m_msgId, pge_network::PgePacket::getServerSideConnectionHandle(pktAsConst));
+                        __func__, msgAppId, pge_network::PgePacket::getServerSideConnectionHandle(pktAsConst));
                     assert(false);
                     continue;
                 }
-                ++m_nRxMsgCount[pMsgApp->m_msgId];
+                ++m_nRxMsgCount[msgAppId];
                 
                 // we could also check if nMsgSize is non-zero, however we shouldnt: app is allowed to define zero-size AppMsg, it is
                 // not our business here to judge.
-                pMsgApp += pMsgApp->m_nMsgSize;
+                pMsgApp += pge_network::MsgApp::getMsgAppTotalActualSizeBytes(*pMsgApp);
             }
         }
         else
