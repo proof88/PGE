@@ -18,12 +18,12 @@ namespace pge_network {
 
     PgePktId& pge_network::PgePacket::getPacketId(PgePacket& pkt)
     {
-        return pkt.pktId;
+        return pkt.m_pktId;
     }
 
     const PgePktId& pge_network::PgePacket::getPacketId(const PgePacket& pkt)
     {
-        return pkt.pktId;
+        return pkt.m_pktId;
     }
 
     PgeNetworkConnectionHandle& pge_network::PgePacket::getServerSideConnectionHandle(PgePacket& pkt)
@@ -38,32 +38,32 @@ namespace pge_network {
 
     MsgUserConnectedServerSelf& PgePacket::getMessageAsUserConnected(PgePacket& pkt)
     {
-        return pkt.msg.userConnected;
+        return pkt.m_msg.m_userConnected;
     }
 
     const MsgUserConnectedServerSelf& PgePacket::getMessageAsUserConnected(const PgePacket& pkt)
     {
-        return pkt.msg.userConnected;
+        return pkt.m_msg.m_userConnected;
     }
 
     MsgUserDisconnectedFromServer& PgePacket::getMessageAsUserDisconnected(PgePacket& pkt)
     {
-        return pkt.msg.userDisconnected;
+        return pkt.m_msg.m_userDisconnected;
     }
 
     const MsgUserDisconnectedFromServer& PgePacket::getMessageAsUserDisconnected(const PgePacket& pkt)
     {
-        return pkt.msg.userDisconnected;
+        return pkt.m_msg.m_userDisconnected;
     }
 
     MsgAppArea& pge_network::PgePacket::getMessageAppArea(PgePacket& pkt)
     {
-        return pkt.msg.app;
+        return pkt.m_msg.m_app;
     }
 
     const MsgAppArea& pge_network::PgePacket::getMessageAppArea(const PgePacket& pkt)
     {
-        return pkt.msg.app;
+        return pkt.m_msg.m_app;
     }
 
     uint8_t pge_network::PgePacket::getMessageAppCount(const pge_network::PgePacket& pkt)
@@ -96,14 +96,14 @@ namespace pge_network {
         bool bCurrentClient,
         const std::string& sIpAddress)
     {
-        if (sIpAddress.length() >= sizeof(PgePacket::getMessageAsUserConnected(pkt).szIpAddress))
+        if (sIpAddress.length() >= sizeof(PgePacket::getMessageAsUserConnected(pkt).m_szIpAddress))
         {
             return false;
         }
         pge_network::PgePacket::initPktBasic(pkt, MsgUserConnectedServerSelf::id, connHandleServerSide, pge_network::PgePacket::AutoFill::ZERO);
 
         MsgUserConnectedServerSelf& msgUserConnected = PgePacket::getMessageAsUserConnected(pkt);
-        msgUserConnected.bCurrentClient = bCurrentClient;
+        msgUserConnected.m_bCurrentClient = bCurrentClient;
 
         /*
            I explicitly zero the whole pkt area above because I want clean pkt.
@@ -116,8 +116,8 @@ namespace pge_network {
          */
         _CrtSetDebugFillThreshold(0);
         return (strncpy_s(
-            msgUserConnected.szIpAddress,
-            sizeof(msgUserConnected.szIpAddress),
+            msgUserConnected.m_szIpAddress,
+            sizeof(msgUserConnected.m_szIpAddress),
             sIpAddress.c_str(),
             sIpAddress.length()) == 0);
     }
@@ -125,6 +125,17 @@ namespace pge_network {
     bool PgePacket::isMessageAppAreaFull(const pge_network::PgePacket& pkt)
     {
         return pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength == pge_network::MsgAppArea::nMaxMessagesAreaLengthBytes;
+    }
+
+    const pge_network::MsgApp* PgePacket::getMsgAppFromPkt(const pge_network::PgePacket& pkt)
+    {
+        const pge_network::MsgApp* const pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.m_msg.m_app.m_cData);
+        return pMsgApp;
+    }
+
+    const pge_network::TPgeMsgAppMsgId& PgePacket::getMsgAppIdFromPkt(const pge_network::PgePacket& pkt)
+    {
+        return pge_network::PgePacket::getMsgAppFromPkt(pkt)->m_msgId;
     }
 
     void pge_network::PgePacket::initPktPgeMsgUserDisconnected(
@@ -164,7 +175,7 @@ namespace pge_network {
         }
 
         /* use uint32_t instead of uint8_t or TPgeMsgAppMsgSize here to avoid numeric overflow */
-        const uint32_t nActualTotalAppMsgSize = offsetof(pge_network::MsgApp, cMsgData) + MsgApp::getMsgAppDataActualSizeBytes(msgApp);
+        const uint32_t nActualTotalAppMsgSize = offsetof(pge_network::MsgApp, m_cMsgData) + MsgApp::getMsgAppDataActualSizeBytes(msgApp);
         assert(nActualTotalAppMsgSize <= std::numeric_limits<TPgeMsgAppMsgSize>::max());
         if (nActualTotalAppMsgSize > std::numeric_limits<TPgeMsgAppMsgSize>::max())
         {
@@ -187,7 +198,7 @@ namespace pge_network {
         // TODO: find location for next app msg (separate function)
         // TODO: store the given app msg at the proper location
 
-        memcpy(pge_network::PgePacket::getMessageAppArea(pkt).cData, &msgApp, nActualTotalAppMsgSize);
+        memcpy(pge_network::PgePacket::getMessageAppArea(pkt).m_cData, &msgApp, nActualTotalAppMsgSize);
         pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount++;
         pge_network::PgePacket::getMessageAppArea(pkt).m_nActualMessagesAreaLength += static_cast<TPgeMsgAppAreaLength>(nActualTotalAppMsgSize);
 
@@ -213,7 +224,7 @@ namespace pge_network {
         }
 
         /* use uint32_t instead of uint8_t or TPgeMsgAppMsgSize here to avoid numeric overflow */
-        const uint32_t nActualTotalAppMsgSize = offsetof(pge_network::MsgApp, cMsgData) + nMsgAppDataSize;
+        const uint32_t nActualTotalAppMsgSize = offsetof(pge_network::MsgApp, m_cMsgData) + nMsgAppDataSize;
         assert(nActualTotalAppMsgSize <= std::numeric_limits<TPgeMsgAppMsgSize>::max());
         if (nActualTotalAppMsgSize > std::numeric_limits<TPgeMsgAppMsgSize>::max())
         {
@@ -239,41 +250,41 @@ namespace pge_network {
         // TODO: find location for next app msg (separate function)
         // TODO: store the given app msg at the proper location
 
-        pge_network::MsgApp* pMsgApp = reinterpret_cast<pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
-        pMsgApp->msgId = static_cast<pge_network::TPgeMsgAppMsgId>(msgAppId);
-        pMsgApp->nMsgSize = nMsgAppDataSize;
+        pge_network::MsgApp* pMsgApp = reinterpret_cast<pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).m_cData);
+        pMsgApp->m_msgId = static_cast<pge_network::TPgeMsgAppMsgId>(msgAppId);
+        pMsgApp->m_nMsgSize = nMsgAppDataSize;
 
-        return pMsgApp->cMsgData;
+        return pMsgApp->m_cMsgData;
     }
 
     TPgeMsgAppMsgId& MsgApp::getMsgAppMsgId(MsgApp& msgApp)
     {
-        return msgApp.msgId;
+        return msgApp.m_msgId;
     }
 
     TPgeMsgAppMsgSize& MsgApp::getMsgAppDataActualSizeBytes(MsgApp& msgApp)
     {
-        return msgApp.nMsgSize;
+        return msgApp.m_nMsgSize;
     }
 
     const TPgeMsgAppMsgSize& MsgApp::getMsgAppDataActualSizeBytes(const MsgApp& msgApp)
     {
-        return msgApp.nMsgSize;
+        return msgApp.m_nMsgSize;
     }
 
     const TPgeMsgAppMsgSize MsgApp::getMsgAppTotalActualSizeBytes(const MsgApp& msgApp)
     {
-        return offsetof(MsgApp, cMsgData) + getMsgAppDataActualSizeBytes(msgApp);
+        return offsetof(MsgApp, m_cMsgData) + getMsgAppDataActualSizeBytes(msgApp);
     }
 
     const TByte* MsgApp::getMsgAppData(const MsgApp& msgApp)
     {
-        return msgApp.cMsgData;
+        return msgApp.m_cMsgData;
     }
 
     TByte* MsgApp::getMsgAppData(MsgApp& msgApp)
     {
-        return msgApp.cMsgData;
+        return msgApp.m_cMsgData;
     }
 
     bool MsgApp::fillMsgApp(

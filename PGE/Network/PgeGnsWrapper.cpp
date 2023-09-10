@@ -195,22 +195,22 @@ bool PgeGnsWrapper::pollIncomingMessages()
             // for now we support only 1 app msg / pkt
             assert(pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount == 1);
 
-            const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).cData);
+            const pge_network::MsgApp* pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pge_network::PgePacket::getMessageAppArea(pkt).m_cData);
             for (uint8_t iAppMsg = 0; iAppMsg < pge_network::PgePacket::getMessageAppArea(pkt).m_nMessageCount; iAppMsg++)
             {
                 // TODO: nooo I need proper iteration for every msgId!
-                if (m_allowListedAppMessages.end() == m_allowListedAppMessages.find(pMsgApp->msgId))
+                if (m_allowListedAppMessages.end() == m_allowListedAppMessages.find(pMsgApp->m_msgId))
                 {
                     CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s: non-allowlisted app message received: %u from connection %u!",
-                        __func__, pMsgApp->msgId, pge_network::PgePacket::getServerSideConnectionHandle(pkt));
+                        __func__, pMsgApp->m_msgId, pge_network::PgePacket::getServerSideConnectionHandle(pkt));
                     assert(false);
                     continue;
                 }
-                ++m_nRxMsgCount[pMsgApp->msgId];
+                ++m_nRxMsgCount[pMsgApp->m_msgId];
                 
                 // we could also check if nMsgSize is non-zero, however we shouldnt: app is allowed to define zero-size AppMsg, it is
                 // not our business here to judge.
-                pMsgApp += pMsgApp->nMsgSize;
+                pMsgApp += pMsgApp->m_nMsgSize;
             }
         }
         else

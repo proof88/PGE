@@ -17,6 +17,7 @@
 
 #include <cassert>
 #include <limits>
+#include <type_traits>
 
 // Make sure min/max weren't defined, even though now I'm including windows.h using winproof88.h that helps skip these definitions, and
 // added NOMINMAX macro defined to project settings, I want to be sure that these are not defined by accident anywhere!
@@ -25,16 +26,35 @@
 #error "min or max are defined (maybe in windows.h)"
 #endif
 
-// These packet and message structs are sent between server and clients.
-// Different endianness is not considered as an issue because all machines expected to use this have same endianness for now.
-// In case this changes in the future, use a lib like cereal to easily solve endianness issue.
+class PgePacketTest;  // forward declaring the unit test class so it can be friend of PgePacket for easier testing
+
+/**
+ * These packet and message structs are sent between server and clients.
+ * Different endianness is not considered as an issue because all machines expected to use this have same endianness for now.
+ * In case this changes in the future, use a lib like cereal to easily solve endianness issue.
+ * 
+ * Since we tx/rx/memcpy these structs, we have expectations of their memory layout, so we keep them POD as defined by C++11/14/17:
+ * - they are trivial classes,
+ * - they are standard-layout,
+ * - they are trivially copyable.
+ * Details: https://stackoverflow.com/questions/4178175/what-are-aggregates-and-trivial-types-pods-and-how-why-are-they-special/7189821#7189821
+ * Note that POD is depreceted from C++20 hence we check the above 3 properties.
+ * 
+ * "A pointer to a standard-layout class may be converted (with reinterpret_cast) to a pointer to its first non-static data member and vice versa.
+ *  If a standard-layout union holds two or more standard-layout structs, it is permitted to inspect the common initial part of them.
+ *  The macro offsetof is only guaranteed to be usable with standard-layout classes." (https://en.cppreference.com/w/cpp/types/is_standard_layout)
+ * 
+ * "Objects of trivially-copyable types that are not potentially-overlapping subobjects are the only C++ objects that may be safely copied with
+ *  std::memcpy or serialized to/from binary files with std::ofstream::write() / std::ifstream::read()."
+ *  (https://en.cppreference.com/w/cpp/types/is_trivially_copyable)
+*/
 
 namespace pge_network
 {
 
     typedef uint32_t PgeNetworkConnectionHandle;
 
-    // since 0 is considered as an invalid handle at GSN level, we use this to refer to server, since
+    // since 0 is considered as an invalid handle at GNS level, we use this to refer to server, since
     // server never wants to send to this connection, or it automatically injects when this value is used.
     constexpr PgeNetworkConnectionHandle ServerConnHandle = 0;
 
@@ -54,13 +74,16 @@ namespace pge_network
         static const PgePktId id = PgePktId::UserConnectedServerSelf;
         static const uint8_t nIpAddressMaxLength = 48;
 
-        bool bCurrentClient;  // true means server injected itself its own birth, false means a client has connected
-        char szIpAddress[nIpAddressMaxLength];
+        bool m_bCurrentClient;  // true means server injected itself its own birth, false means a client has connected
+        char m_szIpAddress[nIpAddressMaxLength];
         // TODO: server always knows IP address of clients, but doesn't know its own IP address used by the clients to connect.
         // It should be grabbed from the first connecting client.
         // See if remote server address logged is the good server address in: PgeGnsWrapper::onSteamNetConnectionStatusChanged(),
         // client code, when client reaches k_ESteamNetworkingConnectionState_Connected. Jump there by searching for "KEKEKEKEKE"
     };
+    static_assert(std::is_trivial_v<MsgUserConnectedServerSelf>);
+    static_assert(std::is_trivially_copyable_v<MsgUserConnectedServerSelf>);
+    static_assert(std::is_standard_layout_v<MsgUserConnectedServerSelf>);
 
     // server -> clients and to self
     // it is NOT allowlisted for server app because server should not receive this over network, it just injects it for itself
@@ -68,6 +91,9 @@ namespace pge_network
     {
         static const PgePktId id = PgePktId::UserDisconnectedFromServer;
     };
+    static_assert(std::is_trivial_v<MsgUserDisconnectedFromServer>);
+    static_assert(std::is_trivially_copyable_v<MsgUserDisconnectedFromServer>);
+    static_assert(std::is_standard_layout_v<MsgUserDisconnectedFromServer>);
 
     typedef uint32_t TPgeMsgAppMsgId;  // TODO: could be decreased to uint16_t
     typedef uint8_t TPgeMsgAppMsgSize;
@@ -93,8 +119,8 @@ namespace pge_network
             const TByte* msgAppData,
             TPgeMsgAppMsgSize nMsgAppDataSize);
         
-        TPgeMsgAppMsgId msgId;  // this is checked by engine upon polling for new messages against the allowlists
-        TPgeMsgAppMsgSize nMsgSize;
+        TPgeMsgAppMsgId m_msgId;  // this is checked by engine upon polling for new messages against the allowlists
+        TPgeMsgAppMsgSize m_nMsgSize;
         /* This 'cMsgData' memory area is for 1 application message defined at application level, not here.
            So the application is responsible for copying the message here.
            The C++ standard guarantees that the members of a class or struct appear in memory in the same order as they are declared.
@@ -102,8 +128,11 @@ namespace pge_network
            When packaging MsgApp into MsgAppArea, we should put the actually used memory area (nMsgSize) and not the whole area, and
            increase MsgAppArea::m_nMessageCount by 1.
          */
-        TByte cMsgData[nMaxMessageLengthBytes];
+        TByte m_cMsgData[nMaxMessageLengthBytes];
     };
+    static_assert(std::is_trivial_v<MsgApp>);
+    static_assert(std::is_trivially_copyable_v<MsgApp>);
+    static_assert(std::is_standard_layout_v<MsgApp>);
 
     static_assert(MsgApp::nMaxMessageLengthBytes <= std::numeric_limits<TPgeMsgAppMsgSize>::max(),
         "Size of MsgApp data should fit in MsgApp::nMsgSize");
@@ -123,15 +152,29 @@ namespace pge_network
            When sending, we should send the actually used memory area and not the whole area.
            In 'cData' we store at least 1 variable-sized MsgApp.
          */
-        TByte cData[nMaxMessagesAreaLengthBytes];   // should be writable by application, but the pointer to it should be calculated by wrapper function
+        TByte m_cData[nMaxMessagesAreaLengthBytes];   // should be writable by application, but the pointer to it should be calculated by wrapper function
     };
+    static_assert(std::is_trivial_v<MsgAppArea>);
+    static_assert(std::is_trivially_copyable_v<MsgAppArea>);
+    static_assert(std::is_standard_layout_v<MsgAppArea>);
     
     static_assert(
         sizeof(MsgApp) <= MsgAppArea::nMaxMessagesAreaLengthBytes,
         "At least 1 full MsgApp should fit into MsgAppArea.cData!");
 
+    /**
+    * PgePacket is the carrier of information over the network.
+    * It always contains at least 1 message i.e. a pge_network struct starting with name Msg, since messages cannot be sent
+    * on their own over the network.
+    * Whenever we want to send data between server and clients, we put the message into a PgePacket instance and
+    * pass it to PgeIServerClient::send(), the receiver will be notified about the arrival of this PgePacket instance and
+    * can extract the message from it.
+    */
     struct PgePacket
     {
+        friend class PgePacketTest;
+
+    public:
         enum class AutoFill {
             NONE,
             ZERO
@@ -159,13 +202,34 @@ namespace pge_network
 
         static bool isMessageAppAreaFull(const pge_network::PgePacket& pkt);
 
-        // packet initializers
+        static const pge_network::MsgApp* getMsgAppFromPkt(const pge_network::PgePacket& pkt);
 
-        static void initPktBasic(
-            pge_network::PgePacket& pkt,
-            const PgePktId& pktId,
-            const pge_network::PgeNetworkConnectionHandle& connHandleServerSide,
-            const AutoFill& autoFill);
+        static const pge_network::TPgeMsgAppMsgId& getMsgAppIdFromPkt(const pge_network::PgePacket& pkt);
+
+        /**
+        * This convenient function is for the application: the custom application-defined message can
+        * be easily extracted from the packet.
+        */
+        template <class MsgAppDataType>
+        static const MsgAppDataType& getMsgAppDataFromPkt(const pge_network::PgePacket& pkt)
+        {
+            return reinterpret_cast<const MsgAppDataType&>(getMsgAppFromPkt(pkt)->m_cMsgData);
+        }
+
+        /**
+        * This convenient function is for the application: the custom application-defined message can
+        * be easily extracted from the packet.
+        */
+        template <class MsgAppDataType>
+        static MsgAppDataType& getMsgAppDataFromPkt(pge_network::PgePacket& pkt)
+        {
+            // simply invoke the const-version of getMsgAppDataFromPkt() above by const-casting:
+            return reinterpret_cast<MsgAppDataType&>(
+                const_cast<pge_network::MsgApp*>(getMsgAppFromPkt(const_cast<pge_network::PgePacket&>(pkt)))->m_cMsgData
+            );
+        }
+
+        // packet initializers
 
         /*
         * Initializes the given packet to be used for sending MsgUserConnectedServerSelf.
@@ -242,39 +306,26 @@ namespace pge_network
             TPgeMsgAppMsgSize nMsgAppDataSize
         );
 
-        static const pge_network::MsgApp* getMsgAppFromPkt(const pge_network::PgePacket& pkt)
-        {
-            const pge_network::MsgApp* const pMsgApp = reinterpret_cast<const pge_network::MsgApp*>(pkt.msg.app.cData);
-            return pMsgApp;
-        }
-
-        static const pge_network::TPgeMsgAppMsgId& getMsgAppIdFromPkt(const pge_network::PgePacket& pkt)
-        {
-            return pge_network::PgePacket::getMsgAppFromPkt(pkt)->msgId;
-        }
-
-        template <class MsgAppDataType>
-        static const MsgAppDataType& getMsgAppDataFromPkt(const pge_network::PgePacket& pkt)
-        {
-            return reinterpret_cast<const MsgAppDataType&>(getMsgAppFromPkt(pkt)->cMsgData);
-        }
-
-        template <class MsgAppDataType>
-        static MsgAppDataType& getMsgAppDataFromPkt(pge_network::PgePacket& pkt)
-        {
-            return reinterpret_cast<MsgAppDataType&>(const_cast<pge_network::MsgApp*>(getMsgAppFromPkt(const_cast<pge_network::PgePacket&>(pkt)))->cMsgData);
-        }
-
-        PgePktId pktId;
+    private:
+        PgePktId m_pktId;
         PgeNetworkConnectionHandle m_connHandleServerSide;
 
         union
         {
-            MsgUserConnectedServerSelf userConnected;
-            MsgUserDisconnectedFromServer userDisconnected;
-            MsgAppArea app; // application should load/store its custom messages here
-        } msg;
+            MsgUserConnectedServerSelf m_userConnected;
+            MsgUserDisconnectedFromServer m_userDisconnected;
+            MsgAppArea m_app; // application should load/store its custom messages here
+        } m_msg;
+
+        static void initPktBasic(
+            pge_network::PgePacket& pkt,
+            const PgePktId& pktId,
+            const pge_network::PgeNetworkConnectionHandle& connHandleServerSide,
+            const AutoFill& autoFill);
 
     }; // struct PgePacket
+    static_assert(std::is_trivial_v<PgePacket>);
+    static_assert(std::is_trivially_copyable_v<PgePacket>);
+    static_assert(std::is_standard_layout_v<PgePacket>);
 
 } // namespace pge_network
