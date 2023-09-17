@@ -90,7 +90,7 @@ public:
     pge_network::PgeNetwork& getNetwork() const;     /**< Returns the network functionality interface. */
     SoLoud::Soloud& getAudio();                /**< Returns audio lib interface. */
     
-    std::list<Bullet>& getBullets();           /**< Returns the weapon manager object. */
+    std::list<Bullet>& getBullets();           /**< Returns the bullets simulated by the engine. */
 
     int  initializeGame(const char* szCmdLine);  /**< Initializes the game engine. */
     int  runGame();                              /**< Runs the game. */

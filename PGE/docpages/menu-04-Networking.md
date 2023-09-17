@@ -43,15 +43,15 @@ It also has much less dependencies and easier to build.
 
 **GNS** on the other hand, is still actively maintained by Valve, used by Dota and CSGO.  
 Because of this, I opted for **GNS**.  
-Here is a **small game project** utilizing **GSN**: https://github.com/David-Elle-Jack-Oisin/TeamProject/tree/main/src/network
+Here is a **small game project** utilizing **GNS**: https://github.com/David-Elle-Jack-Oisin/TeamProject/tree/main/src/network
 
-\section client_server Client and Server
+\section client_server Client-Server Model
 
 I'm implementing the **client-server** networking model in the engine because it sounds suitable for my future projects and hopefully easier to implement than P2P.  
 In this model, there is always exactly 1 machine with server role, and some clients connected to the server.  
 There is no communication between clients, server keeps all clients updated about game state.
 
-\subsection pge_network_access Access to Networking Functionality
+\section pge_network_access Access to Networking Functionality
 
 PGE provides networking functionality through the PgeNetwork class instance in pge_network namespace, that can be accessed by PGE::getNetwork() function.  
 This PgeNetwork instance must be initialized before networking functionality can be used, however PGE initializes it automatically upon startup.  
@@ -62,7 +62,7 @@ TODO: ask doxygen to insert value of CVAR_NET_SERVER above!
 
 TODO: make a separate page explaining CVARs!
 
-\subsection pge_network_packets Packets and Messages
+\section pge_network_packets Packets and Messages
 
 Server and client instances communicate by sending and receiving PgePacket structs that encapsulate single messages.  
 As of PGE v0.4 there can be only 1 message within a PgePacket, and there is only 3 different kind of messages:
@@ -76,7 +76,7 @@ TODO: make link to tag PGE v0.4 above!
 
 TODO: should we use pge_network namespace everywhere explicitly?
 
-\subsection pge_network_allowlisting Allowlisting
+\section pge_network_allowlisting Allowlisting
 
 In order to be able to receive messages over the network, the messages need to be explicitly allowlisted, otherwise they are ignored.  
 By default server instance is allowed to receive MsgApp messages only, client instance is allowed to receive MsgUserDisconnected and MsgApp messages.  
@@ -86,7 +86,7 @@ It is very important to understand that even though MsgApp is allowed for both c
 **Application MUST explicitly allowlist its custom messages separately for both client and server.**  
 This can be done by adding the allowed custom messages to the container accessed by PgeNetwork::getServerClientInstance().getAllowListedAppMessages().
 
-\subsection multiplayer_cheating Cheating in Multiplayer
+\section multiplayer_cheating Cheating in Multiplayer
 
 There are many ways to cheat in multiplayer games, and PGE doesn't provide protection against it.  
 However, a good implementation in application level can overcome some forms of cheating.  
@@ -96,7 +96,9 @@ Then it replies back to the client(s) with the updated position of the player wh
 Since server takes care of the entire game state, simulate physics, calculate new positions, etc. and replicates game state to clients, it is the only authorative element of the multiplayer game session.  
 This way it is more difficult for clients to do anything from an illegal position, e.g. put themselves out of map bounds intentionally because always the server calculates their position based on client inputs that can be rejected as well.
 
-\subsection original_naive_impl Original Naive Implementation
+\section implementation_details Implementation Details
+
+\subsection original_naive_impl Original Naive Implementation (in v0.1.2)
 
 PGE currently does not give explicit support on features like client-side prediction, it just gives a basic framework to establish connections between clients and the server as described above.  
 However, my game [PRooFPS-dd](https://github.com/proof88/PRooFPS-dd) implements these features so I'm giving some words about this topic here.
@@ -117,7 +119,7 @@ Although physics is not part of this page, in general the variable delta time-ba
  - here: https://fabiensanglard.net/timer_and_framerate/index.php
  - and here: https://gafferongames.com/post/fix_your_timestep/
 
-\subsection new_tick_based_implementation New Tick-Based Implementation
+\subsection new_tick_based_implementation New Tick-Based Implementation (from v0.1.3)
 
 Now back to the networking part.  
 From now on the techniques I'm describing are very common in multiplayer games and the terms I'm using are same or very similar as in [Counter-Strike](https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking).
@@ -133,7 +135,167 @@ So the **essence of moving away from the naive approach is to understand that we
 Another rule is that **framerate >= tickrate**.  
 So it is totally ok to have framerate 60 while having tickrate 20. This means that we maximize the number of iterations of main game loop at 60, we target 60 rendered frames every second, and we do 20 ticks every second.
 
-\subsection client_behavior New Client Behavior
+\subsubsection new_behavior_overview Old and New Behavior Pseudocode
+
+The following pseudocode shows what functions are invoked by runGame() that are relevant from networking perspective.  
+Server and client instances have the same runGame() code. Some parts are executed only by the server, that is visible from the pseudocode anyway.  
+Some parts were changed between different versions, in those cases I specified the changes with version numbers.  
+In the comments I mention what kind of messages are generated with approximated rates:  
+ - for messages going out from server: total PKT rate and per-client PKT rate;
+ - for messages coming from clients: TODO.
+
+I also mention AP (action point) wherever I think change should be introduced.
+
+```.cpp
+
+// some constants just for the pkt count calculations in this example
+constexpr int nClientsCount = 7;
+constexpr int nPlayerCount = nClientsCount + 1;  // +1 is the server itself
+constexpr int nBulletsCount =
+              nPlayerCount * 6 = 48;             // assuming all players have 6 travelling bullets in-air at the moment (~worst-case)
+constexpr int nMapItemsCount = 25;               // e.g. 9 pistols + 9 mchguns + 7 medkits
+
+PGE::runGame() {
+  while ( isGameRunning() ) {
+  @FRAMERATE (ideally 60 FPS)
+  
+      onGameFrameBegin() {
+        proofps_dd::PRooFPSddPGE::onGameFrameBegin()  // nothing relevant for now
+      }
+    
+  // START transfer PKTs from GNS to PGE level
+  // no changes since v0.1.2
+      getNetwork().Update() {
+        while (
+          m_pServerClient->pollIncomingMessages() {
+            ISteamNetworkingMessage* pIncomingGnsMsg[const nIncomingMsgArraySize = 10];
+            const int numGnsMsgs = receiveMessages(pIncomingGnsMsg, nIncomingMsgArraySize);  // so we read max 10 PKTs from GNS each frame (max. 600 PKT/s @ 60 FPS)
+            
+            // AP: we might increase nIncomingMsgArraySize, however in that case CPU usage will also increase that might lead to less framerate.
+            //     But that is still better than dropping packets due to full buffer.
+            // AP: we might have different nIncomingMsgArraySize for server and clients, based on estimation.
+            // AP: nIncomingMsgArraySize should be configurable by CVAR.
+            // AP: check how big is the low-level buffer used by GNS from where receiveMessages() grabs the packets! Can we increase it?
+            // AP: can we check if this low-level buffer is full? We should log it.
+            // AP: can we know if we read all messages by receiveMessages() or there are still remaining? If so, we should log it! That is the start of a congestion.
+            
+            for (int i = 0; i < numGnsMsgs; i++) {
+              pge_network::PgePacket pkt;
+              memcpy(&pkt, (pIncomingGnsMsg[i])->m_pData, nActualPktSize);                   // !!! expensive deep copy !!!
+              (pIncomingGnsMsg[i])->Release();                                               // cheap unlink from linked list
+              m_queuePackets.push_back(pktAsConst);                                          // !!! expensive deep copy !!!
+                                                                                             // AP: find a way to link these into m_queuePackets maybe?
+            }
+          }
+        ) {}
+      }
+  // END transfer PKTs from GNS to PGE level
+    
+  // START transfer PKTs from PGE to APP (proofps) level
+  // no changes since v0.1.2
+      while (getNetwork().getServerClientInstance()->getPacketQueueSize() > 0) {
+        onPacketReceived( getNetwork().getServerClientInstance()->popFrontPacket() ) {       // invoke application code for all received pkt in m_queuePackets
+          proofps_dd::PRooFPSddPGE::onPacketReceived() {                                     // (remember: max. 600 PKT/s @ 60 FPS based on calculations in previous block)
+            handleUserConnected()               // might generate a few packets but that is only when a new user has just connected, nothing to do here.
+            handleUserDisconnected()            // no networking
+            handleUserSetupFromServer()         // no networking
+            
+            handleUserCmdMoveFromClient() {
+                // process inputs from clients, so worst case we need to multiply everything by nClientsCount and by their send rate:
+                // the max rate is AT LEAST the server FPS, clients send their input at their FPS rate, and server polls max nIncomingMsgArraySize packets / frame:
+                // since nIncomingMsgArraySize is 10, it CAN poll nClientsCount number of such message in each frame, so:
+                //
+                //  - might generate nClientsCount number of MsgCurrentWpnUpdateFromServer, so:
+                //    7*7 * 60 = 2940 PKT/s @ 60 FPS total outgoing,
+                //    that is 420 PKT/s @ 60 FPS to a single client.
+                //    This is true only if clients are constantly changing their current weapons in each frame, which unfortunately can happen if everybody is
+                //    using the mouse scroll continuously just for fun and that is detected at framerate at client-side, triggering message to server every frame.
+                //    AP: introduce rate-limit for weapon changing on both client- and server side.
+                //
+                //  - might generate 1 MsgWpnUpdateFromServer, so: 1*7 * 60 = 420 PKT/s @ 60 FPS outgoing total that is 60 PKT/s @ 60 FPS to a single client.
+                //    This is true only if a shot is actually fired in every frame, that actually cannot happen due to the fastest firing weapon is mchgun with
+                //    150 msec firing_cooldown, effectively limiting the value to:
+                //    1*7 * 6.7 = ~ 49 PKT/s @ 60 FPS outgoing total,
+                //    that is ~6.7 PKT/s @ 60 FPS to a single client.
+            }
+                                                
+            handleUserUpdateFromServer()        // no networking
+            handleBulletUpdateFromServer()      // no networking
+            handleMapItemUpdateFromServer       // no networking
+            handleWpnUpdateFromServer()         // no networking
+            handleWpnUpdateCurrentFromServer()  // no networking
+          }
+        }
+      }
+  // END transfer PKTs from PGE to APP (proofps) level
+  
+      onGameRunning() {
+        proofps_dd::PRooFPSddPGE::onGameRunning() {
+          if (getNetwork().isServer()) {
+          @TICKRATE (ideally 20 Hz)                // v0.1.3: this was @FRAMERATE in v0.1.2, so all results in this block are only 1/3 of v0.1.2.
+              mainLoopServerOnlyOneTick() {
+                serverGravity();                   // no networking
+                serverPlayerCollisionWithWalls();  // no networking
+                
+                serverUpdateWeapons() {
+                    // might send nClientsCount number of MsgWpnUpdateFromServer, currently only for reloading a weapon:
+                    // max. 7 PKT * 20 Hz = 140 PKT/s @ 20 Hz total outgoing to clients,
+                    // that is max 1 PKT * 20 Hz = 20 PKT/s to a single client.
+                    //
+                    // However reloading is also rate-limited by reload_time weapon cvar, that is 1500 msecs currently for bith pistol and mchgun.
+                    // Note: we need to remember that if a reload_time is less than or close to tickrate, it won't be properly updated as intended.
+                    //
+                    // AP: introduce a run-time warning about this for the future, whenever we have a reload_time really low, we will be aware of this!
+                }
+                
+                serverUpdateBullets() {
+                    // sends nBulletsCount number of MsgBulletUpdateFromServer to ALL clients:
+                    // 48*7 PKT * 20 Hz = 6720 PKT/s @ 20 Hz total outgoing,
+                    // that is 960 PKT/s @ 20 Hz to a single client.
+                    //
+                    // AP: this is way too much, we should stop sending this and introduce client-side simulation of travelling bullets.
+                    // In that case we should send updates from server about a newborn bullet or a bullet being deleted.
+                    // We can assume that if each player has some in-air travelling bullets, then only 1 of them per player is hitting something currently at a moment,
+                    // leading to nPlayerCount number of MsgBulletUpdateFromServer to ALL clients about deleting it. So with this optimization, we could reduce traffic to:
+                    // 8*7 PKT * 20 Hz = 1120 PKT/s @ 20 Hz total outgoing,
+                    // that is 8 PKT * 20 Hz = 160 PKT/s @ 20 Hz to a single client.
+                }
+                
+                serverUpdateRespawnTimers();       // no networking
+                
+                serverPickupAndRespawnItems() {
+                    // might send nClientsCount number of MsgWpnUpdateFromServer and (nMapItemsCount * nClientsCount) number of MsgMapItemUpdateFromServer:
+                    // max. (7 + 25*7) PKT * 20 Hz = 3640 PKT/s @ 20 Hz total outgoing,
+                    // that is 26 PKT * 20 Hz = 520 PKT/s @ 20 Hz to a single client.
+                    // However very unlikely that all players are picking up an item in every tick AND every item is respawning also in every tick.
+                }
+                
+                serverSendUserUpdates() {
+                    // max. nPlayerCount number of MsgUserUpdateFromServer to ALL clients (and to server by injection though):
+                    // 8*7 PKT * 20 Hz = 1120 PKT/s @ 20 Hz total outgoing,
+                    // that is 8 PKT * 20 Hz = 160 PKT/s @ 20 Hz to a single client.
+                }
+              }  // end mainLoopServerOnlyOneTick()
+          }  // end isServer()
+          
+          mainLoopShared() {
+              TODO!!!
+          }  // end mainLoopShared
+        }
+      }
+    
+      RenderScene();
+      frameLimit();    
+  }  // end while ( isGameRunning() )
+}
+
+```
+
+Based on the above calculations in the pseudocode comments, we can say that we have the following estimated required packet budget:
+ - server: TODO.
+ - client: TODO.
+
+\subsubsection client_behavior New Client Behavior (from v0.1.4)
 
 With the tickrate introduced, we successfully solved the problem of a slower machine not be able to keep up with processing messages when faster machines are also present in the network.  
 The implementation changes this way: in every tick (instead of every frame), player input is sampled and sent as a message to the server.  
@@ -185,7 +347,7 @@ Note that this approach also means that clients also have to simulate physics, o
 
 TODO: I should also check if GNS automatically re-sends lost messages or not? Is the order of messages is guaranteed?
 
-\subsection server_behavior New Server Behavior
+\subsubsection server_behavior New Server Behavior (from v0.1.3)
 
 **Without client-side prediction**:
 Remember that with the naive approach, we immediately processed the messages received from clients.  
