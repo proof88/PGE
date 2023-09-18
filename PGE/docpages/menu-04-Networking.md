@@ -171,20 +171,20 @@ PGE::runGame() {
             ISteamNetworkingMessage* pIncomingGnsMsg[const nIncomingMsgArraySize = 10];
             const int numGnsMsgs = receiveMessages(pIncomingGnsMsg, nIncomingMsgArraySize);  // so we read max 10 PKTs from GNS each frame (max. 600 PKT/s @ 60 FPS)
             
-            // AP: we might increase nIncomingMsgArraySize, however in that case CPU usage will also increase that might lead to less framerate.
-            //     But that is still better than dropping packets due to full buffer.
-            // AP: we might have different nIncomingMsgArraySize for server and clients, based on estimation.
-            // AP: nIncomingMsgArraySize should be configurable by CVAR.
-            // AP: check how big is the low-level buffer used by GNS from where receiveMessages() grabs the packets! Can we increase it?
-            // AP: can we check if this low-level buffer is full? We should log it.
-            // AP: can we know if we read all messages by receiveMessages() or there are still remaining? If so, we should log it! That is the start of a congestion.
+            // AP-7:  we might increase nIncomingMsgArraySize, however in that case CPU usage will also increase that might lead to less framerate.
+            //        But that is still better than dropping packets due to full buffer.
+            // AP-12: we might have different nIncomingMsgArraySize for server and clients, based on estimation.
+            // AP-11: nIncomingMsgArraySize should be configurable by CVAR.
+            // AP-8:  check how big is the low-level buffer used by GNS from where receiveMessages() grabs the packets! Can we increase it?
+            // AP-9:  can we check if this low-level buffer is full? We should log it.
+            // AP-10: can we know if we read all messages by receiveMessages() or there are still remaining? If so, we should log it! That is the start of a congestion.
             
             for (int i = 0; i < numGnsMsgs; i++) {
               pge_network::PgePacket pkt;
               memcpy(&pkt, (pIncomingGnsMsg[i])->m_pData, nActualPktSize);                   // !!! expensive deep copy !!!
               (pIncomingGnsMsg[i])->Release();                                               // cheap unlink from linked list
               m_queuePackets.push_back(pktAsConst);                                          // !!! expensive deep copy !!!
-                                                                                             // AP: find a way to link these into m_queuePackets maybe?
+                                                                                             // AP-99: find a way to link these into m_queuePackets maybe?
             }
           }
         ) {}
@@ -210,9 +210,11 @@ PGE::runGame() {
                 //    that is 420 PKT/s @ 60 FPS to a single client.
                 //    This is true only if clients are constantly changing their current weapons in each frame, which unfortunately can happen if everybody is
                 //    using the mouse scroll continuously just for fun and that is detected at framerate at client-side, triggering message to server every frame.
-                //    AP: introduce rate-limit for weapon changing on both client- and server side.
+                //    AP-2: introduce rate-limit for weapon changing at server side (for client-side we have AP-3).
                 //
-                //  - might generate 1 MsgWpnUpdateFromServer, so: 1*7 * 60 = 420 PKT/s @ 60 FPS outgoing total that is 60 PKT/s @ 60 FPS to a single client.
+                //  - might generate 1 MsgWpnUpdateFromServer for updating bullet count for firing, so:
+                //    1*7 * 60 = 420 PKT/s @ 60 FPS outgoing total,
+                //    that is 60 PKT/s @ 60 FPS to a single client.
                 //    This is true only if a shot is actually fired in every frame, that actually cannot happen due to the fastest firing weapon is mchgun with
                 //    150 msec firing_cooldown, effectively limiting the value to:
                 //    1*7 * 6.7 = ~ 49 PKT/s @ 60 FPS outgoing total,
@@ -245,7 +247,7 @@ PGE::runGame() {
                     // However reloading is also rate-limited by reload_time weapon cvar, that is 1500 msecs currently for bith pistol and mchgun.
                     // Note: we need to remember that if a reload_time is less than or close to tickrate, it won't be properly updated as intended.
                     //
-                    // AP: introduce a run-time warning about this for the future, whenever we have a reload_time really low, we will be aware of this!
+                    // AP-99: introduce a run-time warning about this for the future, whenever we have a reload_time really low, we will be aware of this!
                 }
                 
                 serverUpdateBullets() {
@@ -253,7 +255,7 @@ PGE::runGame() {
                     // 48*7 PKT * 20 Hz = 6720 PKT/s @ 20 Hz total outgoing,
                     // that is 960 PKT/s @ 20 Hz to a single client.
                     //
-                    // AP: this is way too much, we should stop sending this and introduce client-side simulation of travelling bullets.
+                    // AP-1: this is way too much, we should stop sending this and introduce client-side simulation of travelling bullets.
                     // In that case we should send updates from server about a newborn bullet or a bullet being deleted.
                     // We can assume that if each player has some in-air travelling bullets, then only 1 of them per player is hitting something currently at a moment,
                     // leading to nPlayerCount number of MsgBulletUpdateFromServer to ALL clients about deleting it. So with this optimization, we could reduce traffic to:
@@ -268,6 +270,10 @@ PGE::runGame() {
                     // max. (7 + 25*7) PKT * 20 Hz = 3640 PKT/s @ 20 Hz total outgoing,
                     // that is 26 PKT * 20 Hz = 520 PKT/s @ 20 Hz to a single client.
                     // However very unlikely that all players are picking up an item in every tick AND every item is respawning also in every tick.
+                    // The realistic is that per tick as many items are respawning as the number of players since those players could pick up only 1 item at a time.
+                    // So I would rather calculate with: might send nClientsCount number of MsgWpnUpdateFromServer and nPlayerCount number of MsgMapItemUpdateFromServer:
+                    // (7 + 8) PKT * 20 Hz = 300 PKT/s @ 20 Hz total outgoing,
+                    // that is (1 + 8) PKT * 20 Hz = 180 PKT/s @ 20 Hz to a single client.
                 }
                 
                 serverSendUserUpdates() {
@@ -276,10 +282,31 @@ PGE::runGame() {
                     // that is 8 PKT * 20 Hz = 160 PKT/s @ 20 Hz to a single client.
                 }
               }  // end mainLoopServerOnlyOneTick()
+          @END TICKRATE
           }  // end isServer()
           
+          @FRAMERATE again
           mainLoopShared() {
-              TODO!!!
+              handleInputAndSendUserCmdMove() {
+                  // Might send 1 MsgUserCmdFromClient to server in case of input.
+                  // Currently strafe is the only continuous operation, it means: once you set the action, server keeps doing the action until explicitly said to stop.
+                  // Some operations don't need to be set as continuous operation because they are triggered by keyup-keydown pairs thus cannot flood the server
+                  // by simply pressing the relevant buttons continuously: jump, toggleRunWalk, requestReload, weapon switch.
+                  // But keeping left mouse button down continuously will generate message being sent out to server in every frame!
+                  // If all players keep pressing the left mouse button down, it means:
+                  // nPlayerCount number of MsgUserCmdFromClient:
+                  // 1*8 * 60 = 480 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
+                  // that is 1*60 = 60 PKT/s @ 60 FPS from a single client.
+                  
+                  // AP-4: shooting by mouse should be also a continuous operation like strafe.
+                  // AP-3: introduce rate-limit for weapon changing by mouse scrolling (this is the client-side task, we already have AP-2 for this for server-side at handleUserCmdMoveFromClient).
+                  // AP-5: weapon angle Y should not be sent, since it is the same as m_fPlayerAngleY.
+                  // AP-6: weapon angle Z should be sent less frequently. For example, every 1 second, or when the change is bigger than 5 degress relative to last sent degree,
+                  //     or the combination of both.
+                  
+                  // TODO: update the calculation here after above APs are done! Also update the required packet rate budget under the pseudocode!
+              }
+              
           }  // end mainLoopShared
         }
       }
@@ -291,9 +318,31 @@ PGE::runGame() {
 
 ```
 
-Based on the above calculations in the pseudocode comments, we can say that we have the following estimated required packet budget:
- - server: TODO.
- - client: TODO.
+Based on the above calculations in the pseudocode comments, we can say that we have the following estimated required packet rate budget (must be able to handle such packet rate) and packet buffer:
+ - server: requirement increase is linear with number of clients:
+   - v0.1.2: 480 PKT/s for 7 clients @ 60 FPS as per handleInputAndSendUserCmdMove() TODO: add required packet buffer based on fixed PgePacket size,
+             120 PKT/s for 1 client @ 60 FPS (1 will be by the server by injection though);
+   - v0.1.3: same as v0.1.2;
+   - v0.1.4: TODO TODO: add required packet buffer based on variable PgePacket size.
+   - v0.1.5: TODO.
+   
+ - client: 
+   - v0.1.2: 4980-5340 PKT/s @ 60 FPS:
+     - 60-420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on fixed PgePacket size
+     - 2880 PKT/s @ 60 FPS as per serverUpdateBullets() + TODO: add required packet buffer based on fixed PgePacket size
+     - 540 PKT/s @ 60 FPS as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on fixed PgePacket size
+     - 480 PKT/s @ 60 FPS as per serverSendUserUpdates(). TODO: add required packet buffer based on fixed PgePacket size
+   - v0.1.3: 1700-2060 PKT/s @ 60 FPS:
+     - 60-420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on fixed PgePacket size
+     - 960 PKT/s @ 20 Hz as per serverUpdateBullets() + TODO: add required packet buffer based on fixed PgePacket size
+     - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on fixed PgePacket size
+     - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(). TODO: add required packet buffer based on fixed PgePacket size
+   - v0.1.4: TODO.
+     - PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on variable PgePacket size
+     - PKT/s @ 20 Hz as per serverUpdateBullets() + TODO: add required packet buffer based on variable PgePacket size
+     - PKT/s @ 20 Hz as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on variable PgePacket size
+     - PKT/s @ 20 Hz as per serverSendUserUpdates(). TODO: add required packet buffer based on variable PgePacket size
+   - v0.1.5: TODO.
 
 \subsubsection client_behavior New Client Behavior (from v0.1.4)
 
@@ -304,7 +353,7 @@ The rest of the implementation is not changed:
  - player is repositioned on client side when server sends the new coordinates (this was same in the naive approach as well).
 
 It is important to understand that since there are commands that should be continuous operations e.g. running, for these we should not only send out message when a button is pressed but also when it is released.  
-This way the server can contiouously simulate running in every server tick until client explicitly requests stop, even if server and client tickrates are different.
+This way the server can continuously simulate running in every server tick until client explicitly requests stop, even if server and client tickrates are different.
 
 Note: we don't even need to send messages in every tick, we can just further enqueue messages over multiple ticks, and send them at lower rate than tickrate, to further reduce required bandwidth.  
 This lower rate is called **command rate**, rule is: **tickrate >= command rate**.  
