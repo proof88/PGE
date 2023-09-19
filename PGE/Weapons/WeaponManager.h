@@ -136,7 +136,9 @@ private:
     TPureBool m_fragile;                                   /**< Fragile flag as defined by weapon file. Used by PGE server instance only. */
     int m_nDamageHp;                                       /**< Damage to HP as defined by weapon file. Used by PGE server instance only. */
 
-    PureObject3D* m_obj;                                   /**< Associated Pure object to be rendered. Used by PGE server and client instances. */
+    PureObject3D* m_obj;                                   /**< Associated Pure object to be rendered. Used by PGE server and client instances.
+                                                                TODO: shared ptr would be better though, so deleting the obj earlier than bullet
+                                                                instance wouldn't be a problem. */
 
     // ---------------------------------------------------------------------------
 
