@@ -251,16 +251,17 @@ PGE::runGame() {
                 }
                 
                 serverUpdateBullets() {
-                    // sends nBulletsCount number of MsgBulletUpdateFromServer to ALL clients:
+                    // Until v0.1.3 server continuously sent all bullet movements to clients
+                    // But from v0.1.4 it just sends msg about new bullet or bullet delete. So clients also simulate the bullet travel.
+                    
+                    // v0.1.3 sends nBulletsCount number of MsgBulletUpdateFromServer to ALL clients:
                     // 48*7 PKT * 20 Hz = 6720 PKT/s @ 20 Hz total outgoing,
                     // that is 960 PKT/s @ 20 Hz to a single client.
                     //
-                    // AP-1: this is way too much, we should stop sending this and introduce client-side simulation of travelling bullets.
-                    // In that case we should send updates from server about a newborn bullet or a bullet being deleted.
-                    // We can assume that if each player has some in-air travelling bullets, then only 1 of them per player is hitting something currently at a moment,
-                    // leading to nPlayerCount number of MsgBulletUpdateFromServer to ALL clients about deleting it. So with this optimization, we could reduce traffic to:
+                    // v0.1.4 sends nPlayerCount number of MsgBulletUpdateFromServer to ALL clients in case everyone is shooting a new bullet in each tick, or
+                    // in case 1-1 bullet of each player hits something so needs to be deleted. Traffic is reduced to:
                     // 8*7 PKT * 20 Hz = 1120 PKT/s @ 20 Hz total outgoing,
-                    // that is 8 PKT * 20 Hz = 160 PKT/s @ 20 Hz to a single client.
+                    // that is 160 PKT/s @ 20 Hz to a single client.
                 }
                 
                 serverUpdateRespawnTimers();       // no networking
@@ -322,8 +323,8 @@ Based on the above calculations in the pseudocode comments, we can say that we h
  - server: requirement increase is linear with number of clients:
    - v0.1.2: 480 PKT/s for 7 clients @ 60 FPS as per handleInputAndSendUserCmdMove() TODO: add required packet buffer based on fixed PgePacket size,
              120 PKT/s for 1 client @ 60 FPS (1 will be by the server by injection though);
-   - v0.1.3: same as v0.1.2;
-   - v0.1.4: TODO TODO: add required packet buffer based on variable PgePacket size.
+   - v0.1.3: same as v0.1.2 since clients are still storming the server with same pkt rate;
+   - v0.1.4: TODO: fill. TODO: add required packet buffer based on variable PgePacket size.
    - v0.1.5: TODO.
    
  - client: 
@@ -338,10 +339,10 @@ Based on the above calculations in the pseudocode comments, we can say that we h
      - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on fixed PgePacket size
      - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(). TODO: add required packet buffer based on fixed PgePacket size
    - v0.1.4: TODO.
-     - PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on variable PgePacket size
-     - PKT/s @ 20 Hz as per serverUpdateBullets() + TODO: add required packet buffer based on variable PgePacket size
-     - PKT/s @ 20 Hz as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on variable PgePacket size
-     - PKT/s @ 20 Hz as per serverSendUserUpdates(). TODO: add required packet buffer based on variable PgePacket size
+     -     PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on variable PgePacket size
+     - 160 PKT/s @ 20 Hz as per serverUpdateBullets() + TODO: add required packet buffer based on variable PgePacket size
+     -     PKT/s @ 20 Hz as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on variable PgePacket size
+     -     PKT/s @ 20 Hz as per serverSendUserUpdates(). TODO: add required packet buffer based on variable PgePacket size
    - v0.1.5: TODO.
 
 \subsubsection client_behavior New Client Behavior (from v0.1.4)

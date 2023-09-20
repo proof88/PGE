@@ -38,6 +38,7 @@ protected:
 
         AddSubTest("test_bullet_ctor_server_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_good);
         AddSubTest("test_bullet_ctor_client_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_good);
+        // TODO: add test for copy ctor and assignment operator
         AddSubTest("test_reset_global_bullet_id", (PFNUNITSUBTEST)&PGEBulletTest::test_reset_global_bullet_id);
         AddSubTest("test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag",
             (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
@@ -112,6 +113,7 @@ private:
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(bFragile, bullet.isFragile(), "fragile");
         b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
+        b &= assertFalse(bullet.isCreateSentToClients(), "isCreateSentToClients");
 
         return b;
     }
@@ -139,6 +141,7 @@ private:
         b &= assertEquals(0.f, bullet.getGravity(), "gravity");
         b &= assertEquals(0.f, bullet.getDrag(), "drag");
         b &= assertEquals(false, bullet.isFragile(), "fragile");
+        b &= assertTrue(bullet.isCreateSentToClients(), "isCreateSentToClients"); /* we are client so yes it is sent :) */
 
         return b;
     }

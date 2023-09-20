@@ -77,6 +77,7 @@ public:
     TPureFloat getDrag() const;
     TPureBool isFragile() const;
     int getDamageHp() const;
+    bool& isCreateSentToClients();
 
     void Update(const unsigned int& nFactor);
 
@@ -92,7 +93,8 @@ public:
         m_gravity(other.m_gravity),
         m_drag(other.m_drag),
         m_fragile(other.m_fragile),
-        m_nDamageHp(other.m_nDamageHp)
+        m_nDamageHp(other.m_nDamageHp),
+        m_bCreateSentToClients(other.m_bCreateSentToClients)
     {
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY()); // TODO: throw if cnanot creaate
         m_obj->SetDoubleSided(true);
@@ -111,6 +113,7 @@ public:
         m_drag = other.m_drag;
         m_fragile = other.m_fragile;
         m_nDamageHp = other.m_nDamageHp;
+        m_bCreateSentToClients = other.m_bCreateSentToClients;
 
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());  // TODO: throw if cnanot creaate
         m_obj->SetDoubleSided(true);
@@ -139,6 +142,7 @@ private:
     PureObject3D* m_obj;                                   /**< Associated Pure object to be rendered. Used by PGE server and client instances.
                                                                 TODO: shared ptr would be better though, so deleting the obj earlier than bullet
                                                                 instance wouldn't be a problem. */
+    bool m_bCreateSentToClients;                           /**< Server should send update to clients about creation of new bullets. By default false. */
 
     // ---------------------------------------------------------------------------
 

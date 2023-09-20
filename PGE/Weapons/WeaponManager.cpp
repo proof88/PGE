@@ -52,7 +52,8 @@ Bullet::Bullet(
     m_drag(drag),
     m_fragile(fragile),
     m_nDamageHp(nDamageHp),
-    m_obj(NULL)
+    m_obj(NULL),
+    m_bCreateSentToClients(false)
 {
     if ( (m_speed == 1000.f) && (m_drag > 0.f))
     {
@@ -78,11 +79,14 @@ Bullet::Bullet(
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/) :
     m_id(id),
     m_gfx(gfx),
-    m_speed(0.f),
-    m_gravity(0.f),
-    m_drag(0.f),
-    m_fragile(0.f),
-    m_obj(NULL)
+    m_connHandle(0),
+    m_speed(0.f) /* need to lookup by weapon for this client-side ctor */,
+    m_gravity(0.f) /* need to lookup by weapon for this client-side ctor */,
+    m_drag(0.f) /* need to lookup by weapon for this client-side ctor */,
+    m_fragile(0.f) /* irrelevant for this client-side ctor */,
+    m_nDamageHp(0) /* irrelevant for this client-side ctor */,
+    m_obj(NULL),
+    m_bCreateSentToClients(true) /* irrelevant for this client-side ctor but we are client so yes it is sent :) */
 {
     m_put.getPosVec().Set(wpn_px, wpn_py, wpn_pz);
     m_put.SetRotation(wpn_ax, (wpn_ay > 0.0f) ? 90.f : -90.f, (wpn_ay > 0.0f) ? wpn_az : -wpn_az);
@@ -140,6 +144,11 @@ TPureBool Bullet::isFragile() const
 int Bullet::getDamageHp() const
 {
     return m_nDamageHp;
+}
+
+bool& Bullet::isCreateSentToClients()
+{
+    return m_bCreateSentToClients;
 }
 
 void Bullet::Update(const unsigned int& nFactor)
