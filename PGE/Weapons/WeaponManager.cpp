@@ -76,13 +76,14 @@ Bullet::Bullet(
     Bullet::BulletId id,
     TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
     TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
-    TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/) :
+    TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
+    TPureFloat speed, TPureFloat gravity, TPureFloat drag) :
     m_id(id),
     m_gfx(gfx),
     m_connHandle(0),
-    m_speed(0.f) /* need to lookup by weapon for this client-side ctor */,
-    m_gravity(0.f) /* need to lookup by weapon for this client-side ctor */,
-    m_drag(0.f) /* need to lookup by weapon for this client-side ctor */,
+    m_speed(speed),
+    m_gravity(gravity),
+    m_drag(drag),
     m_fragile(0.f) /* irrelevant for this client-side ctor */,
     m_nDamageHp(0) /* irrelevant for this client-side ctor */,
     m_obj(NULL),

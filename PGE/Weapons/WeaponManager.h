@@ -62,7 +62,8 @@ public:
         Bullet::BulletId id,
         TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
         TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
-        TPureFloat sx, TPureFloat sy, TPureFloat sz);
+        TPureFloat sx, TPureFloat sy, TPureFloat sz,
+        TPureFloat speed, TPureFloat gravity, TPureFloat drag);
     
     virtual ~Bullet();
 

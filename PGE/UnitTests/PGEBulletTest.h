@@ -124,22 +124,26 @@ private:
         const PureVector posVec(1.f, 2.f, 3.f);
         const PureVector angleVec(20.f, 40.f, 60.f);
         const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
+        const float fSpeed = 60.f;
+        const float fGravity = 15.f;
+        const float fDrag = 25.f;
 
         Bullet bullet(
             *engine,
             static_cast<Bullet::BulletId>(1234),
             posVec.getX(), posVec.getY(), posVec.getZ(),
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
-            sizeVec.getX(), sizeVec.getY(), sizeVec.getZ());
+            sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
+            fSpeed, fGravity, fDrag);
 
         bool b = assertEquals(bullet.getId(), static_cast<Bullet::BulletId>(1234), "bullet id");
         b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId, "global bullet id");
         b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "pos");
         b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "angle");
         b &= assertEquals(sizeVec, bullet.getObject3D().getSizeVec(), "size");
-        b &= assertEquals(0.f, bullet.getSpeed(), "speed");
-        b &= assertEquals(0.f, bullet.getGravity(), "gravity");
-        b &= assertEquals(0.f, bullet.getDrag(), "drag");
+        b &= assertEquals(fSpeed, bullet.getSpeed(), "speed");
+        b &= assertEquals(fGravity, bullet.getGravity(), "gravity");
+        b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(false, bullet.isFragile(), "fragile");
         b &= assertTrue(bullet.isCreateSentToClients(), "isCreateSentToClients"); /* we are client so yes it is sent :) */
 
