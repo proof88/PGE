@@ -285,6 +285,12 @@ PGE::runGame() {
               }  // end mainLoopServerOnlyOneTick()
           @END TICKRATE
           }  // end isServer()
+          else {
+          @TICKRATE (ideally 20 Hz)                
+              mainLoopClientOnlyOneTick() {        // v0.1.4: client-side tick got introduced (same value as for server-side)
+                clientUpdateBullets()              // v0.1.4: client-side bullet travel simulation got introduced (without collision-detection)
+              }
+          }
           
           @FRAMERATE again
           mainLoopShared() {
