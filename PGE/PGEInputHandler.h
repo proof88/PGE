@@ -114,6 +114,7 @@ public:
     CConsole&   getConsole() const;                   /**< Returns access to console preset with logger module name as this class. */
 
     /**
+    * @param key The virtual keycode of the key for which we are checking keypress event.
     * @return True if given key is pressed, false otherwise.
     */
     virtual bool isKeyPressed(unsigned char key) const = 0;
@@ -122,13 +123,19 @@ public:
     * Useful if we want to distinguish between different keypresses of the same key.
     * Unlike isKeyPressed(), this function also keeps track of the last released state of the key,
     * and will return true only if the state has just changed from released to pressed.
+    * 
+    * @param key              The virtual keycode of the key for which we are checking keypress event.
+    * @param nFilterMillisecs Minimum time needs to elapse before accepting another keypress event.
     * @return True if given key has just been changed to pressed state, false otherwise.
     */
-    virtual bool isKeyPressedOnce(unsigned char key) = 0;
+    virtual bool isKeyPressedOnce(unsigned char key, unsigned int nFilterMillisecs = 0) = 0;
     
     /**
     * Sets the pressed state of the given key to the given value.
     * This is used by the message handler callback function of the game window.
+    * 
+    * @param key   The virtual keycode of the key for which we are setting keypress event.
+    * @param state The state we want to set i.e. true for pressed, false for released.
     */
     virtual void SetKeyPressed(unsigned char key, bool state) = 0;
 

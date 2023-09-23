@@ -202,8 +202,8 @@ PGE::runGame() {
             
             handleUserCmdMoveFromClient() {
                 // process inputs from clients, so worst case we need to multiply everything by nClientsCount and by their send rate:
-                // the max rate is AT LEAST the server FPS, clients send their input at their FPS rate, and server polls max nIncomingMsgArraySize packets / frame:
-                // since nIncomingMsgArraySize is 10, it CAN poll nClientsCount number of such message in each frame, so:
+                // clients send their input at their FPS rate, and server polls max nIncomingMsgArraySize packets / frame:
+                // since nIncomingMsgArraySize is 10, it CAN poll nClientsCount number of such message in each frame, so:          
                 //
                 //  - might generate nClientsCount number of MsgCurrentWpnUpdateFromServer, so:
                 //    7*7 * 60 = 2940 PKT/s @ 60 FPS total outgoing,
@@ -233,6 +233,8 @@ PGE::runGame() {
   
       onGameRunning() {
         proofps_dd::PRooFPSddPGE::onGameRunning() {
+          // this block contains updates in v0.1.3 and v.0.1.4
+          
           if (getNetwork().isServer()) {
           @TICKRATE (ideally 20 Hz)                // v0.1.3: this was @FRAMERATE in v0.1.2, so all results in this block are only 1/3 of v0.1.2.
               mainLoopServerOnlyOneTick() {
@@ -297,8 +299,19 @@ PGE::runGame() {
               handleInputAndSendUserCmdMove() {
                   // Might send 1 MsgUserCmdFromClient to server in case of input.
                   // Currently strafe is the only continuous operation, it means: once you set the action, server keeps doing the action until explicitly said to stop.
-                  // Some operations don't need to be set as continuous operation because they are triggered by keyup-keydown pairs thus cannot flood the server
-                  // by simply pressing the relevant buttons continuously: jump, toggleRunWalk, requestReload, weapon switch.
+                  // v0.1.4: pkt traffic got fixed because due to a bug v0.1.3 still sent the same strafe command every frame to server.
+                  //
+                  // Some operations don't need to be set as continuous operation because they are triggered by keyup-keydown pairs (controlled by getKeyboard().isKeyPressedOnce())
+                  // thus cannot flood the server by simply pressing the relevant buttons continuously: jump, toggleRunWalk, requestReload, weapon switch.
+                  // So these are rate-limited at client-side implicitly by the fact that there is a physical limit how many times a player can do key-down-key-up series within a second,
+                  // for now we can say worst-case 5/sec, that is so low I'm not considering now.
+                  // v0.1.4: However, weapon changing by keyboard, currently for switching between pistol and mchgun back-and-forth, could reach worst-case 15 PKT/sec in v0.1.3.
+                  //         So in v0.1.4 a 500 millisecs time elapse is also needed between these keystrokes thus I believe switching back-and-forth is now worst-case 5 PKT/sec.
+                  //
+                  // AP-99: drop clients who are storming the server with too high rate (maybe programmatically).
+                  //
+                  // AP-3: introduce rate-limit for weapon changing by mouse scrolling (this is the client-side task, we already have AP-2 for this for server-side at handleUserCmdMoveFromClient).
+                  //
                   // But keeping left mouse button down continuously will generate message being sent out to server in every frame!
                   // If all players keep pressing the left mouse button down, it means:
                   // nPlayerCount number of MsgUserCmdFromClient:
@@ -306,17 +319,16 @@ PGE::runGame() {
                   // that is 1*60 = 60 PKT/s @ 60 FPS from a single client.
                   
                   // AP-4: shooting by mouse should be also a continuous operation like strafe.
-                  // AP-3: introduce rate-limit for weapon changing by mouse scrolling (this is the client-side task, we already have AP-2 for this for server-side at handleUserCmdMoveFromClient).
                   // AP-5: weapon angle Y should not be sent, since it is the same as m_fPlayerAngleY.
                   // AP-6: weapon angle Z should be sent less frequently. For example, every 1 second, or when the change is bigger than 5 degress relative to last sent degree,
                   //     or the combination of both.
                   
                   // TODO: update the calculation here after above APs are done! Also update the required packet rate budget under the pseudocode!
-              }
+              }  // end handleInputAndSendUserCmdMove()
               
           }  // end mainLoopShared
-        }
-      }
+        }  // end proofps_dd::PRooFPSddPGE::onGameRunning()
+      }  // end onGameRunning()
     
       RenderScene();
       frameLimit();    

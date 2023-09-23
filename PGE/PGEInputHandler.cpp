@@ -13,6 +13,9 @@
 
 #include "PureBaseIncludes.h"  // PCH
 #include "PGEInputHandler.h"
+
+#include <chrono>
+
 #include "PGEincludes.h"
 #include "PGEpragmas.h"
 #include "../../Console/CConsole/src/CConsole.h"
@@ -361,7 +364,7 @@ public:
     virtual ~PGEInputKeyboardImpl();
 
     bool isKeyPressed(unsigned char key) const;
-    bool isKeyPressedOnce(unsigned char key);
+    bool isKeyPressedOnce(unsigned char key, unsigned int nFilterMillisecs);
     void SetKeyPressed(unsigned char key, bool state);
 
 protected:
@@ -373,6 +376,7 @@ private:
     PGEcfgProfiles& m_cfgProfiles;
     bool m_bKeysDown[256];
     bool m_bKeysReleasedSinceLastRead[256];
+    std::chrono::time_point<std::chrono::steady_clock> m_timeKeysDownAccepted[256];
 
     // ---------------------------------------------------------------------------
 
@@ -401,12 +405,19 @@ bool PGEInputKeyboardImpl::isKeyPressed(unsigned char key) const
     return m_bKeysDown[key];
 }
 
-bool PGEInputKeyboardImpl::isKeyPressedOnce(unsigned char key)
+bool PGEInputKeyboardImpl::isKeyPressedOnce(unsigned char key, unsigned int nFilterMillisecs)
 {
-    const bool bPressedOnce = m_bKeysDown[key] && m_bKeysReleasedSinceLastRead[key];
+    const std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::steady_clock::now();
+    const bool bTimeFilterOk =
+        nFilterMillisecs > 0 ?
+        (std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - m_timeKeysDownAccepted[key]).count() >= nFilterMillisecs) :
+        true;
+
+    const bool bPressedOnce = m_bKeysDown[key] && m_bKeysReleasedSinceLastRead[key] && bTimeFilterOk;
     if (bPressedOnce)
     {
         m_bKeysReleasedSinceLastRead[key] = false;
+        m_timeKeysDownAccepted[key] = timeNow;
     }
     return bPressedOnce;
 }
