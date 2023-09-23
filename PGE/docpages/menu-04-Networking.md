@@ -192,7 +192,7 @@ PGE::runGame() {
   // END transfer PKTs from GNS to PGE level
     
   // START transfer PKTs from PGE to APP (proofps) level
-  // no changes since v0.1.2
+  // last change in v0.1.4
       while (getNetwork().getServerClientInstance()->getPacketQueueSize() > 0) {
         onPacketReceived( getNetwork().getServerClientInstance()->popFrontPacket() ) {       // invoke application code for all received pkt in m_queuePackets
           proofps_dd::PRooFPSddPGE::onPacketReceived() {                                     // (remember: max. 600 PKT/s @ 60 FPS based on calculations in previous block)
@@ -202,15 +202,19 @@ PGE::runGame() {
             
             handleUserCmdMoveFromClient() {
                 // process inputs from clients, so worst case we need to multiply everything by nClientsCount and by their send rate:
-                // clients send their input at their FPS rate, and server polls max nIncomingMsgArraySize packets / frame:
-                // since nIncomingMsgArraySize is 10, it CAN poll nClientsCount number of such message in each frame, so:          
+                // - in v0.1.2 most input were sent at their frame rate.
+                // - in v0.1.3 things were similar.
+                // In v0.1.3, since server polled max nIncomingMsgArraySize (= 10) packets / frame: it COULD poll nClientsCount number of such message in each frame, so:          
                 //
-                //  - might generate nClientsCount number of MsgCurrentWpnUpdateFromServer, so:
+                //  - in v0.1.3 it might had generated nClientsCount number of MsgCurrentWpnUpdateFromServer, so:
                 //    7*7 * 60 = 2940 PKT/s @ 60 FPS total outgoing,
                 //    that is 420 PKT/s @ 60 FPS to a single client.
                 //    This is true only if clients are constantly changing their current weapons in each frame, which unfortunately can happen if everybody is
                 //    using the mouse scroll continuously just for fun and that is detected at framerate at client-side, triggering message to server every frame.
-                //    AP-2: introduce rate-limit for weapon changing at server side (for client-side we have AP-3).
+                //    In v0.1.4 we introduced a 500ms minimum elapse time for weapon change, so max 2 weapon changes are allowed per second.
+                //    This changes the calculation to:
+                //    7*7 * 2 = 98 PKT/s @ 60 FPS total outgoing,
+                //    that is 7*2 = 18 PKT/s @ 60 FPS to a single client.
                 //
                 //  - might generate 1 MsgWpnUpdateFromServer for updating bullet count for firing, so:
                 //    1*7 * 60 = 420 PKT/s @ 60 FPS outgoing total,
@@ -306,11 +310,10 @@ PGE::runGame() {
                   // So these are rate-limited at client-side implicitly by the fact that there is a physical limit how many times a player can do key-down-key-up series within a second,
                   // for now we can say worst-case 5/sec, that is so low I'm not considering now.
                   // v0.1.4: However, weapon changing by keyboard, currently for switching between pistol and mchgun back-and-forth, could reach worst-case 15 PKT/sec in v0.1.3.
-                  //         So in v0.1.4 a 500 millisecs time elapse is also needed between these keystrokes thus I believe switching back-and-forth is now worst-case 5 PKT/sec.
+                  //         So in v0.1.4 a 500 millisecs time elapse is also required between these keystrokes thus I believe switching back-and-forth is now worst-case 5 PKT/sec.
+                  //         Also in v0.1.4 I introduced rate-limit for weapon changing by mouse scrolling which was still at framerate in v0.1.3.
                   //
                   // AP-99: drop clients who are storming the server with too high rate (maybe programmatically).
-                  //
-                  // AP-3: introduce rate-limit for weapon changing by mouse scrolling (this is the client-side task, we already have AP-2 for this for server-side at handleUserCmdMoveFromClient).
                   //
                   // But keeping left mouse button down continuously will generate message being sent out to server in every frame!
                   // If all players keep pressing the left mouse button down, it means:
@@ -346,22 +349,26 @@ Based on the above calculations in the pseudocode comments, we can say that we h
    - v0.1.5: TODO.
    
  - client: 
-   - v0.1.2: 4980-5340 PKT/s @ 60 FPS:
-     - 60-420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on fixed PgePacket size
+   - v0.1.2: 4320 PKT/s @ 60 FPS:
+     - 420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on fixed PgePacket size
      - 2880 PKT/s @ 60 FPS as per serverUpdateBullets() + TODO: add required packet buffer based on fixed PgePacket size
      - 540 PKT/s @ 60 FPS as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on fixed PgePacket size
      - 480 PKT/s @ 60 FPS as per serverSendUserUpdates(). TODO: add required packet buffer based on fixed PgePacket size
-   - v0.1.3: 1700-2060 PKT/s @ 60 FPS:
-     - 60-420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on fixed PgePacket size
+   - v0.1.3: 1720 PKT/s @ 60 FPS:
+     - 420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on fixed PgePacket size
      - 960 PKT/s @ 20 Hz as per serverUpdateBullets() + TODO: add required packet buffer based on fixed PgePacket size
      - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on fixed PgePacket size
      - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(). TODO: add required packet buffer based on fixed PgePacket size
    - v0.1.4: TODO.
-     -     PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on variable PgePacket size
+     -  18 PKT/s @ 60 FPS PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on variable PgePacket size
      - 160 PKT/s @ 20 Hz as per serverUpdateBullets() + TODO: add required packet buffer based on variable PgePacket size
      -     PKT/s @ 20 Hz as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on variable PgePacket size
      -     PKT/s @ 20 Hz as per serverSendUserUpdates(). TODO: add required packet buffer based on variable PgePacket size
    - v0.1.5: TODO.
+
+Above results show that although the server was able to keep up with receiving packets from 7 clients in v0.1.2, clients were not able to always keep up.  
+Clients were also polling up to 10 packets in each frame, leading to max 600 PKT/s @ 60 FPS poll rate, that could be crossed in both v0.1.2 and v0.1.3 versions, leading to packet drops.  
+TODO: did this change with v0.1.4 ?
 
 \subsubsection client_behavior New Client Behavior (from v0.1.4)
 
