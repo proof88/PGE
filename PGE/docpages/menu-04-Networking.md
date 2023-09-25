@@ -223,7 +223,8 @@ PGE::runGame() {
                 //    7*7 * 2 = 98 PKT/s @ 60 FPS total outgoing,
                 //    that is 7*2 = 18 PKT/s @ 60 FPS to a single client.
                 //
-                //  - might generate 1 MsgWpnUpdateFromServer for updating bullet count for firing, so:
+                //  - before v0.1.4:
+                //    might generate 1 MsgWpnUpdateFromServer for updating bullet count for firing (wpn->pullTrigger() returns true), so:
                 //    1*7 * 60 = 420 PKT/s @ 60 FPS outgoing total,
                 //    that is 60 PKT/s @ 60 FPS to a single client.
                 //    This is true only if a shot is actually fired in every frame, that actually cannot happen due to the fastest firing weapon is mchgun with
@@ -231,7 +232,9 @@ PGE::runGame() {
                 //    1*7 * 6.7 = ~ 49 PKT/s @ 60 FPS outgoing total,
                 //    that is ~6.7 PKT/s @ 60 FPS to a single client.
                 //
-                //  - above cannot really mixed with each other since after changing weapon, there is a m_nWeaponActionMinimumWaitMillisecondsAfterSwitch = 1000 required
+                //    v0.1.4: this logic has been moved to serverUpdateWeapons() because firing became a continuous operation.
+                //
+                //  - above cannot really be mixed with each other since after changing weapon, there is a m_nWeaponActionMinimumWaitMillisecondsAfterSwitch = 1000 required
                 //    timeout before a bullet can be fired.
             }
                                                 
@@ -247,24 +250,39 @@ PGE::runGame() {
   
       onGameRunning() {
         proofps_dd::PRooFPSddPGE::onGameRunning() {
-          // this block contains updates in v0.1.3 and v.0.1.4
+          // this block contains updates in v0.1.3 and v0.1.4
+          
+          serverUpdateWeapons() {
+              // This block is at framerate since v0.1.4, previously it was in server tick.
+              // The reason of moving this to framerate is that in v0.1.4 attack/mouse left button became a continuous operation, thus player attacking state
+              // is saved on server-side until explicitly said so, and need to invoke wpn->pullTrigger() as often as possible which cannot be done simply with
+              // tickrate. A fast-firing weapon such as the mchun with ~6 shots/second need to be "triggered" more frequently than tickrate, otherwise some
+              // bullets will be fired some millisecs later than expected.
+              // And anyway even with a pistol it is not acceptable if client pulls trigger at time point T but server actually creates bullet at T + (50-16.6) msec
+              // later (worst case).
+              
+              // v0.1.4: Might generate 1 MsgWpnUpdateFromServer for updating bullet count for firing (wpn->pullTrigger() returns true), so:
+              // 1*7 * 60 = 420 PKT/s @ 60 FPS outgoing total,
+              // that is 60 PKT/s @ 60 FPS to a single client.
+              // This is true only if a shot is actually fired in every frame, that actually cannot happen due to the fastest firing weapon is mchgun with
+              // 150 msec firing_cooldown, effectively limiting the value to:
+              // 1*7 * 6.7 = ~ 49 PKT/s @ 60 FPS outgoing total,
+              // that is ~6.7 PKT/s @ 60 FPS to a single client.
+              
+              // Might send nClientsCount number of MsgWpnUpdateFromServer, currently only for reloading a weapon:
+              // max. 7 * 60 = 420 PKT/s @ 60 FPS total outgoing to clients,
+              // that is max 1 * 60 = 60 PKT/s @ 60 FPS to a single client.
+              // However reloading is also rate-limited by reload_time weapon cvar, that is 1500 msecs currently for both pistol and mchgun.
+              // Thus this is not considered yet. Later, if per-bullet-reloadable weapons will be available, we will consider this again.
+              // Note that if a reload_time is less than or close to tickrate, it won't be properly updated as intended. That is also a reason why this function
+              // is not in the server tick anymore.
+          }
           
           if (getNetwork().isServer()) {
           @TICKRATE (ideally 20 Hz)                // v0.1.3: this was @FRAMERATE in v0.1.2, so all results in this block are only 1/3 of v0.1.2.
               mainLoopServerOnlyOneTick() {
                 serverGravity();                   // no networking
                 serverPlayerCollisionWithWalls();  // no networking
-                
-                serverUpdateWeapons() {
-                    // might send nClientsCount number of MsgWpnUpdateFromServer, currently only for reloading a weapon:
-                    // max. 7 PKT * 20 Hz = 140 PKT/s @ 20 Hz total outgoing to clients,
-                    // that is max 1 PKT * 20 Hz = 20 PKT/s to a single client.
-                    //
-                    // However reloading is also rate-limited by reload_time weapon cvar, that is 1500 msecs currently for bith pistol and mchgun.
-                    // Note: we need to remember that if a reload_time is less than or close to tickrate, it won't be properly updated as intended.
-                    //
-                    // AP-99: introduce a run-time warning about this for the future, whenever we have a reload_time really low, we will be aware of this!
-                }
                 
                 serverUpdateBullets() {
                     // Until v0.1.3 server continuously sent all bullet movements to clients
@@ -341,13 +359,12 @@ PGE::runGame() {
                   //
                   // AP-99: drop clients who are storming the server with too high rate (maybe programmatically).
                   //
-                  // But keeping left mouse button down continuously will generate message being sent out to server in every frame!
-                  // If all players keep pressing the left mouse button down, it means:
-                  // nPlayerCount number of MsgUserCmdFromClient:
-                  // 1*8 * 60 = 480 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
-                  // that is 1*60 = 60 PKT/s @ 60 FPS from a single client.
+                  // v0.1.4: attack i.e. left mouse button press also became a continuous operation like strafe, so from only the press and release generated packet towards server.
+                  //         So now the more clicks, the more packets: worst-case 5 PKT/sec for 1 rapidly clicking player.
+                  //         With nPlayerCount number of MsgUserCmdFromClient:
+                  //         8 * 5 = 40 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
+                  //         that is 1 * 5 = 5 PKT/s @ 60 FPS from a single client.
                   
-                  // AP-4: shooting by mouse should be also a continuous operation like strafe.
                   // AP-5: weapon angle Y should not be sent, since it is the same as m_fPlayerAngleY.
                   // AP-6: mouse moving also generates pkts at framerate.
                   //       weapon angle Z should be sent less frequently. For example, every 1 second, or when the change is bigger than 5 degress relative to last sent degree,
@@ -386,7 +403,10 @@ Based on the above calculations in the pseudocode comments, we can say that we h
      - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on fixed PgePacket size;
      - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(). TODO: add required packet buffer based on fixed PgePacket size;
    - v0.1.4: 518 PKT/s @ 60 FPS.
-     -  18 PKT/s @ 60 FPS PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on variable PgePacket size;
+     -  18 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on variable PgePacket size;
+     -   0 PKT/s @ 60 FPS as per serverUpdateWeapons() (that was not relevant in previous versions), now it is still not relevant because
+                          the rate it could produce is less than handleUserCmdMoveFromClient()'s rate in case of weapon changing, and
+                          firing is impossible during weapon changing. I'm still showing this in the list with 0 rate though.                          
      - 160 PKT/s @ 20 Hz as per serverUpdateBullets() + TODO: add required packet buffer based on variable PgePacket size;
      - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on variable PgePacket size;
      - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(). TODO: add required packet buffer based on variable PgePacket size.
