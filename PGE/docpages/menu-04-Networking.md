@@ -359,18 +359,17 @@ PGE::runGame() {
                   //
                   // AP-99: drop clients who are storming the server with too high rate (maybe programmatically).
                   //
-                  // v0.1.4: attack i.e. left mouse button press also became a continuous operation like strafe, so from only the press and release generated packet towards server.
+                  // v0.1.4: attack i.e. left mouse button press also became a continuous operation like strafe, so from now only the press and release generate packets towards server.
                   //         So now the more clicks, the more packets: worst-case 5 PKT/sec for 1 rapidly clicking player.
                   //         With nPlayerCount number of MsgUserCmdFromClient:
                   //         8 * 5 = 40 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
                   //         that is 1 * 5 = 5 PKT/s @ 60 FPS from a single client.
-                  
-                  // AP-5: weapon angle Y should not be sent, since it is the same as m_fPlayerAngleY.
-                  // AP-6: mouse moving also generates pkts at framerate.
-                  //       weapon angle Z should be sent less frequently. For example, every 1 second, or when the change is bigger than 5 degress relative to last sent degree,
-                  //       or the combination of both.
-                  
-                  // TODO: update the calculation here after above APs are done! Also update the required packet rate budget under the pseudocode!
+                  //
+                  // v0.1.4: mouse/xhair moving-induced player- and weapon-angle update sending is also rate-limited. Player angle updates are sent with 200 millisec interval,
+                  //         bigger weapon angle changes are sent with 200 millisec interval, smaller weapon angle changes are sent with 300 millisec interval.
+                  //         This means max ~10 PKTs, so:
+                  //         1*8 * 10 = 80 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
+                  //         that is 1 * 10 = 10 PKT/s @ 60 FPS from a single client.
               }  // end handleInputAndSendUserCmdMove()
               
           }  // end mainLoopShared
@@ -386,30 +385,37 @@ PGE::runGame() {
 
 Based on the above calculations in the pseudocode comments, we can say that we have the following estimated required packet rate budget (must be able to handle such packet rate) and packet buffer:
  - server: requirement increase is linear with number of clients:
-   - v0.1.2: 480 PKT/s for 7 clients @ 60 FPS as per handleInputAndSendUserCmdMove() TODO: add required packet buffer based on fixed PgePacket size,
-             120 PKT/s for 1 client @ 60 FPS (1 will be by the server by injection though);
-   - v0.1.3: same as v0.1.2 since clients are still storming the server with same pkt rate;
-   - v0.1.4: TODO: fill. TODO: add required packet buffer based on variable PgePacket size.
-   
- - client: 
-   - v0.1.2: 4320 PKT/s @ 60 FPS:
-     - 420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on fixed PgePacket size;
-     - 2880 PKT/s @ 60 FPS as per serverUpdateBullets() + TODO: add required packet buffer based on fixed PgePacket size;
-     - 540 PKT/s @ 60 FPS as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on fixed PgePacket size;
-     - 480 PKT/s @ 60 FPS as per serverSendUserUpdates(). TODO: add required packet buffer based on fixed PgePacket size;
-   - v0.1.3: 1720 PKT/s @ 60 FPS:
-     - 420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on fixed PgePacket size;
-     - 960 PKT/s @ 20 Hz as per serverUpdateBullets() + TODO: add required packet buffer based on fixed PgePacket size;
-     - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on fixed PgePacket size;
-     - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(). TODO: add required packet buffer based on fixed PgePacket size;
-   - v0.1.4: 518 PKT/s @ 60 FPS.
-     -  18 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient() + TODO: add required packet buffer based on variable PgePacket size;
+   - v0.1.2: 480 PKT/s with 7 clients (8 players) @ 60 FPS as per handleInputAndSendUserCmdMove(),
+             120 PKT/s with 1 client (2 players) @ 60 FPS (1 will be by the server by injection though).
+             Since a PgePacket size was fix 268 Bytes, this lead to:
+             128640 Byte packet buffer is required on server-side with 8 players.
+   - v0.1.3: same as v0.1.2 since clients are still storming the server with same pkt rate and pkt size;
+   - v0.1.4: 80 PKT/s with 7 clients (8 players) @ 60 FPS as per handleInputAndSendUserCmdMove(),
+             20 PKT/s with 1 client (2 players) @ 60 FPS (1 will be by the server by injection though).
+             This is only the 17% of the requirement of v0.1.3!
+             Since variable packet size was introduced also in this version, and MsgUserCmdFromClient is 16 Bytes, PgePacket overhead 15 Bytes so total PgePacket size is 31 Bytes, this leads to:
+             2480 Byte packet buffer is required on server-side with 8 players, which is only the 2% of the requirement of v0.1.3!
+
+ - client (considering 8 players): 
+   - v0.1.2: 4320 PKT/s @ 60 FPS, with 4320 * 268 = 1157760 Byte packet buffer requirement:
+     - 420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient();
+     - 2880 PKT/s @ 60 FPS as per serverUpdateBullets();
+     - 540 PKT/s @ 60 FPS as per serverPickupAndRespawnItems();
+     - 480 PKT/s @ 60 FPS as per serverSendUserUpdates().
+   - v0.1.3: 1720 PKT/s @ 60 FPS, with 1720 * 268 = 460960 Byte packet buffer requirement (which is only the 40% of v0.1.2 requirement):
+     - 420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient();
+     - 960 PKT/s @ 20 Hz as per serverUpdateBullets();
+     - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems();
+     - 160 PKT/s @ 20 Hz as per serverSendUserUpdates().
+   - v0.1.4: 518 PKT/s @ 60 FPS (this is only the 12% of v0.1.2 rate!), with 1422 + 11360 + 5500 + 8800 = 27082 Byte packet buffer requirement (which is only the 2% of v0.1.2 requirement!).
+     -  18 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient(), with 18 * 79 = 1422 Byte packet buffer requirement (size of MsgCurrentWpnUpdateFromServer is 64 Bytes, PgePacket overhead is 15 Bytes);
      -   0 PKT/s @ 60 FPS as per serverUpdateWeapons() (that was not relevant in previous versions), now it is still not relevant because
                           the rate it could produce is less than handleUserCmdMoveFromClient()'s rate in case of weapon changing, and
                           firing is impossible during weapon changing. I'm still showing this in the list with 0 rate though.                          
-     - 160 PKT/s @ 20 Hz as per serverUpdateBullets() + TODO: add required packet buffer based on variable PgePacket size;
-     - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems() + TODO: add required packet buffer based on variable PgePacket size;
-     - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(). TODO: add required packet buffer based on variable PgePacket size.
+     - 160 PKT/s @ 20 Hz as per serverUpdateBullets(), with 160 * 71 = 11360 Byte packet buffer requirement (size of MsgBulletUpdateFromServer is 56 Bytes, PgePacket overhead is 15 Bytes);
+     - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems(), with 20 * 91 + 160 * 23 = 5500 Byte packet buffer requirement
+                         (size of MsgWpnUpdateFromServer is 76 Bytes, size of MsgMapItemUpdateFromServer is 8 Bytes, PgePacket overhead is 15 Bytes);
+     - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(), with 160 * 55 = 8800 Byte packet buffer requirement (size of MsgUserUpdateFromServer is 40 Bytes, PgePacket overhead is 15 Bytes).
 
 Above results show that although the server was able to keep up with receiving packets from 7 clients in v0.1.2, clients were not able to always keep up.  
 Clients were also polling up to 10 packets in each frame, leading to max 600 PKT/s @ 60 FPS poll rate, that could be easily crossed in both v0.1.2 and v0.1.3 versions with 8 players, leading to packet drops.  
