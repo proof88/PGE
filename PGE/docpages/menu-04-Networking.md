@@ -98,12 +98,12 @@ This way it is more difficult for clients to do anything from an illegal positio
 
 \section implementation_details Implementation Details
 
+PGE currently does not give explicit support on features like linearly interpolated player positions, it just gives a basic framework to establish connections between clients and the server as described above.  
+However, my game [PRooFPS-dd](https://github.com/proof88/PRooFPS-dd) implements some of these features so I'm giving some words about this topic here.
+
 \subsection original_naive_impl Original Naive Implementation (in v0.1.2)
 
-PGE currently does not give explicit support on features like client-side prediction, it just gives a basic framework to establish connections between clients and the server as described above.  
-However, my game [PRooFPS-dd](https://github.com/proof88/PRooFPS-dd) implements these features so I'm giving some words about this topic here.
-
-Until [PRooFPS-dd v0.1.2 Private Beta](https://github.com/proof88/PRooFPS-dd/releases/tag/v0.1.2-PrivateBeta) my naive approach was to tie input sampling to rendering frame rate and send messages between server and clients as soon as input was detected.  
+Until [PRooFPS-dd v0.1.2 Private Beta](https://github.com/proof88/PRooFPS-dd/releases/tag/v0.1.2-PrivateBeta) **my naive approach was to tie input sampling to rendering frame rate and send messages between server and clients as soon as input was detected**.  
 As already explained above, in general it is good to select the server as the only authorative instance in the network to provide a basic implementation against cheating.  
 So in my naive approach, when client player pressed a button to move, it did not move the player object, just sent a message to server about the input.  
 The server processed the message and replied back as soon as possible.  
@@ -115,9 +115,11 @@ However, it has multiple downsides as well:
  - the higher the framerate is, the more messages will be sent across computers, that could overload a machine having lower framerate (i.e. packet buffer might get full leading to packet drops).
 
 Although the first issue could be solved by calculating new player position based on measured delta time elapsed since last update instead of using constant values, we would still have the second issue.  
-Although physics is not part of this page, in general the variable delta time-based physics is not a good approach anyway because of multiple reasons (e.g. different machines with different delta will calculate different floating point results) so I've implemented fixed delta time approach, more you can read about it:
+Although physics is not part of this page, in general the variable delta time-based physics is not a good approach anyway because of multiple reasons (e.g. different machines with different delta will calculate different floating point results) so **I've implemented fixed delta time approach**, more you can read about it:
  - here: https://fabiensanglard.net/timer_and_framerate/index.php
  - and here: https://gafferongames.com/post/fix_your_timestep/
+
+Implementing phyics update with fixed delta time approach helped a lot to introduce the tick-based implementation as described below.
 
 \subsection new_tick_based_implementation New Tick-Based Implementation (from v0.1.3)
 
@@ -125,26 +127,71 @@ Now back to the networking part.
 From now on the techniques I'm describing are very common in multiplayer games and the terms I'm using are same or very similar as in [Counter-Strike](https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking).
 
 We want framerate-independent player movement, so we have our framerate-independent physics implemented as well, we should tie the input sampling, physics and messaging together, so they will be done with a different rate than the framerate.  
-These things (input sampling, game state update, simulation, physics, messaging) tied together we call **tick**.  
-This different rate we call **tickrate**.
+These things (input sampling, game state update, simulation, physics, messaging) tied together into a single operation called **tick**.  
+The number of a tick is executed per second is called **tickrate**.
+
+This is the theory you can read everywhere on the internet.  
+But actually my implementation still does the input sampling part per frame and I'm more carefully explaining this later.
 
 So the **essence of moving away from the naive approach is to understand that we execute different part of core game code at different rates**:
  - **framerate**: frequency of frame rendering;
  - **tickrate**: frequency of ticks i.e. input sampling, game state update and messaging together.
  
 Another rule is that **framerate >= tickrate**.  
-So it is totally ok to have framerate 60 while having tickrate 20. This means that we maximize the number of iterations of main game loop at 60, we target 60 rendered frames every second, and we do 20 ticks every second.
+So it is totally ok to have framerate 60 while having tickrate 20. This means that we maximize the number of iterations of main game loop at 60, we target 60 rendered frames every second, and we do only 20 ticks every second.  
+This also eases the requirement of CPU processing power and network bandwidth.
 
-\subsubsection new_behavior_overview Old and New Behavior Pseudocode
+However, it is not that trivial to say that: okay, from now on I'm just sampling and sending input from client to server at 20 Hz because then the player will really feel the delay in the movement.  
+So **with my implementation the framerate -> tickrate transition mostly helped reducing network traffic in server -> client direction but not in the other direction**.
+
+So in the next sections I explain in more detail how I introduced rate-limiting on client- and server-side.
+
+\subsection server_behavior New Server Behavior (v0.1.3, v0.1.4)
+
+Since physics simulation is done on server-side, introducing **tickrate** mostly affected the server: using fixed delta approach lead to more reliable player position updates.  
+Sending new player states to clients is done now at tickrate, which in case of 20 Hz introduced a ~66% reduction in network traffic in server -> client direction compared to having the framerate for this rate as in v0.1.2.  
+
+Even though the **bullet travel update traffic** from server to client direction was also reduced due to the above, I **decided to simply stop** sending this kind of traffic.  
+The reason is that even though server simulates bullet travel, clients can also do it on their side. They just simulate the bullet travel, don't care about the hits.  
+So still server informs the clients about the born and removal of a bullet (e.g. if the bullet hit a player or wall), but between bullet born and removal the clients can move the bullet on their own.  
+This also greatly reduced server -> client direction traffic.
+
+Some operations became **continuous operations**: when enabled, server executes the action in every tick until explicitly stopped.  
+An example for this is player strafe: once player starts strafing, server simulates it at tickrate until player stops strafing.  
+This way we managed to stop clients from storming the server with inputs such as strafe at their framerate.  
+It is important to understand that for such actions we should not only send out message when a button is pressed but also when it is released.
+
+\subsection client_behavior New Client Behavior (from v0.1.4)
+
+With the tickrate introduced, we successfully solved the problem of a slower machine not be able to keep up with processing messages when faster machines are also present in the network.  
+As I already explained above, with my implementation the framerate -> tickrate transition mostly helped reducing network traffic in server -> client direction but not in the other direction.
+
+To reduce traffic in client -> server direction, one idea was the **continuous operation** that I already explained above, so I'm not explaining it here again.  
+This was used also for the attack (left mouse button) action, once the button is pressed, server simulates that, no need to continuously send it by client.
+
+The basic rule doesn't change:
+ - player is not moved in the moment of detected player input, because player is moved only when server responds with the updated coordinates.  
+ - player is repositioned on client side when server sends the new coordinates (this was same in the naive approach as well).
+
+For other actions such as changing weapon with mouse scroll or keyboard, or reloading the weapon, I **introduced rate-limiting with a simple delay**:  
+a predefined amount of time MUST elapse before the client can send another same kind of message to the server.  
+Note that there is no use of storming the server with higher rate in tricky ways because the server also calculates with the minimum delays for rate-limiting thus there is no benefit for the player to storm the server.
+
+For other actions like updating weapon angle (client is moving the crosshair by mouse movement), I had to **introduce a more sophisticated rate-limiting method**:
+ - if the crosshair movement results in changing weapon angle bigger than a specific amount of degree, client sends such update max 5 times per second;
+ - otherwise client sends update max 3 times per second.
+
+Because the same message type is used for updating weapon angle and attacking state, the exact weapon angle will be sent to server at the moment of starting the attack, so the bullet born on server-side is expected to have the proper same angle.  
+If the client rapidly changes weapon angle during continuous shooting with an automatic weapon like mchgun, **some newborn bullets might have a bit different angle on server-side compared to the client-side angle of the weapon, but based on my testing these are just slight differences**.
+
+\subsection new_behavior_overview Old and New Behavior Pseudocode
 
 The following pseudocode shows what functions are invoked by runGame() that are relevant from networking perspective.  
-Server and client instances have the same runGame() code. Some parts are executed only by the server, that is visible from the pseudocode anyway.  
+Server and client instances have the same runGame() code. Some parts are executed only by the server or the client, that is visible from the pseudocode anyway.  
 Some parts were changed between different versions, in those cases I specified the changes with version numbers.  
-In the comments I mention what kind of messages are generated with approximated rates:  
- - for messages going out from server: total PKT rate and per-client PKT rate;
- - for messages coming from clients: TODO.
+In the comments I mention what kind of messages are generated with approximated rates total PKT rate and per-client PKT rate.
 
-I also mention AP (action point) wherever I think change should be introduced.
+I also mention **AP (action point)** wherever I think change should be introduced.
 
 ```.cpp
 
@@ -164,85 +211,23 @@ PGE::runGame() {
       }
     
   // START transfer PKTs from GNS to PGE level
-  // no changes since v0.1.2
-      getNetwork().Update() {
-        while (
-          m_pServerClient->pollIncomingMessages() {
-            ISteamNetworkingMessage* pIncomingGnsMsg[const nIncomingMsgArraySize = 10];
-            const int numGnsMsgs = receiveMessages(pIncomingGnsMsg, nIncomingMsgArraySize);  // so we read max 10 PKTs from GNS each frame (max. 600 PKT/s @ 60 FPS)
-            
-            // AP-7:  we might increase nIncomingMsgArraySize, however in that case CPU usage will also increase that might lead to less framerate.
-            //        But that is still better than dropping packets due to full buffer.
-            // AP-12: we might have different nIncomingMsgArraySize for server and clients, based on estimation.
-            // AP-11: nIncomingMsgArraySize should be configurable by CVAR.
-            // AP-8:  check how big is the low-level buffer used by GNS from where receiveMessages() grabs the packets! Can we increase it?
-            // AP-9:  can we check if this low-level buffer is full? We should log it.
-            // AP-10: can we know if we read all messages by receiveMessages() or there are still remaining? If so, we should log it! That is the start of a congestion.
-            
-            for (int i = 0; i < numGnsMsgs; i++) {
-              pge_network::PgePacket pkt;
-              memcpy(&pkt, (pIncomingGnsMsg[i])->m_pData, nActualPktSize);                   // !!! expensive deep copy !!!
-              (pIncomingGnsMsg[i])->Release();                                               // cheap unlink from linked list
-              m_queuePackets.push_back(pktAsConst);                                          // !!! expensive deep copy !!!
-                                                                                             // AP-99: find a way to link these into m_queuePackets maybe?
-            }
-          }
-        ) {}
-      }
+      getNetwork().Update()
   // END transfer PKTs from GNS to PGE level
     
   // START transfer PKTs from PGE to APP (proofps) level
   // last change in v0.1.4
       while (getNetwork().getServerClientInstance()->getPacketQueueSize() > 0) {
         onPacketReceived( getNetwork().getServerClientInstance()->popFrontPacket() ) {       // invoke application code for all received pkt in m_queuePackets
-          proofps_dd::PRooFPSddPGE::onPacketReceived() {                                     // (remember: max. 600 PKT/s @ 60 FPS based on calculations in previous block)
-            handleUserConnected()               // might generate a few packets but that is only when a new user has just connected, nothing to do here.
-            handleUserDisconnected()            // no networking
-            handleUserSetupFromServer()         // no networking
-            
-            handleUserCmdMoveFromClient() {
-                // Process inputs from clients.
-                // Here we dont discuss how clients can flood the server, that is discussed in handleInputAndSendUserCmdMove().
-                // Instead, here we discuss what packets with what rate are generated here as response to clients!
-                // Worst case we need to multiply everything by nClientsCount and by their send rate:
-                // - in v0.1.2 most input were sent at their frame rate.
-                // - in v0.1.3 things were similar.
-                // In v0.1.3, server polled max nIncomingMsgArraySize (= 10) packets / frame: 10 * 60 = 600 PKT/s @ 60 FPS poll, so
-                // with nPlayerCount = 8 players, each player sending a message in each frame, that is 8 * 60 = 480 PKT/s @ 60 FPS, so
-                // server COULD really poll nPlayerCount number of such message in each frame.
-                // That leads to the following OUTGOING packet rate from server to clients in this function:
-                //
-                //  - in v0.1.3 it might had generated nClientsCount number of MsgCurrentWpnUpdateFromServer, so:
-                //    7*7 * 60 = 2940 PKT/s @ 60 FPS total outgoing,
-                //    that is 420 PKT/s @ 60 FPS to a single client.
-                //    This is true only if clients are constantly changing their current weapons in each frame, which unfortunately can happen if everybody is
-                //    using the mouse scroll continuously just for fun and that is detected at framerate at client-side, triggering message to server every frame.
-                //
-                //    In v0.1.4 we introduced a 500ms minimum elapse time for weapon change, so max 2 weapon changes are allowed per second.
-                //    This changes the calculation to:
-                //    7*7 * 2 = 98 PKT/s @ 60 FPS total outgoing,
-                //    that is 7*2 = 18 PKT/s @ 60 FPS to a single client.
-                //
-                //  - before v0.1.4:
-                //    might generate 1 MsgWpnUpdateFromServer for updating bullet count for firing (wpn->pullTrigger() returns true), so:
-                //    1*7 * 60 = 420 PKT/s @ 60 FPS outgoing total,
-                //    that is 60 PKT/s @ 60 FPS to a single client.
-                //    This is true only if a shot is actually fired in every frame, that actually cannot happen due to the fastest firing weapon is mchgun with
-                //    150 msec firing_cooldown, effectively limiting the value to:
-                //    1*7 * 6.7 = ~ 49 PKT/s @ 60 FPS outgoing total,
-                //    that is ~6.7 PKT/s @ 60 FPS to a single client.
-                //
-                //    v0.1.4: this logic has been moved to serverUpdateWeapons() because firing became a continuous operation.
-                //
-                //  - above cannot really be mixed with each other since after changing weapon, there is a m_nWeaponActionMinimumWaitMillisecondsAfterSwitch = 1000 required
-                //    timeout before a bullet can be fired.
-            }
-                                                
-            handleUserUpdateFromServer()        // no networking
-            handleBulletUpdateFromServer()      // no networking
-            handleMapItemUpdateFromServer       // no networking
-            handleWpnUpdateFromServer()         // no networking
-            handleWpnUpdateCurrentFromServer()  // no networking
+          proofps_dd::PRooFPSddPGE::onPacketReceived() {                                     // (remember: max. 600 PKT/s @ 60 FPS based on calculations in getNetwork().Update())
+            handleUserConnected();               // v0.1.4: might generate a few packets but that is only when a new user has just connected, nothing to do here.
+            handleUserDisconnected();            // no networking
+            handleUserSetupFromServer();         // no networking
+            handleUserCmdMoveFromClient();       // v0.1.4: 18 PKT/s @ 60 FPS server -> client
+            handleUserUpdateFromServer();        // no networking
+            handleBulletUpdateFromServer();      // no networking
+            handleMapItemUpdateFromServer();     // no networking
+            handleWpnUpdateFromServer();         // no networking
+            handleWpnUpdateCurrentFromServer();  // no networking
           }
         }
       }
@@ -252,125 +237,31 @@ PGE::runGame() {
         proofps_dd::PRooFPSddPGE::onGameRunning() {
           // this block contains updates in v0.1.3 and v0.1.4
           
-          serverUpdateWeapons() {
-              // This block is at framerate since v0.1.4, previously it was in server tick.
-              // The reason of moving this to framerate is that in v0.1.4 attack/mouse left button became a continuous operation, thus player attacking state
-              // is saved on server-side until explicitly said so, and need to invoke wpn->pullTrigger() as often as possible which cannot be done simply with
-              // tickrate. A fast-firing weapon such as the mchun with ~6 shots/second need to be "triggered" more frequently than tickrate, otherwise some
-              // bullets will be fired some millisecs later than expected.
-              // And anyway even with a pistol it is not acceptable if client pulls trigger at time point T but server actually creates bullet at T + (50-16.6) msec
-              // later (worst case).
-              
-              // v0.1.4: Might generate 1 MsgWpnUpdateFromServer for updating bullet count for firing (wpn->pullTrigger() returns true), so:
-              // 1*7 * 60 = 420 PKT/s @ 60 FPS outgoing total,
-              // that is 60 PKT/s @ 60 FPS to a single client.
-              // This is true only if a shot is actually fired in every frame, that actually cannot happen due to the fastest firing weapon is mchgun with
-              // 150 msec firing_cooldown, effectively limiting the value to:
-              // 1*7 * 6.7 = ~ 49 PKT/s @ 60 FPS outgoing total,
-              // that is ~6.7 PKT/s @ 60 FPS to a single client.
-              
-              // Might send nClientsCount number of MsgWpnUpdateFromServer, currently only for reloading a weapon:
-              // max. 7 * 60 = 420 PKT/s @ 60 FPS total outgoing to clients,
-              // that is max 1 * 60 = 60 PKT/s @ 60 FPS to a single client.
-              // However reloading is also rate-limited by reload_time weapon cvar, that is 1500 msecs currently for both pistol and mchgun.
-              // Thus this is not considered yet. Later, if per-bullet-reloadable weapons will be available, we will consider this again.
-              // Note that if a reload_time is less than or close to tickrate, it won't be properly updated as intended. That is also a reason why this function
-              // is not in the server tick anymore.
-          }
+          serverUpdateWeapons();                   // v0.1.4: 0 PKT/s @ 60 FPS server -> client (see later why 0)
           
           if (getNetwork().isServer()) {
           @TICKRATE (ideally 20 Hz)                // v0.1.3: this was @FRAMERATE in v0.1.2, so all results in this block are only 1/3 of v0.1.2.
               mainLoopServerOnlyOneTick() {
                 serverGravity();                   // no networking
                 serverPlayerCollisionWithWalls();  // no networking
-                
-                serverUpdateBullets() {
-                    // Until v0.1.3 server continuously sent all bullet movements to clients
-                    // But from v0.1.4 it just sends msg about new bullet or bullet delete. So clients also simulate the bullet travel.
-                    
-                    // v0.1.3 sends nBulletsCount number of MsgBulletUpdateFromServer to ALL clients:
-                    // 48*7 PKT * 20 Hz = 6720 PKT/s @ 20 Hz total outgoing,
-                    // that is 960 PKT/s @ 20 Hz to a single client.
-                    //
-                    // v0.1.4 sends nPlayerCount number of MsgBulletUpdateFromServer to ALL clients in case everyone is shooting a new bullet in each tick, or
-                    // in case 1-1 bullet of each player hits something so needs to be deleted. Traffic is reduced to:
-                    // 8*7 PKT * 20 Hz = 1120 PKT/s @ 20 Hz total outgoing,
-                    // that is 160 PKT/s @ 20 Hz to a single client.
-                }
-                
+                serverUpdateBullets();             // v0.1.4: 160 PKT/s @ 20 Hz server -> client
                 serverUpdateRespawnTimers();       // no networking
-                
-                serverPickupAndRespawnItems() {
-                    // might send nClientsCount number of MsgWpnUpdateFromServer and (nMapItemsCount * nClientsCount) number of MsgMapItemUpdateFromServer:
-                    // max. (7 + 25*7) PKT * 20 Hz = 3640 PKT/s @ 20 Hz total outgoing,
-                    // that is 26 PKT * 20 Hz = 520 PKT/s @ 20 Hz to a single client.
-                    // However very unlikely that all players are picking up an item in every tick AND every item is respawning also in every tick.
-                    // The realistic is that per tick as many items are respawning as the number of players since those players could pick up only 1 item at a time.
-                    // So I would rather calculate with: might send nClientsCount number of MsgWpnUpdateFromServer and nPlayerCount number of MsgMapItemUpdateFromServer:
-                    // (7 + 8) PKT * 20 Hz = 300 PKT/s @ 20 Hz total outgoing,
-                    // that is (1 + 8) PKT * 20 Hz = 180 PKT/s @ 20 Hz to a single client.
-                }
-                
-                serverSendUserUpdates() {
-                    // max. nPlayerCount number of MsgUserUpdateFromServer to ALL clients (and to server by injection though):
-                    // 8*7 PKT * 20 Hz = 1120 PKT/s @ 20 Hz total outgoing,
-                    // that is 8 PKT * 20 Hz = 160 PKT/s @ 20 Hz to a single client.
-                }
+                serverPickupAndRespawnItems();     // v0.1.4: 180 PKT/s @ 20 Hz server -> client
+                serverSendUserUpdates();           // v0.1.4: 160 PKT/s @ 20 Hz server -> client
               }  // end mainLoopServerOnlyOneTick()
           @END TICKRATE
           }  // end isServer()
           else {
           @TICKRATE (ideally 20 Hz)                
               mainLoopClientOnlyOneTick() {        // v0.1.4: client-side tick got introduced (same value as for server-side)
-                clientUpdateBullets()              // v0.1.4: client-side bullet travel simulation got introduced (without collision-detection)
+                clientUpdateBullets()              // v0.1.4: no networking, client-side bullet travel simulation got introduced (without collision-detection)
               }
-          }
+          @END TICKRATE
+          }  // end client
           
           @FRAMERATE again
           mainLoopShared() {
-              handleInputAndSendUserCmdMove() {
-                  // Here we talk about how clients can flood the server.
-                  // Might send 1 MsgUserCmdFromClient to server in case of input.
-                  // We dont want to storm the server at FPS rate, so here we should introduce ways of rate-limiting client input.
-                  //
-                  // v0.1.2: didnt do any rate-limiting. Thus with clients constantly generating input, that means nPlayerCount number of MsgUserCmdFromClient:
-                  // 1*8 * 60 = 480 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
-                  // that is 1*60 = 60 PKT/s @ 60 FPS from a single client.
-                  //
-                  // v0.1.3: introduced the concept "continuous operation", it means: once you set the action, server keeps doing the action until explicitly said to stop.
-                  // This is very handy from physics simulation perspective as well since server can simulate something precisely without continuously telling it to do so,
-                  // and this also greatly decreases client -> server traffic.
-                  // Strafe has been changed to be such continuous operation.
-                  // But due to a bug the traffic was not decreased.
-                  // 
-                  // v0.1.4: strafe pkt traffic got fixed so now really 1 PKT is sent per strafe-state-change!
-                  //
-                  // Some operations don't need to be set as continuous operation because they are triggered by keyup-keydown pairs (controlled by getKeyboard().isKeyPressedOnce())
-                  // thus cannot flood the server by simply pressing the relevant buttons continuously: jump, toggleRunWalk, requestReload, weapon switch.
-                  // Before v0.1.4: So these are rate-limited at client-side implicitly by the fact that there is a physical limit how many times a player can do key-down-key-up
-                  // series within a second, for now we can say worst-case 5/sec, that is so low I'm not considering now.
-                  // However, weapon changing by keyboard, currently for switching between pistol and mchgun back-and-forth, could reach worst-case 15 PKT/sec in v0.1.3.
-                  //
-                  // v0.1.4: a 500 millisecs time elapse is also required between wpn change keystrokes thus I believe switching back-and-forth is now worst-case 5 PKT/sec.
-                  //         Also introduced rate-limit for weapon changing by mouse scrolling which was still at framerate in v0.1.3.
-                  //         Wpn change rate by mouse scroll or keyboard are measured together so they are worst-case 5 PKT/sec even if you are mixing them.
-                  //         Other actions such as run toggling, jumping, wpn reload also got the 500 millisecs rate-limiting at client-side.
-                  //         All the mentioned rate-limits are also enforced at server-side, thus storming the server programmatically won't lead to any benefit.
-                  //
-                  // AP-99: drop clients who are storming the server with too high rate (maybe programmatically).
-                  //
-                  // v0.1.4: attack i.e. left mouse button press also became a continuous operation like strafe, so from now only the press and release generate packets towards server.
-                  //         So now the more clicks, the more packets: worst-case 5 PKT/sec for 1 rapidly clicking player.
-                  //         With nPlayerCount number of MsgUserCmdFromClient:
-                  //         8 * 5 = 40 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
-                  //         that is 1 * 5 = 5 PKT/s @ 60 FPS from a single client.
-                  //
-                  // v0.1.4: mouse/xhair moving-induced player- and weapon-angle update sending is also rate-limited. Player angle updates are sent with 200 millisec interval,
-                  //         bigger weapon angle changes are sent with 200 millisec interval, smaller weapon angle changes are sent with 300 millisec interval.
-                  //         This means max ~10 PKTs, so:
-                  //         1*8 * 10 = 80 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
-                  //         that is 1 * 10 = 10 PKT/s @ 60 FPS from a single client.
-              }  // end handleInputAndSendUserCmdMove()
+              handleInputAndSendUserCmdMove();     // v0.1.4: 80 PKT/s with 7 clients (8 players) @ 60 FPS client -> server
               
           }  // end mainLoopShared
         }  // end proofps_dd::PRooFPSddPGE::onGameRunning()
@@ -378,65 +269,283 @@ PGE::runGame() {
     
       RenderScene();
       frameLimit();    
+  
+  @END FRAMERATE
   }  // end while ( isGameRunning() )
 }
 
 ```
 
-Based on the above calculations in the pseudocode comments, we can say that we have the following estimated required packet rate budget (must be able to handle such packet rate) and packet buffer:
- - server: requirement increase is linear with number of clients:
-   - v0.1.2: 480 PKT/s with 7 clients (8 players) @ 60 FPS as per handleInputAndSendUserCmdMove(),
-             120 PKT/s with 1 client (2 players) @ 60 FPS (1 will be by the server by injection though).
-             Since a PgePacket size was fix 268 Bytes, this lead to:
-             128640 Byte packet buffer is required on server-side with 8 players.
-   - v0.1.3: same as v0.1.2 since clients are still storming the server with same pkt rate and pkt size;
-   - v0.1.4: 80 PKT/s with 7 clients (8 players) @ 60 FPS as per handleInputAndSendUserCmdMove(),
-             20 PKT/s with 1 client (2 players) @ 60 FPS (1 will be by the server by injection though).
-             This is only the 17% of the requirement of v0.1.3!
-             Since variable packet size was introduced also in this version, and MsgUserCmdFromClient is 16 Bytes, PgePacket overhead 15 Bytes so total PgePacket size is 31 Bytes, this leads to:
-             2480 Byte packet buffer is required on server-side with 8 players, which is only the 2% of the requirement of v0.1.3!
+\subsection req_packet_rate_budget Required Packet Rate Budget and Packet Data Rate
 
- - client (considering 8 players): 
-   - v0.1.2: 4320 PKT/s @ 60 FPS, with 4320 * 268 = 1157760 Byte packet buffer requirement:
+**Required Packet Rate Budget** shows the number of packets required to be processed per second by server or client in order to have smooth gameplay and avoid packet drops.  
+I also calculate the estimated **Packet Data Rate** based on the packet rate budget and size of packets.
+
+\subsubsection server_req_packet_rate_budget Server Required Packet Rate Budget and Packet Data Rate
+
+Considering 8 players:
+ - **v0.1.2:**
+   - **480 PKT/s with 7 clients (8 players) @ 60 FPS** as per handleInputAndSendUserCmdMove(),  
+   - **120 PKT/s with 1 client (2 players) @ 60 FPS** (1 will be by the server by injection though).  
+   - Since a PgePacket size was fix 268 Bytes, this lead to:  
+     **128 640 Byte Packet Data Rate** on server-side with 8 players.  
+ - **v0.1.3:**
+   - same as v0.1.2 since clients are still storming the server with same pkt rate and pkt size;
+ - **v0.1.4:**
+   - **80 PKT/s with 7 clients (8 players) @ 60 FPS** as per handleInputAndSendUserCmdMove(),  
+   - **20 PKT/s with 1 client (2 players) @ 60 FPS** (1 will be by the server by injection though).  
+   This is only the 17% of the requirement of v0.1.3!  
+   - Since **variable packet size** was introduced also in this version in PGE, and MsgUserCmdFromClient is 16 Bytes, PgePacket overhead 15 Bytes so total PgePacket size is 31 Bytes, this leads to:  
+     **2 480 Byte Packet Data Rate** on server-side with 8 players, which is only the 2% of v0.1.3!
+
+\subsubsection client_req_packet_rate_budget Client Required Packet Rate Budget and Packet Data Rate
+
+Considering 8 players:
+ - **v0.1.2:**
+   - **4 320 PKT/s @ 60 FPS**, with 4320 \* 268 = **1 157 760 Byte Packet Data Rate**:
      - 420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient();
      - 2880 PKT/s @ 60 FPS as per serverUpdateBullets();
      - 540 PKT/s @ 60 FPS as per serverPickupAndRespawnItems();
      - 480 PKT/s @ 60 FPS as per serverSendUserUpdates().
-   - v0.1.3: 1720 PKT/s @ 60 FPS, with 1720 * 268 = 460960 Byte packet buffer requirement (which is only the 40% of v0.1.2 requirement):
+ - **v0.1.3:**
+   - **1 720 PKT/s @ 60 FPS**, with 1720 \* 268 = **460 960 Byte Packet Data Rate** (which is only the 40% of v0.1.2 requirement):
      - 420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient();
      - 960 PKT/s @ 20 Hz as per serverUpdateBullets();
      - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems();
      - 160 PKT/s @ 20 Hz as per serverSendUserUpdates().
-   - v0.1.4: 518 PKT/s @ 60 FPS (this is only the 12% of v0.1.2 rate!), with 1422 + 11360 + 5500 + 8800 = 27082 Byte packet buffer requirement (which is only the 2% of v0.1.2 requirement!).
-     -  18 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient(), with 18 * 79 = 1422 Byte packet buffer requirement (size of MsgCurrentWpnUpdateFromServer is 64 Bytes, PgePacket overhead is 15 Bytes);
-     -   0 PKT/s @ 60 FPS as per serverUpdateWeapons() (that was not relevant in previous versions), now it is still not relevant because
+ - **v0.1.4:**
+   - **518 PKT/s @ 60 FPS** (this is only the 12% of v0.1.2 rate!), with 1422 + 11360 + 5500 + 8800 = **27 082 Byte Packet Data Rate** (which is only the 2% of v0.1.2 requirement!).
+     - 18 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient(), with 18 \* 79 = 1422 Byte Packet Data Rate (size of MsgCurrentWpnUpdateFromServer is 64 Bytes, PgePacket overhead is 15 Bytes);
+     - 0 PKT/s @ 60 FPS as per serverUpdateWeapons() (that was not relevant in previous versions), now it is still not relevant because
                           the rate it could produce is less than handleUserCmdMoveFromClient()'s rate in case of weapon changing, and
-                          firing is impossible during weapon changing. I'm still showing this in the list with 0 rate though.                          
-     - 160 PKT/s @ 20 Hz as per serverUpdateBullets(), with 160 * 71 = 11360 Byte packet buffer requirement (size of MsgBulletUpdateFromServer is 56 Bytes, PgePacket overhead is 15 Bytes);
-     - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems(), with 20 * 91 + 160 * 23 = 5500 Byte packet buffer requirement
+                          firing is impossible during weapon changing so handleUserCmdMoveFromClient() is considered in the calculation only.
+                          I'm still showing this in the list with 0 rate though.                          
+     - 160 PKT/s @ 20 Hz as per serverUpdateBullets(), with 160 \* 71 = 11360 Byte Packet Data Rate (size of MsgBulletUpdateFromServer is 56 Bytes, PgePacket overhead is 15 Bytes);
+     - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems(), with 20 \* 91 + 160 \* 23 = 5500 BytePacket Data Rate
                          (size of MsgWpnUpdateFromServer is 76 Bytes, size of MsgMapItemUpdateFromServer is 8 Bytes, PgePacket overhead is 15 Bytes);
-     - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(), with 160 * 55 = 8800 Byte packet buffer requirement (size of MsgUserUpdateFromServer is 40 Bytes, PgePacket overhead is 15 Bytes).
+     - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(), with 160 \* 55 = 8800 Byte Packet Data Rate (size of MsgUserUpdateFromServer is 40 Bytes, PgePacket overhead is 15 Bytes).
 
-Above results show that although the server was able to keep up with receiving packets from 7 clients in v0.1.2, clients were not able to always keep up.  
-Clients were also polling up to 10 packets in each frame, leading to max 600 PKT/s @ 60 FPS poll rate, that could be easily crossed in both v0.1.2 and v0.1.3 versions with 8 players, leading to packet drops.  
-This definitely changed with v0.1.4 because the worst-case rate of clients receiving packets is 518 PKT/s @ 60 FPS.  
+Above results show that although the server was able to keep up with receiving packets from 7 clients in v0.1.2, **clients were not able to always keep up**:  
+clients were also polling up to 10 packets in each frame, leading to max 600 PKT/s @ 60 FPS poll rate, that could be easily crossed in both v0.1.2 and v0.1.3 versions with 8 players, leading to packet drops.  
+**This definitely changed with v0.1.4** because the worst-case rate of clients receiving packets is 518 PKT/s @ 60 FPS.  
 TODO: maybe we should still increase the buffers!  
 TODO: we should also think about using unreliable conneciton!
 
-\subsubsection client_behavior New Client Behavior (from v0.1.4)
+\subsubsection detailed_req_packet_rate_budget Detailed Required Packet Rate Budget per Function
 
-With the tickrate introduced, we successfully solved the problem of a slower machine not be able to keep up with processing messages when faster machines are also present in the network.  
-The implementation changes this way: in every tick (instead of every frame), player input is sampled and sent as a message to the server.  
-The rest of the implementation is not changed:  
- - player is not moved in the moment of detected player input, because player is moved only when server responds with the updated coordinates.  
- - player is repositioned on client side when server sends the new coordinates (this was same in the naive approach as well).
+The detailed explanation of the packet rates of each function is below:
 
-It is important to understand that since there are commands that should be continuous operations e.g. running, for these we should not only send out message when a button is pressed but also when it is released.  
-This way the server can continuously simulate running in every server tick until client explicitly requests stop, even if server and client tickrates are different.
+```.cpp
+  getNetwork().Update() {
+  // no changes since v0.1.2
+    while (
+      m_pServerClient->pollIncomingMessages() {
+        ISteamNetworkingMessage* pIncomingGnsMsg[const nIncomingMsgArraySize = 10];
+        const int numGnsMsgs = receiveMessages(pIncomingGnsMsg, nIncomingMsgArraySize);  // so we read max 10 PKTs from GNS each frame (max. 600 PKT/s @ 60 FPS)
+        
+        // AP-7:  we might increase nIncomingMsgArraySize, however in that case CPU usage will also increase that might lead to less framerate.
+        //        But that is still better than dropping packets due to full buffer.
+        // AP-12: we might have different nIncomingMsgArraySize for server and clients, based on estimation.
+        // AP-11: nIncomingMsgArraySize should be configurable by CVAR.
+        // AP-8:  check how big is the low-level buffer used by GNS from where receiveMessages() grabs the packets! Can we increase it?
+        // AP-9:  can we check if this low-level buffer is full? We should log it.
+        // AP-10: can we know if we read all messages by receiveMessages() or there are still remaining? If so, we should log it! That is the start of a congestion.
+        
+        for (int i = 0; i < numGnsMsgs; i++) {
+          pge_network::PgePacket pkt;
+          memcpy(&pkt, (pIncomingGnsMsg[i])->m_pData, nActualPktSize);                   // !!! expensive deep copy !!!
+          (pIncomingGnsMsg[i])->Release();                                               // cheap unlink from linked list
+          m_queuePackets.push_back(pktAsConst);                                          // !!! expensive deep copy !!!
+                                                                                         // AP-99: find a way to link these into m_queuePackets maybe?
+        }
+      }
+    ) {}  // end while
+  }
+```
 
-Note: we don't even need to send messages in every tick, we can just further enqueue messages over multiple ticks, and send them at lower rate than tickrate, to further reduce required bandwidth.  
+```.cpp
+  handleUserCmdMoveFromClient() {
+      // Process inputs from clients.
+      // Here we dont discuss how clients can flood the server, that is discussed in handleInputAndSendUserCmdMove().
+      // Instead, here we discuss what packets with what rate are generated here as response to clients!
+      // Worst case we need to multiply everything by nClientsCount and by their send rate:
+      // - in v0.1.2 most input were sent at their frame rate.
+      // - in v0.1.3 things were similar.
+      // In v0.1.3, server polled max nIncomingMsgArraySize (= 10) packets / frame: 10 * 60 = 600 PKT/s @ 60 FPS poll, so
+      // with nPlayerCount = 8 players, each player sending a message in each frame, that is 8 * 60 = 480 PKT/s @ 60 FPS, so
+      // server COULD really poll nPlayerCount number of such message in each frame.
+      // That leads to the following OUTGOING packet rate from server to clients in this function:
+      //
+      //  - in v0.1.3 it might had generated nClientsCount number of MsgCurrentWpnUpdateFromServer, so:
+      //    7*7 * 60 = 2940 PKT/s @ 60 FPS total outgoing,
+      //    that is 420 PKT/s @ 60 FPS to a single client.
+      //    This is true only if clients are constantly changing their current weapons in each frame, which unfortunately can happen if everybody is
+      //    using the mouse scroll continuously just for fun and that is detected at framerate at client-side, triggering message to server every frame.
+      //
+      //    In v0.1.4 we introduced a 500ms minimum elapse time for weapon change, so max 2 weapon changes are allowed per second.
+      //    This changes the calculation to:
+      //    7*7 * 2 = 98 PKT/s @ 60 FPS total outgoing,
+      //    that is 7*2 = 18 PKT/s @ 60 FPS to a single client.
+      //
+      //  - before v0.1.4:
+      //    might generate 1 MsgWpnUpdateFromServer for updating bullet count for firing (wpn->pullTrigger() returns true), so:
+      //    1*7 * 60 = 420 PKT/s @ 60 FPS outgoing total,
+      //    that is 60 PKT/s @ 60 FPS to a single client.
+      //    This is true only if a shot is actually fired in every frame, that actually cannot happen due to the fastest firing weapon is mchgun with
+      //    150 msec firing_cooldown, effectively limiting the value to:
+      //    1*7 * 6.7 = ~ 49 PKT/s @ 60 FPS outgoing total,
+      //    that is ~6.7 PKT/s @ 60 FPS to a single client.
+      //
+      //    v0.1.4: this logic has been moved to serverUpdateWeapons() because firing became a continuous operation.
+      //
+      //  - above cannot really be mixed with each other since after changing weapon, there is a m_nWeaponActionMinimumWaitMillisecondsAfterSwitch = 1000 required
+      //    timeout before a bullet can be fired.
+  }
+```
+
+```.cpp
+  serverUpdateWeapons() {
+      // This block is at framerate since v0.1.4, previously it was in server tick.
+      // The reason of moving this to framerate is that in v0.1.4 attack/mouse left button became a continuous operation, thus player attacking state
+      // is saved on server-side until explicitly said so, and need to invoke wpn->pullTrigger() as often as possible which cannot be done simply with
+      // tickrate. A fast-firing weapon such as the mchun with ~6 shots/second need to be "triggered" more frequently than tickrate, otherwise some
+      // bullets will be fired some millisecs later than expected.
+      // And anyway even with a pistol it is not acceptable if client pulls trigger at time point T but server actually creates bullet at T + (50-16.6) msec
+      // later (worst case).
+      
+      // v0.1.4: Might generate 1 MsgWpnUpdateFromServer for updating bullet count for firing (wpn->pullTrigger() returns true), so:
+      // 1*7 * 60 = 420 PKT/s @ 60 FPS outgoing total,
+      // that is 60 PKT/s @ 60 FPS to a single client.
+      // This is true only if a shot is actually fired in every frame, that actually cannot happen due to the fastest firing weapon is mchgun with
+      // 150 msec firing_cooldown, effectively limiting the value to:
+      // 1*7 * 6.7 = ~ 49 PKT/s @ 60 FPS outgoing total,
+      // that is ~6.7 PKT/s @ 60 FPS to a single client.
+      
+      // Might send nClientsCount number of MsgWpnUpdateFromServer, currently only for reloading a weapon:
+      // max. 7 * 60 = 420 PKT/s @ 60 FPS total outgoing to clients,
+      // that is max 1 * 60 = 60 PKT/s @ 60 FPS to a single client.
+      // However reloading is also rate-limited by reload_time weapon cvar, that is 1500 msecs currently for both pistol and mchgun.
+      // Thus this is not considered yet. Later, if per-bullet-reloadable weapons will be available, we will consider this again.
+      // Note that if a reload_time is less than or close to tickrate, it won't be properly updated as intended. That is also a reason why this function
+      // is not in the server tick anymore.
+  }
+```
+
+```.cpp
+  serverUpdateBullets() {
+      // Until v0.1.3 server continuously sent all bullet movements to clients.     
+      // v0.1.3 sends nBulletsCount number of MsgBulletUpdateFromServer to ALL clients:
+      // 48*7 PKT * 20 Hz = 6720 PKT/s @ 20 Hz total outgoing,
+      // that is 960 PKT/s @ 20 Hz to a single client.
+      //
+      // But from v0.1.4 it just sends msg about new bullet or bullet delete, clients also simulate the bullet travel so it doesn't eat network traffic.
+      // v0.1.4 sends nPlayerCount number of MsgBulletUpdateFromServer to ALL clients in case everyone is shooting a new bullet in each tick, or
+      // in case 1-1 bullet of each player hits something so needs to be deleted. Traffic is reduced to:
+      // 8*7 PKT * 20 Hz = 1120 PKT/s @ 20 Hz total outgoing,
+      // that is 160 PKT/s @ 20 Hz to a single client.
+  }
+```
+
+```.cpp
+  serverPickupAndRespawnItems() {
+      // might send nClientsCount number of MsgWpnUpdateFromServer and (nMapItemsCount * nClientsCount) number of MsgMapItemUpdateFromServer:
+      // max. (7 + 25*7) PKT * 20 Hz = 3640 PKT/s @ 20 Hz total outgoing,
+      // that is 26 PKT * 20 Hz = 520 PKT/s @ 20 Hz to a single client.
+      // However very unlikely that all players are picking up an item in every tick AND every item is respawning also in every tick.
+      // The realistic is that per tick as many items are respawning as the number of players since those players could pick up only 1 item at a time.
+      // So I would rather calculate with: might send nClientsCount number of MsgWpnUpdateFromServer and nPlayerCount number of MsgMapItemUpdateFromServer:
+      // (7 + 8) PKT * 20 Hz = 300 PKT/s @ 20 Hz total outgoing,
+      // that is (1 + 8) PKT * 20 Hz = 180 PKT/s @ 20 Hz to a single client.
+  }
+```
+
+```.cpp
+  serverSendUserUpdates() {
+      // max. nPlayerCount number of MsgUserUpdateFromServer to ALL clients (and to server by injection though):
+      // 8*7 PKT * 20 Hz = 1120 PKT/s @ 20 Hz total outgoing,
+      // that is 8 PKT * 20 Hz = 160 PKT/s @ 20 Hz to a single client.
+  }
+```
+
+```.cpp
+  handleInputAndSendUserCmdMove() {
+      // Here we talk about how clients can flood the server.
+      // Might send 1 MsgUserCmdFromClient to server in case of input.
+      // We dont want to storm the server at FPS rate, so here we introduced ways of rate-limiting client input in later versions.
+      //
+      // v0.1.2: didnt do any rate-limiting. Thus with clients constantly generating input, that means nPlayerCount number of MsgUserCmdFromClient:
+      // 1*8 * 60 = 480 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
+      // that is 1*60 = 60 PKT/s @ 60 FPS from a single client.
+      //
+      // v0.1.3: introduced the concept "continuous operation", it means: once you set the action, server keeps doing the action until explicitly said to stop.
+      // This is very handy from physics simulation perspective as well since server can simulate something precisely without continuously telling it to do so,
+      // and this also greatly decreases client -> server traffic.
+      // Strafe has been changed to be such continuous operation.
+      // But due to a bug the traffic was not decreased.
+      // 
+      // v0.1.4: strafe pkt traffic got fixed so now really 1 PKT is sent per strafe-state-change!
+      //
+      // Some operations don't need to be set as continuous operation because they are triggered by keyup-keydown pairs (controlled by getKeyboard().isKeyPressedOnce())
+      // thus cannot flood the server by simply pressing the relevant buttons continuously: jump, toggleRunWalk, requestReload, weapon switch.
+      // Before v0.1.4: So these are rate-limited at client-side implicitly by the fact that there is a physical limit how many times a player can do key-down-key-up
+      // series within a second, for now we can say worst-case 5/sec, that is so low I'm not considering now.
+      // However, weapon changing by keyboard, currently for switching between pistol and mchgun back-and-forth, could reach worst-case 15 PKT/sec in v0.1.3.
+      //
+      // v0.1.4: a 500 millisecs time elapse is also required between wpn change keystrokes thus I believe switching back-and-forth is now worst-case 5 PKT/sec.
+      //         Also introduced rate-limit for weapon changing by mouse scrolling which was still at framerate in v0.1.3.
+      //         Wpn change rate by mouse scroll or keyboard are measured together so they are worst-case 5 PKT/sec even if you are mixing them.
+      //         Other actions such as run toggling, jumping, wpn reload also got the 500 millisecs rate-limiting at client-side.
+      //         All the mentioned rate-limits are also enforced at server-side, thus storming the server programmatically won't lead to any benefit.
+      //
+      // AP-99: drop clients who are storming the server with too high rate (maybe programmatically).
+      //
+      // v0.1.4: attack i.e. left mouse button press also became a continuous operation like strafe, so from now only the press and release generate packets towards server.
+      //         So now the more clicks, the more packets: worst-case 5 PKT/sec for 1 rapidly clicking player.
+      //         With nPlayerCount number of MsgUserCmdFromClient:
+      //         8 * 5 = 40 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
+      //         that is 1 * 5 = 5 PKT/s @ 60 FPS from a single client.
+      //
+      // v0.1.4: mouse/xhair moving-induced player- and weapon-angle update sending is also rate-limited. Player angle updates are sent with 200 millisec interval,
+      //         bigger weapon angle changes are sent with 200 millisec interval, smaller weapon angle changes are sent with 300 millisec interval.
+      //         This means max ~10 PKTs, so:
+      //         1*8 * 10 = 80 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
+      //         that is 1 * 10 = 10 PKT/s @ 60 FPS from a single client.
+  }
+```
+
+\section future_plans Future Improvement Plans
+
+\subsection future_plans_server Server Future Improvement Plans
+
+Currently server in every tick invokes serverSendUserUpdates() that sends out MsgUserUpdateFromServer to all players about the state of a player if any state is dirty.  
+Because this is happening frequently, **we could use unreliable connection (UDP) for this instead of reliable (TCP)** to reduce overhead of reliable connection.  
+Because loss of such message would NOT be a big problem. But it should be done as QuakeWorld/Counter-Strike does: even if player data is NOT dirty, the state is sent out.  
+This can overcome the inconsistency issues caused by packet loss.  
+However, at this point I'm still not convinced if I should start experimenting with this though.  
+At the same time I'm also thinking that there is no packet loss in small LAN environment.
+
+**How server code should work without client-side prediction**:  
+Remember that with the naive approach, we immediately processed the messages received from clients.  
+We don't do this anymore, since server also has tickrate and we should stick to it: game simulation and input sampling is happening in each tick, not in each frame.  
+So whenever a client input message is received on server-side, instead of processing it immediately, we enqueue it.  
+Server dequeues all received messages at its next tick, and responses will be also sent out at this time in the separate serverSendUserUpdates().  
+Alternatively, we don't need to send out response/update messages with the tickrate frequency, we can have a separate frequency for that, called **cl_updaterate**.  
+Rule is: **tickrate >= cl_updaterate**. We can lower the required bandwidth if we set a lower value. The lower the value, the more we depend on client-side lerp and input-prediction to smooth out player movement experience.
+
+Interesting fact: the original Doom [used P2P lockstep mechanism multiplayer](https://www.gabrielgambetta.com/client-side-prediction-server-reconciliation.html), which at that time was not good to be played over the Internet.  
+Then Quake introduced the client-server model with the client-side lerp, which was good for LAN, but less good on Internet with bigger distances between machines.  
+So they introduced client-side prediction in QuakeWorld.
+
+\subsection future_plans_client Client Future Improvement Plans
+
+On the internet you can read that: in every tick (instead of every frame), player input is sampled and sent as a message to the server.  
+I already described this earlier why I think this is not good as it introduces noticable delay:  
+with framerate 60 versus tickrate 20, a keypress might be sent to server (1000/20) - (1000/60) = ~33 milliseconds later.  
+And this latency would be on client-side, that would be added to latency between client-server. I think that would be NOT acceptable.  
+Maybe later I will change my mind.
+
+Another improvement would be: we don't even need to send messages in every tick, we can just further enqueue messages over multiple ticks, and send them at lower rate than tickrate, to further reduce required bandwidth.  
 This lower rate is called **command rate**, rule is: **tickrate >= command rate**.  
-However, this change is optional to be implemented, and PRooFPS-dd v0.1.3 does not implement it.
 As optimization, we could send these client messages in 1 single packet to the server, since sending each message in different packet introduces too high overhead.  
 They say that the ["maximum safe UDP payload is 508 bytes"](https://stackoverflow.com/questions/1098897/what-is-the-largest-safe-udp-packet-size-on-the-internet).  
 As of June of 2023 (in PRooFPS-dd v0.1.2 Private Beta), size of PgePacket was 268 Bytes, room for application message (MsgApp struct) was 260 Bytes.  
@@ -474,20 +583,6 @@ This way **server remains the only authoritive instance in the network**, but we
 Note that this approach also means that clients also have to simulate physics, otherwise they cannot properly predict new player positions, e.g. they need to do collision check against walls.  
 
 TODO: I should also check if GNS automatically re-sends lost messages or not? Is the order of messages is guaranteed?
-
-\subsubsection server_behavior New Server Behavior (from v0.1.3)
-
-**Without client-side prediction**:
-Remember that with the naive approach, we immediately processed the messages received from clients.  
-We don't do this anymore, since server also has tickrate and we should stick to it: game simulation and input sampling is happening in each tick, not in each frame.  
-So whenever a client input message is received on server-side, instead of processing it immediately, we enqueue it.  
-Server dequeues all received messages at its next tick, and responses will be also sent out at this time in the separate sendUserUpdates().  
-Alternatively, we don't need to send out response/update messages with the tickrate frequency, we can have a separate frequency for that, called **cl_updaterate**.  
-Rule is: **tickrate >= cl_updaterate**. We can lower the required bandwidth if we set a lower value. The lower the value, the more we depend on client-side lerp and input-prediction to smooth out player movement experience.
-
-Interesting fact: the original Doom [used P2P lockstep mechanism multiplayer](https://www.gabrielgambetta.com/client-side-prediction-server-reconciliation.html), which at that time was not good to be played over the Internet.  
-Then Quake introduced the client-server model with the client-side lerp, which was good for LAN, but less good on Internet with bigger distances between machines.  
-So they introduced client-side prediction in QuakeWorld.
 
 \section cs_1_6_rates_explained Counter-Strike 1.6 Rates Explained
 
