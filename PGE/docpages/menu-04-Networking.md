@@ -218,7 +218,7 @@ PGE::runGame() {
   // last change in v0.1.4
       while (getNetwork().getServerClientInstance()->getPacketQueueSize() > 0) {
         onPacketReceived( getNetwork().getServerClientInstance()->popFrontPacket() ) {       // invoke application code for all received pkt in m_queuePackets
-          proofps_dd::PRooFPSddPGE::onPacketReceived() {                                     // (remember: max. 600 PKT/s @ 60 FPS based on calculations in getNetwork().Update())
+          proofps_dd::PRooFPSddPGE::onPacketReceived() {
             handleUserConnected();               // v0.1.4: might generate a few packets but that is only when a new user has just connected, nothing to do here.
             handleUserDisconnected();            // no networking
             handleUserSetupFromServer();         // no networking
@@ -276,62 +276,68 @@ PGE::runGame() {
 
 ```
 
-\subsection req_packet_rate_budget Required Packet Rate Budget and Packet Data Rate
+\subsection packet_rate Packet Rate and Packet Data Rate
 
-**Required Packet Rate Budget** shows the number of packets required to be processed per second by server or client in order to have smooth gameplay and avoid packet drops.  
-I also calculate the estimated **Packet Data Rate** based on the packet rate budget and size of packets.
+**Packet Rate** shows the number of packets processed per second by server or client.  
+I also calculate the estimated **Packet Data Rate** based on the packet rate and size of packets.  
+The improvements through versions are very decent and were really needed to solve [issue](https://github.com/proof88/PRooFPS-dd/issues/184).
 
-\subsubsection server_req_packet_rate_budget Server Required Packet Rate Budget and Packet Data Rate
+\subsubsection server_packet_rate Server Packet Rate and Packet Data Rate
+
+In this section we talk about **client -> server** traffic.
 
 Considering 8 players:
  - **v0.1.2:**
    - **480 PKT/s with 7 clients (8 players) @ 60 FPS** as per handleInputAndSendUserCmdMove(),  
    - **120 PKT/s with 1 client (2 players) @ 60 FPS** (1 will be by the server by injection though).  
    - Since a PgePacket size was fix 268 Bytes, this lead to:  
-     **128 640 Byte Packet Data Rate** on server-side with 8 players.  
+     **128 640 Byte/s Packet Data Rate** on server-side with 8 players.  
  - **v0.1.3:**
    - same as v0.1.2 since clients are still storming the server with same pkt rate and pkt size;
  - **v0.1.4:**
    - **80 PKT/s with 7 clients (8 players) @ 60 FPS** as per handleInputAndSendUserCmdMove(),  
    - **20 PKT/s with 1 client (2 players) @ 60 FPS** (1 will be by the server by injection though).  
-   This is only the 17% of the requirement of v0.1.3!  
+   This is only the 17% of the packet rate of v0.1.3!  
    - Since **variable packet size** was introduced also in this version in PGE, and MsgUserCmdFromClient is 16 Bytes, PgePacket overhead 15 Bytes so total PgePacket size is 31 Bytes, this leads to:  
-     **2 480 Byte Packet Data Rate** on server-side with 8 players, which is only the 2% of v0.1.3!
+     **2 480 Byte/s Packet Data Rate** on server-side with 8 players, which is only the 2% of v0.1.3!
 
-\subsubsection client_req_packet_rate_budget Client Required Packet Rate Budget and Packet Data Rate
+\subsubsection client_packet_rate Client Packet Rate and Packet Data Rate
 
-Considering 8 players:
+In this section we talk about **server -> client** traffic.
+
+Considering 8 players, the results are to a single client from the server:
  - **v0.1.2:**
-   - **4 320 PKT/s @ 60 FPS**, with 4320 \* 268 = **1 157 760 Byte Packet Data Rate**:
+   - **4 320 PKT/s @ 60 FPS**, with 4320 \* 268 = **1 157 760 Byte/s Packet Data Rate**:
      - 420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient();
      - 2880 PKT/s @ 60 FPS as per serverUpdateBullets();
      - 540 PKT/s @ 60 FPS as per serverPickupAndRespawnItems();
      - 480 PKT/s @ 60 FPS as per serverSendUserUpdates().
  - **v0.1.3:**
-   - **1 720 PKT/s @ 60 FPS**, with 1720 \* 268 = **460 960 Byte Packet Data Rate** (which is only the 40% of v0.1.2 requirement):
+   - **1 720 PKT/s @ 60 FPS**, with 1720 \* 268 = **460 960 Byte/s Packet Data Rate** (which is only the 40% of v0.1.2 rates):
      - 420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient();
      - 960 PKT/s @ 20 Hz as per serverUpdateBullets();
      - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems();
      - 160 PKT/s @ 20 Hz as per serverSendUserUpdates().
  - **v0.1.4:**
-   - **518 PKT/s @ 60 FPS** (this is only the 12% of v0.1.2 rate!), with 1422 + 11360 + 5500 + 8800 = **27 082 Byte Packet Data Rate** (which is only the 2% of v0.1.2 requirement!).
-     - 18 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient(), with 18 \* 79 = 1422 Byte Packet Data Rate (size of MsgCurrentWpnUpdateFromServer is 64 Bytes, PgePacket overhead is 15 Bytes);
+   - **518 PKT/s @ 60 FPS & 20 Hz** (this is only the 12% of v0.1.2 rate!), with 1422 + 11360 + 5500 + 8800 = **27 082 Byte/s Packet Data Rate** (which is only the 2% of v0.1.2 data rate!).
+     - 18 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient(), with 18 \* 79 = 1422 Byte/s Packet Data Rate (size of MsgCurrentWpnUpdateFromServer is 64 Bytes, PgePacket overhead is 15 Bytes);
      - 0 PKT/s @ 60 FPS as per serverUpdateWeapons() (that was not relevant in previous versions), now it is still not relevant because
                           the rate it could produce is less than handleUserCmdMoveFromClient()'s rate in case of weapon changing, and
                           firing is impossible during weapon changing so handleUserCmdMoveFromClient() is considered in the calculation only.
                           I'm still showing this in the list with 0 rate though.                          
-     - 160 PKT/s @ 20 Hz as per serverUpdateBullets(), with 160 \* 71 = 11360 Byte Packet Data Rate (size of MsgBulletUpdateFromServer is 56 Bytes, PgePacket overhead is 15 Bytes);
-     - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems(), with 20 \* 91 + 160 \* 23 = 5500 BytePacket Data Rate
+     - 160 PKT/s @ 20 Hz as per serverUpdateBullets(), with 160 \* 71 = 11360 Byte/s Packet Data Rate (size of MsgBulletUpdateFromServer is 56 Bytes, PgePacket overhead is 15 Bytes);
+     - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems(), with 20 \* 91 + 160 \* 23 = 5500 Byte/s Packet Data Rate
                          (size of MsgWpnUpdateFromServer is 76 Bytes, size of MsgMapItemUpdateFromServer is 8 Bytes, PgePacket overhead is 15 Bytes);
-     - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(), with 160 \* 55 = 8800 Byte Packet Data Rate (size of MsgUserUpdateFromServer is 40 Bytes, PgePacket overhead is 15 Bytes).
-
-Above results show that although the server was able to keep up with receiving packets from 7 clients in v0.1.2, **clients were not able to always keep up**:  
-clients were also polling up to 10 packets in each frame, leading to max 600 PKT/s @ 60 FPS poll rate, that could be easily crossed in both v0.1.2 and v0.1.3 versions with 8 players, leading to packet drops.  
-**This definitely changed with v0.1.4** because the worst-case rate of clients receiving packets is 518 PKT/s @ 60 FPS.  
-TODO: maybe we should still increase the buffers!  
+     - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(), with 160 \* 55 = 8800 Byte/s Packet Data Rate (size of MsgUserUpdateFromServer is 40 Bytes, PgePacket overhead is 15 Bytes).
+  
+Considering 8 players, the results to ALL clients from the server (because above shows results to 1 client from the server):  
+just multiply above results by 7 (server sending to itself avoids GNS level thus we multiply by nClientsCount instead of nPlayersCount):
+ - **v0.1.2:** 30 240 PKT/s with 8 104 320 Byte/s Outgoing Packet Data Rate Total;
+ - **v0.1.4:** 3 626 PKT/s with 189 574 Byte/s Outgoing Packet Data Rate Total (88% decrease in packet rate and 98% decrease in packet data rate).
+ 
 TODO: we should also think about using unreliable conneciton!
 
-\subsubsection detailed_req_packet_rate_budget Detailed Required Packet Rate Budget per Function
+\subsubsection detailed_packet_rate Detailed Packet Rate per Function
 
 The detailed explanation of the packet rates of each function is below:
 

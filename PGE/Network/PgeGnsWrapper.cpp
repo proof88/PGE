@@ -132,7 +132,7 @@ bool PgeGnsWrapper::isInitialized() const
 
 bool PgeGnsWrapper::pollIncomingMessages()
 {
-    static const int nIncomingMsgArraySize = 10; // TODO: make this configurable from outside
+    static const int nIncomingMsgArraySize = 10;
     ISteamNetworkingMessage* pIncomingGnsMsg[nIncomingMsgArraySize];
 
     if (!isInitialized())
