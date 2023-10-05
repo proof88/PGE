@@ -334,8 +334,6 @@ Considering 8 players, the results to ALL clients from the server (because above
 just multiply above results by 7 (server sending to itself avoids GNS level thus we multiply by nClientsCount instead of nPlayersCount):
  - **v0.1.2:** 30 240 PKT/s with 8 104 320 Byte/s Outgoing Packet Data Rate Total;
  - **v0.1.4:** 3 626 PKT/s with 189 574 Byte/s Outgoing Packet Data Rate Total (88% decrease in packet rate and 98% decrease in packet data rate).
- 
-TODO: we should also think about using unreliable conneciton!
 
 \subsubsection detailed_packet_rate Detailed Packet Rate per Function
 
@@ -348,14 +346,6 @@ The detailed explanation of the packet rates of each function is below:
       m_pServerClient->pollIncomingMessages() {
         ISteamNetworkingMessage* pIncomingGnsMsg[const nIncomingMsgArraySize = 10];
         const int numGnsMsgs = receiveMessages(pIncomingGnsMsg, nIncomingMsgArraySize);  // so we read max 10 PKTs from GNS each frame (max. 600 PKT/s @ 60 FPS)
-        
-        // AP-7:  we might increase nIncomingMsgArraySize, however in that case CPU usage will also increase that might lead to less framerate.
-        //        But that is still better than dropping packets due to full buffer.
-        // AP-12: we might have different nIncomingMsgArraySize for server and clients, based on estimation.
-        // AP-11: nIncomingMsgArraySize should be configurable by CVAR.
-        // AP-8:  check how big is the low-level buffer used by GNS from where receiveMessages() grabs the packets! Can we increase it?
-        // AP-9:  can we check if this low-level buffer is full? We should log it.
-        // AP-10: can we know if we read all messages by receiveMessages() or there are still remaining? If so, we should log it! That is the start of a congestion.
         
         for (int i = 0; i < numGnsMsgs; i++) {
           pge_network::PgePacket pkt;
@@ -524,9 +514,13 @@ The detailed explanation of the packet rates of each function is below:
 \subsection future_plans_server Server Future Improvement Plans
 
 Currently server in every tick invokes serverSendUserUpdates() that sends out MsgUserUpdateFromServer to all players about the state of a player if any state is dirty.  
-Because this is happening frequently, **we could use unreliable connection (UDP) for this instead of reliable (TCP)** to reduce overhead of reliable connection.  
+Because this is happening frequently, **we could use unreliable connection for this instead of reliable** to reduce overhead of reliable connection, even though I'm not sure about the amount of the overhead.  
+Note that reliable and unreliable are 2 different ways of sending messages using GNS, and none of them is using TCP.  
+**Both use UDP.**  
+The difference is that **reliable messages are automatically retransmitted in case of loss, can be expected to be received exactly once, and their order is guaranteed to be same on the receiver side as on the sender side**.  
+Some info about the [message segment differences here](https://github.com/ValveSoftware/GameNetworkingSockets/blob/master/src/steamnetworkingsockets/clientlib/SNP_WIRE_FORMAT.md).  
 Because loss of such message would NOT be a big problem. But it should be done as QuakeWorld/Counter-Strike does: even if player data is NOT dirty, the state is sent out.  
-This can overcome the inconsistency issues caused by packet loss.  
+This can overcome the inconsistency issues caused by packet loss: if a packet is missing, no problem, the next packet will bring fresher data anyway.  
 However, at this point I'm still not convinced if I should start experimenting with this though.  
 At the same time I'm also thinking that there is no packet loss in small LAN environment.
 
@@ -554,8 +548,10 @@ Another improvement would be: we don't even need to send messages in every tick,
 This lower rate is called **command rate**, rule is: **tickrate >= command rate**.  
 As optimization, we could send these client messages in 1 single packet to the server, since sending each message in different packet introduces too high overhead.  
 They say that the ["maximum safe UDP payload is 508 bytes"](https://stackoverflow.com/questions/1098897/what-is-the-largest-safe-udp-packet-size-on-the-internet).  
+GNS also uses UDP under the hood.  
 As of June of 2023 (in PRooFPS-dd v0.1.2 Private Beta), size of PgePacket was 268 Bytes, room for application message (MsgApp struct) was 260 Bytes.  
-Size of a MsgUserCmdMove struct was 20 Bytes, which means that by implementing placing multiple messages into a single packet we could send more than 10 such messages in a single PgePacket.
+Size of a MsgUserCmdMove struct was 20 Bytes, which means that by implementing placing multiple messages into a single packet we could send more than 10 such messages in a single PgePacket.  
+Even though I'm not sure what is the size of the whole packet/message sent by GNS, I'm pretty sure it is still below this 508 Bytes when being added to the size of a PgePacket.
 
 Due to the low tickrate (e.g. 50 ms, meaning 20 ticks per second), the **player movement can appear choppy and delayed**.  
 This is why we need some tricks here:
