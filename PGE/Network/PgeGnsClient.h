@@ -81,7 +81,7 @@ public:
     void sendToServer(const pge_network::PgePacket& pkt);
 
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
-    std::string getDetailedStatus() const;
+    std::string getDetailedConnectionStatus() const;
 
 protected:
     virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const override;

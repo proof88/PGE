@@ -395,5 +395,28 @@ std::string PgeGnsWrapper::getStringByMsgAppId(const pge_network::MsgApp::TMsgId
     return "UNKNOWN_MSG";
 }
 
+std::string PgeGnsWrapper::getDetailedConnectionStatus(const HSteamNetConnection& connHandle) const
+{
+    if (!isInitialized())
+    {
+        CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s not connected!", __func__);
+        assert(false);
+        return "";
+    }
+
+    char szDetailedStatus[4096];
+    const int nRes = m_pInterface->GetDetailedConnectionStatus(connHandle, szDetailedStatus, sizeof(szDetailedStatus));
+    if (nRes == 0)
+    {
+        // only in this case szDetailedStatus is null-terminated and perfect!
+        return std::string(szDetailedStatus);
+    }
+    else
+    {
+        CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s GetDetailedConnectionStatus() returned %d!", __func__, nRes);
+        return "";
+    }
+}
+
 
 // ############################### PRIVATE ###############################

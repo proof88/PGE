@@ -49,7 +49,7 @@ bool PgeGnsClient::destroy()
         return true;
     }
     CConsole::getConsoleInstance("PgeGnsClient").OLn("Detailed Connection Status:");
-    CConsole::getConsoleInstance("PgeGnsClient").OLn("%s", getDetailedStatus().c_str());
+    CConsole::getConsoleInstance("PgeGnsClient").OLn("%s", getDetailedConnectionStatus().c_str());
     
     return disconnectClient() && PgeGnsWrapper::destroy();
 } // destroy()
@@ -112,11 +112,8 @@ bool PgeGnsClient::disconnectClient()
         return true;
     }
 
-    if (m_hConnection != k_HSteamNetConnection_Invalid)
-    {
-        m_pInterface->CloseConnection(m_hConnection, k_ESteamNetConnectionEnd_App_Generic, "PgeGnsServer Client Graceful shutdown", true);
-        m_hConnection = k_HSteamNetConnection_Invalid;
-    }
+    m_pInterface->CloseConnection(m_hConnection, k_ESteamNetConnectionEnd_App_Generic, "PgeGnsServer Client Graceful shutdown", true);
+    m_hConnection = k_HSteamNetConnection_Invalid;
     m_hConnectionServerSide = k_HSteamNetConnection_Invalid;
     m_addrServer.Clear();
     memset(m_szAddr, sizeof(m_szAddr), 0);
@@ -211,7 +208,7 @@ const SteamNetConnectionRealTimeStatus_t& PgeGnsClient::getRealTimeStatus(bool b
     return m_connRtStatus;
 }
 
-std::string PgeGnsClient::getDetailedStatus() const
+std::string PgeGnsClient::getDetailedConnectionStatus() const
 {
     if (!isInitialized())
     {
@@ -220,18 +217,7 @@ std::string PgeGnsClient::getDetailedStatus() const
         return "";
     }
 
-    char szDetailedStatus[4096];
-    const int nRes = m_pInterface->GetDetailedConnectionStatus(m_hConnection, szDetailedStatus, sizeof(szDetailedStatus));
-    if (nRes == 0)
-    {
-        // only in this case szDetailedStatus is null-terminated and perfect!
-        return std::string(szDetailedStatus);
-    }
-    else
-    {
-        CConsole::getConsoleInstance("PgeGnsClient").EOLn("%s GetDetailedConnectionStatus() returned %d!", __func__, nRes);
-        return "";
-    }
+    return PgeGnsWrapper::getDetailedConnectionStatus(m_hConnection);
 }
 
 
@@ -315,6 +301,10 @@ void PgeGnsClient::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
             CConsole::getConsoleInstance("PgeGnsClient").EOLn("%s: CLIENT problem 3 (closed by peer) (%s)",
                 __func__, pInfo->m_info.m_szEndDebug);
         }
+
+        CConsole::getConsoleInstance("PgeGnsClient").OLn("Detailed Connection Status:");
+        CConsole::getConsoleInstance("PgeGnsClient").OLn("%s", PgeGnsWrapper::getDetailedConnectionStatus(pInfo->m_hConn).c_str());
+        CConsole::getConsoleInstance("PgeGnsClient").OLn("");
 
         // Clean up the connection.  This is important!
         // The connection is "closed" in the network sense, but

@@ -166,4 +166,5 @@ protected:
     virtual void onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) = 0;
 
     std::string getStringByMsgAppId(const pge_network::MsgApp::TMsgId& id) const;
+    std::string getDetailedConnectionStatus(const HSteamNetConnection& connHandle) const;
 }; // class PgeGnsWrapper

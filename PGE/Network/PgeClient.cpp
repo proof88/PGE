@@ -77,7 +77,7 @@ public:
     float getRxByteRate(bool bForceUpdate) override;
     float getTxByteRate(bool bForceUpdate) override;
     int64_t getInternalQueueTimeUSecs(bool bForceUpdate) override;
-    std::string getDetailedStatus() const override;
+    std::string getDetailedConnectionStatus() const override;
 
     /* implement stuff from PgeClient end */
 
@@ -323,9 +323,9 @@ int64_t PgeClientImpl::getInternalQueueTimeUSecs(bool bForceUpdate)
     return static_cast<int64_t>(m_gsnClient.getRealTimeStatus(bForceUpdate).m_usecQueueTime);
 }
 
-std::string PgeClientImpl::getDetailedStatus() const
+std::string PgeClientImpl::getDetailedConnectionStatus() const
 {
-    return m_gsnClient.getDetailedStatus();
+    return m_gsnClient.getDetailedConnectionStatus();
 }
 
 

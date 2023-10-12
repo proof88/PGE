@@ -113,18 +113,28 @@ bool PgeGnsServer::stopListening()
     }
 
     // Close all the connections
-    CConsole::getConsoleInstance("PgeGnsServer").OLn("Server closing connections...");
+    CConsole::getConsoleInstance("PgeGnsServer").OLn("Server closing connections for %u clients ...", m_mapClients.size());
     for (const auto& it : m_mapClients)
     {
+        const HSteamNetConnection& hClientConnection = it.first;
+        if (hClientConnection == 0) {
+            // this is us
+            continue;
+        }
+
+        CConsole::getConsoleInstance("PgeGnsServer").OLn("Detailed Connection Status for client %u: ", hClientConnection);
+        CConsole::getConsoleInstance("PgeGnsServer").OLn("%s", PgeGnsWrapper::getDetailedConnectionStatus(hClientConnection).c_str());
+        CConsole::getConsoleInstance("PgeGnsServer").OLn("");
+
         // Send them one more goodbye message.  Note that we also have the
         // connection close reason as a place to send final data.  However,
         // that's usually best left for more diagnostic/debug text not actual
         // protocol strings.
-        //SendStringToClient(it.first, "Server is shutting down.  Goodbye.");
+        //SendStringToClient(hClientConnection, "Server is shutting down.  Goodbye.");
 
         // Close the connection.  We use "linger mode" to ask SteamNetworkingSockets
         // to flush this out and close gracefully.
-        m_pInterface->CloseConnection(it.first, k_ESteamNetConnectionEnd_App_Generic, "PgeGnsServer Server Graceful shutdown", true);
+        m_pInterface->CloseConnection(hClientConnection, k_ESteamNetConnectionEnd_App_Generic, "PgeGnsServer Server Graceful shutdown", true);
     }
     m_mapClients.clear();
 
@@ -354,13 +364,17 @@ void PgeGnsServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
             // Spew something to our own log.  Note that because we put their nick
             // as the connection description, it will show up, along with their
             // transport-specific data (e.g. their IP address)
-            CConsole::getConsoleInstance("PgeGnsServer").OLn("%s: SERVER Connection %s %s, reason %d: %s\n",
+            CConsole::getConsoleInstance("PgeGnsServer").OLn("%s: SERVER Connection %s (handle %u) %s, reason %d: %s\n",
                 __func__,
                 pInfo->m_info.m_szConnectionDescription,
+                pInfo->m_hConn,
                 pszDebugLogAction,
                 pInfo->m_info.m_eEndReason,
                 pInfo->m_info.m_szEndDebug
             );
+            CConsole::getConsoleInstance("PgeGnsServer").OLn("Detailed Connection Status for client %u: ", pInfo->m_hConn);
+            CConsole::getConsoleInstance("PgeGnsServer").OLn("%s", PgeGnsWrapper::getDetailedConnectionStatus(pInfo->m_hConn).c_str());
+            CConsole::getConsoleInstance("PgeGnsServer").OLn("");
 
             pge_network::PgePacket pkt;
             pge_network::PgePacket::initPktPgeMsgUserDisconnected(pkt, pInfo->m_hConn);
