@@ -76,6 +76,9 @@ public:
     float getQualityRemote(bool bForceUpdate) override;
     float getRxByteRate(bool bForceUpdate) override;
     float getTxByteRate(bool bForceUpdate) override;
+    int64_t getPendingUnreliablePktCount(bool bForceUpdate) override;
+    int64_t getPendingReliablePktCount(bool bForceUpdate) override;
+    int64_t getSentButUnAckedReliablePktCount(bool bForceUpdate) override;
     int64_t getInternalQueueTimeUSecs(bool bForceUpdate) override;
     std::string getDetailedConnectionStatus() const override;
 
@@ -316,6 +319,21 @@ float PgeClientImpl::getRxByteRate(bool bForceUpdate)
 float PgeClientImpl::getTxByteRate(bool bForceUpdate)
 {
     return m_gsnClient.getRealTimeStatus(bForceUpdate).m_flOutBytesPerSec;
+}
+
+int64_t PgeClientImpl::getPendingUnreliablePktCount(bool bForceUpdate)
+{
+    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_cbPendingUnreliable;
+}
+
+int64_t PgeClientImpl::getPendingReliablePktCount(bool bForceUpdate)
+{
+    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_cbPendingReliable;
+}
+
+int64_t PgeClientImpl::getSentButUnAckedReliablePktCount(bool bForceUpdate)
+{
+    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_cbSentUnackedReliable;
 }
 
 int64_t PgeClientImpl::getInternalQueueTimeUSecs(bool bForceUpdate)

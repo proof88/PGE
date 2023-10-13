@@ -71,6 +71,9 @@ namespace pge_network
         virtual float getQualityRemote(bool bForceUpdate) = 0;
         virtual float getRxByteRate(bool bForceUpdate) = 0;
         virtual float getTxByteRate(bool bForceUpdate) = 0;
+        virtual int64_t getPendingUnreliablePktCount(bool bForceUpdate) = 0;
+        virtual int64_t getPendingReliablePktCount(bool bForceUpdate) = 0;
+        virtual int64_t getSentButUnAckedReliablePktCount(bool bForceUpdate) = 0;
         virtual int64_t getInternalQueueTimeUSecs(bool bForceUpdate) = 0;
         virtual std::string getDetailedConnectionStatus() const = 0;
     }; // class PgeClient
