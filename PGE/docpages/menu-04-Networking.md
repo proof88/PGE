@@ -178,11 +178,10 @@ a predefined amount of time MUST elapse before the client can send another same 
 Note that there is no use of storming the server with higher rate in tricky ways because the server also calculates with the minimum delays for rate-limiting thus there is no benefit for the player to storm the server.
 
 For other actions like updating weapon angle (client is moving the crosshair by mouse movement), I had to **introduce a more sophisticated rate-limiting method**:
- - if the crosshair movement results in changing weapon angle bigger than a specific amount of degree, client sends such update max 5 times per second;
- - otherwise client sends update max 3 times per second.
+ - if the crosshair movement results in changing weapon angle bigger than a specific amount of degree, client sends such update max 10 times per second;
+ - otherwise client sends update max 5 times per second.
 
-Because the same message type is used for updating weapon angle and attacking state, the exact weapon angle will be sent to server at the moment of starting the attack, so the bullet born on server-side is expected to have the proper same angle.  
-If the client rapidly changes weapon angle during continuous shooting with an automatic weapon like mchgun, **some newborn bullets might have a bit different angle on server-side compared to the client-side angle of the weapon, but based on my testing these are just slight differences**.
+Details in pseudocode can be checked later on this page in function handleInputAndSendUserCmdMove().
 
 \subsection new_behavior_overview Old and New Behavior Pseudocode
 
@@ -295,11 +294,11 @@ Considering 8 players:
  - **v0.1.3:**
    - same as v0.1.2 since clients are still storming the server with same pkt rate and pkt size;
  - **v0.1.4:**
-   - **80 PKT/s with 7 clients (8 players) @ 60 FPS** as per handleInputAndSendUserCmdMove(),  
-   - **20 PKT/s with 1 client (2 players) @ 60 FPS** (1 will be by the server by injection though).  
-   This is only the 17% of the packet rate of v0.1.3!  
+   - **128 PKT/s with 7 clients (8 players) @ 60 FPS** as per handleInputAndSendUserCmdMove(),  
+   - **32 PKT/s with 1 client (2 players) @ 60 FPS** (1 will be by the server by injection though).  
+   This is only the 27% of the packet rate of v0.1.3!  
    - Since **variable packet size** was introduced also in this version in PGE, and MsgUserCmdFromClient is 16 Bytes, PgePacket overhead 15 Bytes so total PgePacket size is 31 Bytes, this leads to:  
-     **2 480 Byte/s Packet Data Rate** on server-side with 8 players, which is only the 2% of v0.1.3!
+     31 \* 80 = **3 968 Byte/s Packet Data Rate** on server-side with 8 players, which is only the 3% of v0.1.3!
 
 \subsubsection client_packet_rate Client Packet Rate and Packet Data Rate
 
@@ -501,11 +500,20 @@ The detailed explanation of the packet rates of each function is below:
       //         8 * 5 = 40 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
       //         that is 1 * 5 = 5 PKT/s @ 60 FPS from a single client.
       //
-      // v0.1.4: mouse/xhair moving-induced player- and weapon-angle update sending is also rate-limited. Player angle updates are sent with 200 millisec interval,
-      //         bigger weapon angle changes are sent with 200 millisec interval, smaller weapon angle changes are sent with 300 millisec interval.
-      //         This means max ~10 PKTs, so:
-      //         1*8 * 10 = 80 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
-      //         that is 1 * 10 = 10 PKT/s @ 60 FPS from a single client.
+      // v0.1.4: mouse/xhair moving-induced player- and weapon-angle update sending is also rate-limited.
+      //         Because the same message type is used for updating weapon angle and attacking state, the exact weapon angle will be sent to server at the moment of starting the attack, so
+      //         the bullet born on server-side is expected to have the proper same angle.  
+      //         However, if too low rate is set and the client is rapidly changing weapon angle during continuous shooting with an automatic weapon like mchgun, some newborn bullets might have
+      //         a bit different angle on server-side compared to the client-side angle of the weapon. To avoid this, we cannot set too low rates for this.
+      //         Originally I used 200 millisec intervals for player angle and bigger (more than 30 degrees) weapon angle changes, and 300 millisec for smaller changes, which shows noticeable
+      //         artifacts of this kind.
+      //         So for now I use 100 instead of 200 millisec, and use 200 instead of 300 millisec intervals.
+      //         Note that I could also do something like dynamically switching to higher send rate whenever the user is attacking, and switch back to lower when user is not attacking.
+      //         But for now I just stick to the fixed higher rates because the number of sent packets is still reasonable I think.
+      //         AP-99: introduce unreliable sending of packets so that they are always sent out to server continuously, in that case weapon angle could be sent with higher rate too!
+      //         This means max ~16 PKTs, so:
+      //         1*8 * 16 = 128 PKT/s @ 60 FPS total incoming to server (1 will be by the server by injection though),
+      //         that is 1 * 16 = 16 PKT/s @ 60 FPS from a single client.
   }
 ```
 
