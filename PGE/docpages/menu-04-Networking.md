@@ -298,7 +298,7 @@ Considering 8 players:
    - **32 PKT/s with 1 client (2 players) @ 60 FPS** (1 will be by the server by injection though).  
    This is only the 27% of the packet rate of v0.1.3!  
    - Since **variable packet size** was introduced also in this version in PGE, and MsgUserCmdFromClient is 16 Bytes, PgePacket overhead 15 Bytes so total PgePacket size is 31 Bytes, this leads to:  
-     31 \* 80 = **3 968 Byte/s Packet Data Rate** on server-side with 8 players, which is only the 3% of v0.1.3!
+     31 \* 128 = **3 968 Byte/s Packet Data Rate** on server-side with 8 players, which is only the 3% of v0.1.3!
 
 \subsubsection client_packet_rate Client Packet Rate and Packet Data Rate
 
@@ -312,13 +312,14 @@ Considering 8 players, the results are to a single client from the server:
      - 540 PKT/s @ 60 FPS as per serverPickupAndRespawnItems();
      - 480 PKT/s @ 60 FPS as per serverSendUserUpdates().
  - **v0.1.3:**
-   - **1 720 PKT/s @ 60 FPS**, with 1720 \* 268 = **460 960 Byte/s Packet Data Rate** (which is only the 40% of v0.1.2 rates):
+   - **1 720 PKT/s @ 60 FPS & 20 Hz**, with 1720 \* 268 = **460 960 Byte/s Packet Data Rate** (which is only the 40% of v0.1.2 rates):
      - 420 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient();
      - 960 PKT/s @ 20 Hz as per serverUpdateBullets();
      - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems();
      - 160 PKT/s @ 20 Hz as per serverSendUserUpdates().
  - **v0.1.4:**
-   - **518 PKT/s @ 60 FPS & 20 Hz** (this is only the 12% of v0.1.2 rate!), with 1422 + 11360 + 5500 + 8800 = **27 082 Byte/s Packet Data Rate** (which is only the 2% of v0.1.2 data rate!).
+   - **518 PKT/s @ 60 FPS & 20 Hz** (this is only the 12% of v0.1.2 rate!), with 1422 + 11360 + 5500 + 8800 = **27 082 Byte/s Packet Data Rate** (which is only the 2% of v0.1.2 data rate!)  
+     (if you set tickrate to 60 Hz in this version, it will be 1518 PKT/s that is still only the 35% of v0.1.2 rate, and 1422 + 34080 + 16500 + 26400 = 78 402 Byte/s Packet Data Rate that is still only the 7% of v0.1.2 data rate!).
      - 18 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient(), with 18 \* 79 = 1422 Byte/s Packet Data Rate (size of MsgCurrentWpnUpdateFromServer is 64 Bytes, PgePacket overhead is 15 Bytes);
      - 0 PKT/s @ 60 FPS as per serverUpdateWeapons() (that was not relevant in previous versions), now it is still not relevant because
                           the rate it could produce is less than handleUserCmdMoveFromClient()'s rate in case of weapon changing, and
@@ -332,7 +333,8 @@ Considering 8 players, the results are to a single client from the server:
 Considering 8 players, the results to ALL clients from the server (because above shows results to 1 client from the server):  
 just multiply above results by 7 (server sending to itself avoids GNS level thus we multiply by nClientsCount instead of nPlayersCount):
  - **v0.1.2:** 30 240 PKT/s with 8 104 320 Byte/s Outgoing Packet Data Rate Total;
- - **v0.1.4:** 3 626 PKT/s with 189 574 Byte/s Outgoing Packet Data Rate Total (88% decrease in packet rate and 98% decrease in packet data rate).
+ - **v0.1.4:** 3 626 PKT/s with 189 574 Byte/s Outgoing Packet Data Rate Total (88% decrease in packet rate and 98% decrease in packet data rate) @ 20 Hz Tickrate  
+   (10 626 PKT/s with 548 814 Byte/s Outgoing Packet Data Rate Total that is 65% decrease in packet rate and 93% decrease in packet data rate @ 60 Hz Tickrate).
 
 \subsubsection detailed_packet_rate Detailed Packet Rate per Function
 
@@ -591,8 +593,6 @@ Note that obviously we don't need to send the replayed messages again to server,
 This way **server remains the only authoritive instance in the network**, but we let clients see themselves a bit ahead in time compared to the server, and hopefully there will be only rare occasions when we need to correct the predicted positions at client side.  
 ["The client sees the game world in present time, but because of lag, the updates it gets from the server are actually the state of the game in the past. By the time the server sent the updated game state, it hadn’t processed all the commands sent by the client."](https://www.gabrielgambetta.com/client-side-prediction-server-reconciliation.html)
 Note that this approach also means that clients also have to simulate physics, otherwise they cannot properly predict new player positions, e.g. they need to do collision check against walls.  
-
-TODO: I should also check if GNS automatically re-sends lost messages or not? Is the order of messages is guaranteed?
 
 \section cs_1_6_rates_explained Counter-Strike 1.6 Rates Explained
 
