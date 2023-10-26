@@ -70,7 +70,8 @@ public:
     bool connectToServer(const std::string& sServerAddress) override; /* temporal */
     const pge_network::PgeNetworkConnectionHandle& getConnectionHandle() const override;
     const pge_network::PgeNetworkConnectionHandle& getConnectionHandleServerSide() const override;
-    const char* getServerAddress() const override;  
+    const char* getServerAddress() const override; 
+
     int getPing(bool bForceUpdate) override;
     float getQualityLocal(bool bForceUpdate) override;
     float getQualityRemote(bool bForceUpdate) override;

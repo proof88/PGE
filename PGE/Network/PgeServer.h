@@ -82,6 +82,38 @@ namespace pge_network
         * @param pkt The packet to be sent.
         */
         virtual void sendToAll(const pge_network::PgePacket& pkt) = 0;
+
+        /* Debug functions. */
+
+        virtual int getPing(
+            const pge_network::PgeNetworkConnectionHandle& connHandle,
+            bool bForceUpdate) = 0;
+        virtual float getQualityLocal(
+            const pge_network::PgeNetworkConnectionHandle& connHandle,
+            bool bForceUpdate) = 0;
+        virtual float getQualityRemote(
+            const pge_network::PgeNetworkConnectionHandle& connHandle,
+            bool bForceUpdate) = 0;
+        virtual float getRxByteRate(
+            const pge_network::PgeNetworkConnectionHandle& connHandle,
+            bool bForceUpdate) = 0;
+        virtual float getTxByteRate(
+            const pge_network::PgeNetworkConnectionHandle& connHandle,
+            bool bForceUpdate) = 0;
+        virtual int64_t getPendingUnreliablePktCount(
+            const pge_network::PgeNetworkConnectionHandle& connHandle,
+            bool bForceUpdate) = 0;
+        virtual int64_t getPendingReliablePktCount(
+            const pge_network::PgeNetworkConnectionHandle& connHandle,
+            bool bForceUpdate) = 0;
+        virtual int64_t getSentButUnAckedReliablePktCount(
+            const pge_network::PgeNetworkConnectionHandle& connHandle,
+            bool bForceUpdate) = 0;
+        virtual int64_t getInternalQueueTimeUSecs(
+            const pge_network::PgeNetworkConnectionHandle& connHandle,
+            bool bForceUpdate) = 0;
+        virtual std::string getDetailedConnectionStatus(
+            const pge_network::PgeNetworkConnectionHandle& connHandle) const = 0;
     }; // class PgeServer
 
 } // namespace pge_network

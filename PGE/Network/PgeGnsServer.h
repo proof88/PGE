@@ -24,11 +24,15 @@
 #include "PgePacket.h"
 #include "PgeGnsWrapper.h"
 
+// TODO: should be private
 struct TClient
 {
     std::string m_sCustomName;  /**< App level can set a custom name for client which is useful for debugging. */
     char m_szAddr[SteamNetworkingIPAddr::k_cchMaxString];
+    SteamNetConnectionRealTimeStatus_t m_connRtStatus;
 };
+
+typedef std::map< HSteamNetConnection, TClient > SteamNetConnHandle2TClientMap;
 
 /**
     Server Wrapper for GameNetworkingSockets library
@@ -87,11 +91,19 @@ public:
 
     void WriteServerClientList();
 
+    /* Debug functions. */
+
+    const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(const HSteamNetConnection& connHandle, bool bForceUpdate);
+    std::string getDetailedConnectionStatus(const HSteamNetConnection& connHandle) const;
+
 protected:
     virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const override;
     virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const override;
     virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const override;
     virtual void onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) override;
+
+    const TClient* isClientConnectionHandleValid(const HSteamNetConnection& connHandle) const;
+    TClient* isClientConnectionHandleValid(const HSteamNetConnection& connHandle);
 
 private:
 
@@ -100,7 +112,7 @@ private:
     HSteamListenSocket m_hListenSock;
     HSteamNetPollGroup m_hPollGroup;
 
-    std::map< HSteamNetConnection, TClient > m_mapClients;
+    SteamNetConnHandle2TClientMap m_mapClients;
     // The connection handle is used to identify clients in the map.
     // This handle for a client is NOT the same as the handle on the client side, obviously.
     // Note that the first connection is this map is an invalid connection (k_HSteamNetConnection_Invalid), which

@@ -71,6 +71,38 @@ public:
     void sendToAllClientsExcept(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& exceptConnHandle = 0) override;
     void sendToAll(const pge_network::PgePacket& pkt) override;
 
+    /* Debug functions. */
+
+    int getPing(
+        const pge_network::PgeNetworkConnectionHandle& connHandle,
+        bool bForceUpdate) override;
+    float getQualityLocal(
+        const pge_network::PgeNetworkConnectionHandle& connHandle,
+        bool bForceUpdate) override;
+    float getQualityRemote(
+        const pge_network::PgeNetworkConnectionHandle& connHandle,
+        bool bForceUpdate) override;
+    float getRxByteRate(
+        const pge_network::PgeNetworkConnectionHandle& connHandle,
+        bool bForceUpdate) override;
+    float getTxByteRate(
+        const pge_network::PgeNetworkConnectionHandle& connHandle,
+        bool bForceUpdate) override;
+    int64_t getPendingUnreliablePktCount(
+        const pge_network::PgeNetworkConnectionHandle& connHandle,
+        bool bForceUpdate) override;
+    int64_t getPendingReliablePktCount(
+        const pge_network::PgeNetworkConnectionHandle& connHandle,
+        bool bForceUpdate) override;
+    int64_t getSentButUnAckedReliablePktCount(
+        const pge_network::PgeNetworkConnectionHandle& connHandle,
+        bool bForceUpdate) override;
+    int64_t getInternalQueueTimeUSecs(
+        const pge_network::PgeNetworkConnectionHandle& connHandle,
+        bool bForceUpdate) override;
+    std::string getDetailedConnectionStatus(
+        const pge_network::PgeNetworkConnectionHandle& connHandle) const override;
+
     /* implement stuff from PgeServer end */
 
 private:
@@ -276,6 +308,56 @@ void PgeServerImpl::sendToAll(const pge_network::PgePacket& pkt)
 {
     send(pkt);
     sendToAllClientsExcept(pkt);
+}
+
+int PgeServerImpl::getPing(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
+{
+    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_nPing;
+}
+
+float PgeServerImpl::getQualityLocal(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
+{
+    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_flConnectionQualityLocal;
+}
+
+float PgeServerImpl::getQualityRemote(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
+{
+    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_flConnectionQualityRemote;
+}
+
+float PgeServerImpl::getRxByteRate(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
+{
+    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_flInBytesPerSec;
+}
+
+float PgeServerImpl::getTxByteRate(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
+{
+    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_flOutBytesPerSec;
+}
+
+int64_t PgeServerImpl::getPendingUnreliablePktCount(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
+{
+    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_cbPendingUnreliable;
+}
+
+int64_t PgeServerImpl::getPendingReliablePktCount(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
+{
+    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_cbPendingReliable;
+}
+
+int64_t PgeServerImpl::getSentButUnAckedReliablePktCount(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
+{
+    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_cbSentUnackedReliable;
+}
+
+int64_t PgeServerImpl::getInternalQueueTimeUSecs(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
+{
+    return static_cast<int64_t>(m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_usecQueueTime);
+}
+
+std::string PgeServerImpl::getDetailedConnectionStatus(const pge_network::PgeNetworkConnectionHandle& connHandle) const
+{
+    return m_gsnServer.getDetailedConnectionStatus(connHandle);
 }
 
 

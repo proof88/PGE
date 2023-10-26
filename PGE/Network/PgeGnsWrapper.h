@@ -99,11 +99,6 @@ public:
     std::set<pge_network::PgePktId>& getAllowListedPgeMessages();
     std::set<pge_network::MsgApp::TMsgId>& getAllowListedAppMessages();
 
-    bool connectToServer(const std::string& sServerAddress); /* temporal, now I dont have better idea in this time */
-    bool disconnectClient();
-    bool startListening();
-    bool stopListening();
-
     uint32_t getRxPacketCount() const;
     uint32_t getTxPacketCount() const;
     uint32_t getInjectPacketCount() const;

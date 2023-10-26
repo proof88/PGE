@@ -86,6 +86,7 @@ bool PgeGnsServer::startListening()
     // k_HSteamNetConnection_Invalid will mean the server itself
     m_mapClients[k_HSteamNetConnection_Invalid];
     memset(m_mapClients[k_HSteamNetConnection_Invalid].m_szAddr, sizeof(m_mapClients[k_HSteamNetConnection_Invalid].m_szAddr), 0);
+    memset(&m_mapClients[k_HSteamNetConnection_Invalid].m_connRtStatus, sizeof(m_mapClients[k_HSteamNetConnection_Invalid].m_connRtStatus), 0);
 
     // here we create a client connect pkt that will be injected to our queue so app level will process it and create
     // player object or whatever they want for the server itself, as it was a real client
@@ -268,6 +269,38 @@ void PgeGnsServer::WriteServerClientList()
     CConsole::getConsoleInstance("PgeGnsServer").OO();
 }
 
+const SteamNetConnectionRealTimeStatus_t& PgeGnsServer::getRealTimeStatus(const HSteamNetConnection& connHandle, bool bForceUpdate)
+{
+    const auto pClient = isClientConnectionHandleValid(connHandle);
+    if (!pClient)
+    {
+        CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s: connHandle %u not valid!", __func__, connHandle);
+        assert(false);
+        assert(!m_mapClients.empty());                         // never empty, first elem is always server (we)
+        return m_mapClients.begin()->second.m_connRtStatus;    // return with server's full zero data
+    }
+
+    if (bForceUpdate)
+    {
+        m_pInterface->GetConnectionRealTimeStatus(connHandle, &pClient->m_connRtStatus, 0, NULL);
+    }
+
+    return pClient->m_connRtStatus;
+}
+
+std::string PgeGnsServer::getDetailedConnectionStatus(const HSteamNetConnection& connHandle) const
+{
+    const auto pClient = isClientConnectionHandleValid(connHandle);
+    if (!pClient)
+    {
+        CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s: connHandle %u not valid!", __func__, connHandle);
+        assert(false);
+        return "";
+    }
+
+    return PgeGnsWrapper::getDetailedConnectionStatus(connHandle);
+}
+
 
 // ############################## PROTECTED ##############################
 
@@ -303,6 +336,8 @@ int PgeGnsServer::receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nI
 
 bool PgeGnsServer::validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const
 {
+    // TODO: can it be 0?
+
     const auto itClient = m_mapClients.find(connHandle);
     if (itClient == m_mapClients.end())
     {
@@ -470,6 +505,41 @@ void PgeGnsServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
         // Silences -Wswitch
         break;
     }
+}
+
+const TClient* PgeGnsServer::isClientConnectionHandleValid(const HSteamNetConnection& connHandle) const
+{
+    static_assert(k_HSteamNetConnection_Invalid == 0U, "on upper layers we use connHandle 0 to identify server, so here k_HSteamNetConnection_Invalid must be 0");
+
+    if (connHandle == k_HSteamNetConnection_Invalid)
+    {
+        CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s: Invalid (server) connHandle specified!", __func__);
+        assert(false);
+        return nullptr;
+    }
+
+    if (!isInitialized())
+    {
+        CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s not listening!", __func__);
+        assert(false);
+        return nullptr;
+    }
+
+    const auto itClient = m_mapClients.find(connHandle);
+    if (itClient == m_mapClients.end())
+    {
+        CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s: connHandle %u not found!", __func__, connHandle);
+        assert(false);
+        return nullptr;
+    }
+
+    return &itClient->second;
+}
+
+TClient* PgeGnsServer::isClientConnectionHandleValid(const HSteamNetConnection& connHandle)
+{
+    // simply invoke the const-version of isClientConnectionHandleValid() above by const-casting:
+    return const_cast<TClient*>((const_cast<const PgeGnsServer* const>(this))->isClientConnectionHandleValid(connHandle));
 }
 
 void PgeGnsServer::SetClientNick(HSteamNetConnection hConn, const char* nick)

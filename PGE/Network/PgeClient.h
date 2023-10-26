@@ -66,6 +66,8 @@ namespace pge_network
 
         virtual const char* getServerAddress() const = 0;
 
+        /* Debug functions. */
+
         virtual int getPing(bool bForceUpdate) = 0;
         virtual float getQualityLocal(bool bForceUpdate) = 0;
         virtual float getQualityRemote(bool bForceUpdate) = 0;

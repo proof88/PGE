@@ -80,6 +80,8 @@ public:
 
     void sendToServer(const pge_network::PgePacket& pkt);
 
+    /* Debug functions. */
+
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(bool bForceUpdate);
     std::string getDetailedConnectionStatus() const;
 
