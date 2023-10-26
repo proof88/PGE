@@ -305,28 +305,6 @@ std::string PgeGnsServer::getDetailedConnectionStatus(const HSteamNetConnection&
 // ############################## PROTECTED ##############################
 
 
-// ############################### PRIVATE ###############################
-
-
-PgeGnsServer::PgeGnsServer(PGEcfgProfiles& cfgProfiles) :
-    PgeGnsWrapper(cfgProfiles),
-    m_nPort(DEFAULT_SERVER_PORT),
-    m_hListenSock(k_HSteamListenSocket_Invalid),
-    m_hPollGroup(k_HSteamNetPollGroup_Invalid)
-{
-} // PgeGnsServer()
-
-PgeGnsServer::PgeGnsServer(const PgeGnsServer& other) :
-    PgeGnsWrapper(other.m_cfgProfiles)
-{
-
-}
-
-PgeGnsServer& PgeGnsServer::operator=(const PgeGnsServer&)
-{
-    return *this;
-}
-
 int PgeGnsServer::receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const
 {
     // ReceiveMessagesOnPollGroup() basically copies the pointers to messages from GNS's internal linked list,
@@ -336,7 +314,11 @@ int PgeGnsServer::receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nI
 
 bool PgeGnsServer::validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const
 {
-    // TODO: can it be 0?
+    if (connHandle == k_HSteamNetConnection_Invalid)
+    {
+        CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s: SERVER received with invalid connhandle!", __func__);
+        return false;
+    }
 
     const auto itClient = m_mapClients.find(connHandle);
     if (itClient == m_mapClients.end())
@@ -505,9 +487,41 @@ void PgeGnsServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
         // Silences -Wswitch
         break;
     }
+}  // onSteamNetConnectionStatusChanged()
+
+
+// ############################### PRIVATE ###############################
+
+
+PgeGnsServer::PgeGnsServer(PGEcfgProfiles& cfgProfiles) :
+    PgeGnsWrapper(cfgProfiles),
+    m_nPort(DEFAULT_SERVER_PORT),
+    m_hListenSock(k_HSteamListenSocket_Invalid),
+    m_hPollGroup(k_HSteamNetPollGroup_Invalid)
+{
+} // PgeGnsServer()
+
+PgeGnsServer::PgeGnsServer(const PgeGnsServer& other) :
+    PgeGnsWrapper(other.m_cfgProfiles)
+{
+
 }
 
-const TClient* PgeGnsServer::isClientConnectionHandleValid(const HSteamNetConnection& connHandle) const
+PgeGnsServer& PgeGnsServer::operator=(const PgeGnsServer&)
+{
+    return *this;
+}
+
+void PgeGnsServer::SetClientNick(HSteamNetConnection hConn, const char* nick)
+{
+    // Remember their nick
+    m_mapClients[hConn].m_sCustomName = nick;
+
+    // Set the connection name, too, which is useful for debugging
+    m_pInterface->SetConnectionName(hConn, nick);
+}
+
+const PgeGnsServer::TClient* PgeGnsServer::isClientConnectionHandleValid(const HSteamNetConnection& connHandle) const
 {
     static_assert(k_HSteamNetConnection_Invalid == 0U, "on upper layers we use connHandle 0 to identify server, so here k_HSteamNetConnection_Invalid must be 0");
 
@@ -536,17 +550,8 @@ const TClient* PgeGnsServer::isClientConnectionHandleValid(const HSteamNetConnec
     return &itClient->second;
 }
 
-TClient* PgeGnsServer::isClientConnectionHandleValid(const HSteamNetConnection& connHandle)
+PgeGnsServer::TClient* PgeGnsServer::isClientConnectionHandleValid(const HSteamNetConnection& connHandle)
 {
     // simply invoke the const-version of isClientConnectionHandleValid() above by const-casting:
     return const_cast<TClient*>((const_cast<const PgeGnsServer* const>(this))->isClientConnectionHandleValid(connHandle));
-}
-
-void PgeGnsServer::SetClientNick(HSteamNetConnection hConn, const char* nick)
-{
-    // Remember their nick
-    m_mapClients[hConn].m_sCustomName = nick;
-
-    // Set the connection name, too, which is useful for debugging
-    m_pInterface->SetConnectionName(hConn, nick);
 }

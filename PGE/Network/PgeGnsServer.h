@@ -24,16 +24,6 @@
 #include "PgePacket.h"
 #include "PgeGnsWrapper.h"
 
-// TODO: should be private
-struct TClient
-{
-    std::string m_sCustomName;  /**< App level can set a custom name for client which is useful for debugging. */
-    char m_szAddr[SteamNetworkingIPAddr::k_cchMaxString];
-    SteamNetConnectionRealTimeStatus_t m_connRtStatus;
-};
-
-typedef std::map< HSteamNetConnection, TClient > SteamNetConnHandle2TClientMap;
-
 /**
     Server Wrapper for GameNetworkingSockets library
 */
@@ -102,10 +92,16 @@ protected:
     virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const override;
     virtual void onSteamNetConnectionStatusChanged(SteamNetConnectionStatusChangedCallback_t* pInfo) override;
 
-    const TClient* isClientConnectionHandleValid(const HSteamNetConnection& connHandle) const;
-    TClient* isClientConnectionHandleValid(const HSteamNetConnection& connHandle);
-
 private:
+
+    struct TClient
+    {
+        std::string m_sCustomName;  /**< App level can set a custom name for client which is useful for debugging. */
+        char m_szAddr[SteamNetworkingIPAddr::k_cchMaxString];
+        SteamNetConnectionRealTimeStatus_t m_connRtStatus;
+    };
+
+    typedef std::map< HSteamNetConnection, TClient > SteamNetConnHandle2TClientMap;
 
     uint16 m_nPort;
 
@@ -125,4 +121,7 @@ private:
     PgeGnsServer& operator=(const PgeGnsServer&);
 
     void SetClientNick(HSteamNetConnection hConn, const char* nick);
+    const TClient* isClientConnectionHandleValid(const HSteamNetConnection& connHandle) const;
+    TClient* isClientConnectionHandleValid(const HSteamNetConnection& connHandle);
+
 }; // class PgeGnsServer
