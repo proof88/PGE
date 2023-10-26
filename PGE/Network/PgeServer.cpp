@@ -88,13 +88,13 @@ public:
     float getTxByteRate(
         const pge_network::PgeNetworkConnectionHandle& connHandle,
         bool bForceUpdate) override;
-    int64_t getPendingUnreliablePktCount(
+    int64_t getPendingUnreliableBytes(
         const pge_network::PgeNetworkConnectionHandle& connHandle,
         bool bForceUpdate) override;
-    int64_t getPendingReliablePktCount(
+    int64_t getPendingReliableBytes(
         const pge_network::PgeNetworkConnectionHandle& connHandle,
         bool bForceUpdate) override;
-    int64_t getSentButUnAckedReliablePktCount(
+    int64_t getSentButUnAckedReliableBytes(
         const pge_network::PgeNetworkConnectionHandle& connHandle,
         bool bForceUpdate) override;
     int64_t getInternalQueueTimeUSecs(
@@ -335,17 +335,17 @@ float PgeServerImpl::getTxByteRate(const pge_network::PgeNetworkConnectionHandle
     return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_flOutBytesPerSec;
 }
 
-int64_t PgeServerImpl::getPendingUnreliablePktCount(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
+int64_t PgeServerImpl::getPendingUnreliableBytes(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
 {
     return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_cbPendingUnreliable;
 }
 
-int64_t PgeServerImpl::getPendingReliablePktCount(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
+int64_t PgeServerImpl::getPendingReliableBytes(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
 {
     return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_cbPendingReliable;
 }
 
-int64_t PgeServerImpl::getSentButUnAckedReliablePktCount(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
+int64_t PgeServerImpl::getSentButUnAckedReliableBytes(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
 {
     return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_cbSentUnackedReliable;
 }

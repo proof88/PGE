@@ -100,13 +100,13 @@ namespace pge_network
         virtual float getTxByteRate(
             const pge_network::PgeNetworkConnectionHandle& connHandle,
             bool bForceUpdate) = 0;
-        virtual int64_t getPendingUnreliablePktCount(
+        virtual int64_t getPendingUnreliableBytes(
             const pge_network::PgeNetworkConnectionHandle& connHandle,
             bool bForceUpdate) = 0;
-        virtual int64_t getPendingReliablePktCount(
+        virtual int64_t getPendingReliableBytes(
             const pge_network::PgeNetworkConnectionHandle& connHandle,
             bool bForceUpdate) = 0;
-        virtual int64_t getSentButUnAckedReliablePktCount(
+        virtual int64_t getSentButUnAckedReliableBytes(
             const pge_network::PgeNetworkConnectionHandle& connHandle,
             bool bForceUpdate) = 0;
         virtual int64_t getInternalQueueTimeUSecs(
