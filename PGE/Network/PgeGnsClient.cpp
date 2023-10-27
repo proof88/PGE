@@ -48,8 +48,7 @@ bool PgeGnsClient::destroy()
         CConsole::getConsoleInstance("PgeGnsClient").OLn("%s() Already disconnected.", __func__);
         return true;
     }
-    CConsole::getConsoleInstance("PgeGnsClient").OLn("Detailed Connection Status:");
-    CConsole::getConsoleInstance("PgeGnsClient").OLn("%s", getDetailedConnectionStatus().c_str());
+    logDetailedConnectionStatus(m_hConnection);
     
     return disconnectClient() && PgeGnsWrapper::destroy();
 } // destroy()
@@ -302,9 +301,7 @@ void PgeGnsClient::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
                 __func__, pInfo->m_info.m_szEndDebug);
         }
 
-        CConsole::getConsoleInstance("PgeGnsClient").OLn("Detailed Connection Status:");
-        CConsole::getConsoleInstance("PgeGnsClient").OLn("%s", PgeGnsWrapper::getDetailedConnectionStatus(pInfo->m_hConn).c_str());
-        CConsole::getConsoleInstance("PgeGnsClient").OLn("");
+        logDetailedConnectionStatus(pInfo->m_hConn);
 
         // Clean up the connection.  This is important!
         // The connection is "closed" in the network sense, but

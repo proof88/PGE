@@ -162,4 +162,5 @@ protected:
 
     std::string getStringByMsgAppId(const pge_network::MsgApp::TMsgId& id) const;
     std::string getDetailedConnectionStatus(const HSteamNetConnection& connHandle) const;
+    void logDetailedConnectionStatus(const HSteamNetConnection& connHandle) const;
 }; // class PgeGnsWrapper

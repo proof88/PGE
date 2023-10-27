@@ -114,18 +114,16 @@ bool PgeGnsServer::stopListening()
     }
 
     // Close all the connections
-    CConsole::getConsoleInstance("PgeGnsServer").OLn("Server closing connections for %u clients ...", m_mapClients.size());
+    CConsole::getConsoleInstance("PgeGnsServer").OLn("Server closing connections for %u client(s) ...", m_mapClients.size());
     for (const auto& it : m_mapClients)
     {
         const HSteamNetConnection& hClientConnection = it.first;
-        if (hClientConnection == 0) {
+        if (hClientConnection == k_HSteamNetConnection_Invalid) {
             // this is us
             continue;
         }
 
-        CConsole::getConsoleInstance("PgeGnsServer").OLn("Detailed Connection Status for client %u: ", hClientConnection);
-        CConsole::getConsoleInstance("PgeGnsServer").OLn("%s", PgeGnsWrapper::getDetailedConnectionStatus(hClientConnection).c_str());
-        CConsole::getConsoleInstance("PgeGnsServer").OLn("");
+        logDetailedConnectionStatus(hClientConnection);
 
         // Send them one more goodbye message.  Note that we also have the
         // connection close reason as a place to send final data.  However,
@@ -389,9 +387,7 @@ void PgeGnsServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
                 pInfo->m_info.m_eEndReason,
                 pInfo->m_info.m_szEndDebug
             );
-            CConsole::getConsoleInstance("PgeGnsServer").OLn("Detailed Connection Status for client %u: ", pInfo->m_hConn);
-            CConsole::getConsoleInstance("PgeGnsServer").OLn("%s", PgeGnsWrapper::getDetailedConnectionStatus(pInfo->m_hConn).c_str());
-            CConsole::getConsoleInstance("PgeGnsServer").OLn("");
+            logDetailedConnectionStatus(pInfo->m_hConn);
 
             pge_network::PgePacket pkt;
             pge_network::PgePacket::initPktPgeMsgUserDisconnected(pkt, pInfo->m_hConn);

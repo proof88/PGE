@@ -397,9 +397,9 @@ std::string PgeGnsWrapper::getStringByMsgAppId(const pge_network::MsgApp::TMsgId
 
 std::string PgeGnsWrapper::getDetailedConnectionStatus(const HSteamNetConnection& connHandle) const
 {
-    if (!isInitialized())
+    if (!isInitialized() || (connHandle == k_HSteamNetConnection_Invalid))
     {
-        CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s not connected!", __func__);
+        CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s not connected or invalid connHandle: %u!", __func__, connHandle);
         assert(false);
         return "";
     }
@@ -410,12 +410,40 @@ std::string PgeGnsWrapper::getDetailedConnectionStatus(const HSteamNetConnection
     {
         // only in this case szDetailedStatus is null-terminated and perfect!
         return std::string(szDetailedStatus);
+        //const std::string sDetailedStatusWithUnixNewlines(szDetailedStatus);
+        //const size_t nNewlineCount = std::count(sDetailedStatusWithUnixNewlines.cbegin(), sDetailedStatusWithUnixNewlines.cend(), '\n');
+        //std::string sDetailedStatusWithWindowsNewlines;
+        //sDetailedStatusWithWindowsNewlines.reserve(sDetailedStatusWithUnixNewlines.size() + nNewlineCount);
+        //for (const auto& c : sDetailedStatusWithUnixNewlines)
+        //{
+        //    sDetailedStatusWithWindowsNewlines += c;
+        //    if (c == '\n')
+        //    {
+        //        sDetailedStatusWithWindowsNewlines += '\r';
+        //    }
+        //}
+        //return sDetailedStatusWithWindowsNewlines;
     }
     else
     {
         CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s GetDetailedConnectionStatus() returned %d!", __func__, nRes);
         return "";
     }
+}
+
+void PgeGnsWrapper::logDetailedConnectionStatus(const HSteamNetConnection& connHandle) const
+{
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLn("Detailed Connection Status for connHandle %u: ", connHandle);
+    // we need this line-by-line logging otherwise no paragraph breaks will be inserted into the html at each newline;
+    // note that this could be a feature of the logger lib in the future.
+    std::stringstream ssDetailedConnStatus(getDetailedConnectionStatus(connHandle));
+    while (ssDetailedConnStatus)
+    {
+        std::string sLine;
+        std::getline(ssDetailedConnStatus, sLine);
+        CConsole::getConsoleInstance("PgeGnsWrapper").OLn("%s", sLine.c_str());
+    }
+    CConsole::getConsoleInstance("PgeGnsWrapper").OLn("");
 }
 
 
