@@ -177,9 +177,6 @@
     <ClInclude Include="..\..\PFL\PFL\PFL.h">
       <Filter>Header Files\PFL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\CConsole\CConsole\src\CConsole.h">
-      <Filter>Header Files\CConsole</Filter>
-    </ClInclude>
     <ClInclude Include="PURE\include\internal\gl\GL.h">
       <Filter>Header Files\PURE\include\internal\gl</Filter>
     </ClInclude>
@@ -611,6 +608,9 @@
     </ClInclude>
     <ClInclude Include="..\..\PFL\PFL\winproof88.h">
       <Filter>Header Files\PFL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Console\CConsole\src\CConsole.h">
+      <Filter>Header Files\CConsole</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
