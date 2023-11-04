@@ -269,6 +269,7 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsUltimateRend
         throw std::runtime_error("failed to load file: " + std::string(fname));
     }
 
+    // TODO: too many manual CVAR validations here, update after implementing https://github.com/proof88/PRooFPS-dd/issues/251 !
     if ( (getVars()["reloadable"].getAsInt() == 0) && getVars()["reload_per_mag"].getAsBool() )
     {
         getConsole().EOLnOO("reloadable is 0 but reload_per_mag is true in %s! ", fname);
