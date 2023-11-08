@@ -146,7 +146,7 @@ So **with my implementation the framerate -> tickrate transition mostly helped r
 
 So in the next sections I explain in more detail how I introduced rate-limiting on client- and server-side.
 
-\subsection server_behavior New Server Behavior (v0.1.3, v0.1.4)
+\subsection server_behavior_v014 New Server Behavior (v0.1.3, v0.1.4)
 
 Since physics simulation is done on server-side, introducing **tickrate** mostly affected the server: using fixed delta approach lead to more reliable player position updates.  
 Sending new player states to clients is done now at tickrate, which in case of 20 Hz introduced a ~66% reduction in network traffic in server -> client direction compared to having the framerate for this rate as in v0.1.2.  
@@ -161,7 +161,7 @@ An example for this is player strafe: once player starts strafing, server simula
 This way we managed to stop clients from storming the server with inputs such as strafe at their framerate.  
 It is important to understand that for such actions we should not only send out message when a button is pressed but also when it is released.
 
-\subsection client_behavior New Client Behavior (from v0.1.4)
+\subsection client_behavior_v014 New Client Behavior (from v0.1.4)
 
 With the tickrate introduced, we successfully solved the problem of a slower machine not be able to keep up with processing messages when faster machines are also present in the network.  
 As I already explained above, with my implementation the framerate -> tickrate transition mostly helped reducing network traffic in server -> client direction but not in the other direction.
@@ -183,12 +183,31 @@ For other actions like updating weapon angle (client is moving the crosshair by 
 
 Details in pseudocode can be checked later on this page in function handleInputAndSendUserCmdMove().
 
+\subsection server_behavior_v015 New Server Behavior (v0.1.5)
+
+With low tickrate the physics calculations might not be precise enough. Even with 20 Hz tickrate we [saw we could not jump on some boxes or fall in between some boxes](https://github.com/proof88/PRooFPS-dd/issues/234).
+
+So I decided to introduce the **cl_updaterate** CVAR that controls how often server should send the updates to clients.  
+It is somehow dependent of the tickrate: in every tick we can either send out updates to clients or postpone to another tick.  
+So if we set high tickrate like 60 Hz, we can have the very precise physics calculations while having cl_updaterate as 20 Hz keeps the required bandwidth low.  
+Rules:
+ - **0 < cl_updaterate <= tickrate**;
+ - **tickrate % cl_updaterate == 0** (clients should receive UPDATED physics results evenly distributed in time).
+
+I also introduced another CVAR called **physics_rate_min**.  
+It allows running multiple physics iterations per tick, so if after all you still set a lower tickrate, you can still have more precise physics.  
+
+The question in this case: why do we even have tickrate then if physics and server -> client updates can have different rate?  
+The answer is that not only these are handled in a tick on server-side, but other stuff also like updating player- and map item-respawn timers, and in the future some more additions will be in place too.  
+So in general it is good if we have the flexibility of fine-tuning these values.
+
 \subsection new_behavior_overview Old and New Behavior Pseudocode
 
 The following pseudocode shows what functions are invoked by runGame() that are relevant from networking perspective.  
 Server and client instances have the same runGame() code. Some parts are executed only by the server or the client, that is visible from the pseudocode anyway.  
 Some parts were changed between different versions, in those cases I specified the changes with version numbers.  
-In the comments I mention what kind of messages are generated with approximated rates total PKT rate and per-client PKT rate.
+In the comments I mention what kind of messages are generated with approximated rates total PKT rate and per-client PKT rate.  
+**We are estimating with an intense situation when 8 players are playing the game, and everyone is moving, shooting, and picking up an item at the same time.**
 
 I also mention **AP (action point)** wherever I think change should be introduced.
 
@@ -234,26 +253,39 @@ PGE::runGame() {
   
       onGameRunning() {
         proofps_dd::PRooFPSddPGE::onGameRunning() {
-          // this block contains updates in v0.1.3 and v0.1.4
+          // this block contains updates in v0.1.3, v0.1.4 and v0.1.5
           
-          serverUpdateWeapons();                   // v0.1.4: 0 PKT/s @ 60 FPS server -> client (see later why 0)
+          serverUpdateWeapons();                   // v0.1.4: 0 PKT/s @ 60 FPS server -> client (see later in handleUserCmdMoveFromClient() why this is 0)
           
           if (getNetwork().isServer()) {
-          @TICKRATE (ideally 20 Hz)                // v0.1.3: this was @FRAMERATE in v0.1.2, so all results in this block are only 1/3 of v0.1.2.
+          @TICKRATE (ideally 60 Hz)                // v0.1.3: this was @FRAMERATE in v0.1.2, so all results of v0.1.3 in this block are only 1/3 of v0.1.2.
+                                                   // v0.1.5: this is ideally 60 because cl_updaterate controls server->client updates, physics_rate_min allows more precise physics 
               mainLoopServerOnlyOneTick() {
-                serverGravity();                   // no networking
-                serverPlayerCollisionWithWalls();  // no networking
-                serverUpdateBullets();             // v0.1.4: 160 PKT/s @ 20 Hz server -> client
-                serverUpdateRespawnTimers();       // no networking
-                serverPickupAndRespawnItems();     // v0.1.4: 180 PKT/s @ 20 Hz server -> client
-                serverSendUserUpdates();           // v0.1.4: 160 PKT/s @ 20 Hz server -> client
+              @PHYSICS_RATE_MIN (ideally 60 Hz)      // v0.1.5: physics_rate_min introduced, physics_rate_min >= tickrate
+                  serverGravity();                   // no networking
+                  serverPlayerCollisionWithWalls();  // no networking
+                  serverUpdateBullets();             // v0.1.4: 160 PKT/s @ 20 Hz tickrate server -> client
+                                                     // v0.1.5: 480 PKT/s @ 60 Hz physics_rate_min server -> client
+                  serverPickupAndRespawnItems();     // v0.1.4: 180 PKT/s @ 20 Hz tickrate server -> client
+                                                     // v0.1.5: 540 PKT/s @ 60 Hz physics_rate_min server -> client
+                  updatePlayersOldValues();          // no networking
+              @END PHYSICS_RATE_MIN
+              
+              serverUpdateRespawnTimers();           // no networking
+              
+              @CL_UPDATERATE (ideally 20 Hz)
+                  serverSendUserUpdates();           // v0.1.4, v0.1.5: 160 PKT/s @ 20 Hz server -> client
+              @END CL_UPDATERATE
+              
               }  // end mainLoopServerOnlyOneTick()
           @END TICKRATE
           }  // end isServer()
           else {
           @TICKRATE (ideally 20 Hz)                
               mainLoopClientOnlyOneTick() {        // v0.1.4: client-side tick got introduced (same value as for server-side)
-                clientUpdateBullets()              // v0.1.4: no networking, client-side bullet travel simulation got introduced (without collision-detection)
+              @PHYSICS_RATE_MIN (ideally 60 Hz)
+                  clientUpdateBullets()            // v0.1.4: no networking, client-side bullet travel simulation got introduced (without collision-detection)
+              @END PHYSICS_RATE_MIN
               }
           @END TICKRATE
           }  // end client
@@ -279,7 +311,7 @@ PGE::runGame() {
 
 **Packet Rate** shows the number of packets processed per second by server or client.  
 I also calculate the estimated **Packet Data Rate** based on the packet rate and size of packets.  
-The improvements through versions are very decent and were really needed to solve [issue](https://github.com/proof88/PRooFPS-dd/issues/184).
+The improvements through versions are very decent and were really needed to solve [the packet congestion issue](https://github.com/proof88/PRooFPS-dd/issues/184).
 
 \subsubsection server_packet_rate Server Packet Rate and Packet Data Rate
 
@@ -326,7 +358,18 @@ Considering 8 players, the results are to a single client from the server:
                           firing is impossible during weapon changing so handleUserCmdMoveFromClient() is considered in the calculation only.
                           I'm still showing this in the list with 0 rate though.                          
      - 160 PKT/s @ 20 Hz as per serverUpdateBullets(), with 160 \* 71 = 11360 Byte/s Packet Data Rate (size of MsgBulletUpdateFromServer is 56 Bytes, PgePacket overhead is 15 Bytes);
-     - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems(), with 20 \* 91 + 160 \* 23 = 5500 Byte/s Packet Data Rate
+     - 180 PKT/s @ 20 Hz as per serverPickupAndRespawnItems(), with 20 \* 91 + (8\*20) \* 23 = 5500 Byte/s Packet Data Rate
+                         (size of MsgWpnUpdateFromServer is 76 Bytes, size of MsgMapItemUpdateFromServer is 8 Bytes, PgePacket overhead is 15 Bytes);
+     - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(), with 160 \* 55 = 8800 Byte/s Packet Data Rate (size of MsgUserUpdateFromServer is 40 Bytes, PgePacket overhead is 15 Bytes).
+ - **v0.1.5:**
+   - **1198 PKT/s @ 60 FPS & 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min** (this is only the 28% of v0.1.2 rate!), with 1422 + 34080 + 16500 + 8800 = **60 802 Byte/s Packet Data Rate** (which is only the 5% of v0.1.2 data rate!).
+     - 18 PKT/s @ 60 FPS as per handleUserCmdMoveFromClient(), with 18 \* 79 = 1422 Byte/s Packet Data Rate (size of MsgCurrentWpnUpdateFromServer is 64 Bytes, PgePacket overhead is 15 Bytes);
+     - 0 PKT/s @ 60 FPS as per serverUpdateWeapons() (that was not relevant in previous versions), now it is still not relevant because
+                          the rate it could produce is less than handleUserCmdMoveFromClient()'s rate in case of weapon changing, and
+                          firing is impossible during weapon changing so handleUserCmdMoveFromClient() is considered in the calculation only.
+                          I'm still showing this in the list with 0 rate though.                          
+     - 480 PKT/s @ 60 Hz as per serverUpdateBullets(), with 480 \* 71 = 34080 Byte/s Packet Data Rate (size of MsgBulletUpdateFromServer is 56 Bytes, PgePacket overhead is 15 Bytes);
+     - 540 PKT/s @ 60 Hz as per serverPickupAndRespawnItems(), with 60 \* 91 + (8\*60) \* 23 = 16500 Byte/s Packet Data Rate
                          (size of MsgWpnUpdateFromServer is 76 Bytes, size of MsgMapItemUpdateFromServer is 8 Bytes, PgePacket overhead is 15 Bytes);
      - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(), with 160 \* 55 = 8800 Byte/s Packet Data Rate (size of MsgUserUpdateFromServer is 40 Bytes, PgePacket overhead is 15 Bytes).
   
@@ -334,7 +377,8 @@ Considering 8 players, the results to ALL clients from the server (because above
 just multiply above results by 7 (server sending to itself avoids GNS level thus we multiply by nClientsCount instead of nPlayersCount):
  - **v0.1.2:** 30 240 PKT/s with 8 104 320 Byte/s Outgoing Packet Data Rate Total;
  - **v0.1.4:** 3 626 PKT/s with 189 574 Byte/s Outgoing Packet Data Rate Total (88% decrease in packet rate and 98% decrease in packet data rate) @ 20 Hz Tickrate  
-   (10 626 PKT/s with 548 814 Byte/s Outgoing Packet Data Rate Total that is 65% decrease in packet rate and 93% decrease in packet data rate @ 60 Hz Tickrate).
+   (10 626 PKT/s with 548 814 Byte/s Outgoing Packet Data Rate Total that is 65% decrease in packet rate and 93% decrease in packet data rate @ 60 Hz Tickrate);
+ - **v0.1.5:** 8 386 PKT/s with 425 614 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
 
 \subsubsection detailed_packet_rate Detailed Packet Rate per Function
 
@@ -383,6 +427,10 @@ The detailed explanation of the packet rates of each function is below:
       //    This changes the calculation to:
       //    7*7 * 2 = 98 PKT/s @ 60 FPS total outgoing,
       //    that is 7*2 = 18 PKT/s @ 60 FPS to a single client.
+      //
+      //    To clarify: even though we said the situation is everyone is shooting, here we will select the weapon change calculation because it generates more
+      //    traffic than continuous shooting. Because when shooting is continuous, this function has makes traffic as described below, and it is LESS than
+      //    the weapon changing traffic described above.
       //
       //  - before v0.1.4:
       //    might generate 1 MsgWpnUpdateFromServer for updating bullet count for firing (wpn->pullTrigger() returns true), so:
@@ -539,8 +587,7 @@ Remember that with the naive approach, we immediately processed the messages rec
 We don't do this anymore, since server also has tickrate and we should stick to it: game simulation and input sampling is happening in each tick, not in each frame.  
 So whenever a client input message is received on server-side, instead of processing it immediately, we enqueue it.  
 Server dequeues all received messages at its next tick, and responses will be also sent out at this time in the separate serverSendUserUpdates().  
-Alternatively, we don't need to send out response/update messages with the tickrate frequency, we can have a separate frequency for that, called **cl_updaterate**.  
-Rule is: **tickrate >= cl_updaterate**. We can lower the required bandwidth if we set a lower value. The lower the value, the more we depend on client-side lerp and input-prediction to smooth out player movement experience.
+Remember: the lower the value of **cl_updaterate**, the more we depend on client-side lerp and input-prediction to smooth out player movement experience.
 
 Interesting fact: the original Doom [used P2P lockstep mechanism multiplayer](https://www.gabrielgambetta.com/client-side-prediction-server-reconciliation.html), which at that time was not good to be played over the Internet.  
 Then Quake introduced the client-server model with the client-side lerp, which was good for LAN, but less good on Internet with bigger distances between machines.  
