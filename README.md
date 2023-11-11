@@ -4,6 +4,8 @@ PR00F's Game Engine
 This C++ open-source game engine is being actively developed to make my games with it.  
 My primary game project is [PRooFPS-dd](https://github.com/proof88/PRooFPS-dd).
 
+There is no generated online documentation yet, however you can already access [WIP wiki pages here](https://github.com/proof88/PGE/tree/master/PGE/docpages).
+
 This game engine contains my open-source PURE graphics engine that has its own [online documentation](https://proof88.github.io/pure-doc/).
 
 ## History
