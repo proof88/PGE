@@ -56,7 +56,8 @@ protected:
         AddSubTest("testDegToRad", (PFNUNITSUBTEST) &PFLTest::testDegToRad);
         AddSubTest("testRadToDeg", (PFNUNITSUBTEST) &PFLTest::testRadToDeg);
         AddSubTest("testRandom", (PFNUNITSUBTEST) &PFLTest::testRandom);
-        AddSubTest("testLerp", (PFNUNITSUBTEST)&PFLTest::testLerp);
+        AddSubTest("testLerp", (PFNUNITSUBTEST) &PFLTest::testLerp);
+        AddSubTest("testSmooth", (PFNUNITSUBTEST)&PFLTest::testSmooth);
     }
 
     virtual bool setUp() override
@@ -390,6 +391,59 @@ private:
             assertEquals(1.f, PFL::lerp(1.f, 3.f, -10.f), "below lower wall") &
             assertEquals(3.f, PFL::lerp(1.f, 3.f, 10.f), "above higher wall") &
             assertEquals(2.f, PFL::lerp(1.f, 3.f, 0.5f), "center");
+    }
+
+    bool testSmooth()
+    {
+        constexpr float fTarget = 1.f;
+        constexpr float fStart = 0.f;
+        
+        bool b = true;
+
+        float fCurrent = fStart;
+        int i = 0;
+        while (fCurrent != fTarget)
+        {
+            ++i;
+            fCurrent = PFL::smooth(fCurrent, fTarget, 2.f);
+            if (i > 40)
+            {
+                b &= assertFalse(true,
+                    (std::string("iteration limit reached 1, fCurrent: ") + std::to_string(fCurrent) + ", fTarget: " + std::to_string(fTarget)).c_str());
+                break;  // avoid infinite loop
+            }
+        }
+
+        fCurrent = fStart;
+        i = 0;
+        while (fCurrent != fTarget)
+        {
+            ++i;
+            fCurrent = PFL::smooth(fCurrent, fTarget, 5.f);
+            if (i > 40)
+            {
+                b &= assertFalse(true,
+                    (std::string("iteration limit reached 2, fCurrent: ") + std::to_string(fCurrent) + ", fTarget: " + std::to_string(fTarget)).c_str());
+                break;  // avoid infinite loop
+            }
+        }
+
+        fCurrent = fStart;
+        i = 0;
+        while (fCurrent != fTarget)
+        {
+            ++i;
+            fCurrent = PFL::smooth(fCurrent, fTarget, 1.f);
+            if (i > 40)
+            {
+                b &= assertFalse(true,
+                    (std::string("iteration limit reached 3, fCurrent: ") + std::to_string(fCurrent) + ", fTarget: " + std::to_string(fTarget)).c_str());
+                break;  // avoid infinite loop
+            }
+        }
+        b &= assertEquals(1, i, "with speed 1.f iteration count should be 1!");
+
+        return b;
     }
 
 }; // class PFLTest
