@@ -9,7 +9,7 @@ This game engine contains my open-source PURE graphics engine that has its own [
 ## History
 
 Since the PURE graphics engine is part of the PGE game engine, their versioning is hard-tied and incremented together.  
-So whenever you read something like PGE vA.B it always implicitly means PURE vA.B and vice versa.
+So whenever you read something like `PGE vA.B` it always implicitly means `PURE vA.B` and vice versa.
 
 ### v0.4 (TBD)
 
