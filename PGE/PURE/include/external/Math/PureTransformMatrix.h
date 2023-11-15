@@ -5,7 +5,7 @@
     PureTransformMatrix.h
     This file is part of PURE.
     External header.
-    Pure 3D-transformation matrix class.
+    PURE 3D-transformation matrix class.
     Made by PR00F88
     EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
@@ -16,8 +16,8 @@
 #include "PureMatrix.h"
 
 /**
-    Pure 3D-transformation matrix class.
-    Pure uses the left-handed Cartesian coordinate system.
+    PURE 3D-transformation matrix class.
+    PURE uses the left-handed Cartesian coordinate system.
     This means the XZ plane is horizontal, the XY and and YZ planes are vertical,
     a positive X value means right, a positive Y value means up, and a positive Z value means forward.
 */

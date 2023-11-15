@@ -612,6 +612,9 @@
     <ClInclude Include="..\..\Console\CConsole\src\CConsole.h">
       <Filter>Header Files\CConsole</Filter>
     </ClInclude>
+    <ClInclude Include="PURE\include\external\Math\PureProjection.h">
+      <Filter>Header Files\PURE\include\external\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
@@ -817,6 +820,9 @@
     </ClCompile>
     <ClCompile Include="Network\PgeGnsServer.cpp">
       <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="PURE\source\Math\PureProjection.cpp">
+      <Filter>Source Files\PURE\Math</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

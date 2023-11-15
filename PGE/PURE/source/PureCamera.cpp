@@ -1,3 +1,5 @@
+#include "PureCamera.h"
+#include "PureCamera.h"
 #pragma once
 
 /*
@@ -13,6 +15,7 @@
 #include "PureBaseIncludes.h"  // PCH
 #include "../include/external/PureCamera.h"
 #include "../include/external/Math/PureMatrix.h"
+#include "../include/external/Math/PureProjection.h"
 #include "../include/internal/PurePragmas.h"
 
 /*
@@ -59,6 +62,24 @@ public:
 
     PureColor& getBackgroundColor();
     const PureColor& getBackgroundColor() const;
+
+    bool project3dTo2d(
+        TPureFloat fWorldX,
+        TPureFloat xWorldY,
+        TPureFloat fWorldZ,
+        const PureVector& vecPos,
+        const PureVector& vecTarget,
+        const PureVector& vecUp,
+        PureVector& vecProjected) const;
+
+    bool project2dTo3d(
+        TPureUInt nScreenX,
+        TPureUInt nScreenY,
+        TPureFloat nScreenDepth,
+        const PureVector& vecPos,
+        const PureVector& vecTarget,
+        const PureVector& vecUp,
+        PureVector& vecUnprojected) const;
 
 private:
     
@@ -180,6 +201,44 @@ PureColor& PureCamera::PureCameraImpl::getBackgroundColor()
 const PureColor& PureCamera::PureCameraImpl::getBackgroundColor() const
 {
     return clrBg;
+}
+
+bool PureCamera::PureCameraImpl::project3dTo2d(
+    TPureFloat fWorldX, TPureFloat fWorldY, TPureFloat fWorldZ,
+    const PureVector& vecPos, const PureVector& vecTarget, const PureVector& vecUp,
+    PureVector& vecProjected) const
+{
+    return PureProjection::project3dTo2d(
+        fWorldX, fWorldY, fWorldZ,
+        vecPos.getX(), vecPos.getY(), vecPos.getZ(),
+        vecTarget.getX(), vecTarget.getY(), vecTarget.getZ(),
+        vecUp.getX(), vecUp.getY(), vecUp.getZ(),
+        fFOV, fAspectRatio,
+        fPlaneNear, fPlaneFar,
+        static_cast<TPureUInt>(rectViewport.pos.x),
+        static_cast<TPureUInt>(rectViewport.pos.y),
+        static_cast<TPureUInt>(rectViewport.size.width),
+        static_cast<TPureUInt>(rectViewport.size.height),
+        vecProjected);
+}
+
+bool PureCamera::PureCameraImpl::project2dTo3d(
+    TPureUInt nScreenX, TPureUInt nScreenY, TPureFloat nScreenDepth,
+    const PureVector& vecPos, const PureVector& vecTarget, const PureVector& vecUp,
+    PureVector& vecUnprojected) const
+{
+    return PureProjection::project2dTo3d(
+        nScreenX, nScreenY, nScreenDepth,
+        vecPos.getX(), vecPos.getY(), vecPos.getZ(),
+        vecTarget.getX(), vecTarget.getY(), vecTarget.getZ(),
+        vecUp.getX(), vecUp.getY(), vecUp.getZ(),
+        fFOV, fAspectRatio,
+        fPlaneNear, fPlaneFar,
+        static_cast<TPureUInt>(rectViewport.pos.x),
+        static_cast<TPureUInt>(rectViewport.pos.y),
+        static_cast<TPureUInt>(rectViewport.size.width),
+        static_cast<TPureUInt>(rectViewport.size.height),
+        vecUnprojected);
 }
 
 
@@ -448,6 +507,48 @@ PureColor& PureCamera::getBackgroundColor()
 const PureColor& PureCamera::getBackgroundColor() const
 {
     return pImpl->getBackgroundColor();
+}
+
+
+/**
+    Makes a projection from world-space to window/screen-space.
+    Basically it calls PureProjection::project3dTo2d() will this camera's properties.
+
+    @param fWorldX,
+           fWorldY,
+           fWorldZ      The world-space position coordinates to be projected to window/screen-space.
+    @param vecProjected The projected 2D window/screen space coordinates.
+                        Valid only if the function returned true.
+
+    @return True if projection is successful, false otherwise.
+*/
+bool PureCamera::project3dTo2d(TPureFloat fWorldX, TPureFloat fWorldY, TPureFloat fWorldZ, PureVector& vecProjected) const
+{
+    return pImpl->project3dTo2d(
+        fWorldX, fWorldY, fWorldZ,
+        getPosVec(), getTargetVec(), getUpVec(),
+        vecProjected);
+}
+
+
+/**
+    Makes an unprojection from window/screen-space to world-space.
+    Basically it calls PureProjection::project2dTo3d() will this camera's properties.
+
+    @param nScreenX,
+           nScreenY
+           nScreenDepth   The window/screen-space position coordinates to be unprojected to world-space.
+    @param vecUnprojected The unprojected 3D world-space coordinates.
+                          Valid only if the function returned true.
+
+    @return True if unprojection is successful, false otherwise.
+*/
+bool PureCamera::project2dTo3d(TPureUInt nScreenX, TPureUInt nScreenY, TPureFloat nScreenDepth, PureVector& vecUnprojected) const
+{
+    return pImpl->project2dTo3d(
+        nScreenX, nScreenY, nScreenDepth,
+        getPosVec(), getTargetVec(), getUpVec(),
+        vecUnprojected);
 }
 
 

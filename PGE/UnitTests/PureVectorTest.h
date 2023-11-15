@@ -57,6 +57,8 @@ public:
         AddSubTest("testOperatorMultiplicationByScalar1", (PFNUNITSUBTEST) &PureVectorTest::testOperatorMultiplicationByScalar1);
         AddSubTest("testOperatorMultiplicationByScalar2", (PFNUNITSUBTEST) &PureVectorTest::testOperatorMultiplicationByScalar2);
         AddSubTest("testOperatorMultiplicationAssignmentByScalar", (PFNUNITSUBTEST) &PureVectorTest::testOperatorMultiplicationAssignmentByScalar);
+        AddSubTest("testOperatorDivisionByScalar1", (PFNUNITSUBTEST)&PureVectorTest::testOperatorDivisionByScalar1);
+        AddSubTest("testOperatorDivisionAssignmentByScalar", (PFNUNITSUBTEST)&PureVectorTest::testOperatorDivisionAssignmentByScalar);
         AddSubTest("testOperatorDotProduct1", (PFNUNITSUBTEST) &PureVectorTest::testOperatorDotProduct1);
         AddSubTest("testOperatorDotProduct2", (PFNUNITSUBTEST) &PureVectorTest::testOperatorDotProduct2);
         AddSubTest("testOperatorCrossProduct1", (PFNUNITSUBTEST) &PureVectorTest::testOperatorCrossProduct1);
@@ -491,6 +493,26 @@ private:
         return assertEquals(2, vec.getX(), E, "getX()") &
             assertEquals(4, vec.getY(), E, "getY()") &
             assertEquals(6, vec.getZ(), E, "getZ()");
+    }
+
+    bool testOperatorDivisionByScalar1()
+    {
+        PureVector vec(2, 4, 6);
+        vec = vec / 2;
+
+        return assertEquals(1, vec.getX(), E, "getX()") &
+            assertEquals(2, vec.getY(), E, "getY()") &
+            assertEquals(3, vec.getZ(), E, "getZ()");
+    }
+
+    bool testOperatorDivisionAssignmentByScalar()
+    {
+        PureVector vec(2, 4, 6);
+        vec /= 2;
+
+        return assertEquals(1, vec.getX(), E, "getX()") &
+            assertEquals(2, vec.getY(), E, "getY()") &
+            assertEquals(3, vec.getZ(), E, "getZ()");
     }
 
     bool testOperatorDotProduct1()

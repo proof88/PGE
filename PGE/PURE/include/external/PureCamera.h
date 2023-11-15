@@ -93,6 +93,18 @@ public:
     PureColor& getBackgroundColor();               /**< Gets camera background color. */
     const PureColor& getBackgroundColor() const;   /**< Gets camera background color. */
 
+    bool project3dTo2d(
+        TPureFloat fWorldX,
+        TPureFloat fWorldY,
+        TPureFloat fWorldZ,
+        PureVector& vecProjected) const;           /**< Makes a projection from world-space to window/screen-space. */
+
+    bool project2dTo3d(
+        TPureUInt nScreenX,
+        TPureUInt nScreenY,
+        TPureFloat nScreenDepth,
+        PureVector& vecUnprojected) const;         /**< Makes a projection from window/screen-space to world-space. */
+
 private:
     class PureCameraImpl;
     PureCameraImpl* pImpl;

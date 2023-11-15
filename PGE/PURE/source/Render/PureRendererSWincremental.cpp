@@ -575,6 +575,8 @@ void PureRendererSWincrementalImpl::VertexProcessing(
 
         transfdVertex = mModelTr * transfdVertex;
 
+        // TODO: this code below is copy-pasted to PureProjection::project3dTo2d() so it would be better to call that from here!
+
         /* World -> View/Eye */
         PureTransformMatrix mViewTr;
         mViewTr.SetLookAt(pCamera->getPosVec(), pCamera->getTargetVec(), pCamera->getUpVec());
@@ -627,6 +629,8 @@ void PureRendererSWincrementalImpl::PrimitiveAssembly(
        Then Render Stage checks if all vertices of a triangle is outside: if so, triangle will be dropped there. */
     // TODO: Note that clipping could be also done in 3D-space now, maybe sometime in future I implement it.
     //       It would be nicer because I think responsibility of Primitive Assembly is to output proper triangles for the rasterizer and if needed, insert extra triangles. */
+
+    // TODO: this code below is copy-pasted to PureProjection::project3dTo2d() so it would be better to call that from here!
 
     for (TPureUInt i = 0; i < (nVertexIndices_h / 3); i++)
     {

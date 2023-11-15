@@ -369,6 +369,7 @@
     <ClInclude Include="..\PURE\include\external\Material\PureTextureManager.h" />
     <ClInclude Include="..\PURE\include\external\Math\PureMatrix.h" />
     <ClInclude Include="..\PURE\include\external\Math\PurePosUpTarget.h" />
+    <ClInclude Include="..\PURE\include\external\Math\PureProjection.h" />
     <ClInclude Include="..\PURE\include\external\Math\PureTransformMatrix.h" />
     <ClInclude Include="..\PURE\include\external\Math\PureVector.h" />
     <ClInclude Include="..\PURE\include\external\Object3D\PureMesh3DManager.h" />
@@ -416,6 +417,7 @@
     <ClInclude Include="PureObject3DTest.h" />
     <ClInclude Include="PureOctreeTest.h" />
     <ClInclude Include="PurePosUpTargetTest.h" />
+    <ClInclude Include="PureProjectionTest.h" />
     <ClInclude Include="PureRendererHWfixedPipeTest.h" />
     <ClInclude Include="PureScissorTest.h" />
     <ClInclude Include="PureScreenTest.h" />

@@ -339,6 +339,12 @@
     <ClInclude Include="..\..\..\PFL\PFL\winproof88.h">
       <Filter>Header Files\PFL</Filter>
     </ClInclude>
+    <ClInclude Include="..\PURE\include\external\Math\PureProjection.h">
+      <Filter>Header Files\PGE\PURE\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="PureProjectionTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UnitTests.cpp">

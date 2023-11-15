@@ -621,9 +621,9 @@ TPureBool PureMatrix::invertArray(TPureFloat* arr, TPureByte rows, TPureByte col
     const TPureFloat det32 = arr[ind(0,0)]*det1123 - arr[ind(0,1)]*det1023 + arr[ind(0,3)]*det1021;
     const TPureFloat det33 = arr[ind(0,0)]*det1122 - arr[ind(0,1)]*det1022 + arr[ind(0,2)]*det1021;
 
-    // now we know all minors, we need to build the adjugate matrix and simply divide by det
-    // adjugate matrix is the transposed form of the cofactor matrix
-    // cofactor matrix consists of signed minors
+    // now we know all minors, we need to build the adjugate matrix and simply divide by det;
+    // adjugate matrix is the transposed form of the cofactor matrix;
+    // cofactor matrix consists of signed minors;
     // we build it now right into the original array
 
     arr[ind(0,0)] =  det00 / det;  arr[ind(0,1)] = -det10 / det;  arr[ind(0,2)] =  det20 / det;  arr[ind(0,3)] = -det30 / det;

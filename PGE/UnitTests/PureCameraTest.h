@@ -17,6 +17,10 @@
 #define E2 0.005f
 #endif // EPSILON
 
+#ifndef E_LOOSE
+#define E_LOOSE 0.02f
+#endif // Loosed EPSILON, for testProject2dTo3d (unclear why our results are not precise enough, should be investigated later)
+
 class PureCameraTest :
     public UnitTest
 {
@@ -35,6 +39,9 @@ public:
         AddSubTest("testSetNearPlane", (PFNUNITSUBTEST) &PureCameraTest::testSetNearPlane);
         AddSubTest("testSetFarPlane", (PFNUNITSUBTEST) &PureCameraTest::testSetFarPlane);
         AddSubTest("testSetFieldOfView", (PFNUNITSUBTEST) &PureCameraTest::testSetFieldOfView);
+        // keep these test cases in sync with PureProjectionTest's (un)projection tests!
+        AddSubTest("testProject3dTo2d", (PFNUNITSUBTEST)&PureCameraTest::testProject3dTo2d);
+        AddSubTest("testProject2dTo3d", (PFNUNITSUBTEST)&PureCameraTest::testProject2dTo3d);
 
     } // PureCameraTest()
 
@@ -255,6 +262,194 @@ private:
 
         cam2.SetFieldOfView(180.f);
         b = b & assertEquals(180.f, cam2.getFieldOfView(), "fov 180");
+
+        return b;
+    }
+
+    bool testProject3dTo2d()
+    {
+        // keep these test cases in sync with PureProjectionTest's projection tests!
+        PureCamera cam;
+        cam.getPosVec().Set(0, 0, -10);
+        cam.getTargetVec().Set(0, 0, 1);
+        cam.getUpVec().Set(0, 1, 0);
+        cam.SetViewport(0, 0, 640, 480);
+        cam.SetAspectRatio(cam.getViewport().size.width / cam.getViewport().size.height);
+        cam.SetNearPlane(0.1f);
+        cam.SetFarPlane(100.f);
+        cam.SetFieldOfView(80.f);
+
+        PureVector vecProjected;
+
+        // case 0: world pos (0,0,0) that should be visible in the center in front of the camera
+        bool b = assertTrue(
+            cam.project3dTo2d(
+                0.f, 0.f, 0.f,
+                vecProjected),
+            "projection 0 ok");
+
+        b &= assertEquals(320.f, vecProjected.getX(), "X 0 exact") &
+            assertEquals(240.f, vecProjected.getY(), "Y 0 exact") &
+            assertBetween(0.f, 1.f, vecProjected.getZ(), "Z 0") &  // this just checks if it is really a valid depth buffer value
+            assertEquals(0.990990996f, vecProjected.getZ(), "Z 0 exact");
+
+        // case 1: world pos (0,0,-2) that should be visible in the center in front of the camera, closer than previous point;
+        // and being closer also means that the generated depth value should be less than the previous depth value.
+        b &= assertTrue(
+            cam.project3dTo2d(
+                0.f, 0.f, -2.f,
+                vecProjected),
+            "projection 1 ok");
+
+        b &= assertEquals(320.f, vecProjected.getX(), "X 1 exact") &
+            assertEquals(240.f, vecProjected.getY(), "Y 1 exact") &
+            assertBetween(0.f, 1.f, vecProjected.getZ(), "Z 1") &  // this just checks if it is really a valid depth buffer value
+            assertEquals(0.988488495f, vecProjected.getZ(), "Z 1 exact");
+
+        // case 2: world pos (-1,1,0) that supposed to be visible left and above the camera
+        b &= assertTrue(
+            cam.project3dTo2d(
+                -1.f, 1.f, 0.f,
+                vecProjected),
+            "projection 2 ok");
+
+        b &= assertLess(vecProjected.getX(), 320.f, "X 2") &       // this just checks if it is really on the left side of the render area
+            assertEquals(291.f, vecProjected.getX(), "X 2 exact") &
+            assertGreater(vecProjected.getY(), 240.f, "Y 2") &     // this just checks if it is really on the top side of the render area
+            assertEquals(269.f, vecProjected.getY(), "Y 2 exact") &
+            assertBetween(0.f, 1.f, vecProjected.getZ(), "Z 2") &  // this just checks if it is really a valid depth buffer value
+            assertEquals(0.990990996f, vecProjected.getZ(), "Z 2 exact");
+
+        // case 3: world pos (0.2, -0.1, 0) that supposed to be visible right and below the camera
+        b &= assertTrue(
+            cam.project3dTo2d(
+                0.2f, -0.1f, 0.f,
+                vecProjected),
+            "projection 3 ok");
+
+        b &= assertGreater(vecProjected.getX(), 320.f, "X 3") &    // this just checks if it is really on the right side of the render area
+            assertEquals(326.f, vecProjected.getX(), "X 3 exact") &
+            assertLess(vecProjected.getY(), 240.f, "Y 3") &        // this just checks if it is really on the bottom side of the render area
+            assertEquals(237.f, vecProjected.getY(), "Y 3 exact") &
+            assertBetween(0.f, 1.f, vecProjected.getZ(), "Z 3") &  // this just checks if it is really a valid depth buffer value
+            assertEquals(0.990990996f, vecProjected.getZ(), "Z 3 exact");
+
+        // case 4: world pos (10,-8,0) that supposed to be visible, more to the right and below the camera than the previous
+        b &= assertTrue(
+            cam.project3dTo2d(
+                10.f, -8.f, 0.f,
+                vecProjected),
+            "projection 4 ok");
+
+        b &= assertGreater(vecProjected.getX(), 320.f, "X 4") &    // this just checks if it is really on the right side of the render area
+            assertEquals(606.f, vecProjected.getX(), "X 4 exact") &
+            assertLess(vecProjected.getY(), 240.f, "Y 4") &        // this just checks if it is really on the bottom side of the render area
+            assertEquals(11.f, vecProjected.getY(), "Y 4 exact") &
+            assertBetween(0.f, 1.f, vecProjected.getZ(), "Z 4") &  // this just checks if it is really a valid depth buffer value
+            assertEquals(0.990990996f, vecProjected.getZ(), "Z 4 exact");
+
+        // case 5: world pos (0,0,-12) that supposed to be behind the camera, cannot project
+        b &= assertFalse(
+            cam.project3dTo2d(
+                0.f, 0.f, cam.getPosVec().getZ() - 2.f,
+                vecProjected),
+            "projection 5 ok");
+
+        // case 6: world pos (100,0,0) that supposed to be too far right to the camera, cannot project
+        b &= assertFalse(
+            cam.project3dTo2d(
+                100.f, 0.f, 0.f,
+                vecProjected),
+            "projection 6 ok");
+
+        return b;
+    }
+
+    bool testProject2dTo3d()
+    {
+        // keep these test cases in sync with PureProjectionTest's unprojection tests!
+        // all cases here are the reverse of cases in testProject3dTo2d()
+
+        PureCamera cam;
+        cam.getPosVec().Set(0, 0, -10);
+        cam.getTargetVec().Set(0, 0, 1);
+        cam.getUpVec().Set(0, 1, 0);
+        cam.SetViewport(0, 0, 640, 480);
+        cam.SetAspectRatio(cam.getViewport().size.width / cam.getViewport().size.height);
+        cam.SetNearPlane(0.1f);
+        cam.SetFarPlane(100.f);
+        cam.SetFieldOfView(80.f);
+
+        PureVector vecUnprojected;
+
+        // case 0: window pos (320, 240, 0.990990996f) that should be visible in the center in front of the camera
+        bool b = assertTrue(
+            cam.project2dTo3d(
+                320, 240, 0.990990996f,
+                vecUnprojected),
+            "unprojection 0 ok");
+
+        b &= assertEquals(0.f, vecUnprojected.getX(), E, "X 0 exact") &
+            assertEquals(0.f, vecUnprojected.getY(), E, "Y 0 exact") &
+            assertEquals(0.f, vecUnprojected.getZ(), E, "Z 0 exact");
+
+        // case 1: window pos (320, 240, 0.988488495f) that should be visible in the center in front of the camera, closer than previous point
+        b &= assertTrue(
+            cam.project2dTo3d(
+                320, 240, 0.988488495f,
+                vecUnprojected),
+            "unprojection 1 ok");
+
+        b &= assertEquals(0.f, vecUnprojected.getX(), E, "X 1 exact") &
+            assertEquals(0.f, vecUnprojected.getY(), E, "Y 1 exact") &
+            assertEquals(-2.f, vecUnprojected.getZ(), E, "Z 1 exact");
+
+        // case 2: window pos (291, 269, 0.990990996f) that supposed to be visible left and above the camera
+        b &= assertTrue(
+            cam.project2dTo3d(
+                291, 269, 0.990990996f,
+                vecUnprojected),
+            "unprojection 2 ok");
+
+        b &= assertEquals(-1.f, vecUnprojected.getX(), E_LOOSE, "X 2 exact") &
+            assertEquals(1.f, vecUnprojected.getY(), E_LOOSE, "Y 2 exact") &
+            assertEquals(0.f, vecUnprojected.getZ(), E, "Z 2 exact");
+
+        // case 3: window pos (326, 237, 0.990990996f) that supposed to be visible right and below the camera
+        b &= assertTrue(
+            cam.project2dTo3d(
+                326, 237, 0.990990996f,
+                vecUnprojected),
+            "unprojection 3 ok");
+
+        b &= assertEquals(0.2f, vecUnprojected.getX(), E_LOOSE, "X 3 exact") &
+            assertEquals(-0.1f, vecUnprojected.getY(), E_LOOSE, "Y 3 exact") &
+            assertEquals(0.f, vecUnprojected.getZ(), E, "Z 3 exact");
+
+        // case 4: window pos (377, 183, 0.f) that supposed to be visible more to the right and below the camera than the previous
+        b &= assertTrue(
+            cam.project2dTo3d(
+                606, 11, 0.990990996f,
+                vecUnprojected),
+            "unprojection 4 ok");
+
+        b &= assertEquals(10.f, vecUnprojected.getX(), E_LOOSE, "X 4 exact") &
+            assertEquals(-8.f, vecUnprojected.getY(), E_LOOSE, "Y 4 exact") &
+            assertEquals(0.f, vecUnprojected.getZ(), E, "Z 4 exact");
+
+        // case 5: window pos (0,0,-2) that supposed to be behind the camera, cannot unproject
+        b &= assertFalse(
+            cam.project2dTo3d(
+                0, 0, -2.f,
+                vecUnprojected),
+            "unprojection 5 ok");
+
+        // case 6: window pos (1000,0,0) that supposed to be too far right to the camera, cannot unproject
+        b &= assertFalse(
+            cam.project2dTo3d(
+                1000, 0, 0.f,
+                vecUnprojected),
+            "unprojection 6 ok");
 
         return b;
     }

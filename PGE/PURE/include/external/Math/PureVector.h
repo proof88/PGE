@@ -42,6 +42,7 @@ public:
     TPureFloat getX() const;            /**< Gets the X-coordinate. */
     TPureFloat getY() const;            /**< Gets the Y-coordinate. */
     TPureFloat getZ() const;            /**< Gets the Z-coordinate. */
+    TPureFloat getW() const;            /**< Gets the W-coordinate. */
     const TPURE_XYZW& getXYZW() const;  /**< Gets all the coordinates. */
     TPureFloat get(TPureByte index) const;    /**< Gets the value at the given index. */
     void       SetX(TPureFloat x);            /**< Sets the X-coordinate. */
@@ -67,6 +68,8 @@ public:
     PureVector& operator-=(const PureVector& vec);               /**< Subtraction assignment operator. */
     PureVector  operator* (const TPureFloat& scalar) const;      /**< Multiplication by scalar operator. */
     PureVector& operator*=(const TPureFloat& scalar);            /**< Multiplication assignment operator. */
+    PureVector  operator/ (const TPureFloat& scalar) const;      /**< Division by scalar operator. */
+    PureVector& operator/=(const TPureFloat& scalar);            /**< Division assignment operator. */
     TPureFloat  operator* (const PureVector& vec) const;         /**< Dot product operator. */
     PureVector  operator^ (const PureVector& vec) const;         /**< Cross product operator. */
     PureVector& operator^=(const PureVector& vec);               /**< Cross product assignment operator. */

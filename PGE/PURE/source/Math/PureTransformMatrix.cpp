@@ -235,6 +235,9 @@ void PureTransformMatrix::SetMirrorYZ()
 */
 void PureTransformMatrix::SetFrustum(float left, float right, float bottom, float top, float n, float f)
 {
+    /* to understand this implementation, you can check my matrix calculations done on paper here:
+       https://proof88.github.io/pure-doc/architecture.html */
+
     if ( (n <= 0.0f) || (n >= f) )
         return;
 
@@ -265,7 +268,8 @@ void PureTransformMatrix::SetFrustum(float left, float right, float bottom, floa
     Sets the matrix to represent a viewing frustum in world coordinate system.
     It can be used to produce perspective projection, typically from eye space to clip space.
 
-    Depth buffer precision is affected by the values specified for zNear and zFar. The greater the ratio of zFar to zNear is, the less effective the depth buffer will be at distinguishing between surfaces that are near each other.
+    Depth buffer precision is affected by the values specified for zNear and zFar.
+    The greater the ratio of zFar to zNear is, the less effective the depth buffer will be at distinguishing between surfaces that are near each other.
 
     @param fovx   The field of vew angle in X direction. Must be greater than 0.
     @param aspect Specifies the aspect ratio that determines the field of view in the X direction. Typically the aspect ratio is the ratio of viewport width to viewport height. Must be greater than 0.
@@ -274,6 +278,9 @@ void PureTransformMatrix::SetFrustum(float left, float right, float bottom, floa
 */
 void PureTransformMatrix::SetFrustumByFovX(float fovx, float aspect, float zNear, float zFar)
 {
+    /* to understand this implementation, you can check my matrix calculations done on paper here:
+       https://proof88.github.io/pure-doc/architecture.html */
+
     if ( (fovx <= 0.0f) || (aspect <= 0.0f) || (zNear <= 0.0f) || (zNear >= zFar) )
         return;
 
@@ -302,6 +309,9 @@ void PureTransformMatrix::SetFrustumByFovX(float fovx, float aspect, float zNear
 */
 void PureTransformMatrix::SetFrustumByFovY(float fovy, float aspect, float zNear, float zFar)
 {
+    /* to understand this implementation, you can check my matrix calculations done on paper here:
+       https://proof88.github.io/pure-doc/architecture.html */
+
     if ( (fovy <= 0.0f) || (aspect <= 0.0f) || (zNear <= 0.0f) || (zNear >= zFar) )
         return;
 
@@ -325,7 +335,8 @@ void PureTransformMatrix::SetFrustumByFovY(float fovy, float aspect, float zNear
     @param vTarget Where we are looking at.
     @param vUp     An Up vector representing positive direction on Y-angle, usually the camera's Up vector.
 */
-void PureTransformMatrix::SetLookAt(const PureVector& vPos,
+void PureTransformMatrix::SetLookAt(
+    const PureVector& vPos,
     const PureVector& vTarget,
     const PureVector& vUp)
 {

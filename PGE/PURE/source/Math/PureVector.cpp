@@ -1,3 +1,5 @@
+#include "PureVector.h"
+#include "PureVector.h"
 /*
     ###################################################################################
     PureVector.cpp
@@ -84,6 +86,17 @@ TPureFloat PureVector::getY() const
 TPureFloat PureVector::getZ() const
 {
     return pos.z;
+} // getZ()
+
+
+/**
+    Gets the W-coordinate.
+
+    @return W-coordinate of the vector.
+*/
+TPureFloat PureVector::getW() const
+{
+    return pos.w;
 } // getZ()
 
 
@@ -372,7 +385,7 @@ PureVector PureVector::operator*(const TPureFloat& scalar) const
 
 
 /**
-    Multiplication assignmennt operator.
+    Multiplication assignment operator.
 */
 PureVector& PureVector::operator*=(const TPureFloat& scalar)
 {
@@ -381,6 +394,28 @@ PureVector& PureVector::operator*=(const TPureFloat& scalar)
     pos.z *= scalar;
     return *this;
 } // operator*=()
+
+
+/**
+    Division by scalar operator.
+*/
+PureVector PureVector::operator/(const TPureFloat& scalar) const
+{
+    const PureVector newvec(pos.x / scalar, pos.y / scalar, pos.z / scalar);
+    return newvec;
+}
+
+
+/**
+    Division assignment operator.
+*/
+PureVector& PureVector::operator/=(const TPureFloat& scalar)
+{
+    pos.x /= scalar;
+    pos.y /= scalar;
+    pos.z /= scalar;
+    return *this;
+}
 
 
 /**
