@@ -152,6 +152,9 @@ bool PgeGnsWrapper::pollIncomingMessages()
 
     if (numGnsMsgs < 0)
     {
+        // This case falling here would be normal when GNS instance is not connected, actually sometimes
+        // we do disconnect on purpose in different cases other than exiting the application.
+        // However, we still log this as error and expect the caller NOT invoke us when they know we are not connected.
         CConsole::getConsoleInstance("PgeGnsWrapper").EOLn("%s: Error checking for messages!", __func__);
         return false;
     }

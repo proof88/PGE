@@ -45,26 +45,33 @@ bool PgeGnsClient::destroy()
 {
     if (!isInitialized())
     {
-        CConsole::getConsoleInstance("PgeGnsClient").OLn("%s() Already disconnected.", __func__);
+        CConsole::getConsoleInstance("PgeGnsClient").OLn("%s() Already destroyed.", __func__);
         return true;
     }
-    logDetailedConnectionStatus(m_hConnection);
+    if (isConnected())
+    {
+        logDetailedConnectionStatus(m_hConnection);
+    }
     
     return disconnectClient() && PgeGnsWrapper::destroy();
 } // destroy()
 
-bool PgeGnsClient::isInitialized() const
-{
-    return m_hConnection != k_HSteamNetConnection_Invalid;
-} // isInitialized()
-
 bool PgeGnsClient::connectToServer(const std::string& sServerAddress)
 {
-    if (isInitialized())
+    if (isConnected())
     {
         CConsole::getConsoleInstance("PgeGnsClient").EOLn("%s ERROR: already connected to %s!", __func__, m_szAddr);
         return false;
     }
+
+    if (!isInitialized())
+    {
+        CConsole::getConsoleInstance("PgeGnsClient").EOLn("%s() ERROR: not initialized!", __func__);
+        return true;
+    }
+
+    // currently there is no separate initialization logic here, only connecting to server, however
+    // we still have a logical separation of isInitialized() and isConnected()
 
     m_addrServer.Clear();
     if (!m_addrServer.ParseString(sServerAddress.c_str()))
@@ -105,13 +112,25 @@ bool PgeGnsClient::connectToServer(const std::string& sServerAddress)
 
 bool PgeGnsClient::disconnectClient()
 {
-    if (!isInitialized())
+    if (!isConnected())
     {
         CConsole::getConsoleInstance("PgeGnsClient").OLn("%s not connected.", __func__);
         return true;
     }
 
-    m_pInterface->CloseConnection(m_hConnection, k_ESteamNetConnectionEnd_App_Generic, "PgeGnsServer Client Graceful shutdown", true);
+    // here we create a client disconnect pkt that will be injected to our queue so app level can process it
+    // for the server itself, as it was a real client disconnecting
+    pge_network::PgePacket pkt;
+    pge_network::PgePacket::initPktPgeMsgUserDisconnected(
+        pkt,
+        static_cast<pge_network::PgeNetworkConnectionHandle>(k_HSteamNetConnection_Invalid));
+    // we push this packet to our pkt queue, this is how we "send" message to ourselves so client game loop can process it
+    m_queuePackets.push_back(pkt);
+
+    // we cannot inject similar pkt about ourselves because we dont have our server-side connection handle (that would be stored in
+    // m_hConnectionServerSide - somehow I never implemented it)
+
+    m_pInterface->CloseConnection(m_hConnection, k_ESteamNetConnectionEnd_App_Generic, "PgeGnsServer Client Graceful disconnectClient()", true);
     m_hConnection = k_HSteamNetConnection_Invalid;
     m_hConnectionServerSide = k_HSteamNetConnection_Invalid;
     m_addrServer.Clear();
@@ -120,6 +139,11 @@ bool PgeGnsClient::disconnectClient()
 
     return true;
 }
+
+bool PgeGnsClient::isConnected() const
+{
+    return m_hConnection != k_HSteamNetConnection_Invalid;
+} // isConnected()
 
 const HSteamNetConnection& PgeGnsClient::getConnectionHandle() const
 {
@@ -138,7 +162,7 @@ const char* PgeGnsClient::getServerAddress() const
 
 void PgeGnsClient::sendToServer(const pge_network::PgePacket& pkt)
 {
-    if (!isInitialized())
+    if (!isConnected())
     {
         CConsole::getConsoleInstance("PgeGnsClient").EOLn("%s not connected!", __func__);
         return;
@@ -192,7 +216,7 @@ void PgeGnsClient::sendToServer(const pge_network::PgePacket& pkt)
 
 const SteamNetConnectionRealTimeStatus_t& PgeGnsClient::getRealTimeStatus(bool bForceUpdate)
 {
-    if (!isInitialized())
+    if (!isConnected())
     {
         CConsole::getConsoleInstance("PgeGnsClient").EOLn("%s not connected!", __func__);
         assert(false);
@@ -209,7 +233,7 @@ const SteamNetConnectionRealTimeStatus_t& PgeGnsClient::getRealTimeStatus(bool b
 
 std::string PgeGnsClient::getDetailedConnectionStatus() const
 {
-    if (!isInitialized())
+    if (!isConnected())
     {
         CConsole::getConsoleInstance("PgeGnsClient").EOLn("%s not connected!", __func__);
         assert(false);

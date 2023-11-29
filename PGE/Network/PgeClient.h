@@ -47,12 +47,12 @@ namespace pge_network
 
         CConsole& getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
-        /* all abstract functions from PgeIServerClient are overrid by hidden implementation */
+        /* all abstract functions from PgeIServerClient are overridden by hidden implementation */
 
         /**
         * Opens a connection to a server instance.
-        * If the function is successful, any call to the derived isInitialized() is expected to return true.
-        * Note: you can disconnect from server by invoking the derived shutdown() which is implemented already in hidden class.
+        * If the function is successful, any call to the derived isInitialized() and isConnected() is expected to return true.
+        * Note: you can disconnect from server by invoking the derived disconnect() or shutdown() which are implemented already in hidden class.
         *
         * @return True on success, false otherwise or when it is already connected to server.
         */

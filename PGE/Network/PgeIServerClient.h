@@ -41,6 +41,23 @@ namespace pge_network
         virtual bool shutdown() = 0;                     /**< This stops the network instance. */
         virtual bool isInitialized() const = 0;          /**< Gets the state of the network instance. */
 
+        /**
+            Terminates the active connection of the network instance.
+
+            In case of server instance, this terminates the active connections of the server instance and stops listening.
+            It also sends as many MsgUserDisconnectedFromServer to all clients as the number of clients, so all clients
+            will be notified about all other clients disconnecting.
+            A MsgUserDisconnectedFromServer will be injected into the message queue with the server's connection handle, so at
+            application level the handleUserDisconnected() is expected to be invoked with connHandleServerSide = pge_network::ServerConnHandle.
+
+            In case of client instance, this disconnects the client from the server.
+            If client was connected at time of calling this function, a MsgUserDisconnectedFromServer will be injected into the message queue
+            with the server's connection handle, so at application level the handleUserDisconnected() is expected to be invoked with
+            connHandleServerSide = pge_network::ServerConnHandle, for which the client is expected to remove all other players as well since
+            they are/were also connecting to the same server and not available anymore from this client's perspective.
+        */
+        virtual void disconnect() = 0;
+
         virtual void Update() = 0;
 
         virtual bool pollIncomingMessages() = 0;

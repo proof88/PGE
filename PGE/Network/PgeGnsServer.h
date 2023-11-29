@@ -49,18 +49,13 @@ public:
     */
     virtual bool destroy() override;
 
-    /**
-    * Gets the state of initialization of the PgeGnsServer instance i.e. if listening to incoming client connections.
-    *
-    * @return True if initialized, false otherwise.
-    */
-    virtual bool isInitialized() const override;
-
     /* implement stuff from PgeGnsWrapper end */
 
     /**
-    * Basically the initialization function for PgeGnsServer.
-    * Initializes GameNetworkingSockets server listening.
+    * Starts GameNetworkingSockets server listening to incoming GameNetworkingSockets client connections.
+    * First you need to initialize GameNetworkingSockets subsystem by calling PgeGnsWrapper::init(), and only after that
+    * you can try start listening.
+    * After a successful call, isListening() is expected to return true.
     *
     * @return True on success, false on failure.
     */
@@ -69,10 +64,19 @@ public:
     /**
     * Destroys all connections to clients and stops listening.
     * On success, startListening() can be invoked again.
+    * After a successful call, isListening() is expected to return false, but PgeGnsWrapper::isInitialized() state stays unchanged.
     *
     * @return Always true, even if listening was not even initiated before calling this function.
     */
     bool stopListening();
+
+    /**
+    * Gets if we are listening to incoming client connections.
+    * Basically it always returns true after a successful call to startListening(), and returns false after a call to stopListening().
+    *
+    * @return True if listening, false otherwise.
+    */
+    bool isListening() const;
 
     void sendToClient(const HSteamNetConnection& conn, const pge_network::PgePacket& pkt);
     void sendToAllClientsExcept(const pge_network::PgePacket& pkt, const HSteamNetConnection& except = k_HSteamNetConnection_Invalid);

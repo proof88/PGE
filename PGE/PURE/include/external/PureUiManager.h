@@ -86,6 +86,11 @@ public:
     virtual void RemoveText(const std::string& text, int x, int y, int height) = 0;
 
     /**
+        Deletes all permanent texts from the UI.
+    */
+    virtual void RemoveAllPermanentTexts() = 0;
+
+    /**
         Adds temporary text to the UI.
         Temporary texts live until the next rendered frame. This means that in order to display the same temporary text for
         more than 1 frame, you have to issue this command before rendering every single frame. Although there isn't much

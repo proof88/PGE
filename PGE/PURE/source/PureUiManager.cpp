@@ -66,6 +66,7 @@ public:
     PureUiText* addText(const std::string& txt, int x, int y);
 
     void RemoveText(const std::string& text, int x, int y, int height);
+    void RemoveAllPermanentTexts();
 
     PureUiText* text(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout);
     PureUiText* text(const std::string& txt, int x, int y);
@@ -288,6 +289,20 @@ void PureuiManagerImpl::RemoveText(const std::string& text, int x, int y, int he
     const unsigned long hashToFind = PureUiText::getHash(text, x, y, height);
     mTexts.erase(hashToFind);  // should return 1 on successful deletion, we should check that
     // we should also unittest what happens when trying to delete unexisting key ... erase() should return 0.
+}
+
+/**
+    Deletes all permanent texts from the UI.
+*/
+void PureuiManagerImpl::RemoveAllPermanentTexts()
+{
+    for (auto it = mTexts.begin(); it != mTexts.end(); )
+    {
+        if (it->second.getPermanent())
+            it = mTexts.erase(it);
+        else
+            ++it;
+    }
 }
 
 /**

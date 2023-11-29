@@ -29,6 +29,7 @@ public:
     bool initialize() override;
     bool shutdown() override;
     bool isInitialized() const override;
+    void disconnect() override;
 
     void Update() override;
 
@@ -163,15 +164,30 @@ bool PgeServerImpl::isInitialized() const
     return m_gsnServer.isInitialized();
 } // isInitialized()
 
+/**
+    Terminates the active connections of the server instance and stops listening.
+*/
+void PgeServerImpl::disconnect()
+{
+    m_gsnServer.stopListening();
+}
+
 void PgeServerImpl::Update()
 {
-    m_gsnServer.pollIncomingMessages();
+    if (m_gsnServer.isListening())
+    {
+        m_gsnServer.pollIncomingMessages();
+    }
     m_gsnServer.pollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
 }
 
 bool PgeServerImpl::pollIncomingMessages()
 {
-    return m_gsnServer.pollIncomingMessages();
+    if (m_gsnServer.isListening())
+    {
+        return m_gsnServer.pollIncomingMessages();
+    }
+    return false;
 }
 
 void PgeServerImpl::pollConnectionStateChanges()

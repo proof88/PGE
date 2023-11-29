@@ -51,8 +51,8 @@ namespace pge_network
 
         /**
         * Starts listening to incoming client connections.
-        * If the function is successful, any call to the derived isInitialized() is expected to return true.
-        * Note: you can stop listening by invoking the derived shutdown() which is implemented already in hidden class.
+        * If the function is successful, any call to the derived isListening() is expected to return true.
+        * Note: you can stop listening by invoking the derived disconnect() or shutdown() which are implemented already in hidden class.
         * 
         * @return True on success, false otherwise or when it is already listening.
         */

@@ -43,20 +43,27 @@ PgeGnsServer::~PgeGnsServer()
 
 bool PgeGnsServer::destroy()
 {
+    if (!isInitialized())
+    {
+        CConsole::getConsoleInstance("PgeGnsServer").OLn("%s() Already destroyed.", __func__);
+        return true;
+    }
+
     return stopListening() && PgeGnsWrapper::destroy();
 } // destroy()
 
-bool PgeGnsServer::isInitialized() const
-{
-    return m_hListenSock != k_HSteamListenSocket_Invalid;
-} // isInitialized()
-
 bool PgeGnsServer::startListening()
 {
-    if (isInitialized())
+    if (isListening())
     {
         CConsole::getConsoleInstance("PgeGnsServer").OLn("%s() ERROR: Server is already listening on port %d", __func__, m_nPort);
         return false;
+    }
+
+    if (!isInitialized())
+    {
+        CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s() ERROR: not initialized!", __func__);
+        return true;
     }
 
     SteamNetworkingIPAddr serverLocalAddr;
@@ -107,7 +114,7 @@ bool PgeGnsServer::startListening()
 
 bool PgeGnsServer::stopListening()
 {
-    if (!isInitialized())
+    if (!isListening())
     {
         CConsole::getConsoleInstance("PgeGnsServer").OLn("%s() Server was not listening, no need to stop.", __func__);
         return true;
@@ -115,9 +122,9 @@ bool PgeGnsServer::stopListening()
 
     // Close all the connections
     CConsole::getConsoleInstance("PgeGnsServer").OLn("Server closing connections for %u client(s) ...", m_mapClients.size());
-    for (const auto& it : m_mapClients)
+    for (const auto& itClient : m_mapClients)
     {
-        const HSteamNetConnection& hClientConnection = it.first;
+        const HSteamNetConnection& hClientConnection = itClient.first;
         if (hClientConnection == k_HSteamNetConnection_Invalid) {
             // this is us
             continue;
@@ -125,17 +132,19 @@ bool PgeGnsServer::stopListening()
 
         logDetailedConnectionStatus(hClientConnection);
 
-        // Send them one more goodbye message.  Note that we also have the
-        // connection close reason as a place to send final data.  However,
-        // that's usually best left for more diagnostic/debug text not actual
-        // protocol strings.
-        //SendStringToClient(hClientConnection, "Server is shutting down.  Goodbye.");
+        // inform all clients about disconnecting this client;
+        // basically this way all clients will know about all clients got disconnected.
+        // TODO: this should be done above I think before continuing for k_HSteamNetConnection_Invalid ...
+        pge_network::PgePacket pkt;
+        pge_network::PgePacket::initPktPgeMsgUserDisconnected(
+            pkt,
+            static_cast<pge_network::PgeNetworkConnectionHandle>(hClientConnection));
+        sendToAllClientsExcept(pkt, hClientConnection);
 
         // Close the connection.  We use "linger mode" to ask SteamNetworkingSockets
-        // to flush this out and close gracefully.
-        m_pInterface->CloseConnection(hClientConnection, k_ESteamNetConnectionEnd_App_Generic, "PgeGnsServer Server Graceful shutdown", true);
+        // to flush this out (pending reliable message are actually sent) and close gracefully.
+        m_pInterface->CloseConnection(hClientConnection, k_ESteamNetConnectionEnd_App_Generic, "PgeGnsServer Server Graceful stopListening()", true);
     }
-    m_mapClients.clear();
 
     if (m_hListenSock != k_HSteamListenSocket_Invalid)
     {
@@ -149,7 +158,22 @@ bool PgeGnsServer::stopListening()
         m_hPollGroup = k_HSteamNetPollGroup_Invalid;
     }
 
+    // here we create a client disconnect pkt that will be injected to our queue so app level can process it
+    // for the server itself, as it was a real client disconnecting
+    pge_network::PgePacket pkt;
+    pge_network::PgePacket::initPktPgeMsgUserDisconnected(
+        pkt,
+        static_cast<pge_network::PgeNetworkConnectionHandle>(k_HSteamNetConnection_Invalid));
+    
+    // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
+    m_queuePackets.push_back(pkt);
+
     return true;
+}
+
+bool PgeGnsServer::isListening() const
+{
+    return m_hListenSock != k_HSteamListenSocket_Invalid;
 }
 
 void PgeGnsServer::sendToClient(const HSteamNetConnection& conn, const pge_network::PgePacket& pkt)

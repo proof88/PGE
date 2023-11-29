@@ -29,6 +29,7 @@ public:
     bool initialize() override;
     bool shutdown() override;
     bool isInitialized() const override;
+    void disconnect() override;
 
     bool isServer() const override;
     void Update() override;
@@ -131,6 +132,21 @@ bool PgeNetworkImpl::isInitialized() const
 {
     return m_pServerClient != nullptr;
 } // isInitialized()
+
+
+/**
+    Disconnects the initialized networking subsystem.
+    After a disconnect(), the initialized networking subsystem can be connected again:
+     - in case of server: getServer()->startListening();
+     - in case of client: getClient()->connectToServer() .
+*/
+void PgeNetworkImpl::disconnect()
+{
+    if (m_pServerClient)
+    {
+        m_pServerClient->disconnect();
+    }
+}
 
 /**
 *   Returns whether the initialized network subsystem should be the server instance.

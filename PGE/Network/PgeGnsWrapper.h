@@ -62,7 +62,6 @@ public:
 
     /**
     * Initializes the GameNetworkingSockets library.
-    * To be used by initialization of derived classes.
     *
     * @return True if initialization successful, false if initialization is unsuccessful or if it is already initialized.
     */
@@ -70,7 +69,7 @@ public:
 
     /**
     * Uninitializes the GameNetworkingSockets library.
-    * Should be extended by derived classes.
+    * Should be extended by derived classes by closing their connections, before them invoking this.
     * 
     * @return True if uninitialization is successful or not initialized, false otherwise.
     */
@@ -78,11 +77,11 @@ public:
 
     /**
     * Gets the state of initialization of the GameNetworkingSockets library.
-    * Should be extended by derived classes.
+    * This is not the state of any active connection, for that check available functions in the derived classes.
     *
     * @return True if initialized, false otherwise.
     */
-    virtual bool isInitialized() const;
+    bool isInitialized() const;
     
     /**
     * Moves incoming SteamNetworkingMessages from GameNetworkingSockets layer to m_queuePackets as PgePackets.

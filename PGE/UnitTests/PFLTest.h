@@ -443,6 +443,36 @@ private:
         }
         b &= assertEquals(1, i, "with speed 1.f iteration count should be 1!");
 
+        fCurrent = fStart;
+        i = 0;
+        while (fCurrent != fTarget)
+        {
+            ++i;
+            fCurrent = PFL::smooth(fCurrent, fTarget, 0.5f);
+            if (i > 40)
+            {
+                b &= assertFalse(true,
+                    (std::string("iteration limit reached 3, fCurrent: ") + std::to_string(fCurrent) + ", fTarget: " + std::to_string(fTarget)).c_str());
+                break;  // avoid infinite loop
+            }
+        }
+        b &= assertEquals(1, i, "with speed lower than 1.f iteration count should be 1!");
+
+        fCurrent = fStart;
+        i = 0;
+        while (fCurrent != fTarget)
+        {
+            ++i;
+            fCurrent = PFL::smooth(fCurrent, fTarget, -2.f);
+            if (i > 40)
+            {
+                b &= assertFalse(true,
+                    (std::string("iteration limit reached 3, fCurrent: ") + std::to_string(fCurrent) + ", fTarget: " + std::to_string(fTarget)).c_str());
+                break;  // avoid infinite loop
+            }
+        }
+        b &= assertEquals(1, i, "with speed lower than 1.f iteration count should be 1!");
+
         return b;
     }
 

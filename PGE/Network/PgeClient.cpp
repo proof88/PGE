@@ -29,6 +29,7 @@ public:
     bool initialize() override;
     bool shutdown() override;
     bool isInitialized() const override;
+    void disconnect() override;
 
     void Update() override;
 
@@ -142,15 +143,30 @@ bool PgeClientImpl::isInitialized() const
     return m_gsnClient.isInitialized();
 } // isInitialized()
 
+/**
+    Terminates the active connection of the client instance.
+*/
+void PgeClientImpl::disconnect()
+{
+    m_gsnClient.disconnectClient();
+}
+
 void PgeClientImpl::Update()
 {
-    m_gsnClient.pollIncomingMessages();
+    if (m_gsnClient.isConnected())
+    {
+        m_gsnClient.pollIncomingMessages();
+    }
     m_gsnClient.pollConnectionStateChanges();  // this may also add packet(s) to m_gsnClient.queuePackets
 }
 
 bool PgeClientImpl::pollIncomingMessages()
 {
-    return m_gsnClient.pollIncomingMessages();
+    if (m_gsnClient.isConnected())
+    {
+        return m_gsnClient.pollIncomingMessages();
+    }
+    return false;
 }
 
 void PgeClientImpl::pollConnectionStateChanges()

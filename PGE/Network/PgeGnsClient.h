@@ -44,35 +44,50 @@ public:
 
     /**
     * Calls disconnectClient() and PgeGnsWrapper::destroy().
+    * Normally this should be called only once: exiting the application.
+    * You don't need to call this just for disconnecting the client, for that use disconnectClient().
+    * 
+    * After a call to destroy(), and before you can connect to a server again, you need to reinitialize the GameNetworkingSockets subsystem
+    * by calling PgeGnsWrapper::init().
     *
     * @return True if uninitialization is successful or not initialized, false otherwise.
     */
     virtual bool destroy() override;
 
-    /**
-    * Gets the state of initialization of the PgeGnsClient instance i.e. if connected to a GameNetworkingSockets server instance.
-    *
-    * @return True if initialized, false otherwise.
-    */
-    virtual bool isInitialized() const override;
-
     /* implement stuff from PgeGnsWrapper end */
 
     /**
-    * Basically the initialization function for PgeGnsClient.
-    * Initializes GameNetworkingSockets client connection to a GameNetworkingSockets server instance.
+    * Sets up GameNetworkingSockets client connection to a GameNetworkingSockets server instance.
+    * First you need to initialize GameNetworkingSockets subsystem by calling PgeGnsWrapper::init(), and only after that
+    * you can try establishing connection to a server instance.
+    * After a successful call, isConnected() is expected to return true.
     *
     * @return True on success, false on failure.
     */
     bool connectToServer(const std::string& sServerAddress); /* temporal, now I dont have better idea in this time */
 
     /**
-    * Destroys client connection.
-    * On success, connectToServer() can be invoked again.
+    * Disconnects the client from the server.
+    * 
+    * If client was connected at time of calling this function, a MsgUserDisconnectedFromServer will be injected into the message queue
+    * with the server's connection handle, so at application level the handleUserDisconnected() is expected to be invoked with
+    * connHandleServerSide = pge_network::ServerConnHandle, for which the client is expected to remove all other players as well since
+    * they are/were also connecting to the same server.
+    * 
+    * After a successful call, isConnected() is expected to return false, but PgeGnsWrapper::isInitialized() state stays unchanged, so
+    * connectToServer() can be invoked again.
     *
     * @return Always true, even if client was not connected before calling this function.
     */
     bool disconnectClient();
+
+    /**
+    * Gets if we are logically connected to a server.
+    * Basically it always returns true after a successful call to connectToServer(), and returns false after a call to disconnectClient().
+    *
+    * @return True if connected, false otherwise.
+    */
+    bool isConnected() const;
 
     const HSteamNetConnection& getConnectionHandle() const;
     const HSteamNetConnection& getConnectionHandleServerSide() const;
