@@ -51,7 +51,7 @@ namespace pge_network
         virtual bool initialize() = 0;                   /**< Initialize the networking subsystem. */
         virtual bool shutdown() = 0;                     /**< Stops the networking subsystem. */
         virtual bool isInitialized() const = 0;          /**< Gets the state of the networking subsystem. */
-        virtual void disconnect() = 0;                   /**< Disconnects the initialized networking subsystem. */
+        virtual void disconnect(const std::string& sExtraDebugText) = 0;  /**< Disconnects the initialized networking subsystem. */
 
         virtual bool isServer() const = 0;               /**< Returns whether the initialized network subsystem should be the server instance. */
         virtual void Update() = 0;                       /**< Handles connection state changes and forwards messages to the application. */

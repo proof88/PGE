@@ -29,7 +29,7 @@ public:
     bool initialize() override;
     bool shutdown() override;
     bool isInitialized() const override;
-    void disconnect() override;
+    void disconnect(const std::string& sExtraDebugText = "") override;
 
     bool isServer() const override;
     void Update() override;
@@ -139,12 +139,14 @@ bool PgeNetworkImpl::isInitialized() const
     After a disconnect(), the initialized networking subsystem can be connected again:
      - in case of server: getServer()->startListening();
      - in case of client: getClient()->connectToServer() .
+
+    @param sExtraDebugText An optional text that will be sent to the other side and will be logged to help debugging.
 */
-void PgeNetworkImpl::disconnect()
+void PgeNetworkImpl::disconnect(const std::string& sExtraDebugText)
 {
     if (m_pServerClient)
     {
-        m_pServerClient->disconnect();
+        m_pServerClient->disconnect(sExtraDebugText);
     }
 }
 

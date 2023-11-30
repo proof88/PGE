@@ -29,7 +29,7 @@ public:
     bool initialize() override;
     bool shutdown() override;
     bool isInitialized() const override;
-    void disconnect() override;
+    void disconnect(const std::string& sExtraDebugText = "") override;
 
     void Update() override;
 
@@ -166,10 +166,12 @@ bool PgeServerImpl::isInitialized() const
 
 /**
     Terminates the active connections of the server instance and stops listening.
+
+    @param sExtraDebugText An optional text that will be sent to the other side and will be logged to help debugging.
 */
-void PgeServerImpl::disconnect()
+void PgeServerImpl::disconnect(const std::string& sExtraDebugText)
 {
-    m_gsnServer.stopListening();
+    m_gsnServer.stopListening(sExtraDebugText);
 }
 
 void PgeServerImpl::Update()

@@ -55,8 +55,10 @@ namespace pge_network
             with the server's connection handle, so at application level the handleUserDisconnected() is expected to be invoked with
             connHandleServerSide = pge_network::ServerConnHandle, for which the client is expected to remove all other players as well since
             they are/were also connecting to the same server and not available anymore from this client's perspective.
+
+            @param sExtraDebugText An optional text that will be sent to the other side and will be logged to help debugging.
         */
-        virtual void disconnect() = 0;
+        virtual void disconnect(const std::string& sExtraDebugText = "") = 0;
 
         virtual void Update() = 0;
 

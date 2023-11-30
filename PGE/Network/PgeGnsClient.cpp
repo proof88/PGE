@@ -110,13 +110,22 @@ bool PgeGnsClient::connectToServer(const std::string& sServerAddress)
     return true;
 }
 
-bool PgeGnsClient::disconnectClient()
+bool PgeGnsClient::disconnectClient(const std::string& sExtraDebugText)
 {
     if (!isConnected())
     {
         CConsole::getConsoleInstance("PgeGnsClient").OLn("%s not connected.", __func__);
         return true;
     }
+
+    const std::string sExtraDebugTextToSend =
+        sExtraDebugText.empty() ?
+        "PgeGnsClient Client Graceful disconnectClient()" :
+        "PgeGnsClient Client Graceful disconnectClient(), reason: " + sExtraDebugText;
+
+    CConsole::getConsoleInstance("PgeGnsClient").OLn(
+        "Client closing connection ... Reason: %s",
+        sExtraDebugText.empty() ? "" : sExtraDebugText.c_str());
 
     // here we create a client disconnect pkt that will be injected to our queue so app level can process it
     // for the server itself, as it was a real client disconnecting
@@ -130,7 +139,7 @@ bool PgeGnsClient::disconnectClient()
     // we cannot inject similar pkt about ourselves because we dont have our server-side connection handle (that would be stored in
     // m_hConnectionServerSide - somehow I never implemented it)
 
-    m_pInterface->CloseConnection(m_hConnection, k_ESteamNetConnectionEnd_App_Generic, "PgeGnsServer Client Graceful disconnectClient()", true);
+    m_pInterface->CloseConnection(m_hConnection, k_ESteamNetConnectionEnd_App_Generic, sExtraDebugTextToSend.c_str(), true);
     m_hConnection = k_HSteamNetConnection_Invalid;
     m_hConnectionServerSide = k_HSteamNetConnection_Invalid;
     m_addrServer.Clear();

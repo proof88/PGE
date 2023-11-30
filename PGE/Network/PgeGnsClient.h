@@ -76,10 +76,12 @@ public:
     * 
     * After a successful call, isConnected() is expected to return false, but PgeGnsWrapper::isInitialized() state stays unchanged, so
     * connectToServer() can be invoked again.
+    * 
+    * @param sExtraDebugText An optional text that will be sent to the other side and will be logged to help debugging.
     *
     * @return Always true, even if client was not connected before calling this function.
     */
-    bool disconnectClient();
+    bool disconnectClient(const std::string& sExtraDebugText = "");
 
     /**
     * Gets if we are logically connected to a server.

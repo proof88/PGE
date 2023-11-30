@@ -65,10 +65,12 @@ public:
     * Destroys all connections to clients and stops listening.
     * On success, startListening() can be invoked again.
     * After a successful call, isListening() is expected to return false, but PgeGnsWrapper::isInitialized() state stays unchanged.
+    * 
+    * @param sExtraDebugText An optional text that will be sent to the other side and will be logged to help debugging.
     *
     * @return Always true, even if listening was not even initiated before calling this function.
     */
-    bool stopListening();
+    bool stopListening(const std::string& sExtraDebugText = "");
 
     /**
     * Gets if we are listening to incoming client connections.

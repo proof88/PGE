@@ -112,7 +112,7 @@ bool PgeGnsServer::startListening()
     return true;
 }
 
-bool PgeGnsServer::stopListening()
+bool PgeGnsServer::stopListening(const std::string& sExtraDebugText)
 {
     if (!isListening())
     {
@@ -121,7 +121,11 @@ bool PgeGnsServer::stopListening()
     }
 
     // Close all the connections
-    CConsole::getConsoleInstance("PgeGnsServer").OLn("Server closing connections for %u client(s) ...", m_mapClients.size());
+    CConsole::getConsoleInstance("PgeGnsServer").OLn(
+        "Server closing connections for %u client(s) ... Reason: %s",
+        m_mapClients.size(),
+        sExtraDebugText.empty() ? "" : sExtraDebugText.c_str());
+
     for (const auto& itClient : m_mapClients)
     {
         const HSteamNetConnection& hClientConnection = itClient.first;
@@ -141,9 +145,14 @@ bool PgeGnsServer::stopListening()
             static_cast<pge_network::PgeNetworkConnectionHandle>(hClientConnection));
         sendToAllClientsExcept(pkt, hClientConnection);
 
+        const std::string sExtraDebugTextToSend =
+            sExtraDebugText.empty() ?
+            "PgeGnsServer Graceful stopListening()" :
+            "PgeGnsServer Graceful stopListening(), reason: " + sExtraDebugText;
+
         // Close the connection.  We use "linger mode" to ask SteamNetworkingSockets
         // to flush this out (pending reliable message are actually sent) and close gracefully.
-        m_pInterface->CloseConnection(hClientConnection, k_ESteamNetConnectionEnd_App_Generic, "PgeGnsServer Server Graceful stopListening()", true);
+        m_pInterface->CloseConnection(hClientConnection, k_ESteamNetConnectionEnd_App_Generic, sExtraDebugTextToSend.c_str(), true);
     }
 
     if (m_hListenSock != k_HSteamListenSocket_Invalid)

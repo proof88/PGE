@@ -29,7 +29,7 @@ public:
     bool initialize() override;
     bool shutdown() override;
     bool isInitialized() const override;
-    void disconnect() override;
+    void disconnect(const std::string& sExtraDebugText = "") override;
 
     void Update() override;
 
@@ -145,10 +145,12 @@ bool PgeClientImpl::isInitialized() const
 
 /**
     Terminates the active connection of the client instance.
+
+    @param sExtraDebugText An optional text that will be sent to the other side and will be logged to help debugging.
 */
-void PgeClientImpl::disconnect()
+void PgeClientImpl::disconnect(const std::string& sExtraDebugText)
 {
-    m_gsnClient.disconnectClient();
+    m_gsnClient.disconnectClient(sExtraDebugText);
 }
 
 void PgeClientImpl::Update()
