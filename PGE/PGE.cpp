@@ -725,7 +725,7 @@ int PGE::initializeGame(const char* szCmdLine)
     p->m_cfgProfiles.ProcessCommandLine(szCmdLine);
     if (p->m_cfgProfiles.getProfilesCount() > 0)
     {
-        p->m_cfgProfiles.SetProfile(0);
+        p->m_cfgProfiles.SetProfile("default");  // this should load gamedata/profiles/default/default.cfg
     }
     getConsole().OO();
 
