@@ -347,7 +347,7 @@ int PGEcfgProfiles::deleteProfile(int nIndex)
         getConsole().EOLnOO("ERROR: invalid index!");
         return -1;
     }
-    if ( nIndex == getProfile() )
+    if ( nIndex == getProfileIndex() )
     {
         getConsole().OLn("deleting current profile ...");
         SetProfile( -1 );
@@ -446,20 +446,29 @@ const std::map<std::string, PGEcfgVariable>& PGEcfgProfiles::getCommandLineVars(
 /**
     Gets index of active profile.
 */
-int PGEcfgProfiles::getProfile() const
+int PGEcfgProfiles::getProfileIndex() const
 {
     return nActiveProfile;
 } // getActiveProfile()
 
+/**
+    Gets name of active profile.
+*/
+const std::string PGEcfgProfiles::getProfileName() const
+{
+    return m_sActiveProfile;
+} // getProfileName()
+
 
 /**
-    Sets index of active profile.
+    Sets active profile by index.
     This also implies reading the configuration data for the given profile.
-    The active profile index will be -1 if the given index is valid but an error occured while reading config data.
+    The active profile index will be -1 and active profile name will be empty if the given index is valid but an error occured while reading config data.
     Note that config variables parsed earlier by ProcessCommandLine() will overwrite the variables read from profile config file.
 
     @param nIndex A valid profile index in [0..getProfilesCount()-1] range.
                   Specifying -1 will not load anything but erase all previously loaded config variables.
+                  Specifying index less than -1 will log error but leave the configuration unchanged.
 */
 void PGEcfgProfiles::SetProfile(int nIndex)
 {
@@ -469,7 +478,7 @@ void PGEcfgProfiles::SetProfile(int nIndex)
         getConsole().EOLnOO("ERROR: invalid index!");
         return;
     }
-    if ( nIndex == getProfile() )
+    if ( nIndex == getProfileIndex() )
     {
         getConsole().OLnOO("current profile index was given, return.");
         return;
@@ -484,6 +493,7 @@ void PGEcfgProfiles::SetProfile(int nIndex)
     if ( nIndex == -1 )
     {
         ClearVars();
+        m_sActiveProfile = "";
         getConsole().OO();
         return;
     }
@@ -493,10 +503,62 @@ void PGEcfgProfiles::SetProfile(int nIndex)
     {
         getConsole().EOLnOO("ERROR: readConfiguration() failed!");
         nActiveProfile = -1;
+        m_sActiveProfile = "";
     }
+    m_sActiveProfile = *sFoundProfiles[getProfileIndex()];
 
     getConsole().SOLnOO("> done!");
-} // SetActiveProfile()
+} // SetProfile()
+
+
+/**
+    Sets active profile by name.
+    This also implies reading the configuration data for the given profile.
+    The active profile index will be -1 and active profile name will be empty if the given name is valid but an error occured while reading config data.
+    Note that config variables parsed earlier by ProcessCommandLine() will overwrite the variables read from profile config file.
+
+    @param sProfileName A valid profile name.
+                        Specifying an empty string will not load anything but erase all previously loaded config variables.
+*/
+void PGEcfgProfiles::SetProfile(const std::string& sProfileName)
+{
+    getConsole().OLnOI("PGEcfgProfiles::SetProfile(%s)", sProfileName.c_str());
+    if (sProfileName.empty())
+    {
+        // request erasing out profile data
+        SetProfile(-1);
+        getConsole().OO();
+        return;
+    }
+
+    if (getProfilesCount() == 0)
+    {
+        getConsole().EOLnOO("ERROR: there is no any profile!");
+        return;
+    }
+
+    for (int i = 0; i < nProfilesCount; i++)
+    {
+        if (*sFoundProfiles[i] == sProfileName)
+        {
+            SetProfile(i);
+            // sanity check: SetProfile() should set requested profile name too 
+            if (getProfileName() != sProfileName)
+            {
+                getConsole().EOLnOO("ERROR: %s != %s!", getProfileName().c_str(), sProfileName.c_str());
+                // either readConfiguration() in SetProfile(index) failed or there is something else, so erase profile data
+                SetProfile(-1);
+            }
+            else
+            {
+                getConsole().SOLnOO("> done!");
+            }
+            return;
+        }
+    }
+
+    getConsole().EOLnOO("ERROR: there is no such profile!");
+} //SetProfile
 
 
 /**
@@ -507,7 +569,7 @@ void PGEcfgProfiles::SetProfile(int nIndex)
 */
 void PGEcfgProfiles::DeleteVar(const char* varName)
 {
-    if ( (varName == NULL) || (getProfile() == -1) )
+    if ( (varName == NULL) || (getProfileIndex() == -1) )
         return;
 
     if ( strcmp(PGE_SYS_CFG_PLAYER_NAME_CVAR, varName) == 0 )
@@ -526,14 +588,14 @@ void PGEcfgProfiles::DeleteVar(const char* varName)
 bool PGEcfgProfiles::readConfiguration()
 {
     getConsole().OLnOI("PGEcfgProfiles::readConfiguration()");
-    if ( getProfile() == -1 )
+    if ( getProfileIndex() == -1 )
     {
         getConsole().EOLnOO("ERROR: current profile index is -1!");
         return false;
     }
 
     ClearVars();
-    const string sFile = getPathToProfiles() + *sFoundProfiles[getProfile()] + '\\' + (*sFoundProfiles[getProfile()] + ".cfg");
+    const string sFile = getPathToProfiles() + *sFoundProfiles[getProfileIndex()] + '\\' + (*sFoundProfiles[getProfileIndex()] + ".cfg");
     if ( !load(sFile.c_str()) )
     {
         getConsole().EOLnOO("ERROR: failed to load file: %s! ", sFile.c_str());
@@ -558,13 +620,13 @@ bool PGEcfgProfiles::readConfiguration()
 bool PGEcfgProfiles::writeConfiguration()
 {
     getConsole().OLnOI("PGEcfgProfiles::writeConfiguration()");
-    if ( getProfile() == -1 )
+    if ( getProfileIndex() == -1 )
     {
         getConsole().EOLnOO("ERROR: current profile index is -1!");
         return false;
     }
 
-    const string sFile = getPathToProfiles() + *sFoundProfiles[getProfile()] + '\\' + (*sFoundProfiles[getProfile()] + ".cfg");
+    const string sFile = getPathToProfiles() + *sFoundProfiles[getProfileIndex()] + '\\' + (*sFoundProfiles[getProfileIndex()] + ".cfg");
     ofstream f_cfg( sFile );
     if ( f_cfg.fail() )
     {
@@ -572,7 +634,7 @@ bool PGEcfgProfiles::writeConfiguration()
         return false;
     }
 
-    WriteConfiguration(f_cfg, *sFoundProfiles[getProfile()], "");
+    WriteConfiguration(f_cfg, *sFoundProfiles[getProfileIndex()], "");
     f_cfg.close();
 
     getConsole().SOLnOO("> done!");
@@ -703,8 +765,8 @@ void PGEcfgProfiles::LoadProfilesList()
     getConsole().OLnOI("PGEcfgProfiles::LoadProfilesList() ...");
     // save current user
     string sOriginalCurrentProfileUser;
-    if ( getProfile() != -1 )
-        sOriginalCurrentProfileUser = *( getProfilesList()[getProfile()] );
+    if ( getProfileIndex() != -1 )
+        sOriginalCurrentProfileUser = *( getProfilesList()[getProfileIndex()] );
 
     nProfilesCount = 0;
     char pOrigCurrDirr[1024];
@@ -779,7 +841,7 @@ void PGEcfgProfiles::LoadProfilesList()
                                 }
                                 sFoundProfilePlayerNames[nProfilesCount-1] = new string(sPlayerName);
                                 getConsole().OLn("added user %s ~ %s", dirdata.cFileName, sPlayerName.c_str());
-                                if ( getProfile() != -1 )
+                                if ( getProfileIndex() != -1 )
                                 {   // update current profile index that may change during this function
                                     if ( *(sFoundProfiles[nProfilesCount-1]) == sOriginalCurrentProfileUser )
                                         nActiveProfile = nProfilesCount-1;

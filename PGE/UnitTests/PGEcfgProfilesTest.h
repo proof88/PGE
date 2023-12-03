@@ -62,8 +62,9 @@ protected:
         AddSubTest("testGetProfilePlayersList", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfilePlayersList);
         AddSubTest("testAddProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testAddProfile);
         AddSubTest("testDeleteProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testDeleteProfile);
-        AddSubTest("testGetProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfile);
-        AddSubTest("testSetProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testSetProfile);
+        AddSubTest("testGetProfileIndex", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfileIndex);
+        AddSubTest("testSetProfileByIndex", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testSetProfileByIndex);
+        AddSubTest("testSetProfileByName", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testSetProfileByName);
         AddSubTest("testDeleteVar", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testDeleteVar);
         AddSubTest("testGetVarsCount", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetVarsCount);
         AddSubTest("testReadConfiguration", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testReadConfiguration);
@@ -231,13 +232,15 @@ private:
         b &= assertEquals(-1, iNewProfile2, "trysameagain 2");
 
         b &= assertEquals(nOriginalVarsCount, cfg.getVars().size(), "varscount");
-        b &= assertEquals(3, cfg.getProfile(), "getprofile 1");
+        b &= assertEquals(3, cfg.getProfileIndex(), "getprofile 1i");
+        b &= assertEquals("proof88", cfg.getProfileName(), "getprofile 1n");
 
         if ( iNewProfile > -1 )
         {
             // we should be able to switch to newly created profile (which is the last in order)
             cfg.SetProfile( iNewProfile );
-            b &= assertEquals(iNewProfile, cfg.getProfile(), "getprofile 3");
+            b &= assertEquals(iNewProfile, cfg.getProfileIndex(), "getprofile 3i");
+            b &= assertEquals("testusername", cfg.getProfileName(), "getprofile 3n");
             b &= assertTrue(std::string("testnickname") == *(cfg.getProfilePlayersList()[iNewProfile]), "playername 1");
             b &= assertTrue(std::string("testusername") == *(cfg.getProfilesList()[iNewProfile]), "username 1");
             nOriginalVarsCount = cfg.getVars().size();
@@ -247,14 +250,16 @@ private:
         int iNewProfile3 = cfg.addProfile("01234", "test");
         // check if we are still currently at the last profile
         b &= assertEquals(nOriginalVarsCount, cfg.getVars().size(), "varscount 2");
-        b &= assertEquals(cfg.getProfilesCount()-1, cfg.getProfile(), "getprofile 2");
+        b &= assertEquals(cfg.getProfilesCount()-1, cfg.getProfileIndex(), "getprofile 3i");
+        b &= assertEquals("testusername", cfg.getProfileName(), "getprofile 3n");
 
         if ( iNewProfile3 > -1 )
         {
             // we should be able to switch to newly created profile (which is the 1st in order)
             cfg.SetProfile( iNewProfile3 );
-            b &= assertEquals(iNewProfile3, cfg.getProfile(), "getprofile 4");
-            b &= assertEquals(0, cfg.getProfile(), "getprofile 5");
+            b &= assertEquals(iNewProfile3, cfg.getProfileIndex(), "getprofile 4i");
+            b &= assertEquals(0, cfg.getProfileIndex(), "getprofile 5i");
+            b &= assertEquals("01234", cfg.getProfileName(), "getprofile 5n");
             b &= assertTrue(std::string("test") == *(cfg.getProfilePlayersList()[iNewProfile3]), "playername 2");
             b &= assertTrue(std::string("01234") == *(cfg.getProfilesList()[iNewProfile3]), "username 2");
         }
@@ -283,7 +288,8 @@ private:
         {
             b &= assertEquals(0, cfg.deleteProfile(iNewProfile), "delete 1");
             b &= assertEquals(nOriginalVarsCount, cfg.getVars().size(), "varscount 1");
-            b &= assertEquals(3, cfg.getProfile(), "getprofile 1");
+            b &= assertEquals(3, cfg.getProfileIndex(), "getprofile 1i");
+            b &= assertEquals("proof88", cfg.getProfileName(), "getprofile 1n");
         }
 
         // now test delete when it's the current profile
@@ -296,40 +302,77 @@ private:
             cfg.SetProfile(iNewProfile);
             b &= assertEquals(0, cfg.deleteProfile(iNewProfile), "delete 2");
             b &= assertEquals(0u, cfg.getVars().size(), "varscount 2");
-            b &= assertEquals(-1, cfg.getProfile(), "getprofile 2");
+            b &= assertEquals(-1, cfg.getProfileIndex(), "getprofile 2i");
+            b &= assertEquals("", cfg.getProfileName(), "getprofile 2n");
         }
 
         return b;
     }
 
-    bool testGetProfile()
+    bool testGetProfileIndex()
     {
         const PGEcfgProfiles cfg("game title");
-        return assertEquals(-1, cfg.getProfile(), "getProfile()");
+        return assertEquals(-1, cfg.getProfileIndex(), "getProfileIndex()");
     }
 
-    bool testSetProfile()
+    bool testGetProfileName()
+    {
+        const PGEcfgProfiles cfg("game title");
+        return assertEquals("", cfg.getProfileName(), "getProfileName()");
+    }
+
+    bool testSetProfileByIndex()
     {
         PGEcfgProfiles cfg("game title");
         bool b = true;
 
         cfg.SetProfile( -1 );
-        b &= assertEquals(-1, cfg.getProfile(), "-1 1st");
+        b &= assertEquals(-1, cfg.getProfileIndex(), "index 1");
+        b &= assertEquals("", cfg.getProfileName(), "name 1");
+        b &= assertTrue(cfg.getVars().empty(), "getVars empty() 1");
 
         cfg.SetProfile( cfg.getProfilesCount() );
-        b &= assertEquals(-1, cfg.getProfile(), "over max");
+        b &= assertEquals(-1, cfg.getProfileIndex(), "index 2");
+        b &= assertEquals("", cfg.getProfileName(), "name 2");
+        b &= assertTrue(cfg.getVars().empty(), "getVars empty() 2");
 
         cfg.SetProfile( 3 );  // proof88.cfg
-        b &= assertEquals(3, cfg.getProfile(), "3");
-        b &= assertGreater(cfg.getVars().size(), 0u, "getVarsCount() 1st");
+        b &= assertEquals(3, cfg.getProfileIndex(), "index 3");
+        b &= assertEquals("proof88", cfg.getProfileName(), "name 3");
+        b &= assertFalse(cfg.getVars().empty(), "getVars empty() 3");
 
         cfg.SetProfile( -5 );
-        b &= assertEquals(3, cfg.getProfile(), "3 2nd");
-        b &= assertGreater(cfg.getVars().size(), 0u, "getVarsCount() 2nd");
+        b &= assertEquals(3, cfg.getProfileIndex(), "index 4");
+        b &= assertEquals("proof88", cfg.getProfileName(), "name 4");
+        b &= assertFalse(cfg.getVars().empty(), "getVars empty() 4");
 
         cfg.SetProfile( -1 );
-        b &= assertEquals(-1, cfg.getProfile(), "-1 2nd");
-        b &= assertEquals(0u, cfg.getVars().size(), "getVarsCount() 3rd");
+        b &= assertEquals(-1, cfg.getProfileIndex(), "index 5");
+        b &= assertEquals("", cfg.getProfileName(), "name 5");
+        b &= assertTrue(cfg.getVars().empty(), "getVars empty() 5");
+
+        return b;
+    }
+
+    bool testSetProfileByName()
+    {
+        PGEcfgProfiles cfg("game title");
+        bool b = true;
+
+        cfg.SetProfile("");
+        b &= assertEquals(-1, cfg.getProfileIndex(), "index 1");
+        b &= assertEquals("", cfg.getProfileName(), "name 1");
+        b &= assertTrue(cfg.getVars().empty(), "getVars empty() 1");
+
+        cfg.SetProfile("proof88");
+        b &= assertEquals(3, cfg.getProfileIndex(), "index 2");
+        b &= assertEquals("proof88", cfg.getProfileName(), "name 2");
+        b &= assertFalse(cfg.getVars().empty(), "getVars empty() 2");
+
+        cfg.SetProfile("");
+        b &= assertEquals(-1, cfg.getProfileIndex(), "index 3");
+        b &= assertEquals("", cfg.getProfileName(), "name 3");
+        b &= assertTrue(cfg.getVars().empty(), "getVars empty() 3");
 
         return b;
     }
@@ -425,7 +468,8 @@ private:
         cfg.SetProfile( -1 );
         cfg.SetProfile( iNewProfile );
 
-        b &= assertEquals(iNewProfile, cfg.getProfile(), "addprofile 2");
+        b &= assertEquals(iNewProfile, cfg.getProfileIndex(), "addprofile 2i");
+        b &= assertEquals("testusername", cfg.getProfileName(), "addprofile 2n");
         b &= assertEquals(2u, cfg.getVars().size(), "varscount");
         b &= assertEquals(15.6f, cfg.getVars()["cl_alma"].getAsFloat(), E, "alma");
 
