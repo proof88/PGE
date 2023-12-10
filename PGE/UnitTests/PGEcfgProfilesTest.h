@@ -72,7 +72,8 @@ protected:
         AddSubTest("testProcessEmptyCommandLine", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessEmptyCommandLine);
         AddSubTest("testProcessIrrelevantCommandLine", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessIrrelevantCommandLine);
         AddSubTest("testProcessRelevantCommandLine", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessRelevantCommandLine);
-        AddSubTest("testProcessRelevantCommandLineWithDisallowedAssignment", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessRelevantCommandLineWithDisallowedAssignment);
+        // I disabled this test because now I think cl_name setting from commandline should be allowed ...
+        //AddSubTest("testProcessRelevantCommandLineWithDisallowedAssignment", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessRelevantCommandLineWithDisallowedAssignment);
     }
 
     virtual bool setUp() override
@@ -111,7 +112,7 @@ private:
         const PGEcfgProfiles cfg("game title");
         const std::string sMyDocsFolder = cfg.getMyDocsFolder();  /* e.g.: C:\\Users\\PR00F\\Documents\\ */
 
-        return (sMyDocsFolder.find("C:\\Users\\") != std::string::npos) &&
+        return ((sMyDocsFolder.find("C:\\Users\\") != std::string::npos) || (sMyDocsFolder.find("\\OneDrive\\") != std::string::npos)) &&
             ((sMyDocsFolder.find("\\Documents\\") != std::string::npos) || (sMyDocsFolder.find("\\Dokumentumok\\") != std::string::npos));
     }
 
@@ -542,51 +543,51 @@ private:
         return b;
     }
 
-    bool testProcessRelevantCommandLineWithDisallowedAssignment()
-    {
-        PGEcfgProfilesWithPublicNonConstCommandLineCVarAccess cfg("game title");
-
-        cfg.SetProfile(3);  // proof88.cfg
-        const size_t nOriginalVarsCount = cfg.getVars().size();
-        const std::string sOriginalClName1 = cfg.getVars()["cl_name"].getAsString();
-
-        // cl_name is forbidden in command line, we need to skip that, but process the rest
-        cfg.ProcessCommandLine("    --cl_server_ip=168.1.2.3   --cl_name=almafa  --new_cvar=5.0    ");
-
-        bool b = assertFalse(cfg.getVars().empty(), "cvars not empty") &
-            assertFalse(cfg.getCommandLineVars().empty(), "cl cvars not empty") &
-            assertEquals(2u, cfg.getCommandLineVars().size(), "cl cvars size") &
-            assertEquals(nOriginalVarsCount + 1u, cfg.getVars().size(), "cvars size") /* only new_cvar should be new variable */ &
-            assertTrue(cfg.getVars().find("cl_server_ip") != cfg.getVars().end(), "cl_server_ip found 1") &
-            assertTrue(cfg.getVars().find("new_cvar") != cfg.getVars().end(), "new_cvar found 1");
-
-        if (b)
-        {
-            b = assertEquals("168.1.2.3", cfg.getVars()["cl_server_ip"].getAsString(), "cl_server_ip value 1") &
-                assertEquals("5.0", cfg.getVars()["new_cvar"].getAsString(), "new_cvar value 1") &
-                assertEquals("168.1.2.3", cfg.getCommandLineVars()["cl_server_ip"].getAsString(), "cl_server_ip value 2") &
-                assertEquals("5.0", cfg.getCommandLineVars()["new_cvar"].getAsString(), "new_cvar value 2");
-        }
-
-        b &= assertEquals(sOriginalClName1, cfg.getVars()["cl_name"].getAsString(), "cl_name unchanged 1");
-
-        // check if command line vars are automatically re-applied after loading another profile config file
-        cfg.SetProfile(-1);
-        cfg.SetProfile(2);  // loller.cfg
-        const std::string sOriginalClName2 = cfg.getVars()["cl_name"].getAsString();
-
-        b &= assertTrue(cfg.getVars().find("cl_server_ip") != cfg.getVars().end(), "cl_server_ip found 2") &
-            assertTrue(cfg.getVars().find("new_cvar") != cfg.getVars().end(), "new_cvar found 2");
-
-        if (b)
-        {
-            b = assertEquals("168.1.2.3", cfg.getVars()["cl_server_ip"].getAsString(), "cl_server_ip value 3") &
-                assertEquals("5.0", cfg.getVars()["new_cvar"].getAsString(), "new_cvar value 3");
-        }
-
-        b &= assertEquals(sOriginalClName2, cfg.getVars()["cl_name"].getAsString(), "cl_name unchanged 2");
-
-        return b;
-    }
+    //bool testProcessRelevantCommandLineWithDisallowedAssignment()
+    //{
+    //    PGEcfgProfilesWithPublicNonConstCommandLineCVarAccess cfg("game title");
+    //
+    //    cfg.SetProfile(3);  // proof88.cfg
+    //    const size_t nOriginalVarsCount = cfg.getVars().size();
+    //    const std::string sOriginalClName1 = cfg.getVars()["cl_name"].getAsString();
+    //
+    //    // cl_name is forbidden in command line, we need to skip that, but process the rest
+    //    cfg.ProcessCommandLine("    --cl_server_ip=168.1.2.3   --cl_name=almafa  --new_cvar=5.0    ");
+    //
+    //    bool b = assertFalse(cfg.getVars().empty(), "cvars not empty") &
+    //        assertFalse(cfg.getCommandLineVars().empty(), "cl cvars not empty") &
+    //        assertEquals(2u, cfg.getCommandLineVars().size(), "cl cvars size") &
+    //        assertEquals(nOriginalVarsCount + 1u, cfg.getVars().size(), "cvars size") /* only new_cvar should be new variable */ &
+    //        assertTrue(cfg.getVars().find("cl_server_ip") != cfg.getVars().end(), "cl_server_ip found 1") &
+    //        assertTrue(cfg.getVars().find("new_cvar") != cfg.getVars().end(), "new_cvar found 1");
+    //
+    //    if (b)
+    //    {
+    //        b = assertEquals("168.1.2.3", cfg.getVars()["cl_server_ip"].getAsString(), "cl_server_ip value 1") &
+    //            assertEquals("5.0", cfg.getVars()["new_cvar"].getAsString(), "new_cvar value 1") &
+    //            assertEquals("168.1.2.3", cfg.getCommandLineVars()["cl_server_ip"].getAsString(), "cl_server_ip value 2") &
+    //            assertEquals("5.0", cfg.getCommandLineVars()["new_cvar"].getAsString(), "new_cvar value 2");
+    //    }
+    //
+    //    b &= assertEquals(sOriginalClName1, cfg.getVars()["cl_name"].getAsString(), "cl_name unchanged 1");
+    //
+    //    // check if command line vars are automatically re-applied after loading another profile config file
+    //    cfg.SetProfile(-1);
+    //    cfg.SetProfile(2);  // loller.cfg
+    //    const std::string sOriginalClName2 = cfg.getVars()["cl_name"].getAsString();
+    //
+    //    b &= assertTrue(cfg.getVars().find("cl_server_ip") != cfg.getVars().end(), "cl_server_ip found 2") &
+    //        assertTrue(cfg.getVars().find("new_cvar") != cfg.getVars().end(), "new_cvar found 2");
+    //
+    //    if (b)
+    //    {
+    //        b = assertEquals("168.1.2.3", cfg.getVars()["cl_server_ip"].getAsString(), "cl_server_ip value 3") &
+    //            assertEquals("5.0", cfg.getVars()["new_cvar"].getAsString(), "new_cvar value 3");
+    //    }
+    //
+    //    b &= assertEquals(sOriginalClName2, cfg.getVars()["cl_name"].getAsString(), "cl_name unchanged 2");
+    //
+    //    return b;
+    //}
     
 }; // class PGEcfgProfilesTest

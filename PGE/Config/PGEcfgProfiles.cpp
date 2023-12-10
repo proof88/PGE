@@ -416,17 +416,8 @@ void PGEcfgProfiles::ProcessCommandLine(const char* szCmdLine)
                     (nNextSpacePos == std::string::npos) ? nNextSpacePos : (nNextSpacePos - nAssignmentPos - 1)
                 );
                 // this looks to be a valid assignment
-                if (sVar == PGE_SYS_CFG_PLAYER_NAME_CVAR)
-                {   // except for user name, which is not allowed to be overridden from command line, because
-                    // it might cause some nasty bugs, for example, if a config file is also loaded, this would
-                    // override the name, and then the config file would be saved with this new name ...
-                    getConsole().EOLn("WARNING: %s is NOT allowed to be present in command line, skipping it!", PGE_SYS_CFG_PLAYER_NAME_CVAR);
-                }
-                else
-                {
-                    getVars()[sVar] = sValue.c_str();
-                    m_commandLineVars[sVar] = sValue.c_str();
-                }
+                getVars()[sVar] = sValue.c_str();
+                m_commandLineVars[sVar] = sValue.c_str();
             }
         }
         
