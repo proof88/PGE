@@ -74,6 +74,8 @@ public:
 
     /* Debug functions. */
 
+    void setDebugNickname(const pge_network::PgeNetworkConnectionHandle& connHandle, const std::string& sNickname);
+
     int getPing(
         const pge_network::PgeNetworkConnectionHandle& connHandle,
         bool bForceUpdate) override;
@@ -326,6 +328,11 @@ void PgeServerImpl::sendToAll(const pge_network::PgePacket& pkt)
 {
     send(pkt);
     sendToAllClientsExcept(pkt);
+}
+
+void PgeServerImpl::setDebugNickname(const pge_network::PgeNetworkConnectionHandle& connHandle, const std::string& sNickname)
+{
+    m_gsnServer.setClientDebugName(connHandle, sNickname.c_str());
 }
 
 int PgeServerImpl::getPing(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)

@@ -89,6 +89,8 @@ public:
 
     /* Debug functions. */
 
+    void setClientDebugName(HSteamNetConnection connHandle, const char* nick);
+
     const SteamNetConnectionRealTimeStatus_t& getRealTimeStatus(const HSteamNetConnection& connHandle, bool bForceUpdate);
     std::string getDetailedConnectionStatus(const HSteamNetConnection& connHandle) const;
 
@@ -126,7 +128,6 @@ private:
     PgeGnsServer(const PgeGnsServer&);
     PgeGnsServer& operator=(const PgeGnsServer&);
 
-    void SetClientNick(HSteamNetConnection hConn, const char* nick);
     const TClient* isClientConnectionHandleValid(const HSteamNetConnection& connHandle) const;
     TClient* isClientConnectionHandleValid(const HSteamNetConnection& connHandle);
 

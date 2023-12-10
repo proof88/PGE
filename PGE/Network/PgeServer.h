@@ -85,6 +85,17 @@ namespace pge_network
 
         /* Debug functions. */
 
+        /**
+        * Sets a debug helper name associated to the given connection handle.
+        * Useful because it makes reading debug log easier when not only connection handle but also this debug helper name is also logged.
+        * Can be anything, for example it can be the same name as the player name on higher application level associated to this connection.
+        * 
+        * @param connHandle The connection for which we want to set the debug helper name.
+        *                   Cannot be ServerConnHandle.
+        * @param sNickname The debug helper name we want to see associated to the specified connection in the debug logs.
+        */
+        virtual void setDebugNickname(const pge_network::PgeNetworkConnectionHandle& connHandle, const std::string& sNickname) = 0;
+
         virtual int getPing(
             const pge_network::PgeNetworkConnectionHandle& connHandle,
             bool bForceUpdate) = 0;
