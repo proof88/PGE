@@ -74,7 +74,7 @@ public:
 
     /* Debug functions. */
 
-    void setDebugNickname(const pge_network::PgeNetworkConnectionHandle& connHandle, const std::string& sNickname);
+    void setDebugNickname(const pge_network::PgeNetworkConnectionHandle& connHandle, const std::string& sNickname) override;
 
     int getPing(
         const pge_network::PgeNetworkConnectionHandle& connHandle,
@@ -113,7 +113,7 @@ private:
     // ---------------------------------------------------------------------------
 
     PGEcfgProfiles& m_cfgProfiles;
-    PgeGnsServer& m_gsnServer;
+    PgeGnsServer& m_gnsServer;
 
     explicit PgeServerImpl(PGEcfgProfiles& cfgProfiles);
     PgeServerImpl(const PgeServerImpl&);
@@ -141,7 +141,7 @@ PgeServerImpl::~PgeServerImpl()
 */
 bool PgeServerImpl::initialize()
 {
-    return m_gsnServer.init();
+    return m_gnsServer.init();
 } // initialize()
 
 
@@ -154,7 +154,7 @@ bool PgeServerImpl::initialize()
 */
 bool PgeServerImpl::shutdown()
 {
-    return m_gsnServer.destroy();
+    return m_gnsServer.destroy();
 } // shutdown()
 
 /**
@@ -163,7 +163,7 @@ bool PgeServerImpl::shutdown()
 */
 bool PgeServerImpl::isInitialized() const
 {
-    return m_gsnServer.isInitialized();
+    return m_gnsServer.isInitialized();
 } // isInitialized()
 
 /**
@@ -173,127 +173,127 @@ bool PgeServerImpl::isInitialized() const
 */
 void PgeServerImpl::disconnect(const std::string& sExtraDebugText)
 {
-    m_gsnServer.stopListening(sExtraDebugText);
+    m_gnsServer.stopListening(sExtraDebugText);
 }
 
 void PgeServerImpl::Update()
 {
-    if (m_gsnServer.isListening())
+    if (m_gnsServer.isListening())
     {
-        m_gsnServer.pollIncomingMessages();
+        m_gnsServer.pollIncomingMessages();
     }
-    m_gsnServer.pollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
+    m_gnsServer.pollConnectionStateChanges();  // this may also add packet(s) to SysNET.queuePackets
 }
 
 bool PgeServerImpl::pollIncomingMessages()
 {
-    if (m_gsnServer.isListening())
+    if (m_gnsServer.isListening())
     {
-        return m_gsnServer.pollIncomingMessages();
+        return m_gnsServer.pollIncomingMessages();
     }
     return false;
 }
 
 void PgeServerImpl::pollConnectionStateChanges()
 {
-    return m_gsnServer.pollConnectionStateChanges();
+    return m_gnsServer.pollConnectionStateChanges();
 }
 
 std::size_t PgeServerImpl::getPacketQueueSize() const
 {
-    return m_gsnServer.getPacketQueueSize();
+    return m_gnsServer.getPacketQueueSize();
 }
 
 pge_network::PgePacket PgeServerImpl::popFrontPacket() noexcept(false)
 {
-    return m_gsnServer.popFrontPacket();
+    return m_gnsServer.popFrontPacket();
 }
 
 std::set<pge_network::PgePktId>& PgeServerImpl::getAllowListedPgeMessages()
 {
-    return m_gsnServer.getAllowListedPgeMessages();
+    return m_gnsServer.getAllowListedPgeMessages();
 }
 
 std::set<pge_network::MsgApp::TMsgId>& PgeServerImpl::getAllowListedAppMessages()
 {
-    return m_gsnServer.getAllowListedAppMessages();
+    return m_gnsServer.getAllowListedAppMessages();
 }
 
 void PgeServerImpl::send(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle)
 {
     if (connHandle == pge_network::ServerConnHandle)
     {
-        m_gsnServer.inject(pkt);
+        m_gnsServer.inject(pkt);
     }
     else
     {
-        m_gsnServer.sendToClient(static_cast<const HSteamNetConnection&>(connHandle), pkt);
+        m_gnsServer.sendToClient(static_cast<const HSteamNetConnection&>(connHandle), pkt);
     }
 }
 
 uint32_t PgeServerImpl::getRxPacketCount() const
 {
-    return m_gsnServer.getRxPacketCount();
+    return m_gnsServer.getRxPacketCount();
 }
 
 uint32_t PgeServerImpl::getTxPacketCount() const
 {
-    return m_gsnServer.getTxPacketCount();
+    return m_gnsServer.getTxPacketCount();
 }
 
 uint32_t PgeServerImpl::getInjectPacketCount() const
 {
-    return m_gsnServer.getInjectPacketCount();
+    return m_gnsServer.getInjectPacketCount();
 }
 
 uint32_t PgeServerImpl::getRxPacketPerSecondCount() const
 {
-    return m_gsnServer.getRxPacketPerSecondCount();
+    return m_gnsServer.getRxPacketPerSecondCount();
 }
 
 uint32_t PgeServerImpl::getTxPacketPerSecondCount() const
 {
-    return m_gsnServer.getTxPacketPerSecondCount();
+    return m_gnsServer.getTxPacketPerSecondCount();
 }
 
 uint32_t PgeServerImpl::getInjectPacketPerSecondCount() const
 {
-    return m_gsnServer.getInjectPacketPerSecondCount();
+    return m_gnsServer.getInjectPacketPerSecondCount();
 }
 
 const std::map<pge_network::MsgApp::TMsgId, uint32_t>& PgeServerImpl::getRxMsgCount() const
 {
-    return m_gsnServer.getRxMsgCount();
+    return m_gnsServer.getRxMsgCount();
 }
 
 const std::map<pge_network::MsgApp::TMsgId, uint32_t>& PgeServerImpl::getTxMsgCount() const
 {
-    return m_gsnServer.getTxMsgCount();
+    return m_gnsServer.getTxMsgCount();
 }
 
 const std::map<pge_network::MsgApp::TMsgId, uint32_t>& PgeServerImpl::getInjectMsgCount() const
 {
-    return m_gsnServer.getInjectMsgCount();
+    return m_gnsServer.getInjectMsgCount();
 }
 
 std::map<pge_network::MsgApp::TMsgId, std::string>& PgeServerImpl::getMsgAppId2StringMap()
 {
-    return m_gsnServer.getMsgAppId2StringMap();
+    return m_gnsServer.getMsgAppId2StringMap();
 }
 
 uint32_t PgeServerImpl::getRxByteCount() const
 {
-    return m_gsnServer.getRxByteCount();
+    return m_gnsServer.getRxByteCount();
 }
 
 uint32_t PgeServerImpl::getTxByteCount() const
 {
-    return m_gsnServer.getTxByteCount();
+    return m_gnsServer.getTxByteCount();
 }
 
 uint32_t PgeServerImpl::getInjectByteCount() const
 {
-    return m_gsnServer.getInjectByteCount();
+    return m_gnsServer.getInjectByteCount();
 }
 
 void PgeServerImpl::WriteList() const
@@ -302,9 +302,9 @@ void PgeServerImpl::WriteList() const
     if (isInitialized())
     {
         getConsole().OLn("Role: Server");
-        // TODO: PgeGsnWrapper will obviously use PgeGsnWrapper as module name when writing to console, so it is recommended now
-        // to always turn on PgeGsnWrapper logging as well together with PgeServer
-        m_gsnServer.WriteServerClientList();
+        // TODO: PgeGnsWrapper will obviously use PgeGnsWrapper as module name when writing to console, so it is recommended now
+        // to always turn on PgeGnsWrapper logging as well together with PgeServer
+        m_gnsServer.WriteServerClientList();
     }
     else
     {
@@ -316,12 +316,12 @@ void PgeServerImpl::WriteList() const
 
 bool PgeServerImpl::startListening()
 {
-    return m_gsnServer.startListening();
+    return m_gnsServer.startListening();
 }
 
 void PgeServerImpl::sendToAllClientsExcept(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& exceptConnHandle)
 {
-    m_gsnServer.sendToAllClientsExcept(pkt, exceptConnHandle);
+    m_gnsServer.sendToAllClientsExcept(pkt, exceptConnHandle);
 }
 
 void PgeServerImpl::sendToAll(const pge_network::PgePacket& pkt)
@@ -332,57 +332,57 @@ void PgeServerImpl::sendToAll(const pge_network::PgePacket& pkt)
 
 void PgeServerImpl::setDebugNickname(const pge_network::PgeNetworkConnectionHandle& connHandle, const std::string& sNickname)
 {
-    m_gsnServer.setClientDebugName(connHandle, sNickname.c_str());
+    m_gnsServer.setClientDebugName(connHandle, sNickname.c_str());
 }
 
 int PgeServerImpl::getPing(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
 {
-    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_nPing;
+    return m_gnsServer.getRealTimeStatus(connHandle, bForceUpdate).m_nPing;
 }
 
 float PgeServerImpl::getQualityLocal(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
 {
-    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_flConnectionQualityLocal;
+    return m_gnsServer.getRealTimeStatus(connHandle, bForceUpdate).m_flConnectionQualityLocal;
 }
 
 float PgeServerImpl::getQualityRemote(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
 {
-    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_flConnectionQualityRemote;
+    return m_gnsServer.getRealTimeStatus(connHandle, bForceUpdate).m_flConnectionQualityRemote;
 }
 
 float PgeServerImpl::getRxByteRate(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
 {
-    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_flInBytesPerSec;
+    return m_gnsServer.getRealTimeStatus(connHandle, bForceUpdate).m_flInBytesPerSec;
 }
 
 float PgeServerImpl::getTxByteRate(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
 {
-    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_flOutBytesPerSec;
+    return m_gnsServer.getRealTimeStatus(connHandle, bForceUpdate).m_flOutBytesPerSec;
 }
 
 int64_t PgeServerImpl::getPendingUnreliableBytes(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
 {
-    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_cbPendingUnreliable;
+    return m_gnsServer.getRealTimeStatus(connHandle, bForceUpdate).m_cbPendingUnreliable;
 }
 
 int64_t PgeServerImpl::getPendingReliableBytes(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
 {
-    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_cbPendingReliable;
+    return m_gnsServer.getRealTimeStatus(connHandle, bForceUpdate).m_cbPendingReliable;
 }
 
 int64_t PgeServerImpl::getSentButUnAckedReliableBytes(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
 {
-    return m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_cbSentUnackedReliable;
+    return m_gnsServer.getRealTimeStatus(connHandle, bForceUpdate).m_cbSentUnackedReliable;
 }
 
 int64_t PgeServerImpl::getInternalQueueTimeUSecs(const pge_network::PgeNetworkConnectionHandle& connHandle, bool bForceUpdate)
 {
-    return static_cast<int64_t>(m_gsnServer.getRealTimeStatus(connHandle, bForceUpdate).m_usecQueueTime);
+    return static_cast<int64_t>(m_gnsServer.getRealTimeStatus(connHandle, bForceUpdate).m_usecQueueTime);
 }
 
 std::string PgeServerImpl::getDetailedConnectionStatus(const pge_network::PgeNetworkConnectionHandle& connHandle) const
 {
-    return m_gsnServer.getDetailedConnectionStatus(connHandle);
+    return m_gnsServer.getDetailedConnectionStatus(connHandle);
 }
 
 
@@ -394,14 +394,14 @@ std::string PgeServerImpl::getDetailedConnectionStatus(const pge_network::PgeNet
 
 PgeServerImpl::PgeServerImpl(PGEcfgProfiles& cfgProfiles) :
     m_cfgProfiles(cfgProfiles),
-    m_gsnServer(PgeGnsServer::createAndGet(cfgProfiles))
+    m_gnsServer(PgeGnsServer::createAndGet(cfgProfiles))
 {
-    m_gsnServer.getAllowListedPgeMessages().insert(pge_network::MsgApp::id);
+    m_gnsServer.getAllowListedPgeMessages().insert(pge_network::MsgApp::id);
 } // PgeServerImpl(...)
 
 PgeServerImpl::PgeServerImpl(const PgeServerImpl& other) :
     m_cfgProfiles(other.m_cfgProfiles),
-    m_gsnServer(PgeGnsServer::createAndGet(other.m_cfgProfiles))
+    m_gnsServer(PgeGnsServer::createAndGet(other.m_cfgProfiles))
 {
 }
 

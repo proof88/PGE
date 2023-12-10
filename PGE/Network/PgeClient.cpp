@@ -91,7 +91,7 @@ private:
     // ---------------------------------------------------------------------------
 
     PGEcfgProfiles& m_cfgProfiles;
-    PgeGnsClient& m_gsnClient;
+    PgeGnsClient& m_gnsClient;
 
     explicit PgeClientImpl(PGEcfgProfiles& cfgProfiles);
     PgeClientImpl(const PgeClientImpl&);
@@ -119,7 +119,7 @@ PgeClientImpl::~PgeClientImpl()
 */
 bool PgeClientImpl::initialize()
 {
-    return m_gsnClient.init();
+    return m_gnsClient.init();
 } // initialize()
 
 /**
@@ -131,7 +131,7 @@ bool PgeClientImpl::initialize()
 */
 bool PgeClientImpl::shutdown()
 {
-    return m_gsnClient.destroy();
+    return m_gnsClient.destroy();
 } // shutdown()
 
 /**
@@ -140,7 +140,7 @@ bool PgeClientImpl::shutdown()
 */
 bool PgeClientImpl::isInitialized() const
 {
-    return m_gsnClient.isInitialized();
+    return m_gnsClient.isInitialized();
 } // isInitialized()
 
 /**
@@ -150,50 +150,50 @@ bool PgeClientImpl::isInitialized() const
 */
 void PgeClientImpl::disconnect(const std::string& sExtraDebugText)
 {
-    m_gsnClient.disconnectClient(sExtraDebugText);
+    m_gnsClient.disconnectClient(sExtraDebugText);
 }
 
 void PgeClientImpl::Update()
 {
-    if (m_gsnClient.isConnected())
+    if (m_gnsClient.isConnected())
     {
-        m_gsnClient.pollIncomingMessages();
+        m_gnsClient.pollIncomingMessages();
     }
-    m_gsnClient.pollConnectionStateChanges();  // this may also add packet(s) to m_gsnClient.queuePackets
+    m_gnsClient.pollConnectionStateChanges();  // this may also add packet(s) to m_gnsClient.queuePackets
 }
 
 bool PgeClientImpl::pollIncomingMessages()
 {
-    if (m_gsnClient.isConnected())
+    if (m_gnsClient.isConnected())
     {
-        return m_gsnClient.pollIncomingMessages();
+        return m_gnsClient.pollIncomingMessages();
     }
     return false;
 }
 
 void PgeClientImpl::pollConnectionStateChanges()
 {
-    return m_gsnClient.pollConnectionStateChanges();
+    return m_gnsClient.pollConnectionStateChanges();
 }
 
 std::size_t PgeClientImpl::getPacketQueueSize() const
 {
-    return m_gsnClient.getPacketQueueSize();
+    return m_gnsClient.getPacketQueueSize();
 }
 
 pge_network::PgePacket PgeClientImpl::popFrontPacket() noexcept(false)
 {
-    return m_gsnClient.popFrontPacket();
+    return m_gnsClient.popFrontPacket();
 }
 
 std::set<pge_network::PgePktId>& PgeClientImpl::getAllowListedPgeMessages()
 {
-    return m_gsnClient.getAllowListedPgeMessages();
+    return m_gnsClient.getAllowListedPgeMessages();
 }
 
 std::set<pge_network::MsgApp::TMsgId>& PgeClientImpl::getAllowListedAppMessages()
 {
-    return m_gsnClient.getAllowListedAppMessages();
+    return m_gnsClient.getAllowListedAppMessages();
 }
 
 void PgeClientImpl::send(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& connHandle)
@@ -203,72 +203,72 @@ void PgeClientImpl::send(const pge_network::PgePacket& pkt, const pge_network::P
         getConsole().EOLn("%s: CLIENT target connHandle must be %u!", __func__, pge_network::ServerConnHandle);
         return;
     }
-    m_gsnClient.sendToServer(pkt);
+    m_gnsClient.sendToServer(pkt);
 }
 
 uint32_t PgeClientImpl::getRxPacketCount() const
 {
-    return m_gsnClient.getRxPacketCount();
+    return m_gnsClient.getRxPacketCount();
 }
 
 uint32_t PgeClientImpl::getTxPacketCount() const
 {
-    return m_gsnClient.getTxPacketCount();
+    return m_gnsClient.getTxPacketCount();
 }
 
 uint32_t PgeClientImpl::getInjectPacketCount() const
 {
-    return m_gsnClient.getInjectPacketCount();
+    return m_gnsClient.getInjectPacketCount();
 }
 
 uint32_t PgeClientImpl::getRxPacketPerSecondCount() const
 {
-    return m_gsnClient.getRxPacketPerSecondCount();
+    return m_gnsClient.getRxPacketPerSecondCount();
 }
 
 uint32_t PgeClientImpl::getTxPacketPerSecondCount() const
 {
-    return m_gsnClient.getTxPacketPerSecondCount();
+    return m_gnsClient.getTxPacketPerSecondCount();
 }
 
 uint32_t PgeClientImpl::getInjectPacketPerSecondCount() const
 {
-    return m_gsnClient.getInjectPacketPerSecondCount();
+    return m_gnsClient.getInjectPacketPerSecondCount();
 }
 
 const std::map<pge_network::MsgApp::TMsgId, uint32_t>& PgeClientImpl::getRxMsgCount() const
 {
-    return m_gsnClient.getRxMsgCount();
+    return m_gnsClient.getRxMsgCount();
 }
 
 const std::map<pge_network::MsgApp::TMsgId, uint32_t>& PgeClientImpl::getTxMsgCount() const
 {
-    return m_gsnClient.getTxMsgCount();
+    return m_gnsClient.getTxMsgCount();
 }
 
 const std::map<pge_network::MsgApp::TMsgId, uint32_t>& PgeClientImpl::getInjectMsgCount() const
 {
-    return m_gsnClient.getInjectMsgCount();
+    return m_gnsClient.getInjectMsgCount();
 }
 
 std::map<pge_network::MsgApp::TMsgId, std::string>& PgeClientImpl::getMsgAppId2StringMap()
 {
-    return m_gsnClient.getMsgAppId2StringMap();
+    return m_gnsClient.getMsgAppId2StringMap();
 }
 
 uint32_t PgeClientImpl::getRxByteCount() const
 {
-    return m_gsnClient.getRxByteCount();
+    return m_gnsClient.getRxByteCount();
 }
 
 uint32_t PgeClientImpl::getTxByteCount() const
 {
-    return m_gsnClient.getTxByteCount();
+    return m_gnsClient.getTxByteCount();
 }
 
 uint32_t PgeClientImpl::getInjectByteCount() const
 {
-    return m_gsnClient.getInjectByteCount();
+    return m_gnsClient.getInjectByteCount();
 }
 
 void PgeClientImpl::WriteList() const
@@ -297,72 +297,72 @@ void PgeClientImpl::WriteList() const
 
 const pge_network::PgeNetworkConnectionHandle& PgeClientImpl::getConnectionHandle() const
 {
-    return static_cast<pge_network::PgeNetworkConnectionHandle>(m_gsnClient.getConnectionHandle());
+    return static_cast<pge_network::PgeNetworkConnectionHandle>(m_gnsClient.getConnectionHandle());
 }
 
 const pge_network::PgeNetworkConnectionHandle& PgeClientImpl::getConnectionHandleServerSide() const
 {
-    return static_cast<pge_network::PgeNetworkConnectionHandle>(m_gsnClient.getConnectionHandleServerSide());
+    return static_cast<pge_network::PgeNetworkConnectionHandle>(m_gnsClient.getConnectionHandleServerSide());
 }
 
 const char* PgeClientImpl::getServerAddress() const
 {
-    return m_gsnClient.getServerAddress();
+    return m_gnsClient.getServerAddress();
 }
 
 bool PgeClientImpl::connectToServer(const std::string& sServerAddress)
 {
-    return m_gsnClient.connectToServer(sServerAddress);
+    return m_gnsClient.connectToServer(sServerAddress);
 }
 
 int PgeClientImpl::getPing(bool bForceUpdate)
 {
-    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_nPing;
+    return m_gnsClient.getRealTimeStatus(bForceUpdate).m_nPing;
 }
 
 float PgeClientImpl::getQualityLocal(bool bForceUpdate)
 {
-    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_flConnectionQualityLocal;
+    return m_gnsClient.getRealTimeStatus(bForceUpdate).m_flConnectionQualityLocal;
 }
 
 float PgeClientImpl::getQualityRemote(bool bForceUpdate)
 {
-    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_flConnectionQualityRemote;
+    return m_gnsClient.getRealTimeStatus(bForceUpdate).m_flConnectionQualityRemote;
 }
 
 float PgeClientImpl::getRxByteRate(bool bForceUpdate)
 {
-    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_flInBytesPerSec;
+    return m_gnsClient.getRealTimeStatus(bForceUpdate).m_flInBytesPerSec;
 }
 
 float PgeClientImpl::getTxByteRate(bool bForceUpdate)
 {
-    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_flOutBytesPerSec;
+    return m_gnsClient.getRealTimeStatus(bForceUpdate).m_flOutBytesPerSec;
 }
 
 int64_t PgeClientImpl::getPendingUnreliableBytes(bool bForceUpdate)
 {
-    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_cbPendingUnreliable;
+    return m_gnsClient.getRealTimeStatus(bForceUpdate).m_cbPendingUnreliable;
 }
 
 int64_t PgeClientImpl::getPendingReliableBytes(bool bForceUpdate)
 {
-    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_cbPendingReliable;
+    return m_gnsClient.getRealTimeStatus(bForceUpdate).m_cbPendingReliable;
 }
 
 int64_t PgeClientImpl::getSentButUnAckedReliableBytes(bool bForceUpdate)
 {
-    return m_gsnClient.getRealTimeStatus(bForceUpdate).m_cbSentUnackedReliable;
+    return m_gnsClient.getRealTimeStatus(bForceUpdate).m_cbSentUnackedReliable;
 }
 
 int64_t PgeClientImpl::getInternalQueueTimeUSecs(bool bForceUpdate)
 {
-    return static_cast<int64_t>(m_gsnClient.getRealTimeStatus(bForceUpdate).m_usecQueueTime);
+    return static_cast<int64_t>(m_gnsClient.getRealTimeStatus(bForceUpdate).m_usecQueueTime);
 }
 
 std::string PgeClientImpl::getDetailedConnectionStatus() const
 {
-    return m_gsnClient.getDetailedConnectionStatus();
+    return m_gnsClient.getDetailedConnectionStatus();
 }
 
 
@@ -374,15 +374,15 @@ std::string PgeClientImpl::getDetailedConnectionStatus() const
 
 PgeClientImpl::PgeClientImpl(PGEcfgProfiles& cfgProfiles) :
     m_cfgProfiles(cfgProfiles),
-    m_gsnClient(PgeGnsClient::createAndGet(cfgProfiles))
+    m_gnsClient(PgeGnsClient::createAndGet(cfgProfiles))
 {
-    m_gsnClient.getAllowListedPgeMessages().insert(pge_network::MsgUserDisconnectedFromServer::id);
-    m_gsnClient.getAllowListedPgeMessages().insert(pge_network::MsgApp::id);
+    m_gnsClient.getAllowListedPgeMessages().insert(pge_network::MsgUserDisconnectedFromServer::id);
+    m_gnsClient.getAllowListedPgeMessages().insert(pge_network::MsgApp::id);
 } // PgeClientImpl(...)
 
 PgeClientImpl::PgeClientImpl(const PgeClientImpl& other) :
     m_cfgProfiles(other.m_cfgProfiles),
-    m_gsnClient(PgeGnsClient::createAndGet(other.m_cfgProfiles))
+    m_gnsClient(PgeGnsClient::createAndGet(other.m_cfgProfiles))
 {
 }
 
