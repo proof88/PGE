@@ -363,7 +363,7 @@ public:
 
     virtual ~PGEInputKeyboardImpl();
 
-    bool isKeyPressed(unsigned char key) const;
+    bool isKeyPressed(unsigned char key, unsigned int nFilterMillisecs);
     bool isKeyPressedOnce(unsigned char key, unsigned int nFilterMillisecs);
     void SetKeyPressed(unsigned char key, bool state);
 
@@ -400,9 +400,23 @@ PGEInputKeyboardImpl::~PGEInputKeyboardImpl()
 }
 
 
-bool PGEInputKeyboardImpl::isKeyPressed(unsigned char key) const
+bool PGEInputKeyboardImpl::isKeyPressed(unsigned char key, unsigned int nFilterMillisecs)
 {
-    return m_bKeysDown[key];
+    const std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::steady_clock::now();
+    const bool bTimeFilterOk =
+        nFilterMillisecs > 0 ?
+        (std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - m_timeKeysDownAccepted[key]).count() >= nFilterMillisecs) :
+        true;
+
+    const bool bPressAccepted = m_bKeysDown[key] && bTimeFilterOk;
+    if (bPressAccepted)
+    {
+        // maybe I should also m_bKeysReleasedSinceLastRead[key] = false;
+        m_timeKeysDownAccepted[key] = timeNow;
+        // maybe I should return with true here
+    }
+    // maybe I should return with m_bKeysReleasedSinceLastRead[key] here
+    return bPressAccepted;
 }
 
 bool PGEInputKeyboardImpl::isKeyPressedOnce(unsigned char key, unsigned int nFilterMillisecs)

@@ -114,10 +114,11 @@ public:
     CConsole&   getConsole() const;                   /**< Returns access to console preset with logger module name as this class. */
 
     /**
-    * @param key The virtual keycode of the key for which we are checking keypress event.
+    * @param key              The virtual keycode of the key for which we are checking keypress event.
+    * @param nFilterMillisecs Minimum time needs to elapse before accepting another keypress event.
     * @return True if given key is pressed, false otherwise.
     */
-    virtual bool isKeyPressed(unsigned char key) const = 0;
+    virtual bool isKeyPressed(unsigned char key, unsigned int nFilterMillisecs = 0) = 0;
 
     /**
     * Useful if we want to distinguish between different keypresses of the same key.

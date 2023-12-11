@@ -1644,6 +1644,8 @@ LRESULT PureWindowImpl::onInput(HRAWINPUT handle)
 
 LRESULT PureWindowImpl::onKeyUp(TPureInt key)
 {
+    // For extended keys, lParam should be also checked:
+    // https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-keydown
     input.getKeyboard().SetKeyPressed((unsigned char) key, false);
     return 0;
 } // onKeyUp()
@@ -1651,6 +1653,8 @@ LRESULT PureWindowImpl::onKeyUp(TPureInt key)
 
 LRESULT PureWindowImpl::onKeyDown(TPureInt key)
 {
+    // For extended keys, lParam should be also checked:
+    // https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-keydown
     input.getKeyboard().SetKeyPressed((unsigned char) key, true);
     return 0;
 } // onKeyDown()
