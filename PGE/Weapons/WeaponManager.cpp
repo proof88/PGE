@@ -464,7 +464,7 @@ const PureObject3D& Weapon::getObject3D() const
  */
 void Weapon::UpdatePosition(const PureVector& playerPos)
 {
-    getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY(), playerPos.getZ());
+    getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY() + m_fWpnYbiasToPlayerCenter, playerPos.getZ());
 }
 
 /**
@@ -474,7 +474,7 @@ void Weapon::UpdatePosition(const PureVector& playerPos)
  */
 void Weapon::UpdatePositions(const PureVector& playerPos, TPureFloat fAngleY, TPureFloat fAngleZ)
 {
-    getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY(), playerPos.getZ());
+    getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY() + m_fWpnYbiasToPlayerCenter, playerPos.getZ());
     getObject3D().getAngleVec().SetY(fAngleY);
     getObject3D().getAngleVec().SetZ(fAngleZ);
 }
@@ -486,7 +486,7 @@ void Weapon::UpdatePositions(const PureVector& playerPos, TPureFloat fAngleY, TP
  */
 void Weapon::UpdatePositions(const PureVector& playerPos, const PureVector& targetPos2D)
 {
-    getObject3D().getPosVec().Set( playerPos.getX(), playerPos.getY(), playerPos.getZ() );
+    getObject3D().getPosVec().Set( playerPos.getX(), playerPos.getY() + m_fWpnYbiasToPlayerCenter, playerPos.getZ() );
 
     /*
          By default with AngleY 0° and AngleZ 0°, weapon looks to <- direction.
@@ -522,8 +522,30 @@ void Weapon::UpdatePositions(const PureVector& playerPos, const PureVector& targ
 
     */
 
-    const float distYXratio = (targetPos2D.getX() == 0.f) ? targetPos2D.getY() : targetPos2D.getY()/targetPos2D.getX();
-    if ( targetPos2D.getX() < 0.f )
+    PureVector vecWpnPosProjected2D;
+    if (!m_gfx.getCamera().project3dTo2d(
+        getObject3D().getPosVec().getX(),
+        getObject3D().getPosVec().getY(),
+        getObject3D().getPosVec().getZ(),
+        vecWpnPosProjected2D))
+    {
+        // Failure is expected when the weapon is out of frustum, so this is not a real error, ignore it silently
+        //getConsole().EOLn("PRooFPSddPGE::%s(): project3dTo2d() failed!", __func__);
+        return;
+    }
+    else
+    {
+        vecWpnPosProjected2D.SetX(vecWpnPosProjected2D.getX() - m_gfx.getCamera().getViewport().size.width / 2.f);
+        vecWpnPosProjected2D.SetY(vecWpnPosProjected2D.getY() - m_gfx.getCamera().getViewport().size.height / 2.f);
+        //    getConsole().EOLn("PRooFPSddPGE::%s(): wpn2d: (%f,%f,%f), target2d: (%f,%f,%f)",
+        //        __func__,
+        //        vecWpnPosProjected2D.getX(), vecWpnPosProjected2D.getY(), vecWpnPosProjected2D.getZ(),
+        //        targetPos2D.getX(), targetPos2D.getY(), targetPos2D.getZ());
+    }
+
+    const PureVector vecNewTargetPos2D = targetPos2D - vecWpnPosProjected2D;
+    const float distYXratio = (vecNewTargetPos2D.getX() == 0.f) ? vecNewTargetPos2D.getY() : vecNewTargetPos2D.getY()/ vecNewTargetPos2D.getX();
+    if (vecNewTargetPos2D.getX() < 0.f )
     {
         getObject3D().getAngleVec().SetY( 0.f );
         getObject3D().getAngleVec().SetZ( atan( distYXratio )*180.f / PFL::PI );

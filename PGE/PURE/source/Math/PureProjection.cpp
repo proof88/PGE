@@ -21,6 +21,10 @@
 
 /**
     Makes a projection from world-space to window/screen-space.
+    Note that for the projected coordinates, vecProjected = (0,0,z) represents the lower left corner of the window/screen, so if you want
+    to have this projected coordinate vecProjected to be in the same coordinate system as the sticked objects, you need to
+    subtract the half of the camera viewport's width from vecProjected.getX() and the half of the camera viewport's height from vecProjected.getY()
+    because sticked objects have (0,0) as the center of the window/screen as the origin.
 
     @param fWorldX,
            fWorldY,
