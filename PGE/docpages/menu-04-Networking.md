@@ -331,6 +331,8 @@ Considering 8 players:
    This is only the 27% of the packet rate of v0.1.3!  
    - Since **variable packet size** was introduced also in this version in PGE, and MsgUserCmdFromClient is 16 Bytes, PgePacket overhead 15 Bytes so total PgePacket size is 31 Bytes, this leads to:  
      31 \* 128 = **3 968 Byte/s Packet Data Rate** on server-side with 8 players, which is only the 3% of v0.1.3!
+ - **v0.1.6.1:**
+   - same as v0.1.4, the new features did not affect network traffic.
 
 \subsubsection client_packet_rate Client Packet Rate and Packet Data Rate
 
@@ -372,6 +374,8 @@ Considering 8 players, the results are to a single client from the server:
      - 540 PKT/s @ 60 Hz as per serverPickupAndRespawnItems(), with 60 \* 91 + (8\*60) \* 23 = 16500 Byte/s Packet Data Rate
                          (size of MsgWpnUpdateFromServer is 76 Bytes, size of MsgMapItemUpdateFromServer is 8 Bytes, PgePacket overhead is 15 Bytes);
      - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(), with 160 \* 55 = 8800 Byte/s Packet Data Rate (size of MsgUserUpdateFromServer is 40 Bytes, PgePacket overhead is 15 Bytes).
+ - **v0.1.6.1:**
+     - same as v0.1.5, the new features did not affect network traffic.
   
 Considering 8 players, the results to ALL clients from the server (because above shows results to 1 client from the server):  
 just multiply above results by 7 (server sending to itself avoids GNS level thus we multiply by nClientsCount instead of nPlayersCount):
@@ -379,6 +383,7 @@ just multiply above results by 7 (server sending to itself avoids GNS level thus
  - **v0.1.4:** 3 626 PKT/s with 189 574 Byte/s Outgoing Packet Data Rate Total (88% decrease in packet rate and 98% decrease in packet data rate) @ 20 Hz Tickrate  
    (10 626 PKT/s with 548 814 Byte/s Outgoing Packet Data Rate Total that is 65% decrease in packet rate and 93% decrease in packet data rate @ 60 Hz Tickrate);
  - **v0.1.5:** 8 386 PKT/s with 425 614 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
+ - **v0.1.6.1:** same as with v0.1.5.
 
 \subsubsection detailed_packet_rate Detailed Packet Rate per Function
 
@@ -529,10 +534,12 @@ The detailed explanation of the packet rates of each function is below:
       // But due to a bug the traffic was not decreased.
       // 
       // v0.1.4: strafe pkt traffic got fixed so now really 1 PKT is sent per strafe-state-change!
+      // v0.1.6: crouching added as new action as continuous-op like strafe. However, the packet size did not change and we dont need to consider higher frequency
+      //         than what we already considered with strafing, calculations don't need to be changed.
       //
       // Some operations don't need to be set as continuous operation because they are triggered by keyup-keydown pairs (controlled by getKeyboard().isKeyPressedOnce())
       // thus cannot flood the server by simply pressing the relevant buttons continuously: jump, toggleRunWalk, requestReload, weapon switch.
-      // Before v0.1.4: So these are rate-limited at client-side implicitly by the fact that there is a physical limit how many times a player can do key-down-key-up
+      // Before v0.1.4: so these are rate-limited at client-side implicitly by the fact that there is a physical limit how many times a player can do key-down-key-up
       // series within a second, for now we can say worst-case 5/sec, that is so low I'm not considering now.
       // However, weapon changing by keyboard, currently for switching between pistol and mchgun back-and-forth, could reach worst-case 15 PKT/sec in v0.1.3.
       //
