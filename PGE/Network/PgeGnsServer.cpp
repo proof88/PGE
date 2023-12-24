@@ -122,9 +122,9 @@ bool PgeGnsServer::stopListening(const std::string& sExtraDebugText)
 
     // Close all the connections
     CConsole::getConsoleInstance("PgeGnsServer").OLn(
-        "Server closing connections for %u client(s) ... Reason: %s",
+        "Server closing connections for %u client(s) (including itself) ... Reason: %s",
         m_mapClients.size(),
-        sExtraDebugText.empty() ? "" : sExtraDebugText.c_str());
+        sExtraDebugText.empty() ? "unspecified" : sExtraDebugText.c_str());
 
     for (const auto& itClient : m_mapClients)
     {
@@ -387,75 +387,70 @@ void PgeGnsServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
     // So it is safe to do operations on m_queuePackets.
     char szTemp[1024];
 
-    // What's the state of the connection?
+    const char* pszDebugLogAction;
     switch (pInfo->m_info.m_eState)
     {
     case k_ESteamNetworkingConnectionState_None:
-        // NOTE: We will get callbacks here when we destroy connections.  You can ignore these.
-        break;
-
+        // sometimes we fall here immediately with m_eOldState k_ESteamNetworkingConnectionState_Connected when closing down connection
+        // fall-through
     case k_ESteamNetworkingConnectionState_ClosedByPeer:
+        // fall-through
     case k_ESteamNetworkingConnectionState_ProblemDetectedLocally:
     {
-        // Ignore if they were not previously connected.  (If they disconnected
-        // before we accepted the connection.)
-        if (pInfo->m_eOldState == k_ESteamNetworkingConnectionState_Connected)
+        if ((pInfo->m_eOldState == k_ESteamNetworkingConnectionState_Connected) || (pInfo->m_eOldState == k_ESteamNetworkingConnectionState_Connecting))
         {
-            // Locate the client.  Note that it should have been found, because this
-            // is the only codepath where we remove clients (except on shutdown),
-            // and connection change callbacks are dispatched in queue order.
-            auto itClient = m_mapClients.find(pInfo->m_hConn);
-            assert(itClient != m_mapClients.end());
-
-            // Select appropriate log messages
-            const char* pszDebugLogAction;
-            if (pInfo->m_info.m_eState == k_ESteamNetworkingConnectionState_ProblemDetectedLocally)
+            switch (pInfo->m_info.m_eState)
             {
-                pszDebugLogAction = "problem detected locally";
-                sprintf(szTemp, "%s disappeared (%s)", itClient->second.m_sCustomName.c_str(), pInfo->m_info.m_szEndDebug);
+            case k_ESteamNetworkingConnectionState_None:
+                pszDebugLogAction = "disappeared immediately";
+                break;
+            case k_ESteamNetworkingConnectionState_ClosedByPeer:
+                // Note that here we could check the reason code to see if it was a "usual" or an "unusual" one.
+                pszDebugLogAction = "disconnected";
+                break;
+            default: // k_ESteamNetworkingConnectionState_ProblemDetectedLocally
+                pszDebugLogAction = "disappeared, problem detected locally";
+            } // end switch m_eState
+            const auto itClient = m_mapClients.find(pInfo->m_hConn);
+            if (itClient == m_mapClients.end())
+            {
+                assert(false);
+                sprintf(szTemp, "UNKNOWN CLIENT %s, reason %d: %s", pszDebugLogAction, pInfo->m_info.m_eEndReason, pInfo->m_info.m_szEndDebug);
             }
             else
             {
-                // Note that here we could check the reason code to see if
-                // it was a "usual" connection or an "unusual" one.
-                pszDebugLogAction = "closed by peer";
-                sprintf(szTemp, "%s closed connection", itClient->second.m_sCustomName.c_str());
+                sprintf(szTemp, "%s %s, reason %d: %s", itClient->second.m_sCustomName.c_str(), pszDebugLogAction, pInfo->m_info.m_eEndReason, pInfo->m_info.m_szEndDebug);
+                m_mapClients.erase(itClient);  // dont try to send anything to the disconnected client :)
             }
-
-            // Spew something to our own log.  Note that because we put their nick
-            // as the connection description, it will show up, along with their
-            // transport-specific data (e.g. their IP address)
-            CConsole::getConsoleInstance("PgeGnsServer").OLn("%s: SERVER Connection %s (handle %u) %s, reason %d: %s\n",
+            CConsole::getConsoleInstance("PgeGnsServer").OLn("%s: SERVER Connection %s (handle %u) %s",
                 __func__,
                 pInfo->m_info.m_szConnectionDescription,
                 pInfo->m_hConn,
-                pszDebugLogAction,
-                pInfo->m_info.m_eEndReason,
-                pInfo->m_info.m_szEndDebug
+                szTemp
             );
             logDetailedConnectionStatus(pInfo->m_hConn);
 
             pge_network::PgePacket pkt;
             pge_network::PgePacket::initPktPgeMsgUserDisconnected(pkt, pInfo->m_hConn);
-
-            m_mapClients.erase(itClient);  // dont try to send anything to the disconnected client :)
-
             // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
             m_queuePackets.push_back(pkt);
             sendToAllClientsExcept(pkt);
+
+            // Clean up the connection.  This is important!
+            // The connection is "closed" in the network sense, but
+            // it has not been destroyed.  We must close it on our end, too
+            // to finish up.  The reason information do not matter in this case,
+            // and we cannot linger because it's already closed on the other end.
+            m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
         }
         else
         {
-            assert(pInfo->m_eOldState == k_ESteamNetworkingConnectionState_Connecting);
+            CConsole::getConsoleInstance("PgeGnsServer").OLn("%s: SERVER NO ACTION TAKEN: Connection %s (handle %u)",
+                __func__,
+                pInfo->m_info.m_szConnectionDescription,
+                pInfo->m_hConn
+            );
         }
-
-        // Clean up the connection.  This is important!
-        // The connection is "closed" in the network sense, but
-        // it has not been destroyed.  We must close it on our end, too
-        // to finish up.  The reason information do not matter in this case,
-        // and we cannot linger because it's already closed on the other end,
-        // so we just pass 0's.
-        m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
         break;
     }
 
@@ -527,6 +522,16 @@ void PgeGnsServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
 
     default:
         // Silences -Wswitch
+        CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s: SERVER Connection %s (handle %u) %s became UNKNOWN, reason %d: %s, prev state: %u\n",
+            __func__,
+            pInfo->m_info.m_szConnectionDescription,
+            pInfo->m_hConn,
+            "",
+            pInfo->m_info.m_eEndReason,
+            pInfo->m_info.m_szEndDebug,
+            pInfo->m_eOldState
+        );
+
         break;
     }
 }  // onSteamNetConnectionStatusChanged()
