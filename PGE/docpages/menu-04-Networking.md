@@ -596,7 +596,7 @@ So whenever a client input message is received on server-side, instead of proces
 Server dequeues all received messages at its next tick, and responses will be also sent out at this time in the separate serverSendUserUpdates().  
 Remember: the lower the value of **cl_updaterate**, the more we depend on client-side lerp and input-prediction to smooth out player movement experience.
 
-Interesting fact: the original Doom [used P2P lockstep mechanism multiplayer](https://www.gabrielgambetta.com/client-side-prediction-server-reconciliation.html), which at that time was not good to be played over the Internet.  
+Interesting fact: the original Doom [used P2P lockstep mechanism multiplayer](https://gafferongames.com/post/what_every_programmer_needs_to_know_about_game_networking/), which at that time was not good to be played over the Internet.  
 Then Quake introduced the client-server model with the client-side lerp, which was good for LAN, but less good on Internet with bigger distances between machines.  
 So they introduced client-side prediction in QuakeWorld.
 
