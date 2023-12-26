@@ -239,7 +239,7 @@ PGE::runGame() {
           proofps_dd::PRooFPSddPGE::onPacketReceived() {
             handleUserConnected();               // v0.1.4: might generate a few packets but that is only when a new user has just connected, nothing to do here.
             handleUserDisconnected();            // no networking
-            handleUserSetupFromServer();         // no networking
+            handleUserSetupFromServer();         // v0.1.5: might generate a few packets but that is only when a new user is being set up, nothing to do here.
             handleUserCmdMoveFromClient();       // v0.1.4: 18 PKT/s @ 60 FPS server -> client
             handleUserUpdateFromServer();        // no networking
             handleBulletUpdateFromServer();      // no networking

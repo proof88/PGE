@@ -38,7 +38,7 @@ class PgePacketTest;  // forward declaring the unit test class so it can be frie
  * - they are standard-layout,
  * - they are trivially copyable.
  * Details: https://stackoverflow.com/questions/4178175/what-are-aggregates-and-trivial-types-pods-and-how-why-are-they-special/7189821#7189821
- * Note that POD is depreceted from C++20 hence we check the above 3 properties.
+ * Note that POD is deprecated from C++20 hence we check the above 3 properties.
  * 
  * "A pointer to a standard-layout class may be converted (with reinterpret_cast) to a pointer to its first non-static data member and vice versa.
  *  If a standard-layout union holds two or more standard-layout structs, it is permitted to inspect the common initial part of them.
