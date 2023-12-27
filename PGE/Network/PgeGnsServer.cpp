@@ -236,6 +236,10 @@ void PgeGnsServer::sendToClient(const HSteamNetConnection& conn, const pge_netwo
         {
             // TODO: nooo, I need to properly iterate to next appmsg as I iterate in above loop!
             ++m_nTxMsgCount[pge_network::MsgApp::getMsgAppMsgId(*pMsgApp)];
+            //if (pge_network::MsgApp::getMsgAppMsgId(*pMsgApp) == 1u )
+            //{
+            //    CConsole::getConsoleInstance("PgeGnsServer").OLn("%s() Sending out UserSetupFromServer to %u", __func__, conn);
+            //}
         }
     }
     m_nTxByteCount += nActualPktSize;
@@ -244,8 +248,10 @@ void PgeGnsServer::sendToClient(const HSteamNetConnection& conn, const pge_netwo
 void PgeGnsServer::sendToAllClientsExcept(const pge_network::PgePacket& pkt, const HSteamNetConnection& except)
 {
     static_assert(k_HSteamNetConnection_Invalid == 0U, "on upper layers we use connHandle 0 to identify server, so here k_HSteamNetConnection_Invalid must be 0");
+    //CConsole::getConsoleInstance("PgeGnsServer").OLn("%s() start to %u clients ...", __func__, m_mapClients.size());
     for (auto& client : m_mapClients)
     {
+        //CConsole::getConsoleInstance("PgeGnsServer").OLn("%s() client: %u ...", __func__, client.first);
         if (client.first == k_HSteamNetConnection_Invalid)
         {
             // silent ignore, in the future maybe we will simply inject a message to ourselves' message queue
@@ -257,6 +263,7 @@ void PgeGnsServer::sendToAllClientsExcept(const pge_network::PgePacket& pkt, con
             sendToClient(client.first, pkt);
         }
     }
+    //CConsole::getConsoleInstance("PgeGnsServer").OLn("%s() end", __func__);
 }
 
 void PgeGnsServer::inject(const pge_network::PgePacket& pkt)
@@ -495,9 +502,6 @@ void PgeGnsServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
 
         // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
         m_queuePackets.push_back(pkt);
-
-        // TODOOO: network layer needs to set user name! SetClientNick(pInfo->m_hConn, PgePacket::getMessageAsUserConnected(pkt).sUserName);
-
         break;
     }
 
