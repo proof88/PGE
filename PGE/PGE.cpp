@@ -828,7 +828,6 @@ int PGE::initializeGame(const char* szCmdLine)
     window.ShowFull();
     window.WriteSettings();
     //window.SetCursorVisible(false);
-    p->m_gfx.getScreen().SetVSyncEnabled(true);
 
     getConsole().L();
     getConsole().OLnOI("Initializing Input ...");
