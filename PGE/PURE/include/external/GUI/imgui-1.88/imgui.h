@@ -1,3 +1,20 @@
+// ===========================================
+// PR00F88 (West Whiskhyll) change starts here
+// 
+// The original location of this file is in the internal include directory:
+//   include/internal/GUI/imgui-1.88/
+// However, it has been moved to the external include directory:
+//   include/external/GUI/imgui-1.88/
+// 
+// This is because we are shipping PURE with this Dear ImGui header file, we want to expose
+// Dear ImGui's public API to the application, but we want to avoid file duplication too.
+// So this header is used for 2 things:
+//  - to build PURE/PGE;
+//  - to be included by the application.
+// 
+// PR00F88 (West Whiskhyll) change ends here
+// =========================================
+
 // dear imgui, v1.88
 // (headers)
 

@@ -10,9 +10,9 @@
 
 #include "PureBaseIncludes.h"  // PCH
 
-#include "../../include/internal/GUI/imgui-1.88/imgui.h"
-#include "../../include/internal/GUI/imgui-1.88/backends/imgui_impl_opengl2.h"
-#include "../../include/internal/GUI/imgui-1.88/backends/imgui_impl_win32.h"
+#include "imgui.h"                        // this is from the external imgui directory because this we share with apps too
+#include "backends/imgui_impl_opengl2.h"  // this is from the internal imgui directory obviously
+#include "backends/imgui_impl_win32.h"    // this is from the internal imgui directory obviously
 
 #include "../../include/external/Render/PureRendererHWfixedPipe.h"
 #include <cassert>
@@ -114,8 +114,6 @@ public:
 
     void RenderScene();  
 
-    void ShowGuiDemo(TPureBool state);
-
     const TPURE_RENDER_HINT& getRenderHints();
     void  SetRenderHints(const TPURE_RENDER_HINT& hints);
 
@@ -142,12 +140,11 @@ private:
     PureObject3DManager* pObject3DMgr; /**< ObjectManager, at least 1 instance. */
     PureCamera*          pCamera;      /**< Camera, at least 1 instance. */
     PureUiManager*       pUImgr;       /**< UI manager, singleton. */
+    ImGuiContext*        pImGuiCtx;    /**< ImGui context that we share with user application so it can use OUR ImGui instance. */
 
     HGLRC                rc;           /**< Rendering context, initially NULL. Determines whether the renderer is initialized or not. */
     GLfloat              mat4x4Identity[4][4];
     PFL::timeval         timeDurationStart;
-
-    TPureBool            bShowGuiDemo;
 
     // ---------------------------------------------------------------------------
 
@@ -500,7 +497,8 @@ TPureUInt PureRendererHWfixedPipeImpl::initialize(
         }
 
         IMGUI_CHECKVERSION();
-        if (!ImGui::CreateContext())
+        pImGuiCtx = ImGui::CreateContext();
+        if (!pImGuiCtx)
         {
             getConsole().EOLnOO("ERROR: ImGui::CreateContext() failed!");
             shutdown();
@@ -578,6 +576,7 @@ TPureBool PureRendererHWfixedPipeImpl::shutdown()
     {
         ImGui::DestroyContext();
     }
+    pImGuiCtx = nullptr;
 
     if ( !shutdownOpenGL() )
     {
@@ -689,12 +688,6 @@ void PureRendererHWfixedPipeImpl::RenderScene()
     PFL::updateForMaxDuration(stats[stats.size()-1].timeMaxFrameTime, timeFrameStart, timeFrameEnd);
 
 } // RenderScene()
-
-void PureRendererHWfixedPipeImpl::ShowGuiDemo(TPureBool state)
-{
-    bShowGuiDemo = state;
-}
-
 
 const TPURE_RENDER_HINT& PureRendererHWfixedPipeImpl::getRenderHints()
 {
@@ -923,8 +916,7 @@ PureRendererHWfixedPipeImpl::PureRendererHWfixedPipeImpl() :
     screen( screen ),
     pObject3DMgr( NULL ),
     pCamera( NULL ),
-    pUImgr( NULL ),
-    bShowGuiDemo( false )
+    pUImgr( NULL )
 {
     rc = NULL;
     stats.push_back( PureRendererHWfixedPipeImpl::CurrentStats() );
@@ -960,8 +952,7 @@ PureRendererHWfixedPipeImpl::PureRendererHWfixedPipeImpl(
     screen( _scr ),
     pObject3DMgr( NULL ),
     pCamera( NULL ),
-    pUImgr( NULL ),
-    bShowGuiDemo(false)
+    pUImgr( NULL )
 {
     rc = NULL;
     stats.push_back( PureRendererHWfixedPipeImpl::CurrentStats() );
@@ -993,8 +984,7 @@ PureRendererHWfixedPipeImpl::PureRendererHWfixedPipeImpl(const PureRendererHWfix
     screen( PureScreen::createAndGet() ),
     pUImgr( NULL ),
     pObject3DMgr( NULL ),
-    pCamera( NULL ),
-    bShowGuiDemo(false)
+    pCamera( NULL )
 {
 }
 
@@ -1582,7 +1572,7 @@ void PureRendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PureIRenderer& re
 */
 void PureRendererHWfixedPipeImpl::Draw2DObjects(PureIRenderer& renderer)
 {
-    /* legacy 2D code begins */
+    /* legacy PR00FPS 2D code begins */
 
     for (int i = 0; i < pObject3DMgr->getSize(); i++)
     {
@@ -1601,10 +1591,16 @@ void PureRendererHWfixedPipeImpl::Draw2DObjects(PureIRenderer& renderer)
         }
     } // for i
 
-    /* legacy 2D code ends */
+    /* legacy PR00FPS 2D code ends */
+
+    /* PURE UI manager (deprecated) 2D code begins */
 
     glTranslatef( -pCamera->getViewport().size.width / 2.0f, -pCamera->getViewport().size.height / 2.0f, 0.0f );
     pUImgr->Render();
+
+    /* PURE UI manager (deprecated) 2D code ends */
+
+    /* Dear ImGui 2D code begins */
 
     glLoadMatrixf(*mat4x4Identity);
     // Start the Dear ImGui frame
@@ -1612,14 +1608,17 @@ void PureRendererHWfixedPipeImpl::Draw2DObjects(PureIRenderer& renderer)
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    if (bShowGuiDemo)
+    if (pUImgr->getGuiDrawCallback())
     {
-        ImGui::ShowDemoWindow(&bShowGuiDemo);
+        pUImgr->getGuiDrawCallback()();
     }
 
     ImGui::EndFrame();
     ImGui::Render();
     ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+
+    /* Dear ImGui 2D code begins */
+
 } // Draw2DObjects()
 
 

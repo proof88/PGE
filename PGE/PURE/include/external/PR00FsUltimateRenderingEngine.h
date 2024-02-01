@@ -85,7 +85,6 @@ public:
     virtual PureCamera&          getCamera() const = 0;           /**< Get access to camera handler functions. */
     virtual PureUiManager&       getUImanager() const = 0;        /**< Get access to user interface functions. */
     virtual PureIRenderer*       getRenderer() const = 0;         /**< Get access to the selected renderer. */
-    virtual void                 ShowGuiDemo(TPureBool state) = 0;
 
     virtual void                 WriteList() const = 0;           /**< Invoke WriteList() of all children instances. */
 

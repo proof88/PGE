@@ -139,6 +139,9 @@
     <Filter Include="Header Files\PURE\include\external\Render">
       <UniqueIdentifier>{a36ba985-7688-41d3-837a-051f1b497bff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PURE\include\external\GUI">
+      <UniqueIdentifier>{12e00c0e-3afe-48c2-951c-08468c132765}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGE.h">
@@ -462,9 +465,6 @@
     <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imconfig.h">
       <Filter>Header Files\PURE\include\internal\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imgui.h">
-      <Filter>Header Files\PURE\include\internal\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imgui_internal.h">
       <Filter>Header Files\PURE\include\internal\GUI</Filter>
     </ClInclude>
@@ -614,6 +614,9 @@
     </ClInclude>
     <ClInclude Include="PURE\include\external\Math\PureProjection.h">
       <Filter>Header Files\PURE\include\external\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="PURE\include\external\GUI\imgui-1.88\imgui.h">
+      <Filter>Header Files\PURE\include\external\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -10,7 +10,7 @@
 
 #include "PureBaseIncludes.h"  // PCH
 
-#include "../../include/internal/GUI/imgui-1.88/imgui.h"
+#include "imgui.h" // this is from the external directory because this we share with apps too
 #include "../../include/internal/GUI/imgui-1.88/backends/imgui_impl_opengl2.h"
 #include "../../include/internal/GUI/imgui-1.88/backends/imgui_impl_win32.h"
 

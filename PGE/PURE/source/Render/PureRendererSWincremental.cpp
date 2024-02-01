@@ -54,8 +54,6 @@ public:
 
     void RenderScene(); 
 
-    void ShowGuiDemo(TPureBool state);
-
     const TPURE_RENDER_HINT& getRenderHints();
     void  SetRenderHints(const TPURE_RENDER_HINT& hints);
 
@@ -387,12 +385,6 @@ void PureRendererSWincrementalImpl::RenderScene()
     FinishRendering();
 
 } // RenderScene()
-
-void PureRendererSWincrementalImpl::ShowGuiDemo(TPureBool)
-{
-    // this is doing nothing intentionally since we dont have SW implementation for GUI
-}
-
 
 const TPURE_RENDER_HINT& PureRendererSWincrementalImpl::getRenderHints()
 {

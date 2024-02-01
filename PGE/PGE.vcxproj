@@ -140,7 +140,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -171,7 +171,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -202,7 +202,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -233,7 +233,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -269,7 +269,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -306,7 +306,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -338,7 +338,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -429,6 +429,7 @@
     <ClInclude Include="PGEWorldWeather.h" />
     <ClInclude Include="PURE\include\external\Display\PureScreen.h" />
     <ClInclude Include="PURE\include\external\Display\PureWindow.h" />
+    <ClInclude Include="PURE\include\external\GUI\imgui-1.88\imgui.h" />
     <ClInclude Include="PURE\include\external\Hardware\PureHwAudio.h" />
     <ClInclude Include="PURE\include\external\Hardware\PureHwBase.h" />
     <ClInclude Include="PURE\include\external\Hardware\PureHwCentralProcessor.h" />
@@ -470,7 +471,6 @@
     <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\backends\imgui_impl_opengl2.h" />
     <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\backends\imgui_impl_win32.h" />
     <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imconfig.h" />
-    <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imgui.h" />
     <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imgui_internal.h" />
     <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imstb_rectpack.h" />
     <ClInclude Include="PURE\include\internal\GUI\imgui-1.88\imstb_textedit.h" />

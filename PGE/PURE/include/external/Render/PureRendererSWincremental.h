@@ -75,7 +75,4 @@ public:
     */
     virtual void RenderObject(PureObject3D& object) = 0;
 
-    virtual void ShowGuiDemo(TPureBool state) = 0;
-
-
 }; // PureRendererHWfixedPipe

@@ -11,8 +11,6 @@
 
 #include "PureBaseIncludes.h"  // PCH
 
-#include "../include/internal/GUI/imgui-1.88/imgui.h"
-
 #include "../include/external/PR00FsUltimateRenderingEngine.h"
 #include "../include/external/Render/PureRendererHWfixedPipe.h"
 #include "../include/external/Render/PureRendererSWincremental.h"
@@ -58,7 +56,7 @@ public:
     PureCamera&           getCamera() const;      
     PureUiManager&        getUImanager() const;
     PureIRenderer*        getRenderer() const;
-    void                  ShowGuiDemo(TPureBool state);
+    void                  setGuiDrawCallback(const std::function<void()>& cb);
 
     void                  WriteList() const;
 
@@ -443,11 +441,6 @@ PureUiManager& PR00FsUltimateRenderingEngineImpl::getUImanager() const
 PureIRenderer* PR00FsUltimateRenderingEngineImpl::getRenderer() const
 {
     return pRenderer;
-}
-
-void PR00FsUltimateRenderingEngineImpl::ShowGuiDemo(TPureBool state)
-{
-    pRenderer->ShowGuiDemo(state);
 }
 
 

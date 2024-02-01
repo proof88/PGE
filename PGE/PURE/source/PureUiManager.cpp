@@ -58,42 +58,45 @@ public:
 
     virtual ~PureuiManagerImpl();
 
-    void Initialize(HDC wnd_dc);
-    void Deinitialize();
-    TPureBool isInitialized() const;
+    void Initialize(HDC wnd_dc) override;
+    void Deinitialize() override;
+    TPureBool isInitialized() const override;
 
-    PureUiText* addText(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout);
-    PureUiText* addText(const std::string& txt, int x, int y);
+    const std::function<void()>& getGuiDrawCallback() const override;
+    void setGuiDrawCallback(const std::function<void()>& cb) override;
 
-    void RemoveText(const std::string& text, int x, int y, int height);
-    void RemoveAllPermanentTexts();
+    PureUiText* addText(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout) override;
+    PureUiText* addText(const std::string& txt, int x, int y) override;
 
-    PureUiText* text(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout);
-    PureUiText* text(const std::string& txt, int x, int y);
+    void RemoveText(const std::string& text, int x, int y, int height) override;
+    void RemoveAllPermanentTexts() override;
 
-    const std::string& getDefaultFontFace() const;
+    PureUiText* text(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout) override;
+    PureUiText* text(const std::string& txt, int x, int y) override;
 
-    void SetDefaultFontFace(const std::string& face);
+    const std::string& getDefaultFontFace() const override;
 
-    int  getDefaultFontSize() const;
-    void SetDefaultFontSize(int size);
+    void SetDefaultFontFace(const std::string& face) override;
 
-    bool getDefaultFontBold() const;
-    void SetDefaultFontBold(bool bold);
+    int  getDefaultFontSize() const override;
+    void SetDefaultFontSize(int size) override;
 
-    bool getDefaultFontItalic() const;
-    void SetDefaultFontItalic(bool italic);
+    bool getDefaultFontBold() const override;
+    void SetDefaultFontBold(bool bold) override;
 
-    bool getDefaultFontUnderline() const;
-    void SetDefaultFontUnderline(bool underline);
+    bool getDefaultFontItalic() const override;
+    void SetDefaultFontItalic(bool italic) override;
 
-    bool getDefaultFontStrikeout() const;
-    void SetDefaultFontStrikeout(bool strikeout);
+    bool getDefaultFontUnderline() const override;
+    void SetDefaultFontUnderline(bool underline) override;
 
-    const PureColor& getDefaultColor() const;
-          PureColor& getDefaultColor();
+    bool getDefaultFontStrikeout() const override;
+    void SetDefaultFontStrikeout(bool strikeout) override;
 
-    void Render();
+    const PureColor& getDefaultColor() const override;
+          PureColor& getDefaultColor() override;
+
+    void Render() override;
 
 protected:
 
@@ -107,6 +110,8 @@ private:
     HDC hDC;
     std::map<unsigned long, PureUiText> mTexts;
     std::vector<PureUiFontWin*> vFonts;
+
+    std::function<void()> pfGuiCallback;
 
     // dont define these as constants ... should be set at initialization based on system.
     std::string sDefaultFont;
@@ -196,6 +201,8 @@ void PureuiManagerImpl::Deinitialize()
         return;
     }
 
+    pfGuiCallback = nullptr;
+
     // TODO: setting defaults has been copied from Initialize(), let's moved them to a separate funcion!
     sDefaultFont = PURE_UI_MGR_FONT_DEFAULT_FACE;
     nDefaultFontSize = PURE_UI_MGR_FONT_DEFAULT_SIZE;
@@ -220,6 +227,18 @@ void PureuiManagerImpl::Deinitialize()
 TPureBool PureuiManagerImpl::isInitialized() const
 {
     return bInitialized;
+}
+
+
+const std::function<void()>& PureuiManagerImpl::getGuiDrawCallback() const
+{
+    return pfGuiCallback;
+}
+
+
+void PureuiManagerImpl::setGuiDrawCallback(const std::function<void()>& cb)
+{
+    pfGuiCallback = cb;
 }
 
 

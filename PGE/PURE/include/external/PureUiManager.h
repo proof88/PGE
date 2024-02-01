@@ -12,6 +12,11 @@
 */
 
 #include "PureAllHeaders.h"
+
+#include <functional>  // Cpp11
+
+#include "imgui.h"  // this is from the external imgui directory because this we share with apps too
+
 #include "Material/PureColor.h"
 #include "../internal/PureUiText.h"
 
@@ -61,6 +66,27 @@ public:
         Gets whether we are initialized.
     */
     virtual TPureBool isInitialized() const = 0;
+
+
+    /**
+        Returns the previously set GUI callback function.
+    */
+    virtual const std::function<void()>& getGuiDrawCallback() const = 0;
+
+    /**
+        Sets the given GUI draw callback function to be invoked by the renderer in every frame.
+        This callback should invoke Dear ImGui (https://github.com/ocornut/imgui) functions to draw GUI.
+        The caller is not responsible for compiling or initializing Dear ImGui, PURE is in charge for that.
+        PURE is already built with Dear ImGui code.
+        Only the platform-agnostic, actual GUI drawing functions should be invoked that are listed in imgui.h.
+        This header file is in the external include directory of PURE.
+        None of these should be called either:
+         - ImGui::NewFrame();
+         - ImGui::EndFrame();
+         - ImGui::Render().
+        
+    */
+    virtual void setGuiDrawCallback(const std::function<void()>& cb) = 0;
 
 
     /**

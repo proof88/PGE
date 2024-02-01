@@ -94,8 +94,6 @@ public:
     */
     virtual void RenderObject(PureObject3D& object) = 0;
 
-    virtual void ShowGuiDemo(TPureBool state) = 0;
-
     virtual TPureUInt getLastFrameObjectsVisible() const = 0;                         /**< Returns number of objects allowed to be visible in last frame. */
     virtual TPureUInt getLastFrameOccluders() const = 0;                              /**< Returns number of objects that were occluders in last frame. */
     virtual TPureUInt getLastFrameOccludeesNonOcclusionTested() const = 0;            /**< Returns number of occludees that had occlusion test disabled in last frame. */
