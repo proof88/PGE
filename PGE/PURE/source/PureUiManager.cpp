@@ -15,6 +15,8 @@
 
 #include <cassert>
 
+#include "imgui.h"  // this is from the external imgui directory because this we share with apps too
+
 #include "../include/external/Hardware/PureHwInfo.h"
 #include "../include/internal/PurePragmas.h"
 #include "../include/internal/PureUiFontWin.h"

@@ -15,8 +15,6 @@
 
 #include <functional>  // Cpp11
 
-#include "imgui.h"  // this is from the external imgui directory because this we share with apps too
-
 #include "Material/PureColor.h"
 #include "../internal/PureUiText.h"
 
