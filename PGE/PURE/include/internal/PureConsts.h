@@ -28,5 +28,3 @@
 
 #define PURE_NAME    "PR00F's Ultimate Rendering Engine (PURE)"
 #define PURE_VERSION "0.3 private alpha built on "__DATE__" @ "__TIME__
-
-

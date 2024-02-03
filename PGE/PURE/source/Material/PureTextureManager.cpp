@@ -334,10 +334,10 @@ const PureColor& PureTextureManager::PureTextureManagerImpl::getDefaultBorderCol
 // ############################## PROTECTED ##############################
 
 
-PureHwInfo& PureTextureManager::PureTextureManagerImpl::pHWInfo = PureHwInfo::get();
-
-
 // ############################### PRIVATE ###############################
+
+
+PureHwInfo& PureTextureManager::PureTextureManagerImpl::pHWInfo = PureHwInfo::get();
 
 
 /**

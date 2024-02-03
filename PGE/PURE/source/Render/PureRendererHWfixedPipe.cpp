@@ -10,10 +10,6 @@
 
 #include "PureBaseIncludes.h"  // PCH
 
-#include "imgui.h"                        // this is from the external imgui directory because this we share with apps too
-#include "backends/imgui_impl_opengl2.h"  // this is from the internal imgui directory obviously
-#include "backends/imgui_impl_win32.h"    // this is from the internal imgui directory obviously
-
 #include "../../include/external/Render/PureRendererHWfixedPipe.h"
 #include <cassert>
 #include "../../include/external/Math/PureVector.h"
@@ -140,7 +136,6 @@ private:
     PureObject3DManager* pObject3DMgr; /**< ObjectManager, at least 1 instance. */
     PureCamera*          pCamera;      /**< Camera, at least 1 instance. */
     PureUiManager*       pUImgr;       /**< UI manager, singleton. */
-    ImGuiContext*        pImGuiCtx;    /**< ImGui context that we share with user application so it can use OUR ImGui instance. */
 
     HGLRC                rc;           /**< Rendering context, initially NULL. Determines whether the renderer is initialized or not. */
     GLfloat              mat4x4Identity[4][4];
@@ -496,52 +491,6 @@ TPureUInt PureRendererHWfixedPipeImpl::initialize(
             screen.SetVSyncEnabled(bVSyncConfig);
         }
 
-        IMGUI_CHECKVERSION();
-        pImGuiCtx = ImGui::CreateContext();
-        if (!pImGuiCtx)
-        {
-            getConsole().EOLnOO("ERROR: ImGui::CreateContext() failed!");
-            shutdown();
-            return 1;
-        }
-
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
-        io.IniFilename = nullptr;  // by default it is imgui.ini in current work dir, but I dont want this auto-config behavior now ...
-        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
-        ImGui::StyleColorsDark();
-        //ImGui::StyleColorsClassic();
-
-        if (!ImGui_ImplWin32_Init(wnd.getWndHandle()))
-        {
-            getConsole().EOLnOO("ERROR: ImGui::ImGui_ImplWin32_Init() failed!");
-            shutdown();
-            return 1;
-        }
-
-        if (!ImGui_ImplOpenGL2_Init())
-        {
-            getConsole().EOLnOO("ERROR: ImGui::ImGui_ImplOpenGL2_Init() failed!");
-            shutdown();
-            return 1;
-        }
-
-        // Load Fonts
-        // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-        // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-        // - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-        // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-        // - Read 'docs/FONTS.md' for more instructions and details.
-        // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-        //io.Fonts->AddFontDefault();
-        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-        //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-        //IM_ASSERT(font != NULL);
-
     getConsole().OLn("");
     getConsole().SOLn("> Fixed Pipeline HW Renderer initialized");
     getConsole().OLnOO("");
@@ -563,20 +512,6 @@ TPureBool PureRendererHWfixedPipeImpl::shutdown()
     
     getConsole().OIOLn("Shutting down renderer ...");
     getConsole().OI();
-
-    if (ImGui_ImplOpenGL2_Initialized())
-    {
-        ImGui_ImplOpenGL2_Shutdown();
-    }
-    if (ImGui_ImplWin32_Initialized())
-    {
-        ImGui_ImplWin32_Shutdown();
-    }
-    if (ImGui::GetCurrentContext())
-    {
-        ImGui::DestroyContext();
-    }
-    pImGuiCtx = nullptr;
 
     if ( !shutdownOpenGL() )
     {
@@ -1574,50 +1509,31 @@ void PureRendererHWfixedPipeImpl::Draw2DObjects(PureIRenderer& renderer)
 {
     /* legacy PR00FPS 2D code begins */
 
-    for (int i = 0; i < pObject3DMgr->getSize(); i++)
-    {
-        PureObject3D* const obj = (PureObject3D*) pObject3DMgr->getAttachedAt(i);
-        if ( obj == PGENULL )
-            continue;
-
-        if ( ( obj->isRenderingAllowed() )
-                &&
-             ( obj->isStickedToScreen() )
-            )
+        for (int i = 0; i < pObject3DMgr->getSize(); i++)
         {
-            glPushMatrix();
-            obj->draw(PURE_RPASS_NORMAL, false, false);
-            glPopMatrix();
-        }
-    } // for i
+            PureObject3D* const obj = (PureObject3D*) pObject3DMgr->getAttachedAt(i);
+            if ( obj == PGENULL )
+                continue;
+
+            if ( ( obj->isRenderingAllowed() )
+                    &&
+                 ( obj->isStickedToScreen() )
+                )
+            {
+                glPushMatrix();
+                obj->draw(PURE_RPASS_NORMAL, false, false);
+                glPopMatrix();
+            }
+        } // for i
 
     /* legacy PR00FPS 2D code ends */
 
-    /* PURE UI manager (deprecated) 2D code begins */
+    /* PURE UI manager 2D code begins */
 
-    glTranslatef( -pCamera->getViewport().size.width / 2.0f, -pCamera->getViewport().size.height / 2.0f, 0.0f );
-    pUImgr->Render();
+        glTranslatef( -pCamera->getViewport().size.width / 2.0f, -pCamera->getViewport().size.height / 2.0f, 0.0f );
+        pUImgr->render();
 
-    /* PURE UI manager (deprecated) 2D code ends */
-
-    /* Dear ImGui 2D code begins */
-
-    glLoadMatrixf(*mat4x4Identity);
-    // Start the Dear ImGui frame
-    ImGui_ImplOpenGL2_NewFrame();
-    ImGui_ImplWin32_NewFrame();
-    ImGui::NewFrame();
-
-    if (pUImgr->getGuiDrawCallback())
-    {
-        pUImgr->getGuiDrawCallback()();
-    }
-
-    ImGui::EndFrame();
-    ImGui::Render();
-    ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-
-    /* Dear ImGui 2D code begins */
+    /* PURE UI manager 2D code ends */
 
 } // Draw2DObjects()
 

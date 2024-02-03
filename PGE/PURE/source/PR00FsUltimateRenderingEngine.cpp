@@ -148,7 +148,6 @@ TPureUInt PR00FsUltimateRenderingEngineImpl::initialize(
 
     getConsole().OIOLn( PURE_NAME );
     getConsole().OLn( PURE_VERSION );
-    getConsole().OLn( "  with Dear ImGui %s", IMGUI_VERSION);
 
     switch (rndr)
     {
@@ -230,13 +229,13 @@ TPureUInt PR00FsUltimateRenderingEngineImpl::initialize(
         return 1;
     }
 
-    uiMgr.Initialize( wnd.getWndDC() );
+    uiMgr.Initialize( wnd.getWndHandle(), wnd.getWndDC());
 
     pRenderer->SetManagers(pObject3DMgr, &uiMgr, pCamera);
 
-    // Pure is fully operational at this point
+    // PURE is fully operational at this point
     getConsole().OLn("");
-    getConsole().SOLn("> Pure initialized");
+    getConsole().SOLn("> PURE initialized");
     getConsole().OLnOO("");
 
     return 0;

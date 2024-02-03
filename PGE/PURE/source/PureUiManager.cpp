@@ -15,7 +15,9 @@
 
 #include <cassert>
 
-#include "imgui.h"  // this is from the external imgui directory because this we share with apps too
+#include "imgui.h"                        // this is from the external imgui directory because this we share with apps too
+#include "backends/imgui_impl_opengl2.h"  // this is from the internal imgui directory obviously
+#include "backends/imgui_impl_win32.h"    // this is from the internal imgui directory obviously
 
 #include "../include/external/Hardware/PureHwInfo.h"
 #include "../include/internal/PurePragmas.h"
@@ -45,11 +47,11 @@
 
 
 /*
-   PureuiManagerImpl
+   PureUiManagerImpl
    ###########################################################################
 */
 
-class PureuiManagerImpl :
+class PureUiManagerImpl :
     public PureUiManager
 {
 
@@ -58,47 +60,49 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    virtual ~PureuiManagerImpl();
+    virtual ~PureUiManagerImpl();
 
-    void Initialize(HDC wnd_dc) override;
+    void Initialize(HWND wnd_handle, HDC wnd_dc) override;
     void Deinitialize() override;
     TPureBool isInitialized() const override;
 
     const std::function<void()>& getGuiDrawCallback() const override;
     void setGuiDrawCallback(const std::function<void()>& cb) override;
 
-    PureUiText* addText(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout) override;
-    PureUiText* addText(const std::string& txt, int x, int y) override;
+    PureUiText* textPermanentLegacy(
+        const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout) override;
+    PureUiText* textPermanentLegacy(const std::string& txt, int x, int y) override;
 
-    void RemoveText(const std::string& text, int x, int y, int height) override;
-    void RemoveAllPermanentTexts() override;
+    void removeTextPermanentLegacy(const std::string& text, int x, int y, int height) override;
+    void removeAllTextPermanentLegacy() override;
 
-    PureUiText* text(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout) override;
-    PureUiText* text(const std::string& txt, int x, int y) override;
+    PureUiText* textTemporalLegacy(
+        const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout) override;
+    PureUiText* textTemporalLegacy(const std::string& txt, int x, int y) override;
 
-    const std::string& getDefaultFontFace() const override;
+    const std::string& getDefaultFontFaceLegacy() const override;
 
-    void SetDefaultFontFace(const std::string& face) override;
+    void setDefaultFontFaceLegacy(const std::string& face) override;
 
-    int  getDefaultFontSize() const override;
-    void SetDefaultFontSize(int size) override;
+    int  getDefaultFontSizeLegacy() const override;
+    void setDefaultFontSizeLegacy(int size) override;
 
-    bool getDefaultFontBold() const override;
-    void SetDefaultFontBold(bool bold) override;
+    bool getDefaultFontBoldLegacy() const override;
+    void setDefaultFontBoldLegacy(bool bold) override;
 
-    bool getDefaultFontItalic() const override;
-    void SetDefaultFontItalic(bool italic) override;
+    bool getDefaultFontItalicLegacy() const override;
+    void setDefaultFontItalicLegacy(bool italic) override;
 
-    bool getDefaultFontUnderline() const override;
-    void SetDefaultFontUnderline(bool underline) override;
+    bool getDefaultFontUnderlineLegacy() const override;
+    void setDefaultFontUnderlineLegacy(bool underline) override;
 
-    bool getDefaultFontStrikeout() const override;
-    void SetDefaultFontStrikeout(bool strikeout) override;
+    bool getDefaultFontStrikeoutLegacy() const override;
+    void setDefaultFontStrikeoutLegacy(bool strikeout) override;
 
-    const PureColor& getDefaultColor() const override;
-          PureColor& getDefaultColor() override;
+    const PureColor& getDefaultColorLegacy() const override;
+          PureColor& getDefaultColorLegacy() override;
 
-    void Render() override;
+    void render() override;
 
 protected:
 
@@ -110,6 +114,8 @@ private:
 
     bool bInitialized;
     HDC hDC;
+    ImGuiContext* pImGuiCtx;       /**< Dear ImGui context that we share with user application so it can use OUR ImGui instance. */
+    GLfloat mat4x4Identity[4][4];
     std::map<unsigned long, PureUiText> mTexts;
     std::vector<PureUiFontWin*> vFonts;
 
@@ -128,10 +134,10 @@ private:
     /**
         This is the only usable ctor, this is used by the static createAndGet().
     */
-    PureuiManagerImpl();
+    PureUiManagerImpl();
 
-    PureuiManagerImpl(const PureuiManagerImpl&);
-    PureuiManagerImpl& operator=(const PureuiManagerImpl&);
+    PureUiManagerImpl(const PureUiManagerImpl&);
+    PureUiManagerImpl& operator=(const PureUiManagerImpl&);
 
     friend class PureUiManager;
 
@@ -141,29 +147,76 @@ private:
 // ############################### PUBLIC ################################
 
 
-PureuiManagerImpl::~PureuiManagerImpl()
+PureUiManagerImpl::~PureUiManagerImpl()
 {
 
 }
 
 
-/**
-    Sets members to real values within the singleton instance.
-    Does nothing if wnd_dc is NULL.
-*/
-void PureuiManagerImpl::Initialize(HDC wnd_dc)
+void PureUiManagerImpl::Initialize(HWND wnd_handle, HDC wnd_dc)
 {
-    if ( wnd_dc == NULL )
+    if ((wnd_handle == NULL) || (wnd_dc == NULL))
+    {
         return;
+    }
 
-    getConsole().OIOLn("PureUiManager::Initialize() ...");
-    getConsole().OI();
+    getConsole().OLnOI("PureUiManager::Initialize() ...");
     if ( bInitialized )
     {
         getConsole().OLnOO("Already initialized!");     
-        getConsole().OO();
         return;
     }
+
+    if (PureHwInfo::get().getVideo().isAcceleratorDetected())
+    {
+        getConsole().OLn("with Dear ImGui %s", IMGUI_VERSION);
+
+        IMGUI_CHECKVERSION();
+        pImGuiCtx = ImGui::CreateContext();
+        if (!pImGuiCtx)
+        {
+            getConsole().EOLnOO("ERROR: ImGui::CreateContext() failed!");
+            Deinitialize();
+            return;
+        }
+
+        ImGuiIO& io = ImGui::GetIO();
+        io.IniFilename = nullptr;  // by default it is imgui.ini in current work dir, but I dont want this auto-config behavior now ...
+        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+        //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+
+        ImGui::StyleColorsDark();
+        //ImGui::StyleColorsClassic();
+
+        if (!ImGui_ImplWin32_Init(wnd_handle))
+        {
+            getConsole().EOLnOO("ERROR: ImGui::ImGui_ImplWin32_Init() failed!");
+            Deinitialize();
+            return;
+        }
+
+        if (!ImGui_ImplOpenGL2_Init())
+        {
+            getConsole().EOLnOO("ERROR: ImGui::ImGui_ImplOpenGL2_Init() failed!");
+            Deinitialize();
+            return;
+        }
+
+        // Load Fonts
+        // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
+        // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
+        // - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
+        // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
+        // - Read 'docs/FONTS.md' for more instructions and details.
+        // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
+        //io.Fonts->AddFontDefault();
+        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
+        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
+        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
+        //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
+        //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
+        //IM_ASSERT(font != NULL);
+    } // end isAcceleratorDetected()
 
     sDefaultFont = PURE_UI_MGR_FONT_DEFAULT_FACE;
     nDefaultFontSize = PURE_UI_MGR_FONT_DEFAULT_SIZE;
@@ -175,35 +228,32 @@ void PureuiManagerImpl::Initialize(HDC wnd_dc)
     hDC = wnd_dc;
     bInitialized = true;
 
-    if ( bInitialized )
-    {
-        getConsole().OOSOLn("done!");
-        getConsole().OO();
-    }
-    else
-    {
-        getConsole().OOEOLn("Failed to initialize 1 or more UI class(es)!");
-        getConsole().OO();
-        return;
-    }
+    getConsole().OOSOLn("done!");
 }
 
 
-/**
-    This deletes all UI elements and allocated resources, Initialize() can be called again later.
-*/
-void PureuiManagerImpl::Deinitialize()
+void PureUiManagerImpl::Deinitialize()
 {
     getConsole().OLn("PureuiManagerImpl::Deinitialize()");
 
-    if ( !bInitialized )
-    {
-        getConsole().OLnOO("Already deinitialized!");     
-        getConsole().OO();
-        return;
-    }
+    // always deinitialize everything what we can because this is also invoked during initialization error for cleaning up
+    bInitialized = false;
 
     pfGuiCallback = nullptr;
+
+    if (ImGui_ImplOpenGL2_Initialized())
+    {
+        ImGui_ImplOpenGL2_Shutdown();
+    }
+    if (ImGui_ImplWin32_Initialized())
+    {
+        ImGui_ImplWin32_Shutdown();
+    }
+    if (ImGui::GetCurrentContext())
+    {
+        ImGui::DestroyContext();
+    }
+    pImGuiCtx = nullptr;
 
     // TODO: setting defaults has been copied from Initialize(), let's moved them to a separate funcion!
     sDefaultFont = PURE_UI_MGR_FONT_DEFAULT_FACE;
@@ -215,41 +265,54 @@ void PureuiManagerImpl::Deinitialize()
 
     mTexts.clear();
     for (auto pFont : vFonts)
+    {
         delete pFont;
+    }
     vFonts.clear();
 
     hDC = NULL;
-    bInitialized = false;
 } // Deinitialize()
 
 
-/**
-    Gets whether we are initialized.
-*/
-TPureBool PureuiManagerImpl::isInitialized() const
+TPureBool PureUiManagerImpl::isInitialized() const
 {
     return bInitialized;
 }
 
 
-const std::function<void()>& PureuiManagerImpl::getGuiDrawCallback() const
+const std::function<void()>& PureUiManagerImpl::getGuiDrawCallback() const
 {
     return pfGuiCallback;
 }
 
 
-void PureuiManagerImpl::setGuiDrawCallback(const std::function<void()>& cb)
+void PureUiManagerImpl::setGuiDrawCallback(const std::function<void()>& cb)
 {
+    if (!bInitialized)
+    {
+        getConsole().EOLn("%s ERROR: PureUiManager is NOT initialized!", __func__);
+        return;
+    }
+
+    // It can happen that PURE was initialized by a different thread, or from a DLL, or just for any other unknown
+    // reason the caller application might not have the created context of Dear ImGui, so just make sure
+    // that we have the context (we dont want to set it in every frame in render() for performance reasons).
+    // Since this function is supposed to be called by the application it will also implicitly set the context to
+    // the saved context that might had been created by another thread, etc.
+
+    if (!pImGuiCtx)
+    {
+        // should not happen, but do not save the callback if we have problem with the context
+        getConsole().EOLn("%s ERROR: CANNOT HAPPEN: PureUiManager does NOT have Dear ImGui context!", __func__);
+        return;
+    }
+
+    ImGui::SetCurrentContext(pImGuiCtx);
     pfGuiCallback = cb;
-}
+} // setGuiDrawCallback()
 
 
-/**
-    Adds permanent text to the UI.
-    Permanent texts live until explicit deletion. This means that after you add a permanent text to the UI, it will be
-    displayed in all next rendered frames.
-*/
-PureUiText* PureuiManagerImpl::addText(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout)
+PureUiText* PureUiManagerImpl::textPermanentLegacy(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout)
 {
     // here we should search for the font, maybe we have already created it before
     PureUiFontWin* pUIfontWin = NULL;
@@ -261,7 +324,7 @@ PureUiText* PureuiManagerImpl::addText(const std::string& txt, int x, int y, con
         assert(piFont);
         if (!piFont)
         {
-            getConsole().EOLn("PureuiManagerImpl::addText(...) nullptr within vFonts!");
+            getConsole().EOLn("PureuiManagerImpl::textPermanentLegacy(...) nullptr within vFonts!");
             continue;
         }
 
@@ -287,35 +350,23 @@ PureUiText* PureuiManagerImpl::addText(const std::string& txt, int x, int y, con
     mTexts[nHash].getColor() = clrDefault;
 
     return &(mTexts[nHash]);
-}
+} // textPermanentLegacy()
 
 
-/**
-    Adds permanent text to the UI with default properties.
-    Permanent texts live until explicit deletion. This means that after you add a permanent text to the UI, it will be
-    displayed in all next rendered frames.
-*/
-PureUiText* PureuiManagerImpl::addText(const std::string& txt, int x, int y)
+PureUiText* PureUiManagerImpl::textPermanentLegacy(const std::string& txt, int x, int y)
 {
-    return addText(txt, x, y, sDefaultFont, nDefaultFontSize, bDefaultFontBold, bDefaultFontItalic, bDefaultFontUnderline, bDefaultFontStrikeout);
+    return textPermanentLegacy(txt, x, y, sDefaultFont, nDefaultFontSize, bDefaultFontBold, bDefaultFontItalic, bDefaultFontUnderline, bDefaultFontStrikeout);
 }
 
 
-/**
-    Deletes permanent text from the UI.
-    Please note that this command is not needed to be used on temporary texts.
-*/
-void PureuiManagerImpl::RemoveText(const std::string& text, int x, int y, int height)
+void PureUiManagerImpl::removeTextPermanentLegacy(const std::string& text, int x, int y, int height)
 {
     const unsigned long hashToFind = PureUiText::getHash(text, x, y, height);
     mTexts.erase(hashToFind);  // should return 1 on successful deletion, we should check that
     // we should also unittest what happens when trying to delete unexisting key ... erase() should return 0.
 }
 
-/**
-    Deletes all permanent texts from the UI.
-*/
-void PureuiManagerImpl::RemoveAllPermanentTexts()
+void PureUiManagerImpl::removeAllTextPermanentLegacy()
 {
     for (auto it = mTexts.begin(); it != mTexts.end(); )
     {
@@ -326,141 +377,147 @@ void PureuiManagerImpl::RemoveAllPermanentTexts()
     }
 }
 
-/**
-    Adds temporary text to the UI.
-    Temporary texts live until the next rendered frame. This means that in order to display the same temporary text for
-    more than 1 frame, you have to issue this command before rendering every single frame. Although there isn't much
-    performance issue with using temporary texts during multiple frames, adding permanent text could be a better choice.
-*/
-PureUiText* PureuiManagerImpl::text(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout)
+PureUiText* PureUiManagerImpl::textTemporalLegacy(const std::string& txt, int x, int y, const std::string& fontface, int height, bool bold, bool italic, bool underline, bool strikeout)
 {
-    PureUiText* newText = addText(txt, x, y, fontface, height, bold, italic, underline, strikeout);
+    PureUiText* newText = textPermanentLegacy(txt, x, y, fontface, height, bold, italic, underline, strikeout);
     if ( newText )
         newText->SetPermanent( false );
 
     return newText;
 }
 
-/**
-    Adds temporary text to the UI.
-    Temporary texts live until the next rendered frame. This means that in order to display the same temporary text for
-    more than 1 frame, you have to issue this command before rendering every single frame. Although there isn't much
-    performance issue with using temporary texts during multiple frames, adding permanent text could be a better choice.
-*/
-PureUiText* PureuiManagerImpl::text(const std::string& txt, int x, int y)
+PureUiText* PureUiManagerImpl::textTemporalLegacy(const std::string& txt, int x, int y)
 {
-    return this->text(txt, x, y, sDefaultFont, nDefaultFontSize, bDefaultFontBold, bDefaultFontItalic, bDefaultFontUnderline, bDefaultFontStrikeout);
+    return this->textTemporalLegacy(txt, x, y, sDefaultFont, nDefaultFontSize, bDefaultFontBold, bDefaultFontItalic, bDefaultFontUnderline, bDefaultFontStrikeout);
 }
 
-const std::string& PureuiManagerImpl::getDefaultFontFace() const
+const std::string& PureUiManagerImpl::getDefaultFontFaceLegacy() const
 {
     return sDefaultFont;
 }
 
-void PureuiManagerImpl::SetDefaultFontFace(const std::string& face)
+void PureUiManagerImpl::setDefaultFontFaceLegacy(const std::string& face)
 {
     sDefaultFont = face;    
 }
 
-int PureuiManagerImpl::getDefaultFontSize() const
+int PureUiManagerImpl::getDefaultFontSizeLegacy() const
 {
     return nDefaultFontSize;
 }
 
-void PureuiManagerImpl::SetDefaultFontSize(int size)
+void PureUiManagerImpl::setDefaultFontSizeLegacy(int size)
 {
     nDefaultFontSize = size;    
 }
 
-bool PureuiManagerImpl::getDefaultFontBold() const
+bool PureUiManagerImpl::getDefaultFontBoldLegacy() const
 {
     return bDefaultFontBold;
 }
 
-void PureuiManagerImpl::SetDefaultFontBold(bool bold)
+void PureUiManagerImpl::setDefaultFontBoldLegacy(bool bold)
 {
     bDefaultFontBold = bold;    
 }
 
-bool PureuiManagerImpl::getDefaultFontItalic() const
+bool PureUiManagerImpl::getDefaultFontItalicLegacy() const
 {
     return bDefaultFontItalic;
 }
 
-void PureuiManagerImpl::SetDefaultFontItalic(bool italic)
+void PureUiManagerImpl::setDefaultFontItalicLegacy(bool italic)
 {
     bDefaultFontItalic = italic;    
 }
 
-bool PureuiManagerImpl::getDefaultFontUnderline() const
+bool PureUiManagerImpl::getDefaultFontUnderlineLegacy() const
 {
     return bDefaultFontUnderline;
 }
 
-void PureuiManagerImpl::SetDefaultFontUnderline(bool underline)
+void PureUiManagerImpl::setDefaultFontUnderlineLegacy(bool underline)
 {
     bDefaultFontUnderline = underline;    
 }
 
-bool PureuiManagerImpl::getDefaultFontStrikeout() const
+bool PureUiManagerImpl::getDefaultFontStrikeoutLegacy() const
 {
     return bDefaultFontStrikeout;
 }
 
-void PureuiManagerImpl::SetDefaultFontStrikeout(bool strikeout)
+void PureUiManagerImpl::setDefaultFontStrikeoutLegacy(bool strikeout)
 {
     bDefaultFontStrikeout = strikeout;    
 }
 
-/**
-    Returns reference to default color.
-    The default color is black by default.
-*/
-const PureColor& PureuiManagerImpl::getDefaultColor() const
+const PureColor& PureUiManagerImpl::getDefaultColorLegacy() const
 {
     return clrDefault;
 }
 
-/**
-    Returns reference to default color.
-    The default color is black by default.
-*/
-PureColor& PureuiManagerImpl::getDefaultColor()
+PureColor& PureUiManagerImpl::getDefaultColorLegacy()
 {
     return clrDefault;
 }
 
-void PureuiManagerImpl::Render()
+void PureUiManagerImpl::render()
 {
-    glDisable(GL_CULL_FACE);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
-    glDisable(GL_BLEND);
+    /* legacy PR00FPS 2D rendering begins */
 
-    // we hide texts having alpha too low, this way legacy proofps won't have problem
-    // this is because some texts are still displayed by proofps even if they have alpha == 0.0f
-    glEnable(GL_ALPHA_TEST);
-    glAlphaFunc(GL_GEQUAL, 0.1f);
+        glDisable(GL_CULL_FACE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glDisable(GL_DEPTH_TEST);
+        glDisable(GL_LIGHTING);
+        glDisable(GL_BLEND);
 
-    if ( PureHwInfo::get().getVideo().isMultiTexturingSupported() )
-    {
-        glActiveTextureARB(GL_TEXTURE1_ARB);
+        // we hide texts having alpha too low, this way legacy proofps won't have problem
+        // this is because some texts are still displayed by proofps even if they have alpha == 0.0f
+        glEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_GEQUAL, 0.1f);
+
+        if ( PureHwInfo::get().getVideo().isMultiTexturingSupported() )
+        {
+            glActiveTextureARB(GL_TEXTURE1_ARB);
+            glDisable(GL_TEXTURE_2D);
+            glActiveTextureARB(GL_TEXTURE0_ARB);
+        }
         glDisable(GL_TEXTURE_2D);
-        glActiveTextureARB(GL_TEXTURE0_ARB);
-    }
-    glDisable(GL_TEXTURE_2D);
 
-    for (std::map<unsigned long, PureUiText>::const_iterator it = mTexts.begin(); it != mTexts.end(); )
-    {
-        it->second.PrintText();
+        for (std::map<unsigned long, PureUiText>::const_iterator it = mTexts.begin(); it != mTexts.end(); )
+        {
+            it->second.PrintText();
 
-        if ( !(it->second.getPermanent()) )
-            mTexts.erase( it++ );
-        else
-            ++it ;
-    }
-}
+            if ( !(it->second.getPermanent()) )
+                mTexts.erase( it++ );
+            else
+                ++it ;
+        }
+
+    /* legacy PR00FPS 2D rendering ends */
+
+    /* Dear ImGui 2D code begins */
+
+        if (getGuiDrawCallback())
+        {
+
+            glLoadMatrixf(*mat4x4Identity);
+
+            ImGui_ImplOpenGL2_NewFrame();
+            ImGui_ImplWin32_NewFrame();
+            ImGui::NewFrame();
+
+            // application code
+            getGuiDrawCallback()();
+
+            ImGui::EndFrame();
+            ImGui::Render();
+            ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
+
+        }
+
+    /* Dear ImGui 2D code begins */
+} // render()
 
 
 // ############################## PROTECTED ##############################
@@ -472,21 +529,26 @@ void PureuiManagerImpl::Render()
 /**
     This is the only usable ctor, this is used by the static createAndGet().
 */
-PureuiManagerImpl::PureuiManagerImpl()
+PureUiManagerImpl::PureUiManagerImpl()
 {
     bInitialized = false;
     hDC = NULL;
+
+    for (GLint row = 0; row < 4; row++)
+        for (GLint col = 0; col < 4; col++)
+            mat4x4Identity[row][col] = (row == col);
+
     clrDefault.Set(255, 255, 255, 255);
 }
 
 
-PureuiManagerImpl::PureuiManagerImpl(const PureuiManagerImpl&)
+PureUiManagerImpl::PureUiManagerImpl(const PureUiManagerImpl&)
 {
 
 }
 
 
-PureuiManagerImpl& PureuiManagerImpl::operator=(const PureuiManagerImpl&)
+PureUiManagerImpl& PureUiManagerImpl::operator=(const PureUiManagerImpl&)
 {
     return *this;
 }
@@ -501,35 +563,18 @@ PureuiManagerImpl& PureuiManagerImpl::operator=(const PureuiManagerImpl&)
 // ############################### PUBLIC ################################
 
 
-/**
-    Creates and gets the singleton instance.
-*/
 PureUiManager& PureUiManager::createAndGet()
 {
-    static PureuiManagerImpl uiMgrInstance;
+    static PureUiManagerImpl uiMgrInstance;
     return uiMgrInstance;
 }
 
-
-/**
-    Returns access to console preset with logger module name as this class.
-    Intentionally not virtual, so the getConsole() in derived class should hide this instead of overriding.
-
-    @return Console instance used by this class.
-*/
 CConsole& PureUiManager::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
 } // getConsole()
 
 
-/**
-    Returns the logger module name of this class.
-    Intentionally not virtual, so derived class should hide this instead of overriding.
-    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
-
-    @return The logger module name of this class.
-*/
 const char* PureUiManager::getLoggerModuleName()
 {
     return "PureUiManager";
@@ -540,9 +585,3 @@ const char* PureUiManager::getLoggerModuleName()
 
 
 // ############################### PRIVATE ###############################
-
-
-
-
-
-
