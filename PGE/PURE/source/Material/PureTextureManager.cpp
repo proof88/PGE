@@ -779,6 +779,12 @@ void PureTextureManager::SetPixelPreservingEnabled(TPureBool state)
     Based on lazy instancing setting, this function may return an already existing Texture instance if such exists with same file name.
     Lazy instancing is controlled by SetLazyInstancingEnabled().
 
+    The texture may appear misaligned on surfaces under certain circumstances, check the documentation of PureImageManager::createFromFile()
+    for details and workarounds.
+
+    For maximum compatibility with older systems, it is highly recommended to use images having width and height divisible by 2, and
+    equal (width = height).
+
     @return The constructed texture object on success, PGENULL otherwise.
 */
 PureTexture* PureTextureManager::createTextureFromImage(const PureImage& img)
@@ -842,6 +848,12 @@ PureTexture* PureTextureManager::createTextureFromImage(const PureImage& img)
     Only the file formats accepted in ImageManager can be used here.
     Based on lazy instancing setting, this function may return an already existing Texture instance if such exists with same image data.
     Lazy instancing is controlled by SetLazyInstancingEnabled().
+
+    The texture may appear misaligned on surfaces under certain circumstances, check the documentation of PureImageManager::createFromFile()
+    for details and workarounds.
+
+    For maximum compatibility with older systems, it is highly recommended to use images having width and height divisible by 2, and
+    equal (width = height).
 
     @return The constructed texture object on success, PGENULL otherwise.
 */

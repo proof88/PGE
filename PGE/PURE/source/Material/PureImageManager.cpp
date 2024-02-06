@@ -322,12 +322,28 @@ const char* PureImageManager::getLoggerModuleName()
      - at 1 bits (2 colors) the width of the image must be divisible by 32.
 
     Note that with 32 bit BMP files you can utilize real alpha component of pixel colors, but
-    not all image editing application saves real alpha values into 32 bit color depth bitmap files.
-    For example, IrfanView and MS Paint saves 0 or 255 for every pixel's alpha component even if the
+    not all image editing applications save real alpha values into 32 bit color depth bitmap files.
+    For example, IrfanView and MS Paint save 0 or 255 for every pixel's alpha component even if the
     source image was a true transparent PNG.
     But Adobe Flash properly saves transparency data.
     If you want to utilize transparency of 32 bit bitmaps properly, follow the instructions given
     in at PureMaterial::setBlendFuncs().
+
+    The BMP loader implemented in PURE is not compatible with all BMP formats, and this might lead to texture misalignment
+    once you create texture from such BMP file and apply it to an Object3D instance.
+    One case of such misalignment issue is if you export the BMP with color space information.
+    Some applications like GIMP give option to skip writing color space information, so a workaround for this issue can be if
+    you are selecting the option "Do not write color space information": https://github.com/proof88/PRooFPS-dd/issues/271 .
+    
+    If you do not have such control over the BMP exporting procedure, then as another workaround you need to manually
+    adjust the texture UV-coordinates. Texture UV-coordinates can be accessed using PureMaterial::getTexcoords().
+    Note that in case the geometry of your PureObject3D instance is already stored in video memory, you need to re-upload geometry
+    to video memory after correcting the texture coordinates. This can be done by setting the already set vertex transfer mode
+    again for the PureObject3D instace, e.g.:
+
+        PureObject3D* obj = (... create your object ...);
+        (... adjust texture coordinates by writing to obj.getMaterial().getTexcoords() ...);
+        obj.setVertexTransferMode( obj.getVertexTransferMode() );
 
     @return The created Image object on success, PGENULL otherwise.
 */
