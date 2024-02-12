@@ -41,6 +41,9 @@ class PureScreen
 #endif
 
 public:
+
+    static constexpr char* CVAR_GFX_VSYNC = "gfx_vsync";
+
     /**
         Creates and gets the singleton instance.
     */

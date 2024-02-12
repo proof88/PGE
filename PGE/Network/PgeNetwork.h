@@ -39,6 +39,8 @@ namespace pge_network
 #endif
 
     public:
+        static constexpr char* CVAR_NET_SERVER = "net_server";
+
         static PgeNetwork& createAndGet(
             PGEcfgProfiles& cfgProfiles);           /**< Creates and gets the singleton implementation instance. */
 

@@ -22,8 +22,6 @@
 
 using namespace std;
 
-static constexpr char* CVAR_GFX_VSYNC = "gfx_vsync";
-
 /*
    PureRendererHWfixedPipeImpl
    ###########################################################################
@@ -478,7 +476,7 @@ TPureUInt PureRendererHWfixedPipeImpl::initialize(
         timeDurationStart.tv_sec = 0;
         timeDurationStart.tv_usec = 0;
 
-        if (m_cfgProfiles.getVars()[CVAR_GFX_VSYNC].getAsString().empty())
+        if (m_cfgProfiles.getVars()[PureScreen::CVAR_GFX_VSYNC].getAsString().empty())
         {
             // GFX card drivers' default setting in 2015: off (if undefined by application), so we also set it to false initially
             getConsole().OLn("V-Sync default: %b", false);
@@ -486,7 +484,7 @@ TPureUInt PureRendererHWfixedPipeImpl::initialize(
         }
         else
         {
-            const bool bVSyncConfig = m_cfgProfiles.getVars()[CVAR_GFX_VSYNC].getAsBool();
+            const bool bVSyncConfig = m_cfgProfiles.getVars()[PureScreen::CVAR_GFX_VSYNC].getAsBool();
             getConsole().OLn("V-Sync from config: %b", bVSyncConfig);
             screen.SetVSyncEnabled(bVSyncConfig);
         }

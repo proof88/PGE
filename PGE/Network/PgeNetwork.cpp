@@ -13,8 +13,6 @@
 #include "PgeNetwork.h"
 #include "PgeGnsWrapper.h"
 
-static constexpr char* CVAR_NET_SERVER = "net_server";
-
 /*
    PgeNetworkImpl
    ###########################################################################

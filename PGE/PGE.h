@@ -60,6 +60,8 @@ class PGE
 
 public:
 
+    static constexpr char* CVAR_GFX_WINDOWED = "gfx_windowed";  // TODO: Move this into PURE
+
     static PGE* createAndGet(const char* gameTitle);  /**< Creates and gets the only singleton instance. */
 
     static int  showErrorDialog(const char* msg);     /**< Shows an error dialog box. */

@@ -28,7 +28,6 @@
 
 using namespace std;
 
-static constexpr char* CVAR_GFX_WINDOWED = "gfx_windowed";
 static constexpr char* CVAR_CL_EXTRA_RENDER_DELAY = "cl_extra_render_delay";
 static constexpr char* CVAR_SV_EXTRA_RENDER_DELAY = "sv_extra_render_delay";
 static constexpr int   CVAR_EXTRA_RENDER_DELAY_MAX = 2000;
