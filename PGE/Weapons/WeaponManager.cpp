@@ -464,7 +464,7 @@ const PureObject3D& Weapon::getObject3D() const
  */
 void Weapon::UpdatePosition(const PureVector& playerPos)
 {
-    getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY() + m_fWpnYbiasToPlayerCenter, playerPos.getZ());
+    getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY() + WpnYBiasToPlayerCenter, playerPos.getZ());
 }
 
 /**
@@ -474,7 +474,7 @@ void Weapon::UpdatePosition(const PureVector& playerPos)
  */
 void Weapon::UpdatePositions(const PureVector& playerPos, TPureFloat fAngleY, TPureFloat fAngleZ)
 {
-    getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY() + m_fWpnYbiasToPlayerCenter, playerPos.getZ());
+    getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY() + WpnYBiasToPlayerCenter, playerPos.getZ());
     getObject3D().getAngleVec().SetY(fAngleY);
     getObject3D().getAngleVec().SetZ(fAngleZ);
 }
@@ -486,7 +486,7 @@ void Weapon::UpdatePositions(const PureVector& playerPos, TPureFloat fAngleY, TP
  */
 void Weapon::UpdatePositions(const PureVector& playerPos, const PureVector& targetPos2D)
 {
-    getObject3D().getPosVec().Set( playerPos.getX(), playerPos.getY() + m_fWpnYbiasToPlayerCenter, playerPos.getZ() );
+    getObject3D().getPosVec().Set( playerPos.getX(), playerPos.getY() + WpnYBiasToPlayerCenter, playerPos.getZ() );
 
     /*
          By default with AngleY 0° and AngleZ 0°, weapon looks to <- direction.
