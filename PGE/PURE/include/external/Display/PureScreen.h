@@ -49,6 +49,8 @@ public:
     */
     static PureScreen& createAndGet();
 
+    static const char* getLoggerModuleName();         /**< Returns the logger module name of this class. */
+
     // ---------------------------------------------------------------------------
 
     /**
@@ -283,8 +285,10 @@ public:
         Sets the state of VSync.
         Default state is false.
         No effect if VSync is not supported.
+
+        @return The new state. This implies that if requested enabled but a failure happened, false is returned.
     */
-    virtual void SetVSyncEnabled(TPureBool state) = 0;
+    virtual TPureBool setVSyncEnabled(TPureBool state) = 0;
 
 
 }; // class PureScreen

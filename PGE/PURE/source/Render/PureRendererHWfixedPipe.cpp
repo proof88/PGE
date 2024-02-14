@@ -480,13 +480,23 @@ TPureUInt PureRendererHWfixedPipeImpl::initialize(
         {
             // GFX card drivers' default setting in 2015: off (if undefined by application), so we also set it to false initially
             getConsole().OLn("V-Sync default: %b", false);
-            screen.SetVSyncEnabled(false);
+            screen.setVSyncEnabled(false);
+            m_cfgProfiles.getVars()[PureScreen::CVAR_GFX_VSYNC].Set(false);
         }
         else
         {
             const bool bVSyncConfig = m_cfgProfiles.getVars()[PureScreen::CVAR_GFX_VSYNC].getAsBool();
-            getConsole().OLn("V-Sync from config: %b", bVSyncConfig);
-            screen.SetVSyncEnabled(bVSyncConfig);
+            getConsole().O("Trying V-Sync from config: %b ... ", bVSyncConfig);
+            const bool bVSyncSetRet = screen.setVSyncEnabled(bVSyncConfig);
+            m_cfgProfiles.getVars()[PureScreen::CVAR_GFX_VSYNC].Set(bVSyncSetRet);
+            if (bVSyncConfig == bVSyncSetRet)
+            {
+                getConsole().SOLn("OK!");
+            }
+            else
+            {
+                getConsole().EOLn("FAILED!");
+            }
         }
 
     getConsole().OLn("");

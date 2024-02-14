@@ -97,7 +97,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     vector<std::unique_ptr<UnitTest>> tests;
     
        
-    //tests.push_back(std::unique_ptr<UnitTest>(new PFLTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PFLTest));
     
     //tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgVariableTest));
     //tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgFileTest));
@@ -107,12 +107,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     //tests.push_back(std::unique_ptr<UnitTest>(new PgePacketTest));
     
-    /*  
+    /*
     tests.push_back(std::unique_ptr<UnitTest>(new WeaponsTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PGEBulletTest));
     */
     
-    /*   
+    /*
     tests.push_back(std::unique_ptr<UnitTest>(new PureScreenTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PureSharedSettingsTest));
     */

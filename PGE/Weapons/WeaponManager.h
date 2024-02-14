@@ -174,7 +174,7 @@ public:
         WPN_FM_AUTO   /**< Trigger needs to be pulled only once to fire continuously until we have bullet. */
     };
 
-    static constexpr TPureFloat m_fWpnYbiasToPlayerCenter{ 0.15f };
+    static constexpr TPureFloat m_fWpnYbiasToPlayerCenter{ 0.15f };  // TODO: I guess this supposed to be get/set through functions later based on something ...
 
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 

@@ -967,7 +967,7 @@ int PGE::destroyGame()
     Default value is 0, meaning not limiting maximum FPS.
 
     Note that even if this value is 0, maximum FPS might be limited by the current V-Sync setting.
-    V-Sync is controlled by PureScreen::SetVSyncEnabled().
+    V-Sync is controlled by PureScreen::setVSyncEnabled().
 */
 unsigned int PGE::getGameRunningFrequency() const
 {
@@ -981,7 +981,7 @@ unsigned int PGE::getGameRunningFrequency() const
     Default value is 0, meaning not limiting maximum FPS.
 
     Note that even if this value is 0, maximum FPS might be limited by the current V-Sync setting.
-    V-Sync is controlled by PureScreen::SetVSyncEnabled().
+    V-Sync is controlled by PureScreen::setVSyncEnabled().
 */
 void PGE::setGameRunningFrequency(unsigned int freq)
 {

@@ -29,13 +29,13 @@ class PureScreenImpl :
 
 public:
 
-    static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+    static const char* getLoggerModuleName();
 
     // ---------------------------------------------------------------------------
 
     virtual ~PureScreenImpl();
 
-    CConsole&  getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
+    CConsole&  getConsole() const;
 
     TPureBool applyDisplaySettings(HDC dc, TPURE_SCREEN_PF pixelFormat = PURE_SCREEN_PF_SIMPLE);
     void ResetDisplaySettings();
@@ -75,7 +75,7 @@ public:
     void SetFSAAlevel(TPureInt level);
 
     TPureBool isVSyncEnabled() const;
-    void SetVSyncEnabled(TPureBool state);
+    TPureBool setVSyncEnabled(TPureBool state);
 
 private:
 
@@ -110,52 +110,15 @@ private:
     PureScreenImpl& operator=(const PureScreenImpl&);
 
 
-    /**
-        Finds a pixel format for the given HDC based on the previously set values like color bits.
-        This is the legacy way of selecting a pfd and this does not support setting up FSAA.
-        Tries to lower Z-depth bits to 24 or 16 to ensure success.
-        Updates iSimplePixelFormat.
-    */
     void FindSimplePixelFormat(HDC dc);
-
-
-    /**
-        Finds a pixel format for the given HDC based on the previously set values like color bits.
-        Advanced means the pfd will be selected by OpenGL so this method requires OpenGL to be initialized.
-        This method can be used if an FSAA-ready pfd is needed.
-        Updates m_iAdvancedPixelFormat.
-    */
     void FindAdvancedPixelFormat(HDC dc);
-
-
-    /**
-        Reads advanced pixel format about the given pixel format using wglGetPixelFormatAttrib...().
-    */
     void ReadAdvancedPixelFormatInfo(HDC dc, int iAppliedPixelFormat);
-
-
-    /**
-        Sets the given pixel format for the given HDC.
-        Updates m_iAppliedPixelFormat.
-    */
     TPureBool applyPixelFormat(HDC dc, int iPixelFormat, PIXELFORMATDESCRIPTOR* pfd);
 
-
-    /**
-        Reads and stores current display resolution width, height, color depth and refresh rate.
-    */
     void ReadCurrentDisplaySettings(TPureUInt& nWidth, TPureUInt& nHeight, TPureInt& nCDepth, TPureUInt& nRefRate);
 
-
-    /**
-        Finds and the maximum available refresh rate for the given display resolution width, height and color depth.
-    */
     TPureUInt findMaximumRefreshRate(TPureUInt nWidth, TPureUInt nHeight, TPureInt nCDepth);
 
-
-    /**
-        Switches display mode to fullscreen at the given resolution width, height, color depth with the given refresh rate.
-    */
     bool switchToFullscreenMode(TPureUInt nWidth, TPureUInt nHeight, TPureInt nCDepth, TPureUInt nRefRate);
 
     friend class PureScreen;
@@ -198,25 +161,6 @@ const char* PureScreenImpl::getLoggerModuleName()
 } // getLoggerModuleName()
 
 
-/**
-    Applies the set settings and the appropriate pixel format for the given HDC.
-    The following functions must be called before this: 
-        - SetResolution()
-        - SetColorBits()
-        - SetDepthBits()
-    The result of not calling any of the mentioned functions is the function has no effect.
-    Changes screen resolution, color depth and refresh rate ONLY IF fullscreen mode is requested.
-    If fullscreen mode is requested without calling SetFreq() with an available value, like 60, the greatest 
-    available refresh rate will be applied.
-
-    Requesting an FSAA mode is a little bit complex: first call this method with pixelFormat = simple,
-    then after initializing OpenGL, call this method again so an advanced pixel format will be selected.
-    Then shutdown OpenGL, close the previously created window, create a new window and call this
-    method with pixelFormat = advanced. This time an FSAA-ready pixel format will be set so you can
-    reinitialize OpenGL and enable FSAA in it.
-
-    @return True if succeeds, false on error.
-*/
 TPureBool PureScreenImpl::applyDisplaySettings(HDC dc, TPURE_SCREEN_PF pixelFormat)
 {
     getConsole().OLn("PureScreen::applyDisplaySettings()");
@@ -224,8 +168,10 @@ TPureBool PureScreenImpl::applyDisplaySettings(HDC dc, TPURE_SCREEN_PF pixelForm
     if ( bDisplaySettingsApplied )
     {
         getConsole().OLn("  Already applied!");
-        if ( pixelFormat != PURE_SCREEN_PF_NONE )
+        if (pixelFormat != PURE_SCREEN_PF_NONE)
+        {
             FindAdvancedPixelFormat(dc);
+        }
 
         return false;
     }
@@ -283,10 +229,6 @@ TPureBool PureScreenImpl::applyDisplaySettings(HDC dc, TPURE_SCREEN_PF pixelForm
 } // applyDisplaySettings()
 
 
-/**
-    Resets the original display settings.
-    If no settings have been applied yet or not in fullscreen mode, the function has no effect.
-*/
 void PureScreenImpl::ResetDisplaySettings()
 {
     getConsole().OLn("PureScreen::ResetDisplaySettings()");
@@ -302,55 +244,36 @@ void PureScreenImpl::ResetDisplaySettings()
 
     getConsole().OI();
     LONG cdsret;
-    if ( (cdsret = ChangeDisplaySettings(NULL, 0)) == DISP_CHANGE_SUCCESSFUL )
+    if ((cdsret = ChangeDisplaySettings(NULL, 0)) == DISP_CHANGE_SUCCESSFUL)
+    {
         getConsole().SOLn("ChangeDisplaySettings() okay.");
+    }
     else
+    {
         getConsole().EOLn("ChangeDisplaySettings(NULL, 0) failed: %d", cdsret);
+    }
     getConsole().OO();
     bDisplaySettingsApplied = false;
 } // ResetDisplaySettings()
 
 
-/**
-    Gets whether display settings are applied.
-*/
 TPureBool PureScreenImpl::isInitialized() const
 {
     return bDisplaySettingsApplied;
 } // isInitialized()
 
 
-/**
-    Gets the horizontal display resolution.
-    Should be used only after a successful applyDisplaySettings().
-
-    @return The horizontal display resolution in pixels.
-*/
 TPureUInt PureScreenImpl::getResWidth() const
 {
     return nResX;
 } // getWidth()
 
-
-/**
-    Gets the vertical display resolution.
-    Should be used only after a successful applyDisplaySettings().
-
-    @return The vertical display resolution in pixels.
-*/
 TPureUInt PureScreenImpl::getResHeight() const
 { 
     return nResY; 
 } // getHeight()
 
 
-/**
-    Stores the given display resolution.
-    Can be used only before applyDisplaySettings(), no effect otherwise.
-    If w or h is 0, the target width and height will be the current screen resolution.
-    If the current screen resolution can't be queried, the target will be 800x600.
-    A call to applyDisplaySettings() is needed to apply the stored display resolution.
-*/
 void PureScreenImpl::SetResolution(TPureUInt w, TPureUInt h)
 {
     if ( bDisplaySettingsApplied )
@@ -380,21 +303,11 @@ void PureScreenImpl::SetResolution(TPureUInt w, TPureUInt h)
 } // SetWidth()
 
 
-/**
-    Gets whether we wanted fullscreen or not.
-    @return True, if we wanted fullscreen mode, otherwise false.
-*/
 TPureBool PureScreenImpl::isFullScreened() const
 {
     return bFullScreen;
 } // isFullScreened()
 
-
-/**
-    Stores whether we want fullscreen mode or not.
-    Can be used only before applyDisplaySettings(), no effect otherwise.
-    A call to applyDisplaySettings() is needed to apply the setting.
-*/
 void PureScreenImpl::SetFullScreened(TPureBool fs)
 {
     if ( bDisplaySettingsApplied )
@@ -403,23 +316,11 @@ void PureScreenImpl::SetFullScreened(TPureBool fs)
 } // SetFullScreened()
 
 
-/**
-    Gets the stored display refresh rate.
-
-    @return 0 or the stored value, if called before a successful applyDisplaySettings(), otherwise
-            the finally selected refreshrate after a successful applyDisplaySettings().
-*/
 TPureUInt PureScreenImpl::getFreq() const
 { 
     return nRefreshRate; 
 } // getFreq()
 
-
-/**
-    Stores the needed display refresh rate.
-    Can be used only before applyDisplaySettings(), no effect otherwise.
-    The stored display refresh rate will be applied only in fullscreen mode by a successful applyDisplaySettings().
-*/
 void PureScreenImpl::SetFreq(TPureUInt f)
 {
     if ( bDisplaySettingsApplied )
@@ -429,23 +330,11 @@ void PureScreenImpl::SetFreq(TPureUInt f)
 } // SetFreq()
 
 
-/**
-    Gets the stored display color depth.
-    @return 0 before a call to applyDisplaySettings() or SetColorBits().
-            The stored value after SetColorBits() and before applyDisplaySettings().
-            The finally selected value after a successful applyDisplaySettings().
-*/
 TPureInt PureScreenImpl::getColorBits() const
 { 
     return nBitsColor;
 } // getColorBits()
 
-
-/**
-    Stores the needed display color depth.
-    Can be used only before applyDisplaySettings(), no effect otherwise.
-    A call to applyDisplaySettings() is needed to apply the setting.
-*/
 void PureScreenImpl::SetColorBits(TPureInt c)
 {
     if ( bDisplaySettingsApplied )
@@ -455,25 +344,11 @@ void PureScreenImpl::SetColorBits(TPureInt c)
 } // SetColorBits()
 
 
-/**
-    Gets the needed Z-buffer depth.
-
-    @return 0 before a call to applyDisplaySettings() or SetDepthBits().
-            The stored value after SetColorBits() and before applyDisplaySettings().
-            The finally selected value after a successful applyDisplaySettings(). This value maybe lower than the needed value because
-            the engine automatically tries to apply a lower value if the needed value is not supported by the driver.
-*/
 TPureInt PureScreenImpl::getDepthBits() const
 { 
     return nBitsDepth; 
 } // getDepthBits()
 
-
-/**
-    Stores the needed Z-Buffer depth.
-    Can be used only before applyDisplaySettings(), no effect otherwise.
-    A call to applyDisplaySettings() is needed to apply the setting.
-*/
 void PureScreenImpl::SetDepthBits(TPureInt d)
 {
     if ( bDisplaySettingsApplied )
@@ -483,24 +358,11 @@ void PureScreenImpl::SetDepthBits(TPureInt d)
 } // SetDepthBits()
 
 
-/**
-    Gets the stored Stencil Buffer depth.
-                                      
-    @return 0 before a call to applyDisplaySettings() or SetStencilBits().
-            The stored value after SetStencilBits() and before applyDisplaySettings().
-            The finally selected value after a successful applyDisplaySettings().
-*/
 TPureInt PureScreenImpl::getStencilBits() const
 { 
     return nBitsStencil; 
 } // getStencilBits()
 
-
-/**
-    Stores the needed Stencil Buffer depth.
-    Can be used only before applyDisplaySettings(), no effect otherwise.
-    A call to applyDisplaySettings() is needed to apply the setting.
-*/
 void PureScreenImpl::SetStencilBits(TPureInt s)
 {
     if ( bDisplaySettingsApplied )
@@ -510,97 +372,49 @@ void PureScreenImpl::SetStencilBits(TPureInt s)
 } // SetStencilBits()
 
 
-/**
-    Gets whether the screensaver is allowed or not while the engine is running.
-    Disabled by default.
-
-    @return True if screensaver is allowed, false otherwise. 
-*/
 TPureBool PureScreenImpl::isScreensaverEnabled() const
 { 
     return sharedSettings.get(PURE_SSET_SCREENSAVER_ALLOWED);
 } // isScreensaverEnabled()
 
-
-/**
-    Sets whether the screensaver is allowed or not while the engine is running.
-    Disabled by default.
-*/
 void PureScreenImpl::SetScreensaverEnabled(TPureBool state) 
 { 
     sharedSettings.Set(PURE_SSET_SCREENSAVER_ALLOWED, state); 
 } // SetScreensaverEnabled()
 
 
-/**
-    Gets whether monitor power saving is allowed or not while the engine is running.
-    Enabled by default.
-
-    @return True if monitor power saving is allowed, false otherwise.
-*/
 TPureBool PureScreenImpl::isMonitorPowersaveEnabled() const
 { 
     return sharedSettings.get(PURE_SSET_MONITORPOWERSAVE_ALLOWED);
 } // isMonitorPowersaveEnabled()
 
-
-/**
-    Sets whether monitor power saving is allowed or not while the engine is running.
-    Enabled by default.
-*/
 void PureScreenImpl::SetMonitorPowersaveEnabled(TPureBool state) 
 { 
     sharedSettings.Set(PURE_SSET_MONITORPOWERSAVE_ALLOWED, state);
 } // SetMonitorPowersaveEnabled()
 
 
-/**
-    Gets whether computer standy is allowed or not while the engine is running.
-    Disabled by default.
-
-    @return True if computer standy is allowed, false otherwise.
-*/
 TPureBool PureScreenImpl::isStandbyEnabled() const
 { 
     return sharedSettings.get(PURE_SSET_STANDBY_ALLOWED); 
 } // isStandbyEnabled()
 
-
-/**
-    Sets whether computer standy is allowed or not while the engine is running.
-    Disabled by default.
-*/
 void PureScreenImpl::SetStandbyEnabled(TPureBool state) 
 { 
     sharedSettings.Set(PURE_SSET_STANDBY_ALLOWED, state);
 } // SetStandbyEnabled()
 
 
-/**
-    Gets whether the engine is ready to use FSAA.
-    @return True if FSAA can be used, false otherwise. 
-*/
 TPureBool PureScreenImpl::isFSAAready() const
 { 
     return bFSAA_ready;
 } // isFSAAready()
 
-
-/**
-    Gets the actual FSAA-level. Default value is 0.
-    @return The actual FSAA-value, 0 means no FSAA.
-*/
 TPureInt PureScreenImpl::getFSAAlevel() const
 { 
     return iFSAA_state; 
 } // getFSAACurrentLevel()
 
-
-/**
-    Sets the needed FSAA-level. Default value is 0.
-    Can be used only before applyDisplaySettings(), no effect otherwise.
-    A call to applyDisplaySettings() is needed to apply the setting.
-*/
 void PureScreenImpl::SetFSAAlevel(TPureInt level)
 { 
     if ( bDisplaySettingsApplied )
@@ -610,42 +424,37 @@ void PureScreenImpl::SetFSAAlevel(TPureInt level)
 } // getFSAACurrentLevel()
 
 
-/**
-    Gets whether VSync is enabled or not.
-    Disabled by default.
-
-    @return True if VSync is currently enabled, otherwise false.
-*/
 TPureBool PureScreenImpl::isVSyncEnabled() const
 {
     return bVSyncState;
 } // isVSyncEnabled()
 
-
-/**
-    Sets the state of VSync.
-    Default state is false.
-    No effect if VSync is not supported.
-*/
-void PureScreenImpl::SetVSyncEnabled(TPureBool state)
+TPureBool PureScreenImpl::setVSyncEnabled(TPureBool state)
 {
     if ( sharedSettings.get(PURE_SSET_VSYNC_SUPPORTED) )
     {
         if ( TRUE == wglSwapIntervalEXT( state ? 1 : 0 ) )
         {
             bVSyncState = state;
-            getConsole().SOLn("SetVSyncEnabled(%b) OK!", state);
+            getConsole().SOLn("setVSyncEnabled(%b) OK!", state);
         }
         else
         {
-            getConsole().EOLn("SetVSyncEnabled(%b) ERROR: wglSwapIntervalEXT() failed!", state);
+            bVSyncState = false;
+            getConsole().EOLn("setVSyncEnabled(%b) ERROR: wglSwapIntervalEXT() failed!", state);
         }
     }
     else
     {
-        getConsole().EOLn("SetVSyncEnabled(%b) ERROR: VSync is not supported!", state);
+        bVSyncState = false;
+        if (state)
+        {
+            getConsole().EOLn("setVSyncEnabled(%b) ERROR: VSync is not supported!", state);
+        }
     }
-} // SetVSyncEnabled()
+
+    return bVSyncState;
+} // setVSyncEnabled()
 
 
 
@@ -957,6 +766,19 @@ PureScreen& PureScreen::createAndGet()
     static PureScreenImpl screenInstance;
     return (PureScreen&) screenInstance;
 } // createAndGet()
+
+
+/**
+    Returns the logger module name of this class.
+    Intentionally not virtual, so derived class should hide this instead of overriding.
+    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
+
+    @return The logger module name of this class.
+*/
+const char* PureScreen::getLoggerModuleName()
+{
+    return PureScreenImpl::getLoggerModuleName();
+} // getLoggerModuleName()
 
 
 // ############################## PROTECTED ##############################

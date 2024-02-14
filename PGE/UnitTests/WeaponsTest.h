@@ -1357,7 +1357,7 @@ private:
             b = true;
 
             wpn.UpdatePosition(PureVector(10.f, 20.f, 30.f));
-            b &= assertEquals(PureVector(10.f, 20.f, 30.f), wpn.getObject3D().getPosVec(), "pos");
+            b &= assertEquals(PureVector(10.f, 20.f + Weapon::m_fWpnYbiasToPlayerCenter, 30.f), wpn.getObject3D().getPosVec(), "pos");
 
         }
         catch (const std::exception& e)
@@ -1411,31 +1411,37 @@ private:
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
             b = true;
 
+            // this test requires proper camera direction, since getCamera().project3dTo2d() is invoked by Weapon::UpdatePositions(PureVector,PureVector)
+            engine->getCamera().SetNearPlane(0.1f);
+            engine->getCamera().SetFarPlane(100.0f);
+            engine->getCamera().getPosVec().Set(0, 0, -5);
+            engine->getCamera().getTargetVec().Set(0, 0, 1);
+
             wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
             wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
 
-            wpn.UpdatePositions(PureVector(0.f, 0.f, 0.f), PureVector(1.f, 1.f, 0.f));
+            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::m_fWpnYbiasToPlayerCenter, 0.f), PureVector(1.f, 1.f, 0.f));
             b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 1");
             b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 180.f, -45.f), wpn.getObject3D().getAngleVec(), "angle right up");
 
             wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
             wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
 
-            wpn.UpdatePositions(PureVector(0.f, 0.f, 0.f), PureVector(-1.f, 1.f, 0.f));
+            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::m_fWpnYbiasToPlayerCenter, 0.f), PureVector(-1.f, 1.f, 0.f));
             b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 2");
             b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 0.f, -45.f), wpn.getObject3D().getAngleVec(), "angle left up");
 
             wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
             wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
 
-            wpn.UpdatePositions(PureVector(0.f, 0.f, 0.f), PureVector(-1.f, -1.f, 0.f));
+            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::m_fWpnYbiasToPlayerCenter, 0.f), PureVector(-1.f, -1.f, 0.f));
             b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 3");
             b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 0.f, 45.f), wpn.getObject3D().getAngleVec(), "angle left bottom");
 
             wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
             wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
 
-            wpn.UpdatePositions(PureVector(0.f, 0.f, 0.f), PureVector(-1.f, -1.f, 0.f));
+            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::m_fWpnYbiasToPlayerCenter, 0.f), PureVector(-1.f, -1.f, 0.f));
             b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 4");
             b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 0.f, 45.f), wpn.getObject3D().getAngleVec(), "angle right bottom");
 
@@ -1461,7 +1467,7 @@ private:
             wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
             wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
 
-            wpn.UpdatePositions(PureVector(0.f, 0.f, 0.f), 180.f, 60.f);
+            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::m_fWpnYbiasToPlayerCenter, 0.f), 180.f, 60.f);
             b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos");
             b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 180.f, 60.f), wpn.getObject3D().getAngleVec(), "angle");
 

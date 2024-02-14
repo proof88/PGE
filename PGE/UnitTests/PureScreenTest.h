@@ -85,7 +85,7 @@ protected:
         scr.SetScreensaverEnabled(screensvrOrig);
         scr.SetMonitorPowersaveEnabled(monitorpwrOrig);
         scr.SetStandbyEnabled(standbyOrig);
-        scr.SetVSyncEnabled(vsyncOrig);
+        scr.setVSyncEnabled(vsyncOrig);
         if ( engine )
         {
             engine->shutdown();
@@ -382,8 +382,9 @@ private:
 
     bool testSetVSyncEnabled1()
     {
-        scr.SetVSyncEnabled(true);
-        return assertFalse(scr.isVSyncEnabled());
+        const bool bRet = scr.setVSyncEnabled(true);
+        return assertFalse(scr.isVSyncEnabled(), "isVSyncEnabled") &
+            assertFalse(bRet, "returned");
     }
 
     bool testSetVSyncEnabled2()
@@ -391,7 +392,7 @@ private:
         engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
         
-        scr.SetVSyncEnabled(true);
+        const bool bRet = scr.setVSyncEnabled(true);
         const bool b1 = scr.isVSyncEnabled();
 
         if ( engine )
@@ -399,7 +400,8 @@ private:
             engine->shutdown();
             engine = NULL;
         }
-        return assertTrue(b1);
+        return assertTrue(b1, "isVSyncEnabled") &
+            assertTrue(bRet, "returned");;
     }
 
     bool testSetFSAAlevel1()

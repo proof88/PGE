@@ -308,7 +308,7 @@ TPureUInt PureRendererSWincrementalImpl::initialize(
     getConsole().OLn("");
 
         // GFX card drivers' default setting in 2015: off (if undefined by application), so we also set it to false initially
-        screen.SetVSyncEnabled(false);
+        screen.setVSyncEnabled(false);
         bInited = true;
 
     getConsole().OLn("");
