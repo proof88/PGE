@@ -194,6 +194,7 @@ void PGE::PGEimpl::SetInactiveLikeActive(bool value)
 
 void PGE::PGEimpl::setCookie(int cookie)
 {
+    getConsole().OLn("PGE::setCookie(%d), previous value was: %d", cookie, m_nCookie);
     m_nCookie = cookie;
 }
 
@@ -637,7 +638,7 @@ void PGE::setCookie(int cookie)
 */
 int PGE::getCookie() const
 {
-    p->getCookie();
+    return p->getCookie();
 }
 
 
