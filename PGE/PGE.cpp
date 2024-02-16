@@ -58,6 +58,9 @@ public:
     bool isInactiveLikeActive() const;       
     void SetInactiveLikeActive(bool value);  
 
+    void setCookie(int cookie);
+    int getCookie() const;
+
     PGEcfgProfiles& getConfigProfiles();
     PGEInputHandler& getInput() const;       
     PGEWorld& getWorld() const;             
@@ -101,6 +104,8 @@ private:
     std::string m_sGameTitle;             /**< Simplified name of the game, used in paths too, so can't contain joker chars. */
     int         m_nInactiveSleep;         /**< Amount of sleep in millisecs when inactive, 0 means no sleep. */
     bool        m_bInactiveLikeActive;    /**< If true, runGame() will act the same way in inactive state as in active state. */
+
+    int         m_nCookie;                /**< A custom cookie for arbitrary use by the application. */
 
     unsigned int m_nTargetGameLoopFreq;   /**< Frequency for the main game engine loop, 0 means no target frequency. */
     double m_minFrameTimeMicrosecs;
@@ -186,6 +191,16 @@ void PGE::PGEimpl::SetInactiveLikeActive(bool value)
 {
     m_bInactiveLikeActive = value;
 } // setInactiveLikeActive()
+
+void PGE::PGEimpl::setCookie(int cookie)
+{
+    m_nCookie = cookie;
+}
+
+int PGE::PGEimpl::getCookie() const
+{
+    return m_nCookie;
+}
 
 
 PGEcfgProfiles& PGE::PGEimpl::getConfigProfiles()
@@ -308,6 +323,9 @@ PGE::PGEimpl::PGEimpl() :
     m_network( pge_network::PgeNetwork::createAndGet(m_cfgProfiles) ),
     m_sysSFX(m_cfgProfiles),
     m_bIsGameRunning(false),
+    m_nInactiveSleep(PGE_INACTIVE_SLEEP),
+    m_bInactiveLikeActive(PGE_INACTIVE_AS_ACTIVE),
+    m_nCookie(0),
     m_nTargetGameLoopFreq(0),
     m_minFrameTimeMicrosecs(0.0),
     m_nRenderExtraDelayMillisecs(0)
@@ -326,6 +344,9 @@ PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     m_network( pge_network::PgeNetwork::createAndGet(m_cfgProfiles) ),
     m_sysSFX(m_cfgProfiles),
     m_bIsGameRunning(false),
+    m_nInactiveSleep(PGE_INACTIVE_SLEEP),
+    m_bInactiveLikeActive(PGE_INACTIVE_AS_ACTIVE),
+    m_nCookie(0),
     m_nTargetGameLoopFreq(0),
     m_minFrameTimeMicrosecs(0.0),
     m_nRenderExtraDelayMillisecs(0)
@@ -347,9 +368,9 @@ PGE::PGEimpl& PGE::PGEimpl::operator=(const PGE::PGEimpl&)
 PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     m_pOwner(NULL),  // currently not used
     m_cfgProfiles(gameTitle),
-    m_inputHandler( PGEInputHandler::createAndGet(m_cfgProfiles) ),
-    m_world( PGEWorld::createAndGet() ),
-    m_gfx( PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler) ),
+    m_inputHandler(PGEInputHandler::createAndGet(m_cfgProfiles)),
+    m_world(PGEWorld::createAndGet()),
+    m_gfx(PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler)),
     m_sysGFX(m_cfgProfiles, m_inputHandler),
     m_network(pge_network::PgeNetwork::createAndGet(m_cfgProfiles)),
     m_sysSFX(m_cfgProfiles),
@@ -357,6 +378,7 @@ PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     m_sGameTitle(gameTitle),
     m_nInactiveSleep(PGE_INACTIVE_SLEEP),
     m_bInactiveLikeActive(PGE_INACTIVE_AS_ACTIVE),
+    m_nCookie(0),
     m_nTargetGameLoopFreq(0),
     m_minFrameTimeMicrosecs(0.0),
     m_nRenderExtraDelayMillisecs(0)
@@ -593,6 +615,33 @@ void PGE::SetInactiveLikeActive(bool value)
 
 
 /**
+    Sets a special purpose value for arbitrary use.
+    This value is not reset by shutdown(), so the application can still use it for arbitrary purpose.
+    This value is returned by runGame().
+    This value is reset to 0 by initializeGame().
+
+    For example, if there is a condition that normally requires an application restart (e.g. change special display setting), the game engine
+    can be restarted without actually exiting the application: the game can set a custom value here, then initiate the shutdown, so runGame() will
+    return, then destroyGame() should be invoked, and then initializeGame() can be run again.
+    An example for this is the WinMain() function of PRooFPS-dd (https://github.com/proof88/PRooFPS-dd/blob/main/PRooFPS-dd/PRooFPS-dd.cpp).
+*/
+void PGE::setCookie(int cookie)
+{
+    p->setCookie(cookie);
+}
+
+/**
+    Gets the previously set special purpose value for arbitrary use.
+    This value is by default 0.
+    It is also returned by runGame().
+*/
+int PGE::getCookie() const
+{
+    p->getCookie();
+}
+
+
+/**
     Returns the config handler object.
 
     @return Game engine config handler.
@@ -694,6 +743,8 @@ int PGE::initializeGame(const char* szCmdLine)
     getConsole().OI();
     getConsole().OLn(PGE_NAME);
     getConsole().OLn(PGE_VERSION);
+
+    setCookie(0);
 
     if (!onGameInitializing())
     {
@@ -873,7 +924,7 @@ int PGE::initializeGame(const char* szCmdLine)
 /**
     Runs the game.
 
-    @return Always 0.
+    @return A custom cookie value as returned by getCookie().
 */
 int PGE::runGame()
 {
@@ -929,7 +980,7 @@ int PGE::runGame()
         //}
     }
 
-    return 0;
+    return getCookie();
 } // runGame()
 
 

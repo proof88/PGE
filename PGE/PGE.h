@@ -85,6 +85,9 @@ public:
     bool isInactiveLikeActive() const;         /**< Gets whether runGame() acts the same way in inactive state as in active state. */
     void SetInactiveLikeActive(bool value);    /**< Sets how runGame() should act in inactive state. */
 
+    void setCookie(int cookie);                /**< Sets a special purpose value for arbitrary use. */
+    int getCookie() const;                     /**< Gets a previously set special purpose value for arbitrary use. */
+
     PGEcfgProfiles& getConfigProfiles() const; /**< Returns the config handler object. */
     PGEInputHandler& getInput() const;         /**< Returns the input handler object. */
     PGEWorld& getWorld() const;                /**< Returns the world object. */
