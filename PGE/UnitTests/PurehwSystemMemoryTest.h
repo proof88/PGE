@@ -25,8 +25,7 @@ public:
     PureHwSystemMemoryTest() :
         UnitTest( __FILE__ ),
         hw( PureHwInfo::get() ),
-        mem( PureHwSystemMemory::get() ),
-        cfgProfiles("")
+        mem( PureHwSystemMemory::get() )
     {
         engine = NULL;
     }
@@ -89,8 +88,7 @@ private:
 
     PureHwSystemMemoryTest(const PureHwSystemMemoryTest&) :
         hw( PureHwInfo::get() ),
-        mem( PureHwSystemMemory::get() ),
-        cfgProfiles("")
+        mem( PureHwSystemMemory::get() )
     {};         
 
     PureHwSystemMemoryTest& operator=(const PureHwSystemMemoryTest&)

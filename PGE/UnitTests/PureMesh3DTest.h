@@ -34,8 +34,7 @@ class PureMesh3DTest :
 public:
 
     PureMesh3DTest() :
-        UnitTest( __FILE__ ),
-        cfgProfiles("")
+        UnitTest( __FILE__ )
     {
         engine = NULL;
         mesh = NULL;
@@ -161,8 +160,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PureMesh3DTest(const PureMesh3DTest&) :
-        cfgProfiles("")
+    PureMesh3DTest(const PureMesh3DTest&)
     {};         
 
     PureMesh3DTest& operator=(const PureMesh3DTest&)

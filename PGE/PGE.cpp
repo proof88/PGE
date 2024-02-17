@@ -258,7 +258,7 @@ int PGE::PGEimpl::destroyGame()
     m_sysGFX.destroySysGFX();
     m_sysSFX.destroySysSFX();
     getNetwork().shutdown();
-    // m_cfgProfiles doesnt have any shutdown
+    m_cfgProfiles.shutdown();
 
     getConsole().Deinitialize();
 
@@ -316,7 +316,6 @@ int PGE::PGEimpl::showWindowsMessageDialogWin32(PGE_MSG_ID msg_id, PGE_MSG_ID cp
 
 PGE::PGEimpl::PGEimpl() :
     m_pOwner(NULL),  // currently not used
-    m_cfgProfiles(""),
     m_inputHandler( PGEInputHandler::createAndGet(m_cfgProfiles) ),
     m_world( PGEWorld::createAndGet() ),
     m_gfx( PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler) ),
@@ -337,7 +336,6 @@ PGE::PGEimpl::PGEimpl() :
 
 PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     m_pOwner(NULL),  // currently not used
-    m_cfgProfiles(""),
     m_inputHandler( PGEInputHandler::createAndGet(m_cfgProfiles) ),
     m_world( PGEWorld::createAndGet() ),
     m_gfx( PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler) ),
@@ -368,7 +366,6 @@ PGE::PGEimpl& PGE::PGEimpl::operator=(const PGE::PGEimpl&)
 */
 PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     m_pOwner(NULL),  // currently not used
-    m_cfgProfiles(gameTitle),
     m_inputHandler(PGEInputHandler::createAndGet(m_cfgProfiles)),
     m_world(PGEWorld::createAndGet()),
     m_gfx(PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler)),
@@ -757,6 +754,7 @@ int PGE::initializeGame(const char* szCmdLine)
     getConsole().OLn("Game Title: %s", p->m_sGameTitle.c_str());
     getConsole().OLn("Command Line Args: %s", szCmdLine);
 
+    p->m_cfgProfiles.reinitialize(p->m_sGameTitle.c_str());
     getConsole().OLn("Documents Folder: %s", p->m_cfgProfiles.getMyDocsFolder().c_str());
     p->m_nLangTable = p->m_cfgProfiles.readLanguageData( p->m_pLangTable );
     getConsole().OLn("Lang Table with %d rows from %s.", p->m_nLangTable, p->m_cfgProfiles.getLangFileName().c_str());

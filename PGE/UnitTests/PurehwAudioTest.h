@@ -25,8 +25,7 @@ public:
     PureHwAudioTest() :
         UnitTest( __FILE__ ),
         hw( PureHwInfo::get() ), 
-        audio( PureHwAudio::get() ),
-        cfgProfiles("")
+        audio( PureHwAudio::get() )
     {
         engine = NULL;
     }
@@ -86,8 +85,7 @@ private:
 
     PureHwAudioTest(const PureHwAudioTest&) :
         hw( PureHwInfo::get() ),
-        audio( PureHwAudio::get() ),
-        cfgProfiles("")
+        audio( PureHwAudio::get() )
     {};         
 
     PureHwAudioTest& operator=(const PureHwAudioTest&)

@@ -18,8 +18,7 @@ class PureBoundingVolumeHierarchyTest :
 public:
 
     PureBoundingVolumeHierarchyTest() :
-        UnitTest( __FILE__ ),
-        cfgProfiles("")
+        UnitTest( __FILE__ )
     {
     } // PureBoundingVolumeHierarchyTest()
 
@@ -69,8 +68,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PureBoundingVolumeHierarchyTest(const PureBoundingVolumeHierarchyTest&) :
-        cfgProfiles("")
+    PureBoundingVolumeHierarchyTest(const PureBoundingVolumeHierarchyTest&)
     {}         
 
     PureBoundingVolumeHierarchyTest& operator=(const PureBoundingVolumeHierarchyTest&)

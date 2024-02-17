@@ -23,8 +23,7 @@ class PureObject3DTest :
 public:
 
     PureObject3DTest() :
-        UnitTest( __FILE__ ),
-        cfgProfiles("")
+        UnitTest( __FILE__ )
     {
         engine = NULL;
         obj = NULL;
@@ -239,8 +238,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PureObject3DTest(const PureObject3DTest&) :
-        cfgProfiles("")
+    PureObject3DTest(const PureObject3DTest&)
     {};         
 
     PureObject3DTest& operator=(const PureObject3DTest&)

@@ -24,8 +24,7 @@ public:
 
     PureHwInfoTest() :
         UnitTest( __FILE__ ),
-        hw( PureHwInfo::get() ),
-        cfgProfiles("")
+        hw( PureHwInfo::get() )
     {
         engine = NULL;
     }
@@ -82,8 +81,7 @@ private:
     // ---------------------------------------------------------------------------
 
     PureHwInfoTest(const PureHwInfoTest&) :
-        hw( PureHwInfo::get() ),
-        cfgProfiles("")
+        hw( PureHwInfo::get() )
     {};         
 
     PureHwInfoTest& operator=(const PureHwInfoTest&)

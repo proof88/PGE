@@ -18,8 +18,7 @@ class PureOctreeTest :
 public:
 
     PureOctreeTest() :
-        UnitTest( __FILE__ ),
-        cfgProfiles("")
+        UnitTest( __FILE__ )
     {
     } // PureOctreeTest()
 
@@ -73,8 +72,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PureOctreeTest(const PureOctreeTest&) :
-        cfgProfiles("")
+    PureOctreeTest(const PureOctreeTest&)
     {}         
 
     PureOctreeTest& operator=(const PureOctreeTest&)

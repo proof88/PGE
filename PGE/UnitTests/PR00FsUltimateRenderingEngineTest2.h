@@ -18,8 +18,7 @@ class PR00FsUltimateRenderingEngineTest2 :
 public:
 
     PR00FsUltimateRenderingEngineTest2() :
-        UnitTest( __FILE__, "inited" ),
-        cfgProfiles("")
+        UnitTest( __FILE__, "inited" )
     {
         
     }
@@ -82,8 +81,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PR00FsUltimateRenderingEngineTest2(const PR00FsUltimateRenderingEngineTest2&) :
-        cfgProfiles("")
+    PR00FsUltimateRenderingEngineTest2(const PR00FsUltimateRenderingEngineTest2&)
     {};         
 
     PR00FsUltimateRenderingEngineTest2& operator=(const PR00FsUltimateRenderingEngineTest2&)

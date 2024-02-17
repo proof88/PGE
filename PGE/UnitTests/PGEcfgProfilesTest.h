@@ -19,8 +19,8 @@
 class PGEcfgProfilesWithPublicNonConstCommandLineCVarAccess : public PGEcfgProfiles
 {
 public:
-    explicit PGEcfgProfilesWithPublicNonConstCommandLineCVarAccess(const char* gameTitle) :
-        PGEcfgProfiles(gameTitle)
+    explicit PGEcfgProfilesWithPublicNonConstCommandLineCVarAccess() :
+        PGEcfgProfiles()
     {}
 
     std::map<std::string, PGEcfgVariable>& getCommandLineVars()
@@ -52,6 +52,10 @@ protected:
         //CConsole::getConsoleInstance().SetLoggingState(PGEcfgProfiles::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), true);
         AddSubTest("testCtor1", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testCtor1);
+        AddSubTest("testReinitializeBeforeInit", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testReinitializeBeforeInit);
+        AddSubTest("testReinitializeAfterInit", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testReinitializeAfterInit);
+        AddSubTest("testShutdownBeforeInit", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testShutdownBeforeInit);
+        AddSubTest("testShutdownAfterInit", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testShutdownAfterInit);
         AddSubTest("testGetMyDocsFolder", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetMyDocsFolder);
         AddSubTest("testGetLangFileName", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetLangFileName);
         AddSubTest("testReadLanguageData", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testReadLanguageData);
@@ -103,29 +107,128 @@ private:
 
     bool testCtor1()
     {
-        const PGEcfgProfiles cfg("game title");
-        return true;
+        PGEcfgProfiles cfg;
+        const PGEcfgProfiles& cfgAsConst = cfg;
+        std::string** saLangData;
+
+        return assertTrue(cfg.getMyDocsFolder().empty(), "mydocs empty") &
+            assertTrue(cfg.getProfileName().empty(), "active profile name empty") &
+            assertEquals(-1, cfg.getProfileIndex(), "active profile index") &
+            assertTrue(cfgAsConst.getCommandLineVars().empty(), "command line") &
+            assertEquals(0, cfg.getProfilesCount(), "profiles count") &
+            assertNull(cfg.getProfilePlayersList(), "players list") &
+            assertNull(cfg.getProfilesList(), "profiles list") &
+            assertTrue(cfg.getVars().empty(), "getVars") &
+            assertFalse(cfg.readConfiguration(), "readConfiguration") &
+            assertTrue(cfg.getPathToProfiles().empty(), "path to profiles") &
+            assertFalse(cfg.areProfilesInMyDocs(), "profiles are in mydocs") &
+            assertTrue(cfg.getFilename().empty(), "filename") &
+            assertTrue(cfg.getLangFileName().empty(), "lang filename") &
+            assertEquals(0, cfg.readLanguageData(saLangData), "lang data") &
+            assertTrue(cfg.getAcceptedVars().empty(), "accepted vars") &
+            assertFalse(cfg.getCaseSensitiveVars(), "case sensitive vars") &
+            assertFalse(cfg.getAllAcceptedVarsDefineRequirement(), "all accepted vars define req") &
+            assertEquals(-3, cfg.addProfile("asd", "asd"), "addProfile") &
+            assertEquals(-1, cfg.deleteProfile(0), "deleteProfile");
+    }
+
+    bool testReinitializeBeforeInit()
+    {
+        PGEcfgProfiles cfg;
+
+        return assertTrue(cfg.reinitialize("asd"), "reinit");
+    }
+
+    bool testReinitializeAfterInit()
+    {
+        PGEcfgProfiles cfg;
+
+        const bool b = assertTrue(cfg.reinitialize("asd"), "reinit");
+        return b & assertTrue(cfg.reinitialize("asd"), "reinit 2");
+    }
+
+    bool testShutdownBeforeInit()
+    {
+        PGEcfgProfiles cfg;
+        const PGEcfgProfiles& cfgAsConst = cfg;
+        std::string** saLangData;
+
+        cfg.shutdown();
+
+        return assertTrue(cfg.getMyDocsFolder().empty(), "mydocs empty") &
+            assertTrue(cfg.getProfileName().empty(), "active profile name empty") &
+            assertEquals(-1, cfg.getProfileIndex(), "active profile index") &
+            assertTrue(cfgAsConst.getCommandLineVars().empty(), "command line") &
+            assertEquals(0, cfg.getProfilesCount(), "profiles count") &
+            assertNull(cfg.getProfilePlayersList(), "players list") &
+            assertNull(cfg.getProfilesList(), "profiles list") &
+            assertTrue(cfg.getVars().empty(), "getVars") &
+            assertFalse(cfg.readConfiguration(), "readConfiguration") &
+            assertTrue(cfg.getPathToProfiles().empty(), "path to profiles") &
+            assertFalse(cfg.areProfilesInMyDocs(), "profiles are in mydocs") &
+            assertTrue(cfg.getFilename().empty(), "filename") &
+            assertTrue(cfg.getLangFileName().empty(), "lang filename") &
+            assertEquals(0, cfg.readLanguageData(saLangData), "lang data") &
+            assertTrue(cfg.getAcceptedVars().empty(), "accepted vars") &
+            assertFalse(cfg.getCaseSensitiveVars(), "case sensitive vars") &
+            assertFalse(cfg.getAllAcceptedVarsDefineRequirement(), "all accepted vars define req") &
+            assertEquals(-3, cfg.addProfile("asd", "asd"), "addProfile") &
+            assertEquals(-1, cfg.deleteProfile(0), "deleteProfile");
+    }
+
+    bool testShutdownAfterInit()
+    {
+        PGEcfgProfiles cfg;
+        const PGEcfgProfiles& cfgAsConst = cfg;
+        std::string** saLangData;
+
+        const bool b = assertTrue(cfg.reinitialize(""), "reinit");
+        cfg.shutdown();
+
+        return b & assertTrue(cfg.getMyDocsFolder().empty(), "mydocs empty") &
+            assertTrue(cfg.getProfileName().empty(), "active profile name empty") &
+            assertEquals(-1, cfg.getProfileIndex(), "active profile index") &
+            assertTrue(cfgAsConst.getCommandLineVars().empty(), "command line") &
+            assertEquals(0, cfg.getProfilesCount(), "profiles count") &
+            assertNull(cfg.getProfilePlayersList(), "players list") &
+            assertNull(cfg.getProfilesList(), "profiles list") &
+            assertTrue(cfg.getVars().empty(), "getVars") &
+            assertFalse(cfg.readConfiguration(), "readConfiguration") &
+            assertTrue(cfg.getPathToProfiles().empty(), "path to profiles") &
+            assertFalse(cfg.areProfilesInMyDocs(), "profiles are in mydocs") &
+            assertTrue(cfg.getFilename().empty(), "filename") &
+            assertTrue(cfg.getLangFileName().empty(), "lang filename") &
+            assertEquals(0, cfg.readLanguageData(saLangData), "lang data") &
+            assertTrue(cfg.getAcceptedVars().empty(), "accepted vars") &
+            assertFalse(cfg.getCaseSensitiveVars(), "case sensitive vars") &
+            assertFalse(cfg.getAllAcceptedVarsDefineRequirement(), "all accepted vars define req") &
+            assertEquals(-3, cfg.addProfile("asd", "asd"), "addProfile") &
+            assertEquals(-1, cfg.deleteProfile(0), "deleteProfile");
     }
 
     bool testGetMyDocsFolder()
     {
-        const PGEcfgProfiles cfg("game title");
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
         const std::string sMyDocsFolder = cfg.getMyDocsFolder();  /* e.g.: C:\\Users\\PR00F\\Documents\\ */
 
-        return ((sMyDocsFolder.find("C:\\Users\\") != std::string::npos) || (sMyDocsFolder.find("\\OneDrive\\") != std::string::npos)) &&
+        return b && ((sMyDocsFolder.find("C:\\Users\\") != std::string::npos) || (sMyDocsFolder.find("\\OneDrive\\") != std::string::npos)) &&
             ((sMyDocsFolder.find("\\Documents\\") != std::string::npos) || (sMyDocsFolder.find("\\Dokumentumok\\") != std::string::npos));
     }
 
     bool testGetLangFileName()
     {
-        const PGEcfgProfiles cfg("game title");
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
 
-        return assertEquals(std::string("gamedata\\language\\magyar_teszt.txt"), cfg.getLangFileName());
+        return b && assertEquals(std::string("gamedata\\language\\magyar_teszt.txt"), cfg.getLangFileName());
     }
 
     bool testReadLanguageData()
     {
-        PGEcfgProfiles cfg("game title");
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
+
         std::string** saLangData;
         const int nReadLangLines = cfg.readLanguageData(saLangData);
 
@@ -156,30 +259,37 @@ private:
         }
         delete[] saLangData;
 
-        return b1 & !bErrorFound;
+        return b & b1 & !bErrorFound;
     }
 
     bool testAreProfilesInMyDocs()
     {
-        const PGEcfgProfiles cfg("game title");
-        return assertFalse( cfg.areProfilesInMyDocs() );
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
+        return b & assertFalse( cfg.areProfilesInMyDocs() );
     }
 
     bool testGetPathToProfiles()
     {
-        const PGEcfgProfiles cfg("game title");
-        return assertNotEquals(std::string::npos, cfg.getPathToProfiles().find("\\profiles\\") );
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
+
+        return b & assertNotEquals(std::string::npos, cfg.getPathToProfiles().find("\\profiles\\") );
     }
 
     bool testGetProfilesCount()
     {
-        const PGEcfgProfiles cfg("game title");
-        return assertEquals(4, cfg.getProfilesCount());
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
+
+        return b & assertEquals(4, cfg.getProfilesCount());
     }
 
     bool testGetProfilesList()
     {
-        const PGEcfgProfiles cfg("game title");
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
+
         const std::string** const sProfileList = cfg.getProfilesList();
         const char* const saProfilesExpected[4] = { "alma", "béla", "loller", "proof88" };
         bool bErrorFound = false;
@@ -190,12 +300,14 @@ private:
                 break;
         }
 
-        return !bErrorFound;
+        return b & !bErrorFound;
     }
 
     bool testGetProfilePlayersList()
     {
-        const PGEcfgProfiles cfg("game title");
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
+
         const std::string** const sProfilePlayersList = cfg.getProfilePlayersList();
         const char* const saProfilePlayersExpected[4] = { "Alma 76", "Béla", "loller", "PR00F88" };
         bool bErrorFound = false;
@@ -206,18 +318,20 @@ private:
                 break;
         }
 
-        return !bErrorFound;
+        return b & !bErrorFound;
     }
 
     bool testAddProfile()
     {
-        PGEcfgProfiles cfg("game title");
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
+
         cfg.SetProfile( 3 );  // proof88.cfg
         const int nOriginalUsersCount = cfg.getProfilesCount();
         size_t nOriginalVarsCount = cfg.getVars().size();
 
         int iNewProfile = cfg.addProfile("testusername?", "testnickname");
-        bool b = assertEquals(nOriginalUsersCount, cfg.getProfilesCount(), "wrongname1 1");
+        b &= assertEquals(nOriginalUsersCount, cfg.getProfilesCount(), "wrongname1 1");
         b &= assertEquals(-2, iNewProfile, "wrongname1 2");
 
         iNewProfile = cfg.addProfile("*", "testnickname");
@@ -274,12 +388,14 @@ private:
 
     bool testDeleteProfile()
     {
-        PGEcfgProfiles cfg("game title");
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
+
         cfg.SetProfile( 3 );  // proof88.cfg
         const int nOriginalUsersCount = cfg.getProfilesCount();
         size_t nOriginalVarsCount = cfg.getVars().size();
 
-        bool b = assertEquals(-1, cfg.deleteProfile(nOriginalUsersCount+1), "delete non-existing profile");
+        b &= assertEquals(-1, cfg.deleteProfile(nOriginalUsersCount+1), "delete non-existing profile");
 
         int iNewProfile = cfg.addProfile("testusername", "testnickname");
         b &= assertEquals(cfg.getProfilesCount()-1, iNewProfile, "addprofile 1");
@@ -312,20 +428,24 @@ private:
 
     bool testGetProfileIndex()
     {
-        const PGEcfgProfiles cfg("game title");
-        return assertEquals(-1, cfg.getProfileIndex(), "getProfileIndex()");
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
+
+        return b & assertEquals(-1, cfg.getProfileIndex(), "getProfileIndex()");
     }
 
     bool testGetProfileName()
     {
-        const PGEcfgProfiles cfg("game title");
-        return assertEquals("", cfg.getProfileName(), "getProfileName()");
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
+
+        return b & assertEquals("", cfg.getProfileName(), "getProfileName()");
     }
 
     bool testSetProfileByIndex()
     {
-        PGEcfgProfiles cfg("game title");
-        bool b = true;
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
 
         cfg.SetProfile( -1 );
         b &= assertEquals(-1, cfg.getProfileIndex(), "index 1");
@@ -357,8 +477,8 @@ private:
 
     bool testSetProfileByName()
     {
-        PGEcfgProfiles cfg("game title");
-        bool b = true;
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
 
         cfg.SetProfile("");
         b &= assertEquals(-1, cfg.getProfileIndex(), "index 1");
@@ -380,8 +500,8 @@ private:
 
     bool testDeleteVar()
     {
-        PGEcfgProfiles cfg("game title");
-        bool b = true;
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
 
         b &= assertEquals(0u, cfg.getVars().size(), "getVarsCount() 1");
         cfg.DeleteVar("cl_alma");  // try to remove anything without current profile
@@ -402,9 +522,10 @@ private:
 
     bool testGetVarsCount()
     {
-        PGEcfgProfiles cfg("game title");
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
 
-        bool b = assertEquals(0u, cfg.getVars().size(), "1");
+        b &= assertEquals(0u, cfg.getVars().size(), "1");
 
         cfg.SetProfile( 3 );  // proof88.cfg
         b &= assertNotEquals(0u, cfg.getVars().size(), "2");
@@ -414,8 +535,8 @@ private:
 
     bool testReadConfiguration()
     {
-        PGEcfgProfiles cfg("game title");
-        bool b = true;
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
 
         b &= assertFalse(cfg.readConfiguration(), "1");
 
@@ -449,9 +570,10 @@ private:
 
     bool testWriteConfiguration()
     {
-        PGEcfgProfiles cfg("game title");
+        PGEcfgProfiles cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
 
-        bool b = assertFalse(cfg.writeConfiguration(), "writecfg 1");
+        b &= assertFalse(cfg.writeConfiguration(), "writecfg 1");
 
         int iNewProfile = cfg.addProfile("testusername", "testnickname");
         b &= assertGreater(iNewProfile, -1, "addprofile 1");
@@ -481,11 +603,12 @@ private:
 
     bool testProcessEmptyCommandLine()
     {
-        PGEcfgProfilesWithPublicNonConstCommandLineCVarAccess cfg("game title");
+        PGEcfgProfilesWithPublicNonConstCommandLineCVarAccess cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
 
         cfg.ProcessCommandLine("");
 
-        bool b = assertTrue(cfg.getVars().empty(), "cvars empty") &
+        b &= assertTrue(cfg.getVars().empty(), "cvars empty") &
             assertTrue(cfg.getCommandLineVars().empty(), "cl cvars empty");
 
         return b;
@@ -493,11 +616,12 @@ private:
 
     bool testProcessIrrelevantCommandLine()
     {
-        PGEcfgProfilesWithPublicNonConstCommandLineCVarAccess cfg("game title");
+        PGEcfgProfilesWithPublicNonConstCommandLineCVarAccess cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
 
         cfg.ProcessCommandLine("aghhahade gaghagih --asg ijag i = df -- --=");
 
-        bool b = assertTrue(cfg.getVars().empty(), "cvars empty") &
+        b &= assertTrue(cfg.getVars().empty(), "cvars empty") &
             assertTrue(cfg.getCommandLineVars().empty(), "cl cvars empty");
 
         return b;
@@ -505,14 +629,15 @@ private:
 
     bool testProcessRelevantCommandLine()
     {
-        PGEcfgProfilesWithPublicNonConstCommandLineCVarAccess cfg("game title");
+        PGEcfgProfilesWithPublicNonConstCommandLineCVarAccess cfg;
+        bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
 
         cfg.SetProfile(3);  // proof88.cfg
         const size_t nOriginalVarsCount = cfg.getVars().size();
 
         cfg.ProcessCommandLine("    --cl_server_ip=168.1.2.3   --new_cvar=5.0    ");
 
-        bool b = assertFalse(cfg.getVars().empty(), "cvars not empty") &
+        b &= assertFalse(cfg.getVars().empty(), "cvars not empty") &
             assertFalse(cfg.getCommandLineVars().empty(), "cl cvars not empty") &
             assertEquals(2u, cfg.getCommandLineVars().size(), "cl cvars size") &
             assertEquals(nOriginalVarsCount + 1u, cfg.getVars().size(), "cvars size") /* only new_cvar should be new variable */ &
@@ -545,7 +670,8 @@ private:
 
     //bool testProcessRelevantCommandLineWithDisallowedAssignment()
     //{
-    //    PGEcfgProfilesWithPublicNonConstCommandLineCVarAccess cfg("game title");
+    //    PGEcfgProfilesWithPublicNonConstCommandLineCVarAccess cfg;
+    //    bool b = assertTrue(cfg.reinitialize("game title"), "reinit");
     //
     //    cfg.SetProfile(3);  // proof88.cfg
     //    const size_t nOriginalVarsCount = cfg.getVars().size();
@@ -554,7 +680,7 @@ private:
     //    // cl_name is forbidden in command line, we need to skip that, but process the rest
     //    cfg.ProcessCommandLine("    --cl_server_ip=168.1.2.3   --cl_name=almafa  --new_cvar=5.0    ");
     //
-    //    bool b = assertFalse(cfg.getVars().empty(), "cvars not empty") &
+    //    b &= assertFalse(cfg.getVars().empty(), "cvars not empty") &
     //        assertFalse(cfg.getCommandLineVars().empty(), "cl cvars not empty") &
     //        assertEquals(2u, cfg.getCommandLineVars().size(), "cl cvars size") &
     //        assertEquals(nOriginalVarsCount + 1u, cfg.getVars().size(), "cvars size") /* only new_cvar should be new variable */ &

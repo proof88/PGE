@@ -25,8 +25,7 @@ public:
     PurehwCentralProcessorTest() :
         UnitTest( __FILE__ ),
         hw( PureHwInfo::get() ),
-        proc( PureHwCentralProcessor::get() ),
-        cfgProfiles("")
+        proc( PureHwCentralProcessor::get() )
     {
         engine = NULL;
     }
@@ -86,8 +85,7 @@ private:
 
     PurehwCentralProcessorTest(const PurehwCentralProcessorTest&) :
         hw( PureHwInfo::get() ),
-        proc( PureHwCentralProcessor::get() ),
-        cfgProfiles("")
+        proc( PureHwCentralProcessor::get() )
     {};         
 
     PurehwCentralProcessorTest& operator=(const PurehwCentralProcessorTest&)

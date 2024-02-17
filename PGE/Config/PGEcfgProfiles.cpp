@@ -20,75 +20,21 @@ using namespace std;
 // ############################### PUBLIC ################################
 
 
-PGEcfgProfiles::PGEcfgProfiles(const char* gameTitle) :
-    PGEcfgFile(false, false)
+PGEcfgProfiles::PGEcfgProfiles() :
+    PGEcfgFile(false, false),
+    bMainCFGinMyDocs(false),
+    nProfilesCount(0),
+    nActiveProfile(-1),
+    sFoundProfiles(PGENULL),
+    sFoundProfilePlayerNames(PGENULL)
 {
-    getConsole().OLnOI("PGEcfgProfiles::PGEcfgProfiles(%s)", gameTitle);
-    
-    MAX_PATH;
-    nActiveProfile = -1;
-    nProfilesCount = 0;
-    sFoundProfiles = PGENULL;
-    sFoundProfilePlayerNames = PGENULL;
-
-    if ( !findMyDocsFolder() )
-    {
-        getConsole().EOLnOO("ERROR: couldn't find Documents folder!");
-        return;
-    }
-
-    ifstream f(PGE_1ST_CFG_FILENAME);
-    if ( f.fail() )
-    {
-        f.close();
-        sLangFileName = std::string(PGE_LANG_FOLDER) + "english.txt";
-        getConsole().EOLnOO("ERROR: couldn't find %s!", PGE_1ST_CFG_FILENAME);
-        return;
-    } // f.fail()
-
-    f >> sLangFileName;
-    sLangFileName = PGE_LANG_FOLDER + sLangFileName;
-    string ggg;
-    f >> ggg;
-    if ( ggg == "there" )
-    {
-        bMainCFGinMyDocs = true;
-        sPathToProfiles  = sPathToMyDocs;
-        sPathToProfiles += gameTitle;
-        sPathToProfiles += "\\profiles\\";
-    }
-    else
-    {    // ggg == "here"
-        bMainCFGinMyDocs = false;
-        char pOrigCurrDirr[1024];
-        GetCurrentDirectory(1024, pOrigCurrDirr);
-        SetCurrentDirectory( PGE_PROFILE_FOLDER );
-        char pNewCurrDirr[1024];
-        GetCurrentDirectory(1024, pNewCurrDirr);
-        sPathToProfiles = pNewCurrDirr;
-        sPathToProfiles += "\\";
-        SetCurrentDirectory( pOrigCurrDirr );
-    }
-    getConsole().OLn("user profile dir is: %s", sPathToProfiles.c_str());
-
-    LoadProfilesList();
-
-    getConsole().SOLnOO("> done!");
-    
 } // PGEcfgProfiles(...)
 
 
 PGEcfgProfiles::~PGEcfgProfiles()
 {
     getConsole().OLn("PGEcfgProfiles::~PGEcfgProfiles()");
-    sPathToMyDocs.clear();
-    for (int i = 0; i < nProfilesCount; i++)
-    {
-        delete sFoundProfiles[i];
-        delete sFoundProfilePlayerNames[i];
-    }
-    delete[] sFoundProfiles;
-    delete[] sFoundProfilePlayerNames;
+    shutdown();
 } // ~PGEcfgProfiles()
 
 
@@ -128,6 +74,93 @@ string PGEcfgProfiles::getMyDocsFolder()
 
 
 /**
+    Resets initial state.
+    Unloads active profile and resets active profile index to -1 (no active profile selected), and re-reads profiles, language data, etc.
+
+    @return True on success, false otherwise.
+*/
+bool PGEcfgProfiles::reinitialize(const char* gameTitle)
+{
+    getConsole().OLnOI("PGEcfgProfiles::reinitialize()");
+
+    shutdown();
+
+    if (!findMyDocsFolder())
+    {
+        getConsole().EOLnOO("ERROR: couldn't find Documents folder!");
+        return false;
+    }
+
+    ifstream f(PGE_1ST_CFG_FILENAME);
+    if (f.fail())
+    {
+        f.close();
+        sLangFileName = std::string(PGE_LANG_FOLDER) + "english.txt";
+        getConsole().EOLnOO("ERROR: couldn't find %s!", PGE_1ST_CFG_FILENAME);
+        return false;
+    } // f.fail()
+
+    f >> sLangFileName;
+    sLangFileName = PGE_LANG_FOLDER + sLangFileName;
+    string ggg;
+    f >> ggg;
+    if (ggg == "there")
+    {
+        bMainCFGinMyDocs = true;
+        sPathToProfiles = sPathToMyDocs;
+        sPathToProfiles += gameTitle;
+        sPathToProfiles += "\\profiles\\";
+    }
+    else
+    {    // ggg == "here"
+        bMainCFGinMyDocs = false;
+        char pOrigCurrDirr[1024];
+        GetCurrentDirectory(1024, pOrigCurrDirr);
+        SetCurrentDirectory(PGE_PROFILE_FOLDER);
+        char pNewCurrDirr[1024];
+        GetCurrentDirectory(1024, pNewCurrDirr);
+        sPathToProfiles = pNewCurrDirr;
+        sPathToProfiles += "\\";
+        SetCurrentDirectory(pOrigCurrDirr);
+    }
+    getConsole().OLn("user profile dir is: %s", sPathToProfiles.c_str());
+
+    LoadProfilesList();
+
+    getConsole().SOLnOO("> done!");
+
+    return true;
+}
+
+/**
+    Resets everything.
+*/
+void PGEcfgProfiles::shutdown()
+{
+    /* clear current profile */
+    ClearVars();
+    nActiveProfile = -1;
+    m_sActiveProfile.clear();
+
+    /* clear general stuff */
+    sPathToProfiles.clear();
+    bMainCFGinMyDocs = false;
+    m_commandLineVars.clear();
+    sLangFileName.clear();
+    sPathToMyDocs.clear();
+    for (int i = 0; i < nProfilesCount; i++)
+    {
+        delete sFoundProfiles[i];
+        delete sFoundProfilePlayerNames[i];
+    }
+    nProfilesCount = 0;
+    delete[] sFoundProfiles;
+    delete[] sFoundProfilePlayerNames;
+    sFoundProfiles = PGENULL;
+    sFoundProfilePlayerNames = PGENULL;
+}
+
+/**
     Returns the file name of the selected language file.
 */
 string PGEcfgProfiles::getLangFileName() const
@@ -138,7 +171,9 @@ string PGEcfgProfiles::getLangFileName() const
 
 /**
     Reads the language file into the given table.
-    @return The read language lines.
+    The given pointer will be valid only if the returned number is positive;
+
+    @return The number of read language lines.
 */
 int PGEcfgProfiles::readLanguageData(string** &langTable) const
 {
@@ -265,13 +300,22 @@ const string** PGEcfgProfiles::getProfilePlayersList() const
     @return Non-negative index of the new profile on success.
             -1 if a profile already exists with the given user name.
             -2 if a profile can't be created for some other reason.
+            -3 getPathToProfiles() is empty, maybe forgot to call reinitialize() ?
 */
 int PGEcfgProfiles::addProfile(const char* sUser, const char* sNick)
 {
-    if ( (sUser == NULL) || (sNick == NULL) )
+    if ((sUser == NULL) || (sNick == NULL))
+    {
         return -2;
+    }
 
     getConsole().OLnOI("PGEcfgProfiles::addProfile(%s, %s)", sUser, sNick);
+
+    if (getPathToProfiles().empty())
+    {
+        getConsole().EOLnOO("ERROR: profiles path unknown!");
+        return -3;
+    }
 
     const std::string sFileToCreate = getPathToProfiles() + sUser + "\\" + sUser + ".cfg";
     const std::string sDirToCreate = getPathToProfiles() + sUser;
@@ -342,11 +386,13 @@ int PGEcfgProfiles::addProfile(const char* sUser, const char* sNick)
 int PGEcfgProfiles::deleteProfile(int nIndex)
 {
     getConsole().OLnOI("PGEcfgProfiles::deleteProfile(%d)", nIndex);
+
     if ( (nIndex < 0) || (nIndex >= getProfilesCount()) )
     {
         getConsole().EOLnOO("ERROR: invalid index!");
         return -1;
     }
+
     if ( nIndex == getProfileIndex() )
     {
         getConsole().OLn("deleting current profile ...");
@@ -654,13 +700,6 @@ std::map<std::string, PGEcfgVariable>& PGEcfgProfiles::getCommandLineVars()
 
 
 std::string PGEcfgProfiles::sPathToMyDocs;
-
-
-PGEcfgProfiles::PGEcfgProfiles() :
-    PGEcfgFile(false, false)
-{
-
-}
 
 
 PGEcfgProfiles::PGEcfgProfiles(const PGEcfgProfiles& other) :

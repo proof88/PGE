@@ -33,7 +33,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    explicit PGEcfgProfiles(const char* gameTitle);
+    explicit PGEcfgProfiles();
     virtual ~PGEcfgProfiles();
 
     CConsole&   getConsole() const;                   /**< Returns access to console preset with logger module name as this class. */
@@ -41,6 +41,9 @@ public:
     // Profile-independent
     // ---------------------------------------------------------------------------
     static std::string  getMyDocsFolder();                     /**< Returns the path to user documents. */
+
+    bool                reinitialize(const char* gameTitle);   /**< Resets initial state. */
+    void                shutdown();                            /**< Resets everything. */
 
     std::string         getLangFileName() const;               /**< Returns the file name of the selected language file. */
     int                 readLanguageData(std::string** &langTable) const; /**< Reads the language file into the given table. */
@@ -93,8 +96,6 @@ private:
     // ---------------------------------------------------------------------------
 
     static bool findMyDocsFolder();         /**< Stores user docs folder path in sPathToMyDocs. */
-    
-    PGEcfgProfiles();
 
     PGEcfgProfiles(const PGEcfgProfiles&);  
     PGEcfgProfiles& operator=(const PGEcfgProfiles&);

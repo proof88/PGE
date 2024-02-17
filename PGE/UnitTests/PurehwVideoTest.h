@@ -25,8 +25,7 @@ public:
     PureHwVideoTest() :
         UnitTest( __FILE__ ),
         hw( PureHwInfo::get() ),
-        video( PureHwVideo::get() ),
-        cfgProfiles("")
+        video( PureHwVideo::get() )
     {
         engine = NULL;
         
@@ -130,8 +129,7 @@ private:
 
     PureHwVideoTest(const PureHwVideoTest&) :
         hw( PureHwInfo::get() ),
-        video( PureHwVideo::get() ),
-        cfgProfiles("")
+        video( PureHwVideo::get() )
     {};         
 
     PureHwVideoTest& operator=(const PureHwVideoTest&)

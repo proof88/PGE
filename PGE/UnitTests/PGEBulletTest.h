@@ -19,8 +19,7 @@ class PGEBulletTest :
 public:
 
     PGEBulletTest() :
-        UnitTest(__FILE__),
-        cfgProfiles("")
+        UnitTest(__FILE__)
     {
         engine = NULL;
     }
@@ -72,8 +71,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PGEBulletTest(const PGEBulletTest&) :
-        cfgProfiles("")
+    PGEBulletTest(const PGEBulletTest&)
     {};
 
     PGEBulletTest& operator=(const PGEBulletTest&)

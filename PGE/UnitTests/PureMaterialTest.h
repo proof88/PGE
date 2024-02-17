@@ -94,8 +94,7 @@ class PureMaterialTest :
 public:
 
     PureMaterialTest() :
-        UnitTest(__FILE__),
-        cfgProfiles("")
+        UnitTest(__FILE__)
     {
         engine = NULL;
         tm = NULL;
@@ -183,8 +182,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PureMaterialTest(const PureMaterialTest&) :
-        cfgProfiles("")
+    PureMaterialTest(const PureMaterialTest&) 
     {};         
 
     PureMaterialTest& operator=(const PureMaterialTest&)

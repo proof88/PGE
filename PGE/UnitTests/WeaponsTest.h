@@ -23,8 +23,7 @@ class WeaponsTest :
 public:
 
     WeaponsTest() :
-        UnitTest( __FILE__ ),
-        cfgProfiles("")
+        UnitTest( __FILE__ )
     {
         engine = NULL;
     }
@@ -152,7 +151,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    WeaponsTest(const WeaponsTest&) : cfgProfiles("")
+    WeaponsTest(const WeaponsTest&)
     {};         
 
     WeaponsTest& operator=(const WeaponsTest&)

@@ -25,7 +25,6 @@ public:
 
     PureRendererHWfixedPipeTest() :
         UnitTest( __FILE__ ),
-        cfgProfiles(""),
         inputHandler(PGEInputHandler::createAndGet(cfgProfiles))
     {
     };
@@ -107,7 +106,6 @@ private:
     // ---------------------------------------------------------------------------
 
     PureRendererHWfixedPipeTest(const PureRendererHWfixedPipeTest&) :
-        cfgProfiles(""),
         inputHandler(PGEInputHandler::createAndGet(cfgProfiles))
     {};         
 

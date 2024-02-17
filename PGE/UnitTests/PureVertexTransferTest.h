@@ -189,8 +189,7 @@ class PureVertexTransferTest :
 public:
 
     PureVertexTransferTest() :
-        UnitTest( __FILE__ ),
-        cfgProfiles("")
+        UnitTest( __FILE__ )
     {
         engine = NULL;
         vtm = NULL;
@@ -292,8 +291,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PureVertexTransferTest(const PureVertexTransferTest&) :
-        cfgProfiles("")
+    PureVertexTransferTest(const PureVertexTransferTest&)
     {};         
 
     PureVertexTransferTest& operator=(const PureVertexTransferTest&)

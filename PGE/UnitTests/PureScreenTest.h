@@ -27,7 +27,6 @@ public:
         UnitTest( __FILE__ ),
         scr( PureScreen::createAndGet() ),
         wnd( PureWindow::createAndGet(cfgProfiles, inputHandler) ),
-        cfgProfiles(""),
         inputHandler(PGEInputHandler::createAndGet(cfgProfiles))
     {
         engine = NULL;
@@ -111,7 +110,6 @@ private:
     PureScreenTest(const PureScreenTest&) :
         scr( PureScreen::createAndGet() ),
         wnd( PureWindow::createAndGet(cfgProfiles, inputHandler) ),
-        cfgProfiles(""),
         inputHandler(PGEInputHandler::createAndGet(cfgProfiles))
     {};         
 

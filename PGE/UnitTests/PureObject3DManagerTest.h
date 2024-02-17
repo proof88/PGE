@@ -24,8 +24,7 @@ class PureObject3DManagerTest :
 public:
 
     PureObject3DManagerTest() :
-        UnitTest( __FILE__ ),
-        cfgProfiles("")
+        UnitTest( __FILE__ )
     {
     };
 
@@ -110,8 +109,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PureObject3DManagerTest(const PureObject3DManagerTest&) :
-        cfgProfiles("")
+    PureObject3DManagerTest(const PureObject3DManagerTest&)
     {};         
 
     PureObject3DManagerTest& operator=(const PureObject3DManagerTest&)

@@ -23,8 +23,7 @@ class PureMesh3DManagerTest :
 public:
 
     PureMesh3DManagerTest() :
-        UnitTest( __FILE__ ),
-        cfgProfiles("")
+        UnitTest( __FILE__ )
     {
         
     };
@@ -93,8 +92,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PureMesh3DManagerTest(const PureMesh3DManagerTest&) :
-        cfgProfiles("")
+    PureMesh3DManagerTest(const PureMesh3DManagerTest&)
     {};         
 
     PureMesh3DManagerTest& operator=(const PureMesh3DManagerTest&)

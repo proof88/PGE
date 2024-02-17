@@ -34,8 +34,7 @@ class PureTextureManagerTest :
 public:
 
     PureTextureManagerTest() :
-        UnitTest(__FILE__),
-        cfgProfiles("")
+        UnitTest(__FILE__)
     {
         engine = NULL;
         im = NULL;
@@ -139,8 +138,7 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PureTextureManagerTest(const PureTextureManagerTest&) :
-        cfgProfiles("")
+    PureTextureManagerTest(const PureTextureManagerTest&)
     {};         
 
     PureTextureManagerTest& operator=(const PureTextureManagerTest&)
