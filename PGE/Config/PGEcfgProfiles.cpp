@@ -396,7 +396,7 @@ int PGEcfgProfiles::deleteProfile(int nIndex)
     if ( nIndex == getProfileIndex() )
     {
         getConsole().OLn("deleting current profile ...");
-        SetProfile( -1 );
+        setProfile( -1 );
     }
     const string sUserToDelete = *getProfilesList()[nIndex];
     const string sFileToDelete = getPathToProfiles() + sUserToDelete + "\\" + sUserToDelete + ".cfg";
@@ -506,24 +506,26 @@ const std::string PGEcfgProfiles::getProfileName() const
     @param nIndex A valid profile index in [0..getProfilesCount()-1] range.
                   Specifying -1 will not load anything but erase all previously loaded config variables.
                   Specifying index less than -1 will log error but leave the configuration unchanged.
+
+    @return True if setting active profile was successful, false otherwise.
 */
-void PGEcfgProfiles::SetProfile(int nIndex)
+bool PGEcfgProfiles::setProfile(int nIndex)
 {
     getConsole().OLnOI("PGEcfgProfiles::SetProfile(%d)", nIndex);
     if ( nIndex >= getProfilesCount() )
     {
         getConsole().EOLnOO("ERROR: invalid index!");
-        return;
+        return false;
     }
     if ( nIndex == getProfileIndex() )
     {
         getConsole().OLnOO("current profile index was given, return.");
-        return;
+        return true;
     }
     if ( nIndex < -1 )
     {
         getConsole().EOLnOO("ERROR: invalid index!");
-        return;
+        return false;
     }
 
     nActiveProfile = nIndex;
@@ -532,7 +534,7 @@ void PGEcfgProfiles::SetProfile(int nIndex)
         ClearVars();
         m_sActiveProfile = "";
         getConsole().OO();
-        return;
+        return true;
     }
 
     // at this point, a valid, actual profile index was given which is not the currently set profile
@@ -541,10 +543,12 @@ void PGEcfgProfiles::SetProfile(int nIndex)
         getConsole().EOLnOO("ERROR: readConfiguration() failed!");
         nActiveProfile = -1;
         m_sActiveProfile = "";
+        return false;
     }
     m_sActiveProfile = *sFoundProfiles[getProfileIndex()];
 
     getConsole().SOLnOO("> done!");
+    return true;
 } // SetProfile()
 
 
@@ -556,45 +560,54 @@ void PGEcfgProfiles::SetProfile(int nIndex)
 
     @param sProfileName A valid profile name.
                         Specifying an empty string will not load anything but erase all previously loaded config variables.
+
+    @return True if setting active profile was successful, false otherwise.
 */
-void PGEcfgProfiles::SetProfile(const std::string& sProfileName)
+bool PGEcfgProfiles::setProfile(const std::string& sProfileName)
 {
     getConsole().OLnOI("PGEcfgProfiles::SetProfile(%s)", sProfileName.c_str());
     if (sProfileName.empty())
     {
         // request erasing out profile data
-        SetProfile(-1);
+        const bool b = setProfile(-1);
         getConsole().OO();
-        return;
+        return b;
     }
 
     if (getProfilesCount() == 0)
     {
         getConsole().EOLnOO("ERROR: there is no any profile!");
-        return;
+        return false;
     }
 
     for (int i = 0; i < nProfilesCount; i++)
     {
         if (*sFoundProfiles[i] == sProfileName)
         {
-            SetProfile(i);
-            // sanity check: SetProfile() should set requested profile name too 
-            if (getProfileName() != sProfileName)
+            const bool b = setProfile(i);
+            // sanity check: setProfile() should set requested profile name too 
+            if (b)
             {
-                getConsole().EOLnOO("ERROR: %s != %s!", getProfileName().c_str(), sProfileName.c_str());
-                // either readConfiguration() in SetProfile(index) failed or there is something else, so erase profile data
-                SetProfile(-1);
+                if (getProfileName() != sProfileName)
+                {
+                    getConsole().EOLnOO("ERROR: %s != %s!", getProfileName().c_str(), sProfileName.c_str());
+                    // either readConfiguration() in SetProfile(index) failed or there is something else, so erase profile data
+                    setProfile(-1);
+                    return false;
+                }
+                else
+                {
+                    getConsole().SOLnOO("> done!");
+                    return true;
+                }
             }
-            else
-            {
-                getConsole().SOLnOO("> done!");
-            }
-            return;
+            getConsole().EOLnOO("ERROR: found profile with index %d but could not set it!", i);
+            return false;
         }
     }
 
     getConsole().EOLnOO("ERROR: there is no such profile!");
+    return false;
 } //SetProfile
 
 

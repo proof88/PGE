@@ -774,7 +774,11 @@ int PGE::initializeGame(const char* szCmdLine)
     p->m_cfgProfiles.ProcessCommandLine(szCmdLine);
     if (p->m_cfgProfiles.getProfilesCount() > 0)
     {
-        p->m_cfgProfiles.SetProfile("default");  // this should load gamedata/profiles/default/default.cfg
+        // this should load gamedata/profiles/default/default.cfg
+        if (!(p->m_cfgProfiles.setProfile("default")))
+        {
+            getConsole().EOLn("ERROR: Failed to load default config, relying on default values!");
+        }
     }
     getConsole().OO();
 

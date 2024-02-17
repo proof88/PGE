@@ -64,8 +64,8 @@ public:
     // ---------------------------------------------------------------------------
     int  getProfileIndex() const;                       /**< Gets index of active profile. */
     const std::string getProfileName() const;           /**< Gets name of active profile. */
-    void SetProfile(int nIndex);                        /**< Sets active profile by index. */
-    void SetProfile(const std::string& sProfileName);   /**< Sets active profileby name. */
+    bool setProfile(int nIndex);                        /**< Sets active profile by index. */
+    bool setProfile(const std::string& sProfileName);   /**< Sets active profileby name. */
     void DeleteVar(const char* varName);                /**< Deletes a cvar by the given name. */
     bool readConfiguration();                           /**< Loads configuration for current profile from file. */
     bool writeConfiguration();                          /**< Saves configuration for current profile to file. */
