@@ -673,8 +673,10 @@ TPureBool PureScreenImpl::applyPixelFormat(HDC dc, int iPixelFormat, PIXELFORMAT
     {
         getConsole().SOLn("  SetPixelFormat() passed");
         m_iAppliedPixelFormat = GetPixelFormat(dc);
-        if ( m_iAppliedPixelFormat != iPixelFormat )
+        if (m_iAppliedPixelFormat != iPixelFormat)
+        {
             getConsole().EOLn("  WARNING: GetPixelFormat() did not return the expected pixel format!");
+        }
         DescribePixelFormat(dc, m_iAppliedPixelFormat, sizeof(PIXELFORMATDESCRIPTOR), pfd);
         getConsole().OLn("  clr: %d R%dG%dB%dA%d Z%d S%d ver: %d",
                             pfd->cColorBits, pfd->cRedBits, pfd->cGreenBits, pfd->cBlueBits,

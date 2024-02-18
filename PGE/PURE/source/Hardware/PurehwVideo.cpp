@@ -795,7 +795,12 @@ TPureBool PureHwVideoImpl::initializeBase()
         return true;
     }
 
-    if ( !bAlreadyInitializedOnceOGL )
+    if (bAlreadyInitializedOnceOGL)
+    {
+        getConsole().OLn("");
+        getConsole().OLn("This process already initialized OpenGL during a previous initialization, no need to fetch pointers again!");
+    }
+    else
     {
         PureGLgetFunctionPointers();
 
@@ -872,7 +877,7 @@ TPureBool PureHwVideoImpl::initializeBase()
         getConsole().OLn("");
         printOGLextensions();
         printWGLextensions();
-    } // !bAlreadyInitializedOnceOGL
+    } // bAlreadyInitializedOnceOGL
 
     sharedSettings.Set(
         PURE_SSET_VSYNC_SUPPORTED,
