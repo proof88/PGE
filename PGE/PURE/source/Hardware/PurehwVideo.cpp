@@ -797,7 +797,6 @@ TPureBool PureHwVideoImpl::initializeBase()
 
     if (bAlreadyInitializedOnceOGL)
     {
-        getConsole().OLn("");
         getConsole().OLn("This process already initialized OpenGL during a previous initialization, no need to fetch pointers again!");
     }
     else

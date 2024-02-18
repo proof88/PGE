@@ -75,6 +75,11 @@ public:
     void Set(const char* value);
     void Set(const std::string& value);
 
+    std::string& getShortHint();                                    /**< Get/Set for a short one-liner description of this CVAR. */
+    const std::string& getShortHint() const;                        /**< Getter for a short one-liner description of this CVAR. */
+    std::string& getLongHint();                                     /**< Get/Set for a longer description of this CVAR. */
+    const std::string& getLongHint() const;                         /**< Getter for a longer description of this CVAR. */
+
     bool   operator==(const int& other) const;                      /**< Equals to. */
     bool   operator==(const unsigned int& other) const;             /**< Equals to. */
     bool   operator==(const float& other) const;                    /**< Equals to. */
@@ -108,6 +113,8 @@ protected:
 private:
     std::string sValue;
     TPGE_CFG_VARIABLE_TYPE type;
+    std::string sShortHint;
+    std::string sLongHint;
 };
 
 bool operator==(const int& other,          const PGEcfgVariable& value);  /**< Equals to. */

@@ -1,3 +1,7 @@
+#include "PGEcfgVariable.h"
+#include "PGEcfgVariable.h"
+#include "PGEcfgVariable.h"
+#include "PGEcfgVariable.h"
 /*
     ###################################################################################
     PGEcfgVariable.cpp
@@ -255,6 +259,64 @@ void PGEcfgVariable::Set(const std::string& value)
 {
     sValue = value;
     type = TPGE_CFG_VARIABLE_TYPE::PGE_CVAR_STRING;
+}
+
+/**
+    Get/Set for a short one-liner description of this CVAR.
+    This one-liner will appear in the configuration file right above the CVAR definition, so it should
+    not be longer than 80-120 characters.
+    Neither the short- nor the long hint string is mandatory.
+
+    @return Reference to the short one-liner string description of this CVAR.
+*/
+std::string& PGEcfgVariable::getShortHint()
+{
+    return sShortHint;
+}
+
+/**
+    Getter for a short one-liner description of this CVAR.
+    This one-liner will appear in the configuration file right above the CVAR definition, so it should
+    not be longer than 80-120 characters.
+    Neither the short- nor the long hint string is mandatory.
+
+    @return Reference to the short one-liner string description of this CVAR.
+*/
+const std::string& PGEcfgVariable::getShortHint() const
+{
+    return sShortHint;
+}
+
+/**
+    Get/Set for a longer description of this CVAR.
+    This text will appear in the configuration file right below the CVAR definition, it can explain the purpose
+    and effects of this CVAR in more details, even in multiple lines.
+    You can wrap this text into multiple lines using the newline character.
+    Just make sure a single line is no longer than 80-120 characters so no "word wrap" is needed to be enabled in a
+    text editor for properly viewing the configuration file.
+    Neither the short- nor the long hint string is mandatory.
+
+    @return Reference to the short one-liner string description of this CVAR.
+*/
+std::string& PGEcfgVariable::getLongHint()
+{
+    return sLongHint;
+}
+
+/**
+    Getter for a longer description of this CVAR.
+    This text will appear in the configuration file right below the CVAR definition, it can explain the purpose
+    and effects of this CVAR in more details, even in multiple lines.
+    You can wrap this text into multiple lines using the newline character.
+    Just make sure a single line is no longer than 80-120 characters so no "word wrap" is needed to be enabled in a
+    text editor for properly viewing the configuration file.
+    Neither the short- nor the long hint string is mandatory.
+
+    @return Reference to the short one-liner string description of this CVAR.
+*/
+const std::string& PGEcfgVariable::getLongHint() const
+{
+    return sLongHint;
 }
 
 /**
