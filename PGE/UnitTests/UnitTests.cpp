@@ -98,13 +98,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     //tests.push_back(std::unique_ptr<UnitTest>(new PFLTest));
     
-    
     tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgVariableTest));
-    /*
     tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgFileTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgProfilesTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PgeOldNewValueTest));
-    */
+    /**/
     
     //tests.push_back(std::unique_ptr<UnitTest>(new PgePacketTest));
     
@@ -166,7 +164,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     tests.push_back(std::unique_ptr<UnitTest>(new PureWindowTest2));
     */
 
-    tests.push_back(std::unique_ptr<UnitTest>(new PureRendererHWfixedPipeTest));
+    //tests.push_back(std::unique_ptr<UnitTest>(new PureRendererHWfixedPipeTest));
     
     /*  
     tests.push_back(std::unique_ptr<UnitTest>(new PR00FsUltimateRenderingEngineTest));

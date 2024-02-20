@@ -532,6 +532,7 @@ bool PGEcfgProfiles::setProfile(int nIndex)
     if ( nIndex == -1 )
     {
         ClearVars();
+        getTemplate().clear();
         m_sActiveProfile = "";
         getConsole().OO();
         return true;

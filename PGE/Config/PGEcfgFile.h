@@ -46,7 +46,7 @@ public:
     std::map<std::string, PGEcfgVariable>& getVars();
     const std::map<std::string, PGEcfgVariable>& getVars() const;
 
-    bool load(const char* fname);
+    bool load(const char* fname);                      /**< Loads variables from the given config file. */
 
     const std::string& getFilename() const;
 
@@ -55,6 +55,9 @@ public:
 
     const std::set<std::string>& getAcceptedVars() const;
     bool setAcceptedVars(const std::set<std::string>& newAcceptedVars);
+
+    std::vector<std::string>& getTemplate();               /**< Returns the lines of the template generated from the loaded config file. */
+    const std::vector<std::string>& getTemplate() const;   /**< Returns the lines of the template generated from the loaded config file. */
 
     PGEcfgFile(const PGEcfgFile& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
         m_acceptedVars(other.m_acceptedVars),
@@ -90,9 +93,11 @@ private:
     bool m_bCaseSensitiveVars;
 
     std::string m_sFilename;
+    std::vector<std::string> m_vTemplateLines;
 
     // ---------------------------------------------------------------------------
 
+    static bool lineIsComment(const std::string& sTrimmedLine);
     static bool lineShouldBeIgnored(const std::string& sTrimmedLine);
 
     void lineHandleAssignment(const std::string& sVar, const std::string& sValue, const char* fname, std::set<std::string>& m_missingVars, bool& bParseError);

@@ -119,6 +119,7 @@ private:
             assertNull(cfg.getProfilePlayersList(), "players list") &
             assertNull(cfg.getProfilesList(), "profiles list") &
             assertTrue(cfg.getVars().empty(), "getVars") &
+            assertTrue(cfg.getTemplate().empty(), "template") &
             assertFalse(cfg.readConfiguration(), "readConfiguration") &
             assertTrue(cfg.getPathToProfiles().empty(), "path to profiles") &
             assertFalse(cfg.areProfilesInMyDocs(), "profiles are in mydocs") &
@@ -135,6 +136,8 @@ private:
     bool testReinitializeBeforeInit()
     {
         PGEcfgProfiles cfg;
+
+        // values are tested in the separate test cases
 
         return assertTrue(cfg.reinitialize("asd"), "reinit");
     }
@@ -163,6 +166,7 @@ private:
             assertNull(cfg.getProfilePlayersList(), "players list") &
             assertNull(cfg.getProfilesList(), "profiles list") &
             assertTrue(cfg.getVars().empty(), "getVars") &
+            assertTrue(cfg.getTemplate().empty(), "template") &
             assertFalse(cfg.readConfiguration(), "readConfiguration") &
             assertTrue(cfg.getPathToProfiles().empty(), "path to profiles") &
             assertFalse(cfg.areProfilesInMyDocs(), "profiles are in mydocs") &
@@ -193,6 +197,7 @@ private:
             assertNull(cfg.getProfilePlayersList(), "players list") &
             assertNull(cfg.getProfilesList(), "profiles list") &
             assertTrue(cfg.getVars().empty(), "getVars") &
+            assertTrue(cfg.getTemplate().empty(), "template") &
             assertFalse(cfg.readConfiguration(), "readConfiguration") &
             assertTrue(cfg.getPathToProfiles().empty(), "path to profiles") &
             assertFalse(cfg.areProfilesInMyDocs(), "profiles are in mydocs") &
@@ -451,26 +456,31 @@ private:
         b &= assertEquals(-1, cfg.getProfileIndex(), "index 1");
         b &= assertEquals("", cfg.getProfileName(), "name 1");
         b &= assertTrue(cfg.getVars().empty(), "getVars empty() 1");
+        b &= assertTrue(cfg.getTemplate().empty(), "template 1");
 
         b &= assertFalse(cfg.setProfile( cfg.getProfilesCount() ), "ret 2");
         b &= assertEquals(-1, cfg.getProfileIndex(), "index 2");
         b &= assertEquals("", cfg.getProfileName(), "name 2");
         b &= assertTrue(cfg.getVars().empty(), "getVars empty() 2");
+        b &= assertTrue(cfg.getTemplate().empty(), "template 2");
 
         b &= assertTrue(cfg.setProfile( 3 ), "ret 3");  // proof88.cfg
         b &= assertEquals(3, cfg.getProfileIndex(), "index 3");
         b &= assertEquals("proof88", cfg.getProfileName(), "name 3");
         b &= assertFalse(cfg.getVars().empty(), "getVars empty() 3");
+        b &= assertFalse(cfg.getTemplate().empty(), "template 3");
 
         b &= assertFalse(cfg.setProfile( -5 ), "ret 4");
         b &= assertEquals(3, cfg.getProfileIndex(), "index 4");
         b &= assertEquals("proof88", cfg.getProfileName(), "name 4");
         b &= assertFalse(cfg.getVars().empty(), "getVars empty() 4");
+        b &= assertFalse(cfg.getTemplate().empty(), "template 4");
 
         b &= assertTrue(cfg.setProfile( -1 ), "ret 5");
         b &= assertEquals(-1, cfg.getProfileIndex(), "index 5");
         b &= assertEquals("", cfg.getProfileName(), "name 5");
         b &= assertTrue(cfg.getVars().empty(), "getVars empty() 5");
+        b &= assertTrue(cfg.getTemplate().empty(), "template 5");
 
         return b;
     }
@@ -484,16 +494,19 @@ private:
         b &= assertEquals(-1, cfg.getProfileIndex(), "index 1");
         b &= assertEquals("", cfg.getProfileName(), "name 1");
         b &= assertTrue(cfg.getVars().empty(), "getVars empty() 1");
+        b &= assertTrue(cfg.getTemplate().empty(), "template 1");
 
         b &= assertTrue(cfg.setProfile("proof88"), "ret 2");
         b &= assertEquals(3, cfg.getProfileIndex(), "index 2");
         b &= assertEquals("proof88", cfg.getProfileName(), "name 2");
         b &= assertFalse(cfg.getVars().empty(), "getVars empty() 2");
+        b &= assertFalse(cfg.getTemplate().empty(), "template 2");
 
         b &= assertTrue(cfg.setProfile(""), "ret 3");
         b &= assertEquals(-1, cfg.getProfileIndex(), "index 3");
         b &= assertEquals("", cfg.getProfileName(), "name 3");
         b &= assertTrue(cfg.getVars().empty(), "getVars empty() 3");
+        b &= assertTrue(cfg.getTemplate().empty(), "template 3");
 
         return b;
     }

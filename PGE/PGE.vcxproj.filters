@@ -591,9 +591,6 @@
     <ClInclude Include="PURE\include\external\PR00FsUltimateRenderingEngine.h">
       <Filter>Header Files\PURE\include\external</Filter>
     </ClInclude>
-    <ClInclude Include="Config\PGEcfgIHandler.h">
-      <Filter>Header Files\Config</Filter>
-    </ClInclude>
     <ClInclude Include="Config\PgeOldNewValue.h">
       <Filter>Header Files\Config</Filter>
     </ClInclude>

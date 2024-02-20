@@ -1,3 +1,5 @@
+#include "PGEcfgFile.h"
+#include "PGEcfgFile.h"
 /*
     ###################################################################################
     PGEcfgFile.cpp
@@ -57,6 +59,13 @@ const std::map<std::string, PGEcfgVariable>& PGEcfgFile::getVars() const
     return m_vars;
 }
 
+/**
+    Loads variables from the given config file.
+    Remember: CVAR names are automatically converted to lowercase if you did not request case-sensitive variables in the constructor.
+    It also fills the template vector of strings which can be accessed by getTemplate().
+
+    @return True on success, false otherwise.
+*/
 bool PGEcfgFile::load(const char* fname)
 {
     getConsole().OLnOI("PGEcfgFile::load(%s) ...", fname);
@@ -67,8 +76,9 @@ bool PGEcfgFile::load(const char* fname)
         return false;
     }
 
-    std::ifstream f;
+    m_vTemplateLines.clear();
 
+    std::ifstream f;
     f.open (fname, std::ifstream::in);
     if ( !f.good() )
     {
@@ -87,6 +97,8 @@ bool PGEcfgFile::load(const char* fname)
     bool bParseError = false;
     const std::streamsize nBuffSize = 1024;
     char cLine[nBuffSize];
+    bool bRightAfterVarDefinition = false;
+    std::string sVar, sValue;
     while ( !bParseError && !f.eof() )
     {
         f.getline(cLine, nBuffSize);
@@ -95,12 +107,31 @@ bool PGEcfgFile::load(const char* fname)
         const std::string sTrimmedLine(cLine);
         if ( lineShouldBeIgnored(sTrimmedLine) )
         {
+            if (bRightAfterVarDefinition && lineIsComment(sTrimmedLine))
+            {
+                m_vars[sVar].getLongHint().push_back(sTrimmedLine);
+            }
+            else
+            {
+                bRightAfterVarDefinition = false;
+                m_vTemplateLines.push_back(sTrimmedLine);
+            }
             continue;
         }
-        std::string sVar, sValue;
+        bRightAfterVarDefinition = false;
         if ( lineIsValueAssignment(sTrimmedLine, m_bCaseSensitiveVars, sVar, sValue, bParseError) )
         {
             lineHandleAssignment(sVar, sValue, fname, m_missingVars, bParseError);
+            if (!bParseError)
+            {
+                if (!m_vTemplateLines.empty() && lineIsComment(m_vTemplateLines.back()))
+                {
+                    m_vars[sVar].getShortHint() = m_vTemplateLines.back();
+                    m_vTemplateLines.pop_back();
+                }
+                m_vTemplateLines.push_back(sVar);
+                bRightAfterVarDefinition = true;
+            }
         }
     };
     f.close();
@@ -109,6 +140,7 @@ bool PGEcfgFile::load(const char* fname)
     {
         getConsole().EOLnOO("ERROR: failed to parse file: %s!", fname);
         m_vars.clear();
+        m_vTemplateLines.clear();
         return false;
     }
 
@@ -126,6 +158,7 @@ bool PGEcfgFile::load(const char* fname)
         }
         getConsole().EOLnOO("ERROR: failed to parse file: %s, variable(s) missing: %s!", fname, sMissingVars.c_str());
         m_vars.clear();
+        m_vTemplateLines.clear();
         return false;
     }
 
@@ -167,6 +200,34 @@ bool PGEcfgFile::setAcceptedVars(const std::set<std::string>& newAcceptedVars)
 
     m_acceptedVars = newAcceptedVars;
     return true;
+}
+
+/**
+    Returns the lines of the template generated from the loaded config file.
+
+    This template is built up automatically in case of a successful load() but you can also modify it if needed.
+    This template is used when writing the configuration back to file:
+    it defines which CVARs in what order should be written to the file, and also the comments unrelated to CVARS.
+
+    @return The config file template.
+*/
+std::vector<std::string>& PGEcfgFile::getTemplate()
+{
+    return m_vTemplateLines;
+}
+
+/**
+    Returns the lines of the template generated from the loaded config file.
+
+    This template is built up automatically in case of a successful load() but you can also modify it if needed.
+    This template is used when writing the configuration back to file:
+    it defines which CVARs in what order should be written to the file, and also the comments unrelated to CVARS.
+
+    @return The config file template.
+*/
+const std::vector<std::string>& PGEcfgFile::getTemplate() const
+{
+    return m_vTemplateLines;
 }
 
 
@@ -257,9 +318,14 @@ bool PGEcfgFile::validateOnLoad(std::ifstream&) const
 // ############################### PRIVATE ###############################
 
 
+bool PGEcfgFile::lineIsComment(const std::string& sTrimmedLine)
+{
+    return !sTrimmedLine.empty() && (sTrimmedLine[0] == '#');
+}
+
 bool PGEcfgFile::lineShouldBeIgnored(const std::string& sTrimmedLine)
 {
-    return sTrimmedLine.empty() || (sTrimmedLine[0] == '#');
+    return sTrimmedLine.empty() || lineIsComment(sTrimmedLine);
 }
 
 void PGEcfgFile::lineHandleAssignment(const std::string& sVar, const std::string& sValue, const char* fname, std::set<std::string>& m_missingVars, bool& bParseError)

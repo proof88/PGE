@@ -393,7 +393,6 @@
     <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_waveshaperfilter.h" />
     <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_wavstream.h" />
     <ClInclude Include="Config\PGEcfgFile.h" />
-    <ClInclude Include="Config\PGEcfgIHandler.h" />
     <ClInclude Include="Config\PGEcfgVariable.h" />
     <ClInclude Include="Config\PGEcfgProfiles.h" />
     <ClInclude Include="Config\PgeOldNewValue.h" />

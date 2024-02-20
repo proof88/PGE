@@ -4,7 +4,13 @@
 
 Name = Sample Weapon 1
 
+# Variables can have a one-liner short explanation comment right above them.
+# This is NOT such a one-liner since this is not right above the next variable.
+
+# However, this is a one-liner short explanation.
 cap_max = 999
+# Variables can also have a longer, even multi-line more detailed explanation below them.
+# This explanation lasts until the next non-comment line.
 
 reload_per_mag = true
 reload_time = 3000
@@ -19,7 +25,7 @@ testVar3=
 # You can also place space chars, they will be preserved:
 testVar4=   
 
-# However, values having non-space chars as well, are left-trimmed, so following
-# variable will have "alma    " stored. I might change this behavior,
-# but currently I leave it as it is.
+# However, values having non-space chars as well, are left-trimmed:
 testVar5 =     alma    
+# So this variable will have "alma    " stored.
+# I might change this behavior, but currently I leave it as it is.

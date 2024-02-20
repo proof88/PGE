@@ -291,32 +291,32 @@ const std::string& PGEcfgVariable::getShortHint() const
     Get/Set for a longer description of this CVAR.
     This text will appear in the configuration file right below the CVAR definition, it can explain the purpose
     and effects of this CVAR in more details, even in multiple lines.
-    You can wrap this text into multiple lines using the newline character.
+    You can wrap this text into multiple lines: one element of the vector represent one line.
     Just make sure a single line is no longer than 80-120 characters so no "word wrap" is needed to be enabled in a
     text editor for properly viewing the configuration file.
-    Neither the short- nor the long hint string is mandatory.
+    Neither the short- nor the long hint text is mandatory.
 
-    @return Reference to the short one-liner string description of this CVAR.
+    @return Reference to the long text description of this CVAR.
 */
-std::string& PGEcfgVariable::getLongHint()
+std::vector<std::string>& PGEcfgVariable::getLongHint()
 {
-    return sLongHint;
+    return vsLongHint;
 }
 
 /**
     Getter for a longer description of this CVAR.
     This text will appear in the configuration file right below the CVAR definition, it can explain the purpose
     and effects of this CVAR in more details, even in multiple lines.
-    You can wrap this text into multiple lines using the newline character.
+    You can wrap this text into multiple lines: one element of the vector represent one line.
     Just make sure a single line is no longer than 80-120 characters so no "word wrap" is needed to be enabled in a
     text editor for properly viewing the configuration file.
-    Neither the short- nor the long hint string is mandatory.
+    Neither the short- nor the long hint text is mandatory.
 
-    @return Reference to the short one-liner string description of this CVAR.
+    @return Reference to the long text description of this CVAR.
 */
-const std::string& PGEcfgVariable::getLongHint() const
+const std::vector<std::string>& PGEcfgVariable::getLongHint() const
 {
-    return sLongHint;
+    return vsLongHint;
 }
 
 /**
