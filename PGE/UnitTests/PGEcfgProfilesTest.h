@@ -336,20 +336,47 @@ private:
         size_t nOriginalVarsCount = cfg.getVars().size();
 
         int iNewProfile = cfg.addProfile("testusername?", "testnickname");
-        b &= assertEquals(nOriginalUsersCount, cfg.getProfilesCount(), "wrongname1 1");
-        b &= assertEquals(-2, iNewProfile, "wrongname1 2");
+        b &= assertEquals(nOriginalUsersCount, cfg.getProfilesCount(), "wrong username1 1");
+        b &= assertEquals(-2, iNewProfile, "wrong username1 2");
 
         iNewProfile = cfg.addProfile("*", "testnickname");
-        b &= assertEquals(nOriginalUsersCount, cfg.getProfilesCount(), "wrongname2 1");
-        b &= assertEquals(-2, iNewProfile, "wrongname2 2");
+        b &= assertEquals(nOriginalUsersCount, cfg.getProfilesCount(), "wrong username2 1");
+        b &= assertEquals(-2, iNewProfile, "wrong username2 2");
+
+        iNewProfile = cfg.addProfile("", "testnickname");
+        b &= assertEquals(nOriginalUsersCount, cfg.getProfilesCount(), "wrong username3 1");
+        b &= assertEquals(-2, iNewProfile, "wrong username3 2");
+
+        iNewProfile = cfg.addProfile(" ", "testnickname");
+        b &= assertEquals(nOriginalUsersCount, cfg.getProfilesCount(), "wrong username4 1");
+        b &= assertEquals(-2, iNewProfile, "wrong username4 2");
+
+        iNewProfile = cfg.addProfile("testusername", "");
+        b &= assertEquals(nOriginalUsersCount, cfg.getProfilesCount(), "wrong nickname1 1");
+        b &= assertEquals(-2, iNewProfile, "wrong nickname1 2");
+
+        if (!b)
+        {
+            return false;
+        }
 
         iNewProfile = cfg.addProfile("testusername", "testnickname");
         b &= assertEquals(nOriginalUsersCount+1, cfg.getProfilesCount(), "good 1");
         b &= assertGreater(iNewProfile, -1, "good 2");
 
+        if (!b)
+        {
+            return false;
+        }
+
         int iNewProfile2 = cfg.addProfile("testusername", "testothernickname");
         b &= assertEquals(nOriginalUsersCount+1, cfg.getProfilesCount(), "trysameagain 1");
         b &= assertEquals(-1, iNewProfile2, "trysameagain 2");
+
+        if (!b)
+        {
+            return false;
+        }
 
         b &= assertEquals(nOriginalVarsCount, cfg.getVars().size(), "varscount");
         b &= assertEquals(3, cfg.getProfileIndex(), "getprofile 1i");

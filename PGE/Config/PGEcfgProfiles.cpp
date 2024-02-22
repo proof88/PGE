@@ -298,8 +298,10 @@ const string** PGEcfgProfiles::getProfilePlayersList() const
 
     @param sUser The username for the profile, which will be used primarily for the filename.
                  Thus some characters are restricted (?, *, etc ...).
+                 Cannot be empty.
     @param sNick The nickname / player name for the profile, which can hold any character.
                  This is what is shown in a game, for example in frag table.
+                 Cannot be empty.
 
     @return Non-negative index of the new profile on success.
             -1 if a profile already exists with the given user name.
@@ -309,6 +311,14 @@ const string** PGEcfgProfiles::getProfilePlayersList() const
 int PGEcfgProfiles::addProfile(const char* sUser, const char* sNick)
 {
     if ((sUser == NULL) || (sNick == NULL))
+    {
+        return -2;
+    }
+
+    // this is ridiculous, PFL still doesnt have std::string-compatible strClr() !!!
+    char cLine[200]{};
+    strncpy_s(cLine, sizeof(cLine), sNick, sizeof(cLine)); // last param should be something else but here I have no better choice ...
+    if ((strlen(sNick) == 0) || (PFL::strClr(cLine) != strlen(sNick)))
     {
         return -2;
     }
