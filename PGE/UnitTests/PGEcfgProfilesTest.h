@@ -385,8 +385,11 @@ private:
         }
 
         // cleanup
-        cfg.deleteProfile( 0 );
-        cfg.deleteProfile( cfg.getProfilesCount()-1 );
+        if (b)
+        {
+            cfg.deleteProfile(0);
+            cfg.deleteProfile(cfg.getProfilesCount() - 1);
+        }
 
         return b;
     }
@@ -588,18 +591,27 @@ private:
 
         b &= assertFalse(cfg.writeConfiguration(), "writecfg 1");
 
-        int iNewProfile = cfg.addProfile("testusername", "testnickname");
+        const int iNewProfile = cfg.addProfile("testusername", "testnickname");
         b &= assertGreater(iNewProfile, -1, "addprofile 1");
 
-        if ( !b )
+        if (!b)
+        {
             return b;
+        }
 
         b &= assertTrue(cfg.setProfile( iNewProfile ), "setProfile ret 1");
+
+        // variables wont be written to file if template doesnt contain them so we need to add them to template
+        cfg.getTemplate().push_back("cl_alma");
+
         cfg.getVars()["cl_alma"] = 15.6f;
         b &= assertTrue(cfg.writeConfiguration(), "writecfg 2");
         
-        if ( !b )
+        if (!b)
+        {
+            cfg.deleteProfile(iNewProfile);
             return b;
+        }
 
         b &= assertTrue(cfg.setProfile( -1 ), "setProfile ret 2");
         b &= assertTrue(cfg.setProfile( iNewProfile ), "setProfile ret 3");

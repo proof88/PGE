@@ -12,17 +12,33 @@
 
 #include "UnitTest.h"  // PCH
 #include "../Config/PGEcfgFile.h"
+#include <stdio.h>  // for remove() for deleting file
 
-class PGEcfgFileDerived : public PGEcfgFile
+class PGEcfgFileForcedValidateLoadFailure : public PGEcfgFile
 {
 public:
-    PGEcfgFileDerived(
+    PGEcfgFileForcedValidateLoadFailure(
         bool bRequireAllAcceptedVarsDefineRequirement,
         bool bCaseSensitiveVars) : PGEcfgFile(bRequireAllAcceptedVarsDefineRequirement, bCaseSensitiveVars)
     {} 
 
 protected:
-    virtual bool validateOnLoad(std::ifstream&) const /* override */
+    virtual bool validateOnLoad(std::ifstream&) const override
+    {
+        return false;
+    }
+};
+
+class PGEcfgFileForcedValidateSaveFailure : public PGEcfgFile
+{
+public:
+    PGEcfgFileForcedValidateSaveFailure(
+        bool bRequireAllAcceptedVarsDefineRequirement,
+        bool bCaseSensitiveVars) : PGEcfgFile(bRequireAllAcceptedVarsDefineRequirement, bCaseSensitiveVars)
+    {}
+
+protected:
+    virtual bool validateOnSave(std::ofstream&) const override
     {
         return false;
     }
@@ -58,6 +74,10 @@ protected:
         AddSubTest("test_load_not_allowed_when_already_loaded", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_not_allowed_when_already_loaded);
         AddSubTest("test_set_accepted_vars_not_allowed_when_already_loaded", (PFNUNITSUBTEST) &PGEcfgFileTest::test_set_accepted_vars_not_allowed_when_already_loaded);
         AddSubTest("test_override_validateOnLoad", (PFNUNITSUBTEST) &PGEcfgFileTest::test_override_validateOnLoad);
+
+        AddSubTest("test_save_fail_nothing_loaded", (PFNUNITSUBTEST)&PGEcfgFileTest::test_save_fail_nothing_loaded);
+        AddSubTest("test_save_good", (PFNUNITSUBTEST)&PGEcfgFileTest::test_save_good);
+        AddSubTest("test_override_validateOnSave", (PFNUNITSUBTEST)&PGEcfgFileTest::test_override_validateOnSave);
     }
 
     virtual void Finalize() override
@@ -84,6 +104,7 @@ private:
             assertFalse(cfgFile.getAllAcceptedVarsDefineRequirement(), "getAllAcceptedVarsDefineRequirement") &
             assertFalse(cfgFile.getCaseSensitiveVars(), "getCaseSensitiveVars") &
             assertTrue(cfgFile.getFilename().empty(), "filename") &
+            assertTrue(cfgFile.getPathToFile().empty(), "path") &
             assertTrue(cfgFile.getTemplate().empty(), "template");
     }
 
@@ -94,6 +115,7 @@ private:
         bool b = assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_bad_assignment.txt"), "load");
         b &= assertTrue(cfgFile.getVars().empty(), "empty") &
             assertTrue(cfgFile.getFilename().empty(), "filename") &
+            assertTrue(cfgFile.getPathToFile().empty(), "path") &
             assertTrue(cfgFile.getTemplate().empty(), "template");
 
         return b;
@@ -112,6 +134,7 @@ private:
         
         return b & assertTrue(cfgFile.getVars().empty(), "empty") &
             assertTrue(cfgFile.getFilename().empty(), "filename") &
+            assertTrue(cfgFile.getPathToFile().empty(), "path") &
             assertTrue(cfgFile.getTemplate().empty(), "template");
     }
 
@@ -130,6 +153,7 @@ private:
         return b & assertFalse(cfgFile.getVars().empty(), "empty") &
             assertTrue(cfgFile.getVars().find("name") != cfgFile.getVars().end(), "name") &
             assertEquals("cfg_test_load_missing_var.txt", cfgFile.getFilename(), "filename") &
+            assertEquals("gamedata/cfgs/", cfgFile.getPathToFile(), "path") &
             assertFalse(cfgFile.getTemplate().empty(), "template");
     }
 
@@ -149,6 +173,7 @@ private:
 
         return b & assertTrue(cfgFile.getVars().empty(), "empty") &
             assertTrue(cfgFile.getFilename().empty(), "filename") &
+            assertTrue(cfgFile.getPathToFile().empty(), "path") &
             assertTrue(cfgFile.getTemplate().empty(), "template");
     }
 
@@ -160,6 +185,7 @@ private:
 
         return b & assertTrue(cfgFile.getVars().empty(), "empty") &
             assertTrue(cfgFile.getFilename().empty(), "filename") &
+            assertTrue(cfgFile.getPathToFile().empty(), "path") &
             assertTrue(cfgFile.getTemplate().empty(), "template");
     }
 
@@ -177,6 +203,7 @@ private:
 
         return b & assertTrue(cfgFile.getVars().empty(), "empty") &
             assertTrue(cfgFile.getFilename().empty(), "filename") &
+            assertTrue(cfgFile.getPathToFile().empty(), "path") &
             assertTrue(cfgFile.getTemplate().empty(), "template");
     }
 
@@ -195,6 +222,7 @@ private:
 
         return b & assertTrue(cfgFile.getVars().empty(), "empty") &
             assertTrue(cfgFile.getFilename().empty(), "filename") &
+            assertTrue(cfgFile.getPathToFile().empty(), "path") &
             assertTrue(cfgFile.getTemplate().empty(), "template");
     }
 
@@ -210,6 +238,7 @@ private:
             assertTrue(cfgFile.getVars().find("Name") != cfgFile.getVars().end(), "Name") &
             assertTrue(cfgFile.getVars().find("name") != cfgFile.getVars().end(), "name") &
             assertEquals("cfg_test_load_case_insensitive_vars.txt", cfgFile.getFilename(), "filename") &
+            assertEquals("gamedata/cfgs/", cfgFile.getPathToFile(), "path") &
             assertFalse(cfgFile.getTemplate().empty(), "template");
     }
 
@@ -220,6 +249,7 @@ private:
         bool b = assertTrue(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load");
         b &= assertFalse(cfgFile.getVars().empty(), "not empty") &
             assertEquals("cfg_test_load_good.txt", cfgFile.getFilename(), "filename") &
+            assertEquals("gamedata/cfgs/", cfgFile.getPathToFile(), "path") &
             assertFalse(cfgFile.getTemplate().empty(), "template 1");
 
         b &= assertTrue(cfgFile.getVars().find("name") != cfgFile.getVars().end(), "name var") &
@@ -339,6 +369,7 @@ private:
         bool b = assertTrue(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load");
         b &= assertFalse(cfgFile.getVars().empty(), "not empty") &
             assertEquals("cfg_test_load_good.txt", cfgFile.getFilename(), "filename") &
+            assertEquals("gamedata/cfgs/", cfgFile.getPathToFile(), "path") &
             assertFalse(cfgFile.getTemplate().empty(), "template 1");
 
         b &= assertTrue(cfgFile.getVars().find("Name") != cfgFile.getVars().end(), "Name var") &
@@ -461,6 +492,7 @@ private:
         b &= assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load");
         b &= assertFalse(cfgFile.getVars().empty(), "not empty") &
             assertEquals("cfg_test_load_good.txt", cfgFile.getFilename(), "filename") &
+            assertEquals("gamedata/cfgs/", cfgFile.getPathToFile(), "path") &
             assertFalse(cfgFile.getTemplate().empty(), "template");
 
         return b;
@@ -484,12 +516,161 @@ private:
 
     bool test_override_validateOnLoad()
     {
-        PGEcfgFileDerived cfgFile(false, false);
+        PGEcfgFileForcedValidateLoadFailure cfgFile(false, false);
         bool b = assertFalse(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load") &
             assertTrue(cfgFile.getFilename().empty(), "filename") &
+            assertTrue(cfgFile.getPathToFile().empty(), "path") &
             assertTrue(cfgFile.getTemplate().empty(), "template");
         
         return b;
     }
 
-}; 
+    bool test_save_fail_nothing_loaded()
+    {
+        PGEcfgFile cfgFile(false, false);
+
+        return assertFalse(cfgFile.save("asdasdasd.txt"), "file name specified") &
+            assertFalse(cfgFile.save(""), "without filename");
+    }
+
+    bool assertTemplateEquals(
+        const std::vector<std::string>& vsExpected,
+        const std::vector<std::string>& vsChecked,
+        const std::string& sMessage)
+    {
+        bool b = assertTrue(
+            vsExpected.size() == vsChecked.size() ||
+            /* it is allowed for the written file to have 1 extra last empty line! */
+            (vsExpected.size() == (vsChecked.size() - 1)), "template size");
+
+        if (b)
+        {
+            for (size_t i = 0; i < vsExpected.size(); i++)
+            {
+                b &= assertEquals(vsExpected[i], vsChecked[i], (std::string("template line i: ") + std::to_string(i)).c_str());
+            }
+            if ((vsExpected.size() == (vsChecked.size() - 1)))
+            {
+                b &= assertTrue(vsChecked[vsChecked.size() - 1].empty(), "template last line empty");
+            }
+        }
+
+        return assertTrue(b, sMessage.c_str());
+    }
+
+    bool assertVarsEquals(
+        const std::map<std::string, PGEcfgVariable>& mapVarsExpected,
+        const std::map<std::string, PGEcfgVariable>& mapVarsChecked,
+        const std::string& sMessage)
+    {
+        bool b = assertEquals(mapVarsExpected.size(), mapVarsChecked.size(), "vars size");
+
+        if (b)
+        {
+            auto itExpected = mapVarsExpected.begin();
+            auto itChecked = mapVarsChecked.begin();
+
+            while ((itExpected != mapVarsExpected.end()) && (itChecked != mapVarsChecked.end()))
+            {
+                b &= assertEquals(itExpected->first, itChecked->first, "var name");
+                b &= assertTrue(
+                    itExpected->second == itChecked->second,
+                    (std::string("var value: \"") + itExpected->second.getAsString() + "\" vs \"" + itChecked->second.getAsString() + "\"").c_str());
+                
+                ++itExpected;
+                ++itChecked;
+            }
+        }
+
+        return assertTrue(b, sMessage.c_str());
+    }
+
+    bool test_save_good()
+    {
+        PGEcfgFile cfgFile(false, false);
+
+        bool b = assertTrue(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load initial");
+
+        if (!b)
+        {
+            return false;
+        }
+
+        const auto originalVars = cfgFile.getVars();
+        const auto originalTemplate = cfgFile.getTemplate();
+
+        constexpr char* szFileWeWrite = "gamedata/cfgs/cfg_test_save_good.txt";
+        remove(szFileWeWrite); // make sure it is not already there
+
+        // first test saving to a file which we never read in any other test case
+        b &= assertTrue(cfgFile.save(szFileWeWrite), "save 1");
+        if (!b)
+        {
+            return false;
+        }
+
+        cfgFile.getVars().clear();
+        cfgFile.getTemplate().clear();
+        b &= assertTrue(cfgFile.load(szFileWeWrite), "load 1");
+        b &= assertVarsEquals(originalVars, cfgFile.getVars(), "getVars 1");
+        b &= assertTemplateEquals(originalTemplate, cfgFile.getTemplate(), "template 1");
+
+        if (!b)
+        {
+            // in this case dont delete the file so it is easier to debug if it is left on disk
+            return false;
+        }
+
+        b &= assertEquals(0, remove(szFileWeWrite), "file delete");
+        if (!b)
+        {
+            // if we cannot delete the file, the remaining tests make no sense since we want to write again from scratch
+            return false;
+        }
+
+        // now we can test saving to the same loaded file by NOT specifying file name
+        b &= assertTrue(cfgFile.save(), "save 2");
+        if (!b)
+        {
+            return false;
+        }
+
+        cfgFile.getVars().clear();
+        cfgFile.getTemplate().clear();
+        b &= assertTrue(cfgFile.load(szFileWeWrite), "load 2");
+        b &= assertVarsEquals(originalVars, cfgFile.getVars(), "getVars 2");
+        b &= assertTemplateEquals(originalTemplate, cfgFile.getTemplate(), "template 2");
+
+        if (b)
+        {
+            remove(szFileWeWrite);
+        }
+
+        return b;
+    }
+
+    bool test_override_validateOnSave()
+    {
+        PGEcfgFileForcedValidateSaveFailure cfgFile(false, false);
+
+        bool b = assertTrue(cfgFile.load("gamedata/cfgs/cfg_test_load_good.txt"), "load initial");
+
+        if (!b)
+        {
+            return false;
+        }
+
+        constexpr char* szFileWeWrite = "gamedata/cfgs/cfg_test_save_good.txt";
+        remove(szFileWeWrite); // make sure it is not already there
+
+        b &= assertFalse(cfgFile.save(szFileWeWrite), "save");
+
+        if (b)
+        {
+            remove(szFileWeWrite);
+        }
+
+        return b;
+    }
+
+};

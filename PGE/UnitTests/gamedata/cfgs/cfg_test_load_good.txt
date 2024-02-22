@@ -17,13 +17,13 @@ reload_time = 3000
 
 testVar = Values can have spaces, since they last until end of line!
 
-testVar2=Values can have spaces, since they last until end of line!
+testVar2 = Values can have spaces, since they last until end of line!
 
 # Setting a var to empty string is easy, just write nothing after '=':
-testVar3=
+testVar3 =
 
 # You can also place space chars, they will be preserved:
-testVar4=   
+testVar4 =   
 
 # However, values having non-space chars as well, are left-trimmed:
 testVar5 =     alma    

@@ -47,8 +47,10 @@ public:
     const std::map<std::string, PGEcfgVariable>& getVars() const;
 
     bool load(const char* fname);                      /**< Loads variables from the given config file. */
+    bool save(const char* fname = "") const;           /**< Saves variables to the given config file. */
 
     const std::string& getFilename() const;
+    const std::string& getPathToFile() const;
 
     bool getAllAcceptedVarsDefineRequirement() const;
     bool getCaseSensitiveVars() const;
@@ -86,6 +88,7 @@ protected:
     static bool lineIsValueAssignment(const std::string& sTrimmedLine, bool bCaseSensitiveVars, std::string& sVar, std::string& sValue, bool& bParseError);
 
     virtual bool validateOnLoad(std::ifstream&) const; /**< Validate the file being processed by load(). */
+    virtual bool validateOnSave(std::ofstream&) const; /**< Validate the file being processed by save(). */
 
 private:
 
@@ -93,6 +96,7 @@ private:
     bool m_bCaseSensitiveVars;
 
     std::string m_sFilename;
+    std::string m_sPathToFile;
     std::vector<std::string> m_vTemplateLines;
 
     // ---------------------------------------------------------------------------

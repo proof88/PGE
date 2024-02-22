@@ -71,7 +71,8 @@ public:
     bool writeConfiguration();                          /**< Saves configuration for current profile to file. */
     
 protected:
-    virtual bool validateOnLoad(std::ifstream& f) const /* override */;
+    virtual bool validateOnLoad(std::ifstream& f) const override;
+    virtual bool validateOnSave(std::ofstream& f) const override;
 
     std::map<std::string, PGEcfgVariable>& getCommandLineVars();
 
@@ -106,9 +107,5 @@ private:
 
     void LoadProfilesList();   /**< Fills up sFoundProfiles and sFoundProfilePlayerNames. */
     void ClearVars();          /**< Removes all cvars. */
-    void WriteConfiguration(
-        std::ofstream& f_cfg,
-        const std::string& sUser,
-        const std::string& sNick);  /**< Writes lines to an opened file. */
 
 }; // class PGEcfgProfiles

@@ -1,5 +1,3 @@
-#include "PGEcfgFile.h"
-#include "PGEcfgFile.h"
 /*
     ###################################################################################
     PGEcfgFile.cpp
@@ -162,17 +160,146 @@ bool PGEcfgFile::load(const char* fname)
         return false;
     }
 
+    // remove useless empty line(s) from the end, otherwise their number would increase from time to time if the same
+    // file is loaded and saved repeatedly
+    while (!m_vTemplateLines.empty() && m_vTemplateLines.back().empty())
+    {
+        m_vTemplateLines.pop_back();
+    }
+
     //m_sFilename = PFL::changeExtension(PFL::getFilename(fname).c_str(), "");
     // TODO: there should be a separate name maybe for the filename without extension ...
     m_sFilename = PFL::getFilename(fname);
+    m_sPathToFile = PFL::getDirectory(fname);
 
     getConsole().SOLnOO("PGEcfgFile loaded!");
     return true;
 }
 
+/**
+    Saves variables to the given config file.
+    It uses the template vector of strings which can be accessed by getTemplate().
+
+    @param fname The filename of the file to write to. If left empty, getFilename() is used to determine the file name.
+
+    @return True on success, false otherwise.
+*/
+bool PGEcfgFile::save(const char* fname) const
+{
+    getConsole().OLnOI("PGEcfgFile::save(%s) ...", fname);
+
+    if (m_vTemplateLines.empty())
+    {
+        getConsole().EOLnOO("ERROR: no template lines, not writing anything to %s!", fname);
+        return false;
+    }
+
+    std::string sFilename(fname);
+    if (sFilename.empty())
+    {
+        // PFL::getDirectory() says there is always slash or backslash at the end of the path (if not empty)
+        sFilename = m_sPathToFile + m_sFilename;
+    }
+    if (sFilename.empty())
+    {
+        getConsole().EOLnOO("ERROR: no file is loaded and no filename is specified!", fname);
+        return false;
+    }
+
+    std::ofstream f;
+    f.open(sFilename.c_str(), std::ifstream::out);
+    if (!f.good())
+    {
+        getConsole().EOLnOO("ERROR: failed to open file: %s!", sFilename.c_str());
+        return false;
+    }
+
+    if (!validateOnSave(f))
+    {
+        getConsole().EOLnOO("ERROR: validateOnSave() failed for file: %s!", sFilename.c_str());
+        f.close();
+        return false;
+    }
+
+    bool bRet = true;
+    for (const auto& sTemplateLine : m_vTemplateLines)
+    {
+        if (lineShouldBeIgnored(sTemplateLine))
+        {
+            f << sTemplateLine << std::endl;
+        }
+        else
+        {
+            // CVAR
+            const auto itCvar = m_vars.find(sTemplateLine);
+            if (itCvar != m_vars.end())
+            {
+                const auto& cvar = itCvar->second;
+                if (!cvar.getShortHint().empty())
+                {
+                    f << cvar.getShortHint() << std::endl;
+                }
+
+                f << sTemplateLine;
+                if (cvar.getAsString().empty() || cvar.getAsString()[0] == ' ')
+                {
+                    // this is important for the parser in load() to properly understand empty string or string starting with space!
+                    f << " =";
+                }
+                else
+                {
+                    // in this case we can dont care
+                    f << " = ";
+                }
+                f << cvar.getAsString() << std::endl;
+
+                for (const auto& sLongHintLine : cvar.getLongHint())
+                {
+                    f << sLongHintLine << std::endl;
+                }
+            }
+            else
+            {
+                // I'm still not sure how to handle when the template contains a CVAR which is absent in m_vars, but for now
+                // I'm logging it as an error and interrupting the saving process so the error is fatal, to make sure it is
+                // easily noticable in the future. Since the template file is built up automatically upon loading the config,
+                // it MUST contain all variables that are also in m_vars which is filled up also at the same time.
+                // If someone is deleting a CVAR later from m_vars, should also modify the template accordingly!
+                // I'm adding this statement to the API doc too.
+                getConsole().EOLnOO(
+                    "ERROR: CVAR %s in template was not found in m_cvars, file %s is not fully written, might be partially saved and corrupted!",
+                    sTemplateLine.c_str(),
+                    sFilename.c_str());
+                bRet = false;
+                break;
+            }
+        }
+
+        if (!f.good())
+        {
+            getConsole().EOLnOO("ERROR: failed to write file: %s, might be partially saved and corrupted!", sFilename.c_str());
+            bRet = false;
+            break;
+        }
+    }
+    f.close();
+
+    if (bRet)
+    {
+        getConsole().SOLnOO("PGEcfgFile saved!");
+    }
+    
+    return bRet;
+}
+
 const std::string& PGEcfgFile::getFilename() const
 {
     return m_sFilename;
+}
+
+const std::string& PGEcfgFile::getPathToFile() const
+{
+    return m_sPathToFile;
 }
 
 bool PGEcfgFile::getAllAcceptedVarsDefineRequirement() const
@@ -305,11 +432,30 @@ bool PGEcfgFile::lineIsValueAssignment(const std::string& sTrimmedLine, bool bCa
     Validate the file being processed by load().
     Derived class can override this to provide a validating function, e.g. special way to decide if the file being loaded actually has valid format.
     This is invoked by load() before trying to parse the file.
-    This function should not open/close the given file stream.
+    The stream must be already opened prior to calling this function.
+    This function must not open/close the given file stream.
     Upon success, load() will continue reading the file from the point until this function has read the file.
+
     @return False to indicate that load() should not process the file and fail. True if load() should continue processing the file.
 */
 bool PGEcfgFile::validateOnLoad(std::ifstream&) const
+{
+    return true;
+}
+
+/**
+    Validate the file being processed by save().
+    Derived class can override this to provide a validating function which makes the file compatible with the optionally overridden
+    validateOnLoad() function. For example, if validateOnLoad() checks for a special header, then validateOnSave() is responsible for
+    writing that special header into the file.
+    This is invoked by save() when trying to write the file.
+    The stream must be already opened prior to calling this function.
+    This function must not open/close the given file stream.
+    Upon success, save() will continue writing the file from the point this function has written the file.
+
+    @return False to indicate that save() should not continue writing the file and fail. True if save() should continue writing the file.
+*/
+bool PGEcfgFile::validateOnSave(std::ofstream&) const
 {
     return true;
 }

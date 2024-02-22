@@ -290,12 +290,16 @@ const string** PGEcfgProfiles::getProfilePlayersList() const
 /**
     Creates a new profile.
     This creates a profile directory and a profile file in it immediately.
+    Only the mandatory CVAR containing the nickname of the profile is saved to the file, no other CVARs.
+    You have to explicitly call writeConfiguration() to save all variables based on the config template.
+
     Creating a new profile won't change the current profile. You have to manually switch to it instead.
-    The current profile index may change.
+    The current profile index may change but it will still index the original active profile.
 
     @param sUser The username for the profile, which will be used primarily for the filename.
                  Thus some characters are restricted (?, *, etc ...).
-    @param sNick The nickname for the profile, which can hold any character.
+    @param sNick The nickname / player name for the profile, which can hold any character.
+                 This is what is shown in a game, for example in frag table.
 
     @return Non-negative index of the new profile on success.
             -1 if a profile already exists with the given user name.
@@ -347,8 +351,14 @@ int PGEcfgProfiles::addProfile(const char* sUser, const char* sNick)
         getConsole().EOLnOO("ERROR: couldn't create file: %s", sFileToCreate.c_str());
         return -2;
     }
-
-    WriteConfiguration(f_cfg, sUser, sNick);
+    // write optional header, otherwise switching to this profile may fail if validateOnLoad() fails
+    if (!validateOnSave(f_cfg))
+    {
+        getConsole().EOLnOO("ERROR: validateOnSave() failed for file: %s", sFileToCreate.c_str());
+        return -2;
+    }
+    // write nickname as it is mandatory for valid cfg
+    f_cfg << PGE_SYS_CFG_PLAYER_NAME_CVAR << " = " << sNick << std::endl;
     f_cfg.close();
 
     LoadProfilesList();
@@ -666,6 +676,7 @@ bool PGEcfgProfiles::readConfiguration()
 
 /**
     Saves configuration for current profile to file.
+
     @return True on success, false on failure.
 */
 bool PGEcfgProfiles::writeConfiguration()
@@ -678,18 +689,13 @@ bool PGEcfgProfiles::writeConfiguration()
     }
 
     const string sFile = getPathToProfiles() + *sFoundProfiles[getProfileIndex()] + '\\' + (*sFoundProfiles[getProfileIndex()] + ".cfg");
-    ofstream f_cfg( sFile );
-    if ( f_cfg.fail() )
+    if (!save(sFile.c_str()))
     {
-        getConsole().EOLnOO("ERROR: couldn't open file: %s", sFile.c_str());
+        getConsole().EOLnOO("ERROR: failed to save file: %s! ", sFile.c_str());
         return false;
     }
 
-    WriteConfiguration(f_cfg, *sFoundProfiles[getProfileIndex()], "");
-    f_cfg.close();
-
     getConsole().SOLnOO("> done!");
-
     return true;
 } // writeConfiguration()
 
@@ -701,7 +707,13 @@ bool PGEcfgProfiles::validateOnLoad(std::ifstream& f) const
 {
     string tmp;
     f >> tmp;
-    return tmp == PGE_SYS_CFG_FILE_MAGIC_START;
+    return f.good() && (tmp == PGE_SYS_CFG_FILE_MAGIC_START);
+}
+
+bool PGEcfgProfiles::validateOnSave(std::ofstream& f) const
+{
+    f << PGE_SYS_CFG_FILE_MAGIC_START << endl << endl;
+    return f.good();
 }
 
 std::map<std::string, PGEcfgVariable>& PGEcfgProfiles::getCommandLineVars()
@@ -940,43 +952,3 @@ void PGEcfgProfiles::ClearVars()
 {
     m_vars.clear();
 } // ClearVars()
-
-
-/**
-    Writes lines to an opened file.
-    The stream must be opened.
-    The stream must be closed outside of this function.
-
-    @param f_cfg The opened file stream where the function will write to.
-    @param sUser The user name of the config owner.
-    @param sNick The nickname of the config owner.
-                 If specified, only this cvar will be written to the stream, otherwise all.
-                 Specify this only if this is a new profile being added and not yet current profile.
-                 You can leave it empty if you want to save the current profile.
-*/
-void PGEcfgProfiles::WriteConfiguration(ofstream& f_cfg, const string& sUser, const string& sNick)
-{
-    f_cfg << PGE_SYS_CFG_FILE_MAGIC_START << endl << endl;
-    f_cfg << "# " << sUser << "'s settings file" << endl << endl;
-    
-    if ( sNick.empty() )
-    {
-        f_cfg << "####### GAMEPLAY #######" << endl << endl;
-        f_cfg << "####### MOUSE #######" << endl << endl;
-        f_cfg << "####### KEYBOARD #######" << endl << endl;
-        f_cfg << "####### VIDEO #######" << endl << endl;
-        f_cfg << "####### AUDIO #######" << endl << endl;
-        f_cfg << "####### SERVER #######" << endl << endl;
-
-        std::map<std::string, PGEcfgVariable>::const_iterator it;
-        for (it = m_vars.begin(); it != m_vars.end(); it++)
-            f_cfg << it->first << "=" << it->second.getAsString() << endl;
-    }
-    else
-        f_cfg << PGE_SYS_CFG_PLAYER_NAME_CVAR << "=" << sNick << endl;
-
-    f_cfg << endl;
-} // WriteConfiguration()
-
-
-
