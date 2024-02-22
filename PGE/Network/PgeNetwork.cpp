@@ -27,6 +27,7 @@ public:
     bool initialize() override;
     bool shutdown() override;
     bool isInitialized() const override;
+    bool reinitialize() override;
     void disconnect(const std::string& sExtraDebugText = "") override;
 
     bool isServer() const override;
@@ -119,8 +120,26 @@ bool PgeNetworkImpl::shutdown()
         m_pServerClient = nullptr;
         return bRet;
     }
-    return false;
+    return true;
 } // shutdown()
+
+
+/**
+    Stop and then initialize the networking subsystem.
+    Useful when we change the value of CVAR_NET_SERVER and want this change to take effect.
+
+    @return True on successful reinitialization, false otherwise.
+*/
+bool PgeNetworkImpl::reinitialize()
+{
+    getConsole().OLn("PgeNetwork::reinitialize() ...");
+    if (shutdown())
+    {
+        return initialize();
+    }
+    getConsole().EOLn("ERROR: PgeNetwork::reinitialize() failed!");
+    return false;
+}
 
 /**
     Gets the state of the networking subsystem.
