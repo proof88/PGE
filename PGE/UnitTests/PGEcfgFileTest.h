@@ -74,7 +74,6 @@ protected:
         AddSubTest("test_load_not_allowed_when_already_loaded", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_not_allowed_when_already_loaded);
         AddSubTest("test_set_accepted_vars_not_allowed_when_already_loaded", (PFNUNITSUBTEST) &PGEcfgFileTest::test_set_accepted_vars_not_allowed_when_already_loaded);
         AddSubTest("test_override_validateOnLoad", (PFNUNITSUBTEST) &PGEcfgFileTest::test_override_validateOnLoad);
-
         AddSubTest("test_save_fail_nothing_loaded", (PFNUNITSUBTEST)&PGEcfgFileTest::test_save_fail_nothing_loaded);
         AddSubTest("test_save_good", (PFNUNITSUBTEST)&PGEcfgFileTest::test_save_good);
         AddSubTest("test_override_validateOnSave", (PFNUNITSUBTEST)&PGEcfgFileTest::test_override_validateOnSave);
@@ -275,14 +274,14 @@ private:
                 assertEquals("alma    ", cfgFile.getVars()["testvar5"].getAsString(), "testVar5 value");
 
             b &= assertEquals("", cfgFile.getVars()["name"].getShortHint(), "name short hint") &
-                assertEquals("# However, this is a one-liner short explanation.", cfgFile.getVars()["cap_max"].getShortHint(), "cap_max short hint") &
+                assertEquals(" However, this is a one-liner short explanation.", cfgFile.getVars()["cap_max"].getShortHint(), "cap_max short hint") &
                 assertEquals("", cfgFile.getVars()["reload_per_mag"].getShortHint(), "reload_per_mag short hint") &
                 assertEquals("", cfgFile.getVars()["reload_time"].getShortHint(), "reload_time short hint") &
                 assertEquals("", cfgFile.getVars()["testvar"].getShortHint(), "testVar short hint") &
                 assertEquals("", cfgFile.getVars()["testvar2"].getShortHint(), "testVar2 short hint") &
-                assertEquals("# Setting a var to empty string is easy, just write nothing after '=':", cfgFile.getVars()["testvar3"].getShortHint(), "testVar3 short hint") &
-                assertEquals("# You can also place space chars, they will be preserved:", cfgFile.getVars()["testvar4"].getShortHint(), "testVar4 short hint") &
-                assertEquals("# However, values having non-space chars as well, are left-trimmed:", cfgFile.getVars()["testvar5"].getShortHint(), "testVar5 short hint");
+                assertEquals(" Setting a var to empty string is easy, just write nothing after '=':", cfgFile.getVars()["testvar3"].getShortHint(), "testVar3 short hint") &
+                assertEquals(" You can also place space chars, they will be preserved:", cfgFile.getVars()["testvar4"].getShortHint(), "testVar4 short hint") &
+                assertEquals(" However, values having non-space chars as well, are left-trimmed:", cfgFile.getVars()["testvar5"].getShortHint(), "testVar5 short hint");
 
             b &= assertTrue(cfgFile.getVars()["name"].getLongHint().empty(), "name long hint") &
                 assertTrue(cfgFile.getVars()["reload_per_mag"].getLongHint().empty(), "reload_per_mag long hint") &
@@ -293,8 +292,8 @@ private:
                 assertTrue(cfgFile.getVars()["testvar4"].getLongHint().empty(), "testVar4 long hint");
 
             const std::vector<std::string> sExpectedLongHintForCapMax = {
-                "# Variables can also have a longer, even multi-line more detailed explanation below them.",
-                "# This explanation lasts until the next non-comment line."
+                " Variables can also have a longer, even multi-line more detailed explanation below them.",
+                " This explanation lasts until the next non-comment line."
             };
             b &= assertEquals(sExpectedLongHintForCapMax.size(), cfgFile.getVars()["cap_max"].getLongHint().size(), "cap_max long hint size");
             if (b)
@@ -309,8 +308,8 @@ private:
             }
 
             const std::vector<std::string> sExpectedLongHintForTestVar5 = {
-                "# So this variable will have \"alma    \" stored.",
-                "# I might change this behavior, but currently I leave it as it is."
+                " So this variable will have \"alma    \" stored.",
+                " I might change this behavior, but currently I leave it as it is."
             };
             b &= assertEquals(sExpectedLongHintForTestVar5.size(), cfgFile.getVars()["testvar5"].getLongHint().size(), "testvar5 long hint size");
             if (b)
@@ -395,14 +394,14 @@ private:
                 assertEquals("alma    ", cfgFile.getVars()["testVar5"].getAsString(), "testVar5 value");
 
             b &= assertEquals("", cfgFile.getVars()["Name"].getShortHint(), "Name short hint") &
-                assertEquals("# However, this is a one-liner short explanation.", cfgFile.getVars()["cap_max"].getShortHint(), "cap_max short hint") &
+                assertEquals(" However, this is a one-liner short explanation.", cfgFile.getVars()["cap_max"].getShortHint(), "cap_max short hint") &
                 assertEquals("", cfgFile.getVars()["reload_per_mag"].getShortHint(), "reload_per_mag short hint") &
                 assertEquals("", cfgFile.getVars()["reload_time"].getShortHint(), "reload_time short hint") &
                 assertEquals("", cfgFile.getVars()["testVar"].getShortHint(), "testVar short hint") &
                 assertEquals("", cfgFile.getVars()["testVar2"].getShortHint(), "testVar2 short hint") &
-                assertEquals("# Setting a var to empty string is easy, just write nothing after '=':", cfgFile.getVars()["testVar3"].getShortHint(), "testVar3 short hint") &
-                assertEquals("# You can also place space chars, they will be preserved:", cfgFile.getVars()["testVar4"].getShortHint(), "testVar4 short hint") &
-                assertEquals("# However, values having non-space chars as well, are left-trimmed:", cfgFile.getVars()["testVar5"].getShortHint(), "testVar5 short hint");
+                assertEquals(" Setting a var to empty string is easy, just write nothing after '=':", cfgFile.getVars()["testVar3"].getShortHint(), "testVar3 short hint") &
+                assertEquals(" You can also place space chars, they will be preserved:", cfgFile.getVars()["testVar4"].getShortHint(), "testVar4 short hint") &
+                assertEquals(" However, values having non-space chars as well, are left-trimmed:", cfgFile.getVars()["testVar5"].getShortHint(), "testVar5 short hint");
 
             b &= assertTrue(cfgFile.getVars()["Name"].getLongHint().empty(), "Name long hint") &
                 assertTrue(cfgFile.getVars()["reload_per_mag"].getLongHint().empty(), "reload_per_mag long hint") &
@@ -413,8 +412,8 @@ private:
                 assertTrue(cfgFile.getVars()["testVar4"].getLongHint().empty(), "testVar4 long hint");
 
             const std::vector<std::string> sExpectedLongHintForCapMax = {
-                "# Variables can also have a longer, even multi-line more detailed explanation below them.",
-                "# This explanation lasts until the next non-comment line."
+                " Variables can also have a longer, even multi-line more detailed explanation below them.",
+                " This explanation lasts until the next non-comment line."
             };
             b &= assertEquals(sExpectedLongHintForCapMax.size(), cfgFile.getVars()["cap_max"].getLongHint().size(), "cap_max long hint size");
             if (b)
@@ -429,8 +428,8 @@ private:
             }
 
             const std::vector<std::string> sExpectedLongHintForTestVar5 = {
-                "# So this variable will have \"alma    \" stored.",
-                "# I might change this behavior, but currently I leave it as it is."
+                " So this variable will have \"alma    \" stored.",
+                " I might change this behavior, but currently I leave it as it is."
             };
             b &= assertEquals(sExpectedLongHintForTestVar5.size(), cfgFile.getVars()["testVar5"].getLongHint().size(), "testVar5 long hint size");
             if (b)

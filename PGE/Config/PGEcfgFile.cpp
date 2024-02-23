@@ -107,7 +107,10 @@ bool PGEcfgFile::load(const char* fname)
         {
             if (bRightAfterVarDefinition && lineIsComment(sTrimmedLine))
             {
-                m_vars[sVar].getLongHint().push_back(sTrimmedLine);
+                if (sTrimmedLine.size() > 1)
+                {
+                    m_vars[sVar].getLongHint().push_back(sTrimmedLine.substr(1));
+                }
             }
             else
             {
@@ -124,7 +127,10 @@ bool PGEcfgFile::load(const char* fname)
             {
                 if (!m_vTemplateLines.empty() && lineIsComment(m_vTemplateLines.back()))
                 {
-                    m_vars[sVar].getShortHint() = m_vTemplateLines.back();
+                    if (m_vTemplateLines.back().size() > 1)
+                    {
+                        m_vars[sVar].getShortHint() = m_vTemplateLines.back().substr(1);
+                    }
                     m_vTemplateLines.pop_back();
                 }
                 m_vTemplateLines.push_back(sVar);
@@ -237,7 +243,7 @@ bool PGEcfgFile::save(const char* fname) const
                 const auto& cvar = itCvar->second;
                 if (!cvar.getShortHint().empty())
                 {
-                    f << cvar.getShortHint() << std::endl;
+                    f << '#' << cvar.getShortHint() << std::endl;
                 }
 
                 f << sTemplateLine;
@@ -255,7 +261,7 @@ bool PGEcfgFile::save(const char* fname) const
 
                 for (const auto& sLongHintLine : cvar.getLongHint())
                 {
-                    f << sLongHintLine << std::endl;
+                    f << '#' << sLongHintLine << std::endl;
                 }
             }
             else
