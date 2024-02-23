@@ -10,6 +10,7 @@ Name = Sample Weapon 1
 # However, this is a one-liner short explanation.
 cap_max = 999
 # Variables can also have a longer, even multi-line more detailed explanation below them.
+#
 # This explanation lasts until the next non-comment line.
 
 reload_per_mag = true

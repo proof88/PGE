@@ -293,6 +293,7 @@ private:
 
             const std::vector<std::string> sExpectedLongHintForCapMax = {
                 " Variables can also have a longer, even multi-line more detailed explanation below them.",
+                "",
                 " This explanation lasts until the next non-comment line."
             };
             b &= assertEquals(sExpectedLongHintForCapMax.size(), cfgFile.getVars()["cap_max"].getLongHint().size(), "cap_max long hint size");
@@ -413,6 +414,7 @@ private:
 
             const std::vector<std::string> sExpectedLongHintForCapMax = {
                 " Variables can also have a longer, even multi-line more detailed explanation below them.",
+                "",
                 " This explanation lasts until the next non-comment line."
             };
             b &= assertEquals(sExpectedLongHintForCapMax.size(), cfgFile.getVars()["cap_max"].getLongHint().size(), "cap_max long hint size");

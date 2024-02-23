@@ -111,6 +111,10 @@ bool PGEcfgFile::load(const char* fname)
                 {
                     m_vars[sVar].getLongHint().push_back(sTrimmedLine.substr(1));
                 }
+                else
+                {
+                    m_vars[sVar].getLongHint().push_back(""); // empty comment line
+                }
             }
             else
             {
