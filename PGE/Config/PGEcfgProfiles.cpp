@@ -686,6 +686,8 @@ bool PGEcfgProfiles::readConfiguration()
 
 /**
     Saves configuration for current profile to file.
+    PGE never invokes this function, so it won't overwrite any file automatically.
+    Application has to call this function whenever it wants to save to file.
 
     @return True on success, false on failure.
 */
@@ -717,6 +719,16 @@ bool PGEcfgProfiles::validateOnLoad(std::ifstream& f) const
 {
     string tmp;
     f >> tmp;
+
+    if (f.good())
+    {
+        // we also need to consume 2 endlines since validateOnSave() also writes 2 endlines
+        const std::streamsize nBuffSize = 1024;
+        char cLine[nBuffSize];
+        f.getline(cLine, nBuffSize);
+        f.getline(cLine, nBuffSize);
+    }
+
     return f.good() && (tmp == PGE_SYS_CFG_FILE_MAGIC_START);
 }
 
