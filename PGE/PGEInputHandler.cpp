@@ -167,8 +167,15 @@ int PGEInputMouseImpl::getCursorPosY() const
 }
 
 
+/**
+    Invokes ApplyRelativeInput() first to null out pending input and sets cursor to given screen coordinates.
+
+    @param x The target screen X-coordinate for the cursor to set.
+    @param y The target screen Y-coordinate for the cursor to set.
+*/
 void PGEInputMouseImpl::SetCursorPos(int x, int y)
 {
+    ApplyRelativeInput();  // let the tempMovementX,Y variables be "emptied" in case of raw mouse input
     mx = x;
     my = y;
     ::SetCursorPos(x, y);

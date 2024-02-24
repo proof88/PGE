@@ -61,7 +61,7 @@ public:
      
     virtual int  getCursorPosX() const = 0;
     virtual int  getCursorPosY() const = 0;
-    virtual void SetCursorPos(int x, int y) = 0;
+    virtual void SetCursorPos(int x, int y) = 0;   /**< Invokes ApplyRelativeInput() first to null out pending input and sets cursor to given screen coordinates. */
      
     /**
         The cursor position will be updated by setting the given parameters.
