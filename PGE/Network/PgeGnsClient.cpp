@@ -344,6 +344,17 @@ void PgeGnsClient::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
         // so we just pass 0's.
         m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
         m_hConnection = k_HSteamNetConnection_Invalid;
+
+        // TODO: it would be better to invoke disconnectClient() because if we are here because server disappeared unexpectedly, then
+        // it would be better to call disconnectClient() which also pushes a server disconnect message to application level.
+        // However, when I invoked it, then in the meantime PRooFPS-dd's onGameRunning() loop detects the connection to be lost and
+        // invokes connectToServer() which will eventually update m_hConnection with a new handle, since isConnected() is NOT reliable,
+        // as described here: https://github.com/proof88/PRooFPS-dd/issues/261 .
+        // So to properly solve this issue, https://github.com/proof88/PRooFPS-dd/issues/261 needs to be solved.
+        // And then we can invoke disconnectClient here. Until it is solved, there is no proper way to handle on client-side at application
+        // level when the server makes an ungraceful shutdown (except if we remove the auto reconnect thing from app level).
+        // I'm tracking this bug in this ticket: https://github.com/proof88/PRooFPS-dd/issues/272 .
+        //disconnectClient("Server disappeared");
         break;
     }
 

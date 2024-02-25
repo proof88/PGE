@@ -437,6 +437,13 @@ std::string PgeGnsWrapper::getDetailedConnectionStatus(const HSteamNetConnection
 void PgeGnsWrapper::logDetailedConnectionStatus(const HSteamNetConnection& connHandle) const
 {
     CConsole::getConsoleInstance("PgeGnsWrapper").OLn("Detailed Connection Status for connHandle %u: ", connHandle);
+
+    if (connHandle == k_HSteamNetConnection_Invalid)
+    {
+        CConsole::getConsoleInstance("PgeGnsWrapper").OLn("  Returning immediately, this is invalid handle (for server it is itself)!");
+        return;
+    }
+
     // we need this line-by-line logging otherwise no paragraph breaks will be inserted into the html at each newline;
     // note that this could be a feature of the logger lib in the future.
     std::stringstream ssDetailedConnStatus(getDetailedConnectionStatus(connHandle));

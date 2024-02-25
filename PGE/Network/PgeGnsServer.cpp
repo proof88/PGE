@@ -126,24 +126,24 @@ bool PgeGnsServer::stopListening(const std::string& sExtraDebugText)
         m_mapClients.size(),
         sExtraDebugText.empty() ? "unspecified" : sExtraDebugText.c_str());
 
+    // I always forget but m_mapClients also contains the server itself with invalid handle, this should be renamed so I never forget again!
     for (const auto& itClient : m_mapClients)
     {
         const HSteamNetConnection& hClientConnection = itClient.first;
-        if (hClientConnection == k_HSteamNetConnection_Invalid) {
-            // this is us
-            continue;
-        }
-
         logDetailedConnectionStatus(hClientConnection);
 
         // inform all clients about disconnecting this client;
         // basically this way all clients will know about all clients got disconnected.
-        // TODO: this should be done above I think before continuing for k_HSteamNetConnection_Invalid ...
         pge_network::PgePacket pkt;
         pge_network::PgePacket::initPktPgeMsgUserDisconnected(
             pkt,
             static_cast<pge_network::PgeNetworkConnectionHandle>(hClientConnection));
         sendToAllClientsExcept(pkt, hClientConnection);
+
+        if (hClientConnection == k_HSteamNetConnection_Invalid) {
+            // this is us, we don't have GNS connection to ourselves, so continue with real clients
+            continue;
+        }
 
         const std::string sExtraDebugTextToSend =
             sExtraDebugText.empty() ?
