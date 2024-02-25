@@ -127,8 +127,8 @@ bool PgeGnsClient::disconnectClient(const std::string& sExtraDebugText)
         "Client closing connection ... Reason: %s",
         sExtraDebugText.empty() ? "" : sExtraDebugText.c_str());
 
-    // here we create a client disconnect pkt that will be injected to our queue so app level can process it
-    // for the server itself, as it was a real client disconnecting
+    // here we create a server disconnect pkt that will be injected to our queue so app level can process it
+    // for the server itself, as it was a real server disconnecting
     pge_network::PgePacket pkt;
     pge_network::PgePacket::initPktPgeMsgUserDisconnected(
         pkt,
