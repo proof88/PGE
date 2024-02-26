@@ -379,6 +379,12 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsUltimateRend
         throw std::runtime_error("bullet_speed is 1000 but bullet_drag is non-zero in " + std::string(fname));
     }
 
+    if (getVars()["damage_area_size"].getAsFloat() < 0.f)
+    {
+        getConsole().EOLnOO("damage_area_size cannot be negative in %s! ", fname);
+        throw std::runtime_error("damage_area_size cannot be negative in " + std::string(fname));
+    }
+
     if ( (getVars()["damage_area_size"].getAsFloat() == 0.f) && (getVars()["damage_area_pulse"].getAsFloat() > 0.f) )
     {
         getConsole().EOLnOO("damage_area_size is 0 but damage_area_pulse is non-zero in %s! ", fname);

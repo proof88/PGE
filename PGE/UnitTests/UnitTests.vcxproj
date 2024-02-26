@@ -429,7 +429,7 @@
     <ClInclude Include="PureVertexTransferTest.h" />
     <ClInclude Include="PureWindowTest.h" />
     <ClInclude Include="PureWindowTest2.h" />
-    <ClInclude Include="WeaponsTest.h" />
+    <ClInclude Include="PgeWeaponsTest.h" />
     <ClInclude Include="PFLTest.h" />
     <ClInclude Include="PGEcfgFileTest.h" />
     <ClInclude Include="PGEcfgVariableTest.h" />

@@ -28,8 +28,8 @@
 #include "PGEcfgProfilesTest.h"
 #include "PgeOldNewValueTest.h"
 #include "PgePacketTest.h"
-#include "WeaponsTest.h"
 #include "PGEBulletTest.h"
+#include "PgeWeaponsTest.h"
 #include "PR00FsUltimateRenderingEngineTest.h"
 #include "PR00FsUltimateRenderingEngineTest2.h"
 #include "PureAxisAlignedBoundingBoxTest.h"
@@ -99,16 +99,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     //tests.push_back(std::unique_ptr<UnitTest>(new PFLTest));
     
     //tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgVariableTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgFileTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgProfilesTest));
+    //tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgFileTest));
+    //tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgProfilesTest));
     //tests.push_back(std::unique_ptr<UnitTest>(new PgeOldNewValueTest));
     /**/
     
     //tests.push_back(std::unique_ptr<UnitTest>(new PgePacketTest));
     
-    /* 
-    tests.push_back(std::unique_ptr<UnitTest>(new WeaponsTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PGEBulletTest));
+     
+    tests.push_back(std::unique_ptr<UnitTest>(new PgeWeaponsTest));
+    /*tests.push_back(std::unique_ptr<UnitTest>(new PGEBulletTest));
     */
     
     /*  
