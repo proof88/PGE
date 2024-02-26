@@ -54,7 +54,8 @@ public:
         TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
         TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
-        TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile, int nDamageHp);
+        TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile, int nDamageHp,
+        TPureFloat fDamageAreaSize, TPureFloat fDamageAreaPulse);
     
     /** Ctor to be used by PGE client instance: bullet id as received from server. */
     Bullet(
@@ -63,7 +64,8 @@ public:
         TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
         TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
-        TPureFloat speed, TPureFloat gravity, TPureFloat drag);
+        TPureFloat speed, TPureFloat gravity, TPureFloat drag,
+        TPureFloat fDamageAreaSize);
     
     virtual ~Bullet();
 
@@ -78,6 +80,8 @@ public:
     TPureFloat getDrag() const;
     TPureBool isFragile() const;
     int getDamageHp() const;
+    TPureFloat getAreaDamageSize() const;
+    TPureFloat getAreaDamagePulse() const;
     bool& isCreateSentToClients();
 
     void Update(const unsigned int& nFactor);
@@ -95,6 +99,8 @@ public:
         m_drag(other.m_drag),
         m_fragile(other.m_fragile),
         m_nDamageHp(other.m_nDamageHp),
+        m_fDamageAreaSize(other.m_fDamageAreaSize),
+        m_fDamageAreaPulse(other.m_fDamageAreaPulse),
         m_bCreateSentToClients(other.m_bCreateSentToClients)
     {
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY()); // TODO: throw if cnanot creaate
@@ -114,6 +120,8 @@ public:
         m_drag = other.m_drag;
         m_fragile = other.m_fragile;
         m_nDamageHp = other.m_nDamageHp;
+        m_fDamageAreaSize = other.m_fDamageAreaSize;
+        m_fDamageAreaPulse = other.m_fDamageAreaPulse;
         m_bCreateSentToClients = other.m_bCreateSentToClients;
 
         m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());  // TODO: throw if cnanot creaate
@@ -139,6 +147,8 @@ private:
     TPureFloat m_drag;                                     /**< Drag as defined by weapon file. Used by PGE server instance only. */
     TPureBool m_fragile;                                   /**< Fragile flag as defined by weapon file. Used by PGE server instance only. */
     int m_nDamageHp;                                       /**< Damage to HP as defined by weapon file. Used by PGE server instance only. */
+    TPureFloat m_fDamageAreaSize;                          /**< Area damage size as defined by weapon file. Used by PGE server instance only. */
+    TPureFloat m_fDamageAreaPulse;                         /**< Area damage pulse to HP as defined by weapon file. Used by PGE server instance only. */
 
     PureObject3D* m_obj;                                   /**< Associated Pure object to be rendered. Used by PGE server and client instances.
                                                                 TODO: shared ptr would be better though, so deleting the obj earlier than bullet

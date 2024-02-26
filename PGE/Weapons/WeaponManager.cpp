@@ -43,7 +43,8 @@ Bullet::Bullet(
     TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
     TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
-    TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile, int nDamageHp) :
+    TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile, int nDamageHp,
+    TPureFloat fDamageAreaSize, TPureFloat fDamageAreaPulse) :
     m_id(m_globalBulletId++),
     m_gfx(gfx),
     m_connHandle(connHandle),
@@ -52,13 +53,30 @@ Bullet::Bullet(
     m_drag(drag),
     m_fragile(fragile),
     m_nDamageHp(nDamageHp),
+    m_fDamageAreaSize(fDamageAreaSize),
+    m_fDamageAreaPulse(fDamageAreaPulse),
     m_obj(NULL),
     m_bCreateSentToClients(false)
 {
+    // TODO: actually these copy-pasted validations related to bullets should be defined in a public static validate function,
+    // which should be invoked by WeaponManager when a new Weapon is constructed, to remove validation redundancy!
+    // Ticket: https://github.com/proof88/PGE/issues/14
     if ( (m_speed == 1000.f) && (m_drag > 0.f))
     {
         getConsole().EOLnOO("Bullet ctor: m_speed is 1000 but m_drag is non-zero!");
         throw std::runtime_error("Bullet ctor: m_speed is 1000 but m_drag is non-zero");
+    }
+
+    if (m_fDamageAreaSize < 0.f)
+    {
+        getConsole().EOLnOO("Bullet ctor: m_fDamageAreaSize cannot be negative!");
+        throw std::runtime_error("Bullet ctor: m_fDamageAreaSize cannot be negative!");
+    }
+
+    if ((m_fDamageAreaSize == 0.f) && (m_fDamageAreaPulse > 0.f))
+    {
+        getConsole().EOLnOO("Bullet ctor: m_fDamageAreaSize is 0 but m_fDamageAreaPulse is non-zero!");
+        throw std::runtime_error("Bullet ctor: m_fDamageAreaSize is 0 but m_fDamageAreaPulse is non-zero!");
     }
 
     m_put.getPosVec().Set(wpn_px, wpn_py, wpn_pz);
@@ -77,7 +95,8 @@ Bullet::Bullet(
     TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
     TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
-    TPureFloat speed, TPureFloat gravity, TPureFloat drag) :
+    TPureFloat speed, TPureFloat gravity, TPureFloat drag,
+    TPureFloat fDamageAreaSize) :
     m_id(id),
     m_gfx(gfx),
     m_connHandle(0),
@@ -86,6 +105,8 @@ Bullet::Bullet(
     m_drag(drag),
     m_fragile(0.f) /* irrelevant for this client-side ctor */,
     m_nDamageHp(0) /* irrelevant for this client-side ctor */,
+    m_fDamageAreaSize(fDamageAreaSize),
+    m_fDamageAreaPulse(0) /* irrelevant for this client-side ctor */,
     m_obj(NULL),
     m_bCreateSentToClients(true) /* irrelevant for this client-side ctor but we are client so yes it is sent :) */
 {
@@ -145,6 +166,16 @@ TPureBool Bullet::isFragile() const
 int Bullet::getDamageHp() const
 {
     return m_nDamageHp;
+}
+
+TPureFloat Bullet::getAreaDamageSize() const
+{
+    return m_fDamageAreaSize;
+}
+
+TPureFloat Bullet::getAreaDamagePulse() const
+{
+    return m_fDamageAreaPulse;
 }
 
 bool& Bullet::isCreateSentToClients()
@@ -875,7 +906,9 @@ TPureBool Weapon::pullTrigger()
             getVars()["bullet_gravity"].getAsFloat(),
             getVars()["bullet_drag"].getAsFloat(),
             getVars()["bullet_fragile"].getAsBool(),
-            getVars()["damage_hp"].getAsInt())
+            getVars()["damage_hp"].getAsInt(),
+            getVars()["damage_area_size"].getAsFloat(),
+            getVars()["damage_area_pulse"].getAsFloat())
     );
 
     PFL::gettimeofday(&m_timeLastShot, 0);
