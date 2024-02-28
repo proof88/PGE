@@ -1,5 +1,3 @@
-#include "PureVector.h"
-#include "PureVector.h"
 /*
     ###################################################################################
     PureVector.cpp
