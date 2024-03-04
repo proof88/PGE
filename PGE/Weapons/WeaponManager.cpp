@@ -95,8 +95,9 @@ Bullet::Bullet(
     TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
     TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
-    TPureFloat speed, TPureFloat gravity, TPureFloat drag,
-    TPureFloat fDamageAreaSize) :
+    TPureFloat speed, TPureFloat gravity, TPureFloat drag, int nDamageHp,
+    const TPureFloat& fDamageAreaSize,
+    const TPureFloat& fDamageAreaPulse) :
     m_id(id),
     m_gfx(gfx),
     m_connHandle(0),
@@ -104,9 +105,9 @@ Bullet::Bullet(
     m_gravity(gravity),
     m_drag(drag),
     m_fragile(0.f) /* irrelevant for this client-side ctor */,
-    m_nDamageHp(0) /* irrelevant for this client-side ctor */,
+    m_nDamageHp(nDamageHp),
     m_fDamageAreaSize(fDamageAreaSize),
-    m_fDamageAreaPulse(0) /* irrelevant for this client-side ctor */,
+    m_fDamageAreaPulse(fDamageAreaPulse),
     m_obj(NULL),
     m_bCreateSentToClients(true) /* irrelevant for this client-side ctor but we are client so yes it is sent :) */
 {

@@ -64,8 +64,9 @@ public:
         TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
         TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
-        TPureFloat speed, TPureFloat gravity, TPureFloat drag,
-        TPureFloat fDamageAreaSize);
+        TPureFloat speed, TPureFloat gravity, TPureFloat drag, int nDamageHp,
+        const TPureFloat& fDamageAreaSize,
+        const TPureFloat& fDamageAreaPulse);
     
     virtual ~Bullet();
 
