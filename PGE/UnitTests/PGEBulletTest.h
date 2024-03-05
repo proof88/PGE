@@ -134,7 +134,9 @@ private:
         const float fSpeed = 60.f;
         const float fGravity = 15.f;
         const float fDrag = 25.f;
+        const int nDamageHp = 30;
         const float fDamageAreaSize = 5.f;
+        const float fDamageAreaPulse = 2.f;
 
         Bullet bullet(
             *engine,
@@ -142,8 +144,8 @@ private:
             posVec.getX(), posVec.getY(), posVec.getZ(),
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
-            fSpeed, fGravity, fDrag,
-            fDamageAreaSize);
+            fSpeed, fGravity, fDrag, nDamageHp,
+            fDamageAreaSize, fDamageAreaPulse);
 
         bool b = assertEquals(bullet.getId(), static_cast<Bullet::BulletId>(1234), "bullet id");
         b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId, "global bullet id");
@@ -154,7 +156,9 @@ private:
         b &= assertEquals(fGravity, bullet.getGravity(), "gravity");
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(false, bullet.isFragile(), "fragile");
+        b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
+        b &= assertEquals(fDamageAreaPulse, bullet.getAreaDamagePulse(), "damage area pulse");
         b &= assertTrue(bullet.isCreateSentToClients(), "isCreateSentToClients"); /* we are client so yes it is sent :) */
 
         return b;
