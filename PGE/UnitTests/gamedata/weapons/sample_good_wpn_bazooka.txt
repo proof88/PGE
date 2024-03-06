@@ -7,7 +7,7 @@
 # If opened in Notepad++, I recommend setting INI or Makefile syntax highlighting in Language menu.
 
 # Name of the weapon is that will be displayed in GUI.
-Name = Rail Gun
+Name = Bazooka
 
 # Preview Image is not needed to be explicitly defined here, as
 # image file with same name is to be used implicitly as preview.
@@ -27,12 +27,12 @@ cap_max = 999
 # This can be also understood as magazine capacity.
 # If 0, it is not reloadable (e.g. rail gun).
 # Cannot be bigger than cap_max.
-reloadable = 0
+reloadable = 3
 
 # By default we have this amount of bullets with this weapon
 # If weapon is reloadable, this amount will be loaded, thus it
 # cannot be greater than "reloadable"
-bullets_default = 12
+bullets_default = 3
 
 # If true, reload is per-magazine, not per-bullet.
 # No effect if reloadable is 0.
@@ -49,7 +49,7 @@ reload_whole_mag = false
 # Reload time in millisecs.
 # If reload_per_mag is true, this time means the complete reload process.
 # If reload_per_mag is false, this time meant to be per-bullet!
-reload_time = 0
+reload_time = 1000
 
 #################
 #               #
@@ -78,11 +78,11 @@ firing_mode_def = semi
 # The user is able to select "auto" though even if "proj" is the default, in that case
 # weapon will shot projectiles in automatic mode (e.g. XM1014/Leone YG1265 Auto Shotgun in CS 1.6).
 # Max cannot be less than the default.
-firing_mode_max = burst
+firing_mode_max = semi
 
 # Time needed to elapse between 2 shots, in millisecs.
 # Cannot be 0.
-firing_cooldown = 700
+firing_cooldown = 200
 
 #####################
 #                   #
@@ -110,7 +110,8 @@ recoil_m = 1.1
 
 # Time needed for recoil to disappear after 1 shot, in millisecs.
 # No effect when recoil_m is 1.0.
-recoil_cooldown = 700
+# Must be greater or equal to firing_cooldown if recoil is enabled (see above).
+recoil_cooldown = 1000
 
 # If available, recoil control can improve the accuracy degradation
 # caused by accumulating recoil across multiple shots.
@@ -122,7 +123,7 @@ recoil_cooldown = 700
 #  - low
 #  - medium
 #  - high
-recoil_control = high
+recoil_control = off
 
 ################################################
 #                                              #
@@ -130,12 +131,12 @@ recoil_control = high
 #                                              #
 ################################################
 
-bullet_size_x = 1.0
-bullet_size_y = 2.0
-bullet_size_z = 3.0
+bullet_size_x = 0.2
+bullet_size_y = 0.2
+bullet_size_z = 0.0
 
 # Max speed is 1000, it means instant hit, e.g. rail gun
-bullet_speed = 2.0
+bullet_speed = 8
 
 # Gravity affecting the travel path of the bullet.
 # 0 means no effect of gravity.
@@ -159,18 +160,19 @@ bullet_fragile = true
 #####################################
 
 # Damage to health when hit directly.
-# If firing mode is "proj" or "burst", each hitting bullet or projectile takes this amount of damage.
-damage_hp = 100
+# If firing mode is "proj" or "burst", each hitting bullet or projectile causes this amount of damage.
+damage_hp = 90
 
 # Damage to armor when hit directly.
-# If firing mode is "proj" or "burst", each hitting bullet or projectile takes this amount of damage.
+# If firing mode is "proj" or "burst", each hitting bullet or projectile causes this amount of damage.
 damage_ap = 80
 
 # Area damage.
-# Size of area within damage is taken by player
-# 0 means no area damage (only direct hit takes damage).
-# HP and AP are both affected in area damage too.
-damage_area_size = 5.0
+# Radius of circular area within damage is taken by player.
+# 0 means no area damage (only direct hit causes damage).
+# A positive area damage triggers an explosion.
+# HP and AP are both affected by area damage.
+damage_area_size = 2.0
 
 # How area damage should be calculated?
 # No effect when damage_area_size is 0.
@@ -179,6 +181,6 @@ damage_area_size = 5.0
 #  - linear  : damage is decreasing within area towards the edges from its center.
 damage_area_effect = linear
 
-# Amount of force applied to players within damage area.
+# Amount of push force applied to players within damage area.
 # No effect when damage_area_size is 0.
-damage_area_pulse = 20.0
+damage_area_pulse = 30.0

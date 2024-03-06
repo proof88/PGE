@@ -43,6 +43,8 @@ protected:
         engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
 
+        /* negative tests*/
+
         AddSubTest("test_wpn_load_weapon_bad_assignment", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_bad_assignment);
         AddSubTest("test_wpn_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_unaccepted_var);
         AddSubTest("test_wpn_load_weapon_missing_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_missing_var);
@@ -64,6 +66,8 @@ protected:
         AddSubTest("test_wpn_damage_hp_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_damage_hp_must_be_positive);
         AddSubTest("test_wpn_damage_ap_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_damage_ap_must_be_positive);
         
+        /* positive tests */
+
         AddSubTest("test_wpn_load_weapon_good", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_good);
 
         AddSubTest("test_wpn_set_available", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_set_available);
@@ -958,13 +962,11 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_bazooka.txt", bullets, *engine, 0);
             b = true;
 
-            wpn.getVars()["reload_per_mag"].Set(false);   // reload per bullet
-            wpn.getVars()["reload_whole_mag"].Set(false); // reload does not waste bullets
-            wpn.SetUnmagBulletCount(100); // make sure we could reload
-            wpn.SetMagBulletCount(14); // full would be 30
+            wpn.SetUnmagBulletCount(3); // make sure we could reload
+            wpn.SetMagBulletCount(1); // full would be 3
 
             const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
             const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
@@ -972,8 +974,30 @@ private:
             b &= assertTrue(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
 
-            b &= assertTrue(wpn.pullTrigger(), "shoot");
-            b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 2");
+            int iWait = 0;
+            unsigned int nNumPullTriggerReturnedTrue = 0;
+            bool bChangedToShooting = false;
+            do
+            {
+                iWait++;
+
+                if (wpn.getState() == Weapon::WPN_RELOADING)
+                {
+                    // shoot to cancel reloading
+                    if (wpn.pullTrigger())
+                    {
+                        nNumPullTriggerReturnedTrue++;
+                        wpn.releaseTrigger();
+                        bChangedToShooting = (wpn.getState() == Weapon::WPN_SHOOTING);
+                    }
+                }
+                wpn.update();
+                Sleep(20);
+            } while ((wpn.getState() != Weapon::WPN_READY) && (iWait < 150));
+
+            b &= assertTrue(bChangedToShooting, "changed to shooting");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state settled down");
+            b &= assertEquals(bullets.size(), nNumPullTriggerReturnedTrue, "pullTrigger true count");
             b &= assertFalse(bullets.empty(), "created bullets empty");
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count");
