@@ -217,7 +217,7 @@ bool PGEcfgFile::save(const char* fname) const
     }
 
     std::ofstream f;
-    f.open(sFilename.c_str(), std::ifstream::out);
+    f.open(sFilename.c_str(), std::ofstream::out);
     if (!f.good())
     {
         getConsole().EOLnOO("ERROR: failed to open file: %s!", sFilename.c_str());
