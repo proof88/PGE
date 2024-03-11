@@ -91,10 +91,13 @@ This can be done by adding the allowed custom messages to the container accessed
 There are many ways to cheat in multiplayer games, and PGE doesn't provide protection against it.  
 However, a good implementation in application level can overcome some forms of cheating.  
 A common approach is to treat the **server as the only authorative instance** and make clients show only a replication of server state.  
-For example: player movement. When a player presses a button to move, it should send a request/command message to the server about the keypress, and the server calculates the actual movement of the player.  
+My game [PRooFPS-dd](https://github.com/proof88/PRooFPS-dd) has such client-server model implemented in it.  
+**For example: player movement.** When a player presses a button to move, it should send a request/command message to the server about the keypress, and the server calculates the actual movement of the player.  
 Then it replies back to the client(s) with the updated position of the player who requested the move, client(s) receive(s) the reply and move(s) the player to the position calculated by the server.  
 Since server takes care of the entire game state, simulate physics, calculate new positions, etc. and replicates game state to clients, it is the only authorative element of the multiplayer game session.  
-This way it is more difficult for clients to do anything from an illegal position, e.g. put themselves out of map bounds intentionally because always the server calculates their position based on client inputs that can be rejected as well.
+This way it is more difficult for clients to do anything from an illegal position, e.g. put themselves out of map bounds intentionally because always the server calculates their position based on client inputs that can be rejected as well.  
+**Another example is how the weapons work**: when a player pressen a button to shoot, an attack request is sent to the server, and server decides if the player can actually shoot, and if so, it will create a bullet.  
+Since the server keeps track of the available and current weapons for each player, there is no client-side cheat that will allow the player to use arbitrary weapon, also there is no use of modifying the weapon files on client-side since server is using only the server-side files.
 
 \section implementation_details Implementation Details
 
@@ -260,12 +263,13 @@ PGE::runGame() {
           if (getNetwork().isServer()) {
           @TICKRATE (ideally 60 Hz)                // v0.1.3: this was @FRAMERATE in v0.1.2, so all results of v0.1.3 in this block are only 1/3 of v0.1.2.
                                                    // v0.1.5: this is ideally 60 because cl_updaterate controls server->client updates, physics_rate_min allows more precise physics 
-              mainLoopServerOnlyOneTick() {
+              mainLoopConnectedServerOnlyOneTick() {
               @PHYSICS_RATE_MIN (ideally 60 Hz)      // v0.1.5: physics_rate_min introduced, physics_rate_min >= tickrate
                   serverGravity();                   // no networking
                   serverPlayerCollisionWithWalls();  // no networking
                   serverUpdateBullets();             // v0.1.4: 160 PKT/s @ 20 Hz tickrate server -> client
                                                      // v0.1.5: 480 PKT/s @ 60 Hz physics_rate_min server -> client
+                  serverUpdateExplosions();          // no networking
                   serverPickupAndRespawnItems();     // v0.1.4: 180 PKT/s @ 20 Hz tickrate server -> client
                                                      // v0.1.5: 540 PKT/s @ 60 Hz physics_rate_min server -> client
                   updatePlayersOldValues();          // no networking
@@ -277,22 +281,25 @@ PGE::runGame() {
                   serverSendUserUpdates();           // v0.1.4, v0.1.5: 160 PKT/s @ 20 Hz server -> client
               @END CL_UPDATERATE
               
-              }  // end mainLoopServerOnlyOneTick()
+              }  // end mainLoopConnectedServerOnlyOneTick()
           @END TICKRATE
           }  // end isServer()
           else {
           @TICKRATE (ideally 20 Hz)                
-              mainLoopClientOnlyOneTick() {        // v0.1.4: client-side tick got introduced (same value as for server-side)
+              mainLoopConnectedClientOnlyOneTick() { // v0.1.4: client-side tick got introduced (same value as for server-side)
               @PHYSICS_RATE_MIN (ideally 60 Hz)
-                  clientUpdateBullets()            // v0.1.4: no networking, client-side bullet travel simulation got introduced (without collision-detection)
+                  clientUpdateBullets();             // v0.1.4: no networking because client-side bullet travel simulation got introduced (without collision-detection)
+                  clientUpdateExplosions();          // no networking
               @END PHYSICS_RATE_MIN
               }
           @END TICKRATE
           }  // end client
           
           @FRAMERATE again
-          mainLoopShared() {
-              handleInputAndSendUserCmdMove();     // v0.1.4: 80 PKT/s with 7 clients (8 players) @ 60 FPS client -> server
+          mainLoopConnectedShared() {
+              handleInputWhenConnectedAndSendUserCmdMove();     // v0.1.4: 80 PKT/s with 7 clients (8 players) @ 60 FPS client -> server
+              CameraMovement();                                 // no networking
+              UpdateGameMode();                                 // no networking
               
           }  // end mainLoopShared
         }  // end proofps_dd::PRooFPSddPGE::onGameRunning()
@@ -333,6 +340,8 @@ Considering 8 players:
      31 \* 128 = **3 968 Byte/s Packet Data Rate** on server-side with 8 players, which is only the 3% of v0.1.3!
  - **v0.1.6.1:**
    - same as v0.1.4, the new features did not affect network traffic.
+ - **v0.2.0.0:**
+   - same as v0.1.6.1, the new features did not affect network traffic.
 
 \subsubsection client_packet_rate Client Packet Rate and Packet Data Rate
 
@@ -376,6 +385,10 @@ Considering 8 players, the results are to a single client from the server:
      - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(), with 160 \* 55 = 8800 Byte/s Packet Data Rate (size of MsgUserUpdateFromServer is 40 Bytes, PgePacket overhead is 15 Bytes).
  - **v0.1.6.1:**
      - same as v0.1.5, the new features did not affect network traffic.
+ - **v0.2.0.0:**
+   - slight increase in pakcet data rate due to size of MsgBulletUpdateFromServer increased from 56 Bytes to 68 Bytes:
+   - **1198 PKT/s @ 60 FPS & 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min** (this is only the 28% of v0.1.2 rate!), with 1422 + 39840 + 16500 + 8800 = **66 562 Byte/s Packet Data Rate** (which is only the 6% of v0.1.2 data rate!).
+     - 480 PKT/s @ 60 Hz as per serverUpdateBullets(), with 480 \* 83 = 39840 Byte/s Packet Data Rate (size of MsgBulletUpdateFromServer is 68 Bytes, PgePacket overhead is 15 Bytes).
   
 Considering 8 players, the results to ALL clients from the server (because above shows results to 1 client from the server):  
 just multiply above results by 7 (server sending to itself avoids GNS level thus we multiply by nClientsCount instead of nPlayersCount):
@@ -383,7 +396,8 @@ just multiply above results by 7 (server sending to itself avoids GNS level thus
  - **v0.1.4:** 3 626 PKT/s with 189 574 Byte/s Outgoing Packet Data Rate Total (88% decrease in packet rate and 98% decrease in packet data rate) @ 20 Hz Tickrate  
    (10 626 PKT/s with 548 814 Byte/s Outgoing Packet Data Rate Total that is 65% decrease in packet rate and 93% decrease in packet data rate @ 60 Hz Tickrate);
  - **v0.1.5:** 8 386 PKT/s with 425 614 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
- - **v0.1.6.1:** same as with v0.1.5.
+ - **v0.1.6.1:** same as with v0.1.5;
+ - **v0.2.0.0:** 8 386 PKT/s with 465 934 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
 
 \subsubsection detailed_packet_rate Detailed Packet Rate per Function
 
@@ -474,8 +488,11 @@ The detailed explanation of the packet rates of each function is below:
       // Might send nClientsCount number of MsgWpnUpdateFromServer, currently only for reloading a weapon:
       // max. 7 * 60 = 420 PKT/s @ 60 FPS total outgoing to clients,
       // that is max 1 * 60 = 60 PKT/s @ 60 FPS to a single client.
-      // However reloading is also rate-limited by reload_time weapon cvar, that is 1500 msecs currently for both pistol and mchgun.
-      // Thus this is not considered yet. Later, if per-bullet-reloadable weapons will be available, we will consider this again.
+      // However reloading is also rate-limited by reload_time weapon cvar (reload_time), that is 1500 msecs currently for both pistol and mchgun.
+      // Thus this is not considered yet.
+      // In v0.2.0.0 Bazooka, the first per-bullet-reloadable weapon has become available, but its bullet reload time is 1000 msecs, thus we can still
+      // leave this out of calculations.
+      
       // Note that if a reload_time is less than or close to tickrate, it won't be properly updated as intended. That is also a reason why this function
       // is not in the server tick anymore.
   }
