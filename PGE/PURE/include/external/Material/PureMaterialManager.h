@@ -7,7 +7,6 @@
     External header.
     PureMaterialManager and PureMaterial classes.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

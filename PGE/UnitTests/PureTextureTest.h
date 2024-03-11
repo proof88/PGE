@@ -5,7 +5,6 @@
     PureTextureTest.h
     Unit test for PureTexture.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

@@ -8,7 +8,6 @@
     Input handler classes for PGE.
     Keyboard handling class, mouse handling class, and an encapsulating class.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

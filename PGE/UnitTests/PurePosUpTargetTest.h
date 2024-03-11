@@ -5,7 +5,6 @@
     PurePosUpTargetTest.h
     Unit test for PurePosUpTarget.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

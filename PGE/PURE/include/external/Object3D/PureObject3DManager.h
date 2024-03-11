@@ -7,7 +7,6 @@
     External header.
     PureObject3DManager and PureObject3D classes.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

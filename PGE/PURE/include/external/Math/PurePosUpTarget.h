@@ -7,7 +7,6 @@
     External header.
     Pure class for PUT (position, up and target) vectors.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

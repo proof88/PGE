@@ -7,7 +7,6 @@
     External header.
     PR00F's Ultimate Rendering Engine
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

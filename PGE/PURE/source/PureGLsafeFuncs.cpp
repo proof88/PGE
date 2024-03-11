@@ -4,7 +4,6 @@
     This file is part of PURE.
     Safe wrapper functions for OpenGL functions which return true or false based on the last GL error.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

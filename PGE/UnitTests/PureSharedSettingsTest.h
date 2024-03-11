@@ -5,7 +5,6 @@
     PureSharedSettingsTest.h
     Unit test for PureSharedSettings.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

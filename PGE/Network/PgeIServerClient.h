@@ -7,7 +7,6 @@
     External header.
     PGE Network Client and Server Common Interface class
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

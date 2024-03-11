@@ -5,7 +5,6 @@
     PureImageTest.h
     Unit test for PureObject3D.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

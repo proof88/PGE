@@ -5,7 +5,6 @@
     PureHwSystemMemoryTest.h
     Unit test for PureHwSystemMemory.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

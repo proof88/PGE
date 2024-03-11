@@ -5,7 +5,6 @@
     PureRendererHWfixedPipeTest.h
     Unit test for PureRendererHWfixedPipe.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

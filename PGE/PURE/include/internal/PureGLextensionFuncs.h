@@ -7,7 +7,6 @@
     Internal header.
     Pure useful GL extension functions and non-1.1 function pointers.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

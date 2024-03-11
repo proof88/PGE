@@ -5,7 +5,6 @@
     PFLTest.h
     Unit test for PR00F Foundation Library.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

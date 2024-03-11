@@ -7,7 +7,6 @@
     External header.
     Pure 3D-matrix class.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

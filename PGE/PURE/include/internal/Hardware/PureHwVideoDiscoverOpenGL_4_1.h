@@ -7,7 +7,6 @@
     Internal header.
     Pure OpenGL 4.1 capabilities class.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

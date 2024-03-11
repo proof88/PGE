@@ -5,7 +5,6 @@
     PR00FsUltimateRenderingEngineTest2.h
     Unit test for PR00FsUltimateRenderingEngine.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

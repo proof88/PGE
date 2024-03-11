@@ -5,7 +5,6 @@
     PureTransformMatrixTest.h
     Unit test for PureTransformMatrix.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

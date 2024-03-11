@@ -5,7 +5,6 @@
     PureObject3DManagerTest.h
     Unit test for PureObject3DManager.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

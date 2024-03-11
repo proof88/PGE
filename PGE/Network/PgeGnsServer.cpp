@@ -5,7 +5,6 @@
     Server Wrapper for GameNetworkingSockets library
     PR00F's Game Engine networking subsystem
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

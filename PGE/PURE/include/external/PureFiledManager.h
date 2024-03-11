@@ -9,7 +9,6 @@
     Manager loading from / saving to a file.
     Managed loaded from / saved to a file.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

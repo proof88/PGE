@@ -5,7 +5,6 @@
     PureScissorTest.h
     Unit test for Scissoring class.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 

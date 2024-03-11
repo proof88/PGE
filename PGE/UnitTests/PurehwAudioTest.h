@@ -5,7 +5,6 @@
     PureHwAudioTest.h
     Unit test for PureHwAudio.
     Made by PR00F88
-    EMAIL : PR0o0o0o0o0o0o0o0o0o0oF88@gmail.com
     ###################################################################################
 */
 
