@@ -15,6 +15,38 @@
 #include <utility>
 
 /**
+    A note/statement about using & bitwise operator on bool operands.
+    In some unit tests I do "bitwise and" operation with multiple bool operands.
+    I intentionally do this to make sure all operands are evaluated: if an assertion fails, I would still like to see the results of
+    all the other assertions too.
+    
+    In this comment I'm justifying the safety of using "bitwise and" operation with bool operands.
+    
+    This is C++. In C++, bool true is implicitly converted to 1, bool false is implicitly converted to 0.
+    The standard says "If the source type is bool, the value false is converted to zero and the value true is converted to one".
+    Hence the "bitwise and" operations in my tests are operating with well-defined values (0,1).
+    
+    The standard also says that "A zero value, null pointer value, or null member pointer value is converted to false; any other value is converted to true".
+    Hence assigning the result of "bitwise and" operation to a bool will have well-defined result in my unit tests.
+    
+    So this will compile and run as expected and as I intended:
+    
+      bool bResult = assertTrue(someFunction()) & assertTrue(someOtherFunction());
+    
+    Visual Studio is marking it as a potential problem: "Using bitwise '&' when logical '&&' was probably intended".
+    This is a very useful warning. To get rid of it i.e. to assure Visual Studio I know what I'm doing, I'm changing such conditions to this:
+    
+      bool bResult = (assertTrue(someFunction()) & assertTrue(someOtherFunction())) != 0;
+    
+    So that I will have a bResult telling me if the "bitwise and" operation resulted in zero or not.
+    
+    Note that when using "bitwise and" instead of "logical and", we cannot be sure about the evaluation order of operands.
+    Thus neither the assertions nor the evaluated expressions within the assertions should have any side-effect of affecting
+    each other's results, the results should be identical in arbitrary evaluated order.
+    This responsibility is obviously on the unit test developer.
+*/
+
+/**
     What I have learned from TDD training:
     - as implementation needs to be more generic than specific, unit test cases need to be more specific than generic;
     - unit tests should express usage of the tested code;
