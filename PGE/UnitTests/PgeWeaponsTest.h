@@ -1386,8 +1386,11 @@ private:
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
             b = true;
 
-            wpn.UpdatePosition(PureVector(10.f, 20.f, 30.f));
-            b &= assertEquals(PureVector(10.f, 20.f + Weapon::WpnYBiasToPlayerCenter, 30.f), wpn.getObject3D().getPosVec(), "pos");
+            wpn.UpdatePosition(PureVector(10.f, 20.f, 30.f), false);
+            b &= assertEquals(PureVector(10.f, 20.f + Weapon::WpnYBiasToPlayerCenter, 30.f), wpn.getObject3D().getPosVec(), "pos 1");
+
+            wpn.UpdatePosition(PureVector(10.f, 20.f, 30.f), true);
+            b &= assertEquals(PureVector(10.f, 20.f, 30.f), wpn.getObject3D().getPosVec(), "pos 2");
 
         }
         catch (const std::exception& e)
