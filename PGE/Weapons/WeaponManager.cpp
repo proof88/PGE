@@ -499,9 +499,12 @@ const PureObject3D& Weapon::getObject3D() const
  * Updates the graphical object entity associated to this weapon object.
  * Only the position is updated.
  */
-void Weapon::UpdatePosition(const PureVector& playerPos)
+void Weapon::UpdatePosition(const PureVector& playerPos, bool bStickToCenter)
 {
-    getObject3D().getPosVec().Set(playerPos.getX(), playerPos.getY() + WpnYBiasToPlayerCenter, playerPos.getZ());
+    getObject3D().getPosVec().Set(
+        playerPos.getX(),
+        bStickToCenter ? playerPos.getY() : playerPos.getY() + WpnYBiasToPlayerCenter,
+        playerPos.getZ());
 }
 
 /**

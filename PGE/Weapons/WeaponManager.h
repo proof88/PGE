@@ -200,9 +200,12 @@ public:
 
     PureObject3D& getObject3D();                        /**< Returns the graphical object entity associated to this weapon object. */
     const PureObject3D& getObject3D() const;            /**< Returns the graphical object entity associated to this weapon object. */
-    void UpdatePosition(const PureVector& playerPos);   /**< Updates the graphical object entity associated to this weapon object. */
-    void UpdatePositions(const PureVector& playerPos, TPureFloat fAngleY, TPureFloat fAngleZ);  /**< Updates the graphical object entity associated to this weapon object. */
-    void UpdatePositions(const PureVector& playerPos, const PureVector& targetPos2D);           /**< Updates the graphical object entity associated to this weapon object. */
+    void UpdatePosition(
+        const PureVector& playerPos, bool bStickToCenter);   /**< Updates the graphical object entity associated to this weapon object. */
+    void UpdatePositions(
+        const PureVector& playerPos, TPureFloat fAngleY, TPureFloat fAngleZ);  /**< Updates the graphical object entity associated to this weapon object. */
+    void UpdatePositions(
+        const PureVector& playerPos, const PureVector& targetPos2D);           /**< Updates the graphical object entity associated to this weapon object. */
 
     const FiringMode& getCurrentFiringMode() const;  /**< Returns the current firing mode of the weapon. */
 
