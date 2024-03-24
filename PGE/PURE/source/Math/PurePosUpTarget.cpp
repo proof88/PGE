@@ -44,6 +44,10 @@ PurePosUpTarget::PurePosUpTarget(const PureVector& pos, const PureVector& target
 
 /**
     Gets Position vector.
+    By default it is (0,0,0).
+    We are looking from the Position vector to the Target vector.
+    Changing the Position vector will result in changing the pitch and/or the yaw i.e. rotation along the X- and/or the Y-axis.
+    If you don't want to change pitch and yaw, apply the same change to the Target vector as well: use the Move()/Strafe()/Elevate() functions.
  */
 PureVector& PurePosUpTarget::getPosVec()
 {
@@ -52,6 +56,10 @@ PureVector& PurePosUpTarget::getPosVec()
 
 /**
     Gets Position vector.
+    By default it is (0,0,0).
+    We are looking from the Position vector to the Target vector.
+    Changing the Position vector will result in changing the pitch and/or the yaw i.e. rotation along the X- and/or the Y-axis.
+    If you don't want to change pitch and yaw, apply the same change to the Target vector as well: use the Move()/Strafe()/Elevate() functions.
 */
 const PureVector& PurePosUpTarget::getPosVec() const
 {
@@ -60,6 +68,10 @@ const PureVector& PurePosUpTarget::getPosVec() const
 
 /**
     Gets Target vector.
+    We are looking from the Position vector to the Target vector.
+    By default it is (0,0,1) which means 0 degrees pitch and yaw together with the default (0,0,0) Position vector.
+    Changing the Target vector will result in changing the pitch and/or the yaw i.e. rotation along the X- and/or the Y-axis.
+    If you don't want to change pitch and yaw, apply the same change to the Position vector as well: use the Move()/Strafe()/Elevate() functions.
 */
 PureVector& PurePosUpTarget::getTargetVec()
 {
@@ -68,6 +80,10 @@ PureVector& PurePosUpTarget::getTargetVec()
 
 /**
     Gets Target vector.
+    We are looking from the Position vector to the Target vector.
+    By default it is (0,0,1) which means 0 degrees pitch and yaw together with the default (0,0,0) Position vector.
+    Changing the Target vector will result in changing the pitch and/or the yaw i.e. rotation along the X- and/or the Y-axis.
+    If you don't want to change pitch and yaw, apply the same change to the Position vector as well: use the Move()/Strafe()/Elevate() functions.
 */
 const PureVector& PurePosUpTarget::getTargetVec() const
 {
@@ -76,6 +92,8 @@ const PureVector& PurePosUpTarget::getTargetVec() const
 
 /**
     Gets Up vector.
+    By default it is (0,1,0) meaning 0 degrees roll.
+    Changing the Up vector results in rotation along the Z axis.
 */
 PureVector& PurePosUpTarget::getUpVec()
 {
@@ -84,6 +102,8 @@ PureVector& PurePosUpTarget::getUpVec()
 
 /**
     Gets Up vector.
+    By default it is (0,1,0) meaning 0 degrees roll.
+    Changing the Up vector results in rotation along the Z axis.
 */
 const PureVector& PurePosUpTarget::getUpVec() const
 {
