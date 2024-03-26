@@ -256,7 +256,7 @@ PGE::runGame() {
   
       onGameRunning() {
         proofps_dd::PRooFPSddPGE::onGameRunning() {
-          // this block contains updates in v0.1.3, v0.1.4 and v0.1.5
+          // this block contains updates in v0.1.3, v0.1.4, v0.1.5 and v0.2.2.
           
           serverUpdateWeapons();                   // v0.1.4: 0 PKT/s @ 60 FPS server -> client (see later in handleUserCmdMoveFromClient() why this is 0)
           
@@ -265,11 +265,14 @@ PGE::runGame() {
                                                    // v0.1.5: this is ideally 60 because cl_updaterate controls server->client updates, physics_rate_min allows more precise physics 
               mainLoopConnectedServerOnlyOneTick() {
               @PHYSICS_RATE_MIN (ideally 60 Hz)      // v0.1.5: physics_rate_min introduced, physics_rate_min >= tickrate
-                  serverGravity();                   // no networking
+                  serverGravity();                   // v0.2.2: might generate packet about someone dying of falling, but just a few, and in our current scenario nobody dies, so nothing to do here.
                   serverPlayerCollisionWithWalls();  // no networking
                   serverUpdateBullets();             // v0.1.4: 160 PKT/s @ 20 Hz tickrate server -> client
                                                      // v0.1.5: 480 PKT/s @ 60 Hz physics_rate_min server -> client
-                  serverUpdateExplosions();          // no networking
+                                                     // v0.2.2: same as v0.1.5 with addition of some optional extra packet when someone is killed, which is negligible amount of packets, and
+                                                     //         in our current scenario nobody dies, so essentially no change to v0.1.5.
+                  serverUpdateExplosions();          // v0.2.2: some optional extra packet when someone is killed, which is negligible amount of packets, and in our current scenario nobody dies, so
+                                                     //         essentially nothing to do here.
                   serverPickupAndRespawnItems();     // v0.1.4: 180 PKT/s @ 20 Hz tickrate server -> client
                                                      // v0.1.5: 540 PKT/s @ 60 Hz physics_rate_min server -> client
                   updatePlayersOldValues();          // no networking
@@ -342,6 +345,8 @@ Considering 8 players:
    - same as v0.1.4, the new features did not affect network traffic.
  - **v0.2.0.0:**
    - same as v0.1.6.1, the new features did not affect network traffic.
+ - **v0.2.2.0:**
+   - same as v0.2.0.0, the new features did not affect network traffic.
 
 \subsubsection client_packet_rate Client Packet Rate and Packet Data Rate
 
@@ -386,10 +391,14 @@ Considering 8 players, the results are to a single client from the server:
  - **v0.1.6.1:**
      - same as v0.1.5, the new features did not affect network traffic.
  - **v0.2.0.0:**
-   - slight increase in pakcet data rate due to size of MsgBulletUpdateFromServer increased from 56 Bytes to 68 Bytes:
+   - **slight increase in packet data rate** due to size of MsgBulletUpdateFromServer increased from 56 Bytes to 68 Bytes:
    - **1198 PKT/s @ 60 FPS & 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min** (this is only the 28% of v0.1.2 rate!), with 1422 + 39840 + 16500 + 8800 = **66 562 Byte/s Packet Data Rate** (which is only the 6% of v0.1.2 data rate!).
      - 480 PKT/s @ 60 Hz as per serverUpdateBullets(), with 480 \* 83 = 39840 Byte/s Packet Data Rate (size of MsgBulletUpdateFromServer is 68 Bytes, PgePacket overhead is 15 Bytes).
-  
+ - **v0.2.2.0:**
+   - **slight increase in packet data rate** due to size of MsgUserUpdateFromServer increased from 40 Bytes to 48 Bytes:
+   - **1198 PKT/s @ 60 FPS & 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min** (this is only the 28% of v0.1.2 rate!), with 1422 + 39840 + 16500 + 10080 = **67 842 Byte/s Packet Data Rate** (which is only the 6% of v0.1.2 data rate!).
+     - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(), with 160 \* 63 = 10 080 Byte/s Packet Data Rate (size of MsgUserUpdateFromServer is 48 Bytes, PgePacket overhead is 15 Bytes).
+ 
 Considering 8 players, the results to ALL clients from the server (because above shows results to 1 client from the server):  
 just multiply above results by 7 (server sending to itself avoids GNS level thus we multiply by nClientsCount instead of nPlayersCount):
  - **v0.1.2:** 30 240 PKT/s with 8 104 320 Byte/s Outgoing Packet Data Rate Total;
@@ -398,6 +407,7 @@ just multiply above results by 7 (server sending to itself avoids GNS level thus
  - **v0.1.5:** 8 386 PKT/s with 425 614 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
  - **v0.1.6.1:** same as with v0.1.5;
  - **v0.2.0.0:** 8 386 PKT/s with 465 934 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
+ - **v0.2.2.0:** 8 386 PKT/s with 474 894 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
 
 \subsubsection detailed_packet_rate Detailed Packet Rate per Function
 
