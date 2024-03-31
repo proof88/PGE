@@ -31,7 +31,7 @@ Bullet::BulletId Bullet::getGlobalBulletId()
     return m_globalBulletId;
 }
 
-void Bullet::ResetGlobalBulletId()
+void Bullet::resetGlobalBulletId()
 {
     m_globalBulletId = 0;
 }

@@ -42,7 +42,7 @@ public:
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
 
     static BulletId getGlobalBulletId();
-    static void ResetGlobalBulletId();
+    static void resetGlobalBulletId();
 
     // ---------------------------------------------------------------------------
 
