@@ -84,6 +84,10 @@ firing_mode_max = auto
 # Cannot be 0.
 firing_cooldown = 150
 
+# These sounds are non-existing, just setting something for unit tests
+firing_snd = automatic_dummy.wav
+firing_dry_snd = automatic_dry_dummy.wav
+
 #####################
 #                   #
 #  FIRING ACCURACY  #

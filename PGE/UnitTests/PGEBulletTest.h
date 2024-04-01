@@ -186,7 +186,7 @@ private:
             fSpeed, fGravity, fDrag, bFragile, nDamageHp,
             fDamageAreaSize, fDamageAreaPulse);
 
-        Bullet::ResetGlobalBulletId();
+        Bullet::resetGlobalBulletId();
 
         return assertEquals(static_cast<Bullet::BulletId>(0), Bullet::getGlobalBulletId());
     }

@@ -357,6 +357,7 @@
     <ClInclude Include="..\..\Console\CConsole\src\CConsole.h" />
     <ClInclude Include="..\..\PFL\PFL\PFL.h" />
     <ClInclude Include="..\..\PFL\PFL\winproof88.h" />
+    <ClInclude Include="Audio\PgeAudio.h" />
     <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud.h" />
     <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_audiosource.h" />
     <ClInclude Include="Audio\soloud-RELEASE_20200207\include\soloud_bassboostfilter.h" />
@@ -422,7 +423,6 @@
     <ClInclude Include="PGEInputHandler.h" />
     <ClInclude Include="PGEpragmas.h" />
     <ClInclude Include="PGESysGFX.h" />
-    <ClInclude Include="PGESysSFX.h" />
     <ClInclude Include="PGEWorld.h" />
     <ClInclude Include="PGEWorldTime.h" />
     <ClInclude Include="PGEWorldWeather.h" />
@@ -513,6 +513,7 @@
     <ClInclude Include="Weapons\WeaponManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Audio\PgeAudio.cpp" />
     <ClCompile Include="Config\PGEcfgFile.cpp" />
     <ClCompile Include="Config\PGEcfgVariable.cpp" />
     <ClCompile Include="Config\PGEcfgProfiles.cpp" />
@@ -529,7 +530,6 @@
     <ClCompile Include="PGE.cpp" />
     <ClCompile Include="PGEInputHandler.cpp" />
     <ClCompile Include="PGESysGFX.cpp" />
-    <ClCompile Include="PGESysSFX.cpp" />
     <ClCompile Include="PGEWorld.cpp" />
     <ClCompile Include="PGEWorldTime.cpp" />
     <ClCompile Include="PGEWorldWeather.cpp" />

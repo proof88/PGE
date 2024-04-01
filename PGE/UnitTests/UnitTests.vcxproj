@@ -340,6 +340,9 @@
     <ClInclude Include="..\..\..\Console\CConsole\src\CConsole.h" />
     <ClInclude Include="..\..\..\PFL\PFL\PFL.h" />
     <ClInclude Include="..\..\..\PFL\PFL\winproof88.h" />
+    <ClInclude Include="..\Audio\PgeAudio.h" />
+    <ClInclude Include="..\Audio\soloud-RELEASE_20200207\include\soloud.h" />
+    <ClInclude Include="..\Audio\soloud-RELEASE_20200207\include\soloud_wav.h" />
     <ClInclude Include="..\Config\PGEcfgFile.h" />
     <ClInclude Include="..\Config\PGEcfgProfiles.h" />
     <ClInclude Include="..\Config\PGEcfgVariable.h" />

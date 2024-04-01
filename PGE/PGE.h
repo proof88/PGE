@@ -20,6 +20,7 @@
 // TODO: add "Audio/soloud-RELEASE_20200207/include/" to project include dirs, do not use that path here!
 #include "Audio/soloud-RELEASE_20200207/include/soloud.h"
 #include "Audio/soloud-RELEASE_20200207/include/soloud_wav.h"
+#include "Audio/PgeAudio.h"
 
 #include "Network/PgeNetwork.h"
 
@@ -87,12 +88,12 @@ public:
     void setCookie(int cookie);                /**< Sets a special purpose value for arbitrary use. */
     int getCookie() const;                     /**< Gets a previously set special purpose value for arbitrary use. */
 
-    PGEcfgProfiles& getConfigProfiles() const; /**< Returns the config handler object. */
-    PGEInputHandler& getInput() const;         /**< Returns the input handler object. */
-    PGEWorld& getWorld() const;                /**< Returns the world object. */
-    PR00FsUltimateRenderingEngine& getPure() const;   /**< Returns the graphics engine. */
+    pge_audio::PgeAudio& getAudio();                 /**< Returns audio lib interface. */
+    PGEcfgProfiles& getConfigProfiles() const;       /**< Returns the config handler object. */
+    PGEInputHandler& getInput() const;               /**< Returns the input handler object. */
     pge_network::PgeNetwork& getNetwork() const;     /**< Returns the network functionality interface. */
-    SoLoud::Soloud& getAudio();                /**< Returns audio lib interface. */
+    PR00FsUltimateRenderingEngine& getPure() const;  /**< Returns the graphics engine. */
+    PGEWorld& getWorld() const;                      /**< Returns the world object. */
     
     std::list<Bullet>& getBullets();           /**< Returns the bullets simulated by the engine. */
 

@@ -82,6 +82,10 @@ firing_mode_max = burst
 # Cannot be 0.
 firing_cooldown = 300
 
+# These sounds are non-existing, just setting something for unit tests
+firing_snd = dummy_sound.wav
+firing_dry_snd = dummy_dry_sound.wav
+
 #####################
 #                   #
 #  FIRING ACCURACY  #

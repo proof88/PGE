@@ -159,9 +159,6 @@
     <ClInclude Include="PGESysGFX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PGESysSFX.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PGEInputHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -615,15 +612,15 @@
     <ClInclude Include="PURE\include\external\GUI\imgui-1.88\imgui.h">
       <Filter>Header Files\PURE\include\external\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="Audio\PgeAudio.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PGESysGFX.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PGESysSFX.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PGEWorldTime.cpp">
@@ -823,6 +820,9 @@
     </ClCompile>
     <ClCompile Include="PURE\source\Math\PureProjection.cpp">
       <Filter>Source Files\PURE\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Audio\PgeAudio.cpp">
+      <Filter>Source Files\Audio</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

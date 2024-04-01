@@ -37,12 +37,14 @@ protected:
         CConsole::getConsoleInstance().SetLoggingState(WeaponManager::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(Weapon::getLoggerModuleName(), true);
 
+        m_audio.initialize();
+
         PGEInputHandler& inputHandler = PGEInputHandler::createAndGet(cfgProfiles);
         
         engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
 
-        /* negative tests*/
+        /* negative tests */
 
         AddSubTest("test_wpn_load_weapon_bad_assignment", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_bad_assignment);
         AddSubTest("test_wpn_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_unaccepted_var);
@@ -141,6 +143,8 @@ protected:
             engine = NULL;
         }
 
+        m_audio.shutdown();
+
         CConsole::getConsoleInstance().SetLoggingState(PureTexture::getLoggerModuleName(), false);
         CConsole::getConsoleInstance().SetLoggingState(PureTextureManager::getLoggerModuleName(), false);
         CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), false);
@@ -150,6 +154,7 @@ protected:
 
 private:
 
+    pge_audio::PgeAudio m_audio;
     PR00FsUltimateRenderingEngine* engine;
     PGEcfgProfiles cfgProfiles;
 
@@ -175,7 +180,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn(sFilename.c_str(), bullets, *engine, 0);
+            Weapon wpn(sFilename.c_str(), bullets, m_audio, *engine, 0);
         }
         catch (const std::exception& e)
         {
@@ -334,8 +339,8 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 10);
-            b = true;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10); // might throw
+            b = true; // did not throw
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state") &
                 assertFalse(wpn.isAvailable(), "available") &
                 assertEquals(10u, wpn.getOwner(), "owner") &
@@ -353,6 +358,10 @@ private:
                 assertEquals("auto", wpn.getVars()["firing_mode_def"].getAsString(), "firing_mode_def") &
                 assertEquals("auto", wpn.getVars()["firing_mode_max"].getAsString(), "firing_mode_max") &
                 assertEquals(150, wpn.getVars()["firing_cooldown"].getAsInt(), "firing_cooldown") &
+                assertEquals("automatic_dummy.wav", wpn.getVars()["firing_snd"].getAsString(), "firing_snd") &
+                assertEquals("automatic_dry_dummy.wav", wpn.getVars()["firing_dry_snd"].getAsString(), "firing_dry_snd") &
+                assertEquals(0.0, wpn.getFiringSound().getLength(), "firing snd len") &
+                assertEquals(0.0, wpn.getDryFiringSound().getLength(), "firing dry snd len") &
                 assertEquals(5.f, wpn.getVars()["acc_angle"].getAsFloat(), "acc_angle") &
                 assertEquals(1.2f, wpn.getVars()["acc_m_walk"].getAsFloat(), "acc_m_walk") &
                 assertEquals(3.0f, wpn.getVars()["acc_m_run"].getAsFloat(), "acc_m_run") &
@@ -392,7 +401,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 10);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10);
 
             wpn.SetAvailable(true);
             b = assertTrue(wpn.isAvailable(), "true");
@@ -414,7 +423,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 10);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10);
 
             wpn.SetOwner(5678);
             b = assertEquals(5678u, wpn.getOwner(), "owner");
@@ -433,7 +442,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 10);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10);
 
             // sample good wpn has reloadable as 30, so its mag bullet count is that value, unmag is 0 by default,
             // and cap_max is 999
@@ -470,7 +479,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 10);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10);
 
             // sample good wpn has reloadable as 30, so its mag bullet count is that value, unmag is 0 by default,
             // and cap_max is 999
@@ -501,7 +510,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 10);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10);
 
             // sample good wpn has reloadable as 30, so its mag bullet count is that value, unmag is 0 by default,
             // and cap_max is 999
@@ -557,7 +566,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             // by default no unmag bullets are available, and we set mag to 0 as well
@@ -579,7 +588,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             wpn.SetUnmagBulletCount(100); // make sure we could reload
@@ -601,7 +610,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             wpn.SetUnmagBulletCount(100); // make sure we could reload
@@ -624,7 +633,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             wpn.getVars()["reload_whole_mag"].Set(false); // reload does not waste bullets
@@ -674,7 +683,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             wpn.getVars()["reload_whole_mag"].Set(false); // reload does not waste bullets
@@ -724,7 +733,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             // "reload_whole_mag" is true in sample wpn file
@@ -774,7 +783,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             // "reload_whole_mag" is true in sample wpn file
@@ -824,7 +833,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             wpn.SetUnmagBulletCount(100); // make sure we could reload
@@ -878,7 +887,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             wpn.SetUnmagBulletCount(100); // make sure we could reload
@@ -903,7 +912,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             // by default magazine is full == 30 bullets, set it to 0
@@ -927,7 +936,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             wpn.getVars()["reload_whole_mag"].Set(false); // reload does not waste bullets
@@ -961,7 +970,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_bazooka.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_bazooka.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             wpn.SetUnmagBulletCount(3); // make sure we could reload
@@ -1017,7 +1026,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
@@ -1051,7 +1060,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             wpn.SetUnmagBulletCount(100); // make sure we could reload
@@ -1109,7 +1118,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", bullets, m_audio, *engine, 0);
             b = true;
     
             b &= assertEquals("semi", wpn.getVars()["firing_mode_def"].getAsString(), "firing_mode_def");
@@ -1217,7 +1226,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
@@ -1247,7 +1256,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
@@ -1280,7 +1289,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
 
             b = assertEquals((wpn.getVars().at("damage_hp").getAsInt() * wpn.getVars().at("damage_ap").getAsInt()) / 100.f,
                 wpn.getDamagePerFireRating(), 0.001f, "1");
@@ -1300,7 +1309,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
 
             b = assertEquals(std::powf(1000.f / wpn.getVars().at("firing_cooldown").getAsInt() * wpn.getDamagePerFireRating(), 2.f),
                 wpn.getDamagePerSecondRating(), 0.001f, "1");
@@ -1322,7 +1331,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, connHandle);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, connHandle);
             b = true;
 
             wpn.getObject3D().getPosVec().Set(1.f, 2.f, 3.f);
@@ -1357,7 +1366,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, connHandle);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, connHandle);
             b = true;
 
             b &= assertTrue(wpn.pullTrigger(), "shoot");
@@ -1383,7 +1392,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             wpn.UpdatePosition(PureVector(10.f, 20.f, 30.f), false);
@@ -1441,7 +1450,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             // this test requires proper camera direction, since getCamera().project3dTo2d() is invoked by Weapon::UpdatePositions(PureVector,PureVector)
@@ -1494,7 +1503,7 @@ private:
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 0);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
             wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
@@ -1516,7 +1525,7 @@ private:
     bool test_wm_initially_empty()
     {
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         return assertTrue(wm.getWeapons().empty(), "weapons") & assertTrue(wm.getBullets().empty(), "bullets") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon") &
             assertNull(wm.getCurrentWeapon(), "currentWeapon") &
@@ -1526,7 +1535,7 @@ private:
     bool test_wm_clear_weapons()
     {
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         b &= assertTrue(wm.setDefaultAvailableWeaponByFilename("sample_good_wpn_automatic.txt"), "setDefaultAvailable");
         b &= assertTrue(wm.setCurrentWeapon(wm.getWeapons()[0], true, false), "setCurrentWeapon");
@@ -1542,7 +1551,7 @@ private:
     bool test_wm_set_default_available_weapon()
     {
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         
         b &= assertFalse(wm.setDefaultAvailableWeaponByFilename("xxx"), "setDefaultAvailable 1");
@@ -1557,7 +1566,7 @@ private:
     bool test_wm_load_weapon_bad_assignment()
     {
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_bad_assignment.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
@@ -1568,7 +1577,7 @@ private:
     bool test_wm_load_weapon_unaccepted_var()
     {
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_unaccepted_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
@@ -1579,7 +1588,7 @@ private:
     bool test_wm_load_weapon_missing_var()
     {
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_missing_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
@@ -1590,7 +1599,7 @@ private:
     bool test_wm_load_weapon_double_defined_var()
     {
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_double_defined_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
@@ -1601,7 +1610,7 @@ private:
     bool test_wm_load_weapon_good()
     {
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         b &= assertFalse(wm.getWeapons().empty(), "not empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
@@ -1612,7 +1621,7 @@ private:
     bool test_wm_get_set_current_weapon()
     {
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
 
@@ -1640,7 +1649,7 @@ private:
             b &= assertFalse(wm.setCurrentWeapon(nullptr, true, false), "switch to null should not work");
             b &= assertEquals(nLastSwitchTimeSinceEpoch, wm.getTimeLastWeaponSwitch().time_since_epoch().count(), "last switch time should not change 4");
 
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, *engine, 10);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10);
             b &= assertFalse(wm.setCurrentWeapon(&wpn, true, false), "switch to not owned wpn should not work");
             b &= assertEquals(nLastSwitchTimeSinceEpoch, wm.getTimeLastWeaponSwitch().time_since_epoch().count(), "last switch time should not change 5");
         }
@@ -1658,7 +1667,7 @@ private:
         };
 
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_railgun.txt", 0), "load 3");
@@ -1727,7 +1736,7 @@ private:
         };
 
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
 
@@ -1762,7 +1771,7 @@ private:
         };
         
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_railgun.txt", 0), "load 3");
@@ -1825,7 +1834,7 @@ private:
         };
 
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
 
@@ -1862,7 +1871,7 @@ private:
         };
 
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_railgun.txt", 0), "load 3");
@@ -1950,7 +1959,7 @@ private:
         };
 
         std::list<Bullet> bullets;
-        WeaponManager wm(cfgProfiles, *engine, bullets);
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
 

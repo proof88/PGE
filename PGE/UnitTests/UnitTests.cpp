@@ -17,6 +17,10 @@
 #ifndef WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
 #define WINPROOF88_ALLOW_MSG_USER_WINMESSAGES
 #endif
+// otherwise SoLoud.h will have problem due to colliding macro NOSOUND!
+#ifndef WINPROOF88_ALLOW_SOUND
+#define WINPROOF88_ALLOW_SOUND
+#endif
 #include "../../../PFL/PFL/winproof88.h"
 
 #include "../../../Console/CConsole/src/CConsole.h"

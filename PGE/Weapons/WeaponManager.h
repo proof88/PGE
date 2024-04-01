@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "../PGEallHeaders.h"
+#include "../Audio/PgeAudio.h"
 #include "../Config/PGEcfgFile.h"
 #include "../Config/PGEcfgProfiles.h"
 #include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
@@ -191,7 +192,9 @@ public:
     // ---------------------------------------------------------------------------
 
     Weapon(
-        const char* fname, std::list<Bullet>& bullets,
+        const char* fname,
+        std::list<Bullet>& bullets,
+        pge_audio::PgeAudio& audio,
         PR00FsUltimateRenderingEngine& gfx,
         pge_network::PgeNetworkConnectionHandle connHandle);
     virtual ~Weapon();
@@ -236,9 +239,13 @@ public:
     const float getDamagePerFireRating() const;    /**< Returns a calculated rating of damage caused by a single shot fired. */
     const float getDamagePerSecondRating() const;  /**< Returns a calculated rating of total damage per 1 second. */
 
+    SoLoud::Wav& getFiringSound();
+    SoLoud::Wav& getDryFiringSound();
+
     Weapon(const Weapon& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
         PGEcfgFile(other),
         m_bullets(other.m_bullets),
+        m_audio(other.m_audio),
         m_gfx(other.m_gfx),
         m_connHandle(other.m_connHandle),
         m_state(other.m_state),
@@ -269,6 +276,7 @@ public:
     Weapon& operator=(const Weapon& other) // TODO check if we really cannot live with just compiler generated operator_=?
     {
         m_bullets = other.m_bullets;
+        //m_audio = other.m_audio; // deleted assignment operator
         m_gfx = other.m_gfx;
         m_connHandle = other.m_connHandle;
         m_state = other.m_state;
@@ -309,6 +317,7 @@ private:
     static std::set<std::string> m_WpnAcceptedVars;
 
     std::list<Bullet>& m_bullets;
+    pge_audio::PgeAudio& m_audio;
     PR00FsUltimateRenderingEngine& m_gfx;
     pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this weapon. Should be used by PGE server instance only. */
     PureObject3D* m_obj;
@@ -321,6 +330,8 @@ private:
     PFL::timeval m_timeLastShot;                       /**< Only updated during pullTrigger() / Update(). Should be managed by PGE server instance. */
     bool m_bAvailable;                                 /**< Flag for the game, e.g. if true then the player has this weapon. */
     bool m_bTriggerReleased;                           /**< True if trigger is released, false when being pulled. True by default. */
+    SoLoud::Wav m_sndShoot;
+    SoLoud::Wav m_sndShootDry;
 
     // ---------------------------------------------------------------------------
 
@@ -349,7 +360,11 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    WeaponManager(PGEcfgProfiles& cfgProfiles, PR00FsUltimateRenderingEngine& gfx, std::list<Bullet>& bullets);
+    WeaponManager(
+        pge_audio::PgeAudio& audio,
+        PGEcfgProfiles& cfgProfiles,
+        PR00FsUltimateRenderingEngine& gfx,
+        std::list<Bullet>& bullets);
     virtual ~WeaponManager();
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
@@ -384,6 +399,7 @@ public:
 protected:
 
     WeaponManager(const WeaponManager&) :
+        m_audio(m_audio),
         m_cfgProfiles(m_cfgProfiles),
         m_gfx(m_gfx),
         m_pCurrentWpn(nullptr),
@@ -398,6 +414,7 @@ protected:
 private:
     static KeypressToWeaponMap m_mapKeypressToWeapon;
 
+    pge_audio::PgeAudio& m_audio;
     PGEcfgProfiles& m_cfgProfiles;
     PR00FsUltimateRenderingEngine& m_gfx;
     std::vector<Weapon*> m_weapons;

@@ -49,6 +49,9 @@
     <Filter Include="Header Files\PGE\Network">
       <UniqueIdentifier>{8c9a0a95-6bab-4b19-b70b-2c85b89435f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PGE\Audio">
+      <UniqueIdentifier>{969e79da-9b10-4c8a-b314-19e981411d19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\PGE.h">
@@ -344,6 +347,15 @@
     </ClInclude>
     <ClInclude Include="PureProjectionTest.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Audio\PgeAudio.h">
+      <Filter>Header Files\PGE\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Audio\soloud-RELEASE_20200207\include\soloud.h">
+      <Filter>Header Files\PGE\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Audio\soloud-RELEASE_20200207\include\soloud_wav.h">
+      <Filter>Header Files\PGE\Audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

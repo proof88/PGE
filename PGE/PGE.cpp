@@ -18,7 +18,6 @@
 #include "PGEpragmas.h"
 // Subsystems
 #include "PGESysGFX.h"
-#include "PGESysSFX.h"
 #include "Config/PGEcfgProfiles.h"
 #include "Weapons/WeaponManager.h"
 
@@ -60,12 +59,13 @@ public:
     void setCookie(int cookie);
     int getCookie() const;
 
+    pge_audio::PgeAudio& getAudio();
     PGEcfgProfiles& getConfigProfiles();
-    PGEInputHandler& getInput() const;       
-    PGEWorld& getWorld() const;             
-    PR00FsUltimateRenderingEngine& getPure() const;
+    PGEInputHandler& getInput() const;         
     pge_network::PgeNetwork& getNetwork() const;
-    SoLoud::Soloud& getAudio();
+    PR00FsUltimateRenderingEngine& getPure() const;
+    PGEWorld& getWorld() const;
+    
     std::list<Bullet>& getBullets();
                     
     bool isGameRunning() const;               
@@ -92,11 +92,13 @@ private:
 
     PGEcfgProfiles m_cfgProfiles;
     PGEInputHandler& m_inputHandler;
-    PGEWorld& m_world;
+    
+    pge_audio::PgeAudio m_audio;
     PR00FsUltimateRenderingEngine& m_gfx;
     PGESysGFX m_sysGFX;
     pge_network::PgeNetwork& m_network;
-    PGESysSFX  m_sysSFX;
+    PGEWorld& m_world;
+
     std::list<Bullet> m_bullets;
 
     bool        m_bIsGameRunning;         /**< Is the game running (true after successful init and before initiating shutdown)? */
@@ -231,9 +233,9 @@ pge_network::PgeNetwork& PGE::PGEimpl::getNetwork() const
     return m_network;
 }
 
-SoLoud::Soloud& PGE::PGEimpl::getAudio()
+pge_audio::PgeAudio& PGE::PGEimpl::getAudio()
 {
-    return m_sysSFX.getAudioCore();
+    return m_audio;
 }
 
 std::list<Bullet>& PGE::PGEimpl::getBullets()
@@ -255,7 +257,7 @@ int PGE::PGEimpl::destroyGame()
     m_world.Shutdown();
     // m_inputHandler doesnt have any shutdown
     m_sysGFX.destroySysGFX();
-    m_sysSFX.destroySysSFX();
+    m_audio.shutdown();
     getNetwork().shutdown();
     m_cfgProfiles.shutdown();
 
@@ -316,11 +318,10 @@ int PGE::PGEimpl::showWindowsMessageDialogWin32(PGE_MSG_ID msg_id, PGE_MSG_ID cp
 PGE::PGEimpl::PGEimpl() :
     m_pOwner(NULL),  // currently not used
     m_inputHandler( PGEInputHandler::createAndGet(m_cfgProfiles) ),
-    m_world( PGEWorld::createAndGet() ),
     m_gfx( PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler) ),
     m_sysGFX(m_cfgProfiles, m_inputHandler),
     m_network( pge_network::PgeNetwork::createAndGet(m_cfgProfiles) ),
-    m_sysSFX(m_cfgProfiles),
+    m_world(PGEWorld::createAndGet()),
     m_bIsGameRunning(false),
     m_nInactiveSleep(PGE_INACTIVE_SLEEP),
     m_bInactiveLikeActive(PGE_INACTIVE_AS_ACTIVE),
@@ -336,11 +337,10 @@ PGE::PGEimpl::PGEimpl() :
 PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     m_pOwner(NULL),  // currently not used
     m_inputHandler( PGEInputHandler::createAndGet(m_cfgProfiles) ),
-    m_world( PGEWorld::createAndGet() ),
     m_gfx( PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler) ),
     m_sysGFX(m_cfgProfiles, m_inputHandler),
     m_network( pge_network::PgeNetwork::createAndGet(m_cfgProfiles) ),
-    m_sysSFX(m_cfgProfiles),
+    m_world(PGEWorld::createAndGet()),
     m_bIsGameRunning(false),
     m_nInactiveSleep(PGE_INACTIVE_SLEEP),
     m_bInactiveLikeActive(PGE_INACTIVE_AS_ACTIVE),
@@ -366,11 +366,10 @@ PGE::PGEimpl& PGE::PGEimpl::operator=(const PGE::PGEimpl&)
 PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     m_pOwner(NULL),  // currently not used
     m_inputHandler(PGEInputHandler::createAndGet(m_cfgProfiles)),
-    m_world(PGEWorld::createAndGet()),
     m_gfx(PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler)),
     m_sysGFX(m_cfgProfiles, m_inputHandler),
     m_network(pge_network::PgeNetwork::createAndGet(m_cfgProfiles)),
-    m_sysSFX(m_cfgProfiles),
+    m_world(PGEWorld::createAndGet()),
     m_bIsGameRunning(false),
     m_sGameTitle(gameTitle),
     m_nInactiveSleep(PGE_INACTIVE_SLEEP),
@@ -639,6 +638,17 @@ int PGE::getCookie() const
 
 
 /**
+    Returns audio lib interface.
+
+    @return Audio lib interface.
+*/
+pge_audio::PgeAudio& PGE::getAudio()
+{
+    return p->getAudio();
+}
+
+
+/**
     Returns the config handler object.
 
     @return Game engine config handler.
@@ -661,14 +671,14 @@ PGEInputHandler& PGE::getInput() const
 
 
 /**
-    Returns the m_world object.
+    Returns the network functionality interface.
 
-    @return World simulated by the game engine.
+    @return The network functionality interface.
 */
-PGEWorld& PGE::getWorld() const
+pge_network::PgeNetwork& PGE::getNetwork() const
 {
-    return p->getWorld();
-} // getWorld()
+    return p->getNetwork();
+}
 
 
 /**
@@ -683,25 +693,14 @@ PR00FsUltimateRenderingEngine& PGE::getPure() const
 
 
 /**
-    Returns the network functionality interface.
+    Returns the m_world object.
 
-    @return The network functionality interface.
+    @return World simulated by the game engine.
 */
-pge_network::PgeNetwork& PGE::getNetwork() const
+PGEWorld& PGE::getWorld() const
 {
-    return p->getNetwork();
-}
-
-
-/**
-    Returns audio lib interface.
-
-    @return Audio lib interface.
-*/
-SoLoud::Soloud& PGE::getAudio()
-{
-    return p->getAudio();
-}
+    return p->getWorld();
+} // getWorld()
 
 
 /**
@@ -798,7 +797,7 @@ int PGE::initializeGame(const char* szCmdLine)
         
     getConsole().L();
     getConsole().OLnOI("Initializing Audio ...");
-    if ( !(p->m_sysSFX.initSysSFX()) )
+    if ( !(p->m_audio.initialize()) )
     {
         getConsole().EOLnOO("Failed!");
         getConsole().OLn("");

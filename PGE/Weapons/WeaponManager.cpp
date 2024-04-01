@@ -236,9 +236,15 @@ Bullet::BulletId Bullet::m_globalBulletId = 0;
 // ############################### PUBLIC ################################
 
 
-Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsUltimateRenderingEngine& gfx, pge_network::PgeNetworkConnectionHandle connHandle) :
+Weapon::Weapon(
+    const char* fname,
+    std::list<Bullet>& bullets,
+    pge_audio::PgeAudio& audio,
+    PR00FsUltimateRenderingEngine& gfx,
+    pge_network::PgeNetworkConnectionHandle connHandle) :
     PGEcfgFile(true, false),
     m_bullets(bullets),
+    m_audio(audio),
     m_gfx(gfx),
     m_connHandle(connHandle),
     m_obj(NULL),
@@ -264,6 +270,8 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsUltimateRend
         m_WpnAcceptedVars.insert("firing_mode_def");
         m_WpnAcceptedVars.insert("firing_mode_max");
         m_WpnAcceptedVars.insert("firing_cooldown");
+        m_WpnAcceptedVars.insert("firing_snd");
+        m_WpnAcceptedVars.insert("firing_dry_snd");
         m_WpnAcceptedVars.insert("acc_angle");
         m_WpnAcceptedVars.insert("acc_m_walk");
         m_WpnAcceptedVars.insert("acc_m_run");
@@ -441,6 +449,7 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsUltimateRend
     m_obj->SetDoubleSided(true);
     m_obj->Hide();
 
+    // TODO: hardcoded directory should be coming from somewhere instead!
     PureTexture* const wpntex = m_gfx.getTextureManager().createFromFile(
         (std::string("gamedata\\textures\\weapons\\") + PFL::changeExtension(this->getFilename().c_str(), "bmp")).c_str());
     if (wpntex)
@@ -454,6 +463,11 @@ Weapon::Weapon(const char* fname, std::list<Bullet>& bullets, PR00FsUltimateRend
         getConsole().EOLnOO("texture file was not found for %s! ", fname);
         throw std::runtime_error("texture file was not found for " + std::string(fname));
     }
+
+    // finally we load sounds, failing to load is NOT fatal error, weapons will stay simply silent in such case, SoLoud handled that!
+    // TODO: hardcoded directory should be coming from somewhere instead!
+    m_audio.loadSound(m_sndShoot, std::string("gamedata\\audio\\weapons\\") + getVars()["firing_snd"].getAsString());
+    m_audio.loadSound(m_sndShootDry, std::string("gamedata\\audio\\weapons\\") + getVars()["firing_dry_snd"].getAsString());
 
     getConsole().SOLnOO("Weapon loaded!");
 }
@@ -1029,6 +1043,16 @@ const float Weapon::getDamagePerSecondRating() const
     return std::powf(1000.f / getVars().at("firing_cooldown").getAsInt() * getDamagePerFireRating(), 2.f);
 }
 
+SoLoud::Wav& Weapon::getFiringSound()
+{
+    return m_sndShoot;
+}
+
+SoLoud::Wav& Weapon::getDryFiringSound()
+{
+    return m_sndShootDry;
+}
+
 
 // ############################## PROTECTED ##############################
 
@@ -1050,6 +1074,7 @@ std::set<std::string> Weapon::m_WpnAcceptedVars;
 Weapon::Weapon() :
     PGEcfgFile(true, false),
     m_bullets(m_bullets),
+    m_audio(m_audio),
     m_gfx(m_gfx),
     m_connHandle(0),
     m_obj(NULL),
@@ -1073,7 +1098,12 @@ void Weapon::UpdateGraphics()
 // ############################### PUBLIC ################################
 
 
-WeaponManager::WeaponManager(PGEcfgProfiles& cfgProfiles, PR00FsUltimateRenderingEngine& gfx, std::list<Bullet>& bullets) :
+WeaponManager::WeaponManager(
+    pge_audio::PgeAudio& audio,
+    PGEcfgProfiles& cfgProfiles,
+    PR00FsUltimateRenderingEngine& gfx,
+    std::list<Bullet>& bullets) :
+    m_audio(audio),
     m_cfgProfiles(cfgProfiles),
     m_gfx(gfx),
     m_pCurrentWpn(nullptr),
@@ -1122,7 +1152,7 @@ Weapon* WeaponManager::load(const char* fname, pge_network::PgeNetworkConnection
 {
     try
     {
-        Weapon* const wpn = new Weapon(fname, m_bullets, m_gfx, connHandleServerSide);
+        Weapon* const wpn = new Weapon(fname, m_bullets, m_audio, m_gfx, connHandleServerSide);
         if (!wpn)
         {
             return nullptr;
