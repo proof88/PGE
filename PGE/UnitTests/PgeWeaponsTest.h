@@ -342,6 +342,8 @@ private:
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10); // might throw
             b = true; // did not throw
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state") &
+                assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old") &
+                assertFalse(wpn.getState().isDirty(), "state dirty") &
                 assertFalse(wpn.isAvailable(), "available") &
                 assertEquals(10u, wpn.getOwner(), "owner") &
                 assertEquals(Weapon::FiringMode::WPN_FM_AUTO, wpn.getCurrentFiringMode(), "firing mode") &
@@ -573,6 +575,7 @@ private:
             wpn.SetMagBulletCount(0);
             b &= assertFalse(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
+            b &= assertFalse(wpn.getState().isDirty(), "state dirty");
         }
         catch (const std::exception& e)
         {
@@ -595,6 +598,7 @@ private:
             // by default magazine is full == 30 bullets
             b &= assertFalse(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
+            b &= assertFalse(wpn.getState().isDirty(), "state dirty");
         }
         catch (const std::exception& e)
         {
@@ -618,6 +622,7 @@ private:
             wpn.getVars()["reloadable"].Set(0); // set weapon to not reloadable
             b &= assertFalse(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
+            b &= assertFalse(wpn.getState().isDirty(), "state dirty");
         }
         catch (const std::exception& e)
         {
@@ -644,17 +649,25 @@ private:
 
             b &= assertTrue(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
             
             PFL::timeval timeReloadStarted;
             PFL::gettimeofday(&timeReloadStarted, 0);
-            int iWait = 0;
-            int nNumWpnUpdateChangedBulletCount = 0;
+            unsigned int iWait = 0;
+            unsigned int nNumWpnUpdateChangedBulletCount = 0;
+            unsigned int nNumWpnStateChangesCount = 0;
             while ( (wpn.getState() == Weapon::WPN_RELOADING) && (iWait < 10) )
             {
                 iWait++;
                 if (wpn.update())
                 {
                     nNumWpnUpdateChangedBulletCount++;
+                }
+                if (wpn.getState().isDirty())
+                {
+                    nNumWpnStateChangesCount++;
+                    wpn.updateOldValues();
                 }
                 Sleep(50);
             }
@@ -666,7 +679,8 @@ private:
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 2");
             b &= assertEquals(30u, wpn.getMagBulletCount(), "mag");
             b &= assertEquals(84u, wpn.getUnmagBulletCount(), "unmag");
-            b &= assertEquals(1, nNumWpnUpdateChangedBulletCount, "update true count");
+            b &= assertEquals(1u, nNumWpnUpdateChangedBulletCount, "update true count");
+            b &= assertEquals(2u, nNumWpnStateChangesCount, "state changes count"); /* READY -> RELOADING -> READY */
             b &= assertGequals(fMillisecsReloadTook, wpn.getVars()["reload_time"].getAsFloat(), "time");
         }
         catch (const std::exception& e)
@@ -694,17 +708,25 @@ private:
 
             b &= assertTrue(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
 
             PFL::timeval timeReloadStarted;
             PFL::gettimeofday(&timeReloadStarted, 0);
-            int iWait = 0;
-            int nNumWpnUpdateChangedBulletCount = 0;
+            unsigned int iWait = 0;
+            unsigned int nNumWpnUpdateChangedBulletCount = 0;
+            unsigned int nNumWpnStateChangesCount = 0;
             while ( (wpn.getState() == Weapon::WPN_RELOADING) && (iWait < 10) )
             {
                 iWait++;
                 if (wpn.update())
                 {
                     nNumWpnUpdateChangedBulletCount++;
+                }
+                if (wpn.getState().isDirty())
+                {
+                    nNumWpnStateChangesCount++;
+                    wpn.updateOldValues();
                 }
                 Sleep(50);
             }
@@ -716,7 +738,8 @@ private:
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 2");
             b &= assertEquals(21u, wpn.getMagBulletCount(), "mag");
             b &= assertEquals(0u, wpn.getUnmagBulletCount(), "unmag");
-            b &= assertEquals(1, nNumWpnUpdateChangedBulletCount, "update true count");
+            b &= assertEquals(1u, nNumWpnUpdateChangedBulletCount, "update true count");
+            b &= assertEquals(2u, nNumWpnStateChangesCount, "state changes count"); /* READY -> RELOADING -> READY */
             b &= assertGequals(fMillisecsReloadTook, wpn.getVars()["reload_time"].getAsFloat(), "time");
         }
         catch (const std::exception& e)
@@ -744,17 +767,25 @@ private:
 
             b &= assertTrue(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
 
             PFL::timeval timeReloadStarted;
             PFL::gettimeofday(&timeReloadStarted, 0);
-            int iWait = 0;
-            int nNumWpnUpdateChangedBulletCount = 0;
+            unsigned int iWait = 0;
+            unsigned int nNumWpnUpdateChangedBulletCount = 0;
+            unsigned int nNumWpnStateChangesCount = 0;
             while ( (wpn.getState() == Weapon::WPN_RELOADING) && (iWait < 10) )
             {
                 iWait++;
                 if (wpn.update())
                 {
                     nNumWpnUpdateChangedBulletCount++;
+                }
+                if (wpn.getState().isDirty())
+                {
+                    nNumWpnStateChangesCount++;
+                    wpn.updateOldValues();
                 }
                 Sleep(50);
             }
@@ -766,7 +797,8 @@ private:
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 2");
             b &= assertEquals(30u, wpn.getMagBulletCount(), "mag");
             b &= assertEquals(70u, wpn.getUnmagBulletCount(), "unmag");
-            b &= assertEquals(1, nNumWpnUpdateChangedBulletCount, "update true count");
+            b &= assertEquals(1u, nNumWpnUpdateChangedBulletCount, "update true count");
+            b &= assertEquals(2u, nNumWpnStateChangesCount, "state changes count"); /* READY -> RELOADING -> READY */
             b &= assertGequals(fMillisecsReloadTook, wpn.getVars()["reload_time"].getAsFloat(), "time");
         }
         catch (const std::exception& e)
@@ -794,17 +826,25 @@ private:
 
             b &= assertTrue(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
 
             PFL::timeval timeReloadStarted;
             PFL::gettimeofday(&timeReloadStarted, 0);
-            int iWait = 0;
-            int nNumWpnUpdateChangedBulletCount = 0;
+            unsigned int iWait = 0;
+            unsigned int nNumWpnUpdateChangedBulletCount = 0;
+            unsigned int nNumWpnStateChangesCount = 0;
             while ( (wpn.getState() == Weapon::WPN_RELOADING) && (iWait < 10) )
             {
                 iWait++;
                 if (wpn.update())
                 {
                     nNumWpnUpdateChangedBulletCount++;
+                }
+                if (wpn.getState().isDirty())
+                {
+                    nNumWpnStateChangesCount++;
+                    wpn.updateOldValues();
                 }
                 Sleep(50);
             }
@@ -816,7 +856,8 @@ private:
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 2");
             b &= assertEquals(7u, wpn.getMagBulletCount(), "mag");
             b &= assertEquals(0u, wpn.getUnmagBulletCount(), "unmag");
-            b &= assertEquals(1, nNumWpnUpdateChangedBulletCount, "update true count");
+            b &= assertEquals(1u, nNumWpnUpdateChangedBulletCount, "update true count");
+            b &= assertEquals(2u, nNumWpnStateChangesCount, "state changes count"); /* READY -> RELOADING -> READY */
             b &= assertGequals(fMillisecsReloadTook, wpn.getVars()["reload_time"].getAsFloat(), "time");
         }
         catch (const std::exception& e)
@@ -850,16 +891,24 @@ private:
             std::set<TPureUInt> expectedMagBulletCounts = {25, 26, 27, 28, 29, 30};
             std::set<TPureUInt> expectedUnmagBulletCounts = {100, 99, 98, 97, 96, 95};
 
-            int iWait = 0;
-            int nNumWpnUpdateChangedBulletCount = 0;
+            unsigned int iWait = 0;
+            unsigned int nNumWpnUpdateChangedBulletCount = 0;
+            unsigned int nNumWpnStateChangesCount = 0;
             b &= assertTrue(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
             while ( (wpn.getState() == Weapon::WPN_RELOADING) && (iWait < 75) )
             {
                 iWait++;
                 if (wpn.update())
                 {
                     nNumWpnUpdateChangedBulletCount++;
+                }
+                if (wpn.getState().isDirty())
+                {
+                    nNumWpnStateChangesCount++;
+                    wpn.updateOldValues();
                 }
                 expectedMagBulletCounts.erase( wpn.getMagBulletCount() );
                 expectedUnmagBulletCounts.erase( wpn.getUnmagBulletCount() );
@@ -869,7 +918,8 @@ private:
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 2");
             b &= assertEquals(30u, wpn.getMagBulletCount(), "mag");
             b &= assertEquals(95u, wpn.getUnmagBulletCount(), "unmag");
-            b &= assertEquals(5, nNumWpnUpdateChangedBulletCount, "update true count");
+            b &= assertEquals(5u, nNumWpnUpdateChangedBulletCount, "update true count");
+            b &= assertEquals(2u, nNumWpnStateChangesCount, "state changes count"); /* READY -> RELOADING -> READY */
             b &= assertTrue(expectedMagBulletCounts.empty(), "exp mag empty");
             b &= assertTrue(expectedUnmagBulletCounts.empty(), "exp unmag empty");
         }
@@ -895,8 +945,13 @@ private:
 
             b &= assertTrue(wpn.reload(), "reload 1");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
+
             b &= assertFalse(wpn.reload(), "reload 2");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 2");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 2");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 2");
         }
         catch (const std::exception& e)
         {
@@ -919,6 +974,7 @@ private:
             wpn.SetMagBulletCount(0);
             b &= assertFalse(wpn.pullTrigger(), "shoot");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
+            b &= assertFalse(wpn.getState().isDirty(), "state dirty");
             b &= assertFalse(wpn.isTriggerReleased(), "trigger"); // since we didnt explicitly called releaseTrigger()
             b &= assertTrue(bullets.empty(), "created bullets empty");
         }
@@ -948,9 +1004,13 @@ private:
 
             b &= assertTrue(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
 
             b &= assertFalse(wpn.pullTrigger(), "shoot");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 2");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 2");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 2");
             b &= assertTrue(bullets.empty(), "created bullets empty");
             b &= assertEquals(nOriginalMagBulletCount, wpn.getMagBulletCount(), "mag bullet count");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count");
@@ -981,9 +1041,12 @@ private:
 
             b &= assertTrue(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 1");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
 
-            int iWait = 0;
+            unsigned int iWait = 0;
             unsigned int nNumPullTriggerReturnedTrue = 0;
+            unsigned int nNumWpnStateChangesCount = 0;
             bool bChangedToShooting = false;
             do
             {
@@ -1000,12 +1063,18 @@ private:
                     }
                 }
                 wpn.update();
+                if (wpn.getState().isDirty())
+                {
+                    nNumWpnStateChangesCount++;
+                    wpn.updateOldValues();
+                }
                 Sleep(20);
             } while ((wpn.getState() != Weapon::WPN_READY) && (iWait < 150));
 
             b &= assertTrue(bChangedToShooting, "changed to shooting");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state settled down");
             b &= assertEquals(bullets.size(), nNumPullTriggerReturnedTrue, "pullTrigger true count");
+            b &= assertEquals(2u, nNumWpnStateChangesCount, "state changes count"); /* READY -> SHOOTING -> READY */
             b &= assertFalse(bullets.empty(), "created bullets empty");
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count");
@@ -1035,6 +1104,8 @@ private:
             // first shot allowed
             b &= assertTrue(wpn.pullTrigger(), "shoot 1");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 1");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
             b &= assertEquals(1u, bullets.size(), "created bullets size 1");
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 1");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 1");
@@ -1042,6 +1113,8 @@ private:
             // second shot now allowed
             b &= assertFalse(wpn.pullTrigger(), "shoot 2");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 2");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
             b &= assertEquals(1u, bullets.size(), "created bullets size 2");
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 2");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 2");
@@ -1065,6 +1138,7 @@ private:
 
             wpn.SetUnmagBulletCount(100); // make sure we could reload
             wpn.SetMagBulletCount(7);     // full would be 30, just set a lower value to decrease test case time
+            const auto nExpectedShotsToBeFired = wpn.getMagBulletCount();
 
             // so the idea is that we are frequently checking the mag
             // bullets count and we remove the observed values from the set,
@@ -1072,9 +1146,10 @@ private:
             // bullet counts were changing decreasing by 1
             std::set<TPureUInt> expectedMagBulletCounts = {0, 1, 2, 3, 4, 5, 6};
 
-            int iWait = 0;
+            unsigned int iWait = 0;
             unsigned int nNumPullTriggerReturnedTrue = 0;
-            int nNumWpnUpdateChangedMagUnmagBulletCount = 0;
+            unsigned int nNumWpnUpdateChangedMagUnmagBulletCount = 0;
+            unsigned int nNumWpnStateChangesCount = 0;
             // firing cooldown is 300 msecs by the file
             do
             {
@@ -1088,6 +1163,11 @@ private:
                 {
                     nNumWpnUpdateChangedMagUnmagBulletCount++;
                 }
+                if (wpn.getState().isDirty())
+                {
+                    nNumWpnStateChangesCount++;
+                    wpn.updateOldValues();
+                }
                 expectedMagBulletCounts.erase( wpn.getMagBulletCount() );
                 Sleep(20);
             } while ( (wpn.getMagBulletCount() > 0) && (iWait < 150) );
@@ -1096,11 +1176,15 @@ private:
             wpn.update();
 
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
-            b &= assertEquals(7u, bullets.size(), "created bullets size");
+            b &= assertEquals(nExpectedShotsToBeFired, bullets.size(), "created bullets size");
             b &= assertEquals(0u, wpn.getMagBulletCount(), "mag");
             b &= assertEquals(100u, wpn.getUnmagBulletCount(), "unmag");
             b &= assertEquals(bullets.size(), nNumPullTriggerReturnedTrue, "pullTrigger true count");
-            b &= assertEquals(0, nNumWpnUpdateChangedMagUnmagBulletCount, "update true count");
+            b &= assertEquals(0u, nNumWpnUpdateChangedMagUnmagBulletCount, "update true count");
+            b &= assertEquals(
+                nExpectedShotsToBeFired * 2 - 1,
+                nNumWpnStateChangesCount,
+                "state changes count"); /* 1 shot fired generates a (READY -> SHOOTING -> READY) state trans sequence, but the last one is not waited for by the loop above */
             b &= assertTrue(expectedMagBulletCounts.empty(), "exp mag empty");
             b &= assertFalse(wpn.isTriggerReleased(), "trigger"); // since we didnt explicitly called releaseTrigger()
         }
@@ -1139,9 +1223,13 @@ private:
     
             // So, in the first loop below, we just continuously pull the trigger, never release, we expect only
             // 1 shot this way.
+            constexpr auto nExpectedShotsToBeFired_1 = 1u;
+            const auto nOriginalMagCount_1 = wpn.getMagBulletCount();
+            const auto nOriginalUnmagCount = wpn.getUnmagBulletCount();
             int iWait = 0;
             unsigned int nNumPullTriggerReturnedTrue = 0;
-            int nNumWpnUpdateChangedMagUnmagBulletCount = 0; // wpn.update() would change mag/unmag count only during reload
+            unsigned int nNumWpnUpdateChangedMagUnmagBulletCount = 0; // wpn.update() would change mag/unmag count only during reload
+            unsigned int nNumWpnStateChangesCount = 0;
             // firing cooldown is 300 msecs by the file
             do
             {
@@ -1155,6 +1243,11 @@ private:
                 {
                     nNumWpnUpdateChangedMagUnmagBulletCount++;
                 }
+                if (wpn.getState().isDirty())
+                {
+                    nNumWpnStateChangesCount++;
+                    wpn.updateOldValues();
+                }
                 expectedMagBulletCounts.erase(wpn.getMagBulletCount());
                 Sleep(20);
             } while ((wpn.getMagBulletCount() > 0) && (iWait < 150));
@@ -1163,12 +1256,13 @@ private:
             wpn.update();
     
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
-            b &= assertEquals(1u, bullets.size(), "created bullets size");
-            b &= assertEquals(6u, wpn.getMagBulletCount(), "mag");
-            b &= assertEquals(12u, wpn.getUnmagBulletCount(), "unmag");
+            b &= assertEquals(nExpectedShotsToBeFired_1, bullets.size(), "created bullets size");
+            b &= assertEquals(nOriginalMagCount_1 - nExpectedShotsToBeFired_1, wpn.getMagBulletCount(), "mag");
+            b &= assertEquals(nOriginalUnmagCount, wpn.getUnmagBulletCount(), "unmag");
             b &= assertEquals(bullets.size(), nNumPullTriggerReturnedTrue, "pullTrigger true count");
-            b &= assertEquals(0, nNumWpnUpdateChangedMagUnmagBulletCount, "update true count");
-            b &= assertEquals(6u, expectedMagBulletCounts.size(), "exp mag count");
+            b &= assertEquals(0u, nNumWpnUpdateChangedMagUnmagBulletCount, "update true count");
+            b &= assertEquals(nExpectedShotsToBeFired_1 * 2, nNumWpnStateChangesCount, "state changes count 1"); /* READY -> SHOOTING -> READY */
+            b &= assertEquals(nOriginalMagCount_1 - nExpectedShotsToBeFired_1, expectedMagBulletCounts.size(), "exp mag count");
             b &= assertFalse(wpn.isTriggerReleased(), "trigger"); // since we didnt explicitly called releaseTrigger()
     
             // if above stuff failed, there is no use proceeding with this test case
@@ -1179,9 +1273,11 @@ private:
     
             // In next loop below, we continuously pull AND release the trigger, we expect shooting until wpn becomes empty.
             wpn.releaseTrigger();
+            const auto nExpectedShotsToBeFired_2 = wpn.getMagBulletCount();
             iWait = 0;
             nNumPullTriggerReturnedTrue = 0;
             nNumWpnUpdateChangedMagUnmagBulletCount = 0; // wpn.update() would change mag/unmag count only during reload
+            nNumWpnStateChangesCount = 0;
             do
             {
                 iWait++;
@@ -1195,6 +1291,11 @@ private:
                 {
                     nNumWpnUpdateChangedMagUnmagBulletCount++;
                 }
+                if (wpn.getState().isDirty())
+                {
+                    nNumWpnStateChangesCount++;
+                    wpn.updateOldValues();
+                }
                 expectedMagBulletCounts.erase(wpn.getMagBulletCount());
                 Sleep(20);
             } while ((wpn.getMagBulletCount() > 0) && (iWait < 150));
@@ -1203,11 +1304,15 @@ private:
             wpn.update();
     
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 2");
-            b &= assertEquals(7u, bullets.size(), "created bullets size 2");
+            b &= assertEquals(nOriginalMagCount_1, bullets.size(), "created bullets size 2");
             b &= assertEquals(0u, wpn.getMagBulletCount(), "mag 2");
-            b &= assertEquals(12u, wpn.getUnmagBulletCount(), "unmag 2");
-            b &= assertEquals(6u, nNumPullTriggerReturnedTrue, "pullTrigger true count 2");
-            b &= assertEquals(0, nNumWpnUpdateChangedMagUnmagBulletCount, "update true count 2");
+            b &= assertEquals(nOriginalUnmagCount, wpn.getUnmagBulletCount(), "unmag 2");
+            b &= assertEquals(nExpectedShotsToBeFired_2, nNumPullTriggerReturnedTrue, "pullTrigger true count 2");
+            b &= assertEquals(0u, nNumWpnUpdateChangedMagUnmagBulletCount, "update true count 2");
+            b &= assertEquals(
+                nExpectedShotsToBeFired_2 * 2 - 1,
+                nNumWpnStateChangesCount,
+                "state changes count 2"); /* 1 shot fired generates a (READY -> SHOOTING -> READY) state trans sequence, but the last one is not waited for by the loop above */
             b &= assertTrue(expectedMagBulletCounts.empty(), "exp mag empty");
             b &= assertTrue(wpn.isTriggerReleased(), "trigger 2");
         }
@@ -1234,11 +1339,15 @@ private:
 
             b &= assertTrue(wpn.pullTrigger(), "shoot");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 1");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 1");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 1");
 
             b &= assertFalse(wpn.reload(), "reload");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 2");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 2");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 2");
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 2");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 2");
         }

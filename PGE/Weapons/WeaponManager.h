@@ -21,6 +21,7 @@
 #include "../Audio/PgeAudio.h"
 #include "../Config/PGEcfgFile.h"
 #include "../Config/PGEcfgProfiles.h"
+#include "../Config/PgeOldNewValue.h"
 #include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
 #include "../Network/PgePacket.h"
 
@@ -225,7 +226,8 @@ public:
     void SetOwner(const pge_network::PgeNetworkConnectionHandle& owner);  /**< Sets the player associated with this weapon. */
 
     bool update();                     /**< Updates the weapon based on the time elapsed since last call to this function.*/
-    State getState() const;            /**< Returns the current state of the weapon. */
+    const PgeOldNewValue<State>& getState() const;  /**< Returns the current state of the weapon. */
+    void updateOldValues();
     TPureBool reload();                /**< Reloads the weapon i.e. moves some "unmag" bullets into "mag" bullet count. */
     TPureBool pullTrigger();           /**< Pulls the trigger of the weapon, which might result in shooting the weapon. */
     void releaseTrigger();             /**< Releases the trigger of the weapon. */
@@ -321,7 +323,7 @@ private:
     PR00FsUltimateRenderingEngine& m_gfx;
     pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this weapon. Should be used by PGE server instance only. */
     PureObject3D* m_obj;
-    State m_state;                                     /**< State as calculated and updated by PGE server instance. */
+    PgeOldNewValue<State> m_state;                     /**< State as calculated and updated by PGE server instance. */
     FiringMode m_firingMode;                           /**< Current firing mode, something between getVars("firing_mode_def") and getVars("firing_mode_max"). */
     TPureUInt m_nUnmagBulletCount;                     /**< Spare bullets not loaded into weapon. Should be managed by PGE server instance. */
     TPureUInt m_nMagBulletCount;                       /**< Bullets loaded into weapon. Even if weapon is not reloadable. Should be managed by PGE server instance. */

@@ -824,9 +824,16 @@ bool Weapon::update()
  * 
  * @return Current state of the weapon.
  */
-Weapon::State Weapon::getState() const
+const PgeOldNewValue<Weapon::State>& Weapon::getState() const
 {
     return m_state;
+}
+
+void Weapon::updateOldValues()
+{
+    // TODO: should look like as proofps_dd::Player::updateOldValues()
+
+    m_state.commit();
 }
 
 /**
