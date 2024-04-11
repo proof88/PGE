@@ -398,16 +398,24 @@ Considering 8 players, the results are to a single client from the server:
    - **slight increase in packet data rate** due to size of MsgUserUpdateFromServer increased from 40 Bytes to 48 Bytes:
    - **1198 PKT/s @ 60 FPS & 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min** (this is only the 28% of v0.1.2 rate!), with 1422 + 39840 + 16500 + 10080 = **67 842 Byte/s Packet Data Rate** (which is only the 6% of v0.1.2 data rate!).
      - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(), with 160 \* 63 = 10 080 Byte/s Packet Data Rate (size of MsgUserUpdateFromServer is 48 Bytes, PgePacket overhead is 15 Bytes).
- 
+ - **v0.2.3.0:**
+   - **slight increase in both packet rate and packet data rate** due to size of MsgCurrentWpnUpdateFromServer increased from 64 Bytes to 68 Bytes, and serverUpdateWeapons() might also send it out:
+   - **1212 PKT/s @ 60 FPS & 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min** (this is only the 28% of v0.1.2 rate!), with 1494 + 1162 + 39840 + 16500 + 10080 = **69 076 Byte/s Packet Data Rate** (which is only the 6% of v0.1.2 data rate!).
+     - 18 PKT/s @ 60 FPS (unchanged) as per handleUserCmdMoveFromClient(), with 18 \* 83 = 1494 Byte/s Packet Data Rate (size of MsgCurrentWpnUpdateFromServer increased to 68 Bytes, PgePacket overhead is 15 Bytes);
+     - ~14 PKT/s @ 60 FPS as per serverUpdateWeapons(), with 14 \* 83 = 1162 Byte/s Packet Data Rate:  
+       even though in previous versions we always rated it to 0 due to weapon changing, here in this version we are calculating with continuous firing-induced weapon changes,
+       since it is now reflecting weapon state changes to clients and we want to have calculations ready with that in mind (even though shooting and weapon changing cannot happen at the same time).
+   
 Considering 8 players, the results to ALL clients from the server (because above shows results to 1 client from the server):  
 just multiply above results by 7 (server sending to itself avoids GNS level thus we multiply by nClientsCount instead of nPlayersCount):
  - **v0.1.2:** 30 240 PKT/s with 8 104 320 Byte/s Outgoing Packet Data Rate Total;
  - **v0.1.4:** 3 626 PKT/s with 189 574 Byte/s Outgoing Packet Data Rate Total (88% decrease in packet rate and 98% decrease in packet data rate) @ 20 Hz Tickrate  
    (10 626 PKT/s with 548 814 Byte/s Outgoing Packet Data Rate Total that is 65% decrease in packet rate and 93% decrease in packet data rate @ 60 Hz Tickrate);
- - **v0.1.5:** 8 386 PKT/s with 425 614 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
+ - **v0.1.5:** 8 386 PKT/s with 425 614 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min;
  - **v0.1.6.1:** same as with v0.1.5;
- - **v0.2.0.0:** 8 386 PKT/s with 465 934 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
- - **v0.2.2.0:** 8 386 PKT/s with 474 894 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
+ - **v0.2.0.0:** 8 386 PKT/s with 465 934 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min;
+ - **v0.2.2.0:** 8 386 PKT/s with 474 894 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min;
+ - **v0.2.3.0:** 8 484 PKT/s with 483 532 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
 
 \subsubsection detailed_packet_rate Detailed Packet Rate per Function
 
@@ -458,7 +466,7 @@ The detailed explanation of the packet rates of each function is below:
       //    that is 7*2 = 18 PKT/s @ 60 FPS to a single client.
       //
       //    To clarify: even though we said the situation is everyone is shooting, here we will select the weapon change calculation because it generates more
-      //    traffic than continuous shooting. Because when shooting is continuous, this function has makes traffic as described below, and it is LESS than
+      //    traffic than continuous shooting. Because when shooting is continuous, this function makes traffic as described below, and it is LESS than
       //    the weapon changing traffic described above.
       //
       //  - before v0.1.4:
@@ -502,6 +510,18 @@ The detailed explanation of the packet rates of each function is below:
       // Thus this is not considered yet.
       // In v0.2.0.0 Bazooka, the first per-bullet-reloadable weapon has become available, but its bullet reload time is 1000 msecs, thus we can still
       // leave this out of calculations.
+      
+      // From v0.2.3.0, MsgCurrentWpnUpdateFromServer can be also sent out by this function if the current state of the weapon changes.  
+      // Remember, unlike MsgWpnUpdateFromServer, this MsgCurrentWpnUpdateFromServer is sent out to ALL clients. 
+      // This way server reflects any player's state of their current weapon to all clients.  
+      // At this point we have only IDLE, RELOADING and SHOOTING states, no specific state for changing weapon. When weapon is changed, same message type is still sent out by handleUserCmdMoveFromClient().  
+      // If weapon is changed, state can only be IDLE for the period of weapon change duration, thus weapon change and state change induced messages are not sent out overlapped.  
+      // Even though we calculate rate for handleUserCmdMoveFromClient() for weapon change, we are now calculating with shooting-induced weapon state changes for serverUpdateWeapons() just for
+      // seeing how many packets can be generated in this situation.  
+      // We don't need to take RELOADING into account as it is always a time-consuming process, we should calculate with firing: 1 shot will lead to IDLE-SHOOTING-IDLE state changes.  
+      // As currently machine gun is the fastest shooter with 150 msec firing_cooldown, this leads to 6.7 shots/second i.e. 13.4 state changes per second: 
+      // 1*7 * 13.4 = ~ 98 PKT/s @ 60 FPS outgoing total,
+      // that is ~14 PKT/s @ 60 FPS to a single client.
       
       // Note that if a reload_time is less than or close to tickrate, it won't be properly updated as intended. That is also a reason why this function
       // is not in the server tick anymore.
