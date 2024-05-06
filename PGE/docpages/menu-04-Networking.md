@@ -341,12 +341,8 @@ Considering 8 players:
    This is only the 27% of the packet rate of v0.1.3!  
    - Since **variable packet size** was introduced also in this version in PGE, and MsgUserCmdFromClient is 16 Bytes, PgePacket overhead 15 Bytes so total PgePacket size is 31 Bytes, this leads to:  
      31 \* 128 = **3 968 Byte/s Packet Data Rate** on server-side with 8 players, which is only the 3% of v0.1.3!
- - **v0.1.6.1:**
-   - same as v0.1.4, the new features did not affect network traffic.
- - **v0.2.0.0:**
-   - same as v0.1.6.1, the new features did not affect network traffic.
- - **v0.2.2.0:**
-   - same as v0.2.0.0, the new features did not affect network traffic.
+ - **v0.1.6.1, v0.2.0, v0.2.1, v0.2.2, v0.2.3:**
+   - same as v0.1.4, the new features did not affect network traffic in client -> server direction.
 
 \subsubsection client_packet_rate Client Packet Rate and Packet Data Rate
 
@@ -399,13 +395,15 @@ Considering 8 players, the results are to a single client from the server:
    - **1198 PKT/s @ 60 FPS & 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min** (this is only the 28% of v0.1.2 rate!), with 1422 + 39840 + 16500 + 10080 = **67 842 Byte/s Packet Data Rate** (which is only the 6% of v0.1.2 data rate!).
      - 160 PKT/s @ 20 Hz as per serverSendUserUpdates(), with 160 \* 63 = 10 080 Byte/s Packet Data Rate (size of MsgUserUpdateFromServer is 48 Bytes, PgePacket overhead is 15 Bytes).
  - **v0.2.3.0:**
-   - **slight increase in both packet rate and packet data rate** due to size of MsgCurrentWpnUpdateFromServer increased from 64 Bytes to 68 Bytes, and serverUpdateWeapons() might also send it out:
-   - **1212 PKT/s @ 60 FPS & 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min** (this is only the 28% of v0.1.2 rate!), with 1494 + 1162 + 39840 + 16500 + 10080 = **69 076 Byte/s Packet Data Rate** (which is only the 6% of v0.1.2 data rate!).
+   - **slight increase in both packet rate and packet data rate** due to size of MsgCurrentWpnUpdateFromServer increased from 64 Bytes to 68 Bytes, and serverUpdateWeapons() might also send it out;  
+     also size of MsgUserUpdateFromServer increased from 48 Bytes to 52 Bytes (added invulnerability flag):
+   - **1212 PKT/s @ 60 FPS & 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min** (this is only the 28% of v0.1.2 rate!), with 1494 + 1162 + 39840 + 16500 + 10720 = **69 716 Byte/s Packet Data Rate** (which is only the 6% of v0.1.2 data rate!).
      - 18 PKT/s @ 60 FPS (unchanged) as per handleUserCmdMoveFromClient(), with 18 \* 83 = 1494 Byte/s Packet Data Rate (size of MsgCurrentWpnUpdateFromServer increased to 68 Bytes, PgePacket overhead is 15 Bytes);
-     - ~14 PKT/s @ 60 FPS as per serverUpdateWeapons(), with 14 \* 83 = 1162 Byte/s Packet Data Rate:  
+     - ~14 PKT/s @ 60 FPS (extra in this version) as per serverUpdateWeapons(), with 14 \* 83 = 1162 Byte/s Packet Data Rate:  
        even though in previous versions we always rated it to 0 due to weapon changing, here in this version we are calculating with continuous firing-induced weapon changes,
        since it is now reflecting weapon state changes to clients and we want to have calculations ready with that in mind (even though shooting and weapon changing cannot happen at the same time).
-   
+     - 160 PKT/s @ 20 Hz (unchanged) as per serverSendUserUpdates(), with 160 \* 67 = 10 720 Byte/s Packet Data Rate (size of MsgUserUpdateFromServer is 52 Bytes, PgePacket overhead is 15 Bytes).
+
 Considering 8 players, the results to ALL clients from the server (because above shows results to 1 client from the server):  
 just multiply above results by 7 (server sending to itself avoids GNS level thus we multiply by nClientsCount instead of nPlayersCount):
  - **v0.1.2:** 30 240 PKT/s with 8 104 320 Byte/s Outgoing Packet Data Rate Total;
@@ -415,7 +413,7 @@ just multiply above results by 7 (server sending to itself avoids GNS level thus
  - **v0.1.6.1:** same as with v0.1.5;
  - **v0.2.0.0:** 8 386 PKT/s with 465 934 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min;
  - **v0.2.2.0:** 8 386 PKT/s with 474 894 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min;
- - **v0.2.3.0:** 8 484 PKT/s with 483 532 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
+ - **v0.2.3.0:** 8 484 PKT/s with 488 012 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 94% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
 
 \subsubsection detailed_packet_rate Detailed Packet Rate per Function
 
