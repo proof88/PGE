@@ -403,24 +403,11 @@ PgeClientImpl& PgeClientImpl::operator=(const PgeClientImpl&)
 /**
     Creates and gets the singleton instance.
 */
-pge_network::PgeClient& pge_network::PgeClient::createAndGet(PGEcfgProfiles& cfgProfiles)
+pge_network::PgeIClient& pge_network::PgeClient::createAndGet(PGEcfgProfiles& cfgProfiles)
 {
     static PgeClientImpl clientInst(cfgProfiles);
     return clientInst;
 } // createAndGet()
-
-
-/**
-    Returns the logger module name of this class.
-    Intentionally not virtual, so derived class should hide this instead of overriding.
-    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
-
-    @return The logger module name of this class.
-*/
-const char* pge_network::PgeClient::getLoggerModuleName()
-{
-    return "PgeClient";
-} // getLoggerModuleName()
 
 
 /**

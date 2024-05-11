@@ -357,6 +357,15 @@
     <ClInclude Include="..\Audio\soloud-RELEASE_20200207\include\soloud_wav.h">
       <Filter>Header Files\PGE\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="..\Network\PgeIClient.h">
+      <Filter>Header Files\PGE\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\PgeINetwork.h">
+      <Filter>Header Files\PGE\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\PgeIServer.h">
+      <Filter>Header Files\PGE\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UnitTests.cpp">

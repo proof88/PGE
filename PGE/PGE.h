@@ -91,7 +91,7 @@ public:
     pge_audio::PgeAudio& getAudio();                 /**< Returns audio lib interface. */
     PGEcfgProfiles& getConfigProfiles() const;       /**< Returns the config handler object. */
     PGEInputHandler& getInput() const;               /**< Returns the input handler object. */
-    pge_network::PgeNetwork& getNetwork() const;     /**< Returns the network functionality interface. */
+    pge_network::PgeINetwork& getNetwork() const;     /**< Returns the network functionality interface. */
     PR00FsUltimateRenderingEngine& getPure() const;  /**< Returns the graphics engine. */
     PGEWorld& getWorld() const;                      /**< Returns the world object. */
     

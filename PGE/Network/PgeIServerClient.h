@@ -61,7 +61,13 @@ namespace pge_network
 
         virtual void Update() = 0;
 
+        /**
+        * Moves incoming packets from the underlying network layer to PGE network layer as PgePackets.
+        *
+        * @return True on success, false on error.
+        */
         virtual bool pollIncomingMessages() = 0;
+
         virtual void pollConnectionStateChanges() = 0;
 
         virtual std::size_t getPacketQueueSize() const = 0;

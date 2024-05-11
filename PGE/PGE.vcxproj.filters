@@ -142,6 +142,9 @@
     <Filter Include="Header Files\PURE\include\external\GUI">
       <UniqueIdentifier>{12e00c0e-3afe-48c2-951c-08468c132765}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Network\Stubs">
+      <UniqueIdentifier>{fdc7cb3f-053e-4544-9e72-38b09aa4145d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGE.h">
@@ -614,6 +617,24 @@
     </ClInclude>
     <ClInclude Include="Audio\PgeAudio.h">
       <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\PgeINetwork.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\PgeIServer.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\PgeIClient.h">
+      <Filter>Header Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\Stubs\PgeNetworkStub.h">
+      <Filter>Header Files\Network\Stubs</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\Stubs\PgeClientStub.h">
+      <Filter>Header Files\Network\Stubs</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\Stubs\PgeServerStub.h">
+      <Filter>Header Files\Network\Stubs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

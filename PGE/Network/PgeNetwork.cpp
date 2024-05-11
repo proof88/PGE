@@ -9,7 +9,12 @@
 
 #include "PureBaseIncludes.h"  // PCH
 
+#include <cstdint>
+#include <deque>
+
+#include "PgeClient.h"
 #include "PgeNetwork.h"
+#include "PgeServer.h"
 #include "PgeGnsWrapper.h"
 
 /*
@@ -33,8 +38,8 @@ public:
     void Update() override;
 
     pge_network::PgeIServerClient* getServerClientInstance() override;
-    pge_network::PgeClient& getClient() override;
-    pge_network::PgeServer& getServer() override;
+    pge_network::PgeIClient& getClient() override;
+    pge_network::PgeIServer& getServer() override;
 
     void WriteList() const override;
 
@@ -44,8 +49,8 @@ private:
 
     PGEcfgProfiles& m_cfgProfiles;
     pge_network::PgeIServerClient* m_pServerClient;
-    pge_network::PgeClient& m_pClient;
-    pge_network::PgeServer& m_pServer;
+    pge_network::PgeIClient& m_pClient;
+    pge_network::PgeIServer& m_pServer;
     bool m_bServer;
 
     explicit PgeNetworkImpl(PGEcfgProfiles& cfgProfiles);   /**< NULLs members only. */
@@ -214,7 +219,7 @@ pge_network::PgeIServerClient* PgeNetworkImpl::getServerClientInstance()
 * 
 *   @return The client instance which might or might not be initialized.
 */
-pge_network::PgeClient& PgeNetworkImpl::getClient()
+pge_network::PgeIClient& PgeNetworkImpl::getClient()
 {
     return m_pClient;
 }
@@ -228,7 +233,7 @@ pge_network::PgeClient& PgeNetworkImpl::getClient()
 *
 *   @return The server instance which might or might not be initialized.
 */
-pge_network::PgeServer& PgeNetworkImpl::getServer()
+pge_network::PgeIServer& PgeNetworkImpl::getServer()
 {
     return m_pServer;
 }
@@ -301,24 +306,11 @@ PgeNetworkImpl& PgeNetworkImpl::operator=(const PgeNetworkImpl&)
 /**
     Creates and gets the singleton instance.
 */
-pge_network::PgeNetwork& pge_network::PgeNetwork::createAndGet(PGEcfgProfiles& cfgProfiles)
+pge_network::PgeINetwork& pge_network::PgeNetwork::createAndGet(PGEcfgProfiles& cfgProfiles)
 {
     static PgeNetworkImpl inst(cfgProfiles);
     return inst;
 } // createAndGet()
-
-
-/**
-    Returns the logger module name of this class.
-    Intentionally not virtual, so derived class should hide this instead of overriding.
-    Not even private, so user can also access this from outside, for any reason like controlling log filtering per logger module name.
-
-    @return The logger module name of this class.
-*/
-const char* pge_network::PgeNetwork::getLoggerModuleName()
-{
-    return "PgeNetwork";
-} // getLoggerModuleName()
 
 
 /**

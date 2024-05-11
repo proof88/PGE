@@ -411,11 +411,17 @@
     <ClInclude Include="Network\PgeClient.h" />
     <ClInclude Include="Network\PgeGnsClient.h" />
     <ClInclude Include="Network\PgeGnsServer.h" />
+    <ClInclude Include="Network\PgeIClient.h" />
+    <ClInclude Include="Network\PgeINetwork.h" />
+    <ClInclude Include="Network\PgeIServer.h" />
     <ClInclude Include="Network\PgeIServerClient.h" />
     <ClInclude Include="Network\PgeNetwork.h" />
     <ClInclude Include="Network\PgePacket.h" />
     <ClInclude Include="Network\PgeServer.h" />
     <ClInclude Include="Network\PgeGnsWrapper.h" />
+    <ClInclude Include="Network\Stubs\PgeClientStub.h" />
+    <ClInclude Include="Network\Stubs\PgeNetworkStub.h" />
+    <ClInclude Include="Network\Stubs\PgeServerStub.h" />
     <ClInclude Include="PGE.h" />
     <ClInclude Include="PGEallHeaders.h" />
     <ClInclude Include="PGEconsts.h" />

@@ -348,6 +348,9 @@
     <ClInclude Include="..\Config\PGEcfgVariable.h" />
     <ClInclude Include="..\Config\PgeOldNewValue.h" />
     <ClInclude Include="..\Network\PgeClient.h" />
+    <ClInclude Include="..\Network\PgeIClient.h" />
+    <ClInclude Include="..\Network\PgeINetwork.h" />
+    <ClInclude Include="..\Network\PgeIServer.h" />
     <ClInclude Include="..\Network\PgeIServerClient.h" />
     <ClInclude Include="..\Network\PgeNetwork.h" />
     <ClInclude Include="..\Network\PgePacket.h" />

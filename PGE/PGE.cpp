@@ -62,7 +62,7 @@ public:
     pge_audio::PgeAudio& getAudio();
     PGEcfgProfiles& getConfigProfiles();
     PGEInputHandler& getInput() const;         
-    pge_network::PgeNetwork& getNetwork() const;
+    pge_network::PgeINetwork& getNetwork() const;
     PR00FsUltimateRenderingEngine& getPure() const;
     PGEWorld& getWorld() const;
     
@@ -96,7 +96,7 @@ private:
     pge_audio::PgeAudio m_audio;
     PR00FsUltimateRenderingEngine& m_gfx;
     PGESysGFX m_sysGFX;
-    pge_network::PgeNetwork& m_network;
+    pge_network::PgeINetwork& m_network;
     PGEWorld& m_world;
 
     std::list<Bullet> m_bullets;
@@ -228,7 +228,7 @@ PR00FsUltimateRenderingEngine& PGE::PGEimpl::getPure() const
     return m_gfx;
 }
 
-pge_network::PgeNetwork& PGE::PGEimpl::getNetwork() const
+pge_network::PgeINetwork& PGE::PGEimpl::getNetwork() const
 {
     return m_network;
 }
@@ -675,7 +675,7 @@ PGEInputHandler& PGE::getInput() const
 
     @return The network functionality interface.
 */
-pge_network::PgeNetwork& PGE::getNetwork() const
+pge_network::PgeINetwork& PGE::getNetwork() const
 {
     return p->getNetwork();
 }
