@@ -240,15 +240,19 @@ PGE::runGame() {
       while (getNetwork().getServerClientInstance()->getPacketQueueSize() > 0) {
         onPacketReceived( getNetwork().getServerClientInstance()->popFrontPacket() ) {       // invoke application code for all received pkt in m_queuePackets
           proofps_dd::PRooFPSddPGE::onPacketReceived() {
-            handleUserConnected();               // v0.1.4: might generate a few packets but that is only when a new user has just connected, nothing to do here.
-            handleUserDisconnected();            // no networking
-            handleUserSetupFromServer();         // v0.1.5: might generate a few packets but that is only when a new user is being set up, nothing to do here.
-            handleUserCmdMoveFromClient();       // v0.1.4: 18 PKT/s @ 60 FPS server -> client
-            handleUserUpdateFromServer();        // no networking
-            handleBulletUpdateFromServer();      // no networking
-            handleMapItemUpdateFromServer();     // no networking
-            handleWpnUpdateFromServer();         // no networking
-            handleWpnUpdateCurrentFromServer();  // no networking
+            handleUserConnected();                         // v0.1.4: might generate a few packets but that is only when a new user has just connected, nothing to do here.
+            handleUserDisconnected();                      // no networking
+            m_config.clientHandleServerInfoFromServer();   // no networking
+            handleMapChangeFromServer();                   // no networking (just low-level network disconnect)
+            handleUserSetupFromServer();                   // v0.1.5: might generate a few packets but that is only when a new user is being set up, nothing to do here.
+            handleUserNameChange();                        // v0.2.0: neglectable amount of networking to handle user name change
+            serverHandleUserCmdMoveFromClient();           // v0.1.4: 18 PKT/s @ 60 FPS server -> client
+            handleUserUpdateFromServer();                  // no networking
+            handleBulletUpdateFromServer();                // no networking
+            m_maps.handleMapItemUpdateFromServer();        // no networking
+            handleWpnUpdateFromServer();                   // no networking
+            handleWpnUpdateCurrentFromServer();            // no networking
+            handleDeathNotificationFromServer();           // no networking
           }
         }
       }
@@ -256,55 +260,56 @@ PGE::runGame() {
   
       onGameRunning() {
         proofps_dd::PRooFPSddPGE::onGameRunning() {
-          // this block contains updates in v0.1.3, v0.1.4, v0.1.5 and v0.2.2.
-          
-          serverUpdateWeapons();                   // v0.1.4: 0 PKT/s @ 60 FPS server -> client (see later in handleUserCmdMoveFromClient() why this is 0)
-          
-          if (getNetwork().isServer()) {
-          @TICKRATE (ideally 60 Hz)                // v0.1.3: this was @FRAMERATE in v0.1.2, so all results of v0.1.3 in this block are only 1/3 of v0.1.2.
-                                                   // v0.1.5: this is ideally 60 because cl_updaterate controls server->client updates, physics_rate_min allows more precise physics 
-              mainLoopConnectedServerOnlyOneTick() {
-              @PHYSICS_RATE_MIN (ideally 60 Hz)      // v0.1.5: physics_rate_min introduced, physics_rate_min >= tickrate
-                  serverGravity();                   // v0.2.2: might generate packet about someone dying of falling, but just a few, and in our current scenario nobody dies, so nothing to do here.
-                  serverPlayerCollisionWithWalls();  // no networking
-                  serverUpdateBullets();             // v0.1.4: 160 PKT/s @ 20 Hz tickrate server -> client
-                                                     // v0.1.5: 480 PKT/s @ 60 Hz physics_rate_min server -> client
-                                                     // v0.2.2: same as v0.1.5 with addition of some optional extra packet when someone is killed, which is negligible amount of packets, and
-                                                     //         in our current scenario nobody dies, so essentially no change to v0.1.5.
-                  serverUpdateExplosions();          // v0.2.2: some optional extra packet when someone is killed, which is negligible amount of packets, and in our current scenario nobody dies, so
-                                                     //         essentially nothing to do here.
-                  serverPickupAndRespawnItems();     // v0.1.4: 180 PKT/s @ 20 Hz tickrate server -> client
-                                                     // v0.1.5: 540 PKT/s @ 60 Hz physics_rate_min server -> client
-                  updatePlayersOldValues();          // no networking
-              @END PHYSICS_RATE_MIN
-              
-              serverUpdateRespawnTimers();           // no networking
-              
-              @CL_UPDATERATE (ideally 20 Hz)
-                  serverSendUserUpdates();           // v0.1.4, v0.1.5: 160 PKT/s @ 20 Hz server -> client
-              @END CL_UPDATERATE
-              
-              }  // end mainLoopConnectedServerOnlyOneTick()
-          @END TICKRATE
-          }  // end isServer()
-          else {
-          @TICKRATE (ideally 20 Hz)                
-              mainLoopConnectedClientOnlyOneTick() { // v0.1.4: client-side tick got introduced (same value as for server-side)
-              @PHYSICS_RATE_MIN (ideally 60 Hz)
-                  clientUpdateBullets();             // v0.1.4: no networking because client-side bullet travel simulation got introduced (without collision-detection)
-                  clientUpdateExplosions();          // no networking
-              @END PHYSICS_RATE_MIN
-              }
-          @END TICKRATE
-          }  // end client
+          @FRAMERATE 
+            serverUpdateWeapons();                   // v0.1.4: 0 PKT/s @ 60 FPS server -> client (see later in handleUserCmdMoveFromClient() why this is 0)
+            
+            @TICKRATE (ideally 60 Hz)                // v0.1.3: this was @FRAMERATE in v0.1.2, so all results of v0.1.3 in this block are only 1/3 of v0.1.2.
+                                                     // v0.1.5: this is ideally 60 because cl_updaterate controls server->client updates, physics_rate_min allows more precise physics
+                if (getNetwork().isServer()) {                  
+                    mainLoopConnectedServerOnlyOneTick() {
+                        m_gameMode->serverCheckAndUpdateWinningConditions(); // v0.2.4: neglectable server -> client traffic at the moment of game winning conditions becoming true
+                        
+                        @PHYSICS_RATE_MIN (ideally 60 Hz)      // v0.1.5: physics_rate_min introduced, physics_rate_min >= tickrate
+                            serverGravity();                       // v0.2.2: might generate packet about someone dying of falling, but just a few, and in our current scenario nobody dies, so nothing to do here.
+                            serverPlayerCollisionWithWalls();      // no networking
+                            serverUpdateBullets();                 // v0.1.4: 160 PKT/s @ 20 Hz tickrate server -> client
+                                                                   // v0.1.5: 480 PKT/s @ 60 Hz physics_rate_min server -> client
+                                                                   // v0.2.2: same as v0.1.5 with addition of some optional extra packet when someone is killed, which is negligible amount of packets, and
+                                                                   //         in our current scenario nobody dies, so essentially no change to v0.1.5.
+                            serverUpdateExplosions();              // v0.2.2: some optional extra packet when someone is killed, which is negligible amount of packets, and in our current scenario nobody dies, so
+                                                                   //         essentially nothing to do here.
+                            serverPickupAndRespawnItems();         // v0.1.4: 180 PKT/s @ 20 Hz tickrate server -> client
+                                                                   // v0.1.5: 540 PKT/s @ 60 Hz physics_rate_min server -> client
+                            updatePlayersOldValues();              // no networking
+                        @END PHYSICS_RATE_MIN
+                        
+                        serverUpdateRespawnTimers();           // no networking
+                        
+                        @CL_UPDATERATE (ideally 20 Hz)
+                            serverSendUserUpdates();           // v0.1.4, v0.1.5: 160 PKT/s @ 20 Hz server -> client
+                        @END CL_UPDATERATE
+                    
+                    }  // end mainLoopConnectedServerOnlyOneTick()
+                }  // end isServer()
+                else {             
+                    mainLoopConnectedClientOnlyOneTick() { // v0.1.4: client-side tick got introduced (same value as for server-side)
+                        @PHYSICS_RATE_MIN (ideally 60 Hz)
+                            clientUpdateBullets();             // v0.1.4: no networking because client-side bullet travel simulation got introduced (without collision-detection)
+                            clientUpdateExplosions();          // no networking
+                        @END PHYSICS_RATE_MIN
+                    }
+                }  // end client
+            @END TICKRATE
           
           @FRAMERATE again
           mainLoopConnectedShared() {
-              handleInputWhenConnectedAndSendUserCmdMove();     // v0.1.4: 80 PKT/s with 7 clients (8 players) @ 60 FPS client -> server
-              CameraMovement();                                 // no networking
-              UpdateGameMode();                                 // no networking
-              
-          }  // end mainLoopShared
+              clientHandleInputWhenConnectedAndSendUserCmdMoveToServer();    // v0.1.4: 80 PKT/s with 7 clients (8 players) @ 60 FPS client -> server
+              cameraUpdatePosAndAngle();                                     // no networking
+              updatePlayers();                                               // no networking, invulnerability state is changed by server but that generates only neglectable traffic indirectly
+              updateVisualsForGameMode();                                    // server -> client traffic only when current game is restarted, neglectable amount
+              m_maps.update(m_fps);                                          // no networking
+              m_maps.updateVisibilitiesForRenderer();                        // no networking
+          }  // end mainLoopConnectedShared
         }  // end proofps_dd::PRooFPSddPGE::onGameRunning()
       }  // end onGameRunning()
     
