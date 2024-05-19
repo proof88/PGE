@@ -1382,6 +1382,7 @@ private:
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count");
             b &= assertFalse(wpn.isAvailable(), "available");
             b &= assertTrue(wpn.isTriggerReleased(), "trigger");
+            b &= assertEquals(Weapon::State::WPN_READY, wpn.getState(), "state");
 
         }
         catch (const std::exception& e)

@@ -987,12 +987,13 @@ void Weapon::Reset()
     }
 
     m_firingMode = itDefFiringModePos->first;
-
+    m_state = Weapon::State::WPN_READY;
+    m_bAvailable = false;
+    m_bTriggerReleased = true;
     // it doesnt matter if weapon is reloadable or not, the loaded bullet count is in nMagBulletCount
     m_nMagBulletCount = getVars()["bullets_default"].getAsInt();
     m_nUnmagBulletCount = 0;
-    m_bAvailable = false;
-    m_bTriggerReleased = true;
+    m_nBulletsToReload = 0;
 }
 
 /**
