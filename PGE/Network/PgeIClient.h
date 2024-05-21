@@ -47,10 +47,17 @@ namespace pge_network
         * Opens a connection to a server instance.
         * If the function is successful, any call to the derived isInitialized() and isConnected() is expected to return true.
         * Note: you can disconnect from server by invoking the derived disconnect() or shutdown() which are implemented already in hidden class.
+        * 
+        * @param sServerAddress IPv4 or IPv6 address of PgeServer we want to connect to.
+        * @param sAppVersion    Client application version. If server expects a specific client version, we should fill it here.
         *
         * @return True on success, false otherwise or when it is already connected to server.
+        *         Note that mismatch between the specified client application version and server application version will be found out later and
+        *         it does NOT have effect on the return value: the server will disconnect the mismatching client a bit later.
         */
-        virtual bool connectToServer(const std::string& sServerAddress) = 0; /* temporal */
+        virtual bool connectToServer(
+            const std::string& sServerAddress,
+            const std::string& sAppVersion = "") = 0; /* temporal */
 
         /** Returns client's handle to the connection opened towards the server. */
         virtual const pge_network::PgeNetworkConnectionHandle& getConnectionHandle() const = 0;

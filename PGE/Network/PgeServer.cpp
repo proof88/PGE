@@ -67,7 +67,7 @@ public:
 
     /* implement stuff from PgeServer start */
 
-    bool startListening() override;
+    bool startListening(const std::string& sAppVersion = "") override;
     void sendToAllClientsExcept(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& exceptConnHandle = 0) override;
     void sendToAll(const pge_network::PgePacket& pkt) override;
 
@@ -313,9 +313,9 @@ void PgeServerImpl::WriteList() const
     getConsole().OOOLn("PgeServer::WriteList() end");
 } // WriteList()
 
-bool PgeServerImpl::startListening()
+bool PgeServerImpl::startListening(const std::string& sAppVersion)
 {
-    return m_gnsServer.startListening();
+    return m_gnsServer.startListening(sAppVersion);
 }
 
 void PgeServerImpl::sendToAllClientsExcept(const pge_network::PgePacket& pkt, const pge_network::PgeNetworkConnectionHandle& exceptConnHandle)
@@ -395,6 +395,7 @@ PgeServerImpl::PgeServerImpl(PGEcfgProfiles& cfgProfiles) :
     m_cfgProfiles(cfgProfiles),
     m_gnsServer(PgeGnsServer::createAndGet(cfgProfiles))
 {
+    m_gnsServer.getAllowListedPgeMessages().insert(pge_network::MsgClientAppVersionFromClient::id);
     m_gnsServer.getAllowListedPgeMessages().insert(pge_network::MsgApp::id);
 } // PgeServerImpl(...)
 

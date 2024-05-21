@@ -231,8 +231,17 @@ bool PgeGnsWrapper::pollIncomingMessages()
                 assert(false);
                 continue;
             }
+
+            if (pgeMessageIsHandledAtGnsLevel(pktAsConst))
+            {
+                CConsole::getConsoleInstance("PgeGnsWrapper").OLn("%s: PGE message %u handled at GNS level without reaching PGE level, from connection %u!",
+                    __func__, pge_network::PgePacket::getPacketId(pktAsConst), pge_network::PgePacket::getServerSideConnectionHandle(pktAsConst));
+                continue;
+            }
         }
 
+        // TODO: m_nRxByteCount should be incremented earlier since there are cases in the loop where we continue to next pkt, or we should
+        // update the definition of m_nRxByteCount to counting only those pkts which are actually pushed into PGE queue!
         m_nRxByteCount += nActualPktSize;
         // TODO: would be nice if even the size of pushed packets would be the actual to copy less memory
         // or at least use emplace_back()

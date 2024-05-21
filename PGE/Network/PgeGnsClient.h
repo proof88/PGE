@@ -60,10 +60,15 @@ public:
     * First you need to initialize GameNetworkingSockets subsystem by calling PgeGnsWrapper::init(), and only after that
     * you can try establishing connection to a server instance.
     * After a successful call, isConnected() is expected to return true.
+    * 
+    * @param sServerAddress IPv4 or IPv6 address of GameNetworkingSockets server we want to connect to.
+    * @param sAppVersion    Client application version. If server expects a specific client version, we should fill it here.
     *
     * @return True on success, false on failure.
     */
-    bool connectToServer(const std::string& sServerAddress); /* temporal, now I dont have better idea in this time */
+    bool connectToServer(
+        const std::string& sServerAddress,
+        const std::string& sAppVersion = ""); /* temporal, now I dont have better idea at this time */
 
     /**
     * Disconnects the client from the server.
@@ -102,6 +107,7 @@ public:
     std::string getDetailedConnectionStatus() const;
 
 protected:
+    virtual bool pgeMessageIsHandledAtGnsLevel(const pge_network::PgePacket& pktReceivedFromServer);
     virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const override;
     virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const override;
     virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const override;

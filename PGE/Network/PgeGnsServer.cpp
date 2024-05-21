@@ -51,7 +51,7 @@ bool PgeGnsServer::destroy()
     return stopListening() && PgeGnsWrapper::destroy();
 } // destroy()
 
-bool PgeGnsServer::startListening()
+bool PgeGnsServer::startListening(const std::string& sAppVersion)
 {
     if (isListening())
     {
@@ -63,6 +63,16 @@ bool PgeGnsServer::startListening()
     {
         CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s() ERROR: not initialized!", __func__);
         return true;
+    }
+
+    m_sAppVersion = sAppVersion;
+    if (m_sAppVersion.empty())
+    {
+        CConsole::getConsoleInstance("PgeGnsServer").OLn("%s() no server app version is specified!", __func__);
+    }
+    else
+    {
+        CConsole::getConsoleInstance("PgeGnsServer").OLn("%s() server app version is specified as: %s!", __func__, m_sAppVersion.c_str());
     }
 
     SteamNetworkingIPAddr serverLocalAddr;
@@ -96,15 +106,15 @@ bool PgeGnsServer::startListening()
 
     // here we create a client connect pkt that will be injected to our queue so app level will process it and create
     // player object or whatever they want for the server itself, as it was a real client
-    pge_network::PgePacket pkt;
+    pge_network::PgePacket pktUserConnected;
     pge_network::PgePacket::initPktPgeMsgUserConnected(
-        pkt,
+        pktUserConnected,
         static_cast<pge_network::PgeNetworkConnectionHandle>(k_HSteamNetConnection_Invalid),
-        true,
+        true /* bCurrentClient */,
         "" /* we dont know our own IP address, later the 1st connecting client will tell us anyway */);
 
     // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
-    m_queuePackets.push_back(pkt);
+    m_queuePackets.push_back(pktUserConnected);
 
     // TODOOO: network layer needs to set user name! SetClientNick(k_HSteamNetConnection_Invalid, PgePacket::getMessageAsUserConnected(pkt).sUserName);
 
@@ -355,6 +365,54 @@ std::string PgeGnsServer::getDetailedConnectionStatus(const HSteamNetConnection&
 // ############################## PROTECTED ##############################
 
 
+bool PgeGnsServer::pgeMessageIsHandledAtGnsLevel(const pge_network::PgePacket& pktReceivedFromClient)
+{
+    if (pge_network::PgePacket::getPacketId(pktReceivedFromClient) == pge_network::MsgClientAppVersionFromClient::id)
+    {
+        // this should be the very 1st PgePacket we receive from a just connected client
+        const auto nClientConnHandle = pge_network::PgePacket::getServerSideConnectionHandle(pktReceivedFromClient);
+        const auto itClient = m_mapClients.find(nClientConnHandle);
+        if (itClient == m_mapClients.end())
+        {
+            CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s: SERVER Cannot happen: a client (%u) sent MsgClientAppVersionFromClient but not present in clients map!",
+                __func__, nClientConnHandle);
+            assert(false);
+        }
+        else
+        {
+            const auto& msgClientAppVersion = pge_network::PgePacket::getMessageAsClientAppVersionFromClient(pktReceivedFromClient);
+            if (m_sAppVersion == msgClientAppVersion.m_szAppVersion)
+            {
+                CConsole::getConsoleInstance("PgeGnsServer").OLn("%s: SERVER client (%u) app version matching (%s), admitting client!",
+                    __func__, nClientConnHandle, msgClientAppVersion.m_szAppVersion);
+
+                // here we create a client connect pkt that will be injected to our queue so app level will process it and create
+                // player object or whatever they want for the client
+                pge_network::PgePacket pktUserConnected;
+                pge_network::PgePacket::initPktPgeMsgUserConnected(
+                    pktUserConnected,
+                    itClient->first,
+                    false /* bCurrentClient */,
+                    itClient->second.m_szAddr);
+            
+                // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
+                m_queuePackets.push_back(pktUserConnected);
+            }
+            else
+            {
+                CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s: SERVER client (%u) app version mismatching (%s), disconnecting client!",
+                    __func__, nClientConnHandle, msgClientAppVersion.m_szAppVersion);
+
+                m_mapClients.erase(itClient);
+                const std::string sDebugText = "Server app version mismatching with client app version: " + m_sAppVersion + " != " + std::string(msgClientAppVersion.m_szAppVersion);
+                m_pInterface->CloseConnection(nClientConnHandle, 0, sDebugText.c_str(), false);
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
 int PgeGnsServer::receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const
 {
     // ReceiveMessagesOnPollGroup() basically copies the pointers to messages from GNS's internal linked list,
@@ -420,13 +478,19 @@ void PgeGnsServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
             const auto itClient = m_mapClients.find(pInfo->m_hConn);
             if (itClient == m_mapClients.end())
             {
-                assert(false);
-                sprintf(szTemp, "UNKNOWN CLIENT %s, reason %d: %s", pszDebugLogAction, pInfo->m_info.m_eEndReason, pInfo->m_info.m_szEndDebug);
+                sprintf(szTemp, "Not stored (maybe already deleted) client %s, reason %d: %s", pszDebugLogAction, pInfo->m_info.m_eEndReason, pInfo->m_info.m_szEndDebug);
             }
             else
             {
                 sprintf(szTemp, "%s %s, reason %d: %s", itClient->second.m_sCustomName.c_str(), pszDebugLogAction, pInfo->m_info.m_eEndReason, pInfo->m_info.m_szEndDebug);
                 m_mapClients.erase(itClient);  // dont try to send anything to the disconnected client :)
+
+                // App level should be notified only if we found it in m_mapClients, otherwise probably this client was never known by app level
+                pge_network::PgePacket pkt;
+                pge_network::PgePacket::initPktPgeMsgUserDisconnected(pkt, pInfo->m_hConn);
+                // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
+                m_queuePackets.push_back(pkt);
+                sendToAllClientsExcept(pkt);
             }
             CConsole::getConsoleInstance("PgeGnsServer").OLn("%s: SERVER Connection %s (handle %u) %s",
                 __func__,
@@ -435,12 +499,6 @@ void PgeGnsServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
                 szTemp
             );
             logDetailedConnectionStatus(pInfo->m_hConn);
-
-            pge_network::PgePacket pkt;
-            pge_network::PgePacket::initPktPgeMsgUserDisconnected(pkt, pInfo->m_hConn);
-            // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
-            m_queuePackets.push_back(pkt);
-            sendToAllClientsExcept(pkt);
 
             // Clean up the connection.  This is important!
             // The connection is "closed" in the network sense, but
@@ -482,7 +540,7 @@ void PgeGnsServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
         // Assign the poll group
         if (!m_pInterface->SetConnectionPollGroup(pInfo->m_hConn, m_hPollGroup))
         {
-            m_pInterface->CloseConnection(pInfo->m_hConn, 0, nullptr, false);
+            m_pInterface->CloseConnection(pInfo->m_hConn, 0, "Server failed SetConnectionPollGroup()", false);
             CConsole::getConsoleInstance("PgeGnsServer").EOLn("%s: SERVER Failed to set poll group!", __func__);
             break;
         }
@@ -492,15 +550,9 @@ void PgeGnsServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
         pInfo->m_info.m_addrRemote.ToString(m_mapClients[pInfo->m_hConn].m_szAddr, sizeof(m_mapClients[pInfo->m_hConn].m_szAddr), true);
         CConsole::getConsoleInstance("PgeGnsServer").OLn("%s: SERVER A client is connecting from %s ...", __func__, m_mapClients[pInfo->m_hConn].m_szAddr);
 
-        pge_network::PgePacket pkt;
-        pge_network::PgePacket::initPktPgeMsgUserConnected(
-            pkt,
-            static_cast<pge_network::PgeNetworkConnectionHandle>(pInfo->m_hConn),
-            false,
-            m_mapClients[pInfo->m_hConn].m_szAddr);
-
-        // we push this packet to our pkt queue, this is how we "send" message to ourselves so server game loop can process it
-        m_queuePackets.push_back(pkt);
+        // since v0.2.4, we do NOT inject MsgUserConnected, instead we expect client now to send us a MsgClientAppVersionFromClient that we handle in
+        // pgeMessageIsHandledAtGnsLevel(), and based on version match, we inject MsgUserConnected there!
+        
         break;
     }
 
@@ -518,7 +570,9 @@ void PgeGnsServer::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
         }
         else
         {
-            CConsole::getConsoleInstance("PgeGnsServer").OLn("%s: SERVER Client with connHandle %u has reached state Connected!", __func__, pInfo->m_hConn);
+            CConsole::getConsoleInstance("PgeGnsServer").OLn(
+                "%s: SERVER Client with connHandle %u has reached state Connected, now waiting for MsgClientAppVersionFromClient!",
+                __func__, pInfo->m_hConn);
         }
         break;
     }

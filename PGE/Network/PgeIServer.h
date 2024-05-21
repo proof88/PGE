@@ -42,13 +42,15 @@ namespace pge_network
         }
 
         /**
-        * Starts listening to incoming client connections.
+        * Starts listening to incoming PgeClient connections.
         * If the function is successful, any call to the derived isListening() is expected to return true.
         * Note: you can stop listening by invoking the derived disconnect() or shutdown() which are implemented already in hidden class.
         *
+        * @param sAppVersion Server application version. We should fill it in if we expect connecting clients to have this same application version.
+        * 
         * @return True on success, false otherwise or when it is already listening.
         */
-        virtual bool startListening() = 0;
+        virtual bool startListening(const std::string& sAppVersion = "") = 0;
 
         /**
         * Sends the given packet to all client instances except the optionally specified client.

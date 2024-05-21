@@ -55,10 +55,12 @@ public:
     * First you need to initialize GameNetworkingSockets subsystem by calling PgeGnsWrapper::init(), and only after that
     * you can try start listening.
     * After a successful call, isListening() is expected to return true.
+    * 
+    * @param sAppVersion Server application version. We should fill it in if we expect connecting clients to have this same application version.
     *
     * @return True on success, false on failure.
     */
-    bool startListening();
+    bool startListening(const std::string& sAppVersion = "");
 
     /**
     * Destroys all connections to clients and stops listening.
@@ -94,6 +96,7 @@ public:
     std::string getDetailedConnectionStatus(const HSteamNetConnection& connHandle) const;
 
 protected:
+    virtual bool pgeMessageIsHandledAtGnsLevel(const pge_network::PgePacket& pktReceivedFromClient) override;
     virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const override;
     virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const override;
     virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const override;

@@ -67,7 +67,9 @@ public:
 
     /* implement stuff from PgeClient start */
 
-    bool connectToServer(const std::string& sServerAddress) override; /* temporal */
+    bool connectToServer(
+        const std::string& sServerAddress,
+        const std::string& sAppVersion = "") override; /* temporal */
     const pge_network::PgeNetworkConnectionHandle& getConnectionHandle() const override;
     const pge_network::PgeNetworkConnectionHandle& getConnectionHandleServerSide() const override;
     const char* getServerAddress() const override; 
@@ -309,9 +311,9 @@ const char* PgeClientImpl::getServerAddress() const
     return m_gnsClient.getServerAddress();
 }
 
-bool PgeClientImpl::connectToServer(const std::string& sServerAddress)
+bool PgeClientImpl::connectToServer(const std::string& sServerAddress, const std::string& sAppVersion)
 {
-    return m_gnsClient.connectToServer(sServerAddress);
+    return m_gnsClient.connectToServer(sServerAddress, sAppVersion);
 }
 
 int PgeClientImpl::getPing(bool bForceUpdate)

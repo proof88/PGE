@@ -55,6 +55,16 @@ namespace pge_network {
         return pkt.m_msg.m_userDisconnected;
     }
 
+    MsgClientAppVersionFromClient& PgePacket::getMessageAsClientAppVersionFromClient(PgePacket& pkt)
+    {
+        return pkt.m_msg.m_clientAppVersionFromClient;
+    }
+
+    const MsgClientAppVersionFromClient& PgePacket::getMessageAsClientAppVersionFromClient(const PgePacket& pkt)
+    {
+        return pkt.m_msg.m_clientAppVersionFromClient;
+    }
+
     MsgAppArea& pge_network::PgePacket::getMessageAppArea(PgePacket& pkt)
     {
         return pkt.m_msg.m_app;
@@ -158,6 +168,35 @@ namespace pge_network {
         const PgeNetworkConnectionHandle& connHandleServerSide)
     {
         pge_network::PgePacket::initPktBasic(pkt, MsgUserDisconnectedFromServer::id, connHandleServerSide, pge_network::PgePacket::AutoFill::ZERO);
+    }
+
+    bool pge_network::PgePacket::initPktPgeMsgClientAppVersionFromClient(
+        pge_network::PgePacket& pkt,
+        const std::string& sClientAppVersion)
+    {
+        if (sClientAppVersion.length() >= sizeof(PgePacket::getMessageAsClientAppVersionFromClient(pkt).m_szAppVersion))
+        {
+            return false;
+        }
+        pge_network::PgePacket::initPktBasic(pkt, MsgClientAppVersionFromClient::id, 0 /*connHandle not used here */, pge_network::PgePacket::AutoFill::ZERO);
+
+        MsgClientAppVersionFromClient& msgClientAppVersion = PgePacket::getMessageAsClientAppVersionFromClient(pkt);
+
+        /*
+           I explicitly zero the whole pkt area above because I want clean pkt.
+           However, the debug versions of some security-enhanced CRT functions fill the buffer passed to them with
+           a special character (0xFE):
+           https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/crtsetdebugfillthreshold?view=msvc-170
+
+           This can turn it off: _CrtSetDebugFillThreshold( 0 );
+           And I'm not turning this back on because I don't want to use this debug feature.
+         */
+        _CrtSetDebugFillThreshold(0);
+        return (strncpy_s(
+            msgClientAppVersion.m_szAppVersion,
+            sizeof(msgClientAppVersion.m_szAppVersion),
+            sClientAppVersion.c_str(),
+            sClientAppVersion.length()) == 0);
     }
 
     void pge_network::PgePacket::initPktMsgApp(

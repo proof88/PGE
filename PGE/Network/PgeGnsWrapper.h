@@ -145,6 +145,8 @@ protected:
     uint32_t m_nTxByteCount;
     uint32_t m_nInjectByteCount;
 
+    std::string m_sAppVersion; /**< Expected client app version in case of server instance, or simply client app version in case of client instance. */
+
     // ---------------------------------------------------------------------------
 
     static void steamNetConnectionStatusChangedCallback(SteamNetConnectionStatusChangedCallback_t* pInfo);
@@ -153,6 +155,7 @@ protected:
     PgeGnsWrapper(const PgeGnsWrapper&); 
     PgeGnsWrapper& operator=(const PgeGnsWrapper&);
 
+    virtual bool pgeMessageIsHandledAtGnsLevel(const pge_network::PgePacket& pkt) = 0;
     virtual int receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const = 0;
     virtual bool validateSteamNetworkingMessage(const HSteamNetConnection& connHandle) const = 0;
     virtual void updateIncomingPgePacket(pge_network::PgePacket& pkt, const HSteamNetConnection& connHandle) const = 0;

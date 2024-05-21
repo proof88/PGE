@@ -61,13 +61,18 @@ namespace pge_network
     {
         UserConnectedServerSelf = 0,
         UserDisconnectedFromServer,
+        ClientAppVersion,
         Application
     };
 
     // server -> self (injection)
-    // server app can process this in arbitrary way and might send another custom message to all clients about new user;
+    // PgeServer injects this message to the incoming packet queue so application level will receive it.
+    // Server app will receive this message immediately after starting listening.
+    // Server app will receive this message for each connected client with matching application version number.
+    // Server app is NOT notified about clients with mismatching application version number.
+    // Server app can process this in arbitrary way and might send another custom message to all clients about new user;
     // server app should not send this to clients; it is NOT allowlisted for clients by default;
-    // it is NOT allowlisted either for server app because server should not receive this over network, it just injects it for itself
+    // it is NOT allowlisted either for server app because server should not receive this over network, it just injects it for itself.
     struct MsgUserConnectedServerSelf
     {
         static const PgePktId id = PgePktId::UserConnectedServerSelf;
@@ -93,6 +98,24 @@ namespace pge_network
     static_assert(std::is_trivial_v<MsgUserDisconnectedFromServer>);
     static_assert(std::is_trivially_copyable_v<MsgUserDisconnectedFromServer>);
     static_assert(std::is_standard_layout_v<MsgUserDisconnectedFromServer>);
+
+    // clients -> server
+    // PgeClient instance is expected to send this message to PgeServer instance right after connection is established.
+    // This is managed by PGE automatically.
+    // PgeServer expects PgeClient to have a matching application version.
+    // PgeServer instance can set the expected application version using the startListening() API.
+    // PgeClient instance can set the application version using the connectToServer() API.
+    // Application versions on both sides are by default empty strings.
+    struct MsgClientAppVersionFromClient
+    {
+        static const PgePktId id = PgePktId::ClientAppVersion;
+        static const uint8_t nAppVersionMaxLength = 48;
+
+        char m_szAppVersion[nAppVersionMaxLength];
+    };
+    static_assert(std::is_trivial_v<MsgClientAppVersionFromClient>);
+    static_assert(std::is_trivially_copyable_v<MsgClientAppVersionFromClient>);
+    static_assert(std::is_standard_layout_v<MsgClientAppVersionFromClient>);
 
     typedef uint8_t TByte;
 
@@ -206,6 +229,9 @@ namespace pge_network
         static MsgUserDisconnectedFromServer& getMessageAsUserDisconnected(pge_network::PgePacket& pkt);
         static const MsgUserDisconnectedFromServer& getMessageAsUserDisconnected(const pge_network::PgePacket& pkt);
 
+        static MsgClientAppVersionFromClient& getMessageAsClientAppVersionFromClient(pge_network::PgePacket& pkt);
+        static const MsgClientAppVersionFromClient& getMessageAsClientAppVersionFromClient(const pge_network::PgePacket& pkt);
+
         static const uint8_t& getMessageAppCount(const pge_network::PgePacket& pkt);
         static const MsgAppArea::TAreaLength& getMessageAppsTotalActualLengthBytes(const pge_network::PgePacket& pkt);
 
@@ -249,6 +275,8 @@ namespace pge_network
         * @param connHandleServerSide The server-side connection handle of the sender (whoever is filling and sending the packet).
         * @param bCurrentClient       True if the user is the receiver as well (server notifies self about being born), false if the user is a different entity (a client).
         * @param sIpAddress           The IP address of the user being connected.
+        * 
+        * @return True if given PgePacket has been filled successfully, false otherwise.
         */
         static bool initPktPgeMsgUserConnected(
             pge_network::PgePacket& pkt,
@@ -266,6 +294,20 @@ namespace pge_network
         static void initPktPgeMsgUserDisconnected(
             PgePacket& pkt,
             const PgeNetworkConnectionHandle& connHandleServerSide);
+
+        /*
+        * Initializes the given packet to be used for sending MsgClientAppVersionFromClient.
+        * A packet needs to be initialized only once.
+        *
+        * @param pkt      The packet to be initialized.
+        * @param sVersion The client application version to be sent to server.
+        * 
+        * @return True if given PgePacket has been filled successfully, false otherwise.
+        */
+        static bool initPktPgeMsgClientAppVersionFromClient(
+            pge_network::PgePacket& pkt,
+            const std::string& sClientAppVersion
+        );
 
         /*
         * Initializes the given packet to be used to store app messages.
@@ -324,6 +366,7 @@ namespace pge_network
         {
             MsgUserConnectedServerSelf m_userConnected;
             MsgUserDisconnectedFromServer m_userDisconnected;
+            MsgClientAppVersionFromClient m_clientAppVersionFromClient;
             MsgAppArea m_app; // application should load/store its custom messages here
         } m_msg;
 

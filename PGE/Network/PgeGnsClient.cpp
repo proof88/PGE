@@ -55,7 +55,9 @@ bool PgeGnsClient::destroy()
     return disconnectClient() && PgeGnsWrapper::destroy();
 } // destroy()
 
-bool PgeGnsClient::connectToServer(const std::string& sServerAddress)
+bool PgeGnsClient::connectToServer(
+    const std::string& sServerAddress,
+    const std::string& sAppVersion)
 {
     if (isConnected())
     {
@@ -93,9 +95,20 @@ bool PgeGnsClient::connectToServer(const std::string& sServerAddress)
     m_addrServer.ToString(m_szAddr, sizeof(m_szAddr), true);
     CConsole::getConsoleInstance("PgeGnsClient").OLn("%s Connecting to server at %s", __func__, m_szAddr);
 
+    m_sAppVersion = sAppVersion;
+    if (m_sAppVersion.empty())
+    {
+        CConsole::getConsoleInstance("PgeGnsClient").OLn("%s() no client app version is specified!", __func__);
+    }
+    else
+    {
+        CConsole::getConsoleInstance("PgeGnsClient").OLn("%s() client app version is specified as: %s!", __func__, m_sAppVersion.c_str());
+    }
+
     SteamNetworkingConfigValue_t opt;
     opt.SetPtr(k_ESteamNetworkingConfig_Callback_ConnectionStatusChanged, (void*)steamNetConnectionStatusChangedCallback);
 
+    // From now steamNetConnectionStatusChangedCallback() will be called back for connection status updates and that is where m_sAppVersion is also sent to server
     m_hConnection = m_pInterface->ConnectByIPAddress(m_addrServer, 1, &opt);
     if (m_hConnection == k_HSteamNetConnection_Invalid)
     {
@@ -277,6 +290,12 @@ PgeGnsClient& PgeGnsClient::operator=(const PgeGnsClient&)
     return *this;
 }
 
+bool PgeGnsClient::pgeMessageIsHandledAtGnsLevel(const pge_network::PgePacket& /*pktReceivedFromServer*/)
+{
+    // client currently does not do such
+    return false;
+}
+
 int PgeGnsClient::receiveMessages(ISteamNetworkingMessage** pIncomingMsg, int nIncomingMsgArraySize) const
 {
     // ReceiveMessagesOnConnection() basically copies the pointers to messages from GNS's internal linked list,
@@ -374,6 +393,14 @@ void PgeGnsClient::onSteamNetConnectionStatusChanged(SteamNetConnectionStatusCha
         CConsole::getConsoleInstance("PgeGnsClient").OLn("%s: CLIENT Remote address: %s", __func__, szAddr);
 
         CConsole::getConsoleInstance("PgeGnsClient").OLn("%s: CLIENT conn. description: %s", __func__, pInfo->m_info.m_szConnectionDescription);
+
+        // server accepted our connection, now immediately send our app version, otherwise server app won't start talking to us.
+        pge_network::PgePacket pktMsgClientAppVersion;
+        pge_network::PgePacket::initPktPgeMsgClientAppVersionFromClient(
+            pktMsgClientAppVersion,
+            m_sAppVersion);
+
+        sendToServer(pktMsgClientAppVersion);
 
         break;
     }
