@@ -154,7 +154,7 @@ namespace pge_network
 
         /* implement stuff from PgeServer start */
 
-        bool startListening() override { return m_bInited; }
+        bool startListening(const std::string& /*sAppVersion*/) override { return m_bInited; }
 
         void sendToAllClientsExcept(
             const pge_network::PgePacket& pkt,

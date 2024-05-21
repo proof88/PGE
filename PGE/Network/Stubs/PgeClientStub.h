@@ -102,7 +102,7 @@ namespace pge_network
 
         /* implement stuff from PgeClient start */
 
-        bool connectToServer(const std::string& /*sServerAddress*/) override
+        bool connectToServer(const std::string& /*sServerAddress*/, const std::string& /*sAppVersion*/) override
         {
             return true;
         }
