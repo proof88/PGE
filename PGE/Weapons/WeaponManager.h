@@ -227,6 +227,7 @@ public:
 
     bool update();                     /**< Updates the weapon based on the time elapsed since last call to this function.*/
     const PgeOldNewValue<State>& getState() const;  /**< Returns the current state of the weapon. */
+    void clientReceiveStateFromServer(const State& state);
     void updateOldValues();
     TPureBool reload();                /**< Reloads the weapon i.e. moves some "unmag" bullets into "mag" bullet count. */
     TPureBool pullTrigger();           /**< Pulls the trigger of the weapon, which might result in shooting the weapon. */

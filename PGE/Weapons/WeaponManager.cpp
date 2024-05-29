@@ -1,3 +1,4 @@
+#include "WeaponManager.h"
 /*
     ###################################################################################
     WeaponManager.cpp
@@ -827,6 +828,12 @@ bool Weapon::update()
 const PgeOldNewValue<Weapon::State>& Weapon::getState() const
 {
     return m_state;
+}
+
+void Weapon::clientReceiveStateFromServer(const State& state)
+{
+    updateOldValues();
+    m_state = state;
 }
 
 void Weapon::updateOldValues()

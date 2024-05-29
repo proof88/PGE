@@ -108,6 +108,8 @@ protected:
 
         AddSubTest("test_wpn_get_damage_per_fire_rating", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_damage_per_fire_rating);
         AddSubTest("test_wpn_get_damage_per_second_rating", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_damage_per_second_rating);
+
+        AddSubTest("test_wpn_client_receive_state_from_server", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_client_receive_state_from_server);
         
         AddSubTest("test_wm_initially_empty", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_initially_empty);
         AddSubTest("test_wm_clear_weapons", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_clear_weapons);
@@ -1424,6 +1426,33 @@ private:
             b = assertEquals(std::powf(1000.f / wpn.getVars().at("firing_cooldown").getAsInt() * wpn.getDamagePerFireRating(), 2.f),
                 wpn.getDamagePerSecondRating(), 0.001f, "1");
             b &= assertGreater(wpn.getDamagePerSecondRating(), 0.f, "2");
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_client_receive_state_from_server()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+
+            b = assertEquals(Weapon::State::WPN_READY, wpn.getState(), "new state 1");
+            b &= assertEquals(Weapon::State::WPN_READY, wpn.getState().getOld(), "old state 1");
+            
+            wpn.clientReceiveStateFromServer(Weapon::State::WPN_RELOADING);
+            b &= assertEquals(Weapon::State::WPN_RELOADING, wpn.getState(), "new state 2");
+            b &= assertEquals(Weapon::State::WPN_READY, wpn.getState().getOld(), "old state 2");
+
+            wpn.clientReceiveStateFromServer(Weapon::State::WPN_SHOOTING);
+            b &= assertEquals(Weapon::State::WPN_SHOOTING, wpn.getState(), "new state 3");
+            b &= assertEquals(Weapon::State::WPN_RELOADING, wpn.getState().getOld(), "old state 3");
         }
         catch (const std::exception& e)
         {
