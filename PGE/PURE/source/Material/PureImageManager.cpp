@@ -322,9 +322,25 @@ const char* PureImageManager::getLoggerModuleName()
 
     Note that with 32 bit BMP files you can utilize real alpha component of pixel colors, but
     not all image editing applications save real alpha values into 32 bit color depth bitmap files.
+
     For example, IrfanView and MS Paint save 0 or 255 for every pixel's alpha component even if the
-    source image was a true transparent PNG.
-    But Adobe Flash properly saves transparency data.
+    source image was a true transparent PNG: 0 for background and 255 for foreground pixels. This can be ok in some cases,
+    but usually not good enough from quality perspective in most cases, since the edges of a shape will look sharp.
+
+    Adobe Flash properly saves transparency data to 32 bit color depth bitmap file without any hassle.
+
+    Adobe Photoshop CS2 is a bit tricky but can work properly. If you open a transparent PNG without background, or
+    remove background of an image, it will look transparent, but when you save that into a 32 bit depth BMP file, 0 alpha
+    will be set for all pixels which basically makes this BMP useless for us from transparency perspective.
+    To work around this problem, you also need to manually edit the transparency channel on the Channels tab.
+    By default it is black (0) even when background is removed.
+    I read the trick here: https://stackoverflow.com/questions/7369649/how-to-convert-32-bit-bmp-to-contain-alpha-channel
+
+    In Photoshop, removing the background and saving to a different format like PNG would automatically save alpha values
+    properly without the need of manually editing the transparency channel, but for a proper BMP we need to deal with this hassle.
+    Note that loading the true transparent BMP again in Photoshop will also work fine, although there will be white background
+    displayed but transparency channel will be properly loaded from the 32bit BMP.
+    
     If you want to utilize transparency of 32 bit bitmaps properly, follow the instructions given
     in at PureMaterial::setBlendFuncs().
 

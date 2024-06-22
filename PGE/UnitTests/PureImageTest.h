@@ -325,7 +325,7 @@ private:
            Then I realized the trick: it is not enough to remove the background in PS, you also need to manually
            edit the transparency channel on the Channels tab. By default it is black (0) even when background is removed.
            I read the trick here: https://stackoverflow.com/questions/7369649/how-to-convert-32-bit-bmp-to-contain-alpha-channel
-           Note that removing the background and saving to a different format like PNG would automatically saved alpha values
+           Note that removing the background and saving to a different format like PNG would automatically save alpha values
            properly without manually editing the transparency channel.
            Loading the BMP again in Photoshop will also work fine, although there will be white background but transparency channel
            will be properly loaded from the 32bit BMP. */
