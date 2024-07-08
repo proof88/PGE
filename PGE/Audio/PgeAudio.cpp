@@ -83,6 +83,8 @@ bool pge_audio::PgeAudio::shutdown()
     }
 
     m_SoLoudCore.deinit();
+    m_bInitialized = false;
+
     return true;
 }
 
