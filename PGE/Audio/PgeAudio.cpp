@@ -45,7 +45,8 @@ bool pge_audio::PgeAudio::initialize()
         return true;
     }
 
-    const SoLoud::result res = m_SoLoudCore.init(SoLoud::Soloud::CLIP_ROUNDOFF, SoLoud::Soloud::MINIAUDIO);
+    /* Since PURE uses left-handed Cartesian coordinate system, SoLoud shall also use the same. */
+    const SoLoud::result res = m_SoLoudCore.init(SoLoud::Soloud::CLIP_ROUNDOFF | SoLoud::Soloud::LEFT_HANDED_3D, SoLoud::Soloud::MINIAUDIO);
     m_bInitialized = (SoLoud::SOLOUD_ERRORS::SO_NO_ERROR == res);
     if (m_bInitialized)
     {
