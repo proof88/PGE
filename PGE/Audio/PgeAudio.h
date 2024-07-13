@@ -5,7 +5,7 @@
     PgeAudio.h
     This file is part of PGE.
     External header.
-    PR00F's Game Engine audio audio subsystem
+    PR00F's Game Engine audio subsystem
     Made by PR00F88
     ###################################################################################
 */
@@ -22,6 +22,8 @@
 // TODO: later fix the soloud include path, same as described in PGE.h !!!
 #include "../Audio/soloud-RELEASE_20200207/include/soloud.h"
 #include "../Audio/soloud-RELEASE_20200207/include/soloud_wav.h"
+
+#include "../PURE/include/external/Math/PureVector.h"
 
 namespace pge_audio
 {
@@ -51,6 +53,13 @@ namespace pge_audio
         SoLoud::Soloud& getAudioEngineCore();
 
         void loadSound(SoLoud::Wav& snd, const std::string& sFname);
+        SoLoud::handle play3dSound(
+            SoLoud::Wav& snd,
+            const float& posX,
+            const float& posY,
+            const float& posZ);
+        SoLoud::handle play3dSound(SoLoud::Wav& snd, const PureVector& pos);
+        SoLoud::handle play3dSound(SoLoud::Wav& snd, const TXYZ& pos);
 
     protected:
 

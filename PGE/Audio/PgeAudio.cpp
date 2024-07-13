@@ -122,6 +122,33 @@ void pge_audio::PgeAudio::loadSound(SoLoud::Wav& snd, const std::string& sFname)
     }
 }
 
+SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const float& posX, const float& posY, const float& posZ)
+{
+    // https://solhsa.com/soloud/core3d.html
+    // https://solhsa.com/soloud/concepts3d.html
+
+    const auto sndHandle = m_SoLoudCore.play3d(
+        snd,
+        posX, posY, posZ,
+        0.f, 0.f, 0.f, /* velocity xyz */
+        0.f /* volume */);
+
+    /* hack: set initial volume 0 and then set it back to 1, as WA for issue: https://github.com/jarikomppa/soloud/issues/175 */
+    m_SoLoudCore.setVolume(sndHandle, 1.f);
+
+    return sndHandle;
+}
+
+SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const PureVector& pos)
+{
+    return play3dSound(snd, pos.getX(), pos.getY(), pos.getZ());
+}
+
+SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const TXYZ& pos)
+{
+    return play3dSound(snd, pos.x, pos.y, pos.z);
+}
+
 
 // ############################## PROTECTED ##############################
 
