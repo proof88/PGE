@@ -210,7 +210,7 @@ The following pseudocode shows what functions are invoked by runGame() that are 
 Server and client instances have the same runGame() code. Some parts are executed only by the server or the client, that is visible from the pseudocode anyway.  
 Some parts were changed between different versions, in those cases I specified the changes with version numbers.  
 In the comments I mention what kind of messages are generated with approximated rates total PKT rate and per-client PKT rate.  
-**We are estimating with an intense situation when 8 players are playing the game, and everyone is moving, shooting, and picking up an item at the same time.**
+**We are estimating with an intense situation when 8 players are playing the game, and everyone is moving, shooting, and picking up a weapon item at the same time.**
 
 I also mention **AP (action point)** wherever I think change should be introduced.
 
@@ -271,7 +271,7 @@ PGE::runGame() {
                         
                         @PHYSICS_RATE_MIN (ideally 60 Hz)      // v0.1.5: physics_rate_min introduced, physics_rate_min >= tickrate
                             serverGravity();                       // v0.2.2: might generate packet about someone dying of falling, but just a few, and in our current scenario nobody dies, so nothing to do here.
-                            serverPlayerCollisionWithWalls();      // no networking
+                            serverPlayerCollisionWithWalls();      // v0.2.6: might generate packet about someone yelling of high fall, or landed on ground, but just a few, I'm not calculating with these now.
                             serverUpdateBullets();                 // v0.1.4: 160 PKT/s @ 20 Hz tickrate server -> client
                                                                    // v0.1.5: 480 PKT/s @ 60 Hz physics_rate_min server -> client
                                                                    // v0.2.2: same as v0.1.5 with addition of some optional extra packet when someone is killed, which is negligible amount of packets, and
@@ -346,7 +346,7 @@ Considering 8 players:
    This is only the 27% of the packet rate of v0.1.3!  
    - Since **variable packet size** was introduced also in this version in PGE, and MsgUserCmdFromClient is 16 Bytes, PgePacket overhead 15 Bytes so total PgePacket size is 31 Bytes, this leads to:  
      31 \* 128 = **3 968 Byte/s Packet Data Rate** on server-side with 8 players, which is only the 3% of v0.1.3!
- - **v0.1.6.1, v0.2.0, v0.2.1, v0.2.2, v0.2.3:**
+ - **v0.1.6.1, v0.2.0, v0.2.1, v0.2.2, v0.2.3, v0.2.4, v0.2.5, v0.2.6:**
    - same as v0.1.4, the new features did not affect network traffic in client -> server direction.
 
 \subsubsection client_packet_rate Client Packet Rate and Packet Data Rate
@@ -408,6 +408,15 @@ Considering 8 players, the results are to a single client from the server:
        even though in previous versions we always rated it to 0 due to weapon changing, here in this version we are calculating with continuous firing-induced weapon changes,
        since it is now reflecting weapon state changes to clients and we want to have calculations ready with that in mind (even though shooting and weapon changing cannot happen at the same time).
      - 160 PKT/s @ 20 Hz (unchanged) as per serverSendUserUpdates(), with 160 \* 67 = 10 720 Byte/s Packet Data Rate (size of MsgUserUpdateFromServer is 52 Bytes, PgePacket overhead is 15 Bytes).
+ - **v0.2.4, v0.2.5:**
+     - same as v0.2.3, the new features did not affect network traffic.
+ - **v0.2.6:**
+     - there is just slight additional network traffic, due to adding MsgPlayerEventFromServer that is sent occasionally (landed on ground or falling high yell or jumppad activation) to clients.  
+       I'm not calculating with this now because frequency is relatively low compared to other messages I'm calculating with.
+     - **1212 PKT/s @ 60 FPS & 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min** (this is only the 28% of v0.1.2 rate!), with 1494 + 1162 + 39840 + 16980 + 10720 = **70 196 Byte/s Packet Data Rate** (which is only the 7% of v0.1.2 data rate!):
+       - size of MsgWpnUpdateFromServer increased from 76 to 84 Bytes, thus serverPickupAndRespawnItems() generates slightly bigger traffic:
+         - 540 PKT/s @ 60 Hz as per serverPickupAndRespawnItems(), with 60 \* 99 + (8\*60) \* 23 = 16980 Byte/s Packet Data Rate
+           (size of MsgWpnUpdateFromServer is 84 Bytes, size of MsgMapItemUpdateFromServer is 8 Bytes, PgePacket overhead is 15 Bytes).
 
 Considering 8 players, the results to ALL clients from the server (because above shows results to 1 client from the server):  
 just multiply above results by 7 (server sending to itself avoids GNS level thus we multiply by nClientsCount instead of nPlayersCount):
@@ -418,7 +427,9 @@ just multiply above results by 7 (server sending to itself avoids GNS level thus
  - **v0.1.6.1:** same as with v0.1.5;
  - **v0.2.0.0:** 8 386 PKT/s with 465 934 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min;
  - **v0.2.2.0:** 8 386 PKT/s with 474 894 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min;
- - **v0.2.3.0:** 8 484 PKT/s with 488 012 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 94% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
+ - **v0.2.3.0:** 8 484 PKT/s with 488 012 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 94% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min;
+ - **v0.2.4, v0.2.5:** same as with v0.2.3;
+ - **v0.2.6:** 8 484 PKT/s with 491 372 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 94% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
 
 \subsubsection detailed_packet_rate Detailed Packet Rate per Function
 
