@@ -43,7 +43,7 @@ bool pge_audio::PgeAudio::initialize()
     if (m_cfgProfiles.getVars()[CVAR_SFX_ENABLED].getAsString().empty())
     {
         m_cfgProfiles.getVars()[CVAR_SFX_ENABLED].Set(true);
-        getConsole().OLn("Missing audio in config, defaulting to: %b!", m_cfgProfiles.getVars()[CVAR_SFX_ENABLED].getAsBool());
+        getConsole().EOLn("PgeAudio::%s(): Missing audio in config, defaulting to: %b!", __func__, m_cfgProfiles.getVars()[CVAR_SFX_ENABLED].getAsBool());
     }
     
     if (!m_cfgProfiles.getVars()[CVAR_SFX_ENABLED].getAsBool())
@@ -56,13 +56,13 @@ bool pge_audio::PgeAudio::initialize()
         // Also, having a wrapper is good just in case I want to replace SoLoud in the future with some other audio lib, or just
         // offer selection to the user.
         // Anyway, both NOSOUND and NULLDRIVER can be easily tested anytime by just replacing the backendId below for init().
-        CConsole::getConsoleInstance("PgeAudio").EOLn("Audio disabled by config!");
+        getConsole().EOLn("PgeAudio::%s(): Audio disabled by config!", __func__);
         return true;
     }
     
     if (isInitialized())
     {
-        CConsole::getConsoleInstance("PgeAudio").SOLn("Already initialized SoLoud version %d!", SOLOUD_VERSION);
+        getConsole().SOLn("PgeAudio::%s(): Already initialized SoLoud version %d!", __func__, SOLOUD_VERSION);
         return true;
     }
 
@@ -71,12 +71,12 @@ bool pge_audio::PgeAudio::initialize()
     m_bInitialized = (SoLoud::SOLOUD_ERRORS::SO_NO_ERROR == res);
     if (m_bInitialized)
     {
-        CConsole::getConsoleInstance("PgeAudio").SOLn("Initialized SoLoud version %d!", SOLOUD_VERSION);
-        CConsole::getConsoleInstance("PgeAudio").OLn(
+        getConsole().SOLn("PgeAudio::%s(): Initialized SoLoud version %d!", __func__, SOLOUD_VERSION);
+        getConsole().OLn(
             "Backend ID: %d, Name: %s",
             m_SoLoudCore.getBackendId(),
             m_SoLoudCore.getBackendString());
-        CConsole::getConsoleInstance("PgeAudio").OLn(
+        getConsole().OLn(
             "Channels: %d, Sample Rate: %d Hz, Buffer Size: %d frames (dont know how many Bytes per frame)",
             m_SoLoudCore.getBackendChannels(),
             m_SoLoudCore.getBackendSamplerate(),
@@ -84,7 +84,7 @@ bool pge_audio::PgeAudio::initialize()
     }
     else
     {
-        CConsole::getConsoleInstance("PgeAudio").EOLn("Failed to initialize SoLoud version %d, code: %d!", SOLOUD_VERSION, res);
+        getConsole().EOLn("PgeAudio::%s():Failed to initialize SoLoud version %d, code: %d!", __func__, SOLOUD_VERSION, res);
     }
 
     return m_bInitialized;
@@ -101,11 +101,14 @@ bool pge_audio::PgeAudio::shutdown()
 {
     if (!isInitialized())
     {
+        getConsole().SOLn("PgeAudio::%s(): was already shut down!", __func__);
         return true;
     }
 
     m_SoLoudCore.deinit();
     m_bInitialized = false;
+
+    getConsole().SOLn("PgeAudio::%s(): done!", __func__);
 
     return true;
 }
