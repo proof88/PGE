@@ -318,6 +318,7 @@ int PGE::PGEimpl::showWindowsMessageDialogWin32(PGE_MSG_ID msg_id, PGE_MSG_ID cp
 PGE::PGEimpl::PGEimpl() :
     m_pOwner(NULL),  // currently not used
     m_inputHandler( PGEInputHandler::createAndGet(m_cfgProfiles) ),
+    m_audio(m_cfgProfiles),
     m_gfx( PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler) ),
     m_sysGFX(m_cfgProfiles, m_inputHandler),
     m_network( pge_network::PgeNetwork::createAndGet(m_cfgProfiles) ),
@@ -337,6 +338,7 @@ PGE::PGEimpl::PGEimpl() :
 PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
     m_pOwner(NULL),  // currently not used
     m_inputHandler( PGEInputHandler::createAndGet(m_cfgProfiles) ),
+    m_audio(m_cfgProfiles),
     m_gfx( PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler) ),
     m_sysGFX(m_cfgProfiles, m_inputHandler),
     m_network( pge_network::PgeNetwork::createAndGet(m_cfgProfiles) ),
@@ -366,6 +368,7 @@ PGE::PGEimpl& PGE::PGEimpl::operator=(const PGE::PGEimpl&)
 PGE::PGEimpl::PGEimpl(const char* gameTitle) :
     m_pOwner(NULL),  // currently not used
     m_inputHandler(PGEInputHandler::createAndGet(m_cfgProfiles)),
+    m_audio(m_cfgProfiles),
     m_gfx(PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler)),
     m_sysGFX(m_cfgProfiles, m_inputHandler),
     m_network(pge_network::PgeNetwork::createAndGet(m_cfgProfiles)),

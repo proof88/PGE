@@ -25,7 +25,8 @@ CConsole& pge_audio::PgeAudio::getConsole() const
     return CConsole::getConsoleInstance(getLoggerModuleName());
 }
 
-pge_audio::PgeAudio::PgeAudio()
+pge_audio::PgeAudio::PgeAudio(PGEcfgProfiles& cfgProfiles) :
+    m_cfgProfiles(cfgProfiles)
 {
 }
 
@@ -39,6 +40,26 @@ bool pge_audio::PgeAudio::initialize()
 {
     // could use getConsole() now but since this code is copy-pasted and might change the class in future, now getConsoleInstance() stays
 
+    if (m_cfgProfiles.getVars()[CVAR_SFX_ENABLED].getAsString().empty())
+    {
+        m_cfgProfiles.getVars()[CVAR_SFX_ENABLED].Set(true);
+        getConsole().OLn("Missing audio in config, defaulting to: %b!", m_cfgProfiles.getVars()[CVAR_SFX_ENABLED].getAsBool());
+    }
+    
+    if (!m_cfgProfiles.getVars()[CVAR_SFX_ENABLED].getAsBool())
+    {
+        // I'm aware about SoLoud's NOSOUND and NULLDRIVER backends, but as I understand, the former actually plays sounds without actual
+        // hearable result, and about the latter I'm not sure, but I want to actually CUT communication with SoLoud if audio is
+        // disabled in config.
+        // So I'm maintaining this PgeAudio as wrapper layer over SoLoud, this way is the best to actually
+        // test if there is any performance drop with enabled audio in certain situations or not.
+        // Also, having a wrapper is good just in case I want to replace SoLoud in the future with some other audio lib, or just
+        // offer selection to the user.
+        // Anyway, both NOSOUND and NULLDRIVER can be easily tested anytime by just replacing the backendId below for init().
+        CConsole::getConsoleInstance("PgeAudio").EOLn("Audio disabled by config!");
+        return true;
+    }
+    
     if (isInitialized())
     {
         CConsole::getConsoleInstance("PgeAudio").SOLn("Already initialized SoLoud version %d!", SOLOUD_VERSION);
@@ -56,7 +77,7 @@ bool pge_audio::PgeAudio::initialize()
             m_SoLoudCore.getBackendId(),
             m_SoLoudCore.getBackendString());
         CConsole::getConsoleInstance("PgeAudio").OLn(
-            "Channels: %d, Sample Rate: %d Hz, Buffer Size: %d",
+            "Channels: %d, Sample Rate: %d Hz, Buffer Size: %d frames (dont know how many Bytes per frame)",
             m_SoLoudCore.getBackendChannels(),
             m_SoLoudCore.getBackendSamplerate(),
             m_SoLoudCore.getBackendBufferSize());
@@ -107,7 +128,7 @@ void pge_audio::PgeAudio::loadSound(SoLoud::Wav& snd, const std::string& sFname)
 {
     if (!isInitialized())
     {
-        getConsole().EOLn("%s: Audio subsystem is NOT initialized!", __func__);
+        getConsole().EOLn("%s: Audio subsystem is NOT initialized (config-state: %b)!", __func__, m_cfgProfiles.getVars()[CVAR_SFX_ENABLED].getAsBool());
         return;
     }
 
@@ -122,8 +143,35 @@ void pge_audio::PgeAudio::loadSound(SoLoud::Wav& snd, const std::string& sFname)
     }
 }
 
+SoLoud::handle pge_audio::PgeAudio::playSound(SoLoud::Wav& snd)
+{
+    // It is very important to have play wrappers, because as soon as you invoke play() on an AudioSource such as Wav,
+    // the AudioSource's mSoloud member will be set, which will trigger stop() in the dtor of Wav and/or AudioSource,
+    // that could cause us some trouble upon deleting them, latest when we exit from the application.
+    // However, stop() does nothing if mSoloud is not set, so we are indirectly avoid setting it by avoiding play() here
+    // if audio is not initialized, like in the case of it is disabled in config.
+    // It is safe to call property settings though on AudioSource instances even if we are not initialized, that is why
+    // currently I dont have wrappers for them now.
+
+    if (!isInitialized())
+    {
+        // dont spam log with error message, since loadSound() already logs error
+        return SoLoud::handle{};
+    }
+
+    return m_SoLoudCore.play(snd);
+}
+
 SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const float& posX, const float& posY, const float& posZ)
 {
+    // see comment in playSound() to understand why it is always required to use wrapper for play functions!
+
+    if (!isInitialized())
+    {
+        // dont spam log with error message, since loadSound() already logs error
+        return SoLoud::handle{};
+    }
+
     // https://solhsa.com/soloud/core3d.html
     // https://solhsa.com/soloud/concepts3d.html
 
@@ -147,6 +195,17 @@ SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const PureVect
 SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const TXYZ& pos)
 {
     return play3dSound(snd, pos.x, pos.y, pos.z);
+}
+
+void pge_audio::PgeAudio::stopSoundInstance(const SoLoud::handle& sndHandle)
+{
+    if (!isInitialized())
+    {
+        // dont spam log with error message, since loadSound() already logs error
+        return;
+    }
+
+    m_SoLoudCore.stop(sndHandle);
 }
 
 

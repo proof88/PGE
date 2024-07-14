@@ -23,6 +23,7 @@
 #include "../Audio/soloud-RELEASE_20200207/include/soloud.h"
 #include "../Audio/soloud-RELEASE_20200207/include/soloud_wav.h"
 
+#include "../Config/PGEcfgProfiles.h"
 #include "../PURE/include/external/Math/PureVector.h"
 
 namespace pge_audio
@@ -32,13 +33,15 @@ namespace pge_audio
     {
     public:
 
+        static constexpr char* CVAR_SFX_ENABLED = "sfx_enabled";
+
         static const char* getLoggerModuleName();
 
         // ---------------------------------------------------------------------------
 
         CConsole& getConsole() const;
 
-        PgeAudio();
+        PgeAudio(PGEcfgProfiles& cfgProfiles);
 
         PgeAudio(const PgeAudio&) = delete;
         PgeAudio& operator=(const PgeAudio&) = delete;
@@ -53,6 +56,7 @@ namespace pge_audio
         SoLoud::Soloud& getAudioEngineCore();
 
         void loadSound(SoLoud::Wav& snd, const std::string& sFname);
+        SoLoud::handle playSound(SoLoud::Wav& snd);
         SoLoud::handle play3dSound(
             SoLoud::Wav& snd,
             const float& posX,
@@ -60,10 +64,13 @@ namespace pge_audio
             const float& posZ);
         SoLoud::handle play3dSound(SoLoud::Wav& snd, const PureVector& pos);
         SoLoud::handle play3dSound(SoLoud::Wav& snd, const TXYZ& pos);
+        void stopSoundInstance(const SoLoud::handle& sndHandle);
 
     protected:
 
     private:
+
+        PGEcfgProfiles& m_cfgProfiles;
 
         bool m_bInitialized = false;
         SoLoud::Soloud m_SoLoudCore;
