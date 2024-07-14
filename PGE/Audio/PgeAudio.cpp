@@ -139,6 +139,26 @@ void pge_audio::PgeAudio::loadSound(SoLoud::Wav& snd, const std::string& sFname)
     if (resSoloud == SoLoud::SOLOUD_ERRORS::SO_NO_ERROR)
     {
         getConsole().OLn("%s: %s loaded, length: %f secs!", __func__, sFname.c_str(), static_cast<float>(snd.getLength()));
+
+        // Based on debugging the flags in SoLoud::AudioSource, by default neither "must tick" nor "kill" are set for inaudible sounds/voices.
+        // SoLoud::AudioSourceInstances just copy the SoLoud::AudioSource setting, so it is the same default config: by default neither "must tick" nor "kill" are set.
+        // What I usually want is to kill inaudible stuff i.e. they are stopped as soon as their volume goes 0, AND they must tick i.e. played until end even if not audible.
+        // To be honest I dont really understand how these 2 settings are independent because I think they are depending on each other:
+        // I dont know if "kill" is set, then will the "must tick" option will override it? Or "kill" overrides "must tick"?
+        // Based on my experiment, "kill" overrides "must tick", since now as I enabled "kill", I dont even need the WA for the popping inaudible
+        // sounds as I used earlier in play3dSound(). So I think sounds with inaudible "kill" setting are not ticking at all. For me now it is good.
+        // 
+        // Anyway, I want "kill" for sure usually for most sound effects, e.g. explosion, shooting, yell, etc.
+        // I dont want to hear the ending of such sounds if I'm finally getting close enough to them as they are short noises that should be
+        // heard only if I'm already close enough to them at to moment of their born.
+        // For ambient noises like background music in a restaurant, etc., the setting should be different and should be set
+        // explicitly differently after this load function returns.
+        
+        // UPDATE: I cannot set inaudibleBehavior to "kill" here for the AudioSource because then I won't hear any 3D sound as all of them
+        // are started with 0 volume by play3dSound(), and I need that WA to avoid the issue mentioned there.
+        // So, I have to set the "kill" for the AudioSourceInstance instead in that function!
+        // Here, I just set it "not kill" and "must tick".
+        snd.setInaudibleBehavior(true /* must tick */, false /* kill */);
     }
     else
     {
@@ -178,6 +198,7 @@ SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const float& p
     // https://solhsa.com/soloud/core3d.html
     // https://solhsa.com/soloud/concepts3d.html
 
+    // play3d() starts sending the sound to the backend as soon as possible, so we have to start it with 0 volume as WA, as explained below!
     const auto sndHandle = m_SoLoudCore.play3d(
         snd,
         posX, posY, posZ,
@@ -186,6 +207,9 @@ SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const float& p
 
     /* hack: set initial volume 0 and then set it back to 1, as WA for issue: https://github.com/jarikomppa/soloud/issues/175 */
     m_SoLoudCore.setVolume(sndHandle, 1.f);
+
+    // And now as volume is set to 1, I can also set the inaudible behavior to "kill"
+    m_SoLoudCore.setInaudibleBehavior(sndHandle, false /* must tick */, true /* kill */);
 
     return sndHandle;
 }
