@@ -1274,7 +1274,7 @@ bool WeaponManager::setCurrentWeapon(Weapon* wpn, bool bRecordSwitchTime, bool b
         return false;
     }
 
-    if (bServer /* client should not do availability check since it is not aware of wpn availability of the players */ &&
+    if (bServer /* client should not do availability check since it is not aware of wpn availability of other players, only its own weapons! */ &&
         !wpn->isAvailable())
     {
         //getConsole().EOLn(
@@ -1494,9 +1494,13 @@ const Weapon* WeaponManager::getNextAvailableWeapon(unsigned char& cTargetWeapon
 * Gets the next best available weapon.
 * Typically you need this when you run out of ammo of your current weapon and want to switch to another most useful weapon.
 * Unlike the getPrev/NextAvailableWeapon() functions, here we follow the power order of available weapons defined by their DPSR value, and
-* we don't consider weapons for which we don't have any ammo.
+* we don't consider weapons for which we don't have any kind (mag and unmag) ammo.
 * 
-* @param cTargetWeapon Output argument, the key associated to the next best available weapon.
+* @param cTargetWeapon      Output-only argument, the key associated to the next best available weapon.
+*                           Set to '\0' in case of error.
+*                           Set to key associated to current weapon if we could not find a best next available weapon.
+*                           Set to key associated to the found next best available weapon if we found one.
+* @param bMustHaveMagBullet If true, only weapons with non-zero mag bullet count will be considered.
 *
 * @return The next best available weapon based on power order defined by DPSR value of weapons.
 *         Nullptr if there is no current weapon set or the file name of the next best available weapon is not present in KeypressToWeaponMap.
@@ -1504,18 +1508,22 @@ const Weapon* WeaponManager::getNextAvailableWeapon(unsigned char& cTargetWeapon
 *         Note that owner of weapon is not taken into consideration, because the idea is that
 *         each player entity has their own WeaponManager, storing only their owned weapons.
 */
-Weapon* WeaponManager::getNextBestAvailableWeapon(unsigned char& cTargetWeapon)
+Weapon* WeaponManager::getNextBestAvailableWeapon(unsigned char& cTargetWeapon, bool bMustHaveMagBullet)
 {
-    return const_cast<Weapon*>(const_cast<const WeaponManager*>(this)->getNextBestAvailableWeapon(cTargetWeapon));
+    return const_cast<Weapon*>(const_cast<const WeaponManager*>(this)->getNextBestAvailableWeapon(cTargetWeapon, bMustHaveMagBullet));
 }
 
 /**
 * Gets the next best available weapon.
 * Typically you need this when you run out of ammo of your current weapon and want to switch to another most useful weapon.
 * Unlike the getPrev/NextAvailableWeapon() functions, here we follow the power order of available weapons defined by their DPSR value, and
-* we don't consider weapons for which we don't have any ammo.
+* we don't consider weapons for which we don't have any kind (mag and unmag) ammo.
 *
-* @param cTargetWeapon Output argument, the key associated to the next best available weapon.
+* @param cTargetWeapon      Output-only argument, the key associated to the next best available weapon.
+*                           Set to '\0' in case of error.
+*                           Set to key associated to current weapon if we could not find a best next available weapon.
+*                           Set to key associated to the found next best available weapon if we found one.
+* @param bMustHaveMagBullet If true, only weapons with non-zero mag bullet count will be considered.
 *
 * @return The next best available weapon based on power order defined by DPSR value of weapons.
 *         Nullptr if there is no current weapon set or the file name of the next best available weapon is not present in KeypressToWeaponMap.
@@ -1523,7 +1531,7 @@ Weapon* WeaponManager::getNextBestAvailableWeapon(unsigned char& cTargetWeapon)
 *         Note that owner of weapon is not taken into consideration, because the idea is that
 *         each player entity has their own WeaponManager, storing only their owned weapons.
 */
-const Weapon* WeaponManager::getNextBestAvailableWeapon(unsigned char& cTargetWeapon) const
+const Weapon* WeaponManager::getNextBestAvailableWeapon(unsigned char& cTargetWeapon, bool bMustHaveMagBullet) const
 {
     const Weapon* pRetWeapon = getCurrentWeapon();
     cTargetWeapon = '\0';
@@ -1558,7 +1566,11 @@ const Weapon* WeaponManager::getNextBestAvailableWeapon(unsigned char& cTargetWe
                 (pTargetWeapon->getDamagePerSecondRating() > fMaxDpsr) &&
                 ((pTargetWeapon->getMagBulletCount() > 0) || (pTargetWeapon->getUnmagBulletCount() > 0)))
             {
-                // it is also ok if bullets are not yet loaded into the weapon, but we should have ammo at least unloaded
+                if (bMustHaveMagBullet && (pTargetWeapon->getMagBulletCount() == 0))
+                {
+                    continue;
+                }
+
                 cTargetWeapon = keyWpnPair.first;
                 pRetWeapon = pTargetWeapon;
                 fMaxDpsr = pRetWeapon->getDamagePerSecondRating();

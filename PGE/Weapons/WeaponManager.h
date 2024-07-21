@@ -391,8 +391,8 @@ public:
     Weapon* getNextAvailableWeapon(unsigned char& cTargetWeapon);
     const Weapon* getNextAvailableWeapon(unsigned char& cTargetWeapon) const;
 
-    Weapon* getNextBestAvailableWeapon(unsigned char& cTargetWeapon);
-    const Weapon* getNextBestAvailableWeapon(unsigned char& cTargetWeapon) const;
+    Weapon* getNextBestAvailableWeapon(unsigned char& cTargetWeapon, bool bMustHaveMagBullet);
+    const Weapon* getNextBestAvailableWeapon(unsigned char& cTargetWeapon, bool bMustHaveMagBullet) const;
 
     const std::chrono::time_point<std::chrono::steady_clock>& getTimeLastWeaponSwitch() const;
 
