@@ -50,7 +50,7 @@ protected:
         engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
 
-        /* negative tests */
+        /* weapon load negative tests */
 
         AddSubTest("test_wpn_load_weapon_bad_assignment", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_bad_assignment);
         AddSubTest("test_wpn_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_unaccepted_var);
@@ -73,7 +73,9 @@ protected:
         AddSubTest("test_wpn_damage_hp_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_damage_hp_must_be_positive);
         AddSubTest("test_wpn_damage_ap_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_damage_ap_must_be_positive);
         
-        /* positive tests */
+        /* weapon load positive tests and other use cases */
+
+        AddSubTest("test_wpn_state_to_string", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_state_to_string);
 
         AddSubTest("test_wpn_load_weapon_good", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_good);
 
@@ -333,6 +335,13 @@ private:
         return test_helper_wpn_load_and_expect_exception(
             "gamedata/weapons/wpn_test_damage_ap_must_be_positive.txt",
             "damage_hp and damage_ap must be positive values");
+    }
+
+    bool test_wpn_state_to_string()
+    {
+        return assertEquals("READY", Weapon::stateToString(Weapon::WPN_READY)) &
+            assertEquals("RELOADING", Weapon::stateToString(Weapon::WPN_RELOADING)) &
+            assertEquals("SHOOTING", Weapon::stateToString(Weapon::WPN_SHOOTING));
     }
 
     bool test_wpn_load_weapon_good()

@@ -494,6 +494,21 @@ const char* Weapon::getLoggerModuleName()
     return "Weapon";
 }
 
+std::string Weapon::stateToString(const State& eState)
+{
+    switch (eState)
+    {
+    case Weapon::State::WPN_RELOADING:
+        return "RELOADING";
+    case Weapon::State::WPN_SHOOTING:
+        return "SHOOTING";
+    case Weapon::State::WPN_READY:
+        return "READY";
+    default:
+        return "UNKNOWN";
+    }
+}
+
 /**
  * Returns the graphical object entity associated to this weapon object.
  */

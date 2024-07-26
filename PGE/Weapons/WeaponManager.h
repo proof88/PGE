@@ -189,6 +189,7 @@ public:
     static constexpr TPureFloat WpnYBiasToPlayerCenter{ 0.15f };  // TODO: I guess this supposed to be get/set through functions later based on something ...
 
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
+    static std::string stateToString(const State& eState);
 
     // ---------------------------------------------------------------------------
 
