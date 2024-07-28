@@ -43,7 +43,8 @@ Bullet::Bullet(
     TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
     TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
-    TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile, int nDamageHp,
+    TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
+    int nDamageAp, int nDamageHp,
     TPureFloat fDamageAreaSize, TPureFloat fDamageAreaPulse) :
     m_id(m_globalBulletId++),
     m_gfx(gfx),
@@ -52,6 +53,7 @@ Bullet::Bullet(
     m_gravity(gravity),
     m_drag(drag),
     m_fragile(fragile),
+    m_nDamageAp(nDamageAp),
     m_nDamageHp(nDamageHp),
     m_fDamageAreaSize(fDamageAreaSize),
     m_fDamageAreaPulse(fDamageAreaPulse),
@@ -105,6 +107,7 @@ Bullet::Bullet(
     m_gravity(gravity),
     m_drag(drag),
     m_fragile(0.f) /* irrelevant for this client-side ctor */,
+    m_nDamageAp(0) /* irrelevant for this client-side ctor */,
     m_nDamageHp(nDamageHp),
     m_fDamageAreaSize(fDamageAreaSize),
     m_fDamageAreaPulse(fDamageAreaPulse),
@@ -164,6 +167,26 @@ TPureBool Bullet::isFragile() const
     return m_fragile;
 }
 
+/**
+* Maximum damage to Player AP this bullet can cause.
+*/
+int Bullet::getDamageAp() const
+{
+    return m_nDamageAp;
+}
+
+/**
+* Maximum damage to Player HP this bullet can cause.
+* 
+* It is the game's responsibility to calculate actual damage to player.
+* A recommendation I was also doing in PRooFPS v0.2.7:
+*  - Player has AP and HP;
+*  - explosive bullets make radius damage where damage amount is linear decreasing from radius center until edge;
+*  - non-explosive bullets make damage upon hitting target;
+*  - Player has takeDamage() function which is responsible for calculating the damage taken by AP and HP, based on
+*    input Bullet::getDamageAp() and Bullet::getDamageHp();
+*  - if AP is non-0, then it decreases the damage caused to HP.
+*/
 int Bullet::getDamageHp() const
 {
     return m_nDamageHp;
@@ -952,6 +975,7 @@ TPureBool Weapon::pullTrigger()
             getVars()["bullet_gravity"].getAsFloat(),
             getVars()["bullet_drag"].getAsFloat(),
             getVars()["bullet_fragile"].getAsBool(),
+            getVars()["damage_ap"].getAsInt(),
             getVars()["damage_hp"].getAsInt(),
             getVars()["damage_area_size"].getAsFloat(),
             getVars()["damage_area_pulse"].getAsFloat())

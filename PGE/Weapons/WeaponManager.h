@@ -55,7 +55,8 @@ public:
         TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
         TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
-        TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile, int nDamageHp,
+        TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
+        int nDamageAp, int nDamageHp,
         TPureFloat fDamageAreaSize, TPureFloat fDamageAreaPulse);
     
     /** Ctor to be used by PGE client instance: bullet id as received from server. */
@@ -65,7 +66,7 @@ public:
         TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
         TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
-        TPureFloat speed, TPureFloat gravity, TPureFloat drag, int nDamageHp,
+        TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use nDamageAp */ int nDamageHp,
         const TPureFloat& fDamageAreaSize,
         const TPureFloat& fDamageAreaPulse);
     
@@ -81,6 +82,7 @@ public:
     TPureFloat getGravity() const;
     TPureFloat getDrag() const;
     TPureBool isFragile() const;
+    int getDamageAp() const;
     int getDamageHp() const;
     TPureFloat getAreaDamageSize() const;
     TPureFloat getAreaDamagePulse() const;
@@ -100,6 +102,7 @@ public:
         m_gravity(other.m_gravity),
         m_drag(other.m_drag),
         m_fragile(other.m_fragile),
+        m_nDamageAp(other.m_nDamageAp),
         m_nDamageHp(other.m_nDamageHp),
         m_fDamageAreaSize(other.m_fDamageAreaSize),
         m_fDamageAreaPulse(other.m_fDamageAreaPulse),
@@ -121,6 +124,7 @@ public:
         m_gravity = other.m_gravity;
         m_drag = other.m_drag;
         m_fragile = other.m_fragile;
+        m_nDamageAp = other.m_nDamageAp;
         m_nDamageHp = other.m_nDamageHp;
         m_fDamageAreaSize = other.m_fDamageAreaSize;
         m_fDamageAreaPulse = other.m_fDamageAreaPulse;
@@ -140,17 +144,18 @@ private:
 
     static BulletId m_globalBulletId;                      /**< Next unique bullet id for identifying. Used by PGE server instance only. */
 
-    BulletId m_id;                                         /**< Unique bullet id for identifying. Used by PGE server and client instances. */
+    BulletId m_id;                                         /**< Unique bullet id for identifying. Used by both PGE client and server instances. */
     PR00FsUltimateRenderingEngine& m_gfx;
     pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this bullet. Used by PGE server instance only. */
-    PurePosUpTarget m_put;                                 /**< PUT to calculate next position. Used by PGE server instance only. */
-    TPureFloat m_speed;                                    /**< Speed as defined by weapon file. Used by PGE server instance only. */
-    TPureFloat m_gravity;                                  /**< Gravity as defined by weapon file. Used by PGE server instance only. */
-    TPureFloat m_drag;                                     /**< Drag as defined by weapon file. Used by PGE server instance only. */
+    PurePosUpTarget m_put;                                 /**< PUT to calculate next position. Used by both PGE client and server instances. */
+    TPureFloat m_speed;                                    /**< Speed as defined by weapon file. Used by both PGE client and server instances. */
+    TPureFloat m_gravity;                                  /**< Gravity as defined by weapon file. Used by both PGE client and server instances. */
+    TPureFloat m_drag;                                     /**< Drag as defined by weapon file. Used by both PGE client and server instances. */
     TPureBool m_fragile;                                   /**< Fragile flag as defined by weapon file. Used by PGE server instance only. */
-    int m_nDamageHp;                                       /**< Damage to HP as defined by weapon file. Used by PGE server instance only. */
-    TPureFloat m_fDamageAreaSize;                          /**< Area damage size as defined by weapon file. Used by PGE server instance only. */
-    TPureFloat m_fDamageAreaPulse;                         /**< Area damage pulse to HP as defined by weapon file. Used by PGE server instance only. */
+    int m_nDamageAp;                                       /**< Damage to AP as defined by weapon file. Used by PGE server instance only. */
+    int m_nDamageHp;                                       /**< Damage to HP as defined by weapon file. Used by both PGE client and server instances. */
+    TPureFloat m_fDamageAreaSize;                          /**< Area damage size as defined by weapon file. Used by both PGE client and server instances. */
+    TPureFloat m_fDamageAreaPulse;                         /**< Area damage pulse to HP as defined by weapon file. Used by both PGE client and server instances. */
 
     PureObject3D* m_obj;                                   /**< Associated Pure object to be rendered. Used by PGE server and client instances.
                                                                 TODO: shared ptr would be better though, so deleting the obj earlier than bullet

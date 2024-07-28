@@ -92,6 +92,7 @@ private:
         const float fGravity = 15.f;
         const float fDrag = 25.f;
         const bool bFragile = true;
+        const int nDamageAp = 20;
         const int nDamageHp = 30;
         const float fDamageAreaSize = 5.f;
         const float fDamageAreaPulse = 2.f;
@@ -103,7 +104,8 @@ private:
             posVec.getX(), posVec.getY(), posVec.getZ(),
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
-            fSpeed, fGravity, fDrag, bFragile, nDamageHp,
+            fSpeed, fGravity, fDrag, bFragile,
+            nDamageAp, nDamageHp,
             fDamageAreaSize, fDamageAreaPulse);
         
         bool b = assertEquals(bullet.getId(), iLastBulletId, "bullet id");
@@ -116,6 +118,7 @@ private:
         b &= assertEquals(fGravity, bullet.getGravity(), "gravity");
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(bFragile, bullet.isFragile(), "fragile");
+        b &= assertEquals(nDamageAp, bullet.getDamageAp(), "damageAp");
         b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
         b &= assertEquals(fDamageAreaPulse, bullet.getAreaDamagePulse(), "damage area pulse");
@@ -155,6 +158,7 @@ private:
         b &= assertEquals(fGravity, bullet.getGravity(), "gravity");
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(false, bullet.isFragile(), "fragile");
+        b &= assertEquals(0, bullet.getDamageAp(), "damageAp");
         b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
         b &= assertEquals(fDamageAreaPulse, bullet.getAreaDamagePulse(), "damage area pulse");
@@ -172,6 +176,7 @@ private:
         const float fGravity = 15.f;
         const float fDrag = 25.f;
         const bool bFragile = true;
+        const int nDamageAp = 20;
         const int nDamageHp = 30;
         const float fDamageAreaSize = 5.f;
         const float fDamageAreaPulse = 2.f;
@@ -183,7 +188,8 @@ private:
             posVec.getX(), posVec.getY(), posVec.getZ(),
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
-            fSpeed, fGravity, fDrag, bFragile, nDamageHp,
+            fSpeed, fGravity, fDrag, bFragile,
+            nDamageAp, nDamageHp,
             fDamageAreaSize, fDamageAreaPulse);
 
         Bullet::resetGlobalBulletId();
@@ -202,7 +208,8 @@ private:
                 1.f, 2.f, 3.f,
                 20.f, 40.f, 60.f,
                 4.f, 5.f, 0.f,
-                1000.f, 15.f, 25.f, true, 10,
+                1000.f, 15.f, 25.f, true,
+                5 /* AP */, 10 /* HP */,
                 5.f, 2.f);
         }
         catch (const std::exception&)
@@ -224,7 +231,8 @@ private:
                 1.f, 2.f, 3.f,
                 20.f, 40.f, 60.f,
                 4.f, 5.f, 0.f,
-                60.f, 15.f, 25.f, true, 10,
+                60.f, 15.f, 25.f, true,
+                5 /* AP */, 10 /* HP */,
                 -5.f, 2.f);
         }
         catch (const std::exception&)
@@ -246,7 +254,8 @@ private:
                 1.f, 2.f, 3.f,
                 20.f, 40.f, 60.f,
                 4.f, 5.f, 0.f,
-                60.f, 15.f, 25.f, true, 10,
+                60.f, 15.f, 25.f, true,
+                5 /* AP */, 10 /* HP */,
                 0.f, 2.f);
         }
         catch (const std::exception&)
@@ -266,7 +275,7 @@ private:
         put.SetRotation(angleVec.getX(), angleVec.getY(), angleVec.getZ());
         put.Move(speed);
 
-        Bullet bullet(*engine, 0, 0.f, 0.f, 0.f, angleVec.getX(), angleVec.getY(), angleVec.getZ(), 1.f, 1.f, 1.f, speed, 15.f, 25.f, true, 10, 5.f, 2.f);
+        Bullet bullet(*engine, 0, 0.f, 0.f, 0.f, angleVec.getX(), angleVec.getY(), angleVec.getZ(), 1.f, 1.f, 1.f, speed, 15.f, 25.f, true, 5 /* AP */, 10 /* HP */, 5.f, 2.f);
         bullet.Update(1);
 
         bool b = assertEquals(put.getPosVec(), bullet.getObject3D().getPosVec(), "pos");
