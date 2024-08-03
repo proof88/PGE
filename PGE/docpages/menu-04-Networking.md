@@ -322,13 +322,13 @@ PGE::runGame() {
 
 ```
 
-\subsection packet_rate Packet Rate and Packet Data Rate
+\subsection packet_rate Received Packet Rate and Packet Data Rate
 
-**Packet Rate** shows the number of packets processed per second by server or client.  
-I also calculate the estimated **Packet Data Rate** based on the packet rate and size of packets.  
+**Rx Packet Rate** shows the number of received packets processed per second by server or client.  
+I also calculate the estimated **Rx Packet Data Rate** based on the received packet rate and size of packets.  
 The improvements through versions are very decent and were really needed to solve [the packet congestion issue](https://github.com/proof88/PRooFPS-dd/issues/184).
 
-\subsubsection server_packet_rate Server Packet Rate and Packet Data Rate
+\subsubsection server_packet_rate Server Rx Packet Rate and Packet Data Rate
 
 In this section we talk about **client -> server** traffic.
 
@@ -349,7 +349,7 @@ Considering 8 players:
  - **v0.1.6.1, v0.2.0, v0.2.1, v0.2.2, v0.2.3, v0.2.4, v0.2.5, v0.2.6:**
    - same as v0.1.4, the new features did not affect network traffic in client -> server direction.
 
-\subsubsection client_packet_rate Client Packet Rate and Packet Data Rate
+\subsubsection client_packet_rate Client Rx Packet Rate and Packet Data Rate
 
 In this section we talk about **server -> client** traffic.
 
