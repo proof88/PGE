@@ -348,6 +348,8 @@ Considering 8 players:
      31 \* 128 = **3 968 Byte/s Packet Data Rate** on server-side with 8 players, which is only the 3% of v0.1.3!
  - **v0.1.6.1, v0.2.0, v0.2.1, v0.2.2, v0.2.3, v0.2.4, v0.2.5, v0.2.6:**
    - same as v0.1.4, the new features did not affect network traffic in client -> server direction.
+ - **v0.2.7 and onwards:**
+   - only the [PRooFPS-dd-Packet-Rates Excel workbook](PRooFPS-dd-Packet-Rates.xlsx) is kept updated.
 
 \subsubsection client_packet_rate Client Rx Packet Rate and Packet Data Rate
 
@@ -417,6 +419,8 @@ Considering 8 players, the results are to a single client from the server:
        - size of MsgWpnUpdateFromServer increased from 76 to 84 Bytes, thus serverPickupAndRespawnItems() generates slightly bigger traffic:
          - 540 PKT/s @ 60 Hz as per serverPickupAndRespawnItems(), with 60 \* 99 + (8\*60) \* 23 = 16980 Byte/s Packet Data Rate
            (size of MsgWpnUpdateFromServer is 84 Bytes, size of MsgMapItemUpdateFromServer is 8 Bytes, PgePacket overhead is 15 Bytes).
+ - **v0.2.7 and onwards:**
+   - only the [PRooFPS-dd-Packet-Rates Excel workbook](PRooFPS-dd-Packet-Rates.xlsx) is kept updated.
 
 Considering 8 players, the results to ALL clients from the server (because above shows results to 1 client from the server):  
 just multiply above results by 7 (server sending to itself avoids GNS level thus we multiply by nClientsCount instead of nPlayersCount):
@@ -429,7 +433,8 @@ just multiply above results by 7 (server sending to itself avoids GNS level thus
  - **v0.2.2.0:** 8 358 PKT/s with 474 894 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 95% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min;
  - **v0.2.3.0:** 8 456 PKT/s with 488 012 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 94% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min;
  - **v0.2.4, v0.2.5:** same as with v0.2.3;
- - **v0.2.6:** 8 456 PKT/s with 491 372 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 94% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min.
+ - **v0.2.6:** 8 456 PKT/s with 491 372 Byte/s Outgoing Packet Data Rate Total (72% decrease in packet rate and 94% decrease in packet data rate compared to v0.1.2) @ 60 Hz Tickrate & 20 Hz cl_updaterate & 60 Hz physics_rate_min;
+ - **v0.2.7 and onwards:** only the [PRooFPS-dd-Packet-Rates Excel workbook](PRooFPS-dd-Packet-Rates.xlsx) is kept updated.
 
 \subsubsection detailed_packet_rate Detailed Packet Rate per Function
 
