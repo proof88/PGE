@@ -52,24 +52,32 @@ protected:
 
         /* weapon load negative tests */
 
+        /* general config errors */
         AddSubTest("test_wpn_load_weapon_bad_assignment", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_bad_assignment);
         AddSubTest("test_wpn_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_unaccepted_var);
         AddSubTest("test_wpn_load_weapon_missing_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_missing_var);
         AddSubTest("test_wpn_load_weapon_double_defined_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_double_defined_var);
+        
+        /* reload config errors */
         AddSubTest("test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag);
         AddSubTest("test_wpn_load_weapon_reloadable_cannot_be_greater_than_cap_max", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_reloadable_cannot_be_greater_than_cap_max);
         AddSubTest("test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable);
         AddSubTest("test_wpn_load_weapon_bullets_default_cannot_be_greater_than_cap_max", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_bullets_default_cannot_be_greater_than_cap_max);
         AddSubTest("test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag);
+        AddSubTest("test_wpn_load_weapon_reload_end_snd_incompatible_with_no_reload_per_mag", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_reload_end_snd_incompatible_with_no_reload_per_mag);
+
+        /* firing, recoil and cooldown config errors */
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown);
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control);
         AddSubTest("test_wpn_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled);
         AddSubTest("test_wpn_firing_cooldown_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_firing_cooldown_must_be_positive);
+        AddSubTest("test_wpn_firing_mode_max_cannot_be_less_than_default", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_firing_mode_max_cannot_be_less_than_default);
+        AddSubTest("test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj);
+        
+        /* bullet config errors */
         AddSubTest("test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
         AddSubTest("test_wpn_load_weapon_damage_area_size_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_damage_area_size_cannot_be_negative);
         AddSubTest("test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse);
-        AddSubTest("test_wpn_firing_mode_max_cannot_be_less_than_default", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_firing_mode_max_cannot_be_less_than_default);
-        AddSubTest("test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj);
         AddSubTest("test_wpn_damage_hp_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_damage_hp_must_be_positive);
         AddSubTest("test_wpn_damage_ap_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_damage_ap_must_be_positive);
         
@@ -260,6 +268,13 @@ private:
             "reload_whole_mag is true but reload_per_mag is false");
     }
 
+    bool test_wpn_load_weapon_reload_end_snd_incompatible_with_no_reload_per_mag()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_reload_end_snd_incompatible_with_no_reload_per_mag.txt",
+            "reload_end_snd is set but reload_per_mag is false");
+    }
+
     bool test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown()
     {
         return test_helper_wpn_load_and_expect_exception(
@@ -368,6 +383,8 @@ private:
                 assertTrue(wpn.getVars()["reload_per_mag"].getAsBool(), "reload_per_mag") &
                 assertTrue(wpn.getVars()["reload_whole_mag"].getAsBool(), "reload_whole_mag") &
                 assertEquals(1500, wpn.getVars()["reload_time"].getAsInt(), "reload_time") &
+                assertEquals("reload_start_dummy.wav", wpn.getVars()["reload_start_snd"].getAsString(), "reload_start_snd") &
+                assertEquals("reload_end_dummy.wav", wpn.getVars()["reload_end_snd"].getAsString(), "reload_end_snd") &
                 assertEquals("auto", wpn.getVars()["firing_mode_def"].getAsString(), "firing_mode_def") &
                 assertEquals("auto", wpn.getVars()["firing_mode_max"].getAsString(), "firing_mode_max") &
                 assertEquals(150, wpn.getVars()["firing_cooldown"].getAsInt(), "firing_cooldown") &
@@ -1685,8 +1702,11 @@ private:
         std::list<Bullet> bullets;
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
-        b &= assertTrue(wm.setDefaultAvailableWeaponByFilename("sample_good_wpn_automatic.txt"), "setDefaultAvailable");
-        b &= assertTrue(wm.setCurrentWeapon(wm.getWeapons()[0], true, false), "setCurrentWeapon");
+        if (b)
+        {
+            b &= assertTrue(wm.setDefaultAvailableWeaponByFilename("sample_good_wpn_automatic.txt"), "setDefaultAvailable");
+            b &= assertTrue(wm.setCurrentWeapon(wm.getWeapons()[0], true, false), "setCurrentWeapon");
+        }
 
         wm.Clear();
 
@@ -2031,14 +2051,17 @@ private:
         constexpr int iPistol = 1;
         constexpr int iRailgun = 2;
 
-        b &= assertGreater(
-            wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
-            wm.getWeapons()[iPistol]->getDamagePerSecondRating(),
-            "DPSR of mchgun should be greater than pistol");
-        b &= assertGreater(
-            wm.getWeapons()[iRailgun]->getDamagePerSecondRating(),
-            wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
-            "DPSR of railgun should be greater than mchgun");
+        if (b)
+        {
+            b &= assertGreater(
+                wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
+                wm.getWeapons()[iPistol]->getDamagePerSecondRating(),
+                "DPSR of mchgun should be greater than pistol");
+            b &= assertGreater(
+                wm.getWeapons()[iRailgun]->getDamagePerSecondRating(),
+                wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
+                "DPSR of railgun should be greater than mchgun");
+        }
 
         if (b)
         {
@@ -2128,10 +2151,13 @@ private:
         constexpr int iMchgun = 0;
         constexpr int iPistol = 1;
 
-        b &= assertGreater(
-            wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
-            wm.getWeapons()[iPistol]->getDamagePerSecondRating(),
-            "DPSR of mchgun should be greater than pistol");
+        if (b)
+        {
+            b &= assertGreater(
+                wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
+                wm.getWeapons()[iPistol]->getDamagePerSecondRating(),
+                "DPSR of mchgun should be greater than pistol");
+        }
 
         if (b)
         {
@@ -2174,14 +2200,17 @@ private:
         constexpr int iPistol = 1;
         constexpr int iRailgun = 2;
 
-        b &= assertGreater(
-            wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
-            wm.getWeapons()[iPistol]->getDamagePerSecondRating(),
-            "DPSR of mchgun should be greater than pistol");
-        b &= assertGreater(
-            wm.getWeapons()[iRailgun]->getDamagePerSecondRating(),
-            wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
-            "DPSR of railgun should be greater than mchgun");
+        if (b)
+        {
+            b &= assertGreater(
+                wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
+                wm.getWeapons()[iPistol]->getDamagePerSecondRating(),
+                "DPSR of mchgun should be greater than pistol");
+            b &= assertGreater(
+                wm.getWeapons()[iRailgun]->getDamagePerSecondRating(),
+                wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
+                "DPSR of railgun should be greater than mchgun");
+        }
 
         if (b)
         {
@@ -2263,10 +2292,13 @@ private:
         constexpr int iMchgun = 0;
         constexpr int iPistol = 1;
 
-        b &= assertGreater(
-            wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
-            wm.getWeapons()[iPistol]->getDamagePerSecondRating(),
-            "DPSR of mchgun should be greater than pistol");
+        if (b)
+        {
+            b &= assertGreater(
+                wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
+                wm.getWeapons()[iPistol]->getDamagePerSecondRating(),
+                "DPSR of mchgun should be greater than pistol");
+        }
 
         if (b)
         {

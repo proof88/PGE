@@ -250,6 +250,8 @@ public:
 
     SoLoud::Wav& getFiringSound();
     SoLoud::Wav& getDryFiringSound();
+    SoLoud::Wav& getReloadStartSound();
+    SoLoud::Wav& getReloadEndSound();
 
     Weapon(const Weapon& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
         PGEcfgFile(other),
@@ -341,6 +343,8 @@ private:
     bool m_bTriggerReleased;                           /**< True if trigger is released, false when being pulled. True by default. */
     SoLoud::Wav m_sndShoot;
     SoLoud::Wav m_sndShootDry;
+    SoLoud::Wav m_sndReloadStart;
+    SoLoud::Wav m_sndReloadEnd;
 
     // ---------------------------------------------------------------------------
 

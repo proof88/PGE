@@ -291,6 +291,8 @@ Weapon::Weapon(
         m_WpnAcceptedVars.insert("reload_per_mag");
         m_WpnAcceptedVars.insert("reload_whole_mag");
         m_WpnAcceptedVars.insert("reload_time");
+        m_WpnAcceptedVars.insert("reload_start_snd");
+        m_WpnAcceptedVars.insert("reload_end_snd");
         m_WpnAcceptedVars.insert("firing_mode_def");
         m_WpnAcceptedVars.insert("firing_mode_max");
         m_WpnAcceptedVars.insert("firing_cooldown");
@@ -409,6 +411,12 @@ Weapon::Weapon(
         throw std::runtime_error("reload_whole_mag is true but reload_per_mag is false in " + std::string(fname));
     }
 
+    if (!getVars()["reload_end_snd"].getAsString().empty() && !getVars()["reload_per_mag"].getAsBool())
+    {
+        getConsole().EOLnOO("reload_end_snd is set but reload_per_mag is false in %s! ", fname);
+        throw std::runtime_error("reload_end_snd is set but reload_per_mag is false in " + std::string(fname));
+    }
+
     if (getVars()["firing_cooldown"].getAsInt() < 1)
     {
         getConsole().EOLnOO("firing_cooldown must be a positive value in %s! ", fname);
@@ -488,10 +496,12 @@ Weapon::Weapon(
         throw std::runtime_error("texture file was not found for " + std::string(fname));
     }
 
-    // finally we load sounds, failing to load is NOT fatal error, weapons will stay simply silent in such case, SoLoud handled that!
+    // finally we load sounds, failing to load is NOT fatal error, weapons will stay simply silent in such case, SoLoud handles that!
     // TODO: hardcoded directory should be coming from somewhere instead!
     m_audio.loadSound(m_sndShoot, std::string("gamedata\\audio\\weapons\\") + getVars()["firing_snd"].getAsString());
     m_audio.loadSound(m_sndShootDry, std::string("gamedata\\audio\\weapons\\") + getVars()["firing_dry_snd"].getAsString());
+    m_audio.loadSound(m_sndReloadStart, std::string("gamedata\\audio\\weapons\\") + getVars()["reload_start_snd"].getAsString());
+    m_audio.loadSound(m_sndReloadEnd, std::string("gamedata\\audio\\weapons\\") + getVars()["reload_end_snd"].getAsString());
 
     getConsole().SOLnOO("Weapon loaded!");
 }
@@ -1105,6 +1115,16 @@ SoLoud::Wav& Weapon::getFiringSound()
 SoLoud::Wav& Weapon::getDryFiringSound()
 {
     return m_sndShootDry;
+}
+
+SoLoud::Wav& Weapon::getReloadStartSound()
+{
+    return m_sndReloadStart;
+}
+
+SoLoud::Wav& Weapon::getReloadEndSound()
+{
+    return m_sndReloadEnd;
 }
 
 

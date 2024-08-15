@@ -51,6 +51,20 @@ reload_whole_mag = false
 # If reload_per_mag is false, this time meant to be per-bullet!
 reload_time = 0
 
+# Note on reload sounds:
+# - if reload_per_mag is true (e.g. pistol), then:
+#   - reload_start_snd is played at READY -> RELOADING state transition (beginning to reload);
+#   - reload_end_snd is played at RELOADING -> READY transition (finished reload);
+# - if reload_per_mag is false (e.g. bazooka), then:
+#   - reload_start_snd is played in RELOADING state whenever mag bullet count is increased by 1;
+#   - reload_end_snd is not used.
+
+# Sound of reload start (file non-existing, just setting something for unit tests)
+reload_start_snd = reload_start_dummy.wav
+
+# Sound of reload end (must be empty when reload_per_mag is false) (file non-existing, just setting something for unit tests)
+reload_end_snd =
+
 #################
 #               #
 #  FIRING MODE  #
@@ -84,9 +98,11 @@ firing_mode_max = burst
 # Cannot be 0.
 firing_cooldown = 700
 
-# These sounds are non-existing, just setting something for unit tests
-firing_snd = railgun_dummy.wav
-firing_dry_snd = railgun_dry_dummy.wav
+# Sound of a regular shot fired (non-existing, just setting something for unit tests)
+firing_snd = automatic_dummy.wav
+
+# Sound of pulled trigger with zero loaded bullet (non-existing, just setting something for unit tests)
+firing_dry_snd = automatic_dry_dummy.wav
 
 #####################
 #                   #
