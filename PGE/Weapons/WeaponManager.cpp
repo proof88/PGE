@@ -1139,6 +1139,7 @@ float Weapon::getDamagePerSecondRating() const
 
 /**
 * Returns a calculated accuracy based on player's pose.
+* This is basically the weapon's base accuracy (CVAR: acc_angle) modified by CVARS: acc_m_duck, acc_m_run, acc_m_walk. 
 * 
 * @param bMoving Set to true of player is moving (walk or run), or false if is still at the moment.
 * @param bRun    Used only if bMoving is true.
@@ -1147,7 +1148,7 @@ float Weapon::getDamagePerSecondRating() const
 * 
 * @return Calculated accuracy based on player's pose.
 */
-float Weapon::getAccuracyByPose(bool bMoving, bool bRun, bool bDuck)
+float Weapon::getAccuracyByPose(bool bMoving, bool bRun, bool bDuck) const
 {
     float fAccuracy = getVars().at("acc_angle").getAsFloat() * (bDuck ? getVars().at("acc_m_duck").getAsFloat() : 1.f);
 
@@ -1157,6 +1158,38 @@ float Weapon::getAccuracyByPose(bool bMoving, bool bRun, bool bDuck)
     }
 
     return fAccuracy;
+}
+
+/**
+* Returns the momentary recoil multiplier.
+*/
+float Weapon::getRecoilMultiplier() const
+{
+    // TODO implement later
+    return 1.f;
+}
+
+/**
+* Returns a random relative Z angle for a newborn bullet.
+* This relative Z angle is the difference of the absolute Z angles of the weapon and the newborn bullet.
+* The relative Z angle can be positive or negative but its absolute maximum value is the momentary accuracy (fMomAcc).
+* The momentary accuracy depends on multiple factors:
+*  - by-pose accuracy, as returned by getAccuracyByPose();
+*  - recoil multiplier, as returned by getRecoilMultiplier().
+* 
+* @param bMoving Same as for getAccuracyByPose().
+* @param bRun    Same as for getAccuracyByPose().
+* @param bDuck   Same as for getAccuracyByPose().
+*
+* @return A random relative Z angle for a newborn bullet, in the [-fMomAcc, fMomAcc] range.
+*/
+float Weapon::getRandomRelativeBulletAngle(bool bMoving, bool bRun, bool bDuck) const
+{
+    const float fAccuracyByPose = getAccuracyByPose(bMoving, bRun, bDuck);
+
+    return PFL::random(
+        static_cast<int>(std::lroundf(-fAccuracyByPose * 100)),
+        static_cast<int>(std::lroundf(fAccuracyByPose * 100))) / 100.f;
 }
 
 SoLoud::Wav& Weapon::getFiringSound()

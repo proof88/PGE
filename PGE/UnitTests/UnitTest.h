@@ -519,7 +519,7 @@ public:
         return msg == NULL ?
             assertTrue( (checked < comparedTo) || (abs(comparedTo-checked) <= epsilon),
                         toString(checked).append(" should be <= ").append(toString(comparedTo)).append("!").c_str() ) : 
-            assertTrue( checked < comparedTo,
+            assertTrue( (checked < comparedTo) || (abs(comparedTo-checked) <= epsilon),
                         toString(checked).append(" should be <= ").append(toString(comparedTo)).append(", ").append(msg).c_str() );
     }
 

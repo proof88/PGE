@@ -130,7 +130,8 @@ protected:
 
         /* operational tests: firing */
 
-        AddSubTest("test_wpn_accuracy_angle", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_accuracy_angle);
+        AddSubTest("test_wpn_accuracy_angle_by_pose", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_accuracy_angle_by_pose);
+        AddSubTest("test_wpn_get_random_relative_bullet_angle", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_random_relative_bullet_angle);
         AddSubTest("test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon);
         AddSubTest("test_wpn_release_trigger_after_shoot", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_release_trigger_after_shoot);
         AddSubTest("test_wpn_shoot_when_empty_does_not_shoot", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_when_empty_does_not_shoot);
@@ -1245,7 +1246,7 @@ private:
         return b;
     }
 
-    bool test_wpn_accuracy_angle()
+    bool test_wpn_accuracy_angle_by_pose()
     {
         bool b = false;
         try
@@ -1272,6 +1273,105 @@ private:
             b &= assertEquals(fAccAngle * fAccMRun * fAccMDuck, wpn.getAccuracyByPose(true /* bMoving */, true /* bRun */, true /* bDuck */), fEps, "moving, run, duck");
             b &= assertEquals(fAccAngle * fAccMWalk, wpn.getAccuracyByPose(true /* bMoving */, false /* bRun */, false /* bDuck */), fEps, "moving, walk, stand");
             b &= assertEquals(fAccAngle * fAccMWalk * fAccMDuck, wpn.getAccuracyByPose(true /* bMoving */, false /* bRun */, true /* bDuck */), fEps, "moving, walk, duck");
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_get_random_relative_bullet_angle()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+
+            constexpr float fEps = 0.001f;
+            b = true;
+
+            const float fMaxAbsAccAngleWhenStillRunStand = wpn.getAccuracyByPose(false /* bMoving */, true /* bRun */, false /* bDuck */);
+            int i = 0;
+            while (b && (i < 100))
+            {
+                const float fRandomRelativeAngle = wpn.getRandomRelativeBulletAngle(false /* bMoving */, true /* bRun */, false /* bDuck */);
+                b &= assertGequals(fMaxAbsAccAngleWhenStillRunStand, fRandomRelativeAngle, fEps, "still, run, stand");
+                b &= assertLequals(-fMaxAbsAccAngleWhenStillRunStand, fRandomRelativeAngle, fEps, "still, run, stand");
+                i++;
+            }
+
+            const float fMaxAbsAccAngleWhenStillRunDuck = wpn.getAccuracyByPose(false /* bMoving */, true /* bRun */, true /* bDuck */);
+            i = 0;
+            while (b && (i < 100))
+            {
+                const float fRandomRelativeAngle = wpn.getRandomRelativeBulletAngle(false /* bMoving */, true /* bRun */, true /* bDuck */);
+                b &= assertGequals(fMaxAbsAccAngleWhenStillRunDuck, fRandomRelativeAngle, fEps, "still, run, duck");
+                b &= assertLequals(-fMaxAbsAccAngleWhenStillRunDuck, fRandomRelativeAngle, fEps, "still, run, duck");
+                i++;
+            }
+
+            const float fMaxAbsAccAngleWhenStillWalkStand = wpn.getAccuracyByPose(false /* bMoving */, false /* bRun */, false /* bDuck */);
+            i = 0;
+            while (b && (i < 100))
+            {
+                const float fRandomRelativeAngle = wpn.getRandomRelativeBulletAngle(false /* bMoving */, false /* bRun */, false /* bDuck */);
+                b &= assertGequals(fMaxAbsAccAngleWhenStillWalkStand, fRandomRelativeAngle, fEps, "still, walk, stand");
+                b &= assertLequals(-fMaxAbsAccAngleWhenStillWalkStand, fRandomRelativeAngle, fEps, "still, walk, stand");
+                i++;
+            }
+
+            const float fMaxAbsAccAngleWhenStillWalkDuck = wpn.getAccuracyByPose(false /* bMoving */, false /* bRun */, true /* bDuck */);
+            i = 0;
+            while (b && (i < 100))
+            {
+                const float fRandomRelativeAngle = wpn.getRandomRelativeBulletAngle(false /* bMoving */, false /* bRun */, true /* bDuck */);
+                b &= assertGequals(fMaxAbsAccAngleWhenStillWalkDuck, fRandomRelativeAngle, fEps, "still, walk, duck");
+                b &= assertLequals(-fMaxAbsAccAngleWhenStillWalkDuck, fRandomRelativeAngle, fEps, "still, walk, duck");
+                i++;
+            }
+
+            const float fMaxAbsAccAngleWhenMovingRunStand = wpn.getAccuracyByPose(true /* bMoving */, true /* bRun */, false /* bDuck */);
+            i = 0;
+            while (b && (i < 100))
+            {
+                const float fRandomRelativeAngle = wpn.getRandomRelativeBulletAngle(false /* bMoving */, true /* bRun */, false /* bDuck */);
+                b &= assertGequals(fMaxAbsAccAngleWhenMovingRunStand, fRandomRelativeAngle, fEps, "moving, run, stand");
+                b &= assertLequals(-fMaxAbsAccAngleWhenMovingRunStand, fRandomRelativeAngle, fEps, "moving, run, stand");
+                i++;
+            }
+
+            const float fMaxAbsAccAngleWhenMovingRunDuck = wpn.getAccuracyByPose(true /* bMoving */, true /* bRun */, true /* bDuck */);
+            i = 0;
+            while (b && (i < 100))
+            {
+                const float fRandomRelativeAngle = wpn.getRandomRelativeBulletAngle(false /* bMoving */, true /* bRun */, true /* bDuck */);
+                b &= assertGequals(fMaxAbsAccAngleWhenMovingRunDuck, fRandomRelativeAngle, fEps, "moving, run, duck");
+                b &= assertLequals(-fMaxAbsAccAngleWhenMovingRunDuck, fRandomRelativeAngle, fEps, "moving, run, duck");
+                i++;
+            }
+
+            const float fMaxAbsAccAngleWhenMovingWalkStand = wpn.getAccuracyByPose(true /* bMoving */, false /* bRun */, false /* bDuck */);
+            i = 0;
+            while (b && (i < 100))
+            {
+                const float fRandomRelativeAngle = wpn.getRandomRelativeBulletAngle(false /* bMoving */, false /* bRun */, false /* bDuck */);
+                b &= assertGequals(fMaxAbsAccAngleWhenMovingWalkStand, fRandomRelativeAngle, fEps, "moving, walk, stand");
+                b &= assertLequals(-fMaxAbsAccAngleWhenMovingWalkStand, fRandomRelativeAngle, fEps, "moving, walk, stand");
+                i++;
+            }
+
+            const float fMaxAbsAccAngleWhenMovingWalkDuck = wpn.getAccuracyByPose(true /* bMoving */, false /* bRun */, true /* bDuck */);
+            i = 0;
+            while (b && (i < 100))
+            {
+                const float fRandomRelativeAngle = wpn.getRandomRelativeBulletAngle(false /* bMoving */, false /* bRun */, true /* bDuck */);
+                b &= assertGequals(fMaxAbsAccAngleWhenMovingWalkDuck, fRandomRelativeAngle, fEps, "moving, walk, duck");
+                b &= assertLequals(-fMaxAbsAccAngleWhenMovingWalkDuck, fRandomRelativeAngle, fEps, "moving, walk, duck");
+                i++;
+            }
         }
         catch (const std::exception& e)
         {

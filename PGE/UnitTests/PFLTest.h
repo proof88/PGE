@@ -54,7 +54,8 @@ protected:
         AddSubTest("testConstrain", (PFNUNITSUBTEST) &PFLTest::testConstrain);
         AddSubTest("testDegToRad", (PFNUNITSUBTEST) &PFLTest::testDegToRad);
         AddSubTest("testRadToDeg", (PFNUNITSUBTEST) &PFLTest::testRadToDeg);
-        AddSubTest("testRandom", (PFNUNITSUBTEST) &PFLTest::testRandom);
+        AddSubTest("testRandom1", (PFNUNITSUBTEST) &PFLTest::testRandom1);
+        AddSubTest("testRandom2", (PFNUNITSUBTEST)&PFLTest::testRandom2);
         AddSubTest("testLerp", (PFNUNITSUBTEST) &PFLTest::testLerp);
         AddSubTest("testSmooth", (PFNUNITSUBTEST)&PFLTest::testSmooth);
     }
@@ -367,7 +368,7 @@ private:
             assertEquals(180.0f, PFL::radToDeg(PFL::pi()), 0.001f, "pi");
     }   
 
-    bool testRandom()
+    bool testRandom1()
     {
         std::set<int> stdset;
         for (int i = 1; i <= 20; i++)
@@ -382,6 +383,22 @@ private:
 
         return assertTrue(stdset.empty(), "empty");
     }  
+
+    bool testRandom2()
+    {
+        std::set<int> stdset;
+        for (int i = -10; i <= 10; i++)
+            stdset.insert(i);
+
+        int i = 0;
+        while (!stdset.empty() && (i < 500))
+        {
+            stdset.erase(PFL::random(-10, 10));
+            i++;
+        }
+
+        return assertTrue(stdset.empty(), "empty");
+    }
 
     bool testLerp()
     {
