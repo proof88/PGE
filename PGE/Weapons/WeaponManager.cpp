@@ -423,6 +423,36 @@ Weapon::Weapon(
         throw std::runtime_error("firing_cooldown must be a positive value in " + std::string(fname));
     }
 
+    if (getVars()["acc_angle"].getAsFloat() < 0.f)
+    {
+        getConsole().EOLnOO("acc_angle cannot be negative in %s! ", fname);
+        throw std::runtime_error("acc_angle cannot be negative in " + std::string(fname));
+    }
+
+    if (getVars()["acc_m_walk"].getAsFloat() < 0.f)
+    {
+        getConsole().EOLnOO("acc_m_walk cannot be negative in %s! ", fname);
+        throw std::runtime_error("acc_m_walk cannot be negative in " + std::string(fname));
+    }
+
+    if (getVars()["acc_m_run"].getAsFloat() < 0.f)
+    {
+        getConsole().EOLnOO("acc_m_run cannot be negative in %s! ", fname);
+        throw std::runtime_error("acc_m_run cannot be negative in " + std::string(fname));
+    }
+
+    if (getVars()["acc_m_duck"].getAsFloat() < 0.f)
+    {
+        getConsole().EOLnOO("acc_m_duck cannot be negative in %s! ", fname);
+        throw std::runtime_error("acc_m_duck cannot be negative in " + std::string(fname));
+    }
+
+    if (getVars()["recoil_m"].getAsFloat() < 1.f)
+    {
+        getConsole().EOLnOO("recoil_m cannot be less than 1 in %s! ", fname);
+        throw std::runtime_error("recoil_m cannot be less than 1 in " + std::string(fname));
+    }
+
     if ( getVars()["recoil_m"].getAsFloat() > 1.f )
     {
         if ( getVars()["recoil_cooldown"].getAsInt() < getVars()["firing_cooldown"].getAsInt() )

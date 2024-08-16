@@ -50,15 +50,15 @@ protected:
         engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
 
-        /* weapon load negative tests */
+        /* weapon load negative tests: general config errors */
 
-        /* general config errors */
         AddSubTest("test_wpn_load_weapon_bad_assignment", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_bad_assignment);
         AddSubTest("test_wpn_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_unaccepted_var);
         AddSubTest("test_wpn_load_weapon_missing_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_missing_var);
         AddSubTest("test_wpn_load_weapon_double_defined_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_double_defined_var);
         
-        /* reload config errors */
+        /* weapon load negative tests: reload config errors */
+
         AddSubTest("test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag);
         AddSubTest("test_wpn_load_weapon_reloadable_cannot_be_greater_than_cap_max", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_reloadable_cannot_be_greater_than_cap_max);
         AddSubTest("test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable);
@@ -66,7 +66,16 @@ protected:
         AddSubTest("test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag);
         AddSubTest("test_wpn_load_weapon_reload_end_snd_incompatible_with_no_reload_per_mag", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_reload_end_snd_incompatible_with_no_reload_per_mag);
 
-        /* firing, recoil and cooldown config errors */
+        /* weapon load negative tests: accuracy config errors */
+
+        AddSubTest("test_wpn_load_weapon_acc_angle_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_acc_angle_cannot_be_negative);
+        AddSubTest("test_wpn_load_weapon_acc_m_walk_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_acc_m_walk_cannot_be_negative);
+        AddSubTest("test_wpn_load_weapon_acc_m_run_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_acc_m_run_cannot_be_negative);
+        AddSubTest("test_wpn_load_weapon_acc_m_duck_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_acc_m_duck_cannot_be_negative);
+        
+        /* weapon load negative tests: firing, recoil and cooldown config errors */
+
+        AddSubTest("test_wpn_load_weapon_recoil_cannot_be_less_than_1", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_recoil_cannot_be_less_than_1);
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown);
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control);
         AddSubTest("test_wpn_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled);
@@ -74,7 +83,8 @@ protected:
         AddSubTest("test_wpn_firing_mode_max_cannot_be_less_than_default", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_firing_mode_max_cannot_be_less_than_default);
         AddSubTest("test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj);
         
-        /* bullet config errors */
+        /* weapon load negative tests: bullet config errors */
+
         AddSubTest("test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
         AddSubTest("test_wpn_load_weapon_damage_area_size_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_damage_area_size_cannot_be_negative);
         AddSubTest("test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse);
@@ -92,7 +102,18 @@ protected:
         AddSubTest("test_wpn_set_mag_bullet_count", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_set_mag_bullet_count);
         AddSubTest("test_wpn_set_unmag_bullet_count", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_set_unmag_bullet_count);
         AddSubTest("test_wpn_inc_bullet_count", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_inc_bullet_count);
+
+        AddSubTest("test_wpn_update_position_updates_weapon_object_position", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_update_position_updates_weapon_object_position);
+        AddSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle_1", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle_1);
+        AddSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle_2", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle_2);
+
+        AddSubTest("test_wpn_get_damage_per_fire_rating", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_damage_per_fire_rating);
+        AddSubTest("test_wpn_get_damage_per_second_rating", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_damage_per_second_rating);
+
+        AddSubTest("test_wpn_client_receive_state_from_server", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_client_receive_state_from_server);
         
+        /* operational tests: reload */
+
         AddSubTest("test_wpn_reload_when_no_more_bullets_does_not_reload", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_when_no_more_bullets_does_not_reload);
         AddSubTest("test_wpn_reload_when_full_does_not_reload", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_when_full_does_not_reload);
         AddSubTest("test_wpn_reload_when_not_reloadable_does_not_reload", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_when_not_reloadable_does_not_reload);
@@ -107,12 +128,10 @@ protected:
         AddSubTest("test_wpn_reload_per_bullet_is_one_by_one", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_per_bullet_is_one_by_one);
         AddSubTest("test_wpn_reload_doesnt_reload_when_already_reloading", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_doesnt_reload_when_already_reloading);
 
-        AddSubTest("test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon);
-        AddSubTest("test_wpn_release_trigger_after_shoot", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_release_trigger_after_shoot);
-        AddSubTest("test_wpn_update_position_updates_weapon_object_position", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_update_position_updates_weapon_object_position);
-        AddSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle_1", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle_1);
-        AddSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle_2", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle_2);
+        /* operational tests: firing */
 
+        AddSubTest("test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon);
+        AddSubTest("test_wpn_release_trigger_after_shoot", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_release_trigger_after_shoot);
         AddSubTest("test_wpn_shoot_when_empty_does_not_shoot", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_when_empty_does_not_shoot);
         AddSubTest("test_wpn_shoot_during_reloading_per_mag_does_not_shoot", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_during_reloading_per_mag_does_not_shoot);
         AddSubTest("test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading);
@@ -121,12 +140,9 @@ protected:
         AddSubTest("test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop);
         AddSubTest("test_wpn_reload_doesnt_reload_during_shooting", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_doesnt_reload_during_shooting);
         AddSubTest("test_wpn_reset_sets_defaults", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_reset_sets_defaults);
-
-        AddSubTest("test_wpn_get_damage_per_fire_rating", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_damage_per_fire_rating);
-        AddSubTest("test_wpn_get_damage_per_second_rating", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_damage_per_second_rating);
-
-        AddSubTest("test_wpn_client_receive_state_from_server", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_client_receive_state_from_server);
         
+        /* WeaponManager */
+
         AddSubTest("test_wm_initially_empty", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_initially_empty);
         AddSubTest("test_wm_clear_weapons", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_clear_weapons);
         AddSubTest("test_wm_set_default_available_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_set_default_available_weapon);
@@ -273,6 +289,41 @@ private:
         return test_helper_wpn_load_and_expect_exception(
             "gamedata/weapons/wpn_test_reload_end_snd_incompatible_with_no_reload_per_mag.txt",
             "reload_end_snd is set but reload_per_mag is false");
+    }
+
+    bool test_wpn_load_weapon_acc_angle_cannot_be_negative()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_acc_angle_cannot_be_negative.txt",
+            "acc_angle cannot be negative");
+    }
+
+    bool test_wpn_load_weapon_acc_m_walk_cannot_be_negative()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_acc_m_walk_cannot_be_negative.txt",
+            "acc_m_walk cannot be negative");
+    }
+
+    bool test_wpn_load_weapon_acc_m_run_cannot_be_negative()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_acc_m_run_cannot_be_negative.txt",
+            "acc_m_run cannot be negative");
+    }
+
+    bool test_wpn_load_weapon_acc_m_duck_cannot_be_negative()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_acc_m_duck_cannot_be_negative.txt",
+            "acc_m_duck cannot be negative");
+    }
+
+    bool test_wpn_load_weapon_recoil_cannot_be_less_than_1()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_recoil_cannot_be_less_than_1.txt",
+            "recoil_m cannot be less than 1");
     }
 
     bool test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown()
@@ -581,6 +632,210 @@ private:
             b &= assertEquals(999u, wpn.getMagBulletCount(), "7");
 
             b &= assertFalse(wpn.canIncBulletCount(), "can yyy");
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_update_position_updates_weapon_object_position()
+    {
+        bool b = false;
+
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            b = true;
+
+            wpn.UpdatePosition(PureVector(10.f, 20.f, 30.f), false);
+            b &= assertEquals(PureVector(10.f, 20.f + Weapon::WpnYBiasToPlayerCenter, 30.f), wpn.getObject3D().getPosVec(), "pos 1");
+
+            wpn.UpdatePosition(PureVector(10.f, 20.f, 30.f), true);
+            b &= assertEquals(PureVector(10.f, 20.f, 30.f), wpn.getObject3D().getPosVec(), "pos 2");
+
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_update_positions_updates_weapon_object_position_and_angle_1()
+    {
+        bool b = false;
+
+        /*
+          By default with AngleY 0° and AngleZ 0°, weapon looks to <- direction.
+
+           When AngleY is 0, and:
+            - AngleZ is 0, it means weapon looks to <- direction.
+                                                      ^
+            - AngleZ is -45, it means weapon looks to  \  direction.
+
+            - AngleZ is 45, it means weapon looks to  /  direction.
+                                                     ¡
+
+           When AngleY is 180, and:
+            - AngleZ is 0, it means weapon looks to -> direction.
+                                                       ^
+            - AngleZ is -45, it means weapon looks to /  direction.
+
+            - AngleZ is 45, it means weapon looks to \  direction.
+                                                      ¡
+
+           This means that when targetX is less than posX, then angleY should be 0°, otherwise it needs to be 180°, and angleX always needs to be between 90° and -90°.
+
+           Y
+           ^
+           |
+           |  (x)          (x) is the xhair, (w) is the weapon, and ß is angleZ of wpn we need to set.
+           |   |\           Length of A and B are obviously known. Thus tanß can be calculated by B/A, so ß in radians will be arctan(B/A).
+           |  B|  \
+           |   |___ß\(w)
+           |     A
+          -|------------------------->X
+           |
+        */
+
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            b = true;
+
+            // this test requires proper camera direction, since getCamera().project3dTo2d() is invoked by Weapon::UpdatePositions(PureVector,PureVector)
+            engine->getCamera().SetNearPlane(0.1f);
+            engine->getCamera().SetFarPlane(100.0f);
+            engine->getCamera().getPosVec().Set(0, 0, -5);
+            engine->getCamera().getTargetVec().Set(0, 0, 1);
+
+            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
+            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
+
+            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::WpnYBiasToPlayerCenter, 0.f), PureVector(1.f, 1.f, 0.f));
+            b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 1");
+            b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 180.f, -45.f), wpn.getObject3D().getAngleVec(), "angle right up");
+
+            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
+            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
+
+            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::WpnYBiasToPlayerCenter, 0.f), PureVector(-1.f, 1.f, 0.f));
+            b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 2");
+            b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 0.f, -45.f), wpn.getObject3D().getAngleVec(), "angle left up");
+
+            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
+            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
+
+            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::WpnYBiasToPlayerCenter, 0.f), PureVector(-1.f, -1.f, 0.f));
+            b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 3");
+            b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 0.f, 45.f), wpn.getObject3D().getAngleVec(), "angle left bottom");
+
+            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
+            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
+
+            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::WpnYBiasToPlayerCenter, 0.f), PureVector(-1.f, -1.f, 0.f));
+            b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 4");
+            b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 0.f, 45.f), wpn.getObject3D().getAngleVec(), "angle right bottom");
+
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_update_positions_updates_weapon_object_position_and_angle_2()
+    {
+        bool b = false;
+
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            b = true;
+
+            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
+            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
+
+            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::WpnYBiasToPlayerCenter, 0.f), 180.f, 60.f);
+            b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos");
+            b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 180.f, 60.f), wpn.getObject3D().getAngleVec(), "angle");
+
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_get_damage_per_fire_rating()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+
+            b = assertEquals((wpn.getVars().at("damage_hp").getAsInt() * wpn.getVars().at("damage_ap").getAsInt()) / 100.f,
+                wpn.getDamagePerFireRating(), 0.001f, "1");
+            b &= assertBetween(0.01f, 100.f, wpn.getDamagePerFireRating(), 0.001f, "2");
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_get_damage_per_second_rating()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+
+            b = assertEquals(std::powf(1000.f / wpn.getVars().at("firing_cooldown").getAsInt() * wpn.getDamagePerFireRating(), 2.f),
+                wpn.getDamagePerSecondRating(), 0.001f, "1");
+            b &= assertGreater(wpn.getDamagePerSecondRating(), 0.f, "2");
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_client_receive_state_from_server()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+
+            b = assertEquals(Weapon::State::WPN_READY, wpn.getState(), "new state 1");
+            b &= assertEquals(Weapon::State::WPN_READY, wpn.getState().getOld(), "old state 1");
+
+            wpn.clientReceiveStateFromServer(Weapon::State::WPN_RELOADING);
+            b &= assertEquals(Weapon::State::WPN_RELOADING, wpn.getState(), "new state 2");
+            b &= assertEquals(Weapon::State::WPN_READY, wpn.getState().getOld(), "old state 2");
+
+            wpn.clientReceiveStateFromServer(Weapon::State::WPN_SHOOTING);
+            b &= assertEquals(Weapon::State::WPN_SHOOTING, wpn.getState(), "new state 3");
+            b &= assertEquals(Weapon::State::WPN_RELOADING, wpn.getState().getOld(), "old state 3");
         }
         catch (const std::exception& e)
         {
@@ -980,6 +1235,68 @@ private:
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 2");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 2");
             b &= assertTrue(wpn.getState().isDirty(), "state dirty 2");
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon()
+    {
+        bool b = false;
+        const pge_network::PgeNetworkConnectionHandle connHandle = 52;
+
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, connHandle);
+            b = true;
+
+            wpn.getObject3D().getPosVec().Set(1.f, 2.f, 3.f);
+            wpn.getObject3D().getAngleVec().Set(30.f, 40.f, 50.f);
+            b &= assertTrue(wpn.pullTrigger(), "shoot");
+            b &= assertFalse(wpn.isTriggerReleased(), "trigger");
+            b &= assertEquals(1u, bullets.size(), "size");
+
+            if (b)
+            {
+                const Bullet& bullet = *bullets.begin();
+                b &= assertEquals(wpn.getObject3D().getPosVec(), bullet.getObject3D().getPosVec(), "pos");
+                b &= assertEquals(wpn.getObject3D().getAngleVec(), bullet.getObject3D().getAngleVec(), "angle");
+                b &= assertEquals(connHandle, bullet.getOwner(), "bullet owner");
+                b &= assertEquals(wpn.getVars()["damage_hp"].getAsInt(), bullet.getDamageHp(), "damageHp");
+            }
+
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_release_trigger_after_shoot()
+    {
+        bool b = false;
+        const pge_network::PgeNetworkConnectionHandle connHandle = 52;
+
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, connHandle);
+            b = true;
+
+            b &= assertTrue(wpn.pullTrigger(), "shoot");
+            b &= assertFalse(wpn.isTriggerReleased(), "trigger 1");
+
+            // wpn state cares about cooldown, but trigger state is controlled by input
+            wpn.releaseTrigger();
+            b &= assertTrue(wpn.isTriggerReleased(), "trigger 2");
+
         }
         catch (const std::exception& e)
         {
@@ -1411,272 +1728,6 @@ private:
             b &= assertFalse(wpn.isAvailable(), "available");
             b &= assertTrue(wpn.isTriggerReleased(), "trigger");
             b &= assertEquals(Weapon::State::WPN_READY, wpn.getState(), "state");
-
-        }
-        catch (const std::exception& e)
-        {
-            assertTrue(false, e.what());
-        }
-
-        return b;
-    }
-
-    bool test_wpn_get_damage_per_fire_rating()
-    {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
-
-            b = assertEquals((wpn.getVars().at("damage_hp").getAsInt() * wpn.getVars().at("damage_ap").getAsInt()) / 100.f,
-                wpn.getDamagePerFireRating(), 0.001f, "1");
-            b &= assertBetween(0.01f, 100.f, wpn.getDamagePerFireRating(), 0.001f, "2");
-        }
-        catch (const std::exception& e)
-        {
-            assertTrue(false, e.what());
-        }
-
-        return b;
-    }
-
-    bool test_wpn_get_damage_per_second_rating()
-    {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
-
-            b = assertEquals(std::powf(1000.f / wpn.getVars().at("firing_cooldown").getAsInt() * wpn.getDamagePerFireRating(), 2.f),
-                wpn.getDamagePerSecondRating(), 0.001f, "1");
-            b &= assertGreater(wpn.getDamagePerSecondRating(), 0.f, "2");
-        }
-        catch (const std::exception& e)
-        {
-            assertTrue(false, e.what());
-        }
-
-        return b;
-    }
-
-    bool test_wpn_client_receive_state_from_server()
-    {
-        bool b = false;
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
-
-            b = assertEquals(Weapon::State::WPN_READY, wpn.getState(), "new state 1");
-            b &= assertEquals(Weapon::State::WPN_READY, wpn.getState().getOld(), "old state 1");
-            
-            wpn.clientReceiveStateFromServer(Weapon::State::WPN_RELOADING);
-            b &= assertEquals(Weapon::State::WPN_RELOADING, wpn.getState(), "new state 2");
-            b &= assertEquals(Weapon::State::WPN_READY, wpn.getState().getOld(), "old state 2");
-
-            wpn.clientReceiveStateFromServer(Weapon::State::WPN_SHOOTING);
-            b &= assertEquals(Weapon::State::WPN_SHOOTING, wpn.getState(), "new state 3");
-            b &= assertEquals(Weapon::State::WPN_RELOADING, wpn.getState().getOld(), "old state 3");
-        }
-        catch (const std::exception& e)
-        {
-            assertTrue(false, e.what());
-        }
-
-        return b;
-    }
-
-    bool test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon()
-    {
-        bool b = false;
-        const pge_network::PgeNetworkConnectionHandle connHandle = 52;
-
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, connHandle);
-            b = true;
-
-            wpn.getObject3D().getPosVec().Set(1.f, 2.f, 3.f);
-            wpn.getObject3D().getAngleVec().Set(30.f, 40.f, 50.f);
-            b &= assertTrue(wpn.pullTrigger(), "shoot");
-            b &= assertFalse(wpn.isTriggerReleased(), "trigger");
-            b &= assertEquals(1u, bullets.size(), "size");
-            
-            if ( b )
-            {
-                const Bullet& bullet = *bullets.begin();
-                b &= assertEquals(wpn.getObject3D().getPosVec(), bullet.getObject3D().getPosVec(), "pos");
-                b &= assertEquals(wpn.getObject3D().getAngleVec(), bullet.getObject3D().getAngleVec(), "angle");
-                b &= assertEquals(connHandle, bullet.getOwner(), "bullet owner");
-                b &= assertEquals(wpn.getVars()["damage_hp"].getAsInt(), bullet.getDamageHp(), "damageHp");
-            }
-
-        }
-        catch (const std::exception& e)
-        {
-            assertTrue(false, e.what());
-        }
-
-        return b;
-    }
-
-    bool test_wpn_release_trigger_after_shoot()
-    {
-        bool b = false;
-        const pge_network::PgeNetworkConnectionHandle connHandle = 52;
-
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, connHandle);
-            b = true;
-
-            b &= assertTrue(wpn.pullTrigger(), "shoot");
-            b &= assertFalse(wpn.isTriggerReleased(), "trigger 1");
-
-            // wpn state cares about cooldown, but trigger state is controlled by input
-            wpn.releaseTrigger();
-            b &= assertTrue(wpn.isTriggerReleased(), "trigger 2");
-
-        }
-        catch (const std::exception& e)
-        {
-            assertTrue(false, e.what());
-        }
-
-        return b;
-    }
-
-    bool test_wpn_update_position_updates_weapon_object_position()
-    {
-        bool b = false;
-
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
-            b = true;
-
-            wpn.UpdatePosition(PureVector(10.f, 20.f, 30.f), false);
-            b &= assertEquals(PureVector(10.f, 20.f + Weapon::WpnYBiasToPlayerCenter, 30.f), wpn.getObject3D().getPosVec(), "pos 1");
-
-            wpn.UpdatePosition(PureVector(10.f, 20.f, 30.f), true);
-            b &= assertEquals(PureVector(10.f, 20.f, 30.f), wpn.getObject3D().getPosVec(), "pos 2");
-
-        }
-        catch (const std::exception& e)
-        {
-            assertTrue(false, e.what());
-        }
-
-        return b;
-    }
-
-    bool test_wpn_update_positions_updates_weapon_object_position_and_angle_1()
-    {
-        bool b = false;
-
-        /*
-          By default with AngleY 0° and AngleZ 0°, weapon looks to <- direction.
-          
-           When AngleY is 0, and:
-            - AngleZ is 0, it means weapon looks to <- direction.
-                                                      ^
-            - AngleZ is -45, it means weapon looks to  \  direction.
-                                                     
-            - AngleZ is 45, it means weapon looks to  /  direction.
-                                                     ¡
-          
-           When AngleY is 180, and:
-            - AngleZ is 0, it means weapon looks to -> direction.
-                                                       ^
-            - AngleZ is -45, it means weapon looks to /  direction.
-          
-            - AngleZ is 45, it means weapon looks to \  direction.
-                                                      ¡
-          
-           This means that when targetX is less than posX, then angleY should be 0°, otherwise it needs to be 180°, and angleX always needs to be between 90° and -90°.
-          
-           Y
-           ^
-           |
-           |  (x)          (x) is the xhair, (w) is the weapon, and ß is angleZ of wpn we need to set.
-           |   |\           Length of A and B are obviously known. Thus tanß can be calculated by B/A, so ß in radians will be arctan(B/A).
-           |  B|  \
-           |   |___ß\(w)
-           |     A
-          -|------------------------->X
-           |
-        */
-
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
-            b = true;
-
-            // this test requires proper camera direction, since getCamera().project3dTo2d() is invoked by Weapon::UpdatePositions(PureVector,PureVector)
-            engine->getCamera().SetNearPlane(0.1f);
-            engine->getCamera().SetFarPlane(100.0f);
-            engine->getCamera().getPosVec().Set(0, 0, -5);
-            engine->getCamera().getTargetVec().Set(0, 0, 1);
-
-            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
-            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
-
-            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::WpnYBiasToPlayerCenter, 0.f), PureVector(1.f, 1.f, 0.f));
-            b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 1");
-            b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 180.f, -45.f), wpn.getObject3D().getAngleVec(), "angle right up");
-
-            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
-            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
-
-            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::WpnYBiasToPlayerCenter, 0.f), PureVector(-1.f, 1.f, 0.f));
-            b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 2");
-            b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 0.f, -45.f), wpn.getObject3D().getAngleVec(), "angle left up");
-
-            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
-            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
-
-            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::WpnYBiasToPlayerCenter, 0.f), PureVector(-1.f, -1.f, 0.f));
-            b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 3");
-            b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 0.f, 45.f), wpn.getObject3D().getAngleVec(), "angle left bottom");
-
-            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
-            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
-
-            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::WpnYBiasToPlayerCenter, 0.f), PureVector(-1.f, -1.f, 0.f));
-            b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos 4");
-            b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 0.f, 45.f), wpn.getObject3D().getAngleVec(), "angle right bottom");
-
-        }
-        catch (const std::exception& e)
-        {
-            assertTrue(false, e.what());
-        }
-
-        return b;
-    }
-
-    bool test_wpn_update_positions_updates_weapon_object_position_and_angle_2()
-    {
-        bool b = false;
-
-        try
-        {
-            std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
-            b = true;
-
-            wpn.getObject3D().getPosVec().Set(30.f, 30.f, 30.f);
-            wpn.getObject3D().getAngleVec().Set(-30.f, -30.f, -30.f);
-
-            wpn.UpdatePositions(PureVector(0.f, 0.f - Weapon::WpnYBiasToPlayerCenter, 0.f), 180.f, 60.f);
-            b &= assertEquals(PureVector(0.f, 0.f, 0.f), wpn.getObject3D().getPosVec(), "pos");
-            b &= assertEquals(PureVector(-30.f /* angleX is untouched */, 180.f, 60.f), wpn.getObject3D().getAngleVec(), "angle");
 
         }
         catch (const std::exception& e)

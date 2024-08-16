@@ -1,10 +1,12 @@
-# Lines starting with hashtag are comments and ignored by loader
+# Lines starting with hashtag are comments and ignored by loader.
 
-# Blank lines are also ignored by loader
+# Blank lines are also ignored by loader.
 
-# Variable name are case-insensitive, so "Name =" is same as "name =" or "NAME ="
+# Variable name are case-insensitive, so "Name =" is same as "name =" or "NAME =".
 
-# Name of the weapon is that will be displayed in GUI
+# If opened in Notepad++, I recommend setting INI or Makefile syntax highlighting in Language menu.
+
+# Name of the weapon is that will be displayed in GUI.
 Name = Sample Weapon 1
 
 # Preview Image is not needed to be explicitly defined here, as
@@ -117,7 +119,7 @@ firing_dry_snd = automatic_dry_dummy.wav
 # Relative angle is randomized in [-acc_angle, acc_angle] range.
 # 0 means maximum accuracy i.e. always shooting the middle of the crosshair.
 # Cannot be negative.
-acc_angle = 5.0
+acc_angle = -1
 
 # Multipliers of acc_angle in different player poses.
 # Multiple multipliers can be in effect at the same time, e.g.
@@ -185,7 +187,7 @@ bullet_fragile = true
 
 # Damage to health when hit directly.
 # If firing mode is "proj" or "burst", each hitting bullet or projectile takes this amount of damage.
-damage_hp = 0
+damage_hp = 20
 
 # Damage to armor when hit directly.
 # If firing mode is "proj" or "burst", each hitting bullet or projectile takes this amount of damage.
