@@ -245,8 +245,10 @@ public:
     bool isAvailable() const;          /**< Returns if this weapon is available for the player. */
     void SetAvailable(bool bAvail);    /**< Changes the availability of this weapon for the player. */
 
-    const float getDamagePerFireRating() const;    /**< Returns a calculated rating of damage caused by a single shot fired. */
-    const float getDamagePerSecondRating() const;  /**< Returns a calculated rating of total damage per 1 second. */
+    float getDamagePerFireRating() const;    /**< Returns a calculated rating of damage caused by a single shot fired. */
+    float getDamagePerSecondRating() const;  /**< Returns a calculated rating of total damage per 1 second. */
+
+    float getAccuracyByPose(bool bMoving, bool bRun, bool bDuck);  /**< Returns a calculated accuracy based on player's pose. */
 
     SoLoud::Wav& getFiringSound();
     SoLoud::Wav& getDryFiringSound();

@@ -1107,7 +1107,7 @@ void Weapon::SetAvailable(bool bAvail)
 * 
 * @return DPFR (Damage per Fire Rating) caused by a single shot fired, calculated as: damage_hp * damage_ap / 100.f.
 */
-const float Weapon::getDamagePerFireRating() const
+float Weapon::getDamagePerFireRating() const
 {
     /*
       damage_hp       -> greater is better
@@ -1127,7 +1127,7 @@ const float Weapon::getDamagePerFireRating() const
 * 
 * @return DPSR (Damage per Second Rating), calculated as: (1000.f/firing_cooldown * DPFR)^2.
 */
-const float Weapon::getDamagePerSecondRating() const
+float Weapon::getDamagePerSecondRating() const
 {
     /*
       reloadable      -> greater is better
@@ -1135,6 +1135,28 @@ const float Weapon::getDamagePerSecondRating() const
       firing_cooldown -> smaller is better
     */
     return std::powf(1000.f / getVars().at("firing_cooldown").getAsInt() * getDamagePerFireRating(), 2.f);
+}
+
+/**
+* Returns a calculated accuracy based on player's pose.
+* 
+* @param bMoving Set to true of player is moving (walk or run), or false if is still at the moment.
+* @param bRun    Used only if bMoving is true.
+*                If bRun is true, CVAR acc_m_run will be used, otherwise CVAR acc_m_walk will be used for calculation.
+* @param bDuck   If true, accuracy will be multiplied by CVAR acc_m_duck.
+* 
+* @return Calculated accuracy based on player's pose.
+*/
+float Weapon::getAccuracyByPose(bool bMoving, bool bRun, bool bDuck)
+{
+    float fAccuracy = getVars().at("acc_angle").getAsFloat() * (bDuck ? getVars().at("acc_m_duck").getAsFloat() : 1.f);
+
+    if (bMoving)
+    {
+        fAccuracy *= bRun ? getVars().at("acc_m_run").getAsFloat() : getVars().at("acc_m_walk").getAsFloat();
+    }
+
+    return fAccuracy;
 }
 
 SoLoud::Wav& Weapon::getFiringSound()

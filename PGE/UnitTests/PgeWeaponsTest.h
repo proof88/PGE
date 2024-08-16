@@ -130,6 +130,7 @@ protected:
 
         /* operational tests: firing */
 
+        AddSubTest("test_wpn_accuracy_angle", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_accuracy_angle);
         AddSubTest("test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon);
         AddSubTest("test_wpn_release_trigger_after_shoot", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_release_trigger_after_shoot);
         AddSubTest("test_wpn_shoot_when_empty_does_not_shoot", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_when_empty_does_not_shoot);
@@ -1235,6 +1236,42 @@ private:
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 2");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 2");
             b &= assertTrue(wpn.getState().isDirty(), "state dirty 2");
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_accuracy_angle()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+
+            constexpr float fEps = 0.001f;
+            const float fAccAngle = wpn.getVars().at("acc_angle").getAsFloat();
+            const float fAccMDuck = wpn.getVars().at("acc_m_duck").getAsFloat();
+            const float fAccMRun = wpn.getVars().at("acc_m_run").getAsFloat();
+            const float fAccMWalk = wpn.getVars().at("acc_m_walk").getAsFloat();
+
+            b = true;
+
+            // bMoving is false so run and walk are ignored
+            b &= assertEquals(fAccAngle, wpn.getAccuracyByPose(false /* bMoving */, true /* bRun */, false /* bDuck */), fEps, "still, run, stand");
+            b &= assertEquals(fAccAngle * fAccMDuck, wpn.getAccuracyByPose(false /* bMoving */, true /* bRun */, true /* bDuck */), fEps, "still, run, duck");
+            b &= assertEquals(fAccAngle, wpn.getAccuracyByPose(false /* bMoving */, false /* bRun */, false /* bDuck */), fEps, "still, walk, stand");
+            b &= assertEquals(fAccAngle * fAccMDuck, wpn.getAccuracyByPose(false /* bMoving */, false /* bRun */, true /* bDuck */), fEps, "still, walk, duck");
+
+            // bMoving is true so run and walk are now considered
+            b &= assertEquals(fAccAngle * fAccMRun, wpn.getAccuracyByPose(true /* bMoving */, true /* bRun */, false /* bDuck */), fEps, "moving, run, stand");
+            b &= assertEquals(fAccAngle * fAccMRun * fAccMDuck, wpn.getAccuracyByPose(true /* bMoving */, true /* bRun */, true /* bDuck */), fEps, "moving, run, duck");
+            b &= assertEquals(fAccAngle * fAccMWalk, wpn.getAccuracyByPose(true /* bMoving */, false /* bRun */, false /* bDuck */), fEps, "moving, walk, stand");
+            b &= assertEquals(fAccAngle * fAccMWalk * fAccMDuck, wpn.getAccuracyByPose(true /* bMoving */, false /* bRun */, true /* bDuck */), fEps, "moving, walk, duck");
         }
         catch (const std::exception& e)
         {
