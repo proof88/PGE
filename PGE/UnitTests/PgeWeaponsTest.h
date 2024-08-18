@@ -471,9 +471,12 @@ private:
 
     bool test_wpn_state_to_string()
     {
-        return assertEquals("READY", Weapon::stateToString(Weapon::WPN_READY)) &
+        bool b = true;
+        b &= assertEquals("READY", Weapon::stateToString(Weapon::WPN_READY)) &
             assertEquals("RELOADING", Weapon::stateToString(Weapon::WPN_RELOADING)) &
             assertEquals("SHOOTING", Weapon::stateToString(Weapon::WPN_SHOOTING));
+
+        return b;
     }
 
     bool test_wpn_load_weapon_good()
@@ -1938,10 +1941,13 @@ private:
     {
         std::list<Bullet> bullets;
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
-        return assertTrue(wm.getWeapons().empty(), "weapons") & assertTrue(wm.getBullets().empty(), "bullets") &
+        bool b = true;
+        b &= assertTrue(wm.getWeapons().empty(), "weapons") & assertTrue(wm.getBullets().empty(), "bullets") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon") &
             assertNull(wm.getCurrentWeapon(), "currentWeapon") &
             assertEquals(0, wm.getTimeLastWeaponSwitch().time_since_epoch().count(), "last wpn switch");
+
+        return b;
     }
 
     bool test_wm_clear_weapons()
@@ -1957,10 +1963,12 @@ private:
 
         wm.Clear();
 
-        return b & assertTrue(wm.getWeapons().empty(), "empty") &
+        b &= assertTrue(wm.getWeapons().empty(), "empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon") &
             assertNull(wm.getCurrentWeapon(), "currentWeapon") &
             assertEquals(0, wm.getTimeLastWeaponSwitch().time_since_epoch().count(), "last wpn switch");
+
+        return b;
     }
 
     bool test_wm_set_default_available_weapon()
