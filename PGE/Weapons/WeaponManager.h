@@ -236,7 +236,10 @@ public:
     void clientReceiveStateFromServer(const State& state);
     void updateOldValues();
     TPureBool reload();                /**< Reloads the weapon i.e. moves some "unmag" bullets into "mag" bullet count. */
-    TPureBool pullTrigger();           /**< Pulls the trigger of the weapon, which might result in shooting the weapon. */
+    TPureBool pullTrigger(
+        bool bMoving,
+        bool bRun,
+        bool bDuck);                   /**< Pulls the trigger of the weapon, which might result in shooting the weapon. */
     void releaseTrigger();             /**< Releases the trigger of the weapon. */
     bool isTriggerReleased() const;    /**< Returns the state of the trigger. */
 
@@ -250,6 +253,7 @@ public:
 
     float getAccuracyByPose(bool bMoving, bool bRun, bool bDuck) const;  /**< Returns a calculated accuracy based on player's pose. */
     float getRecoilMultiplier() const; /**< Returns the momentary recoil multiplier. */
+    float getMomentaryAccuracy(bool bMoving, bool bRun, bool bDuck) const;  /**< Returns the calculated momentary accuracy based on all factors. */
     float getRandomRelativeBulletAngle(bool bMoving, bool bRun, bool bDuck) const;    /**< Returns a random relative angle for a bullet. */
 
     SoLoud::Wav& getFiringSound();

@@ -12,6 +12,7 @@
 #include "UnitTest.h"  // PCH
 
 #include <cmath>
+#include <thread>
 
 #include "../../../PFL/PFL/PFL.h"
 #include "../Weapons/WeaponManager.h"
@@ -132,7 +133,7 @@ protected:
 
         AddSubTest("test_wpn_accuracy_angle_by_pose", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_accuracy_angle_by_pose);
         AddSubTest("test_wpn_get_random_relative_bullet_angle", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_random_relative_bullet_angle);
-        AddSubTest("test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon);
+        AddSubTest("test_wpn_shoot_creates_bullet_within_momentary_accuracy_range_of_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_shoot_creates_bullet_within_momentary_accuracy_range_of_weapon);
         AddSubTest("test_wpn_release_trigger_after_shoot", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_release_trigger_after_shoot);
         AddSubTest("test_wpn_shoot_when_empty_does_not_shoot", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_when_empty_does_not_shoot);
         AddSubTest("test_wpn_shoot_during_reloading_per_mag_does_not_shoot", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_during_reloading_per_mag_does_not_shoot);
@@ -219,6 +220,69 @@ private:
                 b = true;
             }
         }
+
+        return b;
+    }
+
+    bool test_helper_shoot_all_bullets_from_magazine_and_check_bullets(
+        bool& b,
+        Weapon& wpn,
+        std::list<Bullet>& bullets,
+        const bool& bMoving, const bool& bRun, const bool& bDuck)
+    {
+        if (!b)
+        {
+            return false;
+        }
+
+        constexpr float fEps = 0.001f;
+        const int nMaxShots = wpn.getVars()["reloadable"].getAsInt();
+        const float fMaxAbsAccAngleWhenStillRunStand = wpn.getMomentaryAccuracy(bMoving, bRun, bDuck);
+
+        // empty the magazine
+        int i = 0;
+        while (b && (i < nMaxShots))
+        {
+            i++;
+            b &= assertTrue(wpn.pullTrigger(bMoving, bRun, bDuck), "shoot");  // should transition READY -> SHOOTING
+            b &= assertEquals(static_cast<size_t>(i), bullets.size(), "bullets size in loop");
+            std::this_thread::sleep_for(std::chrono::milliseconds(wpn.getVars()["firing_cooldown"].getAsInt()));
+            wpn.update(); // should transition SHOOTING -> READY
+        }
+        
+        // reset weapon to initial state
+        wpn.releaseTrigger();
+        wpn.SetMagBulletCount(static_cast<unsigned int>(nMaxShots));
+        b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "wpn state after firing loop");
+
+        // check bullet properties
+        b &= assertEquals(static_cast<size_t>(nMaxShots), bullets.size(), "bullets final size");
+        if (b)
+        {
+            bool bNotAllRelativeAnglesWereZero = false;
+            i = 0;
+            for (const auto& bullet : bullets)
+            {
+                b &= assertEquals(wpn.getObject3D().getPosVec(), bullet.getObject3D().getPosVec(), ("pos " + std::to_string(i)).c_str());
+                b &= assertEquals(wpn.getObject3D().getAngleVec().getY(), bullet.getObject3D().getAngleVec().getY(), ("angle Y " + std::to_string(i)).c_str());
+                const float fAbsRelativeBulletAngleZ = std::abs(wpn.getObject3D().getAngleVec().getZ() - bullet.getObject3D().getAngleVec().getZ());
+                if (fAbsRelativeBulletAngleZ != 0.f)
+                {
+                    bNotAllRelativeAnglesWereZero = true;
+                }
+                b &= assertGequals(fMaxAbsAccAngleWhenStillRunStand, fAbsRelativeBulletAngleZ, fEps, ("angle Z " + std::to_string(i)).c_str());
+                b &= assertEquals(wpn.getOwner(), bullet.getOwner(), ("bullet owner " + std::to_string(i)).c_str());
+                b &= assertEquals(wpn.getVars()["damage_hp"].getAsInt(), bullet.getDamageHp(), ("damageHp " + std::to_string(i)).c_str());
+                b &= assertEquals(wpn.getVars()["damage_ap"].getAsInt(), bullet.getDamageAp(), ("damageAp " + std::to_string(i)).c_str());
+
+                i++;
+            }
+            b &= assertTrue(bNotAllRelativeAnglesWereZero, "all relative angles were 0");
+        }
+
+        assertTrue(b, (std::string(__func__) + "() failed with params: " + std::to_string(bMoving) + ", " + std::to_string(bRun) + ", " + std::to_string(bDuck) + "!").c_str());
+
+        bullets.clear();
 
         return b;
     }
@@ -440,7 +504,7 @@ private:
                 assertEquals("reload_end_dummy.wav", wpn.getVars()["reload_end_snd"].getAsString(), "reload_end_snd") &
                 assertEquals("auto", wpn.getVars()["firing_mode_def"].getAsString(), "firing_mode_def") &
                 assertEquals("auto", wpn.getVars()["firing_mode_max"].getAsString(), "firing_mode_max") &
-                assertEquals(150, wpn.getVars()["firing_cooldown"].getAsInt(), "firing_cooldown") &
+                assertEquals(50, wpn.getVars()["firing_cooldown"].getAsInt(), "firing_cooldown") &
                 assertEquals("automatic_dummy.wav", wpn.getVars()["firing_snd"].getAsString(), "firing_snd") &
                 assertEquals("automatic_dry_dummy.wav", wpn.getVars()["firing_dry_snd"].getAsString(), "firing_dry_snd") &
                 assertEquals(0.0, wpn.getFiringSound().getLength(), "firing snd len") &
@@ -1381,32 +1445,27 @@ private:
         return b;
     }
 
-    bool test_wpn_shoot_creates_bullet_with_same_angle_and_pos_as_weapon()
+    bool test_wpn_shoot_creates_bullet_within_momentary_accuracy_range_of_weapon()
     {
         bool b = false;
-        const pge_network::PgeNetworkConnectionHandle connHandle = 52;
 
         try
         {
             std::list<Bullet> bullets;
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, connHandle);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 52u);
             b = true;
 
             wpn.getObject3D().getPosVec().Set(1.f, 2.f, 3.f);
             wpn.getObject3D().getAngleVec().Set(30.f, 40.f, 50.f);
-            b &= assertTrue(wpn.pullTrigger(), "shoot");
-            b &= assertFalse(wpn.isTriggerReleased(), "trigger");
-            b &= assertEquals(1u, bullets.size(), "size");
 
-            if (b)
-            {
-                const Bullet& bullet = *bullets.begin();
-                b &= assertEquals(wpn.getObject3D().getPosVec(), bullet.getObject3D().getPosVec(), "pos");
-                b &= assertEquals(wpn.getObject3D().getAngleVec(), bullet.getObject3D().getAngleVec(), "angle");
-                b &= assertEquals(connHandle, bullet.getOwner(), "bullet owner");
-                b &= assertEquals(wpn.getVars()["damage_hp"].getAsInt(), bullet.getDamageHp(), "damageHp");
-            }
-
+            b &= assertTrue( test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, false /* bMoving */, true /* bRun */, false /* bDuck */));
+            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, false /* bMoving */, true /* bRun */, true /* bDuck */));
+            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, false /* bMoving */, false /* bRun */, false /* bDuck */));
+            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, false /* bMoving */, false /* bRun */, true /* bDuck */));
+            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, true /* bMoving */, true /* bRun */, false /* bDuck */));
+            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, true /* bMoving */, true /* bRun */, true /* bDuck */));
+            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, true /* bMoving */, false /* bRun */, false /* bDuck */));
+            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, true /* bMoving */, false /* bRun */, true /* bDuck */));
         }
         catch (const std::exception& e)
         {
@@ -1427,7 +1486,7 @@ private:
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, connHandle);
             b = true;
 
-            b &= assertTrue(wpn.pullTrigger(), "shoot");
+            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot");
             b &= assertFalse(wpn.isTriggerReleased(), "trigger 1");
 
             // wpn state cares about cooldown, but trigger state is controlled by input
@@ -1454,7 +1513,7 @@ private:
 
             // by default magazine is full == 30 bullets, set it to 0
             wpn.SetMagBulletCount(0);
-            b &= assertFalse(wpn.pullTrigger(), "shoot");
+            b &= assertFalse(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
             b &= assertFalse(wpn.getState().isDirty(), "state dirty");
             b &= assertFalse(wpn.isTriggerReleased(), "trigger"); // since we didnt explicitly called releaseTrigger()
@@ -1489,7 +1548,7 @@ private:
             b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
             b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
 
-            b &= assertFalse(wpn.pullTrigger(), "shoot");
+            b &= assertFalse(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 2");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 2");
             b &= assertTrue(wpn.getState().isDirty(), "state dirty 2");
@@ -1537,7 +1596,7 @@ private:
                 if (wpn.getState() == Weapon::WPN_RELOADING)
                 {
                     // shoot to cancel reloading
-                    if (wpn.pullTrigger())
+                    if (wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */))
                     {
                         nNumPullTriggerReturnedTrue++;
                         wpn.releaseTrigger();
@@ -1584,7 +1643,7 @@ private:
             const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
             // first shot allowed
-            b &= assertTrue(wpn.pullTrigger(), "shoot 1");
+            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot 1");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 1");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
             b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
@@ -1593,7 +1652,7 @@ private:
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 1");
 
             // second shot now allowed
-            b &= assertFalse(wpn.pullTrigger(), "shoot 2");
+            b &= assertFalse(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot 2");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 2");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
             b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
@@ -1637,7 +1696,7 @@ private:
             {
                 iWait++;
                 // even if we call pullTrigger(), it must not shoot when conditions dont meet
-                if (wpn.pullTrigger())
+                if (wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */))
                 {
                     nNumPullTriggerReturnedTrue++;
                 }
@@ -1717,7 +1776,7 @@ private:
             {
                 iWait++;
                 // even if we call pullTrigger(), it must not shoot when conditions dont meet
-                if (wpn.pullTrigger())
+                if (wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */))
                 {
                     nNumPullTriggerReturnedTrue++;
                 }
@@ -1764,7 +1823,7 @@ private:
             {
                 iWait++;
                 // even if we call pullTrigger(), it must not shoot when conditions dont meet
-                if (wpn.pullTrigger())
+                if (wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */))
                 {
                     nNumPullTriggerReturnedTrue++;
                 }
@@ -1819,7 +1878,7 @@ private:
             const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
             const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
-            b &= assertTrue(wpn.pullTrigger(), "shoot");
+            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 1");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
             b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
@@ -1853,7 +1912,7 @@ private:
             const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
             const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
-            wpn.pullTrigger(); // default trigger released state is true, this changes to false
+            wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */); // default trigger released state is true, this changes to false
             wpn.SetUnmagBulletCount(100); // default would be 0
             wpn.SetMagBulletCount(14); // full would be 30
             wpn.SetAvailable(true); // default is false

@@ -975,9 +975,13 @@ TPureBool Weapon::reload()
  * Firing an actual shot depends on different things like current state of the weapon, firing mode, etc.
  * If a shot was actually fired, at least one new bullet is placed in 'bullets' specified in the constructor of this weapon.
  * 
+ * @param bMoving Same as for getAccuracyByPose().
+ * @param bRun    Same as for getAccuracyByPose().
+ * @param bDuck   Same as for getAccuracyByPose().
+ * 
  * @return True if a shot was actually triggered, false otherwise.
  */
-TPureBool Weapon::pullTrigger()
+TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
 {
     const bool bPrevTriggerReleased = m_bTriggerReleased;
     m_bTriggerReleased = false;
@@ -1001,13 +1005,15 @@ TPureBool Weapon::pullTrigger()
 
     m_state = WPN_SHOOTING;
     m_nMagBulletCount--;
+
+    const float fRelativeBulletAngleZ = getRandomRelativeBulletAngle(bMoving, bRun, bDuck);
     
     m_bullets.push_back(
         Bullet(
             m_gfx,
             m_connHandle,
             m_obj->getPosVec().getX(), m_obj->getPosVec().getY(), m_obj->getPosVec().getZ(),
-            m_obj->getAngleVec().getX(), m_obj->getAngleVec().getY(), m_obj->getAngleVec().getZ(),
+            m_obj->getAngleVec().getX(), m_obj->getAngleVec().getY(), m_obj->getAngleVec().getZ() + fRelativeBulletAngleZ,
             getVars()["bullet_size_x"].getAsFloat(),
             getVars()["bullet_size_y"].getAsFloat(),
             getVars()["bullet_size_z"].getAsFloat(),
@@ -1170,26 +1176,41 @@ float Weapon::getRecoilMultiplier() const
 }
 
 /**
-* Returns a random relative Z angle for a newborn bullet.
-* This relative Z angle is the difference of the absolute Z angles of the weapon and the newborn bullet.
-* The relative Z angle can be positive or negative but its absolute maximum value is the momentary accuracy (fMomAcc).
+* Returns the calculated momentary accuracy based on all factors.
 * The momentary accuracy depends on multiple factors:
 *  - by-pose accuracy, as returned by getAccuracyByPose();
 *  - recoil multiplier, as returned by getRecoilMultiplier().
+*
+* @param bMoving Same as for getAccuracyByPose().
+* @param bRun    Same as for getAccuracyByPose().
+* @param bDuck   Same as for getAccuracyByPose().
+*
+* @return The calculated momentary accuracy based on all factors.
+*/
+float Weapon::getMomentaryAccuracy(bool bMoving, bool bRun, bool bDuck) const
+{
+    // TODO: later use getRecoilMultiplier() too!
+    return getAccuracyByPose(bMoving, bRun, bDuck);
+}
+
+/**
+* Returns a random relative Z angle for a newborn bullet.
+* This relative Z angle is the difference of the absolute Z angles of the weapon and the newborn bullet.
+* The relative Z angle can be positive or negative but its absolute maximum value is the momentary accuracy (getMomentaryAccuracy()).
 * 
 * @param bMoving Same as for getAccuracyByPose().
 * @param bRun    Same as for getAccuracyByPose().
 * @param bDuck   Same as for getAccuracyByPose().
 *
-* @return A random relative Z angle for a newborn bullet, in the [-fMomAcc, fMomAcc] range.
+* @return A random relative Z angle for a newborn bullet, in the [-getMomentaryAccuracy(), getMomentaryAccuracy()] range.
 */
 float Weapon::getRandomRelativeBulletAngle(bool bMoving, bool bRun, bool bDuck) const
 {
-    const float fAccuracyByPose = getAccuracyByPose(bMoving, bRun, bDuck);
+    const float fMomentaryAccuracy = getMomentaryAccuracy(bMoving, bRun, bDuck);
 
     return PFL::random(
-        static_cast<int>(std::lroundf(-fAccuracyByPose * 100)),
-        static_cast<int>(std::lroundf(fAccuracyByPose * 100))) / 100.f;
+        static_cast<int>(std::lroundf(-fMomentaryAccuracy * 100)),
+        static_cast<int>(std::lroundf(fMomentaryAccuracy * 100))) / 100.f;
 }
 
 SoLoud::Wav& Weapon::getFiringSound()
