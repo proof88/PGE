@@ -1202,6 +1202,13 @@ float Weapon::getMomentaryRecoilMultiplier() const
     PFL::timeval timeNow;
     PFL::gettimeofday(&timeNow, 0);
     const TPureFloat fMillisecsSinceLastShot = PFL::getTimeDiffInUs(timeNow, m_timeLastShot) / 1000.f;
+
+    if (fMillisecsSinceLastShot < 0.f)
+    {
+        // has never ever fired a shot yet
+        return 1.f;
+    }
+
     const float fRecoilCooldownMillisecs = getVars().at("recoil_cooldown").getAsFloat();
 
     // ctor makes sure that recoil_cooldown is positive (bigger than firing_cooldown) if recoil_m is > 1.f, so
