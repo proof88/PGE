@@ -1147,7 +1147,7 @@ float Weapon::getDamagePerSecondRating() const
 }
 
 /**
-* Returns a calculated accuracy based on player's pose.
+* Returns a calculated accuracy (aim) based on player's pose.
 * This is basically the weapon's base accuracy (CVAR: acc_angle) multiplied by CVARS: acc_m_duck, acc_m_run, acc_m_walk. 
 * 
 * @param bMoving Set to true of player is moving (walk or run), or false if is still at the moment.
@@ -1170,18 +1170,29 @@ float Weapon::getAccuracyByPose(bool bMoving, bool bRun, bool bDuck) const
 }
 
 /**
+* Returns the lowest possible accuracy (aim) of this weapon, based only on player's pose.
+* Note: I use the term "weapon accuracy" interchangeably with "aim".
+* 
+* @return The lowest possible accuracy (aim) of this weapon, based only on player's pose
+*/
+float Weapon::getLowestAccuracyByPose() const
+{
+    return getAccuracyByPose(true /* bMoving */, true /* bRun */, false /* bDuck */);
+}
+
+/**
 * Returns the momentary recoil multiplier.
 * The momentary recoil multiplier is always between 1.0 and CVAR recoil_m.
 * When a shot is fired, the momentary recoil multiplier is set to CVAR recoil_m, and then is it linear decreased to 1.0
 * over the duration of CVAR recoil_cooldown.
 * This causes rapid firing less accurate than moderate firing with the same weapon.
-* Note that CVAR recoil_m set to 1.0 means no recoil i.e. weapon accuracy is not affected by recoil.
+* Note that CVAR recoil_m set to 1.0 means no recoil i.e. weapon accuracy (aim) is not affected by recoil.
 * 
 * @return The momentary recoil multiplier.
 */
 float Weapon::getMomentaryRecoilMultiplier() const
 {
-    const float fRecoilMax = getVars().at("recoil_m").getAsFloat();
+    const float fRecoilMax = getMaximumRecoilMultiplier();
     if (fRecoilMax <= 1.f)
     {
         // fRecoilMax is minimized at 1.f by ctor but it is better to to have the condition that way
@@ -1206,16 +1217,30 @@ float Weapon::getMomentaryRecoilMultiplier() const
 }
 
 /**
-* Returns the calculated momentary accuracy based on all factors.
+* Returns the weapon's maximum recoil multiplier.
+* This is basically value of CVAR recoil_m.
+* The minimum recoil multiplier is always 1.f for any weapon.
+* 
+* @return The maximum recoil multiplier for this weapon.
+*/
+float Weapon::getMaximumRecoilMultiplier() const
+{
+    return getVars().at("recoil_m").getAsFloat();
+}
+
+/**
+* Returns the calculated momentary accuracy (aim) based on all factors.
 * The momentary accuracy depends on multiple factors:
-*  - by-pose accuracy, as returned by getAccuracyByPose();
+*  - by-pose accuracy (aim), as returned by getAccuracyByPose();
 *  - recoil multiplier, as returned by getMomentaryRecoilMultiplier().
 *
+* Note: I use the term "weapon accuracy" interchangeably with "aim".
+* 
 * @param bMoving Same as for getAccuracyByPose().
 * @param bRun    Same as for getAccuracyByPose().
 * @param bDuck   Same as for getAccuracyByPose().
 *
-* @return The calculated momentary accuracy based on all factors.
+* @return The calculated momentary accuracy (aim) based on all factors.
 */
 float Weapon::getMomentaryAccuracy(bool bMoving, bool bRun, bool bDuck) const
 {
@@ -1223,9 +1248,24 @@ float Weapon::getMomentaryAccuracy(bool bMoving, bool bRun, bool bDuck) const
 }
 
 /**
+* Returns a positive relative bullet angle representing the lowest possible accuracy (aim) with this weapon.
+* The higher is the absolute value of the relative bullet angle, the lower the accuracy (aim) is.
+* 
+* Note: I use the term "weapon accuracy" interchangeably with "aim".
+* 
+* @return A positive relative bullet angle representing the lowest possible accuracy (aim) with this weapon.
+*/
+float Weapon::getLowestAccuracyPossible() const
+{
+    return getLowestAccuracyByPose() * getMaximumRecoilMultiplier();
+}
+
+/**
 * Returns a random relative Z angle for a newborn bullet.
-* This relative Z angle is the difference of the absolute Z angles of the weapon and the newborn bullet.
-* The relative Z angle can be positive or negative but its absolute maximum value is the momentary accuracy (getMomentaryAccuracy()).
+* This relative Z angle is the difference of the Z angles of the weapon and the newborn bullet.
+* The relative Z angle can be positive or negative but its absolute maximum value is the momentary accuracy (aim) (getMomentaryAccuracy()).
+* 
+* Note: I use the term "weapon accuracy" interchangeably with "aim".
 * 
 * @param bMoving Same as for getAccuracyByPose().
 * @param bRun    Same as for getAccuracyByPose().

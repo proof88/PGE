@@ -132,6 +132,8 @@ protected:
         /* operational tests: firing */
 
         AddSubTest("test_wpn_accuracy_angle_by_pose", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_accuracy_angle_by_pose);
+        AddSubTest("test_wpn_get_lowest_accuracy_by_pose", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_lowest_accuracy_by_pose);
+        AddSubTest("test_wpn_get_lowest_accuracy_possible", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_lowest_accuracy_possible);
         AddSubTest("test_wpn_get_random_relative_bullet_angle", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_random_relative_bullet_angle);
         AddSubTest("test_wpn_shoot_creates_bullet_within_momentary_accuracy_range_of_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_shoot_creates_bullet_within_momentary_accuracy_range_of_weapon);
         AddSubTest("test_wpn_release_trigger_after_shoot", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_release_trigger_after_shoot);
@@ -566,6 +568,7 @@ private:
                 assertEquals(3.0f, wpn.getVars()["acc_m_run"].getAsFloat(), "acc_m_run") &
                 assertEquals(0.6f, wpn.getVars()["acc_m_duck"].getAsFloat(), "acc_m_duck") &
                 assertEquals(1.1f, wpn.getVars()["recoil_m"].getAsFloat(), "recoil_m") &
+                assertEquals(1.1f, wpn.getMaximumRecoilMultiplier(), "max recoil mplier") &
                 assertEquals(100, wpn.getVars()["recoil_cooldown"].getAsInt(), "recoil_cooldown") &
                 assertEquals("high", wpn.getVars()["recoil_control"].getAsString(), "recoil_control") &
                 assertEquals(1.f, wpn.getVars()["bullet_size_x"].getAsFloat(), "bullet_size_x") &
@@ -1389,6 +1392,47 @@ private:
             b &= assertEquals(fAccAngle * fAccMRun * fAccMDuck, wpn.getAccuracyByPose(true /* bMoving */, true /* bRun */, true /* bDuck */), fEps, "moving, run, duck");
             b &= assertEquals(fAccAngle * fAccMWalk, wpn.getAccuracyByPose(true /* bMoving */, false /* bRun */, false /* bDuck */), fEps, "moving, walk, stand");
             b &= assertEquals(fAccAngle * fAccMWalk * fAccMDuck, wpn.getAccuracyByPose(true /* bMoving */, false /* bRun */, true /* bDuck */), fEps, "moving, walk, duck");
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_get_lowest_accuracy_by_pose()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+
+            // recoil does not play in this test since we are interested in by pose only
+            b = true;
+            b &= assertEquals(wpn.getAccuracyByPose(true /* bMoving */, true /* bRun */, false /* bDuck */), wpn.getLowestAccuracyByPose());
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_get_lowest_accuracy_possible()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+
+            // recoil is not changing in this test, we are interested in the max possible relative bullet angle, given by
+            // the lowest accuracy by pose and highest possible recoil multiplier
+            b = true;
+            b &= assertEquals(wpn.getLowestAccuracyByPose() * wpn.getMaximumRecoilMultiplier(), wpn.getLowestAccuracyPossible());
         }
         catch (const std::exception& e)
         {

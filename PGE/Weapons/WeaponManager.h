@@ -252,8 +252,11 @@ public:
     float getDamagePerSecondRating() const;  /**< Returns a calculated rating of total damage per 1 second. */
 
     float getAccuracyByPose(bool bMoving, bool bRun, bool bDuck) const;              /**< Returns a calculated accuracy based on player's pose. */
+    float getLowestAccuracyByPose() const;                                           /**< Returns the lowest possible accuracy of this weapon, based only on player's pose. */
     float getMomentaryRecoilMultiplier() const;                                      /**< Returns the momentary recoil multiplier. */
+    float getMaximumRecoilMultiplier() const;                                        /**< Returns the weapon's maximum recoil multiplier. */
     float getMomentaryAccuracy(bool bMoving, bool bRun, bool bDuck) const;           /**< Returns the calculated momentary accuracy based on all factors. */
+    float getLowestAccuracyPossible() const;                                         /**< Returns a positive relative bullet angle representing the lowest possible accuracy with this weapon. */
     float getRandomRelativeBulletAngle(bool bMoving, bool bRun, bool bDuck) const;   /**< Returns a random relative angle for a bullet. */
 
     SoLoud::Wav& getFiringSound();
