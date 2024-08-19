@@ -224,7 +224,8 @@ private:
         return b;
     }
 
-    bool test_helper_check_random_relative_bullet_angles(bool& b,
+    bool test_helper_check_random_relative_bullet_angles(
+        bool& b,
         Weapon& wpn,
         const bool& bMoving, const bool& bRun, const bool& bDuck)
     {
@@ -234,7 +235,9 @@ private:
         }
 
         constexpr float fEps = 0.001f;
+        // since recoil is not changed by getRandomRelativeBulletAngle(), recoil factor stays 1.f the entire time
         const float fMaxAbsAccAngle = wpn.getMomentaryAccuracy(bMoving, bRun, bDuck);
+        
         int i = 0;
         while (b && (i < 100))
         {
@@ -244,7 +247,9 @@ private:
             i++;
         }
 
-        assertTrue(b, (std::string(__func__) + "() failed with params: " + std::to_string(bMoving) + ", " + std::to_string(bRun) + ", " + std::to_string(bDuck) + "!").c_str());
+        assertTrue(
+            b,
+            (std::string(__func__) + "() failed with params: bMoving: " + std::to_string(bMoving) + ", bRun: " + std::to_string(bRun) + ", bDuck: " + std::to_string(bDuck) + "!").c_str());
 
         return b;
     }
@@ -253,7 +258,8 @@ private:
         bool& b,
         Weapon& wpn,
         std::list<Bullet>& bullets,
-        const bool& bMoving, const bool& bRun, const bool& bDuck)
+        const bool& bMoving, const bool& bRun, const bool& bDuck,
+        const bool& bWithRecoilFactor)
     {
         if (!b)
         {
@@ -262,7 +268,10 @@ private:
 
         constexpr float fEps = 0.001f;
         const int nMaxShots = wpn.getVars()["reloadable"].getAsInt();
-        const float fMaxAbsAccAngleWhenStillRunStand = wpn.getMomentaryAccuracy(bMoving, bRun, bDuck);
+        const float fMaxAbsAccAngle =
+            bWithRecoilFactor ?
+            wpn.getMomentaryAccuracy(bMoving, bRun, bDuck) + wpn.getVars()["recoil_m"].getAsFloat() :
+            wpn.getMomentaryAccuracy(bMoving, bRun, bDuck);
 
         // empty the magazine
         int i = 0;
@@ -271,8 +280,22 @@ private:
             i++;
             b &= assertTrue(wpn.pullTrigger(bMoving, bRun, bDuck), "shoot");  // should transition READY -> SHOOTING
             b &= assertEquals(static_cast<size_t>(i), bullets.size(), "bullets size in loop");
-            std::this_thread::sleep_for(std::chrono::milliseconds(wpn.getVars()["firing_cooldown"].getAsInt()));
+            
+            // if we dont want to see recoil factor affecting accuracy, we need to sleep at least recoil_cooldown millisecs!
+            if (bWithRecoilFactor)
+            {
+                // with bWithRecoilFactor, we sleep just enough for a next shot, allowing recoil to accumulate, that is why we have
+                // increased fMaxAbsAccAngle when bWithRecoilFactor is true
+                std::this_thread::sleep_for(std::chrono::milliseconds(wpn.getVars()["firing_cooldown"].getAsInt()));
+            }
+            else
+            {
+                // recoil_cooldown >= firing_cooldown, so sleeping for recoil_cooldown implicitly means sleeping for firing_cooldown as well
+                std::this_thread::sleep_for(std::chrono::milliseconds(wpn.getVars()["recoil_cooldown"].getAsInt()));
+            }
             wpn.update(); // should transition SHOOTING -> READY
+
+            // since this is an automatic weapon, no need for releasing the trigger between shots
         }
         
         // reset weapon to initial state
@@ -295,7 +318,7 @@ private:
                 {
                     bNotAllRelativeAnglesWereZero = true;
                 }
-                b &= assertGequals(fMaxAbsAccAngleWhenStillRunStand, fAbsRelativeBulletAngleZ, fEps, ("angle Z " + std::to_string(i)).c_str());
+                b &= assertGequals(fMaxAbsAccAngle, fAbsRelativeBulletAngleZ, fEps, ("angle Z " + std::to_string(i)).c_str());
                 b &= assertEquals(wpn.getOwner(), bullet.getOwner(), ("bullet owner " + std::to_string(i)).c_str());
                 b &= assertEquals(wpn.getVars()["damage_hp"].getAsInt(), bullet.getDamageHp(), ("damageHp " + std::to_string(i)).c_str());
                 b &= assertEquals(wpn.getVars()["damage_ap"].getAsInt(), bullet.getDamageAp(), ("damageAp " + std::to_string(i)).c_str());
@@ -305,7 +328,8 @@ private:
             b &= assertTrue(bNotAllRelativeAnglesWereZero, "all relative angles were 0");
         }
 
-        assertTrue(b, (std::string(__func__) + "() failed with params: " + std::to_string(bMoving) + ", " + std::to_string(bRun) + ", " + std::to_string(bDuck) + "!").c_str());
+        assertTrue(b, (std::string(__func__) + "() failed with params: bMoving: " + std::to_string(bMoving) + ", bRun: " + std::to_string(bRun) + ", bDuck: " + std::to_string(bDuck) +
+            ", bWithRecoilFactor: " + std::to_string(bWithRecoilFactor) + "!").c_str());
 
         bullets.clear();
 
@@ -542,7 +566,7 @@ private:
                 assertEquals(3.0f, wpn.getVars()["acc_m_run"].getAsFloat(), "acc_m_run") &
                 assertEquals(0.6f, wpn.getVars()["acc_m_duck"].getAsFloat(), "acc_m_duck") &
                 assertEquals(1.1f, wpn.getVars()["recoil_m"].getAsFloat(), "recoil_m") &
-                assertEquals(500, wpn.getVars()["recoil_cooldown"].getAsInt(), "recoil_cooldown") &
+                assertEquals(100, wpn.getVars()["recoil_cooldown"].getAsInt(), "recoil_cooldown") &
                 assertEquals("high", wpn.getVars()["recoil_control"].getAsString(), "recoil_control") &
                 assertEquals(1.f, wpn.getVars()["bullet_size_x"].getAsFloat(), "bullet_size_x") &
                 assertEquals(2.f, wpn.getVars()["bullet_size_y"].getAsFloat(), "bullet_size_y") &
@@ -1383,7 +1407,7 @@ private:
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
 
             b = true;
-
+            // recoil does not play in this test, since it is not changed in this test
             b &= assertTrue(test_helper_check_random_relative_bullet_angles(b, wpn, false /* bMoving */, true /* bRun */, false /* bDuck */));
             b &= assertTrue(test_helper_check_random_relative_bullet_angles(b, wpn, false /* bMoving */, true /* bRun */, true /* bDuck */));
             b &= assertTrue(test_helper_check_random_relative_bullet_angles(b, wpn, false /* bMoving */, false /* bRun */, false /* bDuck */));
@@ -1414,14 +1438,19 @@ private:
             wpn.getObject3D().getPosVec().Set(1.f, 2.f, 3.f);
             wpn.getObject3D().getAngleVec().Set(30.f, 40.f, 50.f);
 
-            b &= assertTrue( test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, false /* bMoving */, true /* bRun */, false /* bDuck */));
-            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, false /* bMoving */, true /* bRun */, true /* bDuck */));
-            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, false /* bMoving */, false /* bRun */, false /* bDuck */));
-            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, false /* bMoving */, false /* bRun */, true /* bDuck */));
-            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, true /* bMoving */, true /* bRun */, false /* bDuck */));
-            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, true /* bMoving */, true /* bRun */, true /* bDuck */));
-            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, true /* bMoving */, false /* bRun */, false /* bDuck */));
-            b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, true /* bMoving */, false /* bRun */, true /* bDuck */));
+            bool bWithRecoilFactor = false;
+            for (int i = 0; i < 2; i++)
+            {
+                bWithRecoilFactor = !bWithRecoilFactor;
+                b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, false /* bMoving */, true /* bRun */, false /* bDuck */, bWithRecoilFactor));
+                b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, false /* bMoving */, true /* bRun */, true /* bDuck */, bWithRecoilFactor));
+                b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, false /* bMoving */, false /* bRun */, false /* bDuck */, bWithRecoilFactor));
+                b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, false /* bMoving */, false /* bRun */, true /* bDuck */, bWithRecoilFactor));
+                b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, true /* bMoving */, true /* bRun */, false /* bDuck */, bWithRecoilFactor));
+                b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, true /* bMoving */, true /* bRun */, true /* bDuck */, bWithRecoilFactor));
+                b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, true /* bMoving */, false /* bRun */, false /* bDuck */, bWithRecoilFactor));
+                b &= assertTrue(test_helper_shoot_all_bullets_from_magazine_and_check_bullets(b, wpn, bullets, true /* bMoving */, false /* bRun */, true /* bDuck */, bWithRecoilFactor));
+            }
         }
         catch (const std::exception& e)
         {

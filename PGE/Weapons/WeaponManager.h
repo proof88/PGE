@@ -251,10 +251,10 @@ public:
     float getDamagePerFireRating() const;    /**< Returns a calculated rating of damage caused by a single shot fired. */
     float getDamagePerSecondRating() const;  /**< Returns a calculated rating of total damage per 1 second. */
 
-    float getAccuracyByPose(bool bMoving, bool bRun, bool bDuck) const;  /**< Returns a calculated accuracy based on player's pose. */
-    float getRecoilMultiplier() const; /**< Returns the momentary recoil multiplier. */
-    float getMomentaryAccuracy(bool bMoving, bool bRun, bool bDuck) const;  /**< Returns the calculated momentary accuracy based on all factors. */
-    float getRandomRelativeBulletAngle(bool bMoving, bool bRun, bool bDuck) const;    /**< Returns a random relative angle for a bullet. */
+    float getAccuracyByPose(bool bMoving, bool bRun, bool bDuck) const;              /**< Returns a calculated accuracy based on player's pose. */
+    float getMomentaryRecoilMultiplier() const;                                      /**< Returns the momentary recoil multiplier. */
+    float getMomentaryAccuracy(bool bMoving, bool bRun, bool bDuck) const;           /**< Returns the calculated momentary accuracy based on all factors. */
+    float getRandomRelativeBulletAngle(bool bMoving, bool bRun, bool bDuck) const;   /**< Returns a random relative angle for a bullet. */
 
     SoLoud::Wav& getFiringSound();
     SoLoud::Wav& getDryFiringSound();

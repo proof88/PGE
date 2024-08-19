@@ -1006,7 +1006,10 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
     m_state = WPN_SHOOTING;
     m_nMagBulletCount--;
 
+
+
     const float fRelativeBulletAngleZ = getRandomRelativeBulletAngle(bMoving, bRun, bDuck);
+    getConsole().EOLn("bMoving: %b, bRun: %b, bDuck: %b, fRelativeBulletAngleZ: %f! ", bMoving, bRun, bDuck, fRelativeBulletAngleZ);
     
     m_bullets.push_back(
         Bullet(
@@ -1145,7 +1148,7 @@ float Weapon::getDamagePerSecondRating() const
 
 /**
 * Returns a calculated accuracy based on player's pose.
-* This is basically the weapon's base accuracy (CVAR: acc_angle) modified by CVARS: acc_m_duck, acc_m_run, acc_m_walk. 
+* This is basically the weapon's base accuracy (CVAR: acc_angle) multiplied by CVARS: acc_m_duck, acc_m_run, acc_m_walk. 
 * 
 * @param bMoving Set to true of player is moving (walk or run), or false if is still at the moment.
 * @param bRun    Used only if bMoving is true.
@@ -1168,18 +1171,45 @@ float Weapon::getAccuracyByPose(bool bMoving, bool bRun, bool bDuck) const
 
 /**
 * Returns the momentary recoil multiplier.
+* The momentary recoil multiplier is always between 1.0 and CVAR recoil_m.
+* When a shot is fired, the momentary recoil multiplier is set to CVAR recoil_m, and then is it linear decreased to 1.0
+* over the duration of CVAR recoil_cooldown.
+* This causes rapid firing less accurate than moderate firing with the same weapon.
+* Note that CVAR recoil_m set to 1.0 means no recoil i.e. weapon accuracy is not affected by recoil.
+* 
+* @return The momentary recoil multiplier.
 */
-float Weapon::getRecoilMultiplier() const
+float Weapon::getMomentaryRecoilMultiplier() const
 {
-    // TODO implement later
-    return 1.f;
+    const float fRecoilMax = getVars().at("recoil_m").getAsFloat();
+    if (fRecoilMax <= 1.f)
+    {
+        // fRecoilMax is minimized at 1.f by ctor but it is better to to have the condition that way
+        return 1.f;
+    }
+    
+    PFL::timeval timeNow;
+    PFL::gettimeofday(&timeNow, 0);
+    const TPureFloat fMillisecsSinceLastShot = PFL::getTimeDiffInUs(timeNow, m_timeLastShot) / 1000.f;
+    const float fRecoilCooldownMillisecs = getVars().at("recoil_cooldown").getAsFloat();
+
+    // ctor makes sure that recoil_cooldown is positive (bigger than firing_cooldown) if recoil_m is > 1.f, so
+    // this assertion is implied from ctor behavior, thus we cannot divide by zero below!
+    assert(fRecoilCooldownMillisecs > 0.f);
+
+    if (fRecoilCooldownMillisecs <= fMillisecsSinceLastShot)
+    {
+        return 1.f;
+    }
+
+    return PFL::lerp(1.f, fRecoilMax, 1.f - (fMillisecsSinceLastShot / fRecoilCooldownMillisecs));
 }
 
 /**
 * Returns the calculated momentary accuracy based on all factors.
 * The momentary accuracy depends on multiple factors:
 *  - by-pose accuracy, as returned by getAccuracyByPose();
-*  - recoil multiplier, as returned by getRecoilMultiplier().
+*  - recoil multiplier, as returned by getMomentaryRecoilMultiplier().
 *
 * @param bMoving Same as for getAccuracyByPose().
 * @param bRun    Same as for getAccuracyByPose().
@@ -1189,8 +1219,7 @@ float Weapon::getRecoilMultiplier() const
 */
 float Weapon::getMomentaryAccuracy(bool bMoving, bool bRun, bool bDuck) const
 {
-    // TODO: later use getRecoilMultiplier() too!
-    return getAccuracyByPose(bMoving, bRun, bDuck);
+    return getAccuracyByPose(bMoving, bRun, bDuck) * getMomentaryRecoilMultiplier();
 }
 
 /**
