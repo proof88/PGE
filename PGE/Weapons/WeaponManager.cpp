@@ -527,11 +527,17 @@ Weapon::Weapon(
     }
 
     // finally we load sounds, failing to load is NOT fatal error, weapons will stay simply silent in such case, SoLoud handles that!
+    // only error will be logged but that is fine!
     // TODO: hardcoded directory should be coming from somewhere instead!
     m_audio.loadSound(m_sndShoot, std::string("gamedata\\audio\\weapons\\") + getVars()["firing_snd"].getAsString());
     m_audio.loadSound(m_sndShootDry, std::string("gamedata\\audio\\weapons\\") + getVars()["firing_dry_snd"].getAsString());
     m_audio.loadSound(m_sndReloadStart, std::string("gamedata\\audio\\weapons\\") + getVars()["reload_start_snd"].getAsString());
-    m_audio.loadSound(m_sndReloadEnd, std::string("gamedata\\audio\\weapons\\") + getVars()["reload_end_snd"].getAsString());
+    
+    // CVAR reload_end_snd can be empty if reload_per_mag is false, do not log error -> do not even try load 
+    if (!getVars()["reload_end_snd"].getAsString().empty())
+    {
+        m_audio.loadSound(m_sndReloadEnd, std::string("gamedata\\audio\\weapons\\") + getVars()["reload_end_snd"].getAsString());
+    }
 
     getConsole().SOLnOO("Weapon loaded!");
 }
