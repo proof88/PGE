@@ -99,7 +99,12 @@ public:
          - ImGui::EndFrame();
          - ImGui::Render().
 
-        For example how to use this function, see a real-life game project: https://github.com/proof88/PRooFPS-dd .
+        For an example on how to use this function, see a real-life game project: https://github.com/proof88/PRooFPS-dd .
+
+        Note: this function is invoked every frame, AFTER rendering the 2D sticked-to-screen objects (PureObject3D::SetStickedToScreen()).
+        Thus, if you also do calculations in the specified callback function that have effect on those PURE sticked-to-screen objects, the
+        visible effects will be delayed to the next frame. So in general it is highly recommended to do ONLY Dear ImGui-specific stuff in the
+        specified callback function.
     */
     virtual void setGuiDrawCallback(const std::function<void()>& cb) = 0;
 
