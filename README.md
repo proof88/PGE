@@ -14,8 +14,6 @@ So whenever you read something like `PGE vA.B` it always implicitly means `PURE 
 ### v0.4 (TBD)
 
 TBD  
-**Project kanban board** for PURE 0.4 is here: https://github.com/users/proof88/projects/5 <br/>
-Future versions will have project kanban board under this repo.
 
 ### v0.3 (Nov 1, 2021)
 
