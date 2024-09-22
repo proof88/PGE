@@ -45,7 +45,9 @@ Bullet::Bullet(
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
     int nDamageAp, int nDamageHp,
-    TPureFloat fDamageAreaSize, TPureFloat fDamageAreaPulse) :
+    TPureFloat fDamageAreaSize,
+    const DamageAreaEffect& eDamageAreaEffect,
+    TPureFloat fDamageAreaPulse) :
     m_id(m_globalBulletId++),
     m_gfx(gfx),
     m_connHandle(connHandle),
@@ -56,6 +58,7 @@ Bullet::Bullet(
     m_nDamageAp(nDamageAp),
     m_nDamageHp(nDamageHp),
     m_fDamageAreaSize(fDamageAreaSize),
+    m_eDamageAreaEffect(eDamageAreaEffect),
     m_fDamageAreaPulse(fDamageAreaPulse),
     m_obj(NULL),
     m_bCreateSentToClients(false)
@@ -99,6 +102,7 @@ Bullet::Bullet(
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, int nDamageHp,
     const TPureFloat& fDamageAreaSize,
+    const DamageAreaEffect& eDamageAreaEffect,
     const TPureFloat& fDamageAreaPulse) :
     m_id(id),
     m_gfx(gfx),
@@ -110,6 +114,7 @@ Bullet::Bullet(
     m_nDamageAp(0) /* irrelevant for this client-side ctor */,
     m_nDamageHp(nDamageHp),
     m_fDamageAreaSize(fDamageAreaSize),
+    m_eDamageAreaEffect(eDamageAreaEffect),
     m_fDamageAreaPulse(fDamageAreaPulse),
     m_obj(NULL),
     m_bCreateSentToClients(true) /* irrelevant for this client-side ctor but we are client so yes it is sent :) */
@@ -195,6 +200,11 @@ int Bullet::getDamageHp() const
 TPureFloat Bullet::getAreaDamageSize() const
 {
     return m_fDamageAreaSize;
+}
+
+const Bullet::DamageAreaEffect& Bullet::getAreaDamageEffect() const
+{
+    return m_eDamageAreaEffect;
 }
 
 TPureFloat Bullet::getAreaDamagePulse() const
@@ -490,6 +500,12 @@ Weapon::Weapon(
     {
         getConsole().EOLnOO("damage_area_size is 0 but damage_area_pulse is non-zero in %s! ", fname);
         throw std::runtime_error("damage_area_size is 0 but damage_area_pulse is non-zero in " + std::string(fname));
+    }
+
+    if ((getVars()["damage_area_effect"].getAsString() != "constant") && (getVars()["damage_area_effect"].getAsString() != "linear"))
+    {
+        getConsole().EOLnOO("invalid damage_area_effect (%s) in %s! ", getVars()["damage_area_effect"].getAsString().c_str(), fname);
+        throw std::runtime_error("invalid damage_area_effect (" + getVars()["damage_area_effect"].getAsString() + ") in " + std::string(fname));
     }
 
     if ((getVars()["damage_hp"].getAsInt() < 1) || (getVars()["damage_ap"].getAsInt() < 1))
@@ -1033,6 +1049,9 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
             getVars()["damage_ap"].getAsInt(),
             getVars()["damage_hp"].getAsInt(),
             getVars()["damage_area_size"].getAsFloat(),
+            (getVars()["damage_area_effect"].getAsString() == "linear" ?
+            Bullet::DamageAreaEffect::Linear :
+            Bullet::DamageAreaEffect::Constant),
             getVars()["damage_area_pulse"].getAsFloat())
     );
 

@@ -35,6 +35,13 @@ class Bullet
 #endif
 
 public:
+    enum DamageAreaEffect
+    {
+        Constant,
+        Linear
+    };
+
+
     // for now uint32_t will be fine for bullet id ... if we calculate with 10 bullets/second for a player, who is shooting
     // continuously in a 60 minutes gameplay, that is still only 36000 bullets for that player, and with 30 players that is
     // still 1 080 000 bullets, so uint32_t is far enough for us. Even if it overflows, it is not the problem, since
@@ -57,7 +64,9 @@ public:
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
         int nDamageAp, int nDamageHp,
-        TPureFloat fDamageAreaSize, TPureFloat fDamageAreaPulse);
+        TPureFloat fDamageAreaSize,
+        const DamageAreaEffect& eDamageAreaEffect,
+        TPureFloat fDamageAreaPulse);
     
     /** Ctor to be used by PGE client instance: bullet id as received from server. */
     Bullet(
@@ -68,6 +77,7 @@ public:
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use nDamageAp */ int nDamageHp,
         const TPureFloat& fDamageAreaSize,
+        const DamageAreaEffect& eDamageAreaEffect,
         const TPureFloat& fDamageAreaPulse);
     
     virtual ~Bullet();
@@ -85,6 +95,7 @@ public:
     int getDamageAp() const;
     int getDamageHp() const;
     TPureFloat getAreaDamageSize() const;
+    const DamageAreaEffect& getAreaDamageEffect() const;
     TPureFloat getAreaDamagePulse() const;
     bool& isCreateSentToClients();
 
@@ -105,6 +116,7 @@ public:
         m_nDamageAp(other.m_nDamageAp),
         m_nDamageHp(other.m_nDamageHp),
         m_fDamageAreaSize(other.m_fDamageAreaSize),
+        m_eDamageAreaEffect(other.m_eDamageAreaEffect),
         m_fDamageAreaPulse(other.m_fDamageAreaPulse),
         m_bCreateSentToClients(other.m_bCreateSentToClients)
     {
@@ -127,6 +139,7 @@ public:
         m_nDamageAp = other.m_nDamageAp;
         m_nDamageHp = other.m_nDamageHp;
         m_fDamageAreaSize = other.m_fDamageAreaSize;
+        m_eDamageAreaEffect = other.m_eDamageAreaEffect;
         m_fDamageAreaPulse = other.m_fDamageAreaPulse;
         m_bCreateSentToClients = other.m_bCreateSentToClients;
 
@@ -155,6 +168,7 @@ private:
     int m_nDamageAp;                                       /**< Damage to AP as defined by weapon file. Used by PGE server instance only. */
     int m_nDamageHp;                                       /**< Damage to HP as defined by weapon file. Used by both PGE client and server instances. */
     TPureFloat m_fDamageAreaSize;                          /**< Area damage size as defined by weapon file. Used by both PGE client and server instances. */
+    DamageAreaEffect m_eDamageAreaEffect;                  /**< Area damage effect as defined by weapon file. Used by both PGE client and server instances. */
     TPureFloat m_fDamageAreaPulse;                         /**< Area damage pulse to HP as defined by weapon file. Used by both PGE client and server instances. */
 
     PureObject3D* m_obj;                                   /**< Associated Pure object to be rendered. Used by PGE server and client instances.

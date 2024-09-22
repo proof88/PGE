@@ -95,6 +95,7 @@ private:
         const int nDamageAp = 20;
         const int nDamageHp = 30;
         const float fDamageAreaSize = 5.f;
+        const Bullet::DamageAreaEffect eDamageAreaEffect = Bullet::DamageAreaEffect::Constant;
         const float fDamageAreaPulse = 2.f;
         const pge_network::PgeNetworkConnectionHandle connHandle = 52;
 
@@ -106,7 +107,7 @@ private:
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag, bFragile,
             nDamageAp, nDamageHp,
-            fDamageAreaSize, fDamageAreaPulse);
+            fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
         
         bool b = assertEquals(bullet.getId(), iLastBulletId, "bullet id");
         b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId + 1, "global bullet id");
@@ -121,6 +122,7 @@ private:
         b &= assertEquals(nDamageAp, bullet.getDamageAp(), "damageAp");
         b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
+        b &= assertEquals(eDamageAreaEffect, bullet.getAreaDamageEffect(), "damage area effect");
         b &= assertEquals(fDamageAreaPulse, bullet.getAreaDamagePulse(), "damage area pulse");
         b &= assertFalse(bullet.isCreateSentToClients(), "isCreateSentToClients");
 
@@ -138,6 +140,7 @@ private:
         const float fDrag = 25.f;
         const int nDamageHp = 30;
         const float fDamageAreaSize = 5.f;
+        const Bullet::DamageAreaEffect eDamageAreaEffect = Bullet::DamageAreaEffect::Constant;
         const float fDamageAreaPulse = 2.f;
 
         Bullet bullet(
@@ -147,7 +150,7 @@ private:
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag, nDamageHp,
-            fDamageAreaSize, fDamageAreaPulse);
+            fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
 
         bool b = assertEquals(bullet.getId(), static_cast<Bullet::BulletId>(1234), "bullet id");
         b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId, "global bullet id");
@@ -161,6 +164,7 @@ private:
         b &= assertEquals(0, bullet.getDamageAp(), "damageAp");
         b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
+        b &= assertEquals(eDamageAreaEffect, bullet.getAreaDamageEffect(), "damage area effect");
         b &= assertEquals(fDamageAreaPulse, bullet.getAreaDamagePulse(), "damage area pulse");
         b &= assertTrue(bullet.isCreateSentToClients(), "isCreateSentToClients"); /* we are client so yes it is sent :) */
 
@@ -179,6 +183,7 @@ private:
         const int nDamageAp = 20;
         const int nDamageHp = 30;
         const float fDamageAreaSize = 5.f;
+        const Bullet::DamageAreaEffect eDamageAreaEffect = Bullet::DamageAreaEffect::Constant;
         const float fDamageAreaPulse = 2.f;
         const pge_network::PgeNetworkConnectionHandle connHandle = 52;
 
@@ -190,7 +195,7 @@ private:
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag, bFragile,
             nDamageAp, nDamageHp,
-            fDamageAreaSize, fDamageAreaPulse);
+            fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
 
         Bullet::resetGlobalBulletId();
 
@@ -210,7 +215,7 @@ private:
                 4.f, 5.f, 0.f,
                 1000.f, 15.f, 25.f, true,
                 5 /* AP */, 10 /* HP */,
-                5.f, 2.f);
+                5.f, Bullet::DamageAreaEffect::Constant, 2.f);
         }
         catch (const std::exception&)
         {
@@ -233,7 +238,7 @@ private:
                 4.f, 5.f, 0.f,
                 60.f, 15.f, 25.f, true,
                 5 /* AP */, 10 /* HP */,
-                -5.f, 2.f);
+                -5.f, Bullet::DamageAreaEffect::Constant, 2.f);
         }
         catch (const std::exception&)
         {
@@ -256,7 +261,7 @@ private:
                 4.f, 5.f, 0.f,
                 60.f, 15.f, 25.f, true,
                 5 /* AP */, 10 /* HP */,
-                0.f, 2.f);
+                0.f, Bullet::DamageAreaEffect::Constant, 2.f);
         }
         catch (const std::exception&)
         {
@@ -275,7 +280,14 @@ private:
         put.SetRotation(angleVec.getX(), angleVec.getY(), angleVec.getZ());
         put.Move(speed);
 
-        Bullet bullet(*engine, 0, 0.f, 0.f, 0.f, angleVec.getX(), angleVec.getY(), angleVec.getZ(), 1.f, 1.f, 1.f, speed, 15.f, 25.f, true, 5 /* AP */, 10 /* HP */, 5.f, 2.f);
+        Bullet bullet(
+            *engine,
+            0, 0.f, 0.f, 0.f,
+            angleVec.getX(), angleVec.getY(), angleVec.getZ(),
+            1.f, 1.f, 1.f,
+            speed, 15.f, 25.f, true,
+            5 /* AP */, 10 /* HP */,
+            5.f, Bullet::DamageAreaEffect::Constant, 2.f);
         bullet.Update(1);
 
         bool b = assertEquals(put.getPosVec(), bullet.getObject3D().getPosVec(), "pos");
