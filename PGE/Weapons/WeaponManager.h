@@ -64,6 +64,7 @@ public:
         bool visible,
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
+        TPureFloat fDistMax,
         int nDamageAp, int nDamageHp,
         TPureFloat fDamageAreaSize,
         const DamageAreaEffect& eDamageAreaEffect,
@@ -77,7 +78,9 @@ public:
         TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
         bool visible,
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
-        TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use nDamageAp */ int nDamageHp,
+        TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use fragile */
+        /* client does not receive nor use fDistMax */
+        /* client does not receive nor use nDamageAp */ int nDamageHp,
         const TPureFloat& fDamageAreaSize,
         const DamageAreaEffect& eDamageAreaEffect,
         const TPureFloat& fDamageAreaPulse);
@@ -94,6 +97,8 @@ public:
     TPureFloat getGravity() const;
     TPureFloat getDrag() const;
     TPureBool isFragile() const;
+    TPureFloat getTravelDistanceMax() const;
+    TPureFloat getTravelledDistance() const;
     int getDamageAp() const;
     int getDamageHp() const;
     TPureFloat getAreaDamageSize() const;
@@ -115,6 +120,8 @@ public:
         m_gravity(other.m_gravity),
         m_drag(other.m_drag),
         m_fragile(other.m_fragile),
+        m_fDistMax(other.m_fDistMax),
+        m_fDistTravelled(other.m_fDistTravelled),
         m_nDamageAp(other.m_nDamageAp),
         m_nDamageHp(other.m_nDamageHp),
         m_fDamageAreaSize(other.m_fDamageAreaSize),
@@ -139,6 +146,8 @@ public:
         m_gravity = other.m_gravity;
         m_drag = other.m_drag;
         m_fragile = other.m_fragile;
+        m_fDistMax = other.m_fDistMax;
+        m_fDistTravelled = other.m_fDistTravelled;
         m_nDamageAp = other.m_nDamageAp;
         m_nDamageHp = other.m_nDamageHp;
         m_fDamageAreaSize = other.m_fDamageAreaSize;
@@ -169,6 +178,8 @@ private:
     TPureFloat m_gravity;                                  /**< Gravity as defined by weapon file. Used by both PGE client and server instances. */
     TPureFloat m_drag;                                     /**< Drag as defined by weapon file. Used by both PGE client and server instances. */
     TPureBool m_fragile;                                   /**< Fragile flag as defined by weapon file. Used by PGE server instance only. */
+    TPureFloat m_fDistMax;                                 /**< Max distance as defined by weapon file. Used by PGE server instance only. */
+    TPureFloat m_fDistTravelled;                           /**< Distance travelled so far. Used by both PGE client and server instances. */
     int m_nDamageAp;                                       /**< Damage to AP as defined by weapon file. Used by PGE server instance only. */
     int m_nDamageHp;                                       /**< Damage to HP as defined by weapon file. Used by both PGE client and server instances. */
     TPureFloat m_fDamageAreaSize;                          /**< Area damage size as defined by weapon file. Used by both PGE client and server instances. */

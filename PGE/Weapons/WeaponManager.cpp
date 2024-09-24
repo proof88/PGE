@@ -1,4 +1,3 @@
-#include "WeaponManager.h"
 /*
     ###################################################################################
     WeaponManager.cpp
@@ -37,6 +36,9 @@ void Bullet::resetGlobalBulletId()
     m_globalBulletId = 0;
 }
 
+/**
+    Ctor to be used by PGE server instance: bullet id will be assigned within the ctor.
+*/
 Bullet::Bullet(
     PR00FsUltimateRenderingEngine& gfx,
     pge_network::PgeNetworkConnectionHandle connHandle,
@@ -45,6 +47,7 @@ Bullet::Bullet(
     bool visible,
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
+    TPureFloat fDistMax,
     int nDamageAp, int nDamageHp,
     TPureFloat fDamageAreaSize,
     const DamageAreaEffect& eDamageAreaEffect,
@@ -56,6 +59,8 @@ Bullet::Bullet(
     m_gravity(gravity),
     m_drag(drag),
     m_fragile(fragile),
+    m_fDistMax(fDistMax),
+    m_fDistTravelled(0.f),
     m_nDamageAp(nDamageAp),
     m_nDamageHp(nDamageHp),
     m_fDamageAreaSize(fDamageAreaSize),
@@ -96,6 +101,9 @@ Bullet::Bullet(
     m_obj->SetRenderingAllowed(visible);
 }
 
+/**
+    Ctor to be used by PGE client instance: bullet id as received from server.
+*/
 Bullet::Bullet(
     PR00FsUltimateRenderingEngine& gfx,
     Bullet::BulletId id,
@@ -114,6 +122,8 @@ Bullet::Bullet(
     m_gravity(gravity),
     m_drag(drag),
     m_fragile(0.f) /* irrelevant for this client-side ctor */,
+    m_fDistMax(0.f) /* irrelevant for this client-side ctor */,
+    m_fDistTravelled(0.f),
     m_nDamageAp(0) /* irrelevant for this client-side ctor */,
     m_nDamageHp(nDamageHp),
     m_fDamageAreaSize(fDamageAreaSize),
@@ -174,6 +184,16 @@ TPureFloat Bullet::getDrag() const
 TPureBool Bullet::isFragile() const
 {
     return m_fragile;
+}
+
+TPureFloat Bullet::getTravelDistanceMax() const
+{
+    return m_fDistMax;
+}
+
+TPureFloat Bullet::getTravelledDistance() const
+{
+    return m_fDistTravelled;
 }
 
 /**
@@ -240,8 +260,10 @@ void Bullet::Update(const unsigned int& nFactor)
     * Maybe this approach would be faster than using PUT.Move() like below.
     * However, collision check is the most expensive thing now anyway, so I don't think about this now.
     */
-    m_put.Move(m_speed / nFactor);
+    const float fMoveDistance = m_speed / nFactor;
+    m_put.Move(fMoveDistance);
     m_obj->getPosVec() = m_put.getPosVec();
+    m_fDistTravelled += fMoveDistance;
 }
 
 
@@ -327,6 +349,7 @@ Weapon::Weapon(
         m_WpnAcceptedVars.insert("bullet_gravity");
         m_WpnAcceptedVars.insert("bullet_drag");
         m_WpnAcceptedVars.insert("bullet_fragile");
+        m_WpnAcceptedVars.insert("bullet_distance_max");
         m_WpnAcceptedVars.insert("damage_hp");
         m_WpnAcceptedVars.insert("damage_ap");
         m_WpnAcceptedVars.insert("damage_area_size");
@@ -493,6 +516,12 @@ Weapon::Weapon(
     {
         getConsole().EOLnOO("bullet_speed is 1000 but bullet_drag is non-zero in %s! ", fname);
         throw std::runtime_error("bullet_speed is 1000 but bullet_drag is non-zero in " + std::string(fname));
+    }
+
+    if (getVars()["bullet_distance_max"].getAsFloat() < 0.f)
+    {
+        getConsole().EOLnOO("bullet_distance_max cannot be negative in %s! ", fname);
+        throw std::runtime_error("bullet_distance_max cannot be negative in " + std::string(fname));
     }
 
     if (getVars()["damage_area_size"].getAsFloat() < 0.f)
@@ -1050,6 +1079,7 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
             getVars()["bullet_gravity"].getAsFloat(),
             getVars()["bullet_drag"].getAsFloat(),
             getVars()["bullet_fragile"].getAsBool(),
+            getVars()["bullet_distance_max"].getAsFloat(),
             getVars()["damage_ap"].getAsInt(),
             getVars()["damage_hp"].getAsInt(),
             getVars()["damage_area_size"].getAsFloat(),

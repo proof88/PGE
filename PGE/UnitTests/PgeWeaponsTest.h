@@ -92,6 +92,7 @@ protected:
         AddSubTest("test_wpn_load_weapon_invalid_damage_area_effect", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_invalid_damage_area_effect);
         AddSubTest("test_wpn_damage_hp_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_damage_hp_must_be_positive);
         AddSubTest("test_wpn_damage_ap_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_damage_ap_must_be_positive);
+        AddSubTest("test_wpn_load_weapon_bullet_distance_max_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_bullet_distance_max_cannot_be_negative);
         
         /* weapon load positive tests and other use cases */
 
@@ -529,6 +530,13 @@ private:
             "damage_hp and damage_ap must be positive values");
     }
 
+    bool test_wpn_load_weapon_bullet_distance_max_cannot_be_negative()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_bullet_distance_max_cannot_be_negative.txt",
+            "bullet_distance_max cannot be negative");
+    }
+
     bool test_wpn_state_to_string()
     {
         bool b = true;
@@ -588,6 +596,7 @@ private:
                 assertEquals(0.f, wpn.getVars()["bullet_gravity"].getAsFloat(), "bullet_gravity") &
                 assertEquals(0.2f, wpn.getVars()["bullet_drag"].getAsFloat(), "bullet_drag") &
                 assertTrue(wpn.getVars()["bullet_fragile"].getAsBool(), "bullet_fragile") &
+                assertEquals(0.f, wpn.getVars()["bullet_distance_max"].getAsFloat(), "bullet_distance_max") &
                 assertEquals(20, wpn.getVars()["damage_hp"].getAsInt(), "damage_hp") &
                 assertEquals(10, wpn.getVars()["damage_ap"].getAsInt(), "damage_ap") &
                 assertEquals(5.f, wpn.getVars()["damage_area_size"].getAsFloat(), "damage_area_size") &
