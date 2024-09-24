@@ -1,10 +1,12 @@
-# Lines starting with hashtag are comments and ignored by loader
+# Lines starting with hashtag are comments and ignored by loader.
 
-# Blank lines are also ignored by loader
+# Blank lines are also ignored by loader.
 
-# Variable name are case-insensitive, so "Name =" is same as "name =" or "NAME ="
+# Variable name are case-insensitive, so "Name =" is same as "name =" or "NAME =".
 
-# Name of the weapon is that will be displayed in GUI
+# If opened in Notepad++, I recommend setting INI or Makefile syntax highlighting in Language menu.
+
+# Name of the weapon is that will be displayed in GUI.
 Name = Sample Weapon 1
 
 # Preview Image is not needed to be explicitly defined here, as
@@ -16,15 +18,20 @@ Name = Sample Weapon 1
 #          #
 ############
 
-# Max number of bullets player can have for this weapon
+# Max number of bullets player can have for this weapon.
+# For reloadable weapons, this is max unmag count, which is the max number of bullets held outside of the weapon (e.g. in extra magazines).
+# For non-reloadable weapons, this is max mag count (e.g. rail gun).
 cap_max = 999
 
 # Max number of bullets the weapon can hold at a time.
 # This can be also understood as magazine capacity.
 # If 0, it is not reloadable (e.g. rail gun).
+# Cannot be bigger than cap_max.
 reloadable = 30
 
 # By default we have this amount of bullets with this weapon
+# If weapon is reloadable, this amount will be loaded, thus it
+# cannot be greater than "reloadable"
 bullets_default = 30
 
 # If true, reload is per-magazine, not per-bullet.
@@ -66,16 +73,16 @@ reload_end_snd = reload_end_dummy.wav
 
 # Firing mode defines how bullets are fired by pulling the trigger.
 # Accepted values (from lowest to highest available):
-#  - semi : trigger needs to be pulled as many times as many bullets we want to fire;
+#  - semi : trigger needs to be pulled-and-released as many times as many bullets we want to fire;
 #  - burst: similar to semi, but 1 trigger pull shots some (limited amount) bullets after each other;
-#  - proj : 1 trigger pull shots some (limited amount) of projectiles at once, e.g. shotguns;
+#  - proj : similar to burst, but 1 trigger pull shots some (limited amount) of projectiles AT ONCE, e.g. shotguns;
 #  - auto : trigger needs to be pulled only once to fire continuously until we have bullet.
 
 # Default firing mode
 # For pistols, this is usually "semi".
 # For shotguns, this is usually "proj".
 # For rifles, this is usually "auto".
-firing_mode_def = semi
+firing_mode_def = auto
 
 # Maximum supported firing mode.
 # User can loop from default to max firing mode using a mode selector.
@@ -85,11 +92,11 @@ firing_mode_def = semi
 # The user is able to select "auto" though even if "proj" is the default, in that case
 # weapon will shot projectiles in automatic mode (e.g. XM1014/Leone YG1265 Auto Shotgun in CS 1.6).
 # Max cannot be less than the default.
-firing_mode_max = burst
+firing_mode_max = auto
 
 # Time needed to elapse between 2 shots, in millisecs.
 # Cannot be 0.
-firing_cooldown = 300
+firing_cooldown = 50
 
 # Sound of a regular shot fired (non-existing, just setting something for unit tests)
 firing_snd = automatic_dummy.wav
@@ -130,7 +137,7 @@ recoil_m = 1.1
 
 # Time needed for recoil to disappear after 1 shot, in millisecs.
 # No effect when recoil_m is 1.0.
-recoil_cooldown = 500
+recoil_cooldown = 100
 
 # If available, recoil control can improve the accuracy degradation
 # caused by accumulating recoil across multiple shots.
@@ -192,14 +199,14 @@ damage_ap = 10
 # Size of area within damage is taken by player
 # 0 means no area damage (only direct hit takes damage).
 # HP and AP are both affected in area damage too.
-damage_area_size = -1.0
+damage_area_size = 5.0
 
 # How area damage should be calculated?
 # No effect when damage_area_size is 0.
 # Accepted values:
 #  - constant: damage is equal everywhere within the area.
 #  - linear  : damage is decreasing within area towards the edges from its center.
-damage_area_effect = linear
+damage_area_effect = haha
 
 # Amount of force applied to players within damage area.
 # No effect when damage_area_size is 0.

@@ -61,6 +61,7 @@ public:
         pge_network::PgeNetworkConnectionHandle connHandle,
         TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
         TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
+        bool visible,
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
         int nDamageAp, int nDamageHp,
@@ -74,6 +75,7 @@ public:
         Bullet::BulletId id,
         TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
         TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
+        bool visible,
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use nDamageAp */ int nDamageHp,
         const TPureFloat& fDamageAreaSize,
@@ -124,6 +126,7 @@ public:
         m_obj->SetDoubleSided(true);
         m_obj->getPosVec() = other.m_obj->getPosVec();
         m_obj->getAngleVec() = other.m_obj->getAngleVec();
+        m_obj->SetRenderingAllowed(other.m_obj->isRenderingAllowed());
     }
 
     Bullet& operator=(const Bullet& other) // TODO check if we really cannot live with just compiler generated operator=?
@@ -147,6 +150,7 @@ public:
         m_obj->SetDoubleSided(true);
         m_obj->getPosVec() = other.m_obj->getPosVec();
         m_obj->getAngleVec() = other.m_obj->getAngleVec();
+        m_obj->SetRenderingAllowed(other.m_obj->isRenderingAllowed());
 
         return *this;
     }

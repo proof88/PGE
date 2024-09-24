@@ -104,6 +104,7 @@ private:
             connHandle,
             posVec.getX(), posVec.getY(), posVec.getZ(),
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
+            false /* visible */,
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag, bFragile,
             nDamageAp, nDamageHp,
@@ -114,6 +115,7 @@ private:
         b &= assertEquals(connHandle, bullet.getOwner(), "owner");
         b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "pos");
         b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "angle");
+        b &= assertFalse(bullet.getObject3D().isRenderingAllowed(), "visible");
         b &= assertEquals(sizeVec, bullet.getObject3D().getSizeVec(), "size");
         b &= assertEquals(fSpeed, bullet.getSpeed(), "speed");
         b &= assertEquals(fGravity, bullet.getGravity(), "gravity");
@@ -148,6 +150,7 @@ private:
             static_cast<Bullet::BulletId>(1234),
             posVec.getX(), posVec.getY(), posVec.getZ(),
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
+            false /* visible */,
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag, nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
@@ -156,6 +159,7 @@ private:
         b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId, "global bullet id");
         b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "pos");
         b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "angle");
+        b &= assertFalse(bullet.getObject3D().isRenderingAllowed(), "visible");
         b &= assertEquals(sizeVec, bullet.getObject3D().getSizeVec(), "size");
         b &= assertEquals(fSpeed, bullet.getSpeed(), "speed");
         b &= assertEquals(fGravity, bullet.getGravity(), "gravity");
@@ -192,6 +196,7 @@ private:
             connHandle,
             posVec.getX(), posVec.getY(), posVec.getZ(),
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
+            false /* visible */,
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag, bFragile,
             nDamageAp, nDamageHp,
@@ -212,6 +217,7 @@ private:
                 0,
                 1.f, 2.f, 3.f,
                 20.f, 40.f, 60.f,
+                false /* visible */,
                 4.f, 5.f, 0.f,
                 1000.f, 15.f, 25.f, true,
                 5 /* AP */, 10 /* HP */,
@@ -235,6 +241,7 @@ private:
                 0,
                 1.f, 2.f, 3.f,
                 20.f, 40.f, 60.f,
+                false /* visible */,
                 4.f, 5.f, 0.f,
                 60.f, 15.f, 25.f, true,
                 5 /* AP */, 10 /* HP */,
@@ -258,6 +265,7 @@ private:
                 0,
                 1.f, 2.f, 3.f,
                 20.f, 40.f, 60.f,
+                false /* visible */,
                 4.f, 5.f, 0.f,
                 60.f, 15.f, 25.f, true,
                 5 /* AP */, 10 /* HP */,
@@ -284,6 +292,7 @@ private:
             *engine,
             0, 0.f, 0.f, 0.f,
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
+            false /* visible */,
             1.f, 1.f, 1.f,
             speed, 15.f, 25.f, true,
             5 /* AP */, 10 /* HP */,

@@ -42,6 +42,7 @@ Bullet::Bullet(
     pge_network::PgeNetworkConnectionHandle connHandle,
     TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
     TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
+    bool visible,
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
     int nDamageAp, int nDamageHp,
@@ -92,6 +93,7 @@ Bullet::Bullet(
     m_obj->SetDoubleSided(true);
     m_obj->getPosVec().Set(wpn_px, wpn_py, wpn_pz);
     m_obj->getAngleVec().Set(wpn_ax, wpn_ay, wpn_az);
+    m_obj->SetRenderingAllowed(visible);
 }
 
 Bullet::Bullet(
@@ -99,6 +101,7 @@ Bullet::Bullet(
     Bullet::BulletId id,
     TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
     TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
+    bool visible,
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, int nDamageHp,
     const TPureFloat& fDamageAreaSize,
@@ -127,6 +130,7 @@ Bullet::Bullet(
     m_obj->SetDoubleSided(true);
     m_obj->getPosVec().Set(wpn_px, wpn_py, wpn_pz);
     m_obj->getAngleVec().Set(wpn_ax, wpn_ay, wpn_az);
+    m_obj->SetRenderingAllowed(visible);
 }
 
 Bullet::~Bullet()
@@ -315,6 +319,7 @@ Weapon::Weapon(
         m_WpnAcceptedVars.insert("recoil_m");
         m_WpnAcceptedVars.insert("recoil_cooldown");
         m_WpnAcceptedVars.insert("recoil_control");
+        m_WpnAcceptedVars.insert("bullet_visible");
         m_WpnAcceptedVars.insert("bullet_size_x");
         m_WpnAcceptedVars.insert("bullet_size_y");
         m_WpnAcceptedVars.insert("bullet_size_z");
@@ -1028,8 +1033,6 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
     m_state = WPN_SHOOTING;
     m_nMagBulletCount--;
 
-
-
     const float fRelativeBulletAngleZ = getRandomRelativeBulletAngle(bMoving, bRun, bDuck);
     //getConsole().EOLn("bMoving: %b, bRun: %b, bDuck: %b, fRelativeBulletAngleZ: %f! ", bMoving, bRun, bDuck, fRelativeBulletAngleZ);
     
@@ -1039,6 +1042,7 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
             m_connHandle,
             m_obj->getPosVec().getX(), m_obj->getPosVec().getY(), m_obj->getPosVec().getZ(),
             m_obj->getAngleVec().getX(), m_obj->getAngleVec().getY(), m_obj->getAngleVec().getZ() + fRelativeBulletAngleZ,
+            getVars()["bullet_visible"].getAsBool(),
             getVars()["bullet_size_x"].getAsFloat(),
             getVars()["bullet_size_y"].getAsFloat(),
             getVars()["bullet_size_z"].getAsFloat(),

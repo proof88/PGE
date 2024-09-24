@@ -89,6 +89,7 @@ protected:
         AddSubTest("test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
         AddSubTest("test_wpn_load_weapon_damage_area_size_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_damage_area_size_cannot_be_negative);
         AddSubTest("test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse);
+        AddSubTest("test_wpn_load_weapon_invalid_damage_area_effect", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_invalid_damage_area_effect);
         AddSubTest("test_wpn_damage_hp_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_damage_hp_must_be_positive);
         AddSubTest("test_wpn_damage_ap_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_damage_ap_must_be_positive);
         
@@ -313,6 +314,7 @@ private:
             i = 0;
             for (const auto& bullet : bullets)
             {
+                b &= assertEquals(wpn.getVars()["bullet_visible"].getAsBool(), bullet.getObject3D().isRenderingAllowed(), ("visible " + std::to_string(i)).c_str());
                 b &= assertEquals(wpn.getObject3D().getPosVec(), bullet.getObject3D().getPosVec(), ("pos " + std::to_string(i)).c_str());
                 b &= assertEquals(wpn.getObject3D().getAngleVec().getY(), bullet.getObject3D().getAngleVec().getY(), ("angle Y " + std::to_string(i)).c_str());
                 const float fAbsRelativeBulletAngleZ = std::abs(wpn.getObject3D().getAngleVec().getZ() - bullet.getObject3D().getAngleVec().getZ());
@@ -492,6 +494,13 @@ private:
             "damage_area_size is 0 but damage_area_pulse is non-zero");
     }
 
+    bool test_wpn_load_weapon_invalid_damage_area_effect()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_damage_area_effect_invalid.txt",
+            "invalid damage_area_effect");
+    }
+
     bool test_wpn_firing_mode_max_cannot_be_less_than_default()
     {
         return test_helper_wpn_load_and_expect_exception(
@@ -571,6 +580,7 @@ private:
                 assertEquals(1.1f, wpn.getMaximumRecoilMultiplier(), "max recoil mplier") &
                 assertEquals(100, wpn.getVars()["recoil_cooldown"].getAsInt(), "recoil_cooldown") &
                 assertEquals("high", wpn.getVars()["recoil_control"].getAsString(), "recoil_control") &
+                assertTrue(wpn.getVars()["bullet_visible"].getAsBool(), "bullet_visible") &
                 assertEquals(1.f, wpn.getVars()["bullet_size_x"].getAsFloat(), "bullet_size_x") &
                 assertEquals(2.f, wpn.getVars()["bullet_size_y"].getAsFloat(), "bullet_size_y") &
                 assertEquals(3.f, wpn.getVars()["bullet_size_z"].getAsFloat(), "bullet_size_z") &
