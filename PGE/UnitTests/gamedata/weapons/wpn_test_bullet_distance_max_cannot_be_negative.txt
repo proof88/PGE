@@ -12,6 +12,11 @@ Name = Sample Weapon 1
 # Preview Image is not needed to be explicitly defined here, as
 # image file with same name is to be used implicitly as preview.
 
+# Weapon type, can be one of the following:
+# - melee (e.g. fists, knife)
+# - ranged (e.g. pistol, shotgun).
+type = ranged
+
 ############
 #          #
 #  RELOAD  #

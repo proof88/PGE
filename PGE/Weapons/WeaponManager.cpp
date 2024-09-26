@@ -1,3 +1,4 @@
+#include "WeaponManager.h"
 /*
     ###################################################################################
     WeaponManager.cpp
@@ -321,6 +322,7 @@ Weapon::Weapon(
     if ( m_WpnAcceptedVars.empty() )
     {
         m_WpnAcceptedVars.insert("name");
+        m_WpnAcceptedVars.insert("type");
         m_WpnAcceptedVars.insert("cap_max");
         m_WpnAcceptedVars.insert("reloadable");
         m_WpnAcceptedVars.insert("bullets_default");
@@ -373,6 +375,21 @@ Weapon::Weapon(
     }
 
     // TODO: too many manual CVAR validations here, update after implementing https://github.com/proof88/PRooFPS-dd/issues/251 !
+    
+    if (getVars()["type"].getAsString() == "melee")
+    {
+        m_type = Type::Melee;
+    }
+    else if (getVars()["type"].getAsString() == "ranged")
+    {
+        m_type = Type::Ranged;
+    }
+    else
+    {
+        getConsole().EOLnOO("unsupported weapon type in %s! ", fname);
+        throw std::runtime_error("unsupported weapon type in " + std::string(fname));
+    }
+
     if ( (getVars()["reloadable"].getAsInt() == 0) && getVars()["reload_per_mag"].getAsBool() )
     {
         getConsole().EOLnOO("reloadable is 0 but reload_per_mag is true in %s! ", fname);
@@ -389,6 +406,16 @@ Weapon::Weapon(
     {
         getConsole().EOLnOO("bullets_default cannot be greater than reloadable when the latter is non-zero in %s! ", fname);
         throw std::runtime_error("bullets_default cannot be greater than reloadable when the latter is non-zero in " + std::string(fname));
+    }
+
+    if (m_type == Type::Melee) 
+    {
+        if ((getVars()["reloadable"].getAsInt() != 0) || (getVars()["bullets_default"].getAsInt() != 1) ||
+            (getVars()["cap_max"].getAsInt() != 1) || (getVars()["reload_time"].getAsInt() != 0))
+        {
+            getConsole().EOLnOO("invalid reloadable, bullets_default, cap_max or reload_time for melee type in %s! ", fname);
+            throw std::runtime_error("invalid reloadable, bullets_default, cap_max or reload_time for melee type in " + std::string(fname));
+        }
     }
 
     // since we call PGEcfgFile ctor at the beginning with "require all accepted values to be present", we can be sure that
@@ -606,6 +633,11 @@ Weapon::~Weapon()
 CConsole& Weapon::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
+}
+
+const Weapon::Type& Weapon::getType() const
+{
+    return m_type;
 }
 
 const char* Weapon::getLoggerModuleName()
@@ -1031,6 +1063,8 @@ TPureBool Weapon::reload()
  * Firing an actual shot depends on different things like current state of the weapon, firing mode, etc.
  * If a shot was actually fired, at least one new bullet is placed in 'bullets' specified in the constructor of this weapon.
  * 
+ * Similar to ranged weapons, for melee type weapons as well, this is the attack function.
+ * 
  * @param bMoving Same as for getAccuracyByPose().
  * @param bRun    Same as for getAccuracyByPose().
  * @param bDuck   Same as for getAccuracyByPose().
@@ -1060,7 +1094,11 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
     }
 
     m_state = WPN_SHOOTING;
-    m_nMagBulletCount--;
+
+    if (m_type != Type::Melee)
+    {
+        m_nMagBulletCount--;
+    }
 
     const float fRelativeBulletAngleZ = getRandomRelativeBulletAngle(bMoving, bRun, bDuck);
     //getConsole().EOLn("bMoving: %b, bRun: %b, bDuck: %b, fRelativeBulletAngleZ: %f! ", bMoving, bRun, bDuck, fRelativeBulletAngleZ);

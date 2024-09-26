@@ -139,6 +139,7 @@ protected:
         AddSubTest("test_wpn_get_random_relative_bullet_angle", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_random_relative_bullet_angle);
         AddSubTest("test_wpn_shoot_creates_bullet_within_momentary_accuracy_range_of_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_shoot_creates_bullet_within_momentary_accuracy_range_of_weapon);
         AddSubTest("test_wpn_release_trigger_after_shoot", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_release_trigger_after_shoot);
+        AddSubTest("test_wpn_attack_does_not_decrease_mag_count_for_melee_type", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_attack_does_not_decrease_mag_count_for_melee_type);
         AddSubTest("test_wpn_shoot_when_empty_does_not_shoot", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_when_empty_does_not_shoot);
         AddSubTest("test_wpn_shoot_during_reloading_per_mag_does_not_shoot", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_during_reloading_per_mag_does_not_shoot);
         AddSubTest("test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading);
@@ -554,8 +555,10 @@ private:
         {
             std::list<Bullet> bullets;
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10); // might throw
+            Weapon wpn_melee("gamedata/weapons/sample_good_wpn_melee.txt", bullets, m_audio, *engine, 10); // might throw
             b = true; // did not throw
-            b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state") &
+            b &= assertEquals(Weapon::Type::Ranged, wpn.getType(), "type") &
+                assertEquals(Weapon::WPN_READY, wpn.getState(), "state") &
                 assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old") &
                 assertFalse(wpn.getState().isDirty(), "state dirty") &
                 assertFalse(wpn.isAvailable(), "available") &
@@ -606,7 +609,25 @@ private:
                 assertNotNull(&(wpn.getObject3D()), "object3d") &
                 assertFalse(wpn.getObject3D().isRenderingAllowed(), "rendering allowed") &
                 assertNotNull(wpn.getObject3D().getMaterial().getTexture(), "texture") &
-                assertEquals("gamedata\\textures\\weapons\\sample_good_wpn_automatic.bmp", wpn.getObject3D().getMaterial().getTexture()->getFilename(), "texture filename");
+                assertEquals("gamedata\\textures\\weapons\\sample_good_wpn_automatic.bmp", wpn.getObject3D().getMaterial().getTexture()->getFilename(), "texture filename 1");
+
+            b &= assertEquals(Weapon::Type::Melee, wpn_melee.getType(), "type 2") &
+                assertEquals(Weapon::FiringMode::WPN_FM_SEMI, wpn_melee.getCurrentFiringMode(), "firing mode 2") &
+                assertEquals(1u, wpn_melee.getMagBulletCount(), "mag 2") &
+                assertEquals(0u, wpn_melee.getUnmagBulletCount(), "unmag 2") &
+                assertEquals("Knife", wpn_melee.getVars()["name"].getAsString(), "name 2") &
+                assertEquals(1, wpn_melee.getVars()["cap_max"].getAsInt(), "cap_max 2") &
+                assertEquals(0, wpn_melee.getVars()["reloadable"].getAsInt(), "reloadable 2") &
+                assertEquals(1, wpn_melee.getVars()["bullets_default"].getAsInt(), "bullets_default 2") &
+                assertFalse(wpn_melee.getVars()["reload_per_mag"].getAsBool(), "reload_per_mag 2") &
+                assertFalse(wpn_melee.getVars()["reload_whole_mag"].getAsBool(), "reload_whole_mag 2") &
+                assertEquals(0, wpn_melee.getVars()["reload_time"].getAsInt(), "reload_time 2") &
+                assertEquals("semi", wpn_melee.getVars()["firing_mode_def"].getAsString(), "firing_mode_def 2") &
+                assertEquals("semi", wpn_melee.getVars()["firing_mode_max"].getAsString(), "firing_mode_max 2") &
+                assertNotNull(&(wpn_melee.getObject3D()), "object3d 2") &
+                assertFalse(wpn_melee.getObject3D().isRenderingAllowed(), "rendering allowed 2") &
+                assertNotNull(wpn_melee.getObject3D().getMaterial().getTexture(), "texture 2") &
+                assertEquals("gamedata\\textures\\weapons\\sample_good_wpn_melee.bmp", wpn_melee.getObject3D().getMaterial().getTexture()->getFilename(), "texture filename 2");
         }
         catch (const std::exception& e)
         {
@@ -1540,6 +1561,36 @@ private:
             // wpn state cares about cooldown, but trigger state is controlled by input
             wpn.releaseTrigger();
             b &= assertTrue(wpn.isTriggerReleased(), "trigger 2");
+
+        }
+        catch (const std::exception& e)
+        {
+            assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_attack_does_not_decrease_mag_count_for_melee_type()
+    {
+        bool b = false;
+        try
+        {
+            std::list<Bullet> bullets;
+            Weapon wpn("gamedata/weapons/sample_good_wpn_melee.txt", bullets, m_audio, *engine, 0);
+            b = true;
+
+            const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
+            const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
+            b &= assertEquals(1u, wpn.getMagBulletCount(), "mag bullet count 1");
+            b &= assertEquals(0u, wpn.getUnmagBulletCount(), "unmag bullet count 1");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 1");
+
+            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "attack");
+
+            b &= assertFalse(bullets.empty(), "created bullets empty");
+            b &= assertEquals(nOriginalMagBulletCount, wpn.getMagBulletCount(), "mag bullet count 2");
+            b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 2");
 
         }
         catch (const std::exception& e)

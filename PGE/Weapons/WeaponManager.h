@@ -220,6 +220,13 @@ public:
         WPN_FM_AUTO   /**< Trigger needs to be pulled only once to fire continuously until we have bullet. */
     };
 
+    enum Type
+    {
+        Ranged,
+        Melee,
+        Throwable
+    };
+
     static constexpr TPureFloat WpnYBiasToPlayerCenter{ 0.15f };  // TODO: I guess this supposed to be get/set through functions later based on something ...
 
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
@@ -236,6 +243,8 @@ public:
     virtual ~Weapon();
 
     CConsole&   getConsole() const;                     /**< Returns access to console preset with logger module name as this class. */
+
+    const Type& getType() const;
 
     PureObject3D& getObject3D();                        /**< Returns the graphical object entity associated to this weapon object. */
     const PureObject3D& getObject3D() const;            /**< Returns the graphical object entity associated to this weapon object. */
@@ -299,6 +308,7 @@ public:
         m_audio(other.m_audio),
         m_gfx(other.m_gfx),
         m_connHandle(other.m_connHandle),
+        m_type(other.m_type),
         m_state(other.m_state),
         m_firingMode(other.m_firingMode),
         m_nUnmagBulletCount(other.m_nUnmagBulletCount),
@@ -330,6 +340,7 @@ public:
         //m_audio = other.m_audio; // deleted assignment operator
         m_gfx = other.m_gfx;
         m_connHandle = other.m_connHandle;
+        m_type = other.m_type;
         m_state = other.m_state;
         m_firingMode = other.m_firingMode;
         m_nUnmagBulletCount = other.m_nUnmagBulletCount;
@@ -372,6 +383,7 @@ private:
     PR00FsUltimateRenderingEngine& m_gfx;
     pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this weapon. Should be used by PGE server instance only. */
     PureObject3D* m_obj;
+    Type m_type{};                                     /**< Filled by ctor. */
     PgeOldNewValue<State> m_state;                     /**< State as calculated and updated by PGE server instance. */
     FiringMode m_firingMode;                           /**< Current firing mode, something between getVars("firing_mode_def") and getVars("firing_mode_max"). */
     TPureUInt m_nUnmagBulletCount;                     /**< Spare bullets not loaded into weapon. Should be managed by PGE server instance. */
