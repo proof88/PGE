@@ -4,6 +4,7 @@
     ###################################################################################
     PFLTest.h
     Unit test for PR00F Foundation Library.
+    Please see UnitTest.h about my statement of using "bitwise and" operator with bool operands.
     Made by PR00F88
     ###################################################################################
 */
@@ -48,6 +49,7 @@ protected:
         AddSubTest("testStrClrLeads", (PFNUNITSUBTEST) &PFLTest::testStrClrLeads);
         AddSubTest("testStrClrTrails", (PFNUNITSUBTEST) &PFLTest::testStrClrTrails);
         AddSubTest("testStrClr", (PFNUNITSUBTEST) &PFLTest::testStrClr);
+        AddSubTest("testHash", (PFNUNITSUBTEST)&PFLTest::testHash);
         AddSubTest("testPi", (PFNUNITSUBTEST) &PFLTest::testPi);
         AddSubTest("testRoundf", (PFNUNITSUBTEST) &PFLTest::testRoundf);
         AddSubTest("testRoundi", (PFNUNITSUBTEST) &PFLTest::testRoundi);
@@ -113,7 +115,8 @@ private:
         time1.tv_sec = 10;
         time1.tv_usec = 0;
 
-        bool l = assertFalse(PFL::updateForMinDuration(time1, 20000000), "1") &
+        bool l = true;
+        l &= assertFalse(PFL::updateForMinDuration(time1, 20000000), "1") &
             assertEquals(10, time1.tv_sec, "sec 1") &
             assertEquals(0, time1.tv_usec, "usec 1");
         
@@ -141,21 +144,22 @@ private:
         timeEnd.tv_sec = 20;
         timeEnd.tv_usec = 500000;
 
-        bool l = assertTrue(PFL::updateForMinDuration(time, timeStart, timeEnd), "1") &
+        bool l = true;
+        l &= assertTrue(PFL::updateForMinDuration(time, timeStart, timeEnd), "1") &
             assertEquals(10, time.tv_sec, "sec 1") &
             assertEquals(500000, time.tv_usec, "usec 1");
 
         timeStart.tv_sec = 10;
         timeStart.tv_usec = 700000;
 
-        l = assertTrue(PFL::updateForMinDuration(time, timeStart, timeEnd), "2") &
+        l &= assertTrue(PFL::updateForMinDuration(time, timeStart, timeEnd), "2") &
             assertEquals(9, time.tv_sec, "sec 2") &
             assertEquals(800000, time.tv_usec, "usec 2");
 
         timeStart.tv_sec = 0;
         timeStart.tv_usec = 0;
 
-        l = assertFalse(PFL::updateForMinDuration(time, timeStart, timeEnd), "3") &
+        l &= assertFalse(PFL::updateForMinDuration(time, timeStart, timeEnd), "3") &
             assertEquals(9, time.tv_sec, "sec 3") &
             assertEquals(800000, time.tv_usec, "usec 3");
 
@@ -168,7 +172,8 @@ private:
         time1.tv_sec = 10;
         time1.tv_usec = 0;
 
-        bool l = assertFalse(PFL::updateForMaxDuration(time1, 5000000), "1") &
+        bool l = true;
+        l &= assertFalse(PFL::updateForMaxDuration(time1, 5000000), "1") &
             assertEquals(10, time1.tv_sec, "sec 1") &
             assertEquals(0, time1.tv_usec, "usec 1");
         
@@ -192,21 +197,22 @@ private:
         timeEnd.tv_sec = 20;
         timeEnd.tv_usec = 500000;
 
-        bool l = assertTrue(PFL::updateForMaxDuration(time, timeStart, timeEnd), "1") &
+        bool l = true;
+        l &= assertTrue(PFL::updateForMaxDuration(time, timeStart, timeEnd), "1") &
             assertEquals(10, time.tv_sec, "sec 1") &
             assertEquals(500000, time.tv_usec, "usec 1");
 
         timeEnd.tv_sec = 30;
         timeEnd.tv_usec = 700000;
 
-        l = assertTrue(PFL::updateForMaxDuration(time, timeStart, timeEnd), "2") &
+        l &= assertTrue(PFL::updateForMaxDuration(time, timeStart, timeEnd), "2") &
             assertEquals(20, time.tv_sec, "sec 2") &
             assertEquals(700000, time.tv_usec, "usec 2");
 
         timeStart.tv_sec = 20;
         timeStart.tv_usec = 0;
 
-        l = assertFalse(PFL::updateForMaxDuration(time, timeStart, timeEnd), "3") &
+        l &= assertFalse(PFL::updateForMaxDuration(time, timeStart, timeEnd), "3") &
             assertEquals(20, time.tv_sec, "sec 3") &
             assertEquals(700000, time.tv_usec, "usec 3");
 
@@ -215,22 +221,27 @@ private:
 
     bool testFileExists()
     {
-        return assertTrue(PFL::fileExists("C:\\Windows\\Notepad.exe"), "notepad") &
+        bool l = true;
+        l &= assertTrue(PFL::fileExists("C:\\Windows\\Notepad.exe"), "notepad") &
             assertFalse(PFL::fileExists("C:\\92569234523486"), "fake");
+        return l;
     }
 
     bool testGetExtension()
     {
-        return assertEquals("exe", PFL::getExtension("C:\\Windows\\Notepad.exe"), "notepad") &
+        bool l = true;
+        l &= assertEquals("exe", PFL::getExtension("C:\\Windows\\Notepad.exe"), "notepad") &
             assertEquals("", PFL::getExtension("alma"), "alma") &
             assertEquals("", PFL::getExtension("alma."), "alma dot") &
             assertEquals("", PFL::getExtension("alma.."), "alma dot dot") &
             assertEquals("tga", PFL::getExtension("macskajancsi.exe.pdf.tga"), "tga");
+        return l;
     }
 
     bool testGetDirectory()
     {
-        return assertEquals("C:\\Windows\\", PFL::getDirectory("    C:\\Windows\\Notepad.exe    "), "notepad") &
+        bool l = true;
+        l &= assertEquals("C:\\Windows\\", PFL::getDirectory("    C:\\Windows\\Notepad.exe    "), "notepad") &
             assertEquals("", PFL::getDirectory("alma"), "alma") &
             assertEquals("alma\\", PFL::getDirectory("alma\\"), "alma 2") &
             assertEquals("", PFL::getDirectory("\\"), "backslash") &
@@ -239,11 +250,13 @@ private:
             assertEquals("alma/", PFL::getDirectory("alma/"), "alma 3") &
             assertEquals("", PFL::getDirectory("/"), "slash") &
             assertEquals("", PFL::getDirectory("///"), "slashslashslash");
+        return l;
     }
 
     bool testGetFilename()
     {
-        return assertEquals("Notepad.exe", PFL::getFilename("C:\\Windows\\Notepad.exe"), "notepad") &
+        bool l = true;
+        l &= assertEquals("Notepad.exe", PFL::getFilename("C:\\Windows\\Notepad.exe"), "notepad") &
             assertEquals("Notepad.exe", PFL::getFilename("C:/Windows/Notepad.exe"), "notepad 2") &
             assertEquals("alma", PFL::getFilename("alma"), "alma") &
             assertEquals("alma", PFL::getFilename("alma."), "alma dot") &
@@ -251,25 +264,30 @@ private:
             assertEquals("alma..txt", PFL::getFilename("alma..txt"), "alma dot dot txt") &
             assertEquals("macskajancsi.exe.pdf.tga", PFL::getFilename("macskajancsi.exe.pdf.tga"), "tga") &
             assertEquals("", PFL::getFilename(""), "empty");
+        return l;
     }
 
     bool testChangeExtension()
     {
-        return assertEquals("Notepad.jpg", PFL::changeExtension("Notepad.exe", "jpg"), "notepad") &
+        bool l = true;
+        l &= assertEquals("Notepad.jpg", PFL::changeExtension("Notepad.exe", "jpg"), "notepad") &
             assertEquals("Notepad.jpg", PFL::changeExtension("Notepad", "jpg"), "notepad no ext") &
             assertEquals("C:\\Windows\\Notepad.tga", PFL::changeExtension("C:\\Windows\\Notepad.exe", "tga"), "notepad fullpath") &
             assertEquals("C:/Windows/Notepad.tga", PFL::changeExtension("C:/Windows/Notepad.exe", "tga"), "notepad fullpath 2") &
             assertEquals("", PFL::changeExtension("", "jpg"), "empty") &
             assertEquals("Notepad", PFL::changeExtension("Notepad.exe", ""), "remove ext 1") &
             assertEquals("Notepad", PFL::changeExtension("Notepad", ""), "remove ext 2");
+        return l;
     }
 
     bool testNumCharAppears()
     {
-        return assertEquals((unsigned) 0, PFL::numCharAppears('g', "", 0), "empty") &
+        bool l = true;
+        l &= assertEquals((unsigned) 0, PFL::numCharAppears('g', "", 0), "empty") &
             assertEquals((unsigned) 1, PFL::numCharAppears('g', "g", 1), "1") &
             assertEquals((unsigned) 4, PFL::numCharAppears('g', "iasjoigmnoasn ongoingoasn go", 28), "4") &
             assertEquals((unsigned) 2, PFL::numCharAppears('g', "ggg", 2), "size");
+        return l;
     }
 
     bool testStrClrTrails()
@@ -279,7 +297,8 @@ private:
         char str3[] = "   ";
         char str4[] = "  macska   \t";
 
-        return assertEquals(strlen(str1), PFL::strClrTrails(str1), "len1") &
+        bool l = true;
+        l &= assertEquals(strlen(str1), PFL::strClrTrails(str1), "len1") &
                assertEquals(strlen(str2), PFL::strClrTrails(str2), "len2") &
                assertEquals(strlen(str3), PFL::strClrTrails(str3), "len3") &  
                assertEquals(strlen(str4), PFL::strClrTrails(str4, 'x'), "len4") &
@@ -287,6 +306,7 @@ private:
                assertEquals(std::string("   alma alma"), std::string(str2), "long alma") &
                assertEquals(std::string(""), std::string(str3), "spaces only") &
                assertEquals(std::string("  macska   "), std::string(str4), "macska");
+        return l;
     }
 
     bool testStrClrLeads()
@@ -296,7 +316,8 @@ private:
         char str3[] = "   ";
         char str4[] = "\t  macska   \t";
         
-        return assertEquals(strlen(str1), PFL::strClrLeads(str1), "len1") &
+        bool l = true;
+        l &= assertEquals(strlen(str1), PFL::strClrLeads(str1), "len1") &
                assertEquals(strlen(str2), PFL::strClrLeads(str2), "len2") &
                assertEquals(strlen(str3), PFL::strClrLeads(str3), "len3") & 
                assertEquals(strlen(str4), PFL::strClrLeads(str4, 'x'), "len4") &
@@ -304,6 +325,7 @@ private:
                assertEquals(std::string("alma alma  \t \t "), std::string(str2), "long alma") &
                assertEquals(std::string(""), std::string(str3), "spaces only") &
                assertEquals(std::string("  macska   \t"), std::string(str4), "macska");
+        return l;
     }
 
     bool testStrClr()
@@ -313,7 +335,8 @@ private:
         char str3[] = "   ";
         char str4[] = "\t\t  macska   \t";
         
-        return assertEquals(strlen(str1), PFL::strClr(str1), "len1") &
+        bool l = true;
+        l &= assertEquals(strlen(str1), PFL::strClr(str1), "len1") &
                assertEquals(strlen(str2), PFL::strClr(str2), "len2") &
                assertEquals(strlen(str3), PFL::strClr(str3), "len3") &
                assertEquals(strlen(str4), PFL::strClr(str4, 'x'), "len4") &
@@ -321,51 +344,108 @@ private:
                assertEquals(std::string("alma alma"), std::string(str2), "long alma") &
                assertEquals(std::string(""), std::string(str3), "spaces only") &
                assertEquals(std::string("  macska   "), std::string(str4), "macska");
+        return l;
     } 
+
+    bool testHash()
+    {
+        std::set<PFL::StringHash> charhashes;
+
+        for (char c = 'a'; c <= 'z'; c++)
+        {
+            charhashes.insert(PFL::calcHash(std::to_string(c)));
+        }
+
+        constexpr auto testStrings = PFL::std_array_of<const char*>(
+            "alma",
+            "ALMA",
+            "Alma",
+            "AlmA",
+            "ALmA",
+            "ALMa",
+            "AlMA",
+            "almA",
+            "alMA",
+            "alMa",
+            "aLMa",
+            "aLma",
+            "aLmA",
+            "knife.txt",
+            "pistol.txt",
+            "machinegun.txt",
+            "bazooka.txt",
+            "pusha.txt"
+        );
+
+        std::set<PFL::StringHash> strhashes;
+        for (const auto& zstr : testStrings)
+        {
+            strhashes.insert(
+                PFL::calcHash(zstr)
+            );
+        }
+
+        bool b = true;
+        b &= assertEquals(static_cast<size_t>('z') - static_cast<size_t>('a') + 1, charhashes.size(), "charhashes") &
+            assertEquals(testStrings.size(), strhashes.size(), "strhashes");
+        return b;
+    }
 
     bool testPi()
     {
-        return assertBetween(3.14f, 3.15f, PFL::pi(), "pi()") &
+        bool l = true;
+        l &= assertBetween(3.14f, 3.15f, PFL::pi(), "pi()") &
             assertEquals(PFL::PI, PFL::pi(), 0.001f, "PFL_PI");
+        return l;
     }
 
     bool testRoundf()
     {
-        return assertEquals(4.0f, PFL::roundf(4.15f), 0.001f, "4.15f") &
+        bool l = true;
+        l &= assertEquals(4.0f, PFL::roundf(4.15f), 0.001f, "4.15f") &
             assertEquals(4.0f, PFL::roundf(4.49f), 0.001f, "4.49f") &
             assertEquals(4.0f, PFL::roundf(3.5f), 0.001f, "3.5f") &
             assertEquals(-4.0f, PFL::roundf(-4.49f), 0.001f, "-4.49f") &
             assertEquals(-4.0f, PFL::roundf(-3.5f), 0.001f, "-3.5f");
+        return l;
     }
 
     bool testRoundi()
     {
-        return assertEquals(4, PFL::roundi(4.15f), "4.15f") &
+        bool l = true;
+        l &= assertEquals(4, PFL::roundi(4.15f), "4.15f") &
             assertEquals(4, PFL::roundi(4.49f), "4.49f") &
             assertEquals(4, PFL::roundi(3.5f), "3.5f") &
             assertEquals(-4, PFL::roundi(-4.49f), "-4.49f") &
             assertEquals(-4, PFL::roundi(-3.5f), "-3.5f");
+        return l;
     }
 
     bool testConstrain()
     {
-        return assertEquals(3, PFL::constrain(3, 2, 4), "3, 2, 4") &
+        bool l = true;
+        l &= assertEquals(3, PFL::constrain(3, 2, 4), "3, 2, 4") &
             assertEquals(2, PFL::constrain(1, 2, 4), "1, 2, 4") &
             assertEquals(4, PFL::constrain(5, 2, 4), "5, 2, 4");
+        return l;
     }
 
     bool testDegToRad()
     {
-        return assertEquals(0.0f, PFL::degToRad(0.0f), 0.001f, "0.0f") &
+        bool l = true;
+        l &= assertEquals(0.0f, PFL::degToRad(0.0f), 0.001f, "0.0f") &
             assertEquals(PFL::pi()/180.0f, PFL::degToRad(1.0f), 0.001f, "0.0f") &
             assertEquals(PFL::pi(), PFL::degToRad(180.0f), 0.001f, "180.0f");
+        return l;
     }
 
     bool testRadToDeg()
     {
-        return assertEquals(0.0f, PFL::radToDeg(0.0f), 0.001f, "pi/180") &
+        bool l = true;
+        l &= assertEquals(0.0f, PFL::radToDeg(0.0f), 0.001f, "pi/180") &
             assertEquals(1.0f, PFL::radToDeg(PFL::pi()/180.0f), 0.001f, "pi/180") &
             assertEquals(180.0f, PFL::radToDeg(PFL::pi()), 0.001f, "pi");
+        return l;
     }   
 
     bool testRandom1()
@@ -402,11 +482,13 @@ private:
 
     bool testLerp()
     {
-        return assertEquals(1.f, PFL::lerp(1.f, 3.f, 0.f), "lower wall") &
+        bool l = true;
+        l &= assertEquals(1.f, PFL::lerp(1.f, 3.f, 0.f), "lower wall") &
             assertEquals(3.f, PFL::lerp(1.f, 3.f, 1.f), "higher wall") &
             assertEquals(1.f, PFL::lerp(1.f, 3.f, -10.f), "below lower wall") &
             assertEquals(3.f, PFL::lerp(1.f, 3.f, 10.f), "above higher wall") &
             assertEquals(2.f, PFL::lerp(1.f, 3.f, 0.5f), "center");
+        return l;
     }
 
     bool testSmooth()
