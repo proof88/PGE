@@ -329,6 +329,7 @@ private:
                 }
                 b &= assertGequals(fMaxAbsAccAngle, fAbsRelativeBulletAngleZ, fEps, ("angle Z " + std::to_string(i)).c_str());
                 b &= assertEquals(wpn.getOwner(), bullet.getOwner(), ("bullet owner " + std::to_string(i)).c_str());
+                b &= assertEquals(wpn.getUniqueId(), bullet.getWeaponId(), ("bullet wpn id " + std::to_string(i)).c_str());
                 b &= assertEquals(wpn.getVars()["damage_hp"].getAsInt(), bullet.getDamageHp(), ("damageHp " + std::to_string(i)).c_str());
                 b &= assertEquals(wpn.getVars()["damage_ap"].getAsInt(), bullet.getDamageAp(), ("damageAp " + std::to_string(i)).c_str());
 

@@ -25,6 +25,8 @@
 #include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
 #include "../Network/PgePacket.h"
 
+typedef PFL::StringHash WeaponId;
+
 /**
     Bullet class for PR00F's Game Engine Weapon Manager
 */
@@ -57,6 +59,7 @@ public:
 
     /** Ctor to be used by PGE server instance: bullet id will be assigned within the ctor. */
     Bullet(
+        const WeaponId& wpnId,
         PR00FsUltimateRenderingEngine& gfx,
         pge_network::PgeNetworkConnectionHandle connHandle,
         TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
@@ -72,6 +75,7 @@ public:
     
     /** Ctor to be used by PGE client instance: bullet id as received from server. */
     Bullet(
+        const WeaponId& wpnId,
         PR00FsUltimateRenderingEngine& gfx,
         Bullet::BulletId id,
         TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
@@ -90,6 +94,7 @@ public:
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
     BulletId getId() const;
+    const WeaponId& getWeaponId() const;
 
     pge_network::PgeNetworkConnectionHandle getOwner() const;
 
@@ -113,6 +118,7 @@ public:
 
     Bullet(const Bullet& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
         m_id(other.m_id),
+        m_wpnId(other.m_wpnId),
         m_gfx(other.m_gfx),
         m_connHandle(other.m_connHandle),
         m_put(other.m_put),
@@ -139,6 +145,7 @@ public:
     Bullet& operator=(const Bullet& other) // TODO check if we really cannot live with just compiler generated operator=?
     {
         m_id = other.m_id;
+        m_wpnId = other.m_wpnId;
         m_gfx = other.m_gfx;
         m_connHandle = other.m_connHandle;
         m_put = other.m_put;
@@ -171,6 +178,7 @@ private:
     static BulletId m_globalBulletId;                      /**< Next unique bullet id for identifying. Used by PGE server instance only. */
 
     BulletId m_id;                                         /**< Unique bullet id for identifying. Used by both PGE client and server instances. */
+    WeaponId m_wpnId;                                      /**< Unique weapon id. Used by both PGE client and server instances. */
     PR00FsUltimateRenderingEngine& m_gfx;
     pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this bullet. Used by PGE server instance only. */
     PurePosUpTarget m_put;                                 /**< PUT to calculate next position. Used by both PGE client and server instances. */
@@ -226,8 +234,6 @@ public:
         Melee,
         Throwable
     };
-
-    typedef PFL::StringHash WeaponId;
 
     static constexpr TPureFloat WpnYBiasToPlayerCenter{ 0.15f };  // TODO: I guess this supposed to be get/set through functions later based on something ...
 
@@ -443,8 +449,8 @@ public:
     Weapon* load(const char* fname, pge_network::PgeNetworkConnectionHandle connHandle);
     const std::vector<Weapon*>& getWeapons() const;
 
-    Weapon* getWeaponById(const Weapon::WeaponId& id);
-    const Weapon* getWeaponById(const Weapon::WeaponId& id) const;
+    Weapon* getWeaponById(const WeaponId& id);
+    const Weapon* getWeaponById(const WeaponId& id) const;
     
     Weapon* getWeaponByFilename(const std::string& wpnName);
     const Weapon* getWeaponByFilename(const std::string& wpnName) const;

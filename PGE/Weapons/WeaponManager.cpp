@@ -1,4 +1,3 @@
-#include "WeaponManager.h"
 /*
     ###################################################################################
     WeaponManager.cpp
@@ -41,6 +40,7 @@ void Bullet::resetGlobalBulletId()
     Ctor to be used by PGE server instance: bullet id will be assigned within the ctor.
 */
 Bullet::Bullet(
+    const WeaponId& wpnId,
     PR00FsUltimateRenderingEngine& gfx,
     pge_network::PgeNetworkConnectionHandle connHandle,
     TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
@@ -54,6 +54,7 @@ Bullet::Bullet(
     const DamageAreaEffect& eDamageAreaEffect,
     TPureFloat fDamageAreaPulse) :
     m_id(m_globalBulletId++),
+    m_wpnId(wpnId),
     m_gfx(gfx),
     m_connHandle(connHandle),
     m_speed(speed),
@@ -70,25 +71,31 @@ Bullet::Bullet(
     m_obj(NULL),
     m_bCreateSentToClients(false)
 {
+    if (wpnId == 0)
+    {
+        getConsole().EOLnOO("Bullet ctor (server): given weapon id cannot be 0!");
+        throw std::runtime_error("Bullet ctor (server): given weapon id cannot be 0");
+    }
+
     // TODO: actually these copy-pasted validations related to bullets should be defined in a public static validate function,
     // which should be invoked by WeaponManager when a new Weapon is constructed, to remove validation redundancy!
     // Ticket: https://github.com/proof88/PGE/issues/14
     if ( (m_speed == 1000.f) && (m_drag > 0.f))
     {
-        getConsole().EOLnOO("Bullet ctor: m_speed is 1000 but m_drag is non-zero!");
-        throw std::runtime_error("Bullet ctor: m_speed is 1000 but m_drag is non-zero");
+        getConsole().EOLnOO("Bullet ctor (server): m_speed is 1000 but m_drag is non-zero!");
+        throw std::runtime_error("Bullet ctor (server): m_speed is 1000 but m_drag is non-zero");
     }
 
     if (m_fDamageAreaSize < 0.f)
     {
-        getConsole().EOLnOO("Bullet ctor: m_fDamageAreaSize cannot be negative!");
-        throw std::runtime_error("Bullet ctor: m_fDamageAreaSize cannot be negative!");
+        getConsole().EOLnOO("Bullet ctor (server): m_fDamageAreaSize cannot be negative!");
+        throw std::runtime_error("Bullet ctor (server): m_fDamageAreaSize cannot be negative!");
     }
 
     if ((m_fDamageAreaSize == 0.f) && (m_fDamageAreaPulse > 0.f))
     {
-        getConsole().EOLnOO("Bullet ctor: m_fDamageAreaSize is 0 but m_fDamageAreaPulse is non-zero!");
-        throw std::runtime_error("Bullet ctor: m_fDamageAreaSize is 0 but m_fDamageAreaPulse is non-zero!");
+        getConsole().EOLnOO("Bullet ctor (server): m_fDamageAreaSize is 0 but m_fDamageAreaPulse is non-zero!");
+        throw std::runtime_error("Bullet ctor (server): m_fDamageAreaSize is 0 but m_fDamageAreaPulse is non-zero!");
     }
 
     m_put.getPosVec().Set(wpn_px, wpn_py, wpn_pz);
@@ -106,6 +113,7 @@ Bullet::Bullet(
     Ctor to be used by PGE client instance: bullet id as received from server.
 */
 Bullet::Bullet(
+    const WeaponId& wpnId,
     PR00FsUltimateRenderingEngine& gfx,
     Bullet::BulletId id,
     TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
@@ -117,6 +125,7 @@ Bullet::Bullet(
     const DamageAreaEffect& eDamageAreaEffect,
     const TPureFloat& fDamageAreaPulse) :
     m_id(id),
+    m_wpnId(wpnId),
     m_gfx(gfx),
     m_connHandle(0),
     m_speed(speed),
@@ -133,6 +142,12 @@ Bullet::Bullet(
     m_obj(NULL),
     m_bCreateSentToClients(true) /* irrelevant for this client-side ctor but we are client so yes it is sent :) */
 {
+    if (wpnId == 0)
+    {
+        getConsole().EOLnOO("Bullet ctor (client): given weapon id cannot be 0!");
+        throw std::runtime_error("Bullet ctor (client): given weapon id cannot be 0");
+    }
+
     m_put.getPosVec().Set(wpn_px, wpn_py, wpn_pz);
     m_put.SetRotation(wpn_ax, (wpn_ay > 0.0f) ? 90.f : -90.f, (wpn_ay > 0.0f) ? wpn_az : -wpn_az);
 
@@ -160,6 +175,11 @@ CConsole& Bullet::getConsole() const
 Bullet::BulletId Bullet::getId() const
 {
     return m_id;
+}
+
+const WeaponId& Bullet::getWeaponId() const
+{
+    return m_wpnId;
 }
 
 pge_network::PgeNetworkConnectionHandle Bullet::getOwner() const
@@ -637,7 +657,7 @@ CConsole& Weapon::getConsole() const
     return CConsole::getConsoleInstance(getLoggerModuleName());
 }
 
-const Weapon::WeaponId& Weapon::getUniqueId() const
+const WeaponId& Weapon::getUniqueId() const
 {
     return m_id;
 }
@@ -1112,6 +1132,7 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
     
     m_bullets.push_back(
         Bullet(
+            m_id,
             m_gfx,
             m_connHandle,
             m_obj->getPosVec().getX(), m_obj->getPosVec().getY(), m_obj->getPosVec().getZ(),
@@ -1551,12 +1572,12 @@ const std::vector<Weapon*>& WeaponManager::getWeapons() const
     return m_weapons;
 }
 
-Weapon* WeaponManager::getWeaponById(const Weapon::WeaponId& id)
+Weapon* WeaponManager::getWeaponById(const WeaponId& id)
 {
     return const_cast<Weapon*>(const_cast<const WeaponManager*>(this)->getWeaponById(id));
 }
 
-const Weapon* WeaponManager::getWeaponById(const Weapon::WeaponId& id) const
+const Weapon* WeaponManager::getWeaponById(const WeaponId& id) const
 {
     const auto it = std::find_if(
         m_weapons.begin(),

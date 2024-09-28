@@ -38,6 +38,8 @@ protected:
         AddSubTest("test_bullet_ctor_client_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_good);
         // TODO: add test for copy ctor and assignment operator
         AddSubTest("test_reset_global_bullet_id", (PFNUNITSUBTEST)&PGEBulletTest::test_reset_global_bullet_id);
+        AddSubTest("test_bullet_ctor_server_does_not_accept_0_weapon_id", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_does_not_accept_0_weapon_id);
+        AddSubTest("test_bullet_ctor_client_does_not_accept_0_weapon_id", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_does_not_accept_0_weapon_id);
         AddSubTest("test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag",
             (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
         AddSubTest("test_bullet_ctor_damage_area_size_cannot_be_negative",
@@ -85,6 +87,7 @@ private:
     bool test_bullet_ctor_server_good()
     {
         const Bullet::BulletId iLastBulletId = Bullet::getGlobalBulletId();
+        const WeaponId iWpnBulletId = static_cast<WeaponId>(123u);
         const PureVector posVec(1.f, 2.f, 3.f);
         const PureVector angleVec(20.f, 40.f, 60.f);
         const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
@@ -101,6 +104,7 @@ private:
         const pge_network::PgeNetworkConnectionHandle connHandle = 52;
 
         Bullet bullet(
+            iWpnBulletId,
             *engine,
             connHandle,
             posVec.getX(), posVec.getY(), posVec.getZ(),
@@ -113,6 +117,7 @@ private:
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
         
         bool b = assertEquals(bullet.getId(), iLastBulletId, "bullet id");
+        b &= assertEquals(bullet.getWeaponId(), iWpnBulletId, "weapon id");
         b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId + 1, "global bullet id");
         b &= assertEquals(connHandle, bullet.getOwner(), "owner");
         b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "pos");
@@ -137,6 +142,7 @@ private:
     bool test_bullet_ctor_client_good()
     {
         const Bullet::BulletId iLastBulletId = Bullet::getGlobalBulletId();
+        const WeaponId iWpnBulletId = static_cast<WeaponId>(123u);
         const PureVector posVec(1.f, 2.f, 3.f);
         const PureVector angleVec(20.f, 40.f, 60.f);
         const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
@@ -149,6 +155,7 @@ private:
         const float fDamageAreaPulse = 2.f;
 
         Bullet bullet(
+            iWpnBulletId,
             *engine,
             static_cast<Bullet::BulletId>(1234),
             posVec.getX(), posVec.getY(), posVec.getZ(),
@@ -159,6 +166,7 @@ private:
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
 
         bool b = assertEquals(bullet.getId(), static_cast<Bullet::BulletId>(1234), "bullet id");
+        b &= assertEquals(bullet.getWeaponId(), iWpnBulletId, "weapon id");
         b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId, "global bullet id");
         b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "pos");
         b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "angle");
@@ -181,6 +189,7 @@ private:
 
     bool test_reset_global_bullet_id()
     {
+        const WeaponId iWpnBulletId = static_cast<WeaponId>(123u);
         const PureVector posVec(1.f, 2.f, 3.f);
         const PureVector angleVec(20.f, 40.f, 60.f);
         const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
@@ -197,6 +206,7 @@ private:
         const pge_network::PgeNetworkConnectionHandle connHandle = 52;
 
         Bullet bullet(
+            iWpnBulletId,
             *engine,
             connHandle,
             posVec.getX(), posVec.getY(), posVec.getZ(),
@@ -213,12 +223,66 @@ private:
         return assertEquals(static_cast<Bullet::BulletId>(0), Bullet::getGlobalBulletId());
     }
 
+    bool test_bullet_ctor_server_does_not_accept_0_weapon_id()
+    {
+        bool b = false;
+        try
+        {
+            Bullet bullet(
+                static_cast<WeaponId>(0u),
+                *engine,
+                0 /* connHandle */,
+                1.f, 2.f, 3.f,
+                20.f, 40.f, 60.f,
+                false /* visible */,
+                4.f, 5.f, 0.f,
+                1000.f, 15.f, 25.f, true,
+                0.f /* fDistMax */,
+                5 /* AP */, 10 /* HP */,
+                5.f, Bullet::DamageAreaEffect::Constant, 2.f);
+        }
+        catch (const std::exception&)
+        {
+            b = true;
+        }
+
+        return b;
+    }
+
+    bool test_bullet_ctor_client_does_not_accept_0_weapon_id()
+    {
+        bool b = false;
+        try
+        {
+            Bullet bullet(
+                static_cast<WeaponId>(0u),
+                *engine,
+                0 /* bullet id */,
+                1.f, 2.f, 3.f,
+                20.f, 40.f, 60.f,
+                false /* visible */,
+                4.f, 5.f, 0.f,
+                1000.f, 15.f, 25.f, /* client does not receive nor use fragile */
+                /* client does not receive nor use fDistMax */
+                /* client does not receive nor use nDamageAp */
+                10 /* HP */,
+                5.f, Bullet::DamageAreaEffect::Constant, 2.f);
+        }
+        catch (const std::exception&)
+        {
+            b = true;
+        }
+
+        return b;
+    }
+
     bool test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag()
     {
         bool b = false;
         try
         {
             Bullet bullet(
+                static_cast<WeaponId>(123u),
                 *engine,
                 0,
                 1.f, 2.f, 3.f,
@@ -244,6 +308,7 @@ private:
         try
         {
             Bullet bullet(
+                static_cast<WeaponId>(123u),
                 *engine,
                 0,
                 1.f, 2.f, 3.f,
@@ -269,6 +334,7 @@ private:
         try
         {
             Bullet bullet(
+                static_cast<WeaponId>(123u),
                 *engine,
                 0,
                 1.f, 2.f, 3.f,
@@ -299,6 +365,7 @@ private:
         put.Move(fSpeed / static_cast<float>(nFactor));
 
         Bullet bullet(
+            static_cast<WeaponId>(123u),
             *engine,
             0, 0.f, 0.f, 0.f,
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
