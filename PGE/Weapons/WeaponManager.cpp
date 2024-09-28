@@ -639,8 +639,17 @@ Weapon::Weapon(
     // only error will be logged but that is fine!
     // TODO: hardcoded directory should be coming from somewhere instead!
     m_audio.loadSound(m_sndShoot, std::string("gamedata\\audio\\weapons\\") + getVars()["firing_snd"].getAsString());
-    m_audio.loadSound(m_sndShootDry, std::string("gamedata\\audio\\weapons\\") + getVars()["firing_dry_snd"].getAsString());
-    m_audio.loadSound(m_sndReloadStart, std::string("gamedata\\audio\\weapons\\") + getVars()["reload_start_snd"].getAsString());
+
+    if (m_type != Type::Melee)
+    {
+        // do not even try to load these for melee, do not even log error
+        m_audio.loadSound(m_sndShootDry, std::string("gamedata\\audio\\weapons\\") + getVars()["firing_dry_snd"].getAsString());
+
+        if (getVars()["reloadable"].getAsInt() != 0)
+        {
+            m_audio.loadSound(m_sndReloadStart, std::string("gamedata\\audio\\weapons\\") + getVars()["reload_start_snd"].getAsString());
+        }
+    }
     
     // CVAR reload_end_snd can be empty if reload_per_mag is false, do not log error -> do not even try load 
     if (!getVars()["reload_end_snd"].getAsString().empty())
