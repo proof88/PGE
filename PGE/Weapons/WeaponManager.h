@@ -310,6 +310,8 @@ public:
     SoLoud::Wav& getDryFiringSound();
     SoLoud::Wav& getReloadStartSound();
     SoLoud::Wav& getReloadEndSound();
+    SoLoud::Wav& getPlayerHitSound();
+    SoLoud::Wav& getWallHitSound();
 
     Weapon(const Weapon& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
         PGEcfgFile(other),
@@ -409,6 +411,8 @@ private:
     SoLoud::Wav m_sndShootDry;
     SoLoud::Wav m_sndReloadStart;
     SoLoud::Wav m_sndReloadEnd;
+    SoLoud::Wav m_sndDamageWall;
+    SoLoud::Wav m_sndDamagePlayer;
 
     // ---------------------------------------------------------------------------
 

@@ -630,6 +630,8 @@ private:
                 assertEquals(0, wpn_melee.getVars()["reload_time"].getAsInt(), "reload_time 2") &
                 assertEquals("semi", wpn_melee.getVars()["firing_mode_def"].getAsString(), "firing_mode_def 2") &
                 assertEquals("semi", wpn_melee.getVars()["firing_mode_max"].getAsString(), "firing_mode_max 2") &
+                assertEquals("hit_wall_dummy.wav", wpn_melee.getVars()["damage_wall_snd"].getAsString(), "damage_wall_snd") &
+                assertEquals("hit_player_dummy.wav", wpn_melee.getVars()["damage_player_snd"].getAsString(), "damage_player_snd") &
                 assertNotNull(&(wpn_melee.getObject3D()), "object3d 2") &
                 assertFalse(wpn_melee.getObject3D().isRenderingAllowed(), "rendering allowed 2") &
                 assertNotNull(wpn_melee.getObject3D().getMaterial().getTexture(), "texture 2") &

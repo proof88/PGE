@@ -372,6 +372,8 @@ Weapon::Weapon(
         m_WpnAcceptedVars.insert("bullet_drag");
         m_WpnAcceptedVars.insert("bullet_fragile");
         m_WpnAcceptedVars.insert("bullet_distance_max");
+        m_WpnAcceptedVars.insert("damage_wall_snd");
+        m_WpnAcceptedVars.insert("damage_player_snd");
         m_WpnAcceptedVars.insert("damage_hp");
         m_WpnAcceptedVars.insert("damage_ap");
         m_WpnAcceptedVars.insert("damage_area_size");
@@ -437,6 +439,14 @@ Weapon::Weapon(
         {
             getConsole().EOLnOO("invalid reloadable, bullets_default, cap_max or reload_time for melee type in %s! ", fname);
             throw std::runtime_error("invalid reloadable, bullets_default, cap_max or reload_time for melee type in " + std::string(fname));
+        }
+    }
+    else
+    {
+        if (!getVars()["damage_wall_snd"].getAsString().empty() || !getVars()["damage_player_snd"].getAsString().empty())
+        {
+            getConsole().EOLnOO("damage_wall_snd and damage_player_snd must be empty for non-melee weapon in % s!", fname);
+            throw std::runtime_error("damage_wall_snd and damage_player_snd must be empty for non-melee weapon in " + std::string(fname));
         }
     }
 
@@ -636,6 +646,12 @@ Weapon::Weapon(
     if (!getVars()["reload_end_snd"].getAsString().empty())
     {
         m_audio.loadSound(m_sndReloadEnd, std::string("gamedata\\audio\\weapons\\") + getVars()["reload_end_snd"].getAsString());
+    }
+
+    if (m_type == Type::Melee)
+    {
+        m_audio.loadSound(m_sndDamageWall, std::string("gamedata\\audio\\weapons\\") + getVars()["damage_wall_snd"].getAsString());
+        m_audio.loadSound(m_sndDamagePlayer, std::string("gamedata\\audio\\weapons\\") + getVars()["damage_player_snd"].getAsString());
     }
 
     getConsole().SOLnOO("Weapon loaded!");
@@ -1432,6 +1448,16 @@ SoLoud::Wav& Weapon::getReloadStartSound()
 SoLoud::Wav& Weapon::getReloadEndSound()
 {
     return m_sndReloadEnd;
+}
+
+SoLoud::Wav& Weapon::getPlayerHitSound()
+{
+    return m_sndDamagePlayer;
+}
+
+SoLoud::Wav& Weapon::getWallHitSound()
+{
+    return m_sndDamageWall;
 }
 
 
