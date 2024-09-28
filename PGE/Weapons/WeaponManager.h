@@ -227,6 +227,8 @@ public:
         Throwable
     };
 
+    typedef PFL::StringHash WeaponId;
+
     static constexpr TPureFloat WpnYBiasToPlayerCenter{ 0.15f };  // TODO: I guess this supposed to be get/set through functions later based on something ...
 
     static const char* getLoggerModuleName();          /**< Returns the logger module name of this class. */
@@ -244,6 +246,7 @@ public:
 
     CConsole&   getConsole() const;                     /**< Returns access to console preset with logger module name as this class. */
 
+    const WeaponId& getUniqueId() const;
     const Type& getType() const;
 
     PureObject3D& getObject3D();                        /**< Returns the graphical object entity associated to this weapon object. */
@@ -308,6 +311,7 @@ public:
         m_audio(other.m_audio),
         m_gfx(other.m_gfx),
         m_connHandle(other.m_connHandle),
+        m_id(other.m_id),
         m_type(other.m_type),
         m_state(other.m_state),
         m_firingMode(other.m_firingMode),
@@ -340,6 +344,7 @@ public:
         //m_audio = other.m_audio; // deleted assignment operator
         m_gfx = other.m_gfx;
         m_connHandle = other.m_connHandle;
+        m_id = other.m_id;
         m_type = other.m_type;
         m_state = other.m_state;
         m_firingMode = other.m_firingMode;
@@ -383,7 +388,8 @@ private:
     PR00FsUltimateRenderingEngine& m_gfx;
     pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this weapon. Should be used by PGE server instance only. */
     PureObject3D* m_obj;
-    Type m_type{};                                     /**< Filled by ctor. */
+    WeaponId m_id{};                                   /**< Unique ID, filled by ctor. */
+    Type m_type{};                                     /**< Type of weapon, filled by ctor. */
     PgeOldNewValue<State> m_state;                     /**< State as calculated and updated by PGE server instance. */
     FiringMode m_firingMode;                           /**< Current firing mode, something between getVars("firing_mode_def") and getVars("firing_mode_max"). */
     TPureUInt m_nUnmagBulletCount;                     /**< Spare bullets not loaded into weapon. Should be managed by PGE server instance. */
@@ -437,6 +443,9 @@ public:
     Weapon* load(const char* fname, pge_network::PgeNetworkConnectionHandle connHandle);
     const std::vector<Weapon*>& getWeapons() const;
 
+    Weapon* getWeaponById(const Weapon::WeaponId& id);
+    const Weapon* getWeaponById(const Weapon::WeaponId& id) const;
+    
     Weapon* getWeaponByFilename(const std::string& wpnName);
     const Weapon* getWeaponByFilename(const std::string& wpnName) const;
 
@@ -482,7 +491,7 @@ private:
     pge_audio::PgeAudio& m_audio;
     PGEcfgProfiles& m_cfgProfiles;
     PR00FsUltimateRenderingEngine& m_gfx;
-    std::vector<Weapon*> m_weapons;
+    std::vector<Weapon*> m_weapons;  // due to lot of legacy code, I'm keeping this as vector, but it should be std::map<Weapon::WeaponId, Weapon*>
     Weapon* m_pCurrentWpn;
     std::chrono::time_point<std::chrono::steady_clock> m_timeLastWeaponSwitch;
     std::list<Bullet>& m_bullets;

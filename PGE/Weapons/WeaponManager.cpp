@@ -374,6 +374,8 @@ Weapon::Weapon(
         throw std::runtime_error("failed to load file: " + std::string(fname));
     }
 
+    m_id = PFL::calcHash(getFilename());
+
     // TODO: too many manual CVAR validations here, update after implementing https://github.com/proof88/PRooFPS-dd/issues/251 !
     
     if (getVars()["type"].getAsString() == "melee")
@@ -633,6 +635,11 @@ Weapon::~Weapon()
 CConsole& Weapon::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
+}
+
+const Weapon::WeaponId& Weapon::getUniqueId() const
+{
+    return m_id;
 }
 
 const Weapon::Type& Weapon::getType() const
@@ -1505,9 +1512,26 @@ Weapon* WeaponManager::load(const char* fname, pge_network::PgeNetworkConnection
 {
     try
     {
+        Weapon* const wpnAlreadyLoaded = getWeaponByFilename(PFL::getFilename(fname));
+        if (wpnAlreadyLoaded)
+        {
+            getConsole().OLn("WeaponManager::load(%s) returning already loaded weapon with same path and filename!", fname);
+            return wpnAlreadyLoaded;
+        }
+
         Weapon* const wpn = new Weapon(fname, m_bullets, m_audio, m_gfx, connHandleServerSide);
         if (!wpn)
         {
+            return nullptr;
+        }
+
+        const Weapon* const collidingId = getWeaponById(wpn->getUniqueId());
+        if (collidingId != nullptr)
+        {
+            getConsole().EOLn(
+                "WeaponManager::load(%s) failed due to colliding id %u, already held by: %s",
+                fname, static_cast<uint32_t>(collidingId->getUniqueId()), collidingId->getFilename().c_str());
+            delete wpn;
             return nullptr;
         }
 
@@ -1525,6 +1549,22 @@ Weapon* WeaponManager::load(const char* fname, pge_network::PgeNetworkConnection
 const std::vector<Weapon*>& WeaponManager::getWeapons() const
 {
     return m_weapons;
+}
+
+Weapon* WeaponManager::getWeaponById(const Weapon::WeaponId& id)
+{
+    return const_cast<Weapon*>(const_cast<const WeaponManager*>(this)->getWeaponById(id));
+}
+
+const Weapon* WeaponManager::getWeaponById(const Weapon::WeaponId& id) const
+{
+    const auto it = std::find_if(
+        m_weapons.begin(),
+        m_weapons.end(),
+        [&id](const Weapon* pwpn) { return pwpn && (pwpn->getUniqueId() == id); }
+    );
+
+    return it == m_weapons.end() ? nullptr : *it;
 }
 
 Weapon* WeaponManager::getWeaponByFilename(const std::string& wpnName)

@@ -159,6 +159,9 @@ protected:
         AddSubTest("test_wm_load_weapon_missing_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_load_weapon_missing_var);
         AddSubTest("test_wm_load_weapon_double_defined_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_load_weapon_double_defined_var);
         AddSubTest("test_wm_load_weapon_good", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_load_weapon_good);
+        AddSubTest("test_wm_load_same_weapon_twice", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_load_same_weapon_twice);
+        AddSubTest("test_wm_get_weapon_by_filename", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_weapon_by_filename);
+        AddSubTest("test_wm_get_weapon_by_id", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_weapon_by_id);
         AddSubTest("test_wm_get_set_current_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_set_current_weapon);
         AddSubTest("test_wm_get_prev_avail_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_prev_avail_weapon);
         AddSubTest("test_wm_get_prev_avail_weapon_not_in_keytoweaponmap", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_prev_avail_weapon_not_in_keytoweaponmap);
@@ -558,6 +561,7 @@ private:
             Weapon wpn_melee("gamedata/weapons/sample_good_wpn_melee.txt", bullets, m_audio, *engine, 10); // might throw
             b = true; // did not throw
             b &= assertEquals(Weapon::Type::Ranged, wpn.getType(), "type") &
+                assertLess(0u, wpn.getUniqueId(), "id") &
                 assertEquals(Weapon::WPN_READY, wpn.getState(), "state") &
                 assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old") &
                 assertFalse(wpn.getState().isDirty(), "state dirty") &
@@ -612,6 +616,7 @@ private:
                 assertEquals("gamedata\\textures\\weapons\\sample_good_wpn_automatic.bmp", wpn.getObject3D().getMaterial().getTexture()->getFilename(), "texture filename 1");
 
             b &= assertEquals(Weapon::Type::Melee, wpn_melee.getType(), "type 2") &
+                assertLess(0u, wpn_melee.getUniqueId(), "id 2") &
                 assertEquals(Weapon::FiringMode::WPN_FM_SEMI, wpn_melee.getCurrentFiringMode(), "firing mode 2") &
                 assertEquals(1u, wpn_melee.getMagBulletCount(), "mag 2") &
                 assertEquals(0u, wpn_melee.getUnmagBulletCount(), "unmag 2") &
@@ -2133,6 +2138,72 @@ private:
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         b &= assertFalse(wm.getWeapons().empty(), "not empty") &
             assertTrue(wm.getDefaultAvailableWeaponFilename().empty(), "defaultWeapon");
+
+        return b;
+    }
+
+    bool test_wm_load_same_weapon_twice()
+    {
+        std::list<Bullet> bullets;
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
+        const Weapon* const wpn = wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0);
+
+        bool b = assertNotNull(wpn, "load 1");
+
+        if (b)
+        {
+            b &= assertEquals(wpn, wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 2");
+        }
+
+        return b;
+    }
+
+    bool test_wm_get_weapon_by_filename()
+    {
+        std::list<Bullet> bullets;
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
+        const Weapon* const wpn1 = wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0);
+        const Weapon* const wpn2 = wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0);
+        const Weapon* const wpn3 = wm.load("gamedata/weapons/sample_good_wpn_railgun.txt", 0);
+
+        bool b = true;
+
+        b &= assertNotNull(wpn1, "load 1") &
+            assertNotNull(wpn2, "load 2") &
+            assertNotNull(wpn3, "load 3");
+
+        if (b)
+        {
+            b &= assertEquals(wpn1, wm.getWeaponByFilename("sample_good_wpn_automatic.txt"), "get 1") &
+                assertEquals(wpn2, wm.getWeaponByFilename("sample_good_wpn_semi_with_burst.txt"), "get 2") &
+                assertEquals(wpn3, wm.getWeaponByFilename("sample_good_wpn_railgun.txt"), "get 3") &
+                assertNull(wm.getWeaponByFilename("asdasd"), "get 4");
+        }
+
+        return b;
+    }
+
+    bool test_wm_get_weapon_by_id()
+    {
+        std::list<Bullet> bullets;
+        WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
+        const Weapon* const wpn1 = wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0);
+        const Weapon* const wpn2 = wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0);
+        const Weapon* const wpn3 = wm.load("gamedata/weapons/sample_good_wpn_railgun.txt", 0);
+
+        bool b = true;
+
+        b &= assertNotNull(wpn1, "load 1") &
+            assertNotNull(wpn2, "load 2") &
+            assertNotNull(wpn3, "load 3");
+
+        if (b)
+        {
+            b &= assertEquals(wpn1, wm.getWeaponById(wpn1->getUniqueId()), "get 1") &
+                assertEquals(wpn2, wm.getWeaponById(wpn2->getUniqueId()), "get 2") &
+                assertEquals(wpn3, wm.getWeaponById(wpn3->getUniqueId()), "get 3") &
+                assertNull(wm.getWeaponById(0), "get 4");
+        }
 
         return b;
     }
