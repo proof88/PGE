@@ -607,9 +607,9 @@ private:
                 assertEquals(0.f, wpn.getVars()["bullet_distance_max"].getAsFloat(), "bullet_distance_max") &
                 assertEquals(20, wpn.getVars()["damage_hp"].getAsInt(), "damage_hp") &
                 assertEquals(10, wpn.getVars()["damage_ap"].getAsInt(), "damage_ap") &
-                assertEquals(5.f, wpn.getVars()["damage_area_size"].getAsFloat(), "damage_area_size") &
-                assertEquals("linear", wpn.getVars()["damage_area_effect"].getAsString(), "damage_area_effect") &
-                assertEquals(20.f, wpn.getVars()["damage_area_pulse"].getAsFloat(), "damage_area_pulse") &
+                assertEquals(0.f, wpn.getVars()["damage_area_size"].getAsFloat(), "damage_area_size") &
+                assertEquals("constant", wpn.getVars()["damage_area_effect"].getAsString(), "damage_area_effect") &
+                assertEquals(0.f, wpn.getVars()["damage_area_pulse"].getAsFloat(), "damage_area_pulse") &
                 assertTrue(bullets.empty(), "bullets") &
                 assertNotNull(&(wpn.getObject3D()), "object3d") &
                 assertFalse(wpn.getObject3D().isRenderingAllowed(), "rendering allowed") &

@@ -379,6 +379,8 @@ Weapon::Weapon(
         m_WpnAcceptedVars.insert("damage_area_size");
         m_WpnAcceptedVars.insert("damage_area_effect");
         m_WpnAcceptedVars.insert("damage_area_pulse");
+        m_WpnAcceptedVars.insert("damage_area_gfx_obj");
+        m_WpnAcceptedVars.insert("damage_area_snd");
     }
 
     // Need to think about better design ...
@@ -589,10 +591,39 @@ Weapon::Weapon(
         throw std::runtime_error("damage_area_size cannot be negative in " + std::string(fname));
     }
 
-    if ( (getVars()["damage_area_size"].getAsFloat() == 0.f) && (getVars()["damage_area_pulse"].getAsFloat() > 0.f) )
+    if ( getVars()["damage_area_size"].getAsFloat() == 0.f )
     {
-        getConsole().EOLnOO("damage_area_size is 0 but damage_area_pulse is non-zero in %s! ", fname);
-        throw std::runtime_error("damage_area_size is 0 but damage_area_pulse is non-zero in " + std::string(fname));
+        if (getVars()["damage_area_pulse"].getAsFloat() > 0.f)
+        {
+            getConsole().EOLnOO("damage_area_size is 0 but damage_area_pulse is non-zero in %s! ", fname);
+            throw std::runtime_error("damage_area_size is 0 but damage_area_pulse is non-zero in " + std::string(fname));
+        }
+
+        if (!getVars()["damage_area_gfx_obj"].getAsString().empty())
+        {
+            getConsole().EOLnOO("damage_area_size is 0 but damage_area_gfx_obj is non-empty in %s! ", fname);
+            throw std::runtime_error("damage_area_size is 0 but damage_area_gfx_obj is non-empty in " + std::string(fname));
+        }
+
+        if (!getVars()["damage_area_snd"].getAsString().empty())
+        {
+            getConsole().EOLnOO("damage_area_size is 0 but damage_area_snd is non-empty in %s! ", fname);
+            throw std::runtime_error("damage_area_size is 0 but damage_area_snd is non-empty in " + std::string(fname));
+        }
+    }
+    else
+    {
+        if (getVars()["damage_area_gfx_obj"].getAsString().empty())
+        {
+            getConsole().EOLnOO("damage_area_size is non-0 but damage_area_gfx_obj is empty in %s! ", fname);
+            throw std::runtime_error("damage_area_size is non-0 but damage_area_gfx_obj is empty in " + std::string(fname));
+        }
+
+        if (getVars()["damage_area_snd"].getAsString().empty())
+        {
+            getConsole().EOLnOO("damage_area_size is non-0 but damage_area_snd is empty in %s! ", fname);
+            throw std::runtime_error("damage_area_size is non-0 but damage_area_snd is empty in " + std::string(fname));
+        }
     }
 
     if ((getVars()["damage_area_effect"].getAsString() != "constant") && (getVars()["damage_area_effect"].getAsString() != "linear"))
