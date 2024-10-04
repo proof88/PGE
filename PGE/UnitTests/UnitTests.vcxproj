@@ -394,6 +394,7 @@
     <ClInclude Include="..\PURE\include\external\Render\PureRendererHWfixedPipe.h" />
     <ClInclude Include="..\PURE\include\external\Render\PureRendererSWincremental.h" />
     <ClInclude Include="PGEBulletTest.h" />
+    <ClInclude Include="PgeObjectPoolTest.h" />
     <ClInclude Include="PgeOldNewValueTest.h" />
     <ClInclude Include="PgePacketTest.h" />
     <ClInclude Include="PR00FsUltimateRenderingEngineTest.h" />

@@ -26,6 +26,7 @@
 #include "../../../Console/CConsole/src/CConsole.h"
 
 #include "PFLTest.h"
+#include "PgeObjectPoolTest.h"
 #include "PGEcfgVariableTest.h"
 #include "PGEcfgFileTest.h"
 #include "PGEcfgProfilesTest.h"
@@ -100,6 +101,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     vector<std::unique_ptr<UnitTest>> tests;
     
     //tests.push_back(std::unique_ptr<UnitTest>(new PFLTest));
+
+    tests.push_back(std::unique_ptr<UnitTest>(new PgeObjectPoolTest));
     
     /*
     tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgVariableTest));
@@ -109,10 +112,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     */
     
     //tests.push_back(std::unique_ptr<UnitTest>(new PgePacketTest));
-     
+
+    /*
     tests.push_back(std::unique_ptr<UnitTest>(new PgeWeaponsTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PGEBulletTest));
-    /**/
+    */
     
     /*  
     tests.push_back(std::unique_ptr<UnitTest>(new PureScreenTest));

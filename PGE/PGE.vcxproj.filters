@@ -145,6 +145,12 @@
     <Filter Include="Header Files\Network\Stubs">
       <UniqueIdentifier>{fdc7cb3f-053e-4544-9e72-38b09aa4145d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Memory">
+      <UniqueIdentifier>{cb5379b3-f8d1-40d5-b179-43b6192378c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Memory">
+      <UniqueIdentifier>{0a3373d0-4ca0-4ecd-b033-9a826a8a2bdf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PGE.h">
@@ -635,6 +641,9 @@
     </ClInclude>
     <ClInclude Include="Network\Stubs\PgeServerStub.h">
       <Filter>Header Files\Network\Stubs</Filter>
+    </ClInclude>
+    <ClInclude Include="Memory\PgeObjectPool.h">
+      <Filter>Header Files\Memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -16,6 +16,8 @@
 #include <string>
 #include <vector>
 
+#include "../../../Console/CConsole/src/CConsole.h"
+
 #include "../PGEallHeaders.h"
 #include "PGEcfgVariable.h"
 

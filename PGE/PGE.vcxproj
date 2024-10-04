@@ -397,6 +397,7 @@
     <ClInclude Include="Config\PGEcfgVariable.h" />
     <ClInclude Include="Config\PGEcfgProfiles.h" />
     <ClInclude Include="Config\PgeOldNewValue.h" />
+    <ClInclude Include="Memory\PgeObjectPool.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingmessages.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingsockets.h" />
     <ClInclude Include="Network\GameNetworkingSockets-1.4.0\include\steam\isteamnetworkingutils.h" />
