@@ -60,7 +60,9 @@ protected:
         //CConsole::getConsoleInstance().SetLoggingState(PgeObjectPool<int>::getLoggerModuleName(), true);
 
         AddSubTest("test_ctor", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_ctor);
-        AddSubTest("test_create_and_remove", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_create_and_remove);
+        AddSubTest("test_create", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_create);
+        AddSubTest("test_remove_func_of_pool", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_remove_func_of_pool);
+        AddSubTest("test_remove_func_of_object", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_remove_func_of_object);
     }
 
     virtual bool setUp() override
@@ -107,13 +109,12 @@ private:
         return b;
     }
 
-    bool test_create_and_remove()
+    bool test_create()
     {
         constexpr size_t capacity = 10;
         PgeObjectPool<TestedPooledObject> pool("floats", capacity, 5.6f);
         bool b = true;
 
-        // create() test
         for (size_t i = 0; b && (i < pool.capacity()); i++)
         {
             b &= assertNotNull(pool.create(), ("create " + std::to_string(i)).c_str());
@@ -139,7 +140,52 @@ private:
 
         b &= assertNull(pool.create(), "create after all created already");
 
-        // remove() test
+        return b;
+    }
+
+    bool test_remove_func_of_pool()
+    {
+        // testing pool.remove(obj), should be same as test_remove_func_of_objectt() but with different remove() being tested
+
+        constexpr size_t capacity = 10;
+        PgeObjectPool<TestedPooledObject> pool("floats", capacity, 5.6f);
+        bool b = true;
+
+        // negative remove() test: nothing bad happens if we try to free any of the already freed/usable
+        for (size_t i = 0; b && (i < pool.capacity()); i++)
+        {
+            pool.remove(pool.elems()[i]);
+            b &= assertEquals(0u, pool.count(), (" fake remove 1 count " + std::to_string(i)).c_str());
+        }
+
+        // now create them
+        for (size_t i = 0; b && (i < pool.capacity()); i++)
+        {
+            b &= assertNotNull(pool.create(), ("create " + std::to_string(i)).c_str());
+        }
+
+        // negative remove() test: try removing a pooled object NOT managed by this pool!
+        PgeObjectPool<TestedPooledObject> pool_2("different floats", 5, 2.1f);
+        TestedPooledObject* const pooledByAnotherPool = static_cast<TestedPooledObject*>(pool_2.create());
+        b &= assertNotNull(pooledByAnotherPool, "create 2");
+
+        if (b)
+        {
+            try
+            {
+                pool.remove(*pooledByAnotherPool); // should throw ex
+                b = false; 
+            }
+            catch (const std::exception&)
+            {
+                b = true;
+                b &= assertEquals(pool.capacity(), pool.count(), "pool count() after negative removal of non-pooled object");
+                b &= assertEquals(1u, pool_2.count(), "pool_2 count() after negative removal of non-pooled object");
+                b &= assertTrue(pooledByAnotherPool->used(), "pooledByAnotherPool used() after negative removal of non-pooled object");
+            }
+        }
+
+        // positive remove() test
         for (size_t i = 0; b && (i < pool.capacity()); i++)
         {
             pool.remove(pool.elems()[i]);
@@ -159,15 +205,72 @@ private:
         // next() ptrs are now in reversed order
         for (size_t i = pool.capacity() - 1; b && (i > 0); i--)
         {
-            b &= assertEquals(&(pool.elems()[i-1]), pool.elems()[i].next(), ("remove next " + std::to_string(i)).c_str());
+            b &= assertEquals(&(pool.elems()[i - 1]), pool.elems()[i].next(), ("remove next " + std::to_string(i)).c_str());
         }
         b &= assertTrue(nullptr == pool.elems()[0].next(), "last remove next");
 
-        // nothing bad happens if we try to free any of the already freed
+        // negative remove() test: again, nothing bad happens if we try to free any of the already freed/usable
         for (size_t i = 0; b && (i < pool.capacity()); i++)
         {
             pool.remove(pool.elems()[i]);
-            b &= assertEquals(0u, pool.count(), (" fake remove count " + std::to_string(i)).c_str());
+            b &= assertEquals(0u, pool.count(), (" fake remove 2 count " + std::to_string(i)).c_str());
+        }
+
+        return b;
+    }
+
+    bool test_remove_func_of_object()
+    {
+        // testing pooled_object.remove(), should be same as test_remove_func_of_pool() but with different remove() being tested
+
+        constexpr size_t capacity = 10;
+        PgeObjectPool<TestedPooledObject> pool("floats", capacity, 5.6f);
+        bool b = true;
+
+        // negative remove() test: nothing bad happens if we try to free any of the already freed/usable
+        for (size_t i = 0; b && (i < pool.capacity()); i++)
+        {
+            pool.elems()[i].remove();
+            b &= assertEquals(0u, pool.count(), (" fake remove 1 count " + std::to_string(i)).c_str());
+        }
+
+        // now create them
+        for (size_t i = 0; b && (i < pool.capacity()); i++)
+        {
+            b &= assertNotNull(pool.create(), ("create " + std::to_string(i)).c_str());
+        }
+
+        // negative remove() test: try removing a pooled object NOT managed by this pool, cannot be done using pooled_object's remove(), nothing to test!
+
+        // positive remove() test
+        for (size_t i = 0; b && (i < pool.capacity()); i++)
+        {
+            pool.elems()[i].remove();
+            b &= assertEquals(pool.capacity() - i - 1, pool.count(), ("remove count " + std::to_string(i)).c_str());
+        }
+        b &= assertEquals(0u, pool.count(), "last remove count") &
+            assertEquals(capacity, pool.capacity(), "cap 2");
+
+        // elem data unchanged but now they are "free" again
+        for (size_t i = 0; b && (i < pool.capacity()); i++)
+        {
+            b &= assertEquals(5.6f, pool.elems()[i].getValue(), ("remove value " + std::to_string(i)).c_str()) &
+                assertFalse(pool.elems()[i].used(), ("remove used " + std::to_string(i)).c_str()) &
+                assertEquals(&pool, &(pool.elems()[i].getParentPool()), ("remove parentpool " + std::to_string(i)).c_str());
+        }
+
+        // next() ptrs are now in reversed order
+        for (size_t i = pool.capacity() - 1; b && (i > 0); i--)
+        {
+            b &= assertEquals(&(pool.elems()[i - 1]), pool.elems()[i].next(), ("remove next " + std::to_string(i)).c_str());
+        }
+        b &= assertTrue(nullptr == pool.elems()[0].next(), "last remove next");
+
+        // negative remove() test: again, nothing bad happens if we try to free any of the already freed/usable
+        for (size_t i = 0; b && (i < pool.capacity()); i++)
+        {
+            pool.elems()[i].remove();
+            b &= assertEquals(0u, pool.count(), (" fake remove 2 count " + std::to_string(i)).c_str());
         }
 
         return b;

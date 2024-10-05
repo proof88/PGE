@@ -17,7 +17,28 @@
 
 #include "../PGEallHeaders.h"
 
-class PgeObjectPoolBase;
+
+class PgePooledObject;
+
+
+/**
+* Base class for pool only to have a non-template base so we can use it as non-void pointer in PgePooledObject.
+*/
+class PgeObjectPoolBase
+{
+public:
+    PgeObjectPoolBase() = default;
+    virtual ~PgeObjectPoolBase() = default;
+
+    PgeObjectPoolBase(const PgeObjectPoolBase&) = default;
+    PgeObjectPoolBase& operator=(const PgeObjectPoolBase&) = default;
+    PgeObjectPoolBase(PgeObjectPoolBase&&) = default;
+    PgeObjectPoolBase& operator=(PgeObjectPoolBase&&) = default;
+
+    // This one is declared so we can have convenience function remove() within PgePooledObject.
+    virtual void remove(PgePooledObject& ptr) = 0;
+};
+
 
 /**
 * Only classes derived from PgePooledObject can be stored in PgeObjectPool.
@@ -33,16 +54,25 @@ public:
     PgePooledObject(PgePooledObject&&) = default;
     PgePooledObject& operator=(PgePooledObject&&) = default;
 
+    /**
+    * @return The object pool that created and manages this pooled object.
+    */
     PgeObjectPoolBase& getParentPool()
     {
         return m_parentPool;
     }
 
+    /**
+    * @return The object pool that created and manages this pooled object.
+    */
     const PgeObjectPoolBase& getParentPool() const
     {
         return m_parentPool;
     }
 
+    /**
+    * @return True if this pooled object is flagged as used, false if it is free and available to be reused.
+    */
     const bool& used() const
     {
         return m_isUsed;
@@ -56,6 +86,14 @@ public:
     PgePooledObject* next()
     {
         return m_pNext;
+    }
+
+    /**
+    * Convenience function. Equivalent to: PgeObjectPool.remove(*this) .
+    */
+    void remove()
+    {
+        m_parentPool.remove(*this);
     }
 
 protected:
@@ -87,23 +125,6 @@ private:
     }
 
 }; // class PgePooledObject
-
-
-/**
-* Base class for pool only to have a non-template base so we can use it as non-void pointer in PgePooledObject.
-* 
-*/
-class PgeObjectPoolBase
-{
-public:
-    PgeObjectPoolBase() = default;
-    virtual ~PgeObjectPoolBase() = default;
-
-    PgeObjectPoolBase(const PgeObjectPoolBase&) = default;
-    PgeObjectPoolBase& operator=(const PgeObjectPoolBase&) = default;
-    PgeObjectPoolBase(PgeObjectPoolBase&&) = default;
-    PgeObjectPoolBase& operator=(PgeObjectPoolBase&&) = default;
-};
 
 
 /**
@@ -182,10 +203,13 @@ public:
                I use placement new here so the already allocated mem pool is used.
                Reason explained above. */
             new (&m_pool[i]) T(*this, std::forward<Args>(args)...);
-            m_pool[i].setNext(&(m_pool[i + 1]));
         }
 
-        m_pool[m_capacity - 1].setNext(nullptr);
+        for (size_t i = 0; i < m_capacity - 1; i++)
+        {
+            m_pool[i].setNext(&(m_pool[i + 1]));
+        }
+        // no need for last elem's setNext(nullptr) since its ctor sets it by default
 
         getConsole().SOLn("PgeObjectPool %s with size of %u Bytes created successfully!", poolName.c_str(), capacity * sizeof(T));
     }
