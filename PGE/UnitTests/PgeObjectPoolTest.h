@@ -21,7 +21,7 @@ public:
     class TestedPooledObject : public PgePooledObject
     {
     public:
-        TestedPooledObject(PgeObjectPoolBase& parentPool, const float& n) : PgePooledObject(parentPool), m_n(n)
+        TestedPooledObject(PgeObjectPoolBase& parentPool, const size_t& n) : PgePooledObject(parentPool), m_n(n)
         {
         }
 
@@ -32,13 +32,18 @@ public:
         TestedPooledObject(TestedPooledObject&&) = default;
         TestedPooledObject& operator=(TestedPooledObject&&) = default;
 
-        const float& getValue() const
+        const size_t& getValue() const
         {
             return m_n;
         }
 
+        void setValue(const size_t& n)
+        {
+            m_n = n;
+        }
+
     private:
-        float m_n;
+        size_t m_n;
     };
 
     PgeObjectPoolTest() :
@@ -63,6 +68,8 @@ protected:
         AddSubTest("test_create", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_create);
         AddSubTest("test_remove_func_of_pool", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_remove_func_of_pool);
         AddSubTest("test_remove_func_of_object", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_remove_func_of_object);
+        AddSubTest("test_directly_exposed_iterators", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_directly_exposed_iterators);
+        //AddSubTest("test_additional_iterators", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_additional_iterators);
     }
 
     virtual bool setUp() override
@@ -86,16 +93,16 @@ private:
     bool test_ctor()
     {
         constexpr size_t capacity = 10;
-        PgeObjectPool<TestedPooledObject> pool("floats", capacity, 5.6f);
+        PgeObjectPool<TestedPooledObject> pool("ints", capacity, 3);
         bool b = true;
 
-        b &= assertEquals("floats", pool.name(), "name") &
+        b &= assertEquals("ints", pool.name(), "name") &
             assertEquals(capacity, pool.capacity(), "cap") &
             assertEquals(0u, pool.count(), "count");
 
         for (size_t i = 0; b && (i < pool.capacity()); i++)
         {
-            b &= assertEquals(5.6f, pool.elems()[i].getValue(), ("value " + std::to_string(i)).c_str()) &
+            b &= assertEquals(3u, pool.elems()[i].getValue(), ("value " + std::to_string(i)).c_str()) &
                 assertFalse(pool.elems()[i].used(), ("used " + std::to_string(i)).c_str()) &
                 assertEquals(&pool, &(pool.elems()[i].getParentPool()), ("parentpool " + std::to_string(i)).c_str());
         }
@@ -112,7 +119,7 @@ private:
     bool test_create()
     {
         constexpr size_t capacity = 10;
-        PgeObjectPool<TestedPooledObject> pool("floats", capacity, 5.6f);
+        PgeObjectPool<TestedPooledObject> pool("ints", capacity, 3);
         bool b = true;
 
         for (size_t i = 0; b && (i < pool.capacity()); i++)
@@ -126,7 +133,7 @@ private:
         // elem data unchanged but now they are "used"
         for (size_t i = 0; b && (i < pool.capacity()); i++)
         {
-            b &= assertEquals(5.6f, pool.elems()[i].getValue(), ("create value " + std::to_string(i)).c_str()) &
+            b &= assertEquals(3u, pool.elems()[i].getValue(), ("create value " + std::to_string(i)).c_str()) &
                 assertTrue(pool.elems()[i].used(), ("create used " + std::to_string(i)).c_str()) &
                 assertEquals(&pool, &(pool.elems()[i].getParentPool()), ("create parentpool " + std::to_string(i)).c_str());
         }
@@ -148,7 +155,7 @@ private:
         // testing pool.remove(obj), should be same as test_remove_func_of_objectt() but with different remove() being tested
 
         constexpr size_t capacity = 10;
-        PgeObjectPool<TestedPooledObject> pool("floats", capacity, 5.6f);
+        PgeObjectPool<TestedPooledObject> pool("ints", capacity, 3);
         bool b = true;
 
         // negative remove() test: nothing bad happens if we try to free any of the already freed/usable
@@ -165,7 +172,7 @@ private:
         }
 
         // negative remove() test: try removing a pooled object NOT managed by this pool!
-        PgeObjectPool<TestedPooledObject> pool_2("different floats", 5, 2.1f);
+        PgeObjectPool<TestedPooledObject> pool_2("different ints", 5, 5);
         TestedPooledObject* const pooledByAnotherPool = static_cast<TestedPooledObject*>(pool_2.create());
         b &= assertNotNull(pooledByAnotherPool, "create 2");
 
@@ -197,7 +204,7 @@ private:
         // elem data unchanged but now they are "free" again
         for (size_t i = 0; b && (i < pool.capacity()); i++)
         {
-            b &= assertEquals(5.6f, pool.elems()[i].getValue(), ("remove value " + std::to_string(i)).c_str()) &
+            b &= assertEquals(3u, pool.elems()[i].getValue(), ("remove value " + std::to_string(i)).c_str()) &
                 assertFalse(pool.elems()[i].used(), ("remove used " + std::to_string(i)).c_str()) &
                 assertEquals(&pool, &(pool.elems()[i].getParentPool()), ("remove parentpool " + std::to_string(i)).c_str());
         }
@@ -224,7 +231,7 @@ private:
         // testing pooled_object.remove(), should be same as test_remove_func_of_pool() but with different remove() being tested
 
         constexpr size_t capacity = 10;
-        PgeObjectPool<TestedPooledObject> pool("floats", capacity, 5.6f);
+        PgeObjectPool<TestedPooledObject> pool("ints", capacity, 3);
         bool b = true;
 
         // negative remove() test: nothing bad happens if we try to free any of the already freed/usable
@@ -254,7 +261,7 @@ private:
         // elem data unchanged but now they are "free" again
         for (size_t i = 0; b && (i < pool.capacity()); i++)
         {
-            b &= assertEquals(5.6f, pool.elems()[i].getValue(), ("remove value " + std::to_string(i)).c_str()) &
+            b &= assertEquals(3u, pool.elems()[i].getValue(), ("remove value " + std::to_string(i)).c_str()) &
                 assertFalse(pool.elems()[i].used(), ("remove used " + std::to_string(i)).c_str()) &
                 assertEquals(&pool, &(pool.elems()[i].getParentPool()), ("remove parentpool " + std::to_string(i)).c_str());
         }
@@ -275,5 +282,80 @@ private:
 
         return b;
     }
+
+    bool test_directly_exposed_iterators()
+    {
+        constexpr size_t capacity = 10;
+        PgeObjectPool<TestedPooledObject> pool("ints", capacity, 0);
+        
+        for (size_t i = 0; i < pool.capacity(); i++)
+        {
+            pool.elems()[i].setValue(i);
+        }
+        
+        bool b = true;
+        size_t i = 0;
+        for (auto it = pool.begin(); b && (it != pool.end()); ++it)
+        {
+            b &= assertEquals(i, it->getValue(), ("value 1 " + std::to_string(i)).c_str()) &
+                assertFalse(it->used(), ("used 1 " + std::to_string(i)).c_str()) &
+                assertEquals(&pool, &(it->getParentPool()), ("parentpool 1 " + std::to_string(i)).c_str());
+            i++;
+        }
+
+        //i = 0;
+        //for (auto it = pool.cbegin(); b && (it != pool.cend()); it++)
+        //{
+        //    b &= assertEquals(i, it->getValue(), ("value 2 " + std::to_string(i)).c_str()) &
+        //        assertFalse(it->used(), ("used 2 " + std::to_string(i)).c_str()) &
+        //        assertEquals(&pool, &(it->getParentPool()), ("parentpool 2 " + std::to_string(i)).c_str());
+        //    i++;
+        //}
+        
+        i = 0;
+        for (auto it = pool.rbegin(); b && (it != pool.rend()); it++)
+        {
+            b &= assertEquals(pool.capacity() - i - 1, it->getValue(), ("value 3 " + std::to_string(i)).c_str()) &
+                assertFalse(it->used(), ("used 3 " + std::to_string(i)).c_str()) &
+                assertEquals(&pool, &(it->getParentPool()), ("parentpool 3 " + std::to_string(i)).c_str());
+            i++;
+        }
+        
+        //i = 0;
+        //for (auto it = pool.crbegin(); b && (it != pool.crend()); it++)
+        //{
+        //    b &= assertEquals(i, it->getValue(), ("value 4 " + std::to_string(i)).c_str()) &
+        //        assertFalse(it->used(), ("used 4 " + std::to_string(i)).c_str()) &
+        //        assertEquals(&pool, &(it->getParentPool()), ("parentpool 4 " + std::to_string(i)).c_str());
+        //    i++;
+        //}
+
+        return b;
+    }
+
+    //bool test_additional_iterators()
+    //{
+    //    constexpr size_t capacity = 10;
+    //    PgeObjectPool<TestedPooledObject> pool("ints", capacity, 3);
+    //
+    //    for (size_t i = 0; i < pool.capacity(); i++)
+    //    {
+    //        pool.elems()[i].setValue(i);
+    //    }
+    //    bool b = true;
+    //
+    //    const blIteratorAPI::blLinearIterator<decltype(pool.rawArrayWrapper())> itLinear(pool.rawArrayWrapper());
+    //    size_t i = 0;
+    //    for (auto it = itLinear.begin(); b && (it != itLinear.end()); it++)
+    //    {
+    //        b &= assertEquals(3u, it->getValue(), ("value 1 " + std::to_string(i)).c_str()) &
+    //            assertFalse(it->used(), ("used 1 " + std::to_string(i)).c_str()) &
+    //            assertEquals(&pool, &(it->getParentPool()), ("parentpool 1 " + std::to_string(i)).c_str()) &
+    //            assertEquals(static_cast<int>(i), it.getDistanceFromBeginToIter(), ("distance 1 " + std::to_string(i)).c_str());
+    //        i++;
+    //    }
+    //
+    //    return b;
+    //}
 
 };

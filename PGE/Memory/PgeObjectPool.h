@@ -16,6 +16,7 @@
 #include "../../../Console/CConsole/src/CConsole.h"
 
 #include "../PGEallHeaders.h"
+#include "blIteratorAPI/blIteratorAPI.hpp"
 
 
 class PgePooledObject;
@@ -154,6 +155,8 @@ private:
 
     Basically this class is based on this "Object Pool Pattern": https://gameprogrammingpatterns.com/object-pool.html .
 
+    Also, for iterators, I'm using Vincenzo Barbato's blIteratorAPI: https://github.com/navyenzo/blIteratorAPI .
+
     Reminder: this class is NOT a memory pool neither a memory manager. This is an object pool with
     fixed number of objects, and after construction, no more memory allocation happens!
     For memory pool management, I would rather use an already existing solution from these:
@@ -172,6 +175,7 @@ class PgeObjectPool : public PgeObjectPoolBase
 #endif
 // https://stackoverflow.com/questions/4984502/how-to-force-template-class-to-be-derived-from-baseclassa
 static_assert(std::is_base_of<PgePooledObject, T>::value, "T must derive from PgePooledObject");
+
 public:
 
     static const char* getLoggerModuleName()
@@ -195,7 +199,8 @@ public:
            new T[capacity]{ std::forward<Args>(args)... }
            because aggregate initialization would use the default ctor of T, which might not be available!
            So we are forwarding arguments in the loop below. */
-        m_pool(static_cast<T*>(::operator new[](capacity * sizeof(T))))
+        m_pool(static_cast<T*>(::operator new[](capacity * sizeof(T)))),
+        m_rawArrayWrapper(blIteratorAPI::getRawArrayWrapper(m_pool, m_capacity))
     {
         for (size_t i = 0; i < m_capacity; i++)
         {
@@ -210,6 +215,8 @@ public:
             m_pool[i].setNext(&(m_pool[i + 1]));
         }
         // no need for last elem's setNext(nullptr) since its ctor sets it by default
+
+        
 
         getConsole().SOLn("PgeObjectPool %s with size of %u Bytes created successfully!", poolName.c_str(), capacity * sizeof(T));
     }
@@ -258,6 +265,7 @@ public:
     /**
     * Finds a free (usable) object in the pool, sets it flag as used and returns it.
     * Complexity is O(1) (constant).
+    * Note: the returned object stays in the pool but marked as used, and the user can mark it as free by calling remove().
     */
     PgePooledObject* create()
     {
@@ -280,6 +288,8 @@ public:
     /**
     * Resets the free (usable) flag of this object, "returns it" into the pool so it can be reused again.
     * Complexity is O(1) (constant).
+    * Note: the removed object stays in the pool's contiguous memory, just gets marked as free, so a future call to create() might
+    * return it again to the user.
     */
     void remove(PgePooledObject& ptr)
     {
@@ -301,7 +311,7 @@ public:
     }
 
     /**
-    * @return Instances derived from PgePooledObject, both free and used.
+    * @return All pooled instances, derived from PgePooledObject, both free and used.
     */
     T* elems()
     {
@@ -309,11 +319,83 @@ public:
     }
 
     /**
-    * @return Instances derived from PgePooledObject, both free and used.
+    * @return All pooled instances, derived from PgePooledObject, both free and used.
     */
     const T* elems() const
     {
         return m_pool;
+    }
+
+    /**
+    * @return The underlying wrapper object giving the iterator functionality.
+    */
+    typename blIteratorAPI::blRawArrayWrapper<T> rawArrayWrapper()
+    {
+        return m_rawArrayWrapper;
+    }
+
+    /**
+    * @return Iterator to the first element of the object pool, to begin iterating over elements in order as they are placed in the contiguous memory pool.
+    */
+    typename blIteratorAPI::blRawArrayWrapper<T>::iterator begin()
+    {
+        return m_rawArrayWrapper.begin();
+    }
+
+    /**
+    * @return Iterator to after the last element of the object pool, to detect finished iterating over elements in order as they are placed in the contiguous memory pool.
+    */
+    typename blIteratorAPI::blRawArrayWrapper<T>::iterator end()
+    {
+        return m_rawArrayWrapper.end();
+    }
+
+    /**
+    * @return Constant iterator to the first element of the object pool, to begin iterating over elements in order as they are placed in the contiguous memory pool.
+    */
+    typename blIteratorAPI::blRawArrayWrapper<T>::const_iterator cbegin() const
+    {
+        return m_rawArrayWrapper.cbegin();
+    }
+
+    /**
+    * @return Constant iterator to after the last element of the object pool, to detect finished iterating over elements in order as they are placed in the contiguous memory pool.
+    */
+    typename blIteratorAPI::blRawArrayWrapper<T>::const_iterator cend() const
+    {
+        return m_rawArrayWrapper.cend();
+    }
+
+    /**
+    * @return Reverse iterator to the last element of the object pool, to begin iterating over elements in reverse order, from the end of the contiguous memory pool.
+    */
+    typename blIteratorAPI::blRawArrayWrapper<T>::reverse_iterator rbegin()
+    {
+        return m_rawArrayWrapper.rbegin();
+    }
+
+    /**
+    * @return Reverse iterator to after the first element of the object pool, to detect finished iterating over elements in reversed order, from the end of the contiguous memory pool.
+    */
+    typename blIteratorAPI::blRawArrayWrapper<T>::reverse_iterator rend()
+    {
+        return m_rawArrayWrapper.rend();
+    }
+
+    /**
+    * @return Constant reverse iterator to the last element of the object pool, to begin iterating over elements in reverse order, from the end of the contiguous memory pool.
+    */
+    typename blIteratorAPI::blRawArrayWrapper<T>::const_reverse_iterator crbegin() const
+    {
+        return m_rawArrayWrapper.crbegin();
+    }
+
+    /**
+    * @return Constant reverse iterator to after the first element of the object pool, to detect finished iterating over elements in reversed order, from the end of the contiguous memory pool.
+    */
+    typename blIteratorAPI::blRawArrayWrapper<T>::const_reverse_iterator crend() const
+    {
+        return m_rawArrayWrapper.crend();
     }
 
 private:
@@ -321,6 +403,7 @@ private:
     size_t m_count{0}, m_capacity;
     T* m_pool;
     PgePooledObject* m_firstAvailable = m_pool;
+    blIteratorAPI::blRawArrayWrapper<T> m_rawArrayWrapper;
 
     // ---------------------------------------------------------------------------
 
