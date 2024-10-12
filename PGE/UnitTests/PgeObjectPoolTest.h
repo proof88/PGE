@@ -55,9 +55,28 @@ public:
             setValue(n);
         }
 
+        virtual void onSetUsed() override
+        {
+            // used() already tells the new used state
+            if (used())
+            {
+                if (m_n == 1234567u)
+                {
+                    m_n = 7654321u;
+                }
+            }
+            else
+            {
+                if (m_n == 7654321u)
+                {
+                    m_n = 1234567u;
+                }
+            }
+        }
+
     protected:
         /**
-        * Only PgeObjectPool should instantiate such pooled object, passing itself to this instance.
+        * Only PgeObjectPool should instantiate such pooled object, and passing itself to this instance.
         */
         template<typename T>
         friend class PgeObjectPool;
@@ -97,6 +116,7 @@ protected:
         AddSubTest("test_create_with_parameters", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_create_with_parameters);
         AddSubTest("test_remove_func_of_pool", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_remove_func_of_pool);
         AddSubTest("test_remove_func_of_object", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_remove_func_of_object);
+        AddSubTest("test_create_and_remove_invoke_onsetused", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_create_and_remove_invoke_onsetused);
         AddSubTest("test_directly_exposed_iterators", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_directly_exposed_iterators);
         //AddSubTest("test_additional_iterators", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_additional_iterators);
         AddSubTest("test_clear", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_clear);
@@ -105,6 +125,7 @@ protected:
         AddSubTest("test_reserve_negative", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_reserve_negative);
         AddSubTest("test_erase_positive", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_erase_positive);
         AddSubTest("test_erase_negative", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_erase_negative);
+        AddSubTest("test_erase_and_clear_invoke_onsetused", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_erase_and_clear_invoke_onsetused);
     }
 
     virtual bool setUp() override
@@ -459,6 +480,40 @@ private:
         return b;
     }
 
+    bool test_create_and_remove_invoke_onsetused()
+    {
+        constexpr size_t capacity = 10u;
+        PgeObjectPool<TestedPooledObject> pool("ints", capacity, 1234567u /* magic number to make TestedPooledObject::onSetUsed() react */);
+        bool b = true;
+
+        for (size_t i = 0; b && (i < pool.capacity()); i++)
+        {
+            const auto* const ptr = pool.create();
+            b &= assertNotNull(ptr, ("create " + std::to_string(i)).c_str());
+            if (b)
+            {
+                b &= assertEquals(7654321u, ptr->getValue(), ("values 1, i: " + std::to_string(i)).c_str());
+            }
+        }
+
+        for (size_t i = 0; b && (i < pool.capacity()); i++)
+        {
+            // remove() can be called in 2 ways: from the pool or from the pooled object itself, let's test both alternating
+            if ((i % 2) == 0)
+            {
+                pool.remove(pool.elems()[i]);
+            }
+            else
+            {
+                pool.elems()[i].remove();
+            }
+
+            b &= assertEquals(1234567u, pool.elems()[i].getValue(), ("values 2, i: " + std::to_string(i)).c_str());
+        }
+
+        return b;
+    }
+
     bool test_directly_exposed_iterators()
     {
         constexpr size_t capacity = 10u;
@@ -754,4 +809,36 @@ private:
 
         return b;
     }
+
+    bool test_erase_and_clear_invoke_onsetused()
+    {
+        constexpr size_t capacity = 10u;
+        PgeObjectPool<TestedPooledObject> pool("ints", capacity, 1234567u /* magic number to make TestedPooledObject::onSetUsed() react */);
+        bool b = true;
+
+        for (size_t i = 0; b && (i < pool.capacity()); i++)
+        {
+            const auto* const ptr = pool.create();
+            b &= assertNotNull(ptr, ("create " + std::to_string(i)).c_str());
+            if (b)
+            {
+                b &= assertEquals(7654321u, ptr->getValue(), ("values 1, i: " + std::to_string(i)).c_str());
+            }
+        }
+
+        // test erase() triggering TestedPooledObject::onSetUsed()
+        pool.erase(pool.begin());
+        b &= assertEquals(1234567u, pool.begin()->getValue(), "value 2");
+
+        // test clear() triggering TestedPooledObject::onSetUsed()
+        pool.clear();
+
+        for (size_t i = 0; b && (i < pool.capacity()); i++)
+        {
+            b &= assertEquals(1234567u, pool.elems()[i].getValue(), ("values 3, i: " + std::to_string(i)).c_str());
+        }
+
+        return b;
+    }
+
 };

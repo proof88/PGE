@@ -89,6 +89,13 @@ public:
         return m_isUsed;
     }
 
+    /**
+    * Gets invoked by setUsed().
+    * Derived class can override this to take action whenever the object's used state changes.
+    */
+    virtual void onSetUsed()
+    {}
+
     const PgePooledObject* next() const
     {
         return m_pNext;
@@ -128,6 +135,7 @@ private:
     void setUsed(const bool& state)
     {
         m_isUsed = state;
+        onSetUsed();
     }
 
     void setNext(PgePooledObject* ptr)
@@ -337,12 +345,14 @@ public:
         }
 
         PgePooledObject* const ptr = m_firstAvailable;
-        ptr->setUsed(true);
         m_firstAvailable = ptr->next();
         m_count++;
 
         T* const ptrAsT = static_cast<T*>(ptr);
         ptrAsT->init(std::forward<Args>(pooledObjArgs)...);
+
+        // derived can override onSetUsed(), so setUsed() is the last action here after everything else is set!
+        ptr->setUsed(true);
 
         return ptrAsT;
     }
@@ -370,9 +380,11 @@ public:
         }
 
         obj.setNext(m_firstAvailable);
-        obj.setUsed(false);
         m_firstAvailable = &obj;
         m_count--;
+
+        // derived can override onSetUsed(), so setUsed() is the last action here after everything else is set!
+        obj.setUsed(false);
     }
 
     /**
