@@ -87,7 +87,7 @@ private:
     bool test_bullet_ctor_server_good()
     {
         const Bullet::BulletId iLastBulletId = Bullet::getGlobalBulletId();
-        const WeaponId iWpnBulletId = static_cast<WeaponId>(123u);
+        const WeaponId iWpnId = static_cast<WeaponId>(123u);
         const PureVector posVec(1.f, 2.f, 3.f);
         const PureVector angleVec(20.f, 40.f, 60.f);
         const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
@@ -104,7 +104,7 @@ private:
         const pge_network::PgeNetworkConnectionHandle connHandle = 52;
 
         Bullet bullet(
-            iWpnBulletId,
+            iWpnId,
             *engine,
             connHandle,
             posVec.getX(), posVec.getY(), posVec.getZ(),
@@ -117,13 +117,13 @@ private:
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
         
         bool b = assertEquals(bullet.getId(), iLastBulletId, "bullet id");
-        b &= assertEquals(bullet.getWeaponId(), iWpnBulletId, "weapon id");
+        b &= assertEquals(bullet.getWeaponId(), iWpnId, "weapon id");
         b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId + 1, "global bullet id");
         b &= assertEquals(connHandle, bullet.getOwner(), "owner");
         b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "pos");
         b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "angle");
         b &= assertFalse(bullet.getObject3D().isRenderingAllowed(), "visible");
-        b &= assertEquals(sizeVec, bullet.getObject3D().getSizeVec(), "size");
+        b &= assertEquals(sizeVec, bullet.getObject3D().getScaledSizeVec(), "size");
         b &= assertEquals(fSpeed, bullet.getSpeed(), "speed");
         b &= assertEquals(fGravity, bullet.getGravity(), "gravity");
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
@@ -142,7 +142,7 @@ private:
     bool test_bullet_ctor_client_good()
     {
         const Bullet::BulletId iLastBulletId = Bullet::getGlobalBulletId();
-        const WeaponId iWpnBulletId = static_cast<WeaponId>(123u);
+        const WeaponId iWpnId = static_cast<WeaponId>(123u);
         const PureVector posVec(1.f, 2.f, 3.f);
         const PureVector angleVec(20.f, 40.f, 60.f);
         const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
@@ -155,9 +155,8 @@ private:
         const float fDamageAreaPulse = 2.f;
 
         Bullet bullet(
-            iWpnBulletId,
+            iWpnId,
             *engine,
-            static_cast<Bullet::BulletId>(1234),
             posVec.getX(), posVec.getY(), posVec.getZ(),
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
             false /* visible */,
@@ -165,13 +164,13 @@ private:
             fSpeed, fGravity, fDrag, nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
 
-        bool b = assertEquals(bullet.getId(), static_cast<Bullet::BulletId>(1234), "bullet id");
-        b &= assertEquals(bullet.getWeaponId(), iWpnBulletId, "weapon id");
-        b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId, "global bullet id");
+        bool b = assertEquals(bullet.getId(), iLastBulletId, "bullet id");
+        b &= assertEquals(bullet.getWeaponId(), iWpnId, "weapon id");
+        b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId + 1, "global bullet id");
         b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "pos");
         b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "angle");
         b &= assertFalse(bullet.getObject3D().isRenderingAllowed(), "visible");
-        b &= assertEquals(sizeVec, bullet.getObject3D().getSizeVec(), "size");
+        b &= assertEquals(sizeVec, bullet.getObject3D().getScaledSizeVec(), "size");
         b &= assertEquals(fSpeed, bullet.getSpeed(), "speed");
         b &= assertEquals(fGravity, bullet.getGravity(), "gravity");
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
@@ -182,14 +181,14 @@ private:
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
         b &= assertEquals(eDamageAreaEffect, bullet.getAreaDamageEffect(), "damage area effect");
         b &= assertEquals(fDamageAreaPulse, bullet.getAreaDamagePulse(), "damage area pulse");
-        b &= assertTrue(bullet.isCreateSentToClients(), "isCreateSentToClients"); /* we are client so yes it is sent :) */
+        b &= assertFalse(bullet.isCreateSentToClients(), "isCreateSentToClients"); /* ignoredby client */
 
         return b;
     }
 
     bool test_reset_global_bullet_id()
     {
-        const WeaponId iWpnBulletId = static_cast<WeaponId>(123u);
+        const WeaponId iWpnId = static_cast<WeaponId>(123u);
         const PureVector posVec(1.f, 2.f, 3.f);
         const PureVector angleVec(20.f, 40.f, 60.f);
         const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
@@ -206,7 +205,7 @@ private:
         const pge_network::PgeNetworkConnectionHandle connHandle = 52;
 
         Bullet bullet(
-            iWpnBulletId,
+            iWpnId,
             *engine,
             connHandle,
             posVec.getX(), posVec.getY(), posVec.getZ(),
@@ -257,7 +256,6 @@ private:
             Bullet bullet(
                 static_cast<WeaponId>(0u),
                 *engine,
-                0 /* bullet id */,
                 1.f, 2.f, 3.f,
                 20.f, 40.f, 60.f,
                 false /* visible */,

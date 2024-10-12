@@ -22,6 +22,7 @@
 #include "../Config/PGEcfgFile.h"
 #include "../Config/PGEcfgProfiles.h"
 #include "../Config/PgeOldNewValue.h"
+#include "../Memory/PgeObjectPool.h"
 #include "../Pure/include/external/PR00FsUltimateRenderingEngine.h"
 #include "../Network/PgePacket.h"
 
@@ -57,7 +58,7 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    /** Ctor to be used by PGE server instance: bullet id will be assigned within the ctor. */
+    /** Ctor to be used by PGE server instance. */
     Bullet(
         const WeaponId& wpnId,
         PR00FsUltimateRenderingEngine& gfx,
@@ -73,11 +74,10 @@ public:
         const DamageAreaEffect& eDamageAreaEffect,
         TPureFloat fDamageAreaPulse);
     
-    /** Ctor to be used by PGE client instance: bullet id as received from server. */
+    /** Ctor to be used by PGE client instance. */
     Bullet(
         const WeaponId& wpnId,
         PR00FsUltimateRenderingEngine& gfx,
-        Bullet::BulletId id,
         TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
         TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
         bool visible,
@@ -110,6 +110,40 @@ public:
     const DamageAreaEffect& getAreaDamageEffect() const;
     TPureFloat getAreaDamagePulse() const;
     bool& isCreateSentToClients();
+
+    /** Init to be used by PGE server instance.
+        This also gets invoked by PgeObjectPool::create() when PooledBullet instances are stored there. */
+    void init(
+        const WeaponId& wpnId,
+        PR00FsUltimateRenderingEngine& gfx,
+        pge_network::PgeNetworkConnectionHandle connHandle,
+        TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
+        TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
+        bool visible,
+        TPureFloat sx, TPureFloat sy, TPureFloat sz,
+        TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
+        TPureFloat fDistMax,
+        int nDamageAp, int nDamageHp,
+        TPureFloat fDamageAreaSize,
+        const DamageAreaEffect& eDamageAreaEffect,
+        TPureFloat fDamageAreaPulse);
+
+    /** Init to be used by PGE client instance.
+        This also gets invoked by PgeObjectPool::create() when PooledBullet instances are stored there. */
+    void init(
+        const BulletId& id,
+        const WeaponId& wpnId,
+        PR00FsUltimateRenderingEngine& gfx,
+        TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
+        TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
+        bool visible,
+        TPureFloat sx, TPureFloat sy, TPureFloat sz,
+        TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use fragile */
+        /* client does not receive nor use fDistMax */
+        /* client does not receive nor use nDamageAp */ int nDamageHp,
+        TPureFloat fDamageAreaSize,
+        const DamageAreaEffect& eDamageAreaEffect,
+        TPureFloat fDamageAreaPulse);
 
     void Update(const unsigned int& nFactor);
 
@@ -197,11 +231,52 @@ private:
     PureObject3D* m_obj;                                   /**< Associated Pure object to be rendered. Used by PGE server and client instances.
                                                                 TODO: shared ptr would be better though, so deleting the obj earlier than bullet
                                                                 instance wouldn't be a problem. */
-    bool m_bCreateSentToClients;                           /**< Server should send update to clients about creation of new bullets. By default false. */
+    bool m_bCreateSentToClients;                           /**< Server should send update to clients about creation of new bullets. By default false, client ignores. */
 
     // ---------------------------------------------------------------------------
 
 }; // class Bullet
+
+/**
+    Pooled Bullet class to be used with PgeObjectPool.
+*/
+class PooledBullet : public Bullet, public PgePooledObject
+{
+public:
+    /** Most of the parameters required by Bullet ctor are NOT available when we create the pool,
+        for those we are passing some default values. Later when a pooled bullet is actually
+        "created" by firing a weapon, those values should be properly specified. */
+    PooledBullet(
+        PgeObjectPoolBase& parentPool,
+        PR00FsUltimateRenderingEngine& gfx) :
+        PgePooledObject(parentPool),
+        /* Bullet server ctor is invoked where the Bullet id is assigned internally.
+           This is invoked also on client, thus client also assigns Bullet ids on its own.
+           It is not a problem because server and client assign Bullet ids using the same logic,
+           so they will assign exactly the same Bullet ids.
+           Still the MsgBulletUpdateFromServer will contain Bullet id that must be set for a new
+           Bullet on client side. */
+        Bullet(
+            static_cast<WeaponId>(0),
+            gfx,
+            static_cast<pge_network::PgeNetworkConnectionHandle>(0),
+            0.f, 0.f, 0.f, /* wpn pos */
+            0.f, 0.f, 0.f, /* wpn angles */
+            false /* visible */,
+            1.f, 1.f, 0.f /* size */,
+            0.f /* speed */, 0.f /* gravity */, 0.f /* drag */, false /* fragile */,
+            0.f /* distMax */,
+            0 /* AP */, 0 /* HP */,
+            0.f /* dmg area size */, Bullet::DamageAreaEffect::Constant, 0.f /* dmg area pulse */)
+    {}
+
+    ~PooledBullet() = default;
+
+    PooledBullet(const PooledBullet&) = default;
+    PooledBullet& operator=(const PooledBullet&) = default;
+    PooledBullet(PooledBullet&&) = default;
+    PooledBullet& operator=(PooledBullet&&) = default;
+}; // class PooledBullet
 
 /**
     Weapon class for PR00F's Game Engine Weapon Manager
@@ -244,7 +319,7 @@ public:
 
     Weapon(
         const char* fname,
-        std::list<Bullet>& bullets,
+        PgeObjectPool<PooledBullet>& bullets,
         pge_audio::PgeAudio& audio,
         PR00FsUltimateRenderingEngine& gfx,
         pge_network::PgeNetworkConnectionHandle connHandle);
@@ -348,7 +423,7 @@ public:
 
     Weapon& operator=(const Weapon& other) // TODO check if we really cannot live with just compiler generated operator_=?
     {
-        m_bullets = other.m_bullets;
+        //m_bullets = other.m_bullets;
         //m_audio = other.m_audio; // deleted assignment operator
         m_gfx = other.m_gfx;
         m_connHandle = other.m_connHandle;
@@ -391,7 +466,7 @@ private:
 
     static std::set<std::string> m_WpnAcceptedVars;
 
-    std::list<Bullet>& m_bullets;
+    PgeObjectPool<PooledBullet>& m_bullets;
     pge_audio::PgeAudio& m_audio;
     PR00FsUltimateRenderingEngine& m_gfx;
     pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this weapon. Should be used by PGE server instance only. */
@@ -424,7 +499,13 @@ private:
 
 
 /**
-    PR00F's Game Engine Weapon Manager
+    PR00F's Game Engine Weapon Manager.
+    The idea is that Weapon instances are created and stored by this manager.
+    Each player has a different instance of Weapon Manager. Thus, for each player, Weapon instances also need to be created.
+    This way, each player can utilize convenient manager functions, such as:
+     - setCurrentWeapon()
+     - getNextBestAvailableWeapon()
+     - etc.
 */
 class WeaponManager
 {
@@ -445,7 +526,7 @@ public:
         pge_audio::PgeAudio& audio,
         PGEcfgProfiles& cfgProfiles,
         PR00FsUltimateRenderingEngine& gfx,
-        std::list<Bullet>& bullets);
+        PgeObjectPool<PooledBullet>& bullets);
     virtual ~WeaponManager();
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
@@ -478,7 +559,7 @@ public:
     const std::chrono::time_point<std::chrono::steady_clock>& getTimeLastWeaponSwitch() const;
 
     void Clear();
-    std::list<Bullet>& getBullets();
+    PgeObjectPool<PooledBullet>& getBullets();
 
 protected:
 
@@ -504,7 +585,7 @@ private:
     std::vector<Weapon*> m_weapons;  // due to lot of legacy code, I'm keeping this as vector, but it should be std::map<Weapon::WeaponId, Weapon*>
     Weapon* m_pCurrentWpn;
     std::chrono::time_point<std::chrono::steady_clock> m_timeLastWeaponSwitch;
-    std::list<Bullet>& m_bullets;
+    PgeObjectPool<PooledBullet>& m_bullets;
     std::string m_sDefaultAvailableWeapon;
 
     // ---------------------------------------------------------------------------

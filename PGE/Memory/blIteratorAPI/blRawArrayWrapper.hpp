@@ -77,6 +77,11 @@ public: // Constructors and destructors
 
 public: // Public functions
 
+    // Assignment operator
+    // overloads
+    blRawArrayWrapper<blDataType>& operator=(const blRawArrayWrapper<blDataType>&) = default;
+    blRawArrayWrapper<blDataType>& operator=(blRawArrayWrapper<blDataType>&&) = default;
+
     // Additional operator
     // overloads
 

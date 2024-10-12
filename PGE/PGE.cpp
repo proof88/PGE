@@ -44,6 +44,12 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    PGEimpl() = delete;
+    PGEimpl(const PGEimpl&) = delete;
+    PGEimpl& operator=(const PGEimpl&) = delete;
+    PGEimpl(PGEimpl&&) = delete;
+    PGEimpl& operator=(PGEimpl&&) = delete;
+
     virtual ~PGEimpl();
 
     CConsole& getConsole() const;    
@@ -66,7 +72,7 @@ public:
     PR00FsUltimateRenderingEngine& getPure() const;
     PGEWorld& getWorld() const;
     
-    std::list<Bullet>& getBullets();
+    PgeObjectPool<PooledBullet>& getBullets();
                     
     bool isGameRunning() const;               
     int  destroyGame();                        
@@ -99,7 +105,7 @@ private:
     pge_network::PgeINetwork& m_network;
     PGEWorld& m_world;
 
-    std::list<Bullet> m_bullets;
+    PgeObjectPool<PooledBullet> m_bullets;
 
     bool        m_bIsGameRunning;         /**< Is the game running (true after successful init and before initiating shutdown)? */
     std::string m_sGameTitle;             /**< Simplified name of the game, used in paths too, so can't contain joker chars. */
@@ -113,11 +119,6 @@ private:
     unsigned int m_nRenderExtraDelayMillisecs;
 
     // ---------------------------------------------------------------------------
-
-    PGEimpl();
-
-    PGEimpl(const PGEimpl&); 
-    PGEimpl& operator=(const PGEimpl&);
 
     PGEimpl(const char* gametitle);
 
@@ -238,7 +239,7 @@ pge_audio::PgeAudio& PGE::PGEimpl::getAudio()
     return m_audio;
 }
 
-std::list<Bullet>& PGE::PGEimpl::getBullets()
+PgeObjectPool<PooledBullet>& PGE::PGEimpl::getBullets()
 {
     return m_bullets;
 }
@@ -313,53 +314,6 @@ int PGE::PGEimpl::showWindowsMessageDialogWin32(PGE_MSG_ID msg_id, PGE_MSG_ID cp
 {
     return ( MessageBox(0, m_pLangTable[getLangFromMSG_ID(msg_id)]->c_str(), m_pLangTable[getLangFromMSG_ID(cpt_id)]->c_str(), type) );
 } // showWindowsMessageDialogWindows()
-
-
-PGE::PGEimpl::PGEimpl() :
-    m_pOwner(NULL),  // currently not used
-    m_inputHandler( PGEInputHandler::createAndGet(m_cfgProfiles) ),
-    m_audio(m_cfgProfiles),
-    m_gfx( PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler) ),
-    m_sysGFX(m_cfgProfiles, m_inputHandler),
-    m_network( pge_network::PgeNetwork::createAndGet(m_cfgProfiles) ),
-    m_world(PGEWorld::createAndGet()),
-    m_bIsGameRunning(false),
-    m_nInactiveSleep(PGE_INACTIVE_SLEEP),
-    m_bInactiveLikeActive(PGE_INACTIVE_AS_ACTIVE),
-    m_nCookie(0),
-    m_nTargetGameLoopFreq(0),
-    m_minFrameTimeMicrosecs(0.0),
-    m_nRenderExtraDelayMillisecs(0)
-{
-    
-}
-
-
-PGE::PGEimpl::PGEimpl(const PGE::PGEimpl&) :
-    m_pOwner(NULL),  // currently not used
-    m_inputHandler( PGEInputHandler::createAndGet(m_cfgProfiles) ),
-    m_audio(m_cfgProfiles),
-    m_gfx( PR00FsUltimateRenderingEngine::createAndGet(m_cfgProfiles, m_inputHandler) ),
-    m_sysGFX(m_cfgProfiles, m_inputHandler),
-    m_network( pge_network::PgeNetwork::createAndGet(m_cfgProfiles) ),
-    m_world(PGEWorld::createAndGet()),
-    m_bIsGameRunning(false),
-    m_nInactiveSleep(PGE_INACTIVE_SLEEP),
-    m_bInactiveLikeActive(PGE_INACTIVE_AS_ACTIVE),
-    m_nCookie(0),
-    m_nTargetGameLoopFreq(0),
-    m_minFrameTimeMicrosecs(0.0),
-    m_nRenderExtraDelayMillisecs(0)
-{
-
-}  
-
-
-PGE::PGEimpl& PGE::PGEimpl::operator=(const PGE::PGEimpl&)
-{
-    m_pOwner = NULL;  // currently not used
-    return *this;
-}
 
 
 /** 
@@ -709,7 +663,7 @@ PGEWorld& PGE::getWorld() const
 /**
     Returns the bullets simulated by the engine.
 */
-std::list<Bullet>& PGE::getBullets()
+PgeObjectPool<PooledBullet>& PGE::getBullets()
 {
     return p->getBullets();
 }

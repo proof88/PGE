@@ -17,6 +17,8 @@
 #include "../../../PFL/PFL/PFL.h"
 #include "../Weapons/WeaponManager.h"
 
+constexpr size_t nBulletPoolCap = 100;
+
 class PgeWeaponsTest :
     public UnitTest
 {
@@ -218,7 +220,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn(sFilename.c_str(), bullets, m_audio, *engine, 0);
         }
         catch (const std::exception& e)
@@ -265,7 +267,7 @@ private:
     bool test_helper_shoot_all_bullets_from_magazine_and_check_bullets(
         bool& b,
         Weapon& wpn,
-        std::list<Bullet>& bullets,
+        PgeObjectPool<PooledBullet>& bullets,
         const bool& bMoving, const bool& bRun, const bool& bDuck,
         const bool& bWithRecoilFactor)
     {
@@ -319,6 +321,11 @@ private:
             i = 0;
             for (const auto& bullet : bullets)
             {
+                if (!bullet.used())
+                {
+                    continue;
+                }
+
                 b &= assertEquals(wpn.getVars()["bullet_visible"].getAsBool(), bullet.getObject3D().isRenderingAllowed(), ("visible " + std::to_string(i)).c_str());
                 b &= assertEquals(wpn.getObject3D().getPosVec(), bullet.getObject3D().getPosVec(), ("pos " + std::to_string(i)).c_str());
                 b &= assertEquals(wpn.getObject3D().getAngleVec().getY(), bullet.getObject3D().getAngleVec().getY(), ("angle Y " + std::to_string(i)).c_str());
@@ -557,7 +564,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10); // might throw
             Weapon wpn_melee("gamedata/weapons/sample_good_wpn_melee.txt", bullets, m_audio, *engine, 10); // might throw
             b = true; // did not throw
@@ -639,7 +646,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -650,7 +657,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10);
 
             wpn.SetAvailable(true);
@@ -661,7 +668,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -672,7 +679,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10);
 
             wpn.SetOwner(5678);
@@ -680,7 +687,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -691,7 +698,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10);
 
             // sample good wpn has reloadable as 30, so its mag bullet count is that value, unmag is 0 by default,
@@ -717,7 +724,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -728,7 +735,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10);
 
             // sample good wpn has reloadable as 30, so its mag bullet count is that value, unmag is 0 by default,
@@ -748,7 +755,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -759,7 +766,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 10);
 
             // sample good wpn has reloadable as 30, so its mag bullet count is that value, unmag is 0 by default,
@@ -804,7 +811,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -816,7 +823,7 @@ private:
 
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -829,7 +836,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -874,7 +881,7 @@ private:
 
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -915,7 +922,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -927,7 +934,7 @@ private:
 
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -941,7 +948,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -952,7 +959,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
 
             b = assertEquals((wpn.getVars().at("damage_hp").getAsInt() * wpn.getVars().at("damage_ap").getAsInt()) / 100.f,
@@ -961,7 +968,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -972,7 +979,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
 
             b = assertEquals(std::powf(1000.f / wpn.getVars().at("firing_cooldown").getAsInt() * wpn.getDamagePerFireRating(), 2.f),
@@ -981,7 +988,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -992,7 +999,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
 
             b = assertEquals(Weapon::State::WPN_READY, wpn.getState(), "new state 1");
@@ -1008,7 +1015,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1019,7 +1026,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1031,7 +1038,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1042,7 +1049,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1054,7 +1061,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1065,7 +1072,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1078,7 +1085,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1089,7 +1096,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1137,7 +1144,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1148,7 +1155,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1196,7 +1203,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1207,7 +1214,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1255,7 +1262,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1266,7 +1273,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1314,7 +1321,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1325,7 +1332,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1377,7 +1384,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1388,7 +1395,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1407,7 +1414,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1418,7 +1425,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
 
             constexpr float fEps = 0.001f;
@@ -1443,7 +1450,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1454,7 +1461,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
 
             // recoil does not play in this test since we are interested in by pose only
@@ -1463,7 +1470,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1474,7 +1481,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
 
             // recoil is not changing in this test, we are interested in the max possible relative bullet angle, given by
@@ -1484,7 +1491,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1495,7 +1502,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
 
             b = true;
@@ -1511,7 +1518,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1523,7 +1530,7 @@ private:
 
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 52u);
             b = true;
 
@@ -1546,7 +1553,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1559,7 +1566,7 @@ private:
 
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, connHandle);
             b = true;
 
@@ -1573,7 +1580,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1584,7 +1591,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_melee.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1603,7 +1610,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1614,7 +1621,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1628,7 +1635,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1639,7 +1646,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1666,7 +1673,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1677,7 +1684,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_bazooka.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1730,7 +1737,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1742,7 +1749,7 @@ private:
 
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1769,7 +1776,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1780,7 +1787,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -1838,7 +1845,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -1849,7 +1856,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", bullets, m_audio, *engine, 0);
             b = true;
     
@@ -1966,7 +1973,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
     
         return b;
@@ -1978,7 +1985,7 @@ private:
 
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -2001,7 +2008,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -2012,7 +2019,7 @@ private:
         bool b = false;
         try
         {
-            std::list<Bullet> bullets;
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             b = true;
 
@@ -2035,7 +2042,7 @@ private:
         }
         catch (const std::exception& e)
         {
-            assertTrue(false, e.what());
+            b &= assertTrue(false, e.what());
         }
 
         return b;
@@ -2043,7 +2050,7 @@ private:
 
     bool test_wm_initially_empty()
     {
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = true;
         b &= assertTrue(wm.getWeapons().empty(), "weapons") & assertTrue(wm.getBullets().empty(), "bullets") &
@@ -2056,7 +2063,7 @@ private:
 
     bool test_wm_clear_weapons()
     {
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         if (b)
@@ -2077,7 +2084,7 @@ private:
 
     bool test_wm_set_default_available_weapon()
     {
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         
@@ -2092,7 +2099,7 @@ private:
 
     bool test_wm_load_weapon_bad_assignment()
     {
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_bad_assignment.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
@@ -2103,7 +2110,7 @@ private:
 
     bool test_wm_load_weapon_unaccepted_var()
     {
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_unaccepted_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
@@ -2114,7 +2121,7 @@ private:
 
     bool test_wm_load_weapon_missing_var()
     {
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_missing_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
@@ -2125,7 +2132,7 @@ private:
 
     bool test_wm_load_weapon_double_defined_var()
     {
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertFalse(wm.load("gamedata/weapons/wpn_test_double_defined_var.txt", 0), "load");
         b &= assertTrue(wm.getWeapons().empty(), "empty") &
@@ -2136,7 +2143,7 @@ private:
 
     bool test_wm_load_weapon_good()
     {
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load");
         b &= assertFalse(wm.getWeapons().empty(), "not empty") &
@@ -2147,7 +2154,7 @@ private:
 
     bool test_wm_load_same_weapon_twice()
     {
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         const Weapon* const wpn = wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0);
 
@@ -2163,7 +2170,7 @@ private:
 
     bool test_wm_get_weapon_by_filename()
     {
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         const Weapon* const wpn1 = wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0);
         const Weapon* const wpn2 = wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0);
@@ -2188,7 +2195,7 @@ private:
 
     bool test_wm_get_weapon_by_id()
     {
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         const Weapon* const wpn1 = wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0);
         const Weapon* const wpn2 = wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0);
@@ -2213,7 +2220,7 @@ private:
 
     bool test_wm_get_set_current_weapon()
     {
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
@@ -2259,7 +2266,7 @@ private:
             {'4', "sample_good_wpn_railgun.txt"},
         };
 
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
@@ -2328,7 +2335,7 @@ private:
             {'3', "sample_good_wpn_asdasd.txt"},
         };
 
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
@@ -2363,7 +2370,7 @@ private:
             {'4', "sample_good_wpn_railgun.txt"},
         };
         
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
@@ -2426,7 +2433,7 @@ private:
             {'3', "sample_good_wpn_asdasd.txt"},
         };
 
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
@@ -2466,7 +2473,7 @@ private:
             {'4', "sample_good_wpn_railgun.txt"},
         };
 
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
@@ -2568,7 +2575,7 @@ private:
             {'3', "asdasd.txt"}
         };
 
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
@@ -2615,7 +2622,7 @@ private:
             {'4', "sample_good_wpn_railgun.txt"},
         };
 
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");
@@ -2709,7 +2716,7 @@ private:
             {'3', "asdasd.txt"}
         };
 
-        std::list<Bullet> bullets;
+        PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
         WeaponManager wm(m_audio, cfgProfiles, *engine, bullets);
         bool b = assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_automatic.txt", 0), "load 1");
         b &= assertNotNull(wm.load("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", 0), "load 2");

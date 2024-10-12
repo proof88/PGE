@@ -37,7 +37,7 @@ void Bullet::resetGlobalBulletId()
 }
 
 /**
-    Ctor to be used by PGE server instance: bullet id will be assigned within the ctor.
+    Ctor to be used by PGE server instance.
 */
 Bullet::Bullet(
     const WeaponId& wpnId,
@@ -54,68 +54,38 @@ Bullet::Bullet(
     const DamageAreaEffect& eDamageAreaEffect,
     TPureFloat fDamageAreaPulse) :
     m_id(m_globalBulletId++),
-    m_wpnId(wpnId),
     m_gfx(gfx),
-    m_connHandle(connHandle),
-    m_speed(speed),
-    m_gravity(gravity),
-    m_drag(drag),
-    m_fragile(fragile),
-    m_fDistMax(fDistMax),
-    m_fDistTravelled(0.f),
-    m_nDamageAp(nDamageAp),
-    m_nDamageHp(nDamageHp),
-    m_fDamageAreaSize(fDamageAreaSize),
-    m_eDamageAreaEffect(eDamageAreaEffect),
-    m_fDamageAreaPulse(fDamageAreaPulse),
-    m_obj(NULL),
-    m_bCreateSentToClients(false)
+    m_obj(NULL)
 {
-    if (wpnId == 0)
-    {
-        getConsole().EOLnOO("Bullet ctor (server): given weapon id cannot be 0!");
-        throw std::runtime_error("Bullet ctor (server): given weapon id cannot be 0");
-    }
-
-    // TODO: actually these copy-pasted validations related to bullets should be defined in a public static validate function,
-    // which should be invoked by WeaponManager when a new Weapon is constructed, to remove validation redundancy!
-    // Ticket: https://github.com/proof88/PGE/issues/14
-    if ( (m_speed == 1000.f) && (m_drag > 0.f))
-    {
-        getConsole().EOLnOO("Bullet ctor (server): m_speed is 1000 but m_drag is non-zero!");
-        throw std::runtime_error("Bullet ctor (server): m_speed is 1000 but m_drag is non-zero");
-    }
-
-    if (m_fDamageAreaSize < 0.f)
-    {
-        getConsole().EOLnOO("Bullet ctor (server): m_fDamageAreaSize cannot be negative!");
-        throw std::runtime_error("Bullet ctor (server): m_fDamageAreaSize cannot be negative!");
-    }
-
-    if ((m_fDamageAreaSize == 0.f) && (m_fDamageAreaPulse > 0.f))
-    {
-        getConsole().EOLnOO("Bullet ctor (server): m_fDamageAreaSize is 0 but m_fDamageAreaPulse is non-zero!");
-        throw std::runtime_error("Bullet ctor (server): m_fDamageAreaSize is 0 but m_fDamageAreaPulse is non-zero!");
-    }
-
-    m_put.getPosVec().Set(wpn_px, wpn_py, wpn_pz);
-    m_put.SetRotation(wpn_ax, (wpn_ay > 0.0f) ? 90.f : -90.f, (wpn_ay > 0.0f) ? wpn_az : -wpn_az);
-
-    m_obj = m_gfx.getObject3DManager().createPlane(sx, sy);
+    // unit-sized plane, the real size is set in init() by scaling based on sx, sy
+    m_obj = m_gfx.getObject3DManager().createPlane(1.f, 1.f);
     // TODO throw exception if cant create!
     m_obj->SetDoubleSided(true);
-    m_obj->getPosVec().Set(wpn_px, wpn_py, wpn_pz);
-    m_obj->getAngleVec().Set(wpn_ax, wpn_ay, wpn_az);
-    m_obj->SetRenderingAllowed(visible);
+
+    init(
+        wpnId,
+        gfx,
+        connHandle,
+        wpn_px, wpn_py, wpn_pz,
+        wpn_ax, wpn_ay, wpn_az,
+        visible,
+        sx, sy, 0.f,
+        speed, gravity, drag,
+        fragile,
+        fDistMax,
+        nDamageAp,
+        nDamageHp,
+        fDamageAreaSize,
+        eDamageAreaEffect,
+        fDamageAreaPulse);
 }
 
 /**
-    Ctor to be used by PGE client instance: bullet id as received from server.
+    Ctor to be used by PGE client instance.
 */
 Bullet::Bullet(
     const WeaponId& wpnId,
     PR00FsUltimateRenderingEngine& gfx,
-    Bullet::BulletId id,
     TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
     TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
     bool visible,
@@ -124,39 +94,31 @@ Bullet::Bullet(
     const TPureFloat& fDamageAreaSize,
     const DamageAreaEffect& eDamageAreaEffect,
     const TPureFloat& fDamageAreaPulse) :
-    m_id(id),
-    m_wpnId(wpnId),
+    m_id(m_globalBulletId++),
     m_gfx(gfx),
-    m_connHandle(0),
-    m_speed(speed),
-    m_gravity(gravity),
-    m_drag(drag),
-    m_fragile(0.f) /* irrelevant for this client-side ctor */,
-    m_fDistMax(0.f) /* irrelevant for this client-side ctor */,
-    m_fDistTravelled(0.f),
-    m_nDamageAp(0) /* irrelevant for this client-side ctor */,
-    m_nDamageHp(nDamageHp),
-    m_fDamageAreaSize(fDamageAreaSize),
-    m_eDamageAreaEffect(eDamageAreaEffect),
-    m_fDamageAreaPulse(fDamageAreaPulse),
-    m_obj(NULL),
-    m_bCreateSentToClients(true) /* irrelevant for this client-side ctor but we are client so yes it is sent :) */
+    m_obj(NULL)
 {
-    if (wpnId == 0)
-    {
-        getConsole().EOLnOO("Bullet ctor (client): given weapon id cannot be 0!");
-        throw std::runtime_error("Bullet ctor (client): given weapon id cannot be 0");
-    }
-
-    m_put.getPosVec().Set(wpn_px, wpn_py, wpn_pz);
-    m_put.SetRotation(wpn_ax, (wpn_ay > 0.0f) ? 90.f : -90.f, (wpn_ay > 0.0f) ? wpn_az : -wpn_az);
-
-    m_obj = m_gfx.getObject3DManager().createPlane(sx, sy);
+    // unit-sized plane, the real size is set in init() by scaling based on sx, sy
+    m_obj = m_gfx.getObject3DManager().createPlane(1.f, 1.f);
     // TODO throw exception if cant create!
     m_obj->SetDoubleSided(true);
-    m_obj->getPosVec().Set(wpn_px, wpn_py, wpn_pz);
-    m_obj->getAngleVec().Set(wpn_ax, wpn_ay, wpn_az);
-    m_obj->SetRenderingAllowed(visible);
+
+    init(
+        wpnId,
+        gfx,
+        0u /* connHandle, irrelevant for this client-side ctor */,
+        wpn_px, wpn_py, wpn_pz,
+        wpn_ax, wpn_ay, wpn_az,
+        visible,
+        sx, sy, 0.f,
+        speed, gravity, drag,
+        false /* fragile, irrelevant for this client-side ctor */,
+        0.f /* distMax, irrelevant for this client-side ctor */,
+        0 /* nDamageAP, irrelevant for this client-side ctor */,
+        nDamageHp,
+        fDamageAreaSize,
+        eDamageAreaEffect,
+        fDamageAreaPulse);
 }
 
 Bullet::~Bullet()
@@ -262,6 +224,107 @@ bool& Bullet::isCreateSentToClients()
     return m_bCreateSentToClients;
 }
 
+void Bullet::init(
+    const WeaponId& wpnId,
+    PR00FsUltimateRenderingEngine& gfx,
+    pge_network::PgeNetworkConnectionHandle connHandle,
+    TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
+    TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
+    bool visible,
+    TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
+    TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
+    TPureFloat fDistMax,
+    int nDamageAp, int nDamageHp,
+    TPureFloat fDamageAreaSize,
+    const DamageAreaEffect& eDamageAreaEffect,
+    TPureFloat fDamageAreaPulse)
+{
+    // must not do performance-extensive stuff in this function because if Bullet is pooled (PooledBullet) then the pool's create() invokes this!
+
+    m_bCreateSentToClients = false;  // maintained only by server instance, always false on client
+
+    m_wpnId = wpnId;
+    m_gfx = gfx;
+    m_connHandle = connHandle;
+    m_speed = speed;
+    m_gravity = gravity;
+    m_drag = drag;
+    m_fragile = fragile;
+    m_fDistMax = fDistMax;
+    m_fDistTravelled = 0.f;
+    m_nDamageAp = nDamageAp;
+    m_nDamageHp = nDamageHp;
+    m_fDamageAreaSize = fDamageAreaSize;
+    m_eDamageAreaEffect = eDamageAreaEffect;
+    m_fDamageAreaPulse = fDamageAreaPulse;
+
+    assert(m_obj);
+    m_obj->getPosVec().Set(wpn_px, wpn_py, wpn_pz);
+    m_obj->getAngleVec().Set(wpn_ax, wpn_ay, wpn_az);
+    m_obj->SetScaling(PureVector(sx, sy, 1.f));
+    m_obj->SetRenderingAllowed(visible);
+
+    m_put.getPosVec().Set(wpn_px, wpn_py, wpn_pz);
+    m_put.SetRotation(wpn_ax, (wpn_ay > 0.0f) ? 90.f : -90.f, (wpn_ay > 0.0f) ? wpn_az : -wpn_az);
+
+    // TODO: actually these copy-pasted validations related to bullets should be defined in a public static validate function,
+    // which should be invoked by WeaponManager when a new Weapon is constructed, to remove validation redundancy!
+    // Ticket: https://github.com/proof88/PGE/issues/14
+    if ((m_speed == 1000.f) && (m_drag > 0.f))
+    {
+        getConsole().EOLnOO("Bullet ctor init(): m_speed is 1000 but m_drag is non-zero!");
+        throw std::runtime_error("Bullet ctor init(): m_speed is 1000 but m_drag is non-zero");
+    }
+
+    if (m_fDamageAreaSize < 0.f)
+    {
+        getConsole().EOLnOO("Bullet ctor init(): m_fDamageAreaSize cannot be negative!");
+        throw std::runtime_error("Bullet ctor init(): m_fDamageAreaSize cannot be negative!");
+    }
+
+    if ((m_fDamageAreaSize == 0.f) && (m_fDamageAreaPulse > 0.f))
+    {
+        getConsole().EOLnOO("Bullet ctor init(): m_fDamageAreaSize is 0 but m_fDamageAreaPulse is non-zero!");
+        throw std::runtime_error("Bullet ctor init(): m_fDamageAreaSize is 0 but m_fDamageAreaPulse is non-zero!");
+    }
+}
+
+void Bullet::init(
+    const BulletId& id,
+    const WeaponId& wpnId,
+    PR00FsUltimateRenderingEngine& gfx,
+    TPureFloat wpn_px, TPureFloat wpn_py, TPureFloat wpn_pz,
+    TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
+    bool visible,
+    TPureFloat sx, TPureFloat sy, TPureFloat sz,
+    TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use fragile */
+    /* client does not receive nor use fDistMax */
+    /* client does not receive nor use nDamageAp */ int nDamageHp,
+    TPureFloat fDamageAreaSize,
+    const DamageAreaEffect& eDamageAreaEffect,
+    TPureFloat fDamageAreaPulse)
+{
+    // must not do performance-extensive stuff in this function because if Bullet is pooled (PooledBullet) then the pool's create() invokes this!
+
+    init(
+        wpnId,
+        gfx,
+        static_cast<pge_network::PgeNetworkConnectionHandle>(0u) /* client does not care */,
+        wpn_px, wpn_py, wpn_pz,
+        wpn_ax, wpn_ay, wpn_az,
+        visible,
+        sx, sy, sz,
+        speed, gravity, drag, false /* client does not receive nor use fragile */,
+        0.f /* client does not receive nor use fDistMax */,
+        0 /* client does not receive nor use nDamageAp */,
+        nDamageHp,
+        fDamageAreaSize,
+        eDamageAreaEffect,
+        fDamageAreaPulse);
+
+    m_id = id;
+}
+
 void Bullet::Update(const unsigned int& nFactor)
 {
     /*
@@ -317,9 +380,17 @@ Bullet::BulletId Bullet::m_globalBulletId = 0;
 // ############################### PUBLIC ################################
 
 
+/**
+* @param fname      Path and filename of the Weapon file to be loaded.
+* @param bullets    A bullet pool for storing the bullets that are fired by Weapon instances created by this WeaponManager instance.
+*                   Remember, the pool needs to be properly initialized with non-zero capacity, otherwise bullets cannot be fired.
+* @param audio      The engine's audio subsystem instance.
+* @param gfx        The engine's graphics subsystem instance.
+* @param connHandle Connection handle of the player owning this Weapon instance.
+*/
 Weapon::Weapon(
     const char* fname,
-    std::list<Bullet>& bullets,
+    PgeObjectPool<PooledBullet>& bullets,
     pge_audio::PgeAudio& audio,
     PR00FsUltimateRenderingEngine& gfx,
     pge_network::PgeNetworkConnectionHandle connHandle) :
@@ -1186,30 +1257,33 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
     const float fRelativeBulletAngleZ = getRandomRelativeBulletAngle(bMoving, bRun, bDuck);
     //getConsole().EOLn("bMoving: %b, bRun: %b, bDuck: %b, fRelativeBulletAngleZ: %f! ", bMoving, bRun, bDuck, fRelativeBulletAngleZ);
     
-    m_bullets.push_back(
-        Bullet(
-            m_id,
-            m_gfx,
-            m_connHandle,
-            m_obj->getPosVec().getX(), m_obj->getPosVec().getY(), m_obj->getPosVec().getZ(),
-            m_obj->getAngleVec().getX(), m_obj->getAngleVec().getY(), m_obj->getAngleVec().getZ() + fRelativeBulletAngleZ,
-            getVars()["bullet_visible"].getAsBool(),
-            getVars()["bullet_size_x"].getAsFloat(),
-            getVars()["bullet_size_y"].getAsFloat(),
-            getVars()["bullet_size_z"].getAsFloat(),
-            getVars()["bullet_speed"].getAsFloat(),
-            getVars()["bullet_gravity"].getAsFloat(),
-            getVars()["bullet_drag"].getAsFloat(),
-            getVars()["bullet_fragile"].getAsBool(),
-            getVars()["bullet_distance_max"].getAsFloat(),
-            getVars()["damage_ap"].getAsInt(),
-            getVars()["damage_hp"].getAsInt(),
-            getVars()["damage_area_size"].getAsFloat(),
-            (getVars()["damage_area_effect"].getAsString() == "linear" ?
+    // here create() invokes PooledBullet::init(), should invoke the server version!
+    if (!m_bullets.create(
+        m_id,
+        m_gfx,
+        m_connHandle,
+        m_obj->getPosVec().getX(), m_obj->getPosVec().getY(), m_obj->getPosVec().getZ(),
+        m_obj->getAngleVec().getX(), m_obj->getAngleVec().getY(), m_obj->getAngleVec().getZ() + fRelativeBulletAngleZ,
+        getVars()["bullet_visible"].getAsBool(),
+        getVars()["bullet_size_x"].getAsFloat(),
+        getVars()["bullet_size_y"].getAsFloat(),
+        getVars()["bullet_size_z"].getAsFloat(),
+        getVars()["bullet_speed"].getAsFloat(),
+        getVars()["bullet_gravity"].getAsFloat(),
+        getVars()["bullet_drag"].getAsFloat(),
+        getVars()["bullet_fragile"].getAsBool(),
+        getVars()["bullet_distance_max"].getAsFloat(),
+        getVars()["damage_ap"].getAsInt(),
+        getVars()["damage_hp"].getAsInt(),
+        getVars()["damage_area_size"].getAsFloat(),
+        (getVars()["damage_area_effect"].getAsString() == "linear" ?
             Bullet::DamageAreaEffect::Linear :
             Bullet::DamageAreaEffect::Constant),
-            getVars()["damage_area_pulse"].getAsFloat())
-    );
+        getVars()["damage_area_pulse"].getAsFloat()))
+    {
+        getConsole().EOLn("Weapon::pullTrigger(): pool did not create bullet!");
+        return false;
+    }
 
     PFL::gettimeofday(&m_timeLastShot, 0);
 
@@ -1545,11 +1619,14 @@ void Weapon::UpdateGraphics()
 // ############################### PUBLIC ################################
 
 
+/**
+* @param bullets A bullet pool for storing the bullets that are fired by Weapon instances created by this WeaponManager instance.
+*/
 WeaponManager::WeaponManager(
     pge_audio::PgeAudio& audio,
     PGEcfgProfiles& cfgProfiles,
     PR00FsUltimateRenderingEngine& gfx,
-    std::list<Bullet>& bullets) :
+    PgeObjectPool<PooledBullet>& bullets) :
     m_audio(audio),
     m_cfgProfiles(cfgProfiles),
     m_gfx(gfx),
@@ -2077,7 +2154,7 @@ void WeaponManager::Clear()
 /**
 * @return Reference to the list storing bullets created by firing any weapon managed by this WeaponManager instance.
 */
-std::list<Bullet>& WeaponManager::getBullets()
+PgeObjectPool<PooledBullet>& WeaponManager::getBullets()
 {
     return m_bullets;
 }

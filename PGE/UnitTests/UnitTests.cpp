@@ -113,10 +113,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     //tests.push_back(std::unique_ptr<UnitTest>(new PgePacketTest));
 
-    /*
+    
     tests.push_back(std::unique_ptr<UnitTest>(new PgeWeaponsTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PGEBulletTest));
-    */
+    /**/
     
     /*  
     tests.push_back(std::unique_ptr<UnitTest>(new PureScreenTest));

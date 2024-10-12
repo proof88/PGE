@@ -91,11 +91,11 @@ public:
     pge_audio::PgeAudio& getAudio();                 /**< Returns audio lib interface. */
     PGEcfgProfiles& getConfigProfiles() const;       /**< Returns the config handler object. */
     PGEInputHandler& getInput() const;               /**< Returns the input handler object. */
-    pge_network::PgeINetwork& getNetwork() const;     /**< Returns the network functionality interface. */
+    pge_network::PgeINetwork& getNetwork() const;    /**< Returns the network functionality interface. */
     PR00FsUltimateRenderingEngine& getPure() const;  /**< Returns the graphics engine. */
     PGEWorld& getWorld() const;                      /**< Returns the world object. */
     
-    std::list<Bullet>& getBullets();           /**< Returns the bullets simulated by the engine. */
+    PgeObjectPool<PooledBullet>& getBullets();       /**< Returns the bullets simulated by the engine. */
 
     int  initializeGame(const char* szCmdLine);  /**< Initializes the game engine. */
     int  runGame();                              /**< Runs the game. */
@@ -119,7 +119,7 @@ protected:
     PGE(const PGE&) = delete;
     PGE& operator=(const PGE&) = delete;
     PGE(PGE&&) = delete;
-    PGE&& operator=(PGE&&) = delete;
+    PGE& operator=(PGE&&) = delete;
 
     // Event handlers to be overridden.
     virtual bool onGameInitializing() { return true; }  /**< Called before initializing the engine. */
