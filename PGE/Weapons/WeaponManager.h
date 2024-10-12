@@ -276,6 +276,14 @@ public:
     PooledBullet& operator=(const PooledBullet&) = default;
     PooledBullet(PooledBullet&&) = default;
     PooledBullet& operator=(PooledBullet&&) = default;
+
+    virtual void onSetUsed() override
+    {
+        if (!used())
+        {
+            getObject3D().SetRenderingAllowed(false);
+        }
+    }
 }; // class PooledBullet
 
 /**
