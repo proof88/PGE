@@ -91,6 +91,8 @@ protected:
         AddSubTest("test_ctor_without_args", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_ctor_without_args);
         AddSubTest("test_ctor_with_args_positive", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_ctor_with_args_positive);
         AddSubTest("test_ctor_with_args_negative", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_ctor_with_args_negative);
+        AddSubTest("test_deallocate_normal", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_deallocate_normal);
+        AddSubTest("test_deallocate_degen", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_deallocate_degen);
         AddSubTest("test_create_without_parameters", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_create_without_parameters);
         AddSubTest("test_create_with_parameters", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_create_with_parameters);
         AddSubTest("test_remove_func_of_pool", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_remove_func_of_pool);
@@ -192,6 +194,61 @@ private:
             i++;
         }
         b &= assertEquals(0u, i);
+
+        return b;
+    }
+
+    bool test_deallocate_normal()
+    {
+        PgeObjectPool<TestedPooledObject> pool("ints", 10u, 3u);
+        bool b = true;
+
+        b &= assertNotNull(pool.create(), "create");
+
+        pool.deallocate();
+
+        b &= assertEquals("unnamed pool", pool.name(), "name") &
+            assertEquals(0u, pool.capacity(), "cap") &
+            assertEquals(0u, pool.count(), "count") &
+            assertTrue(pool.empty(), "empty") &
+            assertTrue(nullptr == pool.elems(), "elems");
+
+        // this is not a reserve() test, just check if reserve can succeed after deallocate()
+        pool.reserve("ints", 5u, 3u);
+        b &= assertEquals("ints", pool.name(), "name") &
+            assertEquals(5u, pool.capacity(), "cap") &
+            assertEquals(0u, pool.count(), "count") &
+            assertTrue(pool.empty(), "empty");
+
+        return b;
+    }
+
+    bool test_deallocate_degen()
+    {
+        PgeObjectPool<TestedPooledObject> pool("ints", 10u, 3u);
+        bool b = true;
+
+        b &= assertNotNull(pool.create(), "create");
+
+        // double deallocate
+        pool.deallocate();
+        pool.deallocate();
+
+        b &= assertEquals("unnamed pool", pool.name(), "name") &
+            assertEquals(0u, pool.capacity(), "cap") &
+            assertEquals(0u, pool.count(), "count") &
+            assertTrue(pool.empty(), "empty") &
+            assertTrue(nullptr == pool.elems(), "elems");
+
+        // deallocate already non-allocated
+        PgeObjectPool<TestedPooledObject> pool_nomemory;
+        pool_nomemory.deallocate();
+
+        b &= assertEquals("unnamed pool", pool_nomemory.name(), "name") &
+            assertEquals(0u, pool_nomemory.capacity(), "cap") &
+            assertEquals(0u, pool_nomemory.count(), "count") &
+            assertTrue(pool_nomemory.empty(), "empty") &
+            assertTrue(nullptr == pool_nomemory.elems(), "elems");
 
         return b;
     }

@@ -240,6 +240,25 @@ public:
 
     ~PgeObjectPool()
     {
+        deallocate();
+    }
+
+    PgeObjectPool(const PgeObjectPool&) = delete;
+    PgeObjectPool& operator=(const PgeObjectPool&) = delete;
+    PgeObjectPool(PgeObjectPool&&) = delete;
+    PgeObjectPool&& operator=(PgeObjectPool&&) = delete;
+
+    /**
+    * Frees up the allocated contiguous memory pool, capacity becomes zero, name becomes "unnamed pool".
+    * Capacity can be changed again to non-zero value using reserve().
+    */
+    void deallocate()
+    {
+        if (m_capacity == 0)
+        {
+            return;
+        }
+
         // I have to manually call the dtors because I allocated them 1 by 1 with placement new, so "delete[] m_pool" is not enough.
         for (size_t i = 0; i < m_capacity; i++)
         {
@@ -248,12 +267,14 @@ public:
 
         // And then actually free up the memory pool.
         ::operator delete[](m_pool);
-    }
 
-    PgeObjectPool(const PgeObjectPool&) = delete;
-    PgeObjectPool& operator=(const PgeObjectPool&) = delete;
-    PgeObjectPool(PgeObjectPool&&) = delete;
-    PgeObjectPool&& operator=(PgeObjectPool&&) = delete;
+        m_name = "unnamed pool";
+        m_capacity = 0;
+        m_count = 0;
+        m_pool = nullptr;
+        m_firstAvailable = nullptr;
+        m_rawArrayWrapper = blIteratorAPI::getRawArrayWrapper(m_pool, m_capacity);
+    }
 
     /**
     * @return Number of used objects (PgePooledObject) in this pool, having their used() state true.
@@ -386,6 +407,10 @@ public:
     * is available.
     * 
     * Currently works only for zero-capacity pools.
+    * 
+    * Cannot be used to reduce the capacity of the container.
+    * To reduce the capacity of a non-zero capacity container to non-zero, or to increase the capacity, first
+    * use deallocate() to completely free up the used memory area, and then call reserve().
     *
     * It is decided by the user if the pooled object can be properly initialized when the pool is allocated, or
     * further initialization is needed later. In the latter case, either a default constructor must be available
