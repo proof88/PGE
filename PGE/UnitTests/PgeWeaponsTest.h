@@ -53,6 +53,8 @@ protected:
         engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
 
+        Bullet::resetGlobalBulletId();
+
         /* weapon load negative tests: general config errors */
 
         AddSubTest("test_wpn_load_weapon_bad_assignment", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_bad_assignment);
@@ -186,6 +188,7 @@ protected:
 
     virtual void Finalize() override
     {
+        Bullet::destroyReferenceObject();
         if ( engine )
         {
             engine->shutdown();

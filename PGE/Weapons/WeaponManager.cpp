@@ -36,6 +36,16 @@ void Bullet::resetGlobalBulletId()
     m_globalBulletId = 0;
 }
 
+void Bullet::destroyReferenceObject()
+{
+    // we would not need explicit call if Bullet implemented reference counting
+    if (m_pObjRef)
+    {
+        delete m_pObjRef;
+        m_pObjRef = nullptr;
+    }
+}
+
 /**
     Ctor to be used by PGE server instance.
 */
@@ -57,10 +67,7 @@ Bullet::Bullet(
     m_gfx(gfx),
     m_obj(NULL)
 {
-    // unit-sized plane, the real size is set in init() by scaling based on sx, sy
-    m_obj = m_gfx.getObject3DManager().createPlane(1.f, 1.f);
-    // TODO throw exception if cant create!
-    m_obj->SetDoubleSided(true);
+    build3dObject();
 
     init(
         wpnId,
@@ -98,10 +105,7 @@ Bullet::Bullet(
     m_gfx(gfx),
     m_obj(NULL)
 {
-    // unit-sized plane, the real size is set in init() by scaling based on sx, sy
-    m_obj = m_gfx.getObject3DManager().createPlane(1.f, 1.f);
-    // TODO throw exception if cant create!
-    m_obj->SetDoubleSided(true);
+    build3dObject();
 
     init(
         wpnId,
@@ -361,6 +365,21 @@ const PureObject3D& Bullet::getObject3D() const
     return *m_obj;
 }
 
+void Bullet::build3dObject()
+{
+    if (m_pObjRef == nullptr)
+    {
+        // unit-sized plane, the real size is set in init() by scaling based on sx, sy
+        m_pObjRef = m_gfx.getObject3DManager().createPlane(1.f, 1.f);
+        // TODO throw exception if cant create!
+        m_pObjRef->SetDoubleSided(true);
+        m_pObjRef->Hide();
+    }
+
+    // TODO throw exception if cant create!
+    m_obj = m_gfx.getObject3DManager().createCloned(*m_pObjRef);
+}
+
 
 // ############################## PROTECTED ##############################
 
@@ -369,6 +388,7 @@ const PureObject3D& Bullet::getObject3D() const
 
 
 Bullet::BulletId Bullet::m_globalBulletId = 0;
+PureObject3D* Bullet::m_pObjRef = nullptr;
 
 
 /*

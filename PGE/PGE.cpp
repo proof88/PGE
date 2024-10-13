@@ -253,6 +253,11 @@ bool PGE::PGEimpl::isGameRunning() const
 
 int PGE::PGEimpl::destroyGame()
 {
+    // BulletPool is not allocated by default, and user is expected to call deallocate and destroy reference Bullet, but maybe they forget
+    getBullets().deallocate();
+    Bullet::resetGlobalBulletId();
+    Bullet::destroyReferenceObject();  // we would not need explicit call if Bullet implemented reference counting
+
     // make sure that everything is destructed in REVERSE order compared to initializeGame()
     // first things to shutdown are instances that are NOT even initialized by initializeGame(), such as m_wpnMgr
     m_world.Shutdown();

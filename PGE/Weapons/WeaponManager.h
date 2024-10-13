@@ -55,6 +55,7 @@ public:
 
     static BulletId getGlobalBulletId();
     static void resetGlobalBulletId();
+    static void destroyReferenceObject();
 
     // ---------------------------------------------------------------------------
 
@@ -89,7 +90,69 @@ public:
         const DamageAreaEffect& eDamageAreaEffect,
         const TPureFloat& fDamageAreaPulse);
     
+    /** User is expected to explicitly call Bullet::destroyReferenceObject() after they freed up all Bullet instances.
+        PGE also calls it when destroying the game, but the game might do it based on their use case. */
     virtual ~Bullet();
+
+    Bullet(const Bullet&) = delete;
+    Bullet& operator=(const Bullet&) = delete;
+    Bullet(Bullet&&) = delete;
+    Bullet& operator=(Bullet&&) = delete;
+
+    //Bullet(const Bullet& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
+    //    m_id(other.m_id),
+    //    m_wpnId(other.m_wpnId),
+    //    m_gfx(other.m_gfx),
+    //    m_connHandle(other.m_connHandle),
+    //    m_put(other.m_put),
+    //    m_speed(other.m_speed),
+    //    m_gravity(other.m_gravity),
+    //    m_drag(other.m_drag),
+    //    m_fragile(other.m_fragile),
+    //    m_fDistMax(other.m_fDistMax),
+    //    m_fDistTravelled(other.m_fDistTravelled),
+    //    m_nDamageAp(other.m_nDamageAp),
+    //    m_nDamageHp(other.m_nDamageHp),
+    //    m_fDamageAreaSize(other.m_fDamageAreaSize),
+    //    m_eDamageAreaEffect(other.m_eDamageAreaEffect),
+    //    m_fDamageAreaPulse(other.m_fDamageAreaPulse),
+    //    m_bCreateSentToClients(other.m_bCreateSentToClients)
+    //{
+    //    m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY()); // TODO: throw if cnanot creaate
+    //    m_obj->SetDoubleSided(true);
+    //    m_obj->getPosVec() = other.m_obj->getPosVec();
+    //    m_obj->getAngleVec() = other.m_obj->getAngleVec();
+    //    m_obj->SetRenderingAllowed(other.m_obj->isRenderingAllowed());
+    //}
+
+    //Bullet& operator=(const Bullet& other) // TODO check if we really cannot live with just compiler generated operator=?
+    //{
+    //    m_id = other.m_id;
+    //    m_wpnId = other.m_wpnId;
+    //    m_gfx = other.m_gfx;
+    //    m_connHandle = other.m_connHandle;
+    //    m_put = other.m_put;
+    //    m_speed = other.m_speed;
+    //    m_gravity = other.m_gravity;
+    //    m_drag = other.m_drag;
+    //    m_fragile = other.m_fragile;
+    //    m_fDistMax = other.m_fDistMax;
+    //    m_fDistTravelled = other.m_fDistTravelled;
+    //    m_nDamageAp = other.m_nDamageAp;
+    //    m_nDamageHp = other.m_nDamageHp;
+    //    m_fDamageAreaSize = other.m_fDamageAreaSize;
+    //    m_eDamageAreaEffect = other.m_eDamageAreaEffect;
+    //    m_fDamageAreaPulse = other.m_fDamageAreaPulse;
+    //    m_bCreateSentToClients = other.m_bCreateSentToClients;
+    //
+    //    m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());  // TODO: throw if cnanot creaate
+    //    m_obj->SetDoubleSided(true);
+    //    m_obj->getPosVec() = other.m_obj->getPosVec();
+    //    m_obj->getAngleVec() = other.m_obj->getAngleVec();
+    //    m_obj->SetRenderingAllowed(other.m_obj->isRenderingAllowed());
+    //
+    //    return *this;
+    //}
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
@@ -150,66 +213,12 @@ public:
     PureObject3D& getObject3D();
     const PureObject3D& getObject3D() const;
 
-    Bullet(const Bullet& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
-        m_id(other.m_id),
-        m_wpnId(other.m_wpnId),
-        m_gfx(other.m_gfx),
-        m_connHandle(other.m_connHandle),
-        m_put(other.m_put),
-        m_speed(other.m_speed),
-        m_gravity(other.m_gravity),
-        m_drag(other.m_drag),
-        m_fragile(other.m_fragile),
-        m_fDistMax(other.m_fDistMax),
-        m_fDistTravelled(other.m_fDistTravelled),
-        m_nDamageAp(other.m_nDamageAp),
-        m_nDamageHp(other.m_nDamageHp),
-        m_fDamageAreaSize(other.m_fDamageAreaSize),
-        m_eDamageAreaEffect(other.m_eDamageAreaEffect),
-        m_fDamageAreaPulse(other.m_fDamageAreaPulse),
-        m_bCreateSentToClients(other.m_bCreateSentToClients)
-    {
-        m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY()); // TODO: throw if cnanot creaate
-        m_obj->SetDoubleSided(true);
-        m_obj->getPosVec() = other.m_obj->getPosVec();
-        m_obj->getAngleVec() = other.m_obj->getAngleVec();
-        m_obj->SetRenderingAllowed(other.m_obj->isRenderingAllowed());
-    }
-
-    Bullet& operator=(const Bullet& other) // TODO check if we really cannot live with just compiler generated operator=?
-    {
-        m_id = other.m_id;
-        m_wpnId = other.m_wpnId;
-        m_gfx = other.m_gfx;
-        m_connHandle = other.m_connHandle;
-        m_put = other.m_put;
-        m_speed = other.m_speed;
-        m_gravity = other.m_gravity;
-        m_drag = other.m_drag;
-        m_fragile = other.m_fragile;
-        m_fDistMax = other.m_fDistMax;
-        m_fDistTravelled = other.m_fDistTravelled;
-        m_nDamageAp = other.m_nDamageAp;
-        m_nDamageHp = other.m_nDamageHp;
-        m_fDamageAreaSize = other.m_fDamageAreaSize;
-        m_eDamageAreaEffect = other.m_eDamageAreaEffect;
-        m_fDamageAreaPulse = other.m_fDamageAreaPulse;
-        m_bCreateSentToClients = other.m_bCreateSentToClients;
-
-        m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());  // TODO: throw if cnanot creaate
-        m_obj->SetDoubleSided(true);
-        m_obj->getPosVec() = other.m_obj->getPosVec();
-        m_obj->getAngleVec() = other.m_obj->getAngleVec();
-        m_obj->SetRenderingAllowed(other.m_obj->isRenderingAllowed());
-
-        return *this;
-    }
-
 protected:
 
 private:
 
     static BulletId m_globalBulletId;                      /**< Next unique bullet id for identifying. Used by PGE server instance only. */
+    static PureObject3D* m_pObjRef;                        /**< Reference object for cloned bullet objects. */
 
     BulletId m_id;                                         /**< Unique bullet id for identifying. Used by both PGE client and server instances. */
     WeaponId m_wpnId;                                      /**< Unique weapon id. Used by both PGE client and server instances. */
@@ -234,6 +243,8 @@ private:
     bool m_bCreateSentToClients;                           /**< Server should send update to clients about creation of new bullets. By default false, client ignores. */
 
     // ---------------------------------------------------------------------------
+
+    void build3dObject();
 
 }; // class Bullet
 
@@ -272,10 +283,10 @@ public:
 
     ~PooledBullet() = default;
 
-    PooledBullet(const PooledBullet&) = default;
-    PooledBullet& operator=(const PooledBullet&) = default;
-    PooledBullet(PooledBullet&&) = default;
-    PooledBullet& operator=(PooledBullet&&) = default;
+    PooledBullet(const PooledBullet&) = delete;
+    PooledBullet& operator=(const PooledBullet&) = delete;
+    PooledBullet(PooledBullet&&) = delete;
+    PooledBullet& operator=(PooledBullet&&) = delete;
 
     virtual void onSetUsed() override
     {

@@ -34,6 +34,8 @@ protected:
         engine = &PR00FsUltimateRenderingEngine::createAndGet(cfgProfiles, inputHandler);
         engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0);  // pretty standard display mode, should work on most systems
 
+        Bullet::resetGlobalBulletId();
+
         AddSubTest("test_bullet_ctor_server_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_good);
         AddSubTest("test_bullet_ctor_client_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_good);
         // TODO: add test for copy ctor and assignment operator
@@ -60,6 +62,7 @@ protected:
 
     virtual void Finalize() override
     {
+        Bullet::destroyReferenceObject();
         if (engine)
         {
             engine->shutdown();
