@@ -219,7 +219,7 @@ public:
     PgeObjectPool() :
         m_name("unnamed pool")
     {
-        getConsole().SOLn("PgeObjectPool %s with empty size created successfully!", m_name.c_str());
+        getConsole().SOLn("PgeObjectPool %s with zero capacity created successfully!", m_name.c_str());
     }
 
     /**
@@ -453,7 +453,7 @@ public:
         // https://stackoverflow.com/questions/1087042/c-new-int0-will-it-allocate-memory
         if (m_capacity == 0)
         {
-            getConsole().SOLn("PgeObjectPool %s with empty size created successfully!", m_name.c_str());
+            getConsole().SOLn("PgeObjectPool %s with zero capacity created successfully!", m_name.c_str());
             return;
         }
 
@@ -480,7 +480,7 @@ public:
 
         m_rawArrayWrapper = blIteratorAPI::getRawArrayWrapper(m_pool, m_capacity);
 
-        getConsole().SOLn("PgeObjectPool %s with size of %u Bytes created successfully!", poolName.c_str(), capacity * sizeof(T));
+        getConsole().SOLn("PgeObjectPool %s with capacity of %u elems (%u Bytes) created successfully!", poolName.c_str(), capacity, capacity * sizeof(T));
     }
 
     /**

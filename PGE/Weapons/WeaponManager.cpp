@@ -1405,6 +1405,23 @@ float Weapon::getDamagePerFireRating() const
 }
 
 /**
+* Returns a calculated firing rate per 1 second.
+* Currently it takes the firing cooldown into account, not considering magazine size and reload time.
+* So this is perfect only for those weapons which cannot be emptied within 1 second with continuous firing.
+* If a weapon can be emptied within 1 second and reload is needed to continue firing, this function returns imprecise value.
+*
+* Also, this function does not consider weapon with different firing modes yet.
+*
+* @return Firing rate per second i.e. how many bullets this weapon can fire within 1 second.
+*/
+float Weapon::getFiringRate() const
+{
+    const int nCooldownMsecs = getVars().at("firing_cooldown").getAsInt();
+    assert(nCooldownMsecs > 0); // ctor throws if 0
+    return 1000.f / nCooldownMsecs;
+}
+
+/**
 * Returns a calculated rating of total damage per 1 second: DPSR.
 * This is used by WeaponManager to put Weapons into order based on their power.
 * Always positive.
@@ -1418,7 +1435,7 @@ float Weapon::getDamagePerSecondRating() const
       reload_time     -> smaller is better
       firing_cooldown -> smaller is better
     */
-    return std::powf(1000.f / getVars().at("firing_cooldown").getAsInt() * getDamagePerFireRating(), 2.f);
+    return std::powf(getFiringRate() * getDamagePerFireRating(), 2.f);
 }
 
 /**

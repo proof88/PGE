@@ -115,6 +115,7 @@ protected:
         AddSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle_2", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle_2);
 
         AddSubTest("test_wpn_get_damage_per_fire_rating", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_damage_per_fire_rating);
+        AddSubTest("test_wpn_get_firing_rate", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_firing_rate);
         AddSubTest("test_wpn_get_damage_per_second_rating", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_damage_per_second_rating);
 
         AddSubTest("test_wpn_client_receive_state_from_server", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_client_receive_state_from_server);
@@ -968,6 +969,26 @@ private:
             b = assertEquals((wpn.getVars().at("damage_hp").getAsInt() * wpn.getVars().at("damage_ap").getAsInt()) / 100.f,
                 wpn.getDamagePerFireRating(), 0.001f, "1");
             b &= assertBetween(0.01f, 100.f, wpn.getDamagePerFireRating(), 0.001f, "2");
+        }
+        catch (const std::exception& e)
+        {
+            b &= assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_get_firing_rate()
+    {
+        bool b = false;
+        try
+        {
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+
+            b = assertEquals(1000.f / wpn.getVars().at("firing_cooldown").getAsInt(),
+                 wpn.getFiringRate(), 0.001f, "1");
+            b &= assertGreater(wpn.getFiringRate(), 0.f, "2");
         }
         catch (const std::exception& e)
         {
