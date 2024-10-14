@@ -313,6 +313,14 @@ public:
     }
 
     /**
+    * @return Total number of Bytes allocated for the pooled objects (PgePooledObject) in this pool.
+    */
+    size_t capacityBytes() const
+    {
+        return m_capacity * sizeof(T);
+    }
+
+    /**
     * @return True if none of the pooled objects are currently in use, false otherwise.
     */
     bool empty() const

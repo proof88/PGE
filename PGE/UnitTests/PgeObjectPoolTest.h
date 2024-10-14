@@ -154,6 +154,7 @@ private:
 
         b &= assertEquals("unnamed pool", pool.name(), "name") &
             assertEquals(capacity, pool.capacity(), "cap") &
+            assertEquals(0u, pool.capacityBytes(), "cap bytes") &
             assertEquals(0u, pool.count(), "count") &
             assertTrue(pool.empty(), "empty") &
             assertTrue(nullptr == pool.elems(), "elems");
@@ -177,6 +178,7 @@ private:
 
         b &= assertEquals("ints", pool.name(), "name") &
             assertEquals(capacity, pool.capacity(), "cap") &
+            assertEquals(capacity * sizeof(TestedPooledObject), pool.capacityBytes(), "cap bytes") &
             assertEquals(0u, pool.count(), "count") &
             assertTrue(pool.empty(), "empty");
 
@@ -204,6 +206,7 @@ private:
 
         b &= assertEquals("ints", pool.name(), "name") &
             assertEquals(capacity, pool.capacity(), "cap") &
+            assertEquals(0u, pool.capacityBytes(), "cap bytes") &
             assertEquals(0u, pool.count(), "count") &
             assertTrue(pool.empty(), "empty") &
             assertTrue(nullptr == pool.elems(), "elems");
@@ -230,6 +233,7 @@ private:
 
         b &= assertEquals("unnamed pool", pool.name(), "name") &
             assertEquals(0u, pool.capacity(), "cap") &
+            assertEquals(0u, pool.capacityBytes(), "cap bytes") &
             assertEquals(0u, pool.count(), "count") &
             assertTrue(pool.empty(), "empty") &
             assertTrue(nullptr == pool.elems(), "elems");
@@ -238,6 +242,7 @@ private:
         pool.reserve("ints", 5u, 3u);
         b &= assertEquals("ints", pool.name(), "name") &
             assertEquals(5u, pool.capacity(), "cap") &
+            assertEquals(5u * sizeof(TestedPooledObject), pool.capacityBytes(), "cap bytes") &
             assertEquals(0u, pool.count(), "count") &
             assertTrue(pool.empty(), "empty");
 
@@ -257,6 +262,7 @@ private:
 
         b &= assertEquals("unnamed pool", pool.name(), "name") &
             assertEquals(0u, pool.capacity(), "cap") &
+            assertEquals(0u, pool.capacityBytes(), "cap bytes") &
             assertEquals(0u, pool.count(), "count") &
             assertTrue(pool.empty(), "empty") &
             assertTrue(nullptr == pool.elems(), "elems");
@@ -267,6 +273,7 @@ private:
 
         b &= assertEquals("unnamed pool", pool_nomemory.name(), "name") &
             assertEquals(0u, pool_nomemory.capacity(), "cap") &
+            assertEquals(0u, pool_nomemory.capacityBytes(), "cap bytes") &
             assertEquals(0u, pool_nomemory.count(), "count") &
             assertTrue(pool_nomemory.empty(), "empty") &
             assertTrue(nullptr == pool_nomemory.elems(), "elems");
@@ -287,6 +294,7 @@ private:
         }
         b &= assertEquals(pool.capacity(), pool.count(), "last create count") &
             assertEquals(capacity, pool.capacity(), "cap 1") &
+            assertEquals(capacity * sizeof(TestedPooledObject), pool.capacityBytes(), "cap 1 bytes") &
             assertFalse(pool.empty(), "empty 1");
 
         // elem data unchanged but now they are "used"
@@ -322,6 +330,7 @@ private:
         }
         b &= assertEquals(pool.capacity(), pool.count(), "last create count") &
             assertEquals(capacity, pool.capacity(), "cap 1") &
+            assertEquals(capacity * sizeof(TestedPooledObject), pool.capacityBytes(), "cap 1 bytes") &
             assertFalse(pool.empty(), "empty 1");
 
         // elem data changed as specified as parameter for create(), and now they are "used"
@@ -651,6 +660,7 @@ private:
 
         b &= assertEquals("unnamed pool", pool.name(), "name") &
             assertEquals(capacity, pool.capacity(), "cap") &
+            assertEquals(capacity * sizeof(TestedPooledObject), pool.capacityBytes(), "cap bytes") &
             assertEquals(0u, pool.count(), "count") &
             assertTrue(pool.empty(), "empty") &
             assertTrue(nullptr == pool.elems(), "elems");
@@ -676,6 +686,7 @@ private:
 
         b &= assertEquals("ints", pool.name(), "name") &
             assertEquals(capacity, pool.capacity(), "cap") &
+            assertEquals(capacity * sizeof(TestedPooledObject), pool.capacityBytes(), "cap bytes") &
             assertEquals(0u, pool.count(), "count") &
             assertTrue(pool.empty(), "empty");
 
@@ -715,6 +726,7 @@ private:
 
             b &= assertEquals("ints", pool.name(), "name") &
                 assertEquals(capacity, pool.capacity(), "cap") &
+                assertEquals(capacity * sizeof(TestedPooledObject), pool.capacityBytes(), "cap bytes") &
                 assertEquals(1u, pool.count(), "count") &
                 assertFalse(pool.empty(), "empty");
 
