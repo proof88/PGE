@@ -99,6 +99,7 @@ private:
         const float fDrag = 25.f;
         const bool bFragile = true;
         const float fDistMax = 10.f;
+        const Bullet::ParticleType particleType = Bullet::ParticleType::None;
         const int nDamageAp = 20;
         const int nDamageHp = 30;
         const float fDamageAreaSize = 5.f;
@@ -116,6 +117,7 @@ private:
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag, bFragile,
             fDistMax,
+            particleType,
             nDamageAp, nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
         
@@ -132,6 +134,7 @@ private:
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(bFragile, bullet.isFragile(), "fragile");
         b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
+        b &= assertEquals(particleType, bullet.getParticleType(), "particleType");
         b &= assertEquals(nDamageAp, bullet.getDamageAp(), "damageAp");
         b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
@@ -152,6 +155,7 @@ private:
         const float fSpeed = 60.f;
         const float fGravity = 15.f;
         const float fDrag = 25.f;
+        const Bullet::ParticleType particleType = Bullet::ParticleType::None;
         const int nDamageHp = 30;
         const float fDamageAreaSize = 5.f;
         const Bullet::DamageAreaEffect eDamageAreaEffect = Bullet::DamageAreaEffect::Constant;
@@ -164,7 +168,9 @@ private:
             angleVec.getX(), angleVec.getY(), angleVec.getZ(),
             false /* visible */,
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
-            fSpeed, fGravity, fDrag, nDamageHp,
+            fSpeed, fGravity, fDrag,
+            particleType,
+            nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
 
         bool b = assertEquals(bullet.getId(), iLastBulletId, "bullet id");
@@ -179,6 +185,7 @@ private:
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(false, bullet.isFragile(), "fragile");
         b &= assertEquals(0.f, bullet.getTravelDistanceMax(), "fDistMax");
+        b &= assertEquals(particleType, bullet.getParticleType(), "particleType");
         b &= assertEquals(0, bullet.getDamageAp(), "damageAp");
         b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
@@ -198,6 +205,7 @@ private:
         const float fSpeed = 60.f;
         const float fGravity = 15.f;
         const float fDrag = 25.f;
+        const Bullet::ParticleType particleType = Bullet::ParticleType::None;
         const bool bFragile = true;
         const float fDistMax = 10.f;
         const int nDamageAp = 20;
@@ -217,6 +225,7 @@ private:
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag, bFragile,
             fDistMax,
+            particleType,
             nDamageAp, nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
 
@@ -240,6 +249,7 @@ private:
                 4.f, 5.f, 0.f,
                 1000.f, 15.f, 25.f, true,
                 0.f /* fDistMax */,
+                Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
                 5.f, Bullet::DamageAreaEffect::Constant, 2.f);
         }
@@ -265,6 +275,7 @@ private:
                 4.f, 5.f, 0.f,
                 1000.f, 15.f, 25.f, /* client does not receive nor use fragile */
                 /* client does not receive nor use fDistMax */
+                Bullet::ParticleType::None,
                 /* client does not receive nor use nDamageAp */
                 10 /* HP */,
                 5.f, Bullet::DamageAreaEffect::Constant, 2.f);
@@ -292,6 +303,7 @@ private:
                 4.f, 5.f, 0.f,
                 1000.f, 15.f, 25.f, true,
                 0.f /* fDistMax */,
+                Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
                 5.f, Bullet::DamageAreaEffect::Constant, 2.f);
         }
@@ -318,6 +330,7 @@ private:
                 4.f, 5.f, 0.f,
                 60.f, 15.f, 25.f, true,
                 0.f /* fDistMax */,
+                Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
                 -5.f, Bullet::DamageAreaEffect::Constant, 2.f);
         }
@@ -344,6 +357,7 @@ private:
                 4.f, 5.f, 0.f,
                 60.f, 15.f, 25.f, true,
                 0.f /* fDistMax */,
+                Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
                 0.f, Bullet::DamageAreaEffect::Constant, 2.f);
         }
@@ -374,6 +388,7 @@ private:
             1.f, 1.f, 1.f,
             fSpeed, 15.f, 25.f, true,
             0.f /* fDistMax */,
+            Bullet::ParticleType::None,
             5 /* AP */, 10 /* HP */,
             5.f, Bullet::DamageAreaEffect::Constant, 2.f);
         bullet.Update(nFactor);

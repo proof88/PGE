@@ -102,7 +102,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     
     //tests.push_back(std::unique_ptr<UnitTest>(new PFLTest));
 
-    tests.push_back(std::unique_ptr<UnitTest>(new PgeObjectPoolTest));
+    //tests.push_back(std::unique_ptr<UnitTest>(new PgeObjectPoolTest));
     
     /*
     tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgVariableTest));

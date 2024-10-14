@@ -83,10 +83,10 @@ protected:
         AddSubTest("test_wpn_load_weapon_recoil_cannot_be_less_than_1", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_recoil_cannot_be_less_than_1);
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown);
         AddSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control);
-        AddSubTest("test_wpn_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled);
-        AddSubTest("test_wpn_firing_cooldown_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_firing_cooldown_must_be_positive);
-        AddSubTest("test_wpn_firing_mode_max_cannot_be_less_than_default", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_firing_mode_max_cannot_be_less_than_default);
-        AddSubTest("test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj);
+        AddSubTest("test_wpn_load_weapon_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled);
+        AddSubTest("test_wpn_load_weapon_firing_cooldown_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_firing_cooldown_must_be_positive);
+        AddSubTest("test_wpn_load_weapon_firing_mode_max_cannot_be_less_than_default", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_firing_mode_max_cannot_be_less_than_default);
+        AddSubTest("test_wpn_load_weapon_firing_modes_default_and_max_cannot_be_burst_and_proj", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_firing_modes_default_and_max_cannot_be_burst_and_proj);
         
         /* weapon load negative tests: bullet config errors */
 
@@ -94,9 +94,10 @@ protected:
         AddSubTest("test_wpn_load_weapon_damage_area_size_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_damage_area_size_cannot_be_negative);
         AddSubTest("test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse);
         AddSubTest("test_wpn_load_weapon_invalid_damage_area_effect", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_invalid_damage_area_effect);
-        AddSubTest("test_wpn_damage_hp_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_damage_hp_must_be_positive);
-        AddSubTest("test_wpn_damage_ap_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_damage_ap_must_be_positive);
+        AddSubTest("test_wpn_load_weapon_damage_hp_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_damage_hp_must_be_positive);
+        AddSubTest("test_wpn_load_weapon_damage_ap_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_damage_ap_must_be_positive);
         AddSubTest("test_wpn_load_weapon_bullet_distance_max_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_bullet_distance_max_cannot_be_negative);
+        AddSubTest("test_wpn_load_weapon_invalid_bullet_particle", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_invalid_bullet_particle);
         
         /* weapon load positive tests and other use cases */
 
@@ -343,6 +344,11 @@ private:
                 b &= assertEquals(wpn.getUniqueId(), bullet.getWeaponId(), ("bullet wpn id " + std::to_string(i)).c_str());
                 b &= assertEquals(wpn.getVars()["damage_hp"].getAsInt(), bullet.getDamageHp(), ("damageHp " + std::to_string(i)).c_str());
                 b &= assertEquals(wpn.getVars()["damage_ap"].getAsInt(), bullet.getDamageAp(), ("damageAp " + std::to_string(i)).c_str());
+                b &= assertEquals(
+                    (wpn.getVars()["bullet_particle"].getAsString() == "smoke" ?
+                        Bullet::ParticleType::Smoke :
+                        Bullet::ParticleType::None),
+                    bullet.getParticleType(), ("particleType " + std::to_string(i)).c_str());
 
                 i++;
             }
@@ -476,14 +482,14 @@ private:
             "recoil_m is 1 but recoil_control is not off");
     }
 
-    bool test_wpn_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled()
+    bool test_wpn_load_weapon_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled()
     {
         return test_helper_wpn_load_and_expect_exception(
             "gamedata/weapons/wpn_test_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled.txt",
             "recoil enabled, but recoil_cooldown is less than firing_cooldown");
     }
 
-    bool test_wpn_firing_cooldown_must_be_positive()
+    bool test_wpn_load_weapon_firing_cooldown_must_be_positive()
     {
         return test_helper_wpn_load_and_expect_exception(
             "gamedata/weapons/wpn_test_firing_cooldown_must_be_positive.txt",
@@ -518,28 +524,28 @@ private:
             "invalid damage_area_effect");
     }
 
-    bool test_wpn_firing_mode_max_cannot_be_less_than_default()
+    bool test_wpn_load_weapon_firing_mode_max_cannot_be_less_than_default()
     {
         return test_helper_wpn_load_and_expect_exception(
             "gamedata/weapons/wpn_test_firing_mode_max_cannot_be_less_than_default.txt",
             "wrong order of default and max firing modes: auto and semi");
     }
 
-    bool test_wpn_firing_modes_default_and_max_cannot_be_burst_and_proj()
+    bool test_wpn_load_weapon_firing_modes_default_and_max_cannot_be_burst_and_proj()
     {
         return test_helper_wpn_load_and_expect_exception(
             "gamedata/weapons/wpn_test_firing_modes_default_and_max_cannot_be_burst_and_proj.txt",
             "incompatiable default and max firing modes: burst and proj");
     }
 
-    bool test_wpn_damage_hp_must_be_positive()
+    bool test_wpn_load_weapon_damage_hp_must_be_positive()
     {
         return test_helper_wpn_load_and_expect_exception(
             "gamedata/weapons/wpn_test_damage_hp_must_be_positive.txt",
             "damage_hp and damage_ap must be positive values");
     }
 
-    bool test_wpn_damage_ap_must_be_positive()
+    bool test_wpn_load_weapon_damage_ap_must_be_positive()
     {
         return test_helper_wpn_load_and_expect_exception(
             "gamedata/weapons/wpn_test_damage_ap_must_be_positive.txt",
@@ -551,6 +557,13 @@ private:
         return test_helper_wpn_load_and_expect_exception(
             "gamedata/weapons/wpn_test_bullet_distance_max_cannot_be_negative.txt",
             "bullet_distance_max cannot be negative");
+    }
+
+    bool test_wpn_load_weapon_invalid_bullet_particle()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_invalid_bullet_particle.txt",
+            "invalid bullet_particle");
     }
 
     bool test_wpn_state_to_string()

@@ -38,6 +38,12 @@ class Bullet
 #endif
 
 public:
+    enum ParticleType
+    {
+        None,
+        Smoke
+    };
+
     enum DamageAreaEffect
     {
         Constant,
@@ -70,6 +76,7 @@ public:
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
         TPureFloat fDistMax,
+        const ParticleType& particleType,
         int nDamageAp, int nDamageHp,
         TPureFloat fDamageAreaSize,
         const DamageAreaEffect& eDamageAreaEffect,
@@ -85,6 +92,7 @@ public:
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use fragile */
         /* client does not receive nor use fDistMax */
+        const ParticleType& particleType,
         /* client does not receive nor use nDamageAp */ int nDamageHp,
         const TPureFloat& fDamageAreaSize,
         const DamageAreaEffect& eDamageAreaEffect,
@@ -165,6 +173,7 @@ public:
     TPureFloat getGravity() const;
     TPureFloat getDrag() const;
     TPureBool isFragile() const;
+    const ParticleType& getParticleType() const;
     TPureFloat getTravelDistanceMax() const;
     TPureFloat getTravelledDistance() const;
     int getDamageAp() const;
@@ -186,6 +195,7 @@ public:
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
         TPureFloat fDistMax,
+        const ParticleType& particleType,
         int nDamageAp, int nDamageHp,
         TPureFloat fDamageAreaSize,
         const DamageAreaEffect& eDamageAreaEffect,
@@ -203,6 +213,7 @@ public:
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use fragile */
         /* client does not receive nor use fDistMax */
+        const ParticleType& particleType,
         /* client does not receive nor use nDamageAp */ int nDamageHp,
         TPureFloat fDamageAreaSize,
         const DamageAreaEffect& eDamageAreaEffect,
@@ -231,6 +242,7 @@ private:
     TPureBool m_fragile;                                   /**< Fragile flag as defined by weapon file. Used by PGE server instance only. */
     TPureFloat m_fDistMax;                                 /**< Max distance as defined by weapon file. Used by PGE server instance only. */
     TPureFloat m_fDistTravelled;                           /**< Distance travelled so far. Used by both PGE client and server instances. */
+    ParticleType m_particleType;                           /**< Emitted particle type. Used by both PGE client and server instances. */
     int m_nDamageAp;                                       /**< Damage to AP as defined by weapon file. Used by PGE server instance only. */
     int m_nDamageHp;                                       /**< Damage to HP as defined by weapon file. Used by both PGE client and server instances. */
     TPureFloat m_fDamageAreaSize;                          /**< Area damage size as defined by weapon file. Used by both PGE client and server instances. */
@@ -277,6 +289,7 @@ public:
             1.f, 1.f, 0.f /* size */,
             0.f /* speed */, 0.f /* gravity */, 0.f /* drag */, false /* fragile */,
             0.f /* distMax */,
+            Bullet::ParticleType::None,
             0 /* AP */, 0 /* HP */,
             0.f /* dmg area size */, Bullet::DamageAreaEffect::Constant, 0.f /* dmg area pulse */)
     {}

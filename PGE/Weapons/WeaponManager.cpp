@@ -59,6 +59,7 @@ Bullet::Bullet(
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
     TPureFloat fDistMax,
+    const ParticleType& particleType,
     int nDamageAp, int nDamageHp,
     TPureFloat fDamageAreaSize,
     const DamageAreaEffect& eDamageAreaEffect,
@@ -80,6 +81,7 @@ Bullet::Bullet(
         speed, gravity, drag,
         fragile,
         fDistMax,
+        particleType,
         nDamageAp,
         nDamageHp,
         fDamageAreaSize,
@@ -97,7 +99,9 @@ Bullet::Bullet(
     TPureFloat wpn_ax, TPureFloat wpn_ay, TPureFloat wpn_az,
     bool visible,
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
-    TPureFloat speed, TPureFloat gravity, TPureFloat drag, int nDamageHp,
+    TPureFloat speed, TPureFloat gravity, TPureFloat drag,
+    const ParticleType& particleType,
+    int nDamageHp,
     const TPureFloat& fDamageAreaSize,
     const DamageAreaEffect& eDamageAreaEffect,
     const TPureFloat& fDamageAreaPulse) :
@@ -118,6 +122,7 @@ Bullet::Bullet(
         speed, gravity, drag,
         false /* fragile, irrelevant for this client-side ctor */,
         0.f /* distMax, irrelevant for this client-side ctor */,
+        particleType,
         0 /* nDamageAP, irrelevant for this client-side ctor */,
         nDamageHp,
         fDamageAreaSize,
@@ -171,6 +176,11 @@ TPureFloat Bullet::getDrag() const
 TPureBool Bullet::isFragile() const
 {
     return m_fragile;
+}
+
+const Bullet::ParticleType& Bullet::getParticleType() const
+{
+    return m_particleType;
 }
 
 TPureFloat Bullet::getTravelDistanceMax() const
@@ -238,6 +248,7 @@ void Bullet::init(
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
     TPureFloat fDistMax,
+    const ParticleType& particleType,
     int nDamageAp, int nDamageHp,
     TPureFloat fDamageAreaSize,
     const DamageAreaEffect& eDamageAreaEffect,
@@ -256,6 +267,7 @@ void Bullet::init(
     m_fragile = fragile;
     m_fDistMax = fDistMax;
     m_fDistTravelled = 0.f;
+    m_particleType = particleType;
     m_nDamageAp = nDamageAp;
     m_nDamageHp = nDamageHp;
     m_fDamageAreaSize = fDamageAreaSize;
@@ -303,6 +315,7 @@ void Bullet::init(
     TPureFloat sx, TPureFloat sy, TPureFloat sz,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use fragile */
     /* client does not receive nor use fDistMax */
+    const ParticleType& particleType,
     /* client does not receive nor use nDamageAp */ int nDamageHp,
     TPureFloat fDamageAreaSize,
     const DamageAreaEffect& eDamageAreaEffect,
@@ -320,6 +333,7 @@ void Bullet::init(
         sx, sy, sz,
         speed, gravity, drag, false /* client does not receive nor use fragile */,
         0.f /* client does not receive nor use fDistMax */,
+        particleType,
         0 /* client does not receive nor use nDamageAp */,
         nDamageHp,
         fDamageAreaSize,
@@ -352,6 +366,8 @@ void Bullet::Update(const unsigned int& nFactor)
     m_put.Move(fMoveDistance);
     m_obj->getPosVec() = m_put.getPosVec();
     m_fDistTravelled += fMoveDistance;
+
+    // TODO: particle can be emitted here
 }
 
 
@@ -463,6 +479,7 @@ Weapon::Weapon(
         m_WpnAcceptedVars.insert("bullet_drag");
         m_WpnAcceptedVars.insert("bullet_fragile");
         m_WpnAcceptedVars.insert("bullet_distance_max");
+        m_WpnAcceptedVars.insert("bullet_particle");
         m_WpnAcceptedVars.insert("damage_wall_snd");
         m_WpnAcceptedVars.insert("damage_player_snd");
         m_WpnAcceptedVars.insert("damage_hp");
@@ -674,6 +691,12 @@ Weapon::Weapon(
     {
         getConsole().EOLnOO("bullet_distance_max cannot be negative in %s! ", fname);
         throw std::runtime_error("bullet_distance_max cannot be negative in " + std::string(fname));
+    }
+
+    if ((getVars()["bullet_particle"].getAsString() != "none") && (getVars()["bullet_particle"].getAsString() != "smoke"))
+    {
+        getConsole().EOLnOO("invalid bullet_particle in %s! ", fname);
+        throw std::runtime_error("invalid bullet_particle in " + std::string(fname));
     }
 
     if (getVars()["damage_area_size"].getAsFloat() < 0.f)
@@ -1293,6 +1316,9 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
         getVars()["bullet_drag"].getAsFloat(),
         getVars()["bullet_fragile"].getAsBool(),
         getVars()["bullet_distance_max"].getAsFloat(),
+        (getVars()["bullet_particle"].getAsString() == "smoke" ?
+            Bullet::ParticleType::Smoke :
+            Bullet::ParticleType::None),
         getVars()["damage_ap"].getAsInt(),
         getVars()["damage_hp"].getAsInt(),
         getVars()["damage_area_size"].getAsFloat(),
