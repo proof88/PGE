@@ -232,7 +232,7 @@ public:
     * or default parameters should be passed to this constructor to be forwarded to the pooled object's
     * non-default constructor to bring the pooled objects to a default state, and later the pooled objects
     * can be properly initialized using the pool's create() function which can forward arbitrary parameters
-    * to the pooled objects init() function.
+    * to the pooled object's init() function.
     * 
     * @param poolName       Name of this pool, for informative purpose.
     * @param capacity       Number of pooled objects to be stored in this pool.
@@ -338,6 +338,7 @@ public:
 
     /**
     * Finds a free (usable) object in the pool, sets it flag as used and returns it.
+    * It also forwards arbitrary parameters to the pooled object's init() function.
     * Complexity is O(1) (constant).
     * Note: the returned object stays in the pool but marked as used, and the user can mark it as free by calling remove().
     * 

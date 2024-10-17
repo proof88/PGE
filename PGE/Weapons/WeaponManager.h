@@ -174,6 +174,8 @@ public:
     TPureFloat getDrag() const;
     TPureBool isFragile() const;
     const ParticleType& getParticleType() const;
+    const std::chrono::time_point<std::chrono::steady_clock>& getTimeLastParticleEmitted() const;
+    void updateTimeLastParticleEmitted();
     TPureFloat getTravelDistanceMax() const;
     TPureFloat getTravelledDistance() const;
     int getDamageAp() const;
@@ -243,6 +245,7 @@ private:
     TPureFloat m_fDistMax;                                 /**< Max distance as defined by weapon file. Used by PGE server instance only. */
     TPureFloat m_fDistTravelled;                           /**< Distance travelled so far. Used by both PGE client and server instances. */
     ParticleType m_particleType;                           /**< Emitted particle type. Used by both PGE client and server instances. */
+    std::chrono::time_point<std::chrono::steady_clock> m_timeLastParticleEmitted;
     int m_nDamageAp;                                       /**< Damage to AP as defined by weapon file. Used by PGE server instance only. */
     int m_nDamageHp;                                       /**< Damage to HP as defined by weapon file. Used by both PGE client and server instances. */
     TPureFloat m_fDamageAreaSize;                          /**< Area damage size as defined by weapon file. Used by both PGE client and server instances. */

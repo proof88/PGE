@@ -120,6 +120,11 @@ private:
             particleType,
             nDamageAp, nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
+
+        // should be initialized to "now" when bullet is born
+        const long long nMillisecsElapsedSinceLastParticleEmitted =
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now() - bullet.getTimeLastParticleEmitted()).count();
         
         bool b = assertEquals(bullet.getId(), iLastBulletId, "bullet id");
         b &= assertEquals(bullet.getWeaponId(), iWpnId, "weapon id");
@@ -135,6 +140,7 @@ private:
         b &= assertEquals(bFragile, bullet.isFragile(), "fragile");
         b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
         b &= assertEquals(particleType, bullet.getParticleType(), "particleType");
+        b &= assertBetween(0, 400 /* just some reasonable number here */, nMillisecsElapsedSinceLastParticleEmitted, "time last particle emitted");
         b &= assertEquals(nDamageAp, bullet.getDamageAp(), "damageAp");
         b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
@@ -173,6 +179,11 @@ private:
             nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
 
+        // should be initialized to "now" when bullet is born
+        const long long nMillisecsElapsedSinceLastParticleEmitted =
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now() - bullet.getTimeLastParticleEmitted()).count();
+
         bool b = assertEquals(bullet.getId(), iLastBulletId, "bullet id");
         b &= assertEquals(bullet.getWeaponId(), iWpnId, "weapon id");
         b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId + 1, "global bullet id");
@@ -185,7 +196,7 @@ private:
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(false, bullet.isFragile(), "fragile");
         b &= assertEquals(0.f, bullet.getTravelDistanceMax(), "fDistMax");
-        b &= assertEquals(particleType, bullet.getParticleType(), "particleType");
+        b &= assertBetween(0, 400 /* just some reasonable number here */, nMillisecsElapsedSinceLastParticleEmitted, "time last particle emitted");
         b &= assertEquals(0, bullet.getDamageAp(), "damageAp");
         b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");

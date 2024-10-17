@@ -1,3 +1,4 @@
+#include "WeaponManager.h"
 /*
     ###################################################################################
     WeaponManager.cpp
@@ -183,6 +184,16 @@ const Bullet::ParticleType& Bullet::getParticleType() const
     return m_particleType;
 }
 
+const std::chrono::time_point<std::chrono::steady_clock>& Bullet::getTimeLastParticleEmitted() const
+{
+    return m_timeLastParticleEmitted;
+}
+
+void Bullet::updateTimeLastParticleEmitted()
+{
+    m_timeLastParticleEmitted = std::chrono::steady_clock::now();
+}
+
 TPureFloat Bullet::getTravelDistanceMax() const
 {
     return m_fDistMax;
@@ -268,6 +279,7 @@ void Bullet::init(
     m_fDistMax = fDistMax;
     m_fDistTravelled = 0.f;
     m_particleType = particleType;
+    updateTimeLastParticleEmitted();
     m_nDamageAp = nDamageAp;
     m_nDamageHp = nDamageHp;
     m_fDamageAreaSize = fDamageAreaSize;
