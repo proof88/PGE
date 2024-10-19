@@ -159,6 +159,11 @@ pge_network::PgeNetworkConnectionHandle Bullet::getOwner() const
     return m_connHandle;
 }
 
+const PurePosUpTarget& Bullet::getPut() const
+{
+    return m_put;
+}
+
 TPureFloat Bullet::getSpeed() const
 {
     return m_speed;
@@ -184,14 +189,14 @@ const Bullet::ParticleType& Bullet::getParticleType() const
     return m_particleType;
 }
 
-const std::chrono::time_point<std::chrono::steady_clock>& Bullet::getTimeLastParticleEmitted() const
+int& Bullet::getParticleEmittedCntr()
 {
-    return m_timeLastParticleEmitted;
+    return m_nParticleEmitCntr;
 }
 
-void Bullet::updateTimeLastParticleEmitted()
+const int& Bullet::getParticleEmittedCntr() const
 {
-    m_timeLastParticleEmitted = std::chrono::steady_clock::now();
+    return m_nParticleEmitCntr;
 }
 
 TPureFloat Bullet::getTravelDistanceMax() const
@@ -279,7 +284,7 @@ void Bullet::init(
     m_fDistMax = fDistMax;
     m_fDistTravelled = 0.f;
     m_particleType = particleType;
-    updateTimeLastParticleEmitted();
+    m_nParticleEmitCntr = 0;
     m_nDamageAp = nDamageAp;
     m_nDamageHp = nDamageHp;
     m_fDamageAreaSize = fDamageAreaSize;
