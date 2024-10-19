@@ -6,6 +6,11 @@ My primary game project is [PRooFPS-dd](https://github.com/proof88/PRooFPS-dd).
 
 [Online documentation](https://proof88.github.io/).
 
+PGE uses the following open-source libraries:
+ - [Dear ImGUI](https://github.com/ocornut/imgui) for GUI;
+ - [SoLoud](https://github.com/jarikomppa/soloud) for Audio;
+ - [GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets) for Networking.
+
 ## History
 
 Since the PURE graphics engine is part of the PGE game engine, their versioning is hard-tied and incremented together.  
