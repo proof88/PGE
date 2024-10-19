@@ -414,6 +414,54 @@ void ImGui::BulletTextV(const char* fmt, va_list args)
     RenderText(bb.Min + ImVec2(g.FontSize + style.FramePadding.x * 2, 0.0f), text_begin, text_end, false);
 }
 
+// proof88: copied this from: https://github.com/ocornut/imgui/issues/7660
+// just commented out the focusing color logic because I dont need that.
+// 
+// Crappy HyperLink implemented in a few minutes
+//
+// Does not handle: wordwrap
+// Focus handling is not quite right (focus item stays after clicking with the mouse; ideally would be only outlined if keyboard was used to select/activate most recently)
+// More input options for buttons, etc.
+// Lacks custom style options. uses hard-coded colors
+// Lacks a flag or style/color for "visited" links
+// Lacks disabled link style/color
+// Option to only show underline on hover could be a style? Or part of flags
+bool ImGui::TextHyperLink(const char* label, bool underlineWhenHoveredOnly)
+{
+    const ImU32 linkColor = ImGui::ColorConvertFloat4ToU32({ 0.4f, 0.6f, 0.8f, 1.f });
+    const ImU32 linkHoverColor = ImGui::ColorConvertFloat4ToU32({ 1.f, 1.f, 1.f, 1.f });
+    //const ImU32 linkFocusColor = ImGui::ColorConvertFloat4ToU32({ 0.6f, 0.4f, 0.8f, 1.f });
+
+    const ImGuiID id = ImGui::GetID(label);
+
+    ImGuiWindow* const window = ImGui::GetCurrentWindow();
+    ImDrawList* const draw = ImGui::GetWindowDrawList();
+
+    const ImVec2 pos(window->DC.CursorPos.x, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+    const ImVec2 size = ImGui::CalcTextSize(label);
+    ImRect bb(pos, { pos.x + size.x, pos.y + size.y });
+
+    ImGui::ItemSize(bb, 0.0f);
+    if (!ImGui::ItemAdd(bb, id))
+        return false;
+
+    bool isHovered = false;
+    const bool isClicked = ImGui::ButtonBehavior(bb, id, &isHovered, nullptr);
+    //const bool isFocused = ImGui::IsItemFocused();
+
+    //const ImU32 color = isHovered ? linkHoverColor : isFocused ? linkFocusColor : linkColor;
+    const ImU32 color = isHovered ? linkHoverColor : linkColor;
+
+    draw->AddText(bb.Min, color, label);
+
+    /*if (isFocused)
+        draw->AddRect(bb.Min, bb.Max, color);
+    else*/ if (!underlineWhenHoveredOnly || isHovered)
+        draw->AddLine({ bb.Min.x, bb.Max.y }, bb.Max, color);
+
+    return isClicked;
+}
+
 //-------------------------------------------------------------------------
 // [SECTION] Widgets: Main
 //-------------------------------------------------------------------------

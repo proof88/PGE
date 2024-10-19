@@ -396,6 +396,13 @@ void PGE::PGEimpl::updateMinFrameTime(unsigned int nTargetGameLoopFreq, unsigned
 // ############################### PUBLIC ################################
 
 
+
+const char* PGE::getVersionString()
+{
+    return PGE_VERSION;
+}
+
+
 /**
     Creates and gets the only singleton instance.
 

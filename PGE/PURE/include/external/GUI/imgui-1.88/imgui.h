@@ -503,6 +503,7 @@ namespace ImGui
     IMGUI_API void          LabelTextV(const char* label, const char* fmt, va_list args)    IM_FMTLIST(2);
     IMGUI_API void          BulletText(const char* fmt, ...)                                IM_FMTARGS(1); // shortcut for Bullet()+Text()
     IMGUI_API void          BulletTextV(const char* fmt, va_list args)                      IM_FMTLIST(1);
+    IMGUI_API bool          TextHyperLink(const char* label, bool underlineWhenHoveredOnly = false);       // copied from: https://github.com/ocornut/imgui/issues/7660
 
     // Widgets: Main
     // - Most widgets return true when the value has been changed or when pressed/selected

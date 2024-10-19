@@ -187,6 +187,17 @@ private:
      - https://github.com/cacay/MemoryPool/tree/master
      - https://github.com/lenonk/memorypool
      - https://github.com/danielkrupinski/StringPool?tab=readme-ov-file
+
+    Ideas on improving:
+     - not all iterators can compile currently, as you can see in the unit tests, only begin() and end() are working,
+       but const and reverse iterators don't compile due to warnings and else, need time to fix that in blIteratorAPI.
+
+     - would be nice to implement iterating over only used elems, so that loops would not need to check elem.used(), and
+       this should utilize the elem's next ptr, because currently only the unused elems' next ptr has meaningful value,
+       but the used elem's next ptr is not used for anything, this should be changed to point to next used elem, and then
+       we could have 2 separate lists, 1 with unused elems and 1 with used elems.
+
+     - modify blIteratorAPI so that _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING definition would not be needed.
 */
 template <typename T>
 class PgeObjectPool : public PgeObjectPoolBase
