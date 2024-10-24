@@ -135,7 +135,8 @@ private:
         b &= assertEquals(bFragile, bullet.isFragile(), "fragile");
         b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
         b &= assertEquals(particleType, bullet.getParticleType(), "particleType");
-        b &= assertEquals(0, bullet.getParticleEmittedCntr(), "particle emit cntr");
+        b &= assertEquals(0, bullet.getParticleEmitPerNthPhysicsIterationCntr(), "particle emit per iter cntr");
+        //b &= assertEquals(0, bullet.getParticlesEmittedTotal(), "particles emitted total cntr");
         b &= assertEquals(nDamageAp, bullet.getDamageAp(), "damageAp");
         b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
@@ -186,7 +187,8 @@ private:
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(false, bullet.isFragile(), "fragile");
         b &= assertEquals(0.f, bullet.getTravelDistanceMax(), "fDistMax");
-        b &= assertEquals(0, bullet.getParticleEmittedCntr(), "particle emit cntr");
+        b &= assertEquals(0, bullet.getParticleEmitPerNthPhysicsIterationCntr(), "particle emit cntr");
+        //b &= assertEquals(0, bullet.getParticlesEmittedTotal(), "particles emitted total cntr");
         b &= assertEquals(0, bullet.getDamageAp(), "damageAp");
         b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");

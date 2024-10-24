@@ -175,8 +175,10 @@ public:
     TPureFloat getDrag() const;
     TPureBool isFragile() const;
     const ParticleType& getParticleType() const;
-    int& getParticleEmittedCntr();
-    const int& getParticleEmittedCntr() const;
+    int& getParticleEmitPerNthPhysicsIterationCntr();
+    const int& getParticleEmitPerNthPhysicsIterationCntr() const;
+    int& getParticlesEmittedTotal();
+    const int& getParticlesEmittedTotal() const;
     TPureFloat getTravelDistanceMax() const;
     TPureFloat getTravelledDistance() const;
     int getDamageAp() const;
@@ -246,7 +248,8 @@ private:
     TPureFloat m_fDistMax;                                 /**< Max distance as defined by weapon file. Used by PGE server instance only. */
     TPureFloat m_fDistTravelled;                           /**< Distance travelled so far. Used by both PGE client and server instances. */
     ParticleType m_particleType;                           /**< Emitted particle type. Used by both PGE client and server instances. */
-    int m_nParticleEmitCntr;                               /**< Counter to be used by particle emitter logic. Used by both PGE client and server instances. */
+    int m_nParticleEmitPerNthPhysicsIterCntr;              /**< Counter to be used by particle emitter logic. Used by both PGE client and server instances. */
+    int m_nParticlesEmittedCurrent;                         /**< Counter to be used by particle emitter logic. Used by both PGE client and server instances. */
     int m_nDamageAp;                                       /**< Damage to AP as defined by weapon file. Used by PGE server instance only. */
     int m_nDamageHp;                                       /**< Damage to HP as defined by weapon file. Used by both PGE client and server instances. */
     TPureFloat m_fDamageAreaSize;                          /**< Area damage size as defined by weapon file. Used by both PGE client and server instances. */

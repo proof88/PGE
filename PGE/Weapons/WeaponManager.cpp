@@ -189,14 +189,26 @@ const Bullet::ParticleType& Bullet::getParticleType() const
     return m_particleType;
 }
 
-int& Bullet::getParticleEmittedCntr()
+int& Bullet::getParticleEmitPerNthPhysicsIterationCntr()
 {
-    return m_nParticleEmitCntr;
+    return m_nParticleEmitPerNthPhysicsIterCntr;
 }
 
-const int& Bullet::getParticleEmittedCntr() const
+const int& Bullet::getParticleEmitPerNthPhysicsIterationCntr() const
 {
-    return m_nParticleEmitCntr;
+    return m_nParticleEmitPerNthPhysicsIterCntr;
+}
+
+int& Bullet::getParticlesEmittedTotal()
+{
+    assert(false); // do not use this function for now
+    return m_nParticlesEmittedCurrent;
+}
+
+const int& Bullet::getParticlesEmittedTotal() const
+{
+    assert(false); // do not use this function for now
+    return m_nParticlesEmittedCurrent;
 }
 
 TPureFloat Bullet::getTravelDistanceMax() const
@@ -284,7 +296,8 @@ void Bullet::init(
     m_fDistMax = fDistMax;
     m_fDistTravelled = 0.f;
     m_particleType = particleType;
-    m_nParticleEmitCntr = 0;
+    m_nParticleEmitPerNthPhysicsIterCntr = 0;
+    m_nParticlesEmittedCurrent = 0;
     m_nDamageAp = nDamageAp;
     m_nDamageHp = nDamageHp;
     m_fDamageAreaSize = fDamageAreaSize;
