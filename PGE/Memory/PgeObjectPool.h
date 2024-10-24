@@ -197,6 +197,12 @@ private:
        but the used elem's next ptr is not used for anything, this should be changed to point to next used elem, and then
        we could have 2 separate lists, 1 with unused elems and 1 with used elems.
 
+     - would be useful to have a bool autoReuseOldestElems flag: it would make difference when create() detects no free
+       object is available. If flag is false, simply return without doing anything (current behavior).
+       If true, it would reuse the oldest used elem, updated with the given params.
+       Use case: for example, particles, like rocket smoke: if pool capacity is reached, it would make sense to reuse the
+       oldest emitted smoke objects, instead of not doing anything.
+
      - modify blIteratorAPI so that _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING definition would not be needed.
 */
 template <typename T>
