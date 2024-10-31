@@ -3,16 +3,19 @@
 /*
     ###################################################################################
     UnitTest.h
-    Basic Unit Test class.
+    Basic header-only Unit Test class.
+    Part of the 455-355-7357-88 (ASS-ESS-TEST-88) test suite.
     Made by PR00F88
+    2014
     ###################################################################################
 */
 
-#include <math.h>
+#include <cassert>
+#include <math.h>   // TODO: change it to cmath
 #include <string>
 #include <sstream>
 #include <vector>
-#include <utility>
+#include <utility>  // std::size_t, etc.
 
 /**
     A note/statement about using & bitwise operator on bool operands.
@@ -77,9 +80,11 @@
          write the actual test code into it; note that it won't be invoked if setUp() failed;
     5. - Override TearDown() (optional):
          it will be called by run() right after any test, also if no test was invoked due to setUp() failed;
-    6. - You can create unit-subtests (optional):
+    6. - Override Finalize() (optional):
+         it will be called by run() only once after all tests finished (either successfully or unsuccessfully);
+    7. - You can create unit-subtests (optional):
          use AddSubTest() in Initialize() or the class constructor to add your subtest methods to the test;
-    7. - call run() to run the test(s).
+    8. - call run() to run the test(s).
          If the test fails, use getMessage() to get the cause of the failure.
          Any call to AddToMessage() adds message into the string array returned by getMessage().
 
@@ -153,7 +158,7 @@ public:
 
     virtual ~UnitTest()
     {
-        sMessages.clear();
+        sErrorMessages.clear();
         tSubTests.clear();
     } 
 
@@ -173,18 +178,18 @@ public:
     /**
         @return Error messages after run().
     */
-    const std::vector<std::string>& getMessages() const
+    const std::vector<std::string>& getErrorMessages() const
     {
-        return sMessages;
+        return sErrorMessages;
     }
 
 
     /**
         Adds the given error message to the messages.
     */
-    void AddToMessages(const char* msg)
+    void addToErrorMessages(const char* msg)
     {
-        sMessages.push_back(msg);
+        sErrorMessages.push_back(msg);
     }
 
 
@@ -202,11 +207,11 @@ public:
         {
             if ( msg == NULL )
             {
-                AddToMessages("Assertion failed!");
+                addToErrorMessages("Assertion failed!");
             }
             else
             {
-                AddToMessages(std::string("Assertion failed: ").append(msg).c_str());
+                addToErrorMessages(std::string("Assertion failed: ").append(msg).c_str());
             }
         }
         return statement;
@@ -678,7 +683,7 @@ public:
     */
     bool isPassed() const
     {
-        return bTestRan && sMessages.empty();
+        return bTestRan && sErrorMessages.empty();
     }
 
 
@@ -708,30 +713,31 @@ public:
             bSkipAllSubTests = false;
             if (!testMethod())
             {
-                AddToMessages(std::string("  <").append(sTestFile).append("> failed!").c_str());
+                addToErrorMessages(std::string("  <").append(sTestFile).append("> failed!").c_str());
             }
         }
         else
         {
             bSkipAllSubTests = true;
-            AddToMessages(std::string("  <").append(sTestFile).append("> setUp() failed!").c_str());
+            addToErrorMessages(std::string("  <").append(sTestFile).append("> setUp() failed!").c_str());
         }
         TearDown();
         if ( !bSkipAllSubTests )
         {
             for (std::vector<TUNITSUBTESTFUNCNAMEPAIR>::size_type i = 0; i < tSubTests.size(); ++i)
             {
+                iCurrentSubTest = i;
                 PFNUNITSUBTEST func = tSubTests[i].first;
                 if ( setUp() )
                 {
                     if ( (this->* func)() )
                         ++nSucceededSubTests;
                     else
-                        AddToMessages(std::string("  <").append(tSubTests[i].second).append("> failed!").c_str());
+                        addToErrorMessages(std::string("  <").append(tSubTests[i].second).append("> failed!").c_str());
                 }
                 else
                 {
-                     AddToMessages(std::string("  <").append(tSubTests[i].second).append("> SKIPPED due to setUp() failed!").c_str());
+                     addToErrorMessages(std::string("  <").append(tSubTests[i].second).append("> SKIPPED due to setUp() failed!").c_str());
                 }
                 TearDown();
             }
@@ -757,6 +763,20 @@ public:
     {
         return nSucceededSubTests;
     }        
+
+
+    /**
+        Convenience function for logging/printing, for example, if we want to print the name of the currently running subtest.
+        Being called outside from a subtest can cause either assertion failure (debug build) or thrown exception (release build).
+
+        @return Name of currently running subtest.
+                Valid already in the setUp() and tearDown() phases of the subtest.
+    */
+    const std::string& getCurrentSubTestName() const
+    {
+        assert(iCurrentSubTest < tSubTests.size());
+        tSubTests[iCurrentSubTest].second;
+    }
     
 
 protected:
@@ -792,12 +812,13 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    static UnitTest utInstance;
+    static UnitTest utInstance;   // TODO: why this is here? Not even used?
 
     std::string sTestName;                             /**< Name of the test. */
     std::string sTestFile;                             /**< Testfile name. */
-    std::vector<std::string> sMessages;                /**< Error messages. */
+    std::vector<std::string> sErrorMessages;           /**< Error messages. */
     std::vector<TUNITSUBTESTFUNCNAMEPAIR> tSubTests;   /**< Unit-subtests, not mandatory. */
+    size_t iCurrentSubTest;                            /**< Index of currently running unit-subtest, valid only if tSubTests is NOT empty and a subtest is running. */
     int nSucceededSubTests;                            /**< Number of succeeded unit-subtests. */
     bool bTestRan;                                     /**< Did the test run? */
 
@@ -827,7 +848,8 @@ private:
     void Reset()
     {
         bTestRan = false;
-        sMessages.clear();
+        sErrorMessages.clear();
+        iCurrentSubTest = 0;
         nSucceededSubTests = 0;
     }
 

@@ -73,11 +73,7 @@
 #include "PureWindowTest2.h"
 #include "PureRendererHWfixedPipeTest.h"
 
-#define CON_TITLE "Unit tests for PGE"
-
 using namespace std;
-
-#pragma warning(disable:4100)  /* unreferenced formal parameter */
 
 static CConsole& getConsole()
 {
@@ -86,11 +82,11 @@ static CConsole& getConsole()
 
 /**
     Entry point for UnitTests.
-
-    This directly uses WinAPI.
 */
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInstance*/, _In_ LPSTR /*lpCmdLine*/, _In_ int /*nCmdShow*/)
 {
+    constexpr const char* const CON_TITLE = "Unit tests for PGE";
+
     getConsole().Initialize(CON_TITLE, true);
     //getConsole().SetLoggingState("4LLM0DUL3S", true);
     getConsole().SetErrorsAlwaysOn(false);
@@ -225,9 +221,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
                 getConsole().OLn("Test failed: %s in %s", tests[i]->getName().c_str(), tests[i]->getFile().c_str());
             }
             getConsole().Indent();
-            for (vector<string>::size_type j = 0; j < tests[i]->getMessages().size(); ++j)
+            for (vector<string>::size_type j = 0; j < tests[i]->getErrorMessages().size(); ++j)
             {
-                getConsole().OLn("%s", tests[i]->getMessages()[j].c_str());
+                getConsole().OLn("%s", tests[i]->getErrorMessages()[j].c_str());
             }
             getConsole().Outdent();
             getConsole().EOff();
