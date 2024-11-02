@@ -96,7 +96,7 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     
     vector<std::unique_ptr<UnitTest>> tests;
     
-    //tests.push_back(std::unique_ptr<UnitTest>(new PFLTest));
+    tests.push_back(std::unique_ptr<UnitTest>(new PFLTest));
 
     //tests.push_back(std::unique_ptr<UnitTest>(new PgeObjectPoolTest));
     

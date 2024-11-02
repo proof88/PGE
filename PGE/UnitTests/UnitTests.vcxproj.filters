@@ -52,6 +52,9 @@
     <Filter Include="Header Files\PGE\Audio">
       <UniqueIdentifier>{969e79da-9b10-4c8a-b314-19e981411d19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\455-355-7357-88">
+      <UniqueIdentifier>{6ecc5eb0-8acb-48f5-b724-63cbcbc017f1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\PGE.h">
@@ -77,9 +80,6 @@
     </ClInclude>
     <ClInclude Include="..\PGEWorldWeather.h">
       <Filter>Header Files\PGE</Filter>
-    </ClInclude>
-    <ClInclude Include="UnitTest.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\PGEallHeaders.h">
       <Filter>Header Files\PGE</Filter>
@@ -368,6 +368,15 @@
     </ClInclude>
     <ClInclude Include="PgeObjectPoolTest.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\455-355-7357-88\455-355-7357-88\Benchmarks.h">
+      <Filter>Header Files\455-355-7357-88</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\455-355-7357-88\455-355-7357-88\ScopeBenchmarker.h">
+      <Filter>Header Files\455-355-7357-88</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\455-355-7357-88\455-355-7357-88\UnitTest.h">
+      <Filter>Header Files\455-355-7357-88</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
