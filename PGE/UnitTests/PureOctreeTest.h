@@ -23,14 +23,14 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         engine = NULL;
         om = NULL;
-        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PureOctreeTest::testCtor1);
-        AddSubTest("testCalculateIndex", (PFNUNITSUBTEST) &PureOctreeTest::testCalculateIndex);
-        AddSubTest("testInsertObject", (PFNUNITSUBTEST) &PureOctreeTest::testInsertObject);
-        AddSubTest("testFindObject", (PFNUNITSUBTEST) &PureOctreeTest::testFindObject);
+        addSubTest("testCtor1", (PFNUNITSUBTEST) &PureOctreeTest::testCtor1);
+        addSubTest("testCalculateIndex", (PFNUNITSUBTEST) &PureOctreeTest::testCalculateIndex);
+        addSubTest("testInsertObject", (PFNUNITSUBTEST) &PureOctreeTest::testInsertObject);
+        addSubTest("testFindObject", (PFNUNITSUBTEST) &PureOctreeTest::testFindObject);
         
         // getDepthLevel(), getMaxDepthLevel(), getNodeType(), getChildren() and getObjects() are tested within above functions
     }
@@ -49,13 +49,13 @@ protected:
         return ret;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
-        Finalize();
+        finalize();
         om = NULL;
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         if ( engine )
         {

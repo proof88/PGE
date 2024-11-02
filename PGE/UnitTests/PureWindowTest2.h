@@ -38,60 +38,60 @@ public:
 
     virtual ~PureWindowTest2()
     {
-        Finalize();
+        finalize();
     } // ~PureWindowTest2()
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
-        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PureWindowTest2::testInitialize);
-        AddSubTest("testDeinitialize", (PFNUNITSUBTEST) &PureWindowTest2::testDeinitialize);
-        AddSubTest("testIsInitialized", (PFNUNITSUBTEST) &PureWindowTest2::testIsInitialized);
-        AddSubTest("testResetDefaults", (PFNUNITSUBTEST) &PureWindowTest2::testResetDefaults);
-        AddSubTest("testGetWidth", (PFNUNITSUBTEST) &PureWindowTest2::testGetWidth);
-        AddSubTest("testGetHeight", (PFNUNITSUBTEST) &PureWindowTest2::testGetHeight);
-        AddSubTest("testGetClientWidth", (PFNUNITSUBTEST) &PureWindowTest2::testGetClientWidth);
-        AddSubTest("testGetClientHeight", (PFNUNITSUBTEST) &PureWindowTest2::testGetClientHeight);
-        AddSubTest("testSetWidth", (PFNUNITSUBTEST) &PureWindowTest2::testSetWidth);
-        AddSubTest("testSetHeight", (PFNUNITSUBTEST) &PureWindowTest2::testSetHeight);
-        AddSubTest("testSetClientWidth", (PFNUNITSUBTEST) &PureWindowTest2::testSetClientWidth);
-        AddSubTest("testSetClientHeight", (PFNUNITSUBTEST) &PureWindowTest2::testSetClientHeight);
-        AddSubTest("testGetSideFrameWidth", (PFNUNITSUBTEST) &PureWindowTest2::testGetSideFrameWidth);
-        AddSubTest("testGetBottomFrameHeight", (PFNUNITSUBTEST) &PureWindowTest2::testGetBottomFrameHeight);
-        AddSubTest("testGetCaptionHeight", (PFNUNITSUBTEST) &PureWindowTest2::testGetCaptionHeight);
-        AddSubTest("testGetTitleBarHeight", (PFNUNITSUBTEST) &PureWindowTest2::testGetTitleBarHeight);
-        AddSubTest("testSetX", (PFNUNITSUBTEST) &PureWindowTest2::testSetX);
-        AddSubTest("testSetY", (PFNUNITSUBTEST) &PureWindowTest2::testSetY);
-        AddSubTest("testGetWndHandle", (PFNUNITSUBTEST) &PureWindowTest2::testGetWndHandle);
-        AddSubTest("testGetWndDC", (PFNUNITSUBTEST) &PureWindowTest2::testGetWndDC);
-        AddSubTest("testSetActive", (PFNUNITSUBTEST) &PureWindowTest2::testSetActive);
-        AddSubTest("testSetTopMost", (PFNUNITSUBTEST) &PureWindowTest2::testSetTopMost);
-        AddSubTest("testSetCaption", (PFNUNITSUBTEST) &PureWindowTest2::testSetCaption);
-        AddSubTest("testSetResizableH", (PFNUNITSUBTEST) &PureWindowTest2::testSetResizableH);
-        AddSubTest("testSetResizableV", (PFNUNITSUBTEST) &PureWindowTest2::testSetResizableV);
-        AddSubTest("testSetResizable", (PFNUNITSUBTEST) &PureWindowTest2::testSetResizable);
-        AddSubTest("testSetBorder", (PFNUNITSUBTEST) &PureWindowTest2::testSetBorder);
-        AddSubTest("testSetSysMenu", (PFNUNITSUBTEST) &PureWindowTest2::testSetSysMenu);
-        AddSubTest("testSetMinButton", (PFNUNITSUBTEST) &PureWindowTest2::testSetMinButton);
-        AddSubTest("testSetMaxButton", (PFNUNITSUBTEST) &PureWindowTest2::testSetMaxButton);
-        AddSubTest("testSetEnabled", (PFNUNITSUBTEST) &PureWindowTest2::testSetEnabled);
-        AddSubTest("testSetWindowProc", (PFNUNITSUBTEST) &PureWindowTest2::testSetWindowProc);
-        AddSubTest("testProcessMessages", (PFNUNITSUBTEST) &PureWindowTest2::testProcessMessages);
-        AddSubTest("testHasCloseRequest", (PFNUNITSUBTEST) &PureWindowTest2::testHasCloseRequest);
-        AddSubTest("testSetAutoRedrawAllOnPosChange", (PFNUNITSUBTEST) &PureWindowTest2::testSetAutoRedrawAllOnPosChange);
-        AddSubTest("testSetAutoCleanupOnQuit", (PFNUNITSUBTEST) &PureWindowTest2::testSetAutoCleanupOnQuit);
-        AddSubTest("testSetAutoCameraWarningState", (PFNUNITSUBTEST) &PureWindowTest2::testSetAutoCameraWarningState);
-        AddSubTest("testShow", (PFNUNITSUBTEST) &PureWindowTest2::testShow);
-        AddSubTest("testShowFull", (PFNUNITSUBTEST) &PureWindowTest2::testShowFull);
-        AddSubTest("testHide", (PFNUNITSUBTEST) &PureWindowTest2::testHide);
-        AddSubTest("testMinimize", (PFNUNITSUBTEST) &PureWindowTest2::testMinimize);
-        AddSubTest("testMaximize", (PFNUNITSUBTEST) &PureWindowTest2::testMaximize);
-        AddSubTest("testRestore", (PFNUNITSUBTEST) &PureWindowTest2::testRestore);
-        AddSubTest("testClose", (PFNUNITSUBTEST) &PureWindowTest2::testClose);
-        AddSubTest("testSetCursorVisible", (PFNUNITSUBTEST) &PureWindowTest2::testSetCursorVisible);
-        AddSubTest("testWriteSettings", (PFNUNITSUBTEST) &PureWindowTest2::testWriteSettings);
+        addSubTest("testInitialize", (PFNUNITSUBTEST) &PureWindowTest2::testInitialize);
+        addSubTest("testDeinitialize", (PFNUNITSUBTEST) &PureWindowTest2::testDeinitialize);
+        addSubTest("testIsInitialized", (PFNUNITSUBTEST) &PureWindowTest2::testIsInitialized);
+        addSubTest("testResetDefaults", (PFNUNITSUBTEST) &PureWindowTest2::testResetDefaults);
+        addSubTest("testGetWidth", (PFNUNITSUBTEST) &PureWindowTest2::testGetWidth);
+        addSubTest("testGetHeight", (PFNUNITSUBTEST) &PureWindowTest2::testGetHeight);
+        addSubTest("testGetClientWidth", (PFNUNITSUBTEST) &PureWindowTest2::testGetClientWidth);
+        addSubTest("testGetClientHeight", (PFNUNITSUBTEST) &PureWindowTest2::testGetClientHeight);
+        addSubTest("testSetWidth", (PFNUNITSUBTEST) &PureWindowTest2::testSetWidth);
+        addSubTest("testSetHeight", (PFNUNITSUBTEST) &PureWindowTest2::testSetHeight);
+        addSubTest("testSetClientWidth", (PFNUNITSUBTEST) &PureWindowTest2::testSetClientWidth);
+        addSubTest("testSetClientHeight", (PFNUNITSUBTEST) &PureWindowTest2::testSetClientHeight);
+        addSubTest("testGetSideFrameWidth", (PFNUNITSUBTEST) &PureWindowTest2::testGetSideFrameWidth);
+        addSubTest("testGetBottomFrameHeight", (PFNUNITSUBTEST) &PureWindowTest2::testGetBottomFrameHeight);
+        addSubTest("testGetCaptionHeight", (PFNUNITSUBTEST) &PureWindowTest2::testGetCaptionHeight);
+        addSubTest("testGetTitleBarHeight", (PFNUNITSUBTEST) &PureWindowTest2::testGetTitleBarHeight);
+        addSubTest("testSetX", (PFNUNITSUBTEST) &PureWindowTest2::testSetX);
+        addSubTest("testSetY", (PFNUNITSUBTEST) &PureWindowTest2::testSetY);
+        addSubTest("testGetWndHandle", (PFNUNITSUBTEST) &PureWindowTest2::testGetWndHandle);
+        addSubTest("testGetWndDC", (PFNUNITSUBTEST) &PureWindowTest2::testGetWndDC);
+        addSubTest("testSetActive", (PFNUNITSUBTEST) &PureWindowTest2::testSetActive);
+        addSubTest("testSetTopMost", (PFNUNITSUBTEST) &PureWindowTest2::testSetTopMost);
+        addSubTest("testSetCaption", (PFNUNITSUBTEST) &PureWindowTest2::testSetCaption);
+        addSubTest("testSetResizableH", (PFNUNITSUBTEST) &PureWindowTest2::testSetResizableH);
+        addSubTest("testSetResizableV", (PFNUNITSUBTEST) &PureWindowTest2::testSetResizableV);
+        addSubTest("testSetResizable", (PFNUNITSUBTEST) &PureWindowTest2::testSetResizable);
+        addSubTest("testSetBorder", (PFNUNITSUBTEST) &PureWindowTest2::testSetBorder);
+        addSubTest("testSetSysMenu", (PFNUNITSUBTEST) &PureWindowTest2::testSetSysMenu);
+        addSubTest("testSetMinButton", (PFNUNITSUBTEST) &PureWindowTest2::testSetMinButton);
+        addSubTest("testSetMaxButton", (PFNUNITSUBTEST) &PureWindowTest2::testSetMaxButton);
+        addSubTest("testSetEnabled", (PFNUNITSUBTEST) &PureWindowTest2::testSetEnabled);
+        addSubTest("testSetWindowProc", (PFNUNITSUBTEST) &PureWindowTest2::testSetWindowProc);
+        addSubTest("testProcessMessages", (PFNUNITSUBTEST) &PureWindowTest2::testProcessMessages);
+        addSubTest("testHasCloseRequest", (PFNUNITSUBTEST) &PureWindowTest2::testHasCloseRequest);
+        addSubTest("testSetAutoRedrawAllOnPosChange", (PFNUNITSUBTEST) &PureWindowTest2::testSetAutoRedrawAllOnPosChange);
+        addSubTest("testSetAutoCleanupOnQuit", (PFNUNITSUBTEST) &PureWindowTest2::testSetAutoCleanupOnQuit);
+        addSubTest("testSetAutoCameraWarningState", (PFNUNITSUBTEST) &PureWindowTest2::testSetAutoCameraWarningState);
+        addSubTest("testShow", (PFNUNITSUBTEST) &PureWindowTest2::testShow);
+        addSubTest("testShowFull", (PFNUNITSUBTEST) &PureWindowTest2::testShowFull);
+        addSubTest("testHide", (PFNUNITSUBTEST) &PureWindowTest2::testHide);
+        addSubTest("testMinimize", (PFNUNITSUBTEST) &PureWindowTest2::testMinimize);
+        addSubTest("testMaximize", (PFNUNITSUBTEST) &PureWindowTest2::testMaximize);
+        addSubTest("testRestore", (PFNUNITSUBTEST) &PureWindowTest2::testRestore);
+        addSubTest("testClose", (PFNUNITSUBTEST) &PureWindowTest2::testClose);
+        addSubTest("testSetCursorVisible", (PFNUNITSUBTEST) &PureWindowTest2::testSetCursorVisible);
+        addSubTest("testWriteSettings", (PFNUNITSUBTEST) &PureWindowTest2::testWriteSettings);
     }
 
     virtual bool setUp() override
@@ -99,12 +99,12 @@ protected:
         return assertTrue(wnd.initialize(WINDOW_WIDTH, WINDOW_HEIGHT, false, "alma"), "wnd initialize");
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
-        Finalize();
+        finalize();
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         wnd.Deinitialize();
         CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", false);

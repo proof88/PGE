@@ -34,22 +34,22 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3D::getLoggerModuleName(), true);
         engine = NULL;
         mm = NULL;
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testCtor);
-        AddSubTest("testIsInitialized", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testIsInitialized);
-        AddSubTest("testIsMinimalIndexStorageEnabled", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testIsMinimalIndexStorageEnabled);
-        AddSubTest("testSetMinimalIndexStorageEnabled", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testSetMinimalIndexStorageEnabled);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testCtor);
+        addSubTest("testIsInitialized", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testIsInitialized);
+        addSubTest("testIsMinimalIndexStorageEnabled", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testIsMinimalIndexStorageEnabled);
+        addSubTest("testSetMinimalIndexStorageEnabled", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testSetMinimalIndexStorageEnabled);
         
-        AddSubTest("testCreatePlane", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testCreatePlane);
-        AddSubTest("testCreateBox", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testCreateBox);
-        AddSubTest("testCreateCube", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testCreateCube);
-        AddSubTest("testCreateFromFile", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testCreateFromFile);
-        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testWriteList);
+        addSubTest("testCreatePlane", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testCreatePlane);
+        addSubTest("testCreateBox", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testCreateBox);
+        addSubTest("testCreateCube", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testCreateCube);
+        addSubTest("testCreateFromFile", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testCreateFromFile);
+        addSubTest("testWriteList", (PFNUNITSUBTEST) &PureMesh3DManagerTest::testWriteList);
     }
 
     virtual bool setUp() override
@@ -66,13 +66,13 @@ protected:
         return ret;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
-        Finalize();
+        finalize();
         mm = NULL;
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         if ( engine )
         {

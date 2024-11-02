@@ -32,62 +32,62 @@ public:
 
     virtual ~PureHwVideoTest()
     {
-        Finalize();   
+        finalize();   
     }
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         engine = NULL;
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureHwVideoTest::testCtor);
-        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PureHwVideoTest::testInitialize);
-        AddSubTest("testDeinitialize", (PFNUNITSUBTEST) &PureHwVideoTest::testDeinitialize);
-        AddSubTest("testIsExtensionSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsExtensionSupported);
-        AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PureHwVideoTest::testGetUsedVideoMemory);
-        AddSubTest("testGetUsedTextureMemory", (PFNUNITSUBTEST) &PureHwVideoTest::testGetUsedTextureMemory);
-        AddSubTest("testGetColorBufferPixelCount", (PFNUNITSUBTEST) &PureHwVideoTest::testGetColorBufferPixelCount);
-        AddSubTest("testGetColorBufferSize", (PFNUNITSUBTEST) &PureHwVideoTest::testGetColorBufferSize);
-        AddSubTest("testGetDepthBufferSize", (PFNUNITSUBTEST) &PureHwVideoTest::testGetDepthBufferSize);
-        AddSubTest("testGetStencilBufferSize", (PFNUNITSUBTEST) &PureHwVideoTest::testGetStencilBufferSize);
-        AddSubTest("testGetSampleBufferSize", (PFNUNITSUBTEST) &PureHwVideoTest::testGetSampleBufferSize);
-        AddSubTest("testGetUsedFrameBufferMemory", (PFNUNITSUBTEST) &PureHwVideoTest::testGetUsedFrameBufferMemory);
-        AddSubTest("testIsVSyncSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsVSyncSupported);
-        AddSubTest("testIsMultiTexturingSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsMultiTexturingSupported);
-        AddSubTest("testGetTextureUnitsCount", (PFNUNITSUBTEST) &PureHwVideoTest::testGetTextureUnitsCount);
-        AddSubTest("testIsHardwareMipMapGenerationSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsHardwareMipMapGenerationSupported);
-        AddSubTest("testIsNativeDIBFormatSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsNativeDIBFormatSupported);
-        AddSubTest("testIsAnisoFilteringSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsAnisoFilteringSupported);
-        AddSubTest("testGetMaximumAnisoFiltering", (PFNUNITSUBTEST) &PureHwVideoTest::testGetMaximumAnisoFiltering);
-        AddSubTest("testIsTextureCompressionSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsTextureCompressionSupported);
-        AddSubTest("testIsVTCSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsVTCSupported);
-        AddSubTest("testIs3DcSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIs3DcSupported);
-        AddSubTest("testIsRGTCSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsRGTCSupported);
-        AddSubTest("testIsLATCCSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsLATCSupported);
-        AddSubTest("testIsAdvancedPixelFormatSetSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsAdvancedPixelFormatSetSupported);
-        AddSubTest("testIsFullSceneAntiAliasingSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsFullSceneAntiAliasingSupported);
-        AddSubTest("testGetMaxSamplesCount", (PFNUNITSUBTEST) &PureHwVideoTest::testGetMaxSamplesCount);
-        AddSubTest("testIsSamplesSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsSamplesSupported);
-        AddSubTest("testIsMultiDrawArraysSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsMultiDrawArraysSupported);
-        AddSubTest("testIsDrawRangeElementsSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsDrawRangeElementsSupported);
-        AddSubTest("testIsCompiledVertexArraySupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsCompiledVertexArraySupported);
-        AddSubTest("testIsNVVertexArrayRangeSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsNVVertexArrayRangeSupported);
-        AddSubTest("testIsNVElementArraySupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsNVElementArraySupported);
-        AddSubTest("testIsATIVertexArrayObjectSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsATIVertexArrayObjectSupported);
-        AddSubTest("testIsATIMapObjectBufferSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsATIMapObjectBufferSupported);
-        AddSubTest("testIsATIElementArraySupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsATIElementArraySupported);
-        AddSubTest("testIsVertexBufferObjectSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsVertexBufferObjectSupported);
-        AddSubTest("testIsATITruFormSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsATITruFormSupported);
-        AddSubTest("testIsHwOcclusionQuerySupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsHwOcclusionQuerySupported);
-        AddSubTest("testIsHwBooleanOcclusionQuerySupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsHwBooleanOcclusionQuerySupported);
-        AddSubTest("testGetVideocardOSName", (PFNUNITSUBTEST) &PureHwVideoTest::testGetVideocardOSName);
-        AddSubTest("testGetVideocardOGLName", (PFNUNITSUBTEST) &PureHwVideoTest::testGetVideocardOGLName);
-        AddSubTest("testGetVideocardOGLVersion", (PFNUNITSUBTEST) &PureHwVideoTest::testGetVideocardOGLVersion);
-        AddSubTest("testGetVideocardOGLVendor", (PFNUNITSUBTEST) &PureHwVideoTest::testGetVideocardOGLVendor);
-        AddSubTest("testGetVideocardOGLFeatureList", (PFNUNITSUBTEST) &PureHwVideoTest::testGetVideocardOGLFeatureList);
-        AddSubTest("testGetVideocardWGLFeatureList", (PFNUNITSUBTEST) &PureHwVideoTest::testGetVideocardWGLFeatureList);
-        AddSubTest("testWriteStats", (PFNUNITSUBTEST) &PureHwVideoTest::testWriteStats);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureHwVideoTest::testCtor);
+        addSubTest("testInitialize", (PFNUNITSUBTEST) &PureHwVideoTest::testInitialize);
+        addSubTest("testDeinitialize", (PFNUNITSUBTEST) &PureHwVideoTest::testDeinitialize);
+        addSubTest("testIsExtensionSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsExtensionSupported);
+        addSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PureHwVideoTest::testGetUsedVideoMemory);
+        addSubTest("testGetUsedTextureMemory", (PFNUNITSUBTEST) &PureHwVideoTest::testGetUsedTextureMemory);
+        addSubTest("testGetColorBufferPixelCount", (PFNUNITSUBTEST) &PureHwVideoTest::testGetColorBufferPixelCount);
+        addSubTest("testGetColorBufferSize", (PFNUNITSUBTEST) &PureHwVideoTest::testGetColorBufferSize);
+        addSubTest("testGetDepthBufferSize", (PFNUNITSUBTEST) &PureHwVideoTest::testGetDepthBufferSize);
+        addSubTest("testGetStencilBufferSize", (PFNUNITSUBTEST) &PureHwVideoTest::testGetStencilBufferSize);
+        addSubTest("testGetSampleBufferSize", (PFNUNITSUBTEST) &PureHwVideoTest::testGetSampleBufferSize);
+        addSubTest("testGetUsedFrameBufferMemory", (PFNUNITSUBTEST) &PureHwVideoTest::testGetUsedFrameBufferMemory);
+        addSubTest("testIsVSyncSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsVSyncSupported);
+        addSubTest("testIsMultiTexturingSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsMultiTexturingSupported);
+        addSubTest("testGetTextureUnitsCount", (PFNUNITSUBTEST) &PureHwVideoTest::testGetTextureUnitsCount);
+        addSubTest("testIsHardwareMipMapGenerationSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsHardwareMipMapGenerationSupported);
+        addSubTest("testIsNativeDIBFormatSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsNativeDIBFormatSupported);
+        addSubTest("testIsAnisoFilteringSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsAnisoFilteringSupported);
+        addSubTest("testGetMaximumAnisoFiltering", (PFNUNITSUBTEST) &PureHwVideoTest::testGetMaximumAnisoFiltering);
+        addSubTest("testIsTextureCompressionSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsTextureCompressionSupported);
+        addSubTest("testIsVTCSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsVTCSupported);
+        addSubTest("testIs3DcSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIs3DcSupported);
+        addSubTest("testIsRGTCSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsRGTCSupported);
+        addSubTest("testIsLATCCSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsLATCSupported);
+        addSubTest("testIsAdvancedPixelFormatSetSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsAdvancedPixelFormatSetSupported);
+        addSubTest("testIsFullSceneAntiAliasingSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsFullSceneAntiAliasingSupported);
+        addSubTest("testGetMaxSamplesCount", (PFNUNITSUBTEST) &PureHwVideoTest::testGetMaxSamplesCount);
+        addSubTest("testIsSamplesSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsSamplesSupported);
+        addSubTest("testIsMultiDrawArraysSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsMultiDrawArraysSupported);
+        addSubTest("testIsDrawRangeElementsSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsDrawRangeElementsSupported);
+        addSubTest("testIsCompiledVertexArraySupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsCompiledVertexArraySupported);
+        addSubTest("testIsNVVertexArrayRangeSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsNVVertexArrayRangeSupported);
+        addSubTest("testIsNVElementArraySupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsNVElementArraySupported);
+        addSubTest("testIsATIVertexArrayObjectSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsATIVertexArrayObjectSupported);
+        addSubTest("testIsATIMapObjectBufferSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsATIMapObjectBufferSupported);
+        addSubTest("testIsATIElementArraySupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsATIElementArraySupported);
+        addSubTest("testIsVertexBufferObjectSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsVertexBufferObjectSupported);
+        addSubTest("testIsATITruFormSupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsATITruFormSupported);
+        addSubTest("testIsHwOcclusionQuerySupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsHwOcclusionQuerySupported);
+        addSubTest("testIsHwBooleanOcclusionQuerySupported", (PFNUNITSUBTEST) &PureHwVideoTest::testIsHwBooleanOcclusionQuerySupported);
+        addSubTest("testGetVideocardOSName", (PFNUNITSUBTEST) &PureHwVideoTest::testGetVideocardOSName);
+        addSubTest("testGetVideocardOGLName", (PFNUNITSUBTEST) &PureHwVideoTest::testGetVideocardOGLName);
+        addSubTest("testGetVideocardOGLVersion", (PFNUNITSUBTEST) &PureHwVideoTest::testGetVideocardOGLVersion);
+        addSubTest("testGetVideocardOGLVendor", (PFNUNITSUBTEST) &PureHwVideoTest::testGetVideocardOGLVendor);
+        addSubTest("testGetVideocardOGLFeatureList", (PFNUNITSUBTEST) &PureHwVideoTest::testGetVideocardOGLFeatureList);
+        addSubTest("testGetVideocardWGLFeatureList", (PFNUNITSUBTEST) &PureHwVideoTest::testGetVideocardWGLFeatureList);
+        addSubTest("testWriteStats", (PFNUNITSUBTEST) &PureHwVideoTest::testWriteStats);
     }
 
     virtual bool setUp() override
@@ -102,12 +102,12 @@ protected:
         return ret;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
         
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         if ( engine )
         {

@@ -25,7 +25,7 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(Bullet::getLoggerModuleName(), true);
 
@@ -36,19 +36,19 @@ protected:
 
         Bullet::resetGlobalBulletId();
 
-        AddSubTest("test_bullet_ctor_server_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_good);
-        AddSubTest("test_bullet_ctor_client_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_good);
+        addSubTest("test_bullet_ctor_server_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_good);
+        addSubTest("test_bullet_ctor_client_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_good);
         // TODO: add test for copy ctor and assignment operator
-        AddSubTest("test_reset_global_bullet_id", (PFNUNITSUBTEST)&PGEBulletTest::test_reset_global_bullet_id);
-        AddSubTest("test_bullet_ctor_server_does_not_accept_0_weapon_id", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_does_not_accept_0_weapon_id);
-        AddSubTest("test_bullet_ctor_client_does_not_accept_0_weapon_id", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_does_not_accept_0_weapon_id);
-        AddSubTest("test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag",
+        addSubTest("test_reset_global_bullet_id", (PFNUNITSUBTEST)&PGEBulletTest::test_reset_global_bullet_id);
+        addSubTest("test_bullet_ctor_server_does_not_accept_0_weapon_id", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_does_not_accept_0_weapon_id);
+        addSubTest("test_bullet_ctor_client_does_not_accept_0_weapon_id", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_does_not_accept_0_weapon_id);
+        addSubTest("test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag",
             (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
-        AddSubTest("test_bullet_ctor_damage_area_size_cannot_be_negative",
+        addSubTest("test_bullet_ctor_damage_area_size_cannot_be_negative",
             (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_damage_area_size_cannot_be_negative);
-        AddSubTest("test_bullet_ctor_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse",
+        addSubTest("test_bullet_ctor_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse",
             (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse);
-        AddSubTest("test_bullet_update_updates_position", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_update_updates_position);
+        addSubTest("test_bullet_update_updates_position", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_update_updates_position);
     }
 
     virtual bool setUp() override
@@ -56,11 +56,11 @@ protected:
         return assertTrue(engine && engine->isInitialized());
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         Bullet::destroyReferenceObject();
         if (engine)

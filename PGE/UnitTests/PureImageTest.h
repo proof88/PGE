@@ -53,7 +53,7 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         /*CConsole::getConsoleInstance().SetLoggingState(PureImage::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(PureImageManager::getLoggerModuleName(), true);*/
@@ -66,29 +66,29 @@ protected:
         img128x128x4  = im->createFromFile(BMP128x128x4);
         img128x128x1  = im->createFromFile(BMP128x128x1);
 
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureImageTest::testCtor);
-        AddSubTest("testDtor", (PFNUNITSUBTEST) &PureImageTest::testDtor);
-        AddSubTest("testGetName", (PFNUNITSUBTEST) &PureImageTest::testGetName);
-        AddSubTest("testGetWidth", (PFNUNITSUBTEST) &PureImageTest::testGetWidth);
-        AddSubTest("testGetHeight", (PFNUNITSUBTEST) &PureImageTest::testGetHeight);
-        AddSubTest("testGetFilename", (PFNUNITSUBTEST) &PureImageTest::testGetFilename);
-        AddSubTest("testGetBitsPerPixels", (PFNUNITSUBTEST) &PureImageTest::testGetBitsPerPixels);
-        AddSubTest("testGetPixelComponentOrder", (PFNUNITSUBTEST) &PureImageTest::testGetPixelComponentOrder);
-        AddSubTest("testGetOriginalPixelComponentOrder", (PFNUNITSUBTEST) &PureImageTest::testGetOriginalPixelComponentOrder);
-        AddSubTest("testSetPixelComponentOrderRGB", (PFNUNITSUBTEST) &PureImageTest::testSetPixelComponentOrderRGB);
-        AddSubTest("testSetPixelComponentOrderRBG", (PFNUNITSUBTEST) &PureImageTest::testSetPixelComponentOrderRBG);
-        AddSubTest("testSetPixelComponentOrderGRB", (PFNUNITSUBTEST) &PureImageTest::testSetPixelComponentOrderGRB);
-        AddSubTest("testSetPixelComponentOrderGBR", (PFNUNITSUBTEST) &PureImageTest::testSetPixelComponentOrderGBR);
-        AddSubTest("testSetPixelComponentOrderBGR", (PFNUNITSUBTEST) &PureImageTest::testSetPixelComponentOrderBGR);
-        AddSubTest("testSetPixelComponentOrderBRG", (PFNUNITSUBTEST) &PureImageTest::testSetPixelComponentOrderBRG);
-        AddSubTest("testGetPixel", (PFNUNITSUBTEST) &PureImageTest::testGetPixel);
-        AddSubTest("testSetPixel1", (PFNUNITSUBTEST) &PureImageTest::testSetPixel1);
-        AddSubTest("testSetPixel2", (PFNUNITSUBTEST) &PureImageTest::testSetPixel2);
-        AddSubTest("testIsChanged", (PFNUNITSUBTEST) &PureImageTest::testIsChanged);
-        AddSubTest("testGetPixels", (PFNUNITSUBTEST) &PureImageTest::testGetPixels);
-        AddSubTest("testGetPixelsSize", (PFNUNITSUBTEST) &PureImageTest::testGetPixelsSize);
-        AddSubTest("testFlushResources", (PFNUNITSUBTEST) &PureImageTest::testFlushResources);
-        AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureImageTest::testGetUsedSystemMemory);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureImageTest::testCtor);
+        addSubTest("testDtor", (PFNUNITSUBTEST) &PureImageTest::testDtor);
+        addSubTest("testGetName", (PFNUNITSUBTEST) &PureImageTest::testGetName);
+        addSubTest("testGetWidth", (PFNUNITSUBTEST) &PureImageTest::testGetWidth);
+        addSubTest("testGetHeight", (PFNUNITSUBTEST) &PureImageTest::testGetHeight);
+        addSubTest("testGetFilename", (PFNUNITSUBTEST) &PureImageTest::testGetFilename);
+        addSubTest("testGetBitsPerPixels", (PFNUNITSUBTEST) &PureImageTest::testGetBitsPerPixels);
+        addSubTest("testGetPixelComponentOrder", (PFNUNITSUBTEST) &PureImageTest::testGetPixelComponentOrder);
+        addSubTest("testGetOriginalPixelComponentOrder", (PFNUNITSUBTEST) &PureImageTest::testGetOriginalPixelComponentOrder);
+        addSubTest("testSetPixelComponentOrderRGB", (PFNUNITSUBTEST) &PureImageTest::testSetPixelComponentOrderRGB);
+        addSubTest("testSetPixelComponentOrderRBG", (PFNUNITSUBTEST) &PureImageTest::testSetPixelComponentOrderRBG);
+        addSubTest("testSetPixelComponentOrderGRB", (PFNUNITSUBTEST) &PureImageTest::testSetPixelComponentOrderGRB);
+        addSubTest("testSetPixelComponentOrderGBR", (PFNUNITSUBTEST) &PureImageTest::testSetPixelComponentOrderGBR);
+        addSubTest("testSetPixelComponentOrderBGR", (PFNUNITSUBTEST) &PureImageTest::testSetPixelComponentOrderBGR);
+        addSubTest("testSetPixelComponentOrderBRG", (PFNUNITSUBTEST) &PureImageTest::testSetPixelComponentOrderBRG);
+        addSubTest("testGetPixel", (PFNUNITSUBTEST) &PureImageTest::testGetPixel);
+        addSubTest("testSetPixel1", (PFNUNITSUBTEST) &PureImageTest::testSetPixel1);
+        addSubTest("testSetPixel2", (PFNUNITSUBTEST) &PureImageTest::testSetPixel2);
+        addSubTest("testIsChanged", (PFNUNITSUBTEST) &PureImageTest::testIsChanged);
+        addSubTest("testGetPixels", (PFNUNITSUBTEST) &PureImageTest::testGetPixels);
+        addSubTest("testGetPixelsSize", (PFNUNITSUBTEST) &PureImageTest::testGetPixelsSize);
+        addSubTest("testFlushResources", (PFNUNITSUBTEST) &PureImageTest::testFlushResources);
+        addSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureImageTest::testGetUsedSystemMemory);
     }
 
     virtual bool setUp() override
@@ -97,7 +97,7 @@ protected:
         return assertNotNull(img128x128x24, "img128x128x24");
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
         if ( img128x128x24 )
         {
@@ -106,7 +106,7 @@ protected:
         }
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PureImage::getLoggerModuleName(), false);
         CConsole::getConsoleInstance().SetLoggingState(PureImageManager::getLoggerModuleName(), false);    

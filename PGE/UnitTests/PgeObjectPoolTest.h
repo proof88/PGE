@@ -103,29 +103,29 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PgeObjectPool<int>::getLoggerModuleName(), true);
 
-        AddSubTest("test_ctor_without_args", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_ctor_without_args);
-        AddSubTest("test_ctor_with_args_positive", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_ctor_with_args_positive);
-        AddSubTest("test_ctor_with_args_negative", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_ctor_with_args_negative);
-        AddSubTest("test_deallocate_normal", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_deallocate_normal);
-        AddSubTest("test_deallocate_degen", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_deallocate_degen);
-        AddSubTest("test_create_without_parameters", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_create_without_parameters);
-        AddSubTest("test_create_with_parameters", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_create_with_parameters);
-        AddSubTest("test_remove_func_of_pool", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_remove_func_of_pool);
-        AddSubTest("test_remove_func_of_object", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_remove_func_of_object);
-        AddSubTest("test_create_and_remove_invoke_onsetused", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_create_and_remove_invoke_onsetused);
-        AddSubTest("test_directly_exposed_iterators", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_directly_exposed_iterators);
-        //AddSubTest("test_additional_iterators", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_additional_iterators);
-        AddSubTest("test_clear", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_clear);
-        AddSubTest("test_reserve_empty", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_reserve_empty);
-        AddSubTest("test_reserve_positive", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_reserve_positive);
-        AddSubTest("test_reserve_negative", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_reserve_negative);
-        AddSubTest("test_erase_positive", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_erase_positive);
-        AddSubTest("test_erase_negative", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_erase_negative);
-        AddSubTest("test_erase_and_clear_invoke_onsetused", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_erase_and_clear_invoke_onsetused);
+        addSubTest("test_ctor_without_args", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_ctor_without_args);
+        addSubTest("test_ctor_with_args_positive", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_ctor_with_args_positive);
+        addSubTest("test_ctor_with_args_negative", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_ctor_with_args_negative);
+        addSubTest("test_deallocate_normal", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_deallocate_normal);
+        addSubTest("test_deallocate_degen", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_deallocate_degen);
+        addSubTest("test_create_without_parameters", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_create_without_parameters);
+        addSubTest("test_create_with_parameters", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_create_with_parameters);
+        addSubTest("test_remove_func_of_pool", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_remove_func_of_pool);
+        addSubTest("test_remove_func_of_object", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_remove_func_of_object);
+        addSubTest("test_create_and_remove_invoke_onsetused", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_create_and_remove_invoke_onsetused);
+        addSubTest("test_directly_exposed_iterators", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_directly_exposed_iterators);
+        //addSubTest("test_additional_iterators", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_additional_iterators);
+        addSubTest("test_clear", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_clear);
+        addSubTest("test_reserve_empty", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_reserve_empty);
+        addSubTest("test_reserve_positive", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_reserve_positive);
+        addSubTest("test_reserve_negative", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_reserve_negative);
+        addSubTest("test_erase_positive", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_erase_positive);
+        addSubTest("test_erase_negative", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_erase_negative);
+        addSubTest("test_erase_and_clear_invoke_onsetused", (PFNUNITSUBTEST)&PgeObjectPoolTest::test_erase_and_clear_invoke_onsetused);
     }
 
     virtual bool setUp() override
@@ -133,11 +133,11 @@ protected:
         return true;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PgeObjectPool<int>::getLoggerModuleName(), false);
     }

@@ -43,42 +43,42 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         screensvrOrig = scr.isScreensaverEnabled();
         monitorpwrOrig = scr.isMonitorPowersaveEnabled();
         standbyOrig = scr.isStandbyEnabled();
         vsyncOrig = scr.isVSyncEnabled();
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureScreenTest::testCtor);
-        AddSubTest("testApplyDisplaySettings", (PFNUNITSUBTEST) &PureScreenTest::testApplyDisplaySettings);
-        AddSubTest("testResetDisplaySettings", (PFNUNITSUBTEST) &PureScreenTest::testResetDisplaySettings);
-        AddSubTest("testIsInitialized1", (PFNUNITSUBTEST) &PureScreenTest::testIsInitialized1);
-        AddSubTest("testSetResolution1", (PFNUNITSUBTEST) &PureScreenTest::testSetResolution1);
-        AddSubTest("testSetFullScreened1", (PFNUNITSUBTEST) &PureScreenTest::testSetFullScreened1);
-        AddSubTest("testSetFreq1", (PFNUNITSUBTEST) &PureScreenTest::testSetFreq1);
-        AddSubTest("testSetColorBits1", (PFNUNITSUBTEST) &PureScreenTest::testSetColorBits1);
-        AddSubTest("testSetDepthBit1s", (PFNUNITSUBTEST) &PureScreenTest::testSetDepthBits1);
-        AddSubTest("testSetStencilBits1", (PFNUNITSUBTEST) &PureScreenTest::testSetStencilBits1);
-        AddSubTest("testIsInitialized2", (PFNUNITSUBTEST) &PureScreenTest::testIsInitialized2);
-        AddSubTest("testSetResolution2", (PFNUNITSUBTEST) &PureScreenTest::testSetResolution2);
-        AddSubTest("testSetFullscreened2", (PFNUNITSUBTEST) &PureScreenTest::testSetFullscreened2);
-        AddSubTest("testSetFreq2", (PFNUNITSUBTEST) &PureScreenTest::testSetFreq2);
-        AddSubTest("testSetColorBits2", (PFNUNITSUBTEST) &PureScreenTest::testSetColorBits2);
-        AddSubTest("testSetDepthBits2", (PFNUNITSUBTEST) &PureScreenTest::testSetDepthBits2);
-        AddSubTest("testSetStencilBits2", (PFNUNITSUBTEST) &PureScreenTest::testSetStencilBits2);
-        AddSubTest("testSetResolution3", (PFNUNITSUBTEST) &PureScreenTest::testSetResolution3);
-        AddSubTest("testSetScreensaver", (PFNUNITSUBTEST) &PureScreenTest::testSetScreensaver);
-        AddSubTest("testSetMonitorPowersaveEnabled", (PFNUNITSUBTEST) &PureScreenTest::testSetMonitorPowersaveEnabled);
-        AddSubTest("testSetStandbyEnabled", (PFNUNITSUBTEST) &PureScreenTest::testSetStandbyEnabled);
-        AddSubTest("testSetVSyncEnabled1", (PFNUNITSUBTEST) &PureScreenTest::testSetVSyncEnabled1);
-        AddSubTest("testSetVSyncEnabled2", (PFNUNITSUBTEST) &PureScreenTest::testSetVSyncEnabled2);
-        AddSubTest("testSetFSAAlevel1", (PFNUNITSUBTEST) &PureScreenTest::testSetFSAAlevel1);
-        AddSubTest("testSetFSAAlevel2", (PFNUNITSUBTEST) &PureScreenTest::testSetFSAAlevel2);
-        AddSubTest("testSetFSAAlevel3", (PFNUNITSUBTEST) &PureScreenTest::testSetFSAAlevel3);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureScreenTest::testCtor);
+        addSubTest("testApplyDisplaySettings", (PFNUNITSUBTEST) &PureScreenTest::testApplyDisplaySettings);
+        addSubTest("testResetDisplaySettings", (PFNUNITSUBTEST) &PureScreenTest::testResetDisplaySettings);
+        addSubTest("testIsInitialized1", (PFNUNITSUBTEST) &PureScreenTest::testIsInitialized1);
+        addSubTest("testSetResolution1", (PFNUNITSUBTEST) &PureScreenTest::testSetResolution1);
+        addSubTest("testSetFullScreened1", (PFNUNITSUBTEST) &PureScreenTest::testSetFullScreened1);
+        addSubTest("testSetFreq1", (PFNUNITSUBTEST) &PureScreenTest::testSetFreq1);
+        addSubTest("testSetColorBits1", (PFNUNITSUBTEST) &PureScreenTest::testSetColorBits1);
+        addSubTest("testSetDepthBit1s", (PFNUNITSUBTEST) &PureScreenTest::testSetDepthBits1);
+        addSubTest("testSetStencilBits1", (PFNUNITSUBTEST) &PureScreenTest::testSetStencilBits1);
+        addSubTest("testIsInitialized2", (PFNUNITSUBTEST) &PureScreenTest::testIsInitialized2);
+        addSubTest("testSetResolution2", (PFNUNITSUBTEST) &PureScreenTest::testSetResolution2);
+        addSubTest("testSetFullscreened2", (PFNUNITSUBTEST) &PureScreenTest::testSetFullscreened2);
+        addSubTest("testSetFreq2", (PFNUNITSUBTEST) &PureScreenTest::testSetFreq2);
+        addSubTest("testSetColorBits2", (PFNUNITSUBTEST) &PureScreenTest::testSetColorBits2);
+        addSubTest("testSetDepthBits2", (PFNUNITSUBTEST) &PureScreenTest::testSetDepthBits2);
+        addSubTest("testSetStencilBits2", (PFNUNITSUBTEST) &PureScreenTest::testSetStencilBits2);
+        addSubTest("testSetResolution3", (PFNUNITSUBTEST) &PureScreenTest::testSetResolution3);
+        addSubTest("testSetScreensaver", (PFNUNITSUBTEST) &PureScreenTest::testSetScreensaver);
+        addSubTest("testSetMonitorPowersaveEnabled", (PFNUNITSUBTEST) &PureScreenTest::testSetMonitorPowersaveEnabled);
+        addSubTest("testSetStandbyEnabled", (PFNUNITSUBTEST) &PureScreenTest::testSetStandbyEnabled);
+        addSubTest("testSetVSyncEnabled1", (PFNUNITSUBTEST) &PureScreenTest::testSetVSyncEnabled1);
+        addSubTest("testSetVSyncEnabled2", (PFNUNITSUBTEST) &PureScreenTest::testSetVSyncEnabled2);
+        addSubTest("testSetFSAAlevel1", (PFNUNITSUBTEST) &PureScreenTest::testSetFSAAlevel1);
+        addSubTest("testSetFSAAlevel2", (PFNUNITSUBTEST) &PureScreenTest::testSetFSAAlevel2);
+        addSubTest("testSetFSAAlevel3", (PFNUNITSUBTEST) &PureScreenTest::testSetFSAAlevel3);
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         scr.SetScreensaverEnabled(screensvrOrig);
         scr.SetMonitorPowersaveEnabled(monitorpwrOrig);

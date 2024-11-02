@@ -24,15 +24,15 @@ public:
         UnitTest( __FILE__ )
     {
         
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureManagedTest::testCtor);
-        AddSubTest("testGetUtiliser", (PFNUNITSUBTEST) &PureManagedTest::testGetUtiliser);
-        AddSubTest("testSetUtiliser", (PFNUNITSUBTEST) &PureManagedTest::testSetUtiliser);
-        AddSubTest("testDetachFrom", (PFNUNITSUBTEST) &PureManagedTest::testDetachFrom);
-        AddSubTest("testGetManager", (PFNUNITSUBTEST) &PureManagedTest::testGetManager);
-        AddSubTest("testGetName", (PFNUNITSUBTEST) &PureManagedTest::testGetName);
-        AddSubTest("testSetName", (PFNUNITSUBTEST) &PureManagedTest::testSetName);
-        AddSubTest("testFlushResources", (PFNUNITSUBTEST) &PureManagedTest::testFlushResources);
-        AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureManagedTest::testGetUsedSystemMemory);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureManagedTest::testCtor);
+        addSubTest("testGetUtiliser", (PFNUNITSUBTEST) &PureManagedTest::testGetUtiliser);
+        addSubTest("testSetUtiliser", (PFNUNITSUBTEST) &PureManagedTest::testSetUtiliser);
+        addSubTest("testDetachFrom", (PFNUNITSUBTEST) &PureManagedTest::testDetachFrom);
+        addSubTest("testGetManager", (PFNUNITSUBTEST) &PureManagedTest::testGetManager);
+        addSubTest("testGetName", (PFNUNITSUBTEST) &PureManagedTest::testGetName);
+        addSubTest("testSetName", (PFNUNITSUBTEST) &PureManagedTest::testSetName);
+        addSubTest("testFlushResources", (PFNUNITSUBTEST) &PureManagedTest::testFlushResources);
+        addSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureManagedTest::testGetUsedSystemMemory);
     } // PureManagedTest()
 
     virtual ~PureManagedTest()
@@ -40,13 +40,13 @@ public:
         
     }
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureManaged::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureManager::getLoggerModuleName(), true);
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PureManaged::getLoggerModuleName(), false);
         CConsole::getConsoleInstance().SetLoggingState(PureManager::getLoggerModuleName(), false);    

@@ -38,18 +38,18 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureSharedSettings::getLoggerModuleName(), true);
         screensvrOrig = ss.get(PURE_SSET_SCREENSAVER_ALLOWED);
         monitorpwrOrig = ss.get(PURE_SSET_MONITORPOWERSAVE_ALLOWED);
         standbyOrig = ss.get(PURE_SSET_STANDBY_ALLOWED);
         vsyncOrig = ss.get(PURE_SSET_VSYNC_SUPPORTED);
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureSharedSettingsTest::testCtor);
-        AddSubTest("testSet", (PFNUNITSUBTEST) &PureSharedSettingsTest::testSet);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureSharedSettingsTest::testCtor);
+        addSubTest("testSet", (PFNUNITSUBTEST) &PureSharedSettingsTest::testSet);
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         ss.Set(PURE_SSET_MONITORPOWERSAVE_ALLOWED, monitorpwrOrig);
         ss.Set(PURE_SSET_SCREENSAVER_ALLOWED, screensvrOrig);

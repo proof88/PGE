@@ -23,12 +23,12 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         engine = NULL;
         om = NULL;
-        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testCtor1);
-        AddSubTest("testInsertObject", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testInsertObject);
+        addSubTest("testCtor1", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testCtor1);
+        addSubTest("testInsertObject", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testInsertObject);
     }
 
     virtual bool setUp() override
@@ -45,13 +45,13 @@ protected:
         return ret;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
-        Finalize();
+        finalize();
         om = NULL;
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         if ( engine )
         {

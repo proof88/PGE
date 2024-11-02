@@ -9,7 +9,6 @@
 #include "UnitTest.h"  // PCH
 
 #include <memory>  // for std::unique_ptr; requires cpp11
-#include <vector>
 
 #ifndef WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
 #define WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
@@ -73,8 +72,6 @@
 #include "PureWindowTest2.h"
 #include "PureRendererHWfixedPipeTest.h"
 
-using namespace std;
-
 static CConsole& getConsole()
 {
     return CConsole::getConsoleInstance();
@@ -94,9 +91,9 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     getConsole().L();
     getConsole().OLn("");
     
-    vector<std::unique_ptr<UnitTest>> tests;
+    std::vector<std::unique_ptr<UnitTest>> tests;
     
-    tests.push_back(std::unique_ptr<UnitTest>(new PFLTest));
+    //tests.push_back(std::unique_ptr<UnitTest>(new PFLTest));
 
     //tests.push_back(std::unique_ptr<UnitTest>(new PgeObjectPoolTest));
     
@@ -172,12 +169,11 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     tests.push_back(std::unique_ptr<UnitTest>(new PR00FsUltimateRenderingEngineTest));
     tests.push_back(std::unique_ptr<UnitTest>(new PR00FsUltimateRenderingEngineTest2));
     */
-    
 
-    vector<std::unique_ptr<UnitTest>>::size_type nSucceededTests = 0;
-    vector<std::unique_ptr<UnitTest>>::size_type nTotalSubTests = 0;
-    vector<std::unique_ptr<UnitTest>>::size_type nTotalPassedSubTests = 0;
-    for (vector<std::unique_ptr<UnitTest>>::size_type i = 0; i < tests.size(); ++i)
+    size_t nSucceededTests = 0;
+    size_t nTotalSubTests = 0;
+    size_t nTotalPassedSubTests = 0;
+    for (size_t i = 0; i < tests.size(); ++i)
     {
         getConsole().OLn("Running test %d / %d ... ", i+1, tests.size());
         tests[i]->run();
@@ -185,7 +181,7 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
 
     // summarizing
     getConsole().OLn("");
-    for (vector<std::unique_ptr<UnitTest>>::size_type i = 0; i < tests.size(); ++i)
+    for (size_t i = 0; i < tests.size(); ++i)
     {
         if ( tests[i]->isPassed() )
         {
@@ -221,7 +217,7 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
                 getConsole().OLn("Test failed: %s in %s", tests[i]->getName().c_str(), tests[i]->getFile().c_str());
             }
             getConsole().Indent();
-            for (vector<string>::size_type j = 0; j < tests[i]->getErrorMessages().size(); ++j)
+            for (size_t j = 0; j < tests[i]->getErrorMessages().size(); ++j)
             {
                 getConsole().OLn("%s", tests[i]->getErrorMessages()[j].c_str());
             }

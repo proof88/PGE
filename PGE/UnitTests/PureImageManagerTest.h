@@ -33,21 +33,21 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         /*CConsole::getConsoleInstance().SetLoggingState(PureImage::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(PureImageManager::getLoggerModuleName(), true);*/
-        AddSubTest("testGetColorConversionSwapCount", (PFNUNITSUBTEST) &PureImageManagerTest::testGetColorConversionSwapCount);
-        AddSubTest("testGetMirroredPixelComponentOrder", (PFNUNITSUBTEST) &PureImageManagerTest::testGetMirroredPixelComponentOrder);
-        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PureImageManagerTest::testCtor1);
-        AddSubTest("testCreateImageFromFileNull", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateImageFromFileNull);
-        AddSubTest("testCreateImageFromFileNotExists", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateImageFromFileNotExists);
-        AddSubTest("testCreateImageFromFileInvalidExtension", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateImageFromFileInvalidExtension);
-        AddSubTest("testCreateImageFromFileInvalidFormat", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateImageFromFileInvalidFormat);
-        AddSubTest("testCreateImageFromFileValid", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateImageFromFileValid);
-        AddSubTest("testCreateBlankImageValid", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateBlankImageValid);
-        AddSubTest("testCreateBlankImageInvalid", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateBlankImageInvalid);
-        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PureImageManagerTest::testWriteList);
+        addSubTest("testGetColorConversionSwapCount", (PFNUNITSUBTEST) &PureImageManagerTest::testGetColorConversionSwapCount);
+        addSubTest("testGetMirroredPixelComponentOrder", (PFNUNITSUBTEST) &PureImageManagerTest::testGetMirroredPixelComponentOrder);
+        addSubTest("testCtor1", (PFNUNITSUBTEST) &PureImageManagerTest::testCtor1);
+        addSubTest("testCreateImageFromFileNull", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateImageFromFileNull);
+        addSubTest("testCreateImageFromFileNotExists", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateImageFromFileNotExists);
+        addSubTest("testCreateImageFromFileInvalidExtension", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateImageFromFileInvalidExtension);
+        addSubTest("testCreateImageFromFileInvalidFormat", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateImageFromFileInvalidFormat);
+        addSubTest("testCreateImageFromFileValid", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateImageFromFileValid);
+        addSubTest("testCreateBlankImageValid", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateBlankImageValid);
+        addSubTest("testCreateBlankImageInvalid", (PFNUNITSUBTEST) &PureImageManagerTest::testCreateBlankImageInvalid);
+        addSubTest("testWriteList", (PFNUNITSUBTEST) &PureImageManagerTest::testWriteList);
     }
 
     virtual bool setUp() override
@@ -55,10 +55,10 @@ protected:
         return true;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {}
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PureImage::getLoggerModuleName(), false);
         CConsole::getConsoleInstance().SetLoggingState(PureImageManager::getLoggerModuleName(), false);    

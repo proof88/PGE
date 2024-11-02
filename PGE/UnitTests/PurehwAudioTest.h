@@ -31,19 +31,19 @@ public:
 
     virtual ~PureHwAudioTest()
     {
-        Finalize();   
+        finalize();   
     }
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         engine = NULL;
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureHwAudioTest::testCtor);
-        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PureHwAudioTest::testInitialize);
-        AddSubTest("testDeinitialize", (PFNUNITSUBTEST) &PureHwAudioTest::testDeinitialize);
-        AddSubTest("testWriteStats", (PFNUNITSUBTEST) &PureHwAudioTest::testWriteStats);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureHwAudioTest::testCtor);
+        addSubTest("testInitialize", (PFNUNITSUBTEST) &PureHwAudioTest::testInitialize);
+        addSubTest("testDeinitialize", (PFNUNITSUBTEST) &PureHwAudioTest::testDeinitialize);
+        addSubTest("testWriteStats", (PFNUNITSUBTEST) &PureHwAudioTest::testWriteStats);
     }
 
     virtual bool setUp() override
@@ -58,12 +58,12 @@ protected:
         return ret;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
         
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         if ( engine )
         {

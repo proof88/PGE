@@ -46,37 +46,37 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PGEcfgProfiles::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), true);
-        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testCtor1);
-        AddSubTest("testReinitializeBeforeInit", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testReinitializeBeforeInit);
-        AddSubTest("testReinitializeAfterInit", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testReinitializeAfterInit);
-        AddSubTest("testShutdownBeforeInit", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testShutdownBeforeInit);
-        AddSubTest("testShutdownAfterInit", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testShutdownAfterInit);
-        AddSubTest("testGetMyDocsFolder", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetMyDocsFolder);
-        AddSubTest("testGetLangFileName", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetLangFileName);
-        AddSubTest("testReadLanguageData", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testReadLanguageData);
-        AddSubTest("testAreProfilesInMyDocs", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testAreProfilesInMyDocs);
-        AddSubTest("testGetPathToProfiles", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetPathToProfiles);
-        AddSubTest("testGetProfilesCount", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfilesCount);
-        AddSubTest("testGetProfilesList", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfilesList);
-        AddSubTest("testGetProfilePlayersList", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfilePlayersList);
-        AddSubTest("testAddProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testAddProfile);
-        AddSubTest("testDeleteProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testDeleteProfile);
-        AddSubTest("testGetProfileIndex", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfileIndex);
-        AddSubTest("testSetProfileByIndex", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testSetProfileByIndex);
-        AddSubTest("testSetProfileByName", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testSetProfileByName);
-        AddSubTest("testDeleteVar", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testDeleteVar);
-        AddSubTest("testGetVarsCount", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetVarsCount);
-        AddSubTest("testReadConfiguration", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testReadConfiguration);
-        AddSubTest("testWriteConfiguration", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testWriteConfiguration);
-        AddSubTest("testProcessEmptyCommandLine", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessEmptyCommandLine);
-        AddSubTest("testProcessIrrelevantCommandLine", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessIrrelevantCommandLine);
-        AddSubTest("testProcessRelevantCommandLine", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessRelevantCommandLine);
+        addSubTest("testCtor1", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testCtor1);
+        addSubTest("testReinitializeBeforeInit", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testReinitializeBeforeInit);
+        addSubTest("testReinitializeAfterInit", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testReinitializeAfterInit);
+        addSubTest("testShutdownBeforeInit", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testShutdownBeforeInit);
+        addSubTest("testShutdownAfterInit", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testShutdownAfterInit);
+        addSubTest("testGetMyDocsFolder", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetMyDocsFolder);
+        addSubTest("testGetLangFileName", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetLangFileName);
+        addSubTest("testReadLanguageData", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testReadLanguageData);
+        addSubTest("testAreProfilesInMyDocs", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testAreProfilesInMyDocs);
+        addSubTest("testGetPathToProfiles", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetPathToProfiles);
+        addSubTest("testGetProfilesCount", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfilesCount);
+        addSubTest("testGetProfilesList", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfilesList);
+        addSubTest("testGetProfilePlayersList", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfilePlayersList);
+        addSubTest("testAddProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testAddProfile);
+        addSubTest("testDeleteProfile", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testDeleteProfile);
+        addSubTest("testGetProfileIndex", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetProfileIndex);
+        addSubTest("testSetProfileByIndex", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testSetProfileByIndex);
+        addSubTest("testSetProfileByName", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testSetProfileByName);
+        addSubTest("testDeleteVar", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testDeleteVar);
+        addSubTest("testGetVarsCount", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testGetVarsCount);
+        addSubTest("testReadConfiguration", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testReadConfiguration);
+        addSubTest("testWriteConfiguration", (PFNUNITSUBTEST) &PGEcfgProfilesTest::testWriteConfiguration);
+        addSubTest("testProcessEmptyCommandLine", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessEmptyCommandLine);
+        addSubTest("testProcessIrrelevantCommandLine", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessIrrelevantCommandLine);
+        addSubTest("testProcessRelevantCommandLine", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessRelevantCommandLine);
         // I disabled this test because now I think cl_name setting from commandline should be allowed ...
-        //AddSubTest("testProcessRelevantCommandLineWithDisallowedAssignment", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessRelevantCommandLineWithDisallowedAssignment);
+        //addSubTest("testProcessRelevantCommandLineWithDisallowedAssignment", (PFNUNITSUBTEST)&PGEcfgProfilesTest::testProcessRelevantCommandLineWithDisallowedAssignment);
     }
 
     virtual bool setUp() override
@@ -84,10 +84,10 @@ protected:
         return true;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {}
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PGEcfgProfiles::getLoggerModuleName(), false);    
         CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), false);

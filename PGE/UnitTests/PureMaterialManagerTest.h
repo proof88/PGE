@@ -33,12 +33,12 @@ public:
 
     virtual ~PureMaterialManagerTest()
     {
-        Finalize();
+        finalize();
     } // ~PureMaterialManagerTest()
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         /*
         CConsole::getConsoleInstance().SetLoggingState(PureMaterial::getLoggerModuleName(), true);
@@ -50,11 +50,11 @@ protected:
         */
         engine = NULL;
         mm = NULL;
-        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PureMaterialManagerTest::testCtor1);
-        AddSubTest("testCtor2", (PFNUNITSUBTEST) &PureMaterialManagerTest::testCtor2);
-        AddSubTest("testDtor", (PFNUNITSUBTEST) &PureMaterialManagerTest::testDtor);
-        AddSubTest("testCreateFromFile", (PFNUNITSUBTEST) &PureMaterialManagerTest::testCreateFromFile);
-        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PureMaterialManagerTest::testWriteList);
+        addSubTest("testCtor1", (PFNUNITSUBTEST) &PureMaterialManagerTest::testCtor1);
+        addSubTest("testCtor2", (PFNUNITSUBTEST) &PureMaterialManagerTest::testCtor2);
+        addSubTest("testDtor", (PFNUNITSUBTEST) &PureMaterialManagerTest::testDtor);
+        addSubTest("testCreateFromFile", (PFNUNITSUBTEST) &PureMaterialManagerTest::testCreateFromFile);
+        addSubTest("testWriteList", (PFNUNITSUBTEST) &PureMaterialManagerTest::testWriteList);
     }
 
     virtual bool setUp() override
@@ -75,15 +75,15 @@ protected:
         return ret;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
-        Finalize();
+        finalize();
         im = NULL;
         tm = NULL;
         mm = NULL;
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         if ( engine )
         {

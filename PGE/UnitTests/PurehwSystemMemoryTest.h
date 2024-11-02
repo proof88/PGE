@@ -31,22 +31,22 @@ public:
 
     virtual ~PureHwSystemMemoryTest()
     {
-        Finalize();   
+        finalize();   
     }
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         engine = NULL;
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testCtor);
-        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testInitialize);
-        AddSubTest("testDeinitialize", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testDeinitialize);
-        AddSubTest("testGetFreeSystemMemory", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testGetFreeSystemMemory);
-        AddSubTest("testGetTotalSystemMemory", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testGetTotalSystemMemory);
-        AddSubTest("testFreeTotalSystemMemoryRelation", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testFreeTotalSystemMemoryRelation);
-        AddSubTest("testWriteStats", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testWriteStats);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testCtor);
+        addSubTest("testInitialize", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testInitialize);
+        addSubTest("testDeinitialize", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testDeinitialize);
+        addSubTest("testGetFreeSystemMemory", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testGetFreeSystemMemory);
+        addSubTest("testGetTotalSystemMemory", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testGetTotalSystemMemory);
+        addSubTest("testFreeTotalSystemMemoryRelation", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testFreeTotalSystemMemoryRelation);
+        addSubTest("testWriteStats", (PFNUNITSUBTEST) &PureHwSystemMemoryTest::testWriteStats);
     }
 
     virtual bool setUp() override
@@ -61,12 +61,12 @@ protected:
         return ret;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
         
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         if ( engine )
         {

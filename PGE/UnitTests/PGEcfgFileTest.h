@@ -55,30 +55,30 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), true);
         
-        AddSubTest("test_initially_empty_and_defaults_set", (PFNUNITSUBTEST) &PGEcfgFileTest::test_initially_empty_and_defaults_set);
-        AddSubTest("test_load_bad_assignment", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_bad_assignment);
-        AddSubTest("test_load_fail_unaccepted_var", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_fail_unaccepted_var);
-        AddSubTest("test_load_accept_missing_var", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_accept_missing_var);
-        AddSubTest("test_load_fail_missing_var", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_fail_missing_var);
-        AddSubTest("test_load_double_defined_var", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_double_defined_var);
-        AddSubTest("test_load_fail_case_sensitive_vars_with_case_insensivity", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_fail_case_sensitive_vars_with_case_insensivity);
-        AddSubTest("test_load_fail_case_sensitive_vars_with_case_sensivity", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_fail_case_sensitive_vars_with_case_sensivity);
-        AddSubTest("test_load_good_case_sensitive_vars_with_case_sensivity", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_good_case_sensitive_vars_with_case_sensivity);
-        AddSubTest("test_load_good_without_case_sensitivity", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_good_without_case_sensitivity);
-        AddSubTest("test_load_good_with_case_sensitivity", (PFNUNITSUBTEST)&PGEcfgFileTest::test_load_good_with_case_sensitivity);
-        AddSubTest("test_load_not_allowed_when_already_loaded", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_not_allowed_when_already_loaded);
-        AddSubTest("test_set_accepted_vars_not_allowed_when_already_loaded", (PFNUNITSUBTEST) &PGEcfgFileTest::test_set_accepted_vars_not_allowed_when_already_loaded);
-        AddSubTest("test_override_validateOnLoad", (PFNUNITSUBTEST) &PGEcfgFileTest::test_override_validateOnLoad);
-        AddSubTest("test_save_fail_nothing_loaded", (PFNUNITSUBTEST)&PGEcfgFileTest::test_save_fail_nothing_loaded);
-        AddSubTest("test_save_good", (PFNUNITSUBTEST)&PGEcfgFileTest::test_save_good);
-        AddSubTest("test_override_validateOnSave", (PFNUNITSUBTEST)&PGEcfgFileTest::test_override_validateOnSave);
+        addSubTest("test_initially_empty_and_defaults_set", (PFNUNITSUBTEST) &PGEcfgFileTest::test_initially_empty_and_defaults_set);
+        addSubTest("test_load_bad_assignment", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_bad_assignment);
+        addSubTest("test_load_fail_unaccepted_var", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_fail_unaccepted_var);
+        addSubTest("test_load_accept_missing_var", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_accept_missing_var);
+        addSubTest("test_load_fail_missing_var", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_fail_missing_var);
+        addSubTest("test_load_double_defined_var", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_double_defined_var);
+        addSubTest("test_load_fail_case_sensitive_vars_with_case_insensivity", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_fail_case_sensitive_vars_with_case_insensivity);
+        addSubTest("test_load_fail_case_sensitive_vars_with_case_sensivity", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_fail_case_sensitive_vars_with_case_sensivity);
+        addSubTest("test_load_good_case_sensitive_vars_with_case_sensivity", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_good_case_sensitive_vars_with_case_sensivity);
+        addSubTest("test_load_good_without_case_sensitivity", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_good_without_case_sensitivity);
+        addSubTest("test_load_good_with_case_sensitivity", (PFNUNITSUBTEST)&PGEcfgFileTest::test_load_good_with_case_sensitivity);
+        addSubTest("test_load_not_allowed_when_already_loaded", (PFNUNITSUBTEST) &PGEcfgFileTest::test_load_not_allowed_when_already_loaded);
+        addSubTest("test_set_accepted_vars_not_allowed_when_already_loaded", (PFNUNITSUBTEST) &PGEcfgFileTest::test_set_accepted_vars_not_allowed_when_already_loaded);
+        addSubTest("test_override_validateOnLoad", (PFNUNITSUBTEST) &PGEcfgFileTest::test_override_validateOnLoad);
+        addSubTest("test_save_fail_nothing_loaded", (PFNUNITSUBTEST)&PGEcfgFileTest::test_save_fail_nothing_loaded);
+        addSubTest("test_save_good", (PFNUNITSUBTEST)&PGEcfgFileTest::test_save_good);
+        addSubTest("test_override_validateOnSave", (PFNUNITSUBTEST)&PGEcfgFileTest::test_override_validateOnSave);
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PGEcfgFile::getLoggerModuleName(), false);
     }

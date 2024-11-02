@@ -51,12 +51,12 @@ public:
 
     virtual ~PureTextureTest()
     {
-        Finalize();
+        finalize();
     } // ~PureTextureTest()
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         /*CConsole::getConsoleInstance().SetLoggingState(PureTexture::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(PureTextureManager::getLoggerModuleName(), true);
@@ -93,27 +93,27 @@ protected:
         tm->setDefaultCompressionMode(PURE_TC_NONE);
         tm->SetPixelPreservingEnabled(true);
 
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureTextureTest::testCtor);
-        AddSubTest("testDtor", (PFNUNITSUBTEST) &PureTextureTest::testDtor);
-        AddSubTest("testGetName", (PFNUNITSUBTEST) &PureTextureTest::testGetName);
-        AddSubTest("testMethodsFromImage", (PFNUNITSUBTEST) &PureTextureTest::testMethodsFromImage);
-        AddSubTest("testGetInternalFormat", (PFNUNITSUBTEST) &PureTextureTest::testGetInternalFormat);
-        AddSubTest("testGetInternalNum", (PFNUNITSUBTEST) &PureTextureTest::testGetInternalNum);
-        AddSubTest("testSetMinFilteringMode", (PFNUNITSUBTEST) &PureTextureTest::testSetMinFilteringMode);
-        AddSubTest("testSetMagFilteringMode", (PFNUNITSUBTEST) &PureTextureTest::testSetMagFilteringMode);
-        AddSubTest("testSetIsoFilteringMode", (PFNUNITSUBTEST) &PureTextureTest::testSetIsoFilteringMode);
-        AddSubTest("testGetMIPmapCount", (PFNUNITSUBTEST) &PureTextureTest::testGetMIPmapCount);
-        AddSubTest("testSetAnisoFilteringMode", (PFNUNITSUBTEST) &PureTextureTest::testSetAnisoFilteringMode);
-        AddSubTest("testGetTextureWrappingModeS", (PFNUNITSUBTEST) &PureTextureTest::testGetTextureWrappingModeS);
-        AddSubTest("testGetTextureWrappingModeT", (PFNUNITSUBTEST) &PureTextureTest::testGetTextureWrappingModeT);
-        AddSubTest("testSetTextureWrappingMode", (PFNUNITSUBTEST) &PureTextureTest::testSetTextureWrappingMode);
-        AddSubTest("testGetBorder", (PFNUNITSUBTEST) &PureTextureTest::testGetBorder);
-        AddSubTest("testSetBorder", (PFNUNITSUBTEST) &PureTextureTest::testSetBorder);
-        AddSubTest("testGetBorderColor", (PFNUNITSUBTEST) &PureTextureTest::testGetBorderColor);
-        AddSubTest("testSetBorderColor", (PFNUNITSUBTEST) &PureTextureTest::testSetBorderColor);
-        AddSubTest("testUploadPixels", (PFNUNITSUBTEST) &PureTextureTest::testUploadPixels);
-        AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureTextureTest::testGetUsedSystemMemory);
-        AddSubTest("testGetUsedTextureMemory", (PFNUNITSUBTEST) &PureTextureTest::testGetUsedTextureMemory);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureTextureTest::testCtor);
+        addSubTest("testDtor", (PFNUNITSUBTEST) &PureTextureTest::testDtor);
+        addSubTest("testGetName", (PFNUNITSUBTEST) &PureTextureTest::testGetName);
+        addSubTest("testMethodsFromImage", (PFNUNITSUBTEST) &PureTextureTest::testMethodsFromImage);
+        addSubTest("testGetInternalFormat", (PFNUNITSUBTEST) &PureTextureTest::testGetInternalFormat);
+        addSubTest("testGetInternalNum", (PFNUNITSUBTEST) &PureTextureTest::testGetInternalNum);
+        addSubTest("testSetMinFilteringMode", (PFNUNITSUBTEST) &PureTextureTest::testSetMinFilteringMode);
+        addSubTest("testSetMagFilteringMode", (PFNUNITSUBTEST) &PureTextureTest::testSetMagFilteringMode);
+        addSubTest("testSetIsoFilteringMode", (PFNUNITSUBTEST) &PureTextureTest::testSetIsoFilteringMode);
+        addSubTest("testGetMIPmapCount", (PFNUNITSUBTEST) &PureTextureTest::testGetMIPmapCount);
+        addSubTest("testSetAnisoFilteringMode", (PFNUNITSUBTEST) &PureTextureTest::testSetAnisoFilteringMode);
+        addSubTest("testGetTextureWrappingModeS", (PFNUNITSUBTEST) &PureTextureTest::testGetTextureWrappingModeS);
+        addSubTest("testGetTextureWrappingModeT", (PFNUNITSUBTEST) &PureTextureTest::testGetTextureWrappingModeT);
+        addSubTest("testSetTextureWrappingMode", (PFNUNITSUBTEST) &PureTextureTest::testSetTextureWrappingMode);
+        addSubTest("testGetBorder", (PFNUNITSUBTEST) &PureTextureTest::testGetBorder);
+        addSubTest("testSetBorder", (PFNUNITSUBTEST) &PureTextureTest::testSetBorder);
+        addSubTest("testGetBorderColor", (PFNUNITSUBTEST) &PureTextureTest::testGetBorderColor);
+        addSubTest("testSetBorderColor", (PFNUNITSUBTEST) &PureTextureTest::testSetBorderColor);
+        addSubTest("testUploadPixels", (PFNUNITSUBTEST) &PureTextureTest::testUploadPixels);
+        addSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureTextureTest::testGetUsedSystemMemory);
+        addSubTest("testGetUsedTextureMemory", (PFNUNITSUBTEST) &PureTextureTest::testGetUsedTextureMemory);
     }
 
     virtual bool setUp() override
@@ -135,7 +135,7 @@ protected:
             assertNotNull(tex128x128x32_cmpAUTO, "tex128x128x32_cmpAUTO null");
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
         if ( tex128x128x24 )
         {
@@ -144,7 +144,7 @@ protected:
         }
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         tex128x128x32opaque = NULL;
         tex128x128x32transp = NULL;

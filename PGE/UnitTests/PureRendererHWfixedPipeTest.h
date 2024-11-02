@@ -34,7 +34,7 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3D::getLoggerModuleName(), true);
@@ -44,18 +44,18 @@ protected:
         engine = NULL;
         renderer = NULL;
         om = NULL;
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testCtor);
-        AddSubTest("testIsInitialized", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testIsInitialized);
-        AddSubTest("testGetRenderHints", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testGetRenderHints);
-        AddSubTest("testSetRenderHints", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testSetRenderHints);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testCtor);
+        addSubTest("testIsInitialized", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testIsInitialized);
+        addSubTest("testGetRenderHints", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testGetRenderHints);
+        addSubTest("testSetRenderHints", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testSetRenderHints);
         // RenderScene() has no dedicated unit test but we can test different aspects e.g. if it properly reorders the objects, etc.
-        AddSubTest("testRenderByZdistanceOrder_1", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testRenderByZdistanceOrder_1);
-        AddSubTest("testRenderByZdistanceOrder_2", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testRenderByZdistanceOrder_2);
-        AddSubTest("testRenderByZdistanceOrder_3", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testRenderByZdistanceOrder_3);
-        AddSubTest("testRenderByZdistanceOrder_4", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testRenderByZdistanceOrder_4);
-        AddSubTest("testLastFrameCounters", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testLastFrameCounters);
-        AddSubTest("testResetStatistics", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testResetStatistics);
-        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testWriteStats);
+        addSubTest("testRenderByZdistanceOrder_1", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testRenderByZdistanceOrder_1);
+        addSubTest("testRenderByZdistanceOrder_2", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testRenderByZdistanceOrder_2);
+        addSubTest("testRenderByZdistanceOrder_3", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testRenderByZdistanceOrder_3);
+        addSubTest("testRenderByZdistanceOrder_4", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testRenderByZdistanceOrder_4);
+        addSubTest("testLastFrameCounters", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testLastFrameCounters);
+        addSubTest("testResetStatistics", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testResetStatistics);
+        addSubTest("testWriteList", (PFNUNITSUBTEST) &PureRendererHWfixedPipeTest::testWriteStats);
     }
 
     virtual bool setUp() override
@@ -73,14 +73,14 @@ protected:
         return ret;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
-        Finalize();
+        finalize();
         renderer = NULL;
         om = NULL;
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         if ( engine )
         {

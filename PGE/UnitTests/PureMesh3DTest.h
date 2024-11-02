@@ -45,12 +45,12 @@ public:
 
     virtual ~PureMesh3DTest()
     {
-        Finalize();
+        finalize();
     }
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3D::getLoggerModuleName(), true);
@@ -65,46 +65,46 @@ protected:
         meshBox   = mm->createBox(1.0f, 2.0f, 3.0f);
         meshCube  = mm->createCube(1.0f);
 
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureMesh3DTest::testCtor);
-        AddSubTest("testDtor", (PFNUNITSUBTEST) &PureMesh3DTest::testDtor);
-        AddSubTest("testGetName", (PFNUNITSUBTEST) &PureMesh3DTest::testGetName);
-        AddSubTest("testIsLevel1", (PFNUNITSUBTEST) &PureMesh3DTest::testIsLevel1);
-        AddSubTest("testIsLevel2", (PFNUNITSUBTEST) &PureMesh3DTest::testIsLevel2);
-        AddSubTest("testGetPrimitiveFormat", (PFNUNITSUBTEST) &PureMesh3DTest::testGetPrimitiveFormat);
-        AddSubTest("testGetVerticesCount", (PFNUNITSUBTEST) &PureMesh3DTest::testGetVerticesCount);
-        AddSubTest("testGetVertices", (PFNUNITSUBTEST) &PureMesh3DTest::testGetVertices);
-        AddSubTest("testGetVertexIndicesType", (PFNUNITSUBTEST) &PureMesh3DTest::testGetVertexIndicesType);
-        AddSubTest("testGetMinVertexIndex", (PFNUNITSUBTEST) &PureMesh3DTest::testGetMinVertexIndex);
-        AddSubTest("testGetMaxVertexIndex", (PFNUNITSUBTEST) &PureMesh3DTest::testGetMaxVertexIndex);
-        AddSubTest("testGetVertexIndicesCount", (PFNUNITSUBTEST) &PureMesh3DTest::testGetVertexIndicesCount);
-        AddSubTest("testGetVertexIndex", (PFNUNITSUBTEST) &PureMesh3DTest::testGetVertexIndex);
-        AddSubTest("testGetNormals", (PFNUNITSUBTEST) &PureMesh3DTest::testGetNormals);
-        AddSubTest("testGetFaceCount", (PFNUNITSUBTEST) &PureMesh3DTest::testGetFaceCount);
-        AddSubTest("testGetTriangleCount", (PFNUNITSUBTEST) &PureMesh3DTest::testGetTriangleCount);
-        AddSubTest("testGetPosVec", (PFNUNITSUBTEST) &PureMesh3DTest::testGetPosVec);
-        AddSubTest("testGetRelPosVec", (PFNUNITSUBTEST) &PureMesh3DTest::testGetRelPosVec);
-        AddSubTest("testGetSizeVec", (PFNUNITSUBTEST) &PureMesh3DTest::testGetSizeVec);
-        AddSubTest("testRecalculateSize", (PFNUNITSUBTEST) &PureMesh3DTest::testRecalculateSize);
-        AddSubTest("testGetMaterialNoTexture", (PFNUNITSUBTEST) &PureMesh3DTest::testGetMaterialNoTexture);
-        AddSubTest("testGetMaterialSingleLayered", (PFNUNITSUBTEST) &PureMesh3DTest::testGetMaterialSingleLayered);
-        AddSubTest("testGetMaterialMultiLayered", (PFNUNITSUBTEST) &PureMesh3DTest::testGetMaterialMultiLayered);
-        AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureMesh3DTest::testGetUsedSystemMemory);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureMesh3DTest::testCtor);
+        addSubTest("testDtor", (PFNUNITSUBTEST) &PureMesh3DTest::testDtor);
+        addSubTest("testGetName", (PFNUNITSUBTEST) &PureMesh3DTest::testGetName);
+        addSubTest("testIsLevel1", (PFNUNITSUBTEST) &PureMesh3DTest::testIsLevel1);
+        addSubTest("testIsLevel2", (PFNUNITSUBTEST) &PureMesh3DTest::testIsLevel2);
+        addSubTest("testGetPrimitiveFormat", (PFNUNITSUBTEST) &PureMesh3DTest::testGetPrimitiveFormat);
+        addSubTest("testGetVerticesCount", (PFNUNITSUBTEST) &PureMesh3DTest::testGetVerticesCount);
+        addSubTest("testGetVertices", (PFNUNITSUBTEST) &PureMesh3DTest::testGetVertices);
+        addSubTest("testGetVertexIndicesType", (PFNUNITSUBTEST) &PureMesh3DTest::testGetVertexIndicesType);
+        addSubTest("testGetMinVertexIndex", (PFNUNITSUBTEST) &PureMesh3DTest::testGetMinVertexIndex);
+        addSubTest("testGetMaxVertexIndex", (PFNUNITSUBTEST) &PureMesh3DTest::testGetMaxVertexIndex);
+        addSubTest("testGetVertexIndicesCount", (PFNUNITSUBTEST) &PureMesh3DTest::testGetVertexIndicesCount);
+        addSubTest("testGetVertexIndex", (PFNUNITSUBTEST) &PureMesh3DTest::testGetVertexIndex);
+        addSubTest("testGetNormals", (PFNUNITSUBTEST) &PureMesh3DTest::testGetNormals);
+        addSubTest("testGetFaceCount", (PFNUNITSUBTEST) &PureMesh3DTest::testGetFaceCount);
+        addSubTest("testGetTriangleCount", (PFNUNITSUBTEST) &PureMesh3DTest::testGetTriangleCount);
+        addSubTest("testGetPosVec", (PFNUNITSUBTEST) &PureMesh3DTest::testGetPosVec);
+        addSubTest("testGetRelPosVec", (PFNUNITSUBTEST) &PureMesh3DTest::testGetRelPosVec);
+        addSubTest("testGetSizeVec", (PFNUNITSUBTEST) &PureMesh3DTest::testGetSizeVec);
+        addSubTest("testRecalculateSize", (PFNUNITSUBTEST) &PureMesh3DTest::testRecalculateSize);
+        addSubTest("testGetMaterialNoTexture", (PFNUNITSUBTEST) &PureMesh3DTest::testGetMaterialNoTexture);
+        addSubTest("testGetMaterialSingleLayered", (PFNUNITSUBTEST) &PureMesh3DTest::testGetMaterialSingleLayered);
+        addSubTest("testGetMaterialMultiLayered", (PFNUNITSUBTEST) &PureMesh3DTest::testGetMaterialMultiLayered);
+        addSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureMesh3DTest::testGetUsedSystemMemory);
 
         // since Mesh3D became a Manager also, we should test these capabalities here as well for possible undocumented changed behavior
-        AddSubTest("testGetCount", (PFNUNITSUBTEST) &PureMesh3DTest::testGetCount);
-        AddSubTest("testIsEmpty", (PFNUNITSUBTEST) &PureMesh3DTest::testIsEmpty);
-        AddSubTest("testGetSize", (PFNUNITSUBTEST) &PureMesh3DTest::testGetSize);
-        AddSubTest("testGetAttachedAt", (PFNUNITSUBTEST) &PureMesh3DTest::testGetAttachedAt);
-        AddSubTest("testPreAlloc", (PFNUNITSUBTEST) &PureMesh3DTest::testPreAlloc);
-        AddSubTest("testHasAttached2", (PFNUNITSUBTEST) &PureMesh3DTest::testHasAttached2);
-        AddSubTest("testAttach", (PFNUNITSUBTEST) &PureMesh3DTest::testAttach);
-        AddSubTest("testDetach", (PFNUNITSUBTEST) &PureMesh3DTest::testDetach);
-        AddSubTest("testDeleteAttachedInstance", (PFNUNITSUBTEST) &PureMesh3DTest::testDeleteAttachedInstance);
-        AddSubTest("testDeleteAll", (PFNUNITSUBTEST) &PureMesh3DTest::testDeleteAll);
-        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PureMesh3DTest::testWriteList);
+        addSubTest("testGetCount", (PFNUNITSUBTEST) &PureMesh3DTest::testGetCount);
+        addSubTest("testIsEmpty", (PFNUNITSUBTEST) &PureMesh3DTest::testIsEmpty);
+        addSubTest("testGetSize", (PFNUNITSUBTEST) &PureMesh3DTest::testGetSize);
+        addSubTest("testGetAttachedAt", (PFNUNITSUBTEST) &PureMesh3DTest::testGetAttachedAt);
+        addSubTest("testPreAlloc", (PFNUNITSUBTEST) &PureMesh3DTest::testPreAlloc);
+        addSubTest("testHasAttached2", (PFNUNITSUBTEST) &PureMesh3DTest::testHasAttached2);
+        addSubTest("testAttach", (PFNUNITSUBTEST) &PureMesh3DTest::testAttach);
+        addSubTest("testDetach", (PFNUNITSUBTEST) &PureMesh3DTest::testDetach);
+        addSubTest("testDeleteAttachedInstance", (PFNUNITSUBTEST) &PureMesh3DTest::testDeleteAttachedInstance);
+        addSubTest("testDeleteAll", (PFNUNITSUBTEST) &PureMesh3DTest::testDeleteAll);
+        addSubTest("testWriteList", (PFNUNITSUBTEST) &PureMesh3DTest::testWriteList);
 
         // Material of any Mesh3D must have its utiliser set to the Mesh3D instance
-        AddSubTest("testMaterialGetUtiliser", (PFNUNITSUBTEST) &PureMesh3DTest::testMaterialGetUtiliser);
+        addSubTest("testMaterialGetUtiliser", (PFNUNITSUBTEST) &PureMesh3DTest::testMaterialGetUtiliser);
     }
 
     virtual bool setUp() override
@@ -118,7 +118,7 @@ protected:
             assertNotNull(meshCube, "meshCube = NULL" );
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
         if ( mesh != PGENULL )
         {
@@ -132,7 +132,7 @@ protected:
         }
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         mesh = NULL;
         meshFromFile = NULL;

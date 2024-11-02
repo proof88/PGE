@@ -199,12 +199,12 @@ public:
 
     virtual ~PureVertexTransferTest()
     {
-        Finalize();
+        finalize();
     }
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3D::getLoggerModuleName(), true);
@@ -216,23 +216,23 @@ protected:
         vtm = new SampleManagerForDescendantFromVertexTransfer(engine->getMaterialManager()); 
         mesh = NULL;
         meshFromFile = NULL;
-        AddSubTest("testIsVertexTransferModeSelectable", (PFNUNITSUBTEST) &PureVertexTransferTest::testIsVertexTransferModeSelectable);
-        AddSubTest("testIsVertexReferencingIndexed", (PFNUNITSUBTEST) &PureVertexTransferTest::testIsVertexReferencingIndexed);
-        AddSubTest("testIsVertexModifyingDynamic", (PFNUNITSUBTEST) &PureVertexTransferTest::testIsVertexModifyingDynamic);
-        AddSubTest("testSelectVertexTransferMode", (PFNUNITSUBTEST) &PureVertexTransferTest::testSelectVertexTransferMode);
-        AddSubTest("testIsVideoMemoryUsed", (PFNUNITSUBTEST) &PureVertexTransferTest::testIsVideoMemoryUsed);
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureVertexTransferTest::testCtor);
-        AddSubTest("testGetVertexModifyingHabit", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetVertexModifyingHabit);
-        AddSubTest("testSetVertexModifyingHabit", (PFNUNITSUBTEST) &PureVertexTransferTest::testSetVertexModifyingHabit);
-        AddSubTest("testGetVertexReferencingMode", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetVertexReferencingMode);
-        AddSubTest("testSetVertexReferencingMode", (PFNUNITSUBTEST) &PureVertexTransferTest::testSetVertexReferencingMode);
-        AddSubTest("testGetVertexTransferMode", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetVertexTransferMode);
-        AddSubTest("testSetVertexTransferMode", (PFNUNITSUBTEST) &PureVertexTransferTest::testSetVertexTransferMode);
-        AddSubTest("testTransferVertices", (PFNUNITSUBTEST) &PureVertexTransferTest::testTransferVertices);
-        AddSubTest("testGetLastTransferredVertexCount", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetLastTransferredVertexCount);
-        AddSubTest("testGetLastTransferredTriangleCount", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetLastTransferredTriangleCount);
-        AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetUsedSystemMemory);
-        AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetUsedVideoMemory);
+        addSubTest("testIsVertexTransferModeSelectable", (PFNUNITSUBTEST) &PureVertexTransferTest::testIsVertexTransferModeSelectable);
+        addSubTest("testIsVertexReferencingIndexed", (PFNUNITSUBTEST) &PureVertexTransferTest::testIsVertexReferencingIndexed);
+        addSubTest("testIsVertexModifyingDynamic", (PFNUNITSUBTEST) &PureVertexTransferTest::testIsVertexModifyingDynamic);
+        addSubTest("testSelectVertexTransferMode", (PFNUNITSUBTEST) &PureVertexTransferTest::testSelectVertexTransferMode);
+        addSubTest("testIsVideoMemoryUsed", (PFNUNITSUBTEST) &PureVertexTransferTest::testIsVideoMemoryUsed);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureVertexTransferTest::testCtor);
+        addSubTest("testGetVertexModifyingHabit", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetVertexModifyingHabit);
+        addSubTest("testSetVertexModifyingHabit", (PFNUNITSUBTEST) &PureVertexTransferTest::testSetVertexModifyingHabit);
+        addSubTest("testGetVertexReferencingMode", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetVertexReferencingMode);
+        addSubTest("testSetVertexReferencingMode", (PFNUNITSUBTEST) &PureVertexTransferTest::testSetVertexReferencingMode);
+        addSubTest("testGetVertexTransferMode", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetVertexTransferMode);
+        addSubTest("testSetVertexTransferMode", (PFNUNITSUBTEST) &PureVertexTransferTest::testSetVertexTransferMode);
+        addSubTest("testTransferVertices", (PFNUNITSUBTEST) &PureVertexTransferTest::testTransferVertices);
+        addSubTest("testGetLastTransferredVertexCount", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetLastTransferredVertexCount);
+        addSubTest("testGetLastTransferredTriangleCount", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetLastTransferredTriangleCount);
+        addSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetUsedSystemMemory);
+        addSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PureVertexTransferTest::testGetUsedVideoMemory);
     }
 
     virtual bool setUp() override
@@ -243,7 +243,7 @@ protected:
             assertNotNull(meshFromFile, "meshFromFile null");
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
         if ( mesh )
         {
@@ -257,7 +257,7 @@ protected:
         }
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         mesh = NULL;
         meshFromFile = NULL;

@@ -36,12 +36,12 @@ public:
 
     virtual ~PureObject3DTest()
     {
-        Finalize();
+        finalize();
     }
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3D::getLoggerModuleName(), true);
@@ -61,90 +61,90 @@ protected:
         objBox   = om->createBox(1.0f, 2.0f, 3.0f);
         objCube  = om->createCube(1.0f);
 
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureObject3DTest::testCtor);
-        AddSubTest("testDtor", (PFNUNITSUBTEST) &PureObject3DTest::testDtor);
-        AddSubTest("testGetReferredObject", (PFNUNITSUBTEST) &PureObject3DTest::testGetReferredObject_GetReferrerObjects);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureObject3DTest::testCtor);
+        addSubTest("testDtor", (PFNUNITSUBTEST) &PureObject3DTest::testDtor);
+        addSubTest("testGetReferredObject", (PFNUNITSUBTEST) &PureObject3DTest::testGetReferredObject_GetReferrerObjects);
 
         // Object3D contains some slight modifications in these functions compared to the original Mesh3D functions
-        AddSubTest("testGetPrimitiveFormat", (PFNUNITSUBTEST) &PureObject3DTest::testGetPrimitiveFormat);
-        AddSubTest("testGetVerticesCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetVerticesCount);
-        AddSubTest("testGetVertices", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertices);
-        AddSubTest("testGetVertexIndicesType", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertexIndicesType);
-        AddSubTest("testGetMinVertexIndex", (PFNUNITSUBTEST) &PureObject3DTest::testGetMinVertexIndex);
-        AddSubTest("testGetMaxVertexIndex", (PFNUNITSUBTEST) &PureObject3DTest::testGetMaxVertexIndex);
-        AddSubTest("testGetVertexIndicesCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertexIndicesCount);
-        AddSubTest("testGetVertexIndex", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertexIndex);
-        AddSubTest("testGetNormals", (PFNUNITSUBTEST) &PureObject3DTest::testGetNormals);
-        AddSubTest("testGetFaceCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetFaceCount);
-        AddSubTest("testGetTriangleCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetTriangleCount);
+        addSubTest("testGetPrimitiveFormat", (PFNUNITSUBTEST) &PureObject3DTest::testGetPrimitiveFormat);
+        addSubTest("testGetVerticesCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetVerticesCount);
+        addSubTest("testGetVertices", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertices);
+        addSubTest("testGetVertexIndicesType", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertexIndicesType);
+        addSubTest("testGetMinVertexIndex", (PFNUNITSUBTEST) &PureObject3DTest::testGetMinVertexIndex);
+        addSubTest("testGetMaxVertexIndex", (PFNUNITSUBTEST) &PureObject3DTest::testGetMaxVertexIndex);
+        addSubTest("testGetVertexIndicesCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertexIndicesCount);
+        addSubTest("testGetVertexIndex", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertexIndex);
+        addSubTest("testGetNormals", (PFNUNITSUBTEST) &PureObject3DTest::testGetNormals);
+        addSubTest("testGetFaceCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetFaceCount);
+        addSubTest("testGetTriangleCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetTriangleCount);
         // Object3D contains some slight modifications in these functions compared to the original VertexTransfer functions
-        AddSubTest("testGetVertexModifyingHabit", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertexModifyingHabit);
-        AddSubTest("testSetVertexModifyingHabit", (PFNUNITSUBTEST) &PureObject3DTest::testSetVertexModifyingHabit);
-        AddSubTest("testGetVertexReferencingMode", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertexReferencingMode);
-        AddSubTest("testSetVertexReferencingMode", (PFNUNITSUBTEST) &PureObject3DTest::testSetVertexReferencingMode);
-        AddSubTest("testGetVertexTransferMode", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertexTransferMode);
-        AddSubTest("testSetVertexTransferMode", (PFNUNITSUBTEST) &PureObject3DTest::testSetVertexTransferMode);
-        AddSubTest("testGetLastTransferredVertexCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetLastTransferredVertexCount);
-        AddSubTest("testGetLastTransferredTriangleCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetLastTransferredTriangleCount);
+        addSubTest("testGetVertexModifyingHabit", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertexModifyingHabit);
+        addSubTest("testSetVertexModifyingHabit", (PFNUNITSUBTEST) &PureObject3DTest::testSetVertexModifyingHabit);
+        addSubTest("testGetVertexReferencingMode", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertexReferencingMode);
+        addSubTest("testSetVertexReferencingMode", (PFNUNITSUBTEST) &PureObject3DTest::testSetVertexReferencingMode);
+        addSubTest("testGetVertexTransferMode", (PFNUNITSUBTEST) &PureObject3DTest::testGetVertexTransferMode);
+        addSubTest("testSetVertexTransferMode", (PFNUNITSUBTEST) &PureObject3DTest::testSetVertexTransferMode);
+        addSubTest("testGetLastTransferredVertexCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetLastTransferredVertexCount);
+        addSubTest("testGetLastTransferredTriangleCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetLastTransferredTriangleCount);
 
-        AddSubTest("testGetTransformedVertices", (PFNUNITSUBTEST) &PureObject3DTest::testGetTransformedVertices);
-        AddSubTest("testGetAngleVec", (PFNUNITSUBTEST) &PureObject3DTest::testGetAngleVec);
-        AddSubTest("testGetScaledSizeVec", (PFNUNITSUBTEST) &PureObject3DTest::testGetScaledSizeVec);
-        AddSubTest("testGetScaling", (PFNUNITSUBTEST) &PureObject3DTest::testGetScaling);
-        AddSubTest("testSetScalingToScalar", (PFNUNITSUBTEST) &PureObject3DTest::testSetScalingToScalar);
-        AddSubTest("testSetScalingToVector", (PFNUNITSUBTEST) &PureObject3DTest::testSetScalingToVector);
-        AddSubTest("testScaleByScalar", (PFNUNITSUBTEST) &PureObject3DTest::testScaleByScalar);
-        AddSubTest("testScaleByVector", (PFNUNITSUBTEST) &PureObject3DTest::testScaleByVector);
-        AddSubTest("testGetBiggestAreaScaled", (PFNUNITSUBTEST) &PureObject3DTest::testGetBiggestAreaScaled);
-        AddSubTest("testRecalculateBiggerAreaScaled", (PFNUNITSUBTEST) &PureObject3DTest::testRecalculateBiggerAreaScaled);
-        AddSubTest("testIsVisible", (PFNUNITSUBTEST) &PureObject3DTest::testIsVisible);
-        AddSubTest("testSetVisible", (PFNUNITSUBTEST) &PureObject3DTest::testSetVisible);
-        AddSubTest("testShow", (PFNUNITSUBTEST) &PureObject3DTest::testShow);
-        AddSubTest("testHide", (PFNUNITSUBTEST) &PureObject3DTest::testHide);
-        AddSubTest("testIsColliding_TO_BE_REMOVED", (PFNUNITSUBTEST) &PureObject3DTest::testIsColliding_TO_BE_REMOVED);
-        AddSubTest("testSetColliding_TO_BE_REMOVED", (PFNUNITSUBTEST) &PureObject3DTest::testSetColliding_TO_BE_REMOVED);
-        AddSubTest("testGetRotationOrder", (PFNUNITSUBTEST) &PureObject3DTest::testGetRotationOrder);
-        AddSubTest("testSetRotationOrder", (PFNUNITSUBTEST) &PureObject3DTest::testSetRotationOrder);
-        AddSubTest("testIsLit", (PFNUNITSUBTEST) &PureObject3DTest::testIsLit);
-        AddSubTest("testSetLit", (PFNUNITSUBTEST) &PureObject3DTest::testSetLit);
-        AddSubTest("testIsDoubleSided", (PFNUNITSUBTEST) &PureObject3DTest::testIsDoubleSided);
-        AddSubTest("testSetDoubleSided", (PFNUNITSUBTEST) &PureObject3DTest::testSetDoubleSided);
-        AddSubTest("testIsWireframed", (PFNUNITSUBTEST) &PureObject3DTest::testIsWireframed);
-        AddSubTest("testSetWireframed", (PFNUNITSUBTEST) &PureObject3DTest::testSetWireframed);
-        AddSubTest("testIsWireframedCulled", (PFNUNITSUBTEST) &PureObject3DTest::testIsWireframedCulled);
-        AddSubTest("testSetWireframedCulled", (PFNUNITSUBTEST) &PureObject3DTest::testSetWireframedCulled);
-        AddSubTest("testIsAffectingZBuffer", (PFNUNITSUBTEST) &PureObject3DTest::testIsAffectingZBuffer);
-        AddSubTest("testSetAffectingZBuffer", (PFNUNITSUBTEST) &PureObject3DTest::testSetAffectingZBuffer);
-        AddSubTest("testIsTestingAgainstZBuffer", (PFNUNITSUBTEST) &PureObject3DTest::testIsTestingAgainstZBuffer);
-        AddSubTest("testSetTestingAgainstZBuffer", (PFNUNITSUBTEST) &PureObject3DTest::testSetTestingAgainstZBuffer);
-        AddSubTest("testIsStickedToScreen", (PFNUNITSUBTEST) &PureObject3DTest::testIsStickedToScreen);
-        AddSubTest("testSetStickedToScreen", (PFNUNITSUBTEST) &PureObject3DTest::testSetStickedToScreen);
-        AddSubTest("testIsOccluder", (PFNUNITSUBTEST) &PureObject3DTest::testIsOccluder);
-        AddSubTest("testSetOccluder", (PFNUNITSUBTEST) &PureObject3DTest::testSetOccluder);
-        AddSubTest("testIsOccluded", (PFNUNITSUBTEST) &PureObject3DTest::testIsOccluded);
-        AddSubTest("testIsOcclusionTested", (PFNUNITSUBTEST) &PureObject3DTest::testIsOcclusionTested);
-        AddSubTest("testSetOcclusionTested", (PFNUNITSUBTEST) &PureObject3DTest::testSetOcclusionTested);
-        AddSubTest("testGetBoundingBoxObject", (PFNUNITSUBTEST) &PureObject3DTest::testGetBoundingBoxObject);
-        AddSubTest("testDraw", (PFNUNITSUBTEST) &PureObject3DTest::testDraw);
-        AddSubTest("testDraw_Cloned", (PFNUNITSUBTEST) &PureObject3DTest::testDraw_Cloned);
-        AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureObject3DTest::testGetUsedSystemMemory);
-        AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PureObject3DTest::testGetUsedVideoMemory);
+        addSubTest("testGetTransformedVertices", (PFNUNITSUBTEST) &PureObject3DTest::testGetTransformedVertices);
+        addSubTest("testGetAngleVec", (PFNUNITSUBTEST) &PureObject3DTest::testGetAngleVec);
+        addSubTest("testGetScaledSizeVec", (PFNUNITSUBTEST) &PureObject3DTest::testGetScaledSizeVec);
+        addSubTest("testGetScaling", (PFNUNITSUBTEST) &PureObject3DTest::testGetScaling);
+        addSubTest("testSetScalingToScalar", (PFNUNITSUBTEST) &PureObject3DTest::testSetScalingToScalar);
+        addSubTest("testSetScalingToVector", (PFNUNITSUBTEST) &PureObject3DTest::testSetScalingToVector);
+        addSubTest("testScaleByScalar", (PFNUNITSUBTEST) &PureObject3DTest::testScaleByScalar);
+        addSubTest("testScaleByVector", (PFNUNITSUBTEST) &PureObject3DTest::testScaleByVector);
+        addSubTest("testGetBiggestAreaScaled", (PFNUNITSUBTEST) &PureObject3DTest::testGetBiggestAreaScaled);
+        addSubTest("testRecalculateBiggerAreaScaled", (PFNUNITSUBTEST) &PureObject3DTest::testRecalculateBiggerAreaScaled);
+        addSubTest("testIsVisible", (PFNUNITSUBTEST) &PureObject3DTest::testIsVisible);
+        addSubTest("testSetVisible", (PFNUNITSUBTEST) &PureObject3DTest::testSetVisible);
+        addSubTest("testShow", (PFNUNITSUBTEST) &PureObject3DTest::testShow);
+        addSubTest("testHide", (PFNUNITSUBTEST) &PureObject3DTest::testHide);
+        addSubTest("testIsColliding_TO_BE_REMOVED", (PFNUNITSUBTEST) &PureObject3DTest::testIsColliding_TO_BE_REMOVED);
+        addSubTest("testSetColliding_TO_BE_REMOVED", (PFNUNITSUBTEST) &PureObject3DTest::testSetColliding_TO_BE_REMOVED);
+        addSubTest("testGetRotationOrder", (PFNUNITSUBTEST) &PureObject3DTest::testGetRotationOrder);
+        addSubTest("testSetRotationOrder", (PFNUNITSUBTEST) &PureObject3DTest::testSetRotationOrder);
+        addSubTest("testIsLit", (PFNUNITSUBTEST) &PureObject3DTest::testIsLit);
+        addSubTest("testSetLit", (PFNUNITSUBTEST) &PureObject3DTest::testSetLit);
+        addSubTest("testIsDoubleSided", (PFNUNITSUBTEST) &PureObject3DTest::testIsDoubleSided);
+        addSubTest("testSetDoubleSided", (PFNUNITSUBTEST) &PureObject3DTest::testSetDoubleSided);
+        addSubTest("testIsWireframed", (PFNUNITSUBTEST) &PureObject3DTest::testIsWireframed);
+        addSubTest("testSetWireframed", (PFNUNITSUBTEST) &PureObject3DTest::testSetWireframed);
+        addSubTest("testIsWireframedCulled", (PFNUNITSUBTEST) &PureObject3DTest::testIsWireframedCulled);
+        addSubTest("testSetWireframedCulled", (PFNUNITSUBTEST) &PureObject3DTest::testSetWireframedCulled);
+        addSubTest("testIsAffectingZBuffer", (PFNUNITSUBTEST) &PureObject3DTest::testIsAffectingZBuffer);
+        addSubTest("testSetAffectingZBuffer", (PFNUNITSUBTEST) &PureObject3DTest::testSetAffectingZBuffer);
+        addSubTest("testIsTestingAgainstZBuffer", (PFNUNITSUBTEST) &PureObject3DTest::testIsTestingAgainstZBuffer);
+        addSubTest("testSetTestingAgainstZBuffer", (PFNUNITSUBTEST) &PureObject3DTest::testSetTestingAgainstZBuffer);
+        addSubTest("testIsStickedToScreen", (PFNUNITSUBTEST) &PureObject3DTest::testIsStickedToScreen);
+        addSubTest("testSetStickedToScreen", (PFNUNITSUBTEST) &PureObject3DTest::testSetStickedToScreen);
+        addSubTest("testIsOccluder", (PFNUNITSUBTEST) &PureObject3DTest::testIsOccluder);
+        addSubTest("testSetOccluder", (PFNUNITSUBTEST) &PureObject3DTest::testSetOccluder);
+        addSubTest("testIsOccluded", (PFNUNITSUBTEST) &PureObject3DTest::testIsOccluded);
+        addSubTest("testIsOcclusionTested", (PFNUNITSUBTEST) &PureObject3DTest::testIsOcclusionTested);
+        addSubTest("testSetOcclusionTested", (PFNUNITSUBTEST) &PureObject3DTest::testSetOcclusionTested);
+        addSubTest("testGetBoundingBoxObject", (PFNUNITSUBTEST) &PureObject3DTest::testGetBoundingBoxObject);
+        addSubTest("testDraw", (PFNUNITSUBTEST) &PureObject3DTest::testDraw);
+        addSubTest("testDraw_Cloned", (PFNUNITSUBTEST) &PureObject3DTest::testDraw_Cloned);
+        addSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureObject3DTest::testGetUsedSystemMemory);
+        addSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PureObject3DTest::testGetUsedVideoMemory);
 
         // since Object3D became a Manager also, we should test these capabalities here as well for possible changed behavior
-        AddSubTest("testGetCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetCount);
-        AddSubTest("testIsEmpty", (PFNUNITSUBTEST) &PureObject3DTest::testIsEmpty);
-        AddSubTest("testGetSize", (PFNUNITSUBTEST) &PureObject3DTest::testGetSize);
-        AddSubTest("testGetAttachedAt", (PFNUNITSUBTEST) &PureObject3DTest::testGetAttachedAt);
-        AddSubTest("testPreAlloc", (PFNUNITSUBTEST) &PureObject3DTest::testPreAlloc);
-        AddSubTest("testHasAttached2", (PFNUNITSUBTEST) &PureObject3DTest::testHasAttached2);
-        AddSubTest("testAttach", (PFNUNITSUBTEST) &PureObject3DTest::testAttach);
-        AddSubTest("testDetach", (PFNUNITSUBTEST) &PureObject3DTest::testDetach);
-        AddSubTest("testDeleteAttachedInstance", (PFNUNITSUBTEST) &PureObject3DTest::testDeleteAttachedInstance);
-        AddSubTest("testDeleteAll", (PFNUNITSUBTEST) &PureObject3DTest::testDeleteAll);
-        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PureObject3DTest::testWriteList);
+        addSubTest("testGetCount", (PFNUNITSUBTEST) &PureObject3DTest::testGetCount);
+        addSubTest("testIsEmpty", (PFNUNITSUBTEST) &PureObject3DTest::testIsEmpty);
+        addSubTest("testGetSize", (PFNUNITSUBTEST) &PureObject3DTest::testGetSize);
+        addSubTest("testGetAttachedAt", (PFNUNITSUBTEST) &PureObject3DTest::testGetAttachedAt);
+        addSubTest("testPreAlloc", (PFNUNITSUBTEST) &PureObject3DTest::testPreAlloc);
+        addSubTest("testHasAttached2", (PFNUNITSUBTEST) &PureObject3DTest::testHasAttached2);
+        addSubTest("testAttach", (PFNUNITSUBTEST) &PureObject3DTest::testAttach);
+        addSubTest("testDetach", (PFNUNITSUBTEST) &PureObject3DTest::testDetach);
+        addSubTest("testDeleteAttachedInstance", (PFNUNITSUBTEST) &PureObject3DTest::testDeleteAttachedInstance);
+        addSubTest("testDeleteAll", (PFNUNITSUBTEST) &PureObject3DTest::testDeleteAll);
+        addSubTest("testWriteList", (PFNUNITSUBTEST) &PureObject3DTest::testWriteList);
 
         // since DetachFrom()'s behavior depends on managers' Detach() behavior, and that is overridden in Object3DManager, we test DetachFrom() too!
-        AddSubTest("testDetachFrom", (PFNUNITSUBTEST) &PureObject3DTest::testDetachFrom);
+        addSubTest("testDetachFrom", (PFNUNITSUBTEST) &PureObject3DTest::testDetachFrom);
     }
 
     virtual bool setUp() override
@@ -173,7 +173,7 @@ protected:
             assertNotNull(objBox, "objBox null");
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
         if ( obj )
         {
@@ -197,7 +197,7 @@ protected:
         }
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         obj = NULL;
         objFromFile = NULL;

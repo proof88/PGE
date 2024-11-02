@@ -31,12 +31,12 @@ public:
 
     ~PureProjectionTest()
     {
-        Finalize();
+        finalize();
     } // ~PureProjectionTest()
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         m_cam.getPosVec().Set(0, 0, -10);
         m_cam.getTargetVec().Set(0, 0, 1);
@@ -48,8 +48,8 @@ protected:
         m_cam.SetFieldOfView(80.f);
         
         // keep these test cases in sync with PureCameraTest's projection tests!
-        AddSubTest("testProject3dTo2d", (PFNUNITSUBTEST)&PureProjectionTest::testProject3dTo2d);
-        AddSubTest("testProject2dTo3d", (PFNUNITSUBTEST)&PureProjectionTest::testProject2dTo3d);
+        addSubTest("testProject3dTo2d", (PFNUNITSUBTEST)&PureProjectionTest::testProject3dTo2d);
+        addSubTest("testProject2dTo3d", (PFNUNITSUBTEST)&PureProjectionTest::testProject2dTo3d);
     }
 
     virtual bool setUp() override
@@ -57,12 +57,12 @@ protected:
         return true;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
-        Finalize();
+        finalize();
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
     }
 

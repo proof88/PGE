@@ -19,21 +19,21 @@ public:
     PureAxisAlignedBoundingBoxTest() :
         UnitTest( __FILE__ )
     {
-        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testCtor1);
-        AddSubTest("testCtor2", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testCtor2);
-        AddSubTest("testIsPointInside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testIsPointInside);
-        AddSubTest("testIsPointInside_no_bounds", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testIsPointInside_no_bounds);
-        AddSubTest("testIsBoxInside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testIsBoxInside);
-        AddSubTest("testIsBoxInside_no_bounds", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testIsBoxInside_no_bounds);
-        AddSubTest("testExtendByPointOutside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByPointOutside);
-        AddSubTest("testExtendByPointOutside_is_commutative", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByPointOutside_is_commutative);
-        AddSubTest("testExtendByPointOutside_no_bounds", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByPointOutside_no_bounds);
-        AddSubTest("testExtendByPointOutside_2", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByPointOutside_2);
-        AddSubTest("testExtendByPointInside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByPointInside);
-        AddSubTest("testExtendByBoxOutside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByBoxOutside);
-        AddSubTest("testExtendByBoxOutside_is_commutative", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByBoxOutside_is_commutative);
-        AddSubTest("testExtendByBoxOutside_no_bounds", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByBoxOutside_no_bounds);
-        AddSubTest("testExtendByBoxInside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByBoxInside);
+        addSubTest("testCtor1", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testCtor1);
+        addSubTest("testCtor2", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testCtor2);
+        addSubTest("testIsPointInside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testIsPointInside);
+        addSubTest("testIsPointInside_no_bounds", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testIsPointInside_no_bounds);
+        addSubTest("testIsBoxInside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testIsBoxInside);
+        addSubTest("testIsBoxInside_no_bounds", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testIsBoxInside_no_bounds);
+        addSubTest("testExtendByPointOutside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByPointOutside);
+        addSubTest("testExtendByPointOutside_is_commutative", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByPointOutside_is_commutative);
+        addSubTest("testExtendByPointOutside_no_bounds", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByPointOutside_no_bounds);
+        addSubTest("testExtendByPointOutside_2", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByPointOutside_2);
+        addSubTest("testExtendByPointInside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByPointInside);
+        addSubTest("testExtendByBoxOutside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByBoxOutside);
+        addSubTest("testExtendByBoxOutside_is_commutative", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByBoxOutside_is_commutative);
+        addSubTest("testExtendByBoxOutside_no_bounds", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByBoxOutside_no_bounds);
+        addSubTest("testExtendByBoxInside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByBoxInside);
     } // PureAxisAlignedBoundingBoxTest()
 
 protected:

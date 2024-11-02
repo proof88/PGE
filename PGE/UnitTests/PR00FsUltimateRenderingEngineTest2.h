@@ -29,26 +29,26 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PR00FsUltimateRenderingEngine::getLoggerModuleName(), true);
         engine = NULL;
-        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testInitialize);
-        AddSubTest("testShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testShutdown);
-        AddSubTest("testIsInitialized", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testIsInitialized);
-        AddSubTest("testGetScreen", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetScreen);
-        AddSubTest("testGetWindow", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetWindow);
-        AddSubTest("testGetHardwareInfo", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetHardwareInfo);
-        AddSubTest("testGetImageManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetImageManager);
-        AddSubTest("testGetTextureManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetTextureManager);
-        AddSubTest("testGetObject3DManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetObject3DManager);
-        AddSubTest("testGetCamera", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetCamera);
-        AddSubTest("testGetUImanager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetUImanager);
-        AddSubTest("testGetRenderer", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetRenderer);
-        AddSubTest("testCopyScreenToTexture", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testCopyScreenToTexture);
-        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testWriteList);
-        AddSubTest("testGetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetAutoWriteStatsAtShutdown);
-        AddSubTest("testSetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testSetAutoWriteStatsAtShutdown);
+        addSubTest("testInitialize", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testInitialize);
+        addSubTest("testShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testShutdown);
+        addSubTest("testIsInitialized", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testIsInitialized);
+        addSubTest("testGetScreen", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetScreen);
+        addSubTest("testGetWindow", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetWindow);
+        addSubTest("testGetHardwareInfo", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetHardwareInfo);
+        addSubTest("testGetImageManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetImageManager);
+        addSubTest("testGetTextureManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetTextureManager);
+        addSubTest("testGetObject3DManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetObject3DManager);
+        addSubTest("testGetCamera", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetCamera);
+        addSubTest("testGetUImanager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetUImanager);
+        addSubTest("testGetRenderer", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetRenderer);
+        addSubTest("testCopyScreenToTexture", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testCopyScreenToTexture);
+        addSubTest("testWriteList", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testWriteList);
+        addSubTest("testGetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testGetAutoWriteStatsAtShutdown);
+        addSubTest("testSetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest2::testSetAutoWriteStatsAtShutdown);
     }
 
     virtual bool setUp() override
@@ -59,7 +59,7 @@ protected:
         return assertEquals((TPureUInt) 0, engine->initialize(PURE_RENDERER_HW_FP, 800, 600, PURE_WINDOWED, 0, 32, 24, 0, 0), "engine");  // pretty standard display mode, should work on most systems
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
         if ( engine )
         {
@@ -68,7 +68,7 @@ protected:
         }
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PR00FsUltimateRenderingEngine::getLoggerModuleName(), false);    
     }

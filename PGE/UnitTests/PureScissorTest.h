@@ -27,14 +27,14 @@ public:
 
     ~PureScissorTest()
     {
-        Finalize();
+        finalize();
     } // ~PureScissorTest()
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
-        AddSubTest("testDoScissor", (PFNUNITSUBTEST) &PureScissorTest::testDoScissor);
+        addSubTest("testDoScissor", (PFNUNITSUBTEST) &PureScissorTest::testDoScissor);
     }
 
     virtual bool setUp() override
@@ -42,12 +42,12 @@ protected:
         return true;    
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
-        Finalize();
+        finalize();
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
     }
 

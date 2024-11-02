@@ -29,37 +29,37 @@ public:
 
     ~PFLTest()
     {
-        Finalize();
+        finalize();
     } // ~PFLTest()
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
-        AddSubTest("testGetTimeDiffInUs", (PFNUNITSUBTEST) &PFLTest::testGetTimeDiffInUs);    
-        AddSubTest("testUpdateForMinDuration_1", (PFNUNITSUBTEST) &PFLTest::testUpdateForMinDuration_1);
-        AddSubTest("testUpdateForMinDuration_2", (PFNUNITSUBTEST) &PFLTest::testUpdateForMinDuration_2);    
-        AddSubTest("testUpdateForMaxDuration_1", (PFNUNITSUBTEST) &PFLTest::testUpdateForMaxDuration_1);
-        AddSubTest("testUpdateForMaxDuration_2", (PFNUNITSUBTEST) &PFLTest::testUpdateForMaxDuration_2);    
-        AddSubTest("testGetExtension", (PFNUNITSUBTEST) &PFLTest::testGetExtension);
-        AddSubTest("testGetDirectory", (PFNUNITSUBTEST) &PFLTest::testGetDirectory);
-        AddSubTest("testGetFilename", (PFNUNITSUBTEST) &PFLTest::testGetFilename);
-        AddSubTest("testChangeExtension", (PFNUNITSUBTEST) &PFLTest::testChangeExtension);
-        AddSubTest("testNumCharAppears", (PFNUNITSUBTEST) &PFLTest::testNumCharAppears);
-        AddSubTest("testStrClrLeads", (PFNUNITSUBTEST) &PFLTest::testStrClrLeads);
-        AddSubTest("testStrClrTrails", (PFNUNITSUBTEST) &PFLTest::testStrClrTrails);
-        AddSubTest("testStrClr", (PFNUNITSUBTEST) &PFLTest::testStrClr);
-        AddSubTest("testHash", (PFNUNITSUBTEST)&PFLTest::testHash);
-        AddSubTest("testPi", (PFNUNITSUBTEST) &PFLTest::testPi);
-        AddSubTest("testRoundf", (PFNUNITSUBTEST) &PFLTest::testRoundf);
-        AddSubTest("testRoundi", (PFNUNITSUBTEST) &PFLTest::testRoundi);
-        AddSubTest("testConstrain", (PFNUNITSUBTEST) &PFLTest::testConstrain);
-        AddSubTest("testDegToRad", (PFNUNITSUBTEST) &PFLTest::testDegToRad);
-        AddSubTest("testRadToDeg", (PFNUNITSUBTEST) &PFLTest::testRadToDeg);
-        AddSubTest("testRandom1", (PFNUNITSUBTEST) &PFLTest::testRandom1);
-        AddSubTest("testRandom2", (PFNUNITSUBTEST)&PFLTest::testRandom2);
-        AddSubTest("testLerp", (PFNUNITSUBTEST) &PFLTest::testLerp);
-        AddSubTest("testSmooth", (PFNUNITSUBTEST)&PFLTest::testSmooth);
+        addSubTest("testGetTimeDiffInUs", (PFNUNITSUBTEST) &PFLTest::testGetTimeDiffInUs);    
+        addSubTest("testUpdateForMinDuration_1", (PFNUNITSUBTEST) &PFLTest::testUpdateForMinDuration_1);
+        addSubTest("testUpdateForMinDuration_2", (PFNUNITSUBTEST) &PFLTest::testUpdateForMinDuration_2);    
+        addSubTest("testUpdateForMaxDuration_1", (PFNUNITSUBTEST) &PFLTest::testUpdateForMaxDuration_1);
+        addSubTest("testUpdateForMaxDuration_2", (PFNUNITSUBTEST) &PFLTest::testUpdateForMaxDuration_2);    
+        addSubTest("testGetExtension", (PFNUNITSUBTEST) &PFLTest::testGetExtension);
+        addSubTest("testGetDirectory", (PFNUNITSUBTEST) &PFLTest::testGetDirectory);
+        addSubTest("testGetFilename", (PFNUNITSUBTEST) &PFLTest::testGetFilename);
+        addSubTest("testChangeExtension", (PFNUNITSUBTEST) &PFLTest::testChangeExtension);
+        addSubTest("testNumCharAppears", (PFNUNITSUBTEST) &PFLTest::testNumCharAppears);
+        addSubTest("testStrClrLeads", (PFNUNITSUBTEST) &PFLTest::testStrClrLeads);
+        addSubTest("testStrClrTrails", (PFNUNITSUBTEST) &PFLTest::testStrClrTrails);
+        addSubTest("testStrClr", (PFNUNITSUBTEST) &PFLTest::testStrClr);
+        addSubTest("testHash", (PFNUNITSUBTEST)&PFLTest::testHash);
+        addSubTest("testPi", (PFNUNITSUBTEST) &PFLTest::testPi);
+        addSubTest("testRoundf", (PFNUNITSUBTEST) &PFLTest::testRoundf);
+        addSubTest("testRoundi", (PFNUNITSUBTEST) &PFLTest::testRoundi);
+        addSubTest("testConstrain", (PFNUNITSUBTEST) &PFLTest::testConstrain);
+        addSubTest("testDegToRad", (PFNUNITSUBTEST) &PFLTest::testDegToRad);
+        addSubTest("testRadToDeg", (PFNUNITSUBTEST) &PFLTest::testRadToDeg);
+        addSubTest("testRandom1", (PFNUNITSUBTEST) &PFLTest::testRandom1);
+        addSubTest("testRandom2", (PFNUNITSUBTEST)&PFLTest::testRandom2);
+        addSubTest("testLerp", (PFNUNITSUBTEST) &PFLTest::testLerp);
+        addSubTest("testSmooth", (PFNUNITSUBTEST)&PFLTest::testSmooth);
     }
 
     virtual bool setUp() override
@@ -67,16 +67,10 @@ protected:
         return true;    
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
-        Finalize();
+        finalize();
     }
-
-    virtual void Finalize() override
-    {
-    }
-
-
 
 private:
 

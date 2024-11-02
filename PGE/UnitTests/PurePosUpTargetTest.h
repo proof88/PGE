@@ -24,12 +24,12 @@ public:
     PurePosUpTargetTest() :
         UnitTest( __FILE__ )
     {
-        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PurePosUpTargetTest::testCtor1);
-        AddSubTest("testCopyCtor", (PFNUNITSUBTEST) &PurePosUpTargetTest::testCopyCtor);
-        AddSubTest("testMove", (PFNUNITSUBTEST) &PurePosUpTargetTest::testMove);
-        AddSubTest("testStrafe", (PFNUNITSUBTEST) &PurePosUpTargetTest::testStrafe);
-        AddSubTest("testElevate", (PFNUNITSUBTEST) &PurePosUpTargetTest::testElevate);
-        AddSubTest("testRotation", (PFNUNITSUBTEST) &PurePosUpTargetTest::testRotation);
+        addSubTest("testCtor1", (PFNUNITSUBTEST) &PurePosUpTargetTest::testCtor1);
+        addSubTest("testCopyCtor", (PFNUNITSUBTEST) &PurePosUpTargetTest::testCopyCtor);
+        addSubTest("testMove", (PFNUNITSUBTEST) &PurePosUpTargetTest::testMove);
+        addSubTest("testStrafe", (PFNUNITSUBTEST) &PurePosUpTargetTest::testStrafe);
+        addSubTest("testElevate", (PFNUNITSUBTEST) &PurePosUpTargetTest::testElevate);
+        addSubTest("testRotation", (PFNUNITSUBTEST) &PurePosUpTargetTest::testRotation);
 
     } // PurePosUpTargetTest()
 
@@ -40,7 +40,7 @@ protected:
         return true;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
 
     }

@@ -29,18 +29,18 @@ public:
         UnitTest( __FILE__ )
     {
         
-        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PureCameraTest::testCtor1);
-        AddSubTest("testCopyCtor", (PFNUNITSUBTEST) &PureCameraTest::testCopyCtor);
-        AddSubTest("testSetviewPort", (PFNUNITSUBTEST) &PureCameraTest::testSetviewPort);
-        AddSubTest("testSetAspectRatioMode", (PFNUNITSUBTEST) &PureCameraTest::testSetAspectRatioMode);
-        AddSubTest("testSetAspectRatio", (PFNUNITSUBTEST) &PureCameraTest::testSetAspectRatio);
-        AddSubTest("testSetClearMode", (PFNUNITSUBTEST) &PureCameraTest::testSetClearMode);
-        AddSubTest("testSetNearPlane", (PFNUNITSUBTEST) &PureCameraTest::testSetNearPlane);
-        AddSubTest("testSetFarPlane", (PFNUNITSUBTEST) &PureCameraTest::testSetFarPlane);
-        AddSubTest("testSetFieldOfView", (PFNUNITSUBTEST) &PureCameraTest::testSetFieldOfView);
+        addSubTest("testCtor1", (PFNUNITSUBTEST) &PureCameraTest::testCtor1);
+        addSubTest("testCopyCtor", (PFNUNITSUBTEST) &PureCameraTest::testCopyCtor);
+        addSubTest("testSetviewPort", (PFNUNITSUBTEST) &PureCameraTest::testSetviewPort);
+        addSubTest("testSetAspectRatioMode", (PFNUNITSUBTEST) &PureCameraTest::testSetAspectRatioMode);
+        addSubTest("testSetAspectRatio", (PFNUNITSUBTEST) &PureCameraTest::testSetAspectRatio);
+        addSubTest("testSetClearMode", (PFNUNITSUBTEST) &PureCameraTest::testSetClearMode);
+        addSubTest("testSetNearPlane", (PFNUNITSUBTEST) &PureCameraTest::testSetNearPlane);
+        addSubTest("testSetFarPlane", (PFNUNITSUBTEST) &PureCameraTest::testSetFarPlane);
+        addSubTest("testSetFieldOfView", (PFNUNITSUBTEST) &PureCameraTest::testSetFieldOfView);
         // keep these test cases in sync with PureProjectionTest's (un)projection tests!
-        AddSubTest("testProject3dTo2d", (PFNUNITSUBTEST)&PureCameraTest::testProject3dTo2d);
-        AddSubTest("testProject2dTo3d", (PFNUNITSUBTEST)&PureCameraTest::testProject2dTo3d);
+        addSubTest("testProject3dTo2d", (PFNUNITSUBTEST)&PureCameraTest::testProject3dTo2d);
+        addSubTest("testProject2dTo3d", (PFNUNITSUBTEST)&PureCameraTest::testProject2dTo3d);
 
     } // PureCameraTest()
 
@@ -56,17 +56,17 @@ protected:
         return true;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
 
     }
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureCamera::getLoggerModuleName(), true);
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PureCamera::getLoggerModuleName(), false);    
     }

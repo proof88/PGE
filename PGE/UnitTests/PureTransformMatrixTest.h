@@ -24,32 +24,32 @@ public:
     PureTransformMatrixTest() :
         UnitTest( __FILE__ )
     {
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureTransformMatrixTest::testCtor);
-        AddSubTest("testCopyCtor", (PFNUNITSUBTEST) &PureTransformMatrixTest::testCopyCtor);
-        AddSubTest("testCtorNotableZero", (PFNUNITSUBTEST) &PureTransformMatrixTest::testCtorNotableZero);
-        AddSubTest("testCtorNotableIdentity", (PFNUNITSUBTEST) &PureTransformMatrixTest::testCtorNotableIdentity);
-        AddSubTest("testStaticNotableZero", (PFNUNITSUBTEST) &PureTransformMatrixTest::testStaticNotableZero);
-        AddSubTest("testStaticNotableIdentity", (PFNUNITSUBTEST) &PureTransformMatrixTest::testStaticNotableIdentity);
-        AddSubTest("testIsZero", (PFNUNITSUBTEST) &PureTransformMatrixTest::testIsZero);
-        AddSubTest("testIsIdentity", (PFNUNITSUBTEST) &PureTransformMatrixTest::testIsIdentity);
-        AddSubTest("testSetRotationX", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetRotationX);
-        AddSubTest("testSetRotationY", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetRotationY);
-        AddSubTest("testSetRotationZ", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetRotationZ);
-        AddSubTest("testSetTranslation", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetTranslation);
-        AddSubTest("testGetScaleX", (PFNUNITSUBTEST) &PureTransformMatrixTest::testGetScaleX);
-        AddSubTest("testGetScaleY", (PFNUNITSUBTEST) &PureTransformMatrixTest::testGetScaleY);
-        AddSubTest("testGetScaleZ", (PFNUNITSUBTEST) &PureTransformMatrixTest::testGetScaleZ);
-        AddSubTest("testSetScale", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetScale);
-        AddSubTest("testSetScaleX", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetScaleX);
-        AddSubTest("testSetScaleY", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetScaleY);
-        AddSubTest("testSetScaleZ", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetScaleZ);
-        AddSubTest("testSetMirrorXY", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetMirrorXY);
-        AddSubTest("testSetMirrorXZ", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetMirrorXZ);
-        AddSubTest("testSetMirrorYZ", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetMirrorYZ);
-        AddSubTest("testSetFrustum", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetFrustum);
-        AddSubTest("testSetFrustumByFovX", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetFrustumByFovX);
-        AddSubTest("testSetFrustumByFovY", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetFrustumByFovY);
-        AddSubTest("testSetLookAt", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetLookAt);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureTransformMatrixTest::testCtor);
+        addSubTest("testCopyCtor", (PFNUNITSUBTEST) &PureTransformMatrixTest::testCopyCtor);
+        addSubTest("testCtorNotableZero", (PFNUNITSUBTEST) &PureTransformMatrixTest::testCtorNotableZero);
+        addSubTest("testCtorNotableIdentity", (PFNUNITSUBTEST) &PureTransformMatrixTest::testCtorNotableIdentity);
+        addSubTest("testStaticNotableZero", (PFNUNITSUBTEST) &PureTransformMatrixTest::testStaticNotableZero);
+        addSubTest("testStaticNotableIdentity", (PFNUNITSUBTEST) &PureTransformMatrixTest::testStaticNotableIdentity);
+        addSubTest("testIsZero", (PFNUNITSUBTEST) &PureTransformMatrixTest::testIsZero);
+        addSubTest("testIsIdentity", (PFNUNITSUBTEST) &PureTransformMatrixTest::testIsIdentity);
+        addSubTest("testSetRotationX", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetRotationX);
+        addSubTest("testSetRotationY", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetRotationY);
+        addSubTest("testSetRotationZ", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetRotationZ);
+        addSubTest("testSetTranslation", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetTranslation);
+        addSubTest("testGetScaleX", (PFNUNITSUBTEST) &PureTransformMatrixTest::testGetScaleX);
+        addSubTest("testGetScaleY", (PFNUNITSUBTEST) &PureTransformMatrixTest::testGetScaleY);
+        addSubTest("testGetScaleZ", (PFNUNITSUBTEST) &PureTransformMatrixTest::testGetScaleZ);
+        addSubTest("testSetScale", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetScale);
+        addSubTest("testSetScaleX", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetScaleX);
+        addSubTest("testSetScaleY", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetScaleY);
+        addSubTest("testSetScaleZ", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetScaleZ);
+        addSubTest("testSetMirrorXY", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetMirrorXY);
+        addSubTest("testSetMirrorXZ", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetMirrorXZ);
+        addSubTest("testSetMirrorYZ", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetMirrorYZ);
+        addSubTest("testSetFrustum", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetFrustum);
+        addSubTest("testSetFrustumByFovX", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetFrustumByFovX);
+        addSubTest("testSetFrustumByFovY", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetFrustumByFovY);
+        addSubTest("testSetLookAt", (PFNUNITSUBTEST) &PureTransformMatrixTest::testSetLookAt);
 
     } // PureTransformMatrixTest()
 

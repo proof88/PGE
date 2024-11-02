@@ -20,30 +20,30 @@ public:
     PgeOldNewValueTest() :
         UnitTest(__FILE__)
     {
-        AddSubTest("testCtor", (PFNUNITSUBTEST)&PgeOldNewValueTest::testCtor);
-        AddSubTest("testCopyCtor", (PFNUNITSUBTEST)&PgeOldNewValueTest::testCopyCtor);
-        AddSubTest("testSet", (PFNUNITSUBTEST)&PgeOldNewValueTest::testSet);
-        AddSubTest("testCommit", (PFNUNITSUBTEST)&PgeOldNewValueTest::testCommit);
-        AddSubTest("testRevert", (PFNUNITSUBTEST)&PgeOldNewValueTest::testRevert);
-        AddSubTest("testOperatorEquals", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorEquals);
-        AddSubTest("testOperatorNotEquals", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorNotEquals);
-        AddSubTest("testOperatorAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorAssignment);
-        AddSubTest("testOperatorConversionToValueType", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorConversionToValueType);
-        AddSubTest("testOperatorAddition", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorAddition);
-        AddSubTest("testOperatorAdditionAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorAdditionAssignment);
-        AddSubTest("testOperatorSubtraction", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorSubtraction);
-        AddSubTest("testOperatorSubtractionAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorSubtractionAssignment);
-        AddSubTest("testOperatorMultiplication", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorMultiplication);
-        AddSubTest("testOperatorMultiplicationAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorMultiplicationAssignment);
-        AddSubTest("testOperatorDivision", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorDivision);
-        AddSubTest("testOperatorDivisionAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorDivisionAssignment);
-        AddSubTest("testOperatorModularDivision", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorModularDivision);
-        AddSubTest("testOperatorModularDivisionAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorModularDivisionAssignment);
-        AddSubTest("testOperatorIncrementPrefix", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorIncrementPrefix);
-        AddSubTest("testOperatorIncrementPostfix", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorIncrementPostfix);
-        AddSubTest("testOperatorDecrementPrefix", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorDecrementPrefix);
-        AddSubTest("testOperatorDecrementPostfix", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorDecrementPostfix);
-        AddSubTest("testOperatorNegative", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorNegative);
+        addSubTest("testCtor", (PFNUNITSUBTEST)&PgeOldNewValueTest::testCtor);
+        addSubTest("testCopyCtor", (PFNUNITSUBTEST)&PgeOldNewValueTest::testCopyCtor);
+        addSubTest("testSet", (PFNUNITSUBTEST)&PgeOldNewValueTest::testSet);
+        addSubTest("testCommit", (PFNUNITSUBTEST)&PgeOldNewValueTest::testCommit);
+        addSubTest("testRevert", (PFNUNITSUBTEST)&PgeOldNewValueTest::testRevert);
+        addSubTest("testOperatorEquals", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorEquals);
+        addSubTest("testOperatorNotEquals", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorNotEquals);
+        addSubTest("testOperatorAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorAssignment);
+        addSubTest("testOperatorConversionToValueType", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorConversionToValueType);
+        addSubTest("testOperatorAddition", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorAddition);
+        addSubTest("testOperatorAdditionAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorAdditionAssignment);
+        addSubTest("testOperatorSubtraction", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorSubtraction);
+        addSubTest("testOperatorSubtractionAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorSubtractionAssignment);
+        addSubTest("testOperatorMultiplication", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorMultiplication);
+        addSubTest("testOperatorMultiplicationAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorMultiplicationAssignment);
+        addSubTest("testOperatorDivision", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorDivision);
+        addSubTest("testOperatorDivisionAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorDivisionAssignment);
+        addSubTest("testOperatorModularDivision", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorModularDivision);
+        addSubTest("testOperatorModularDivisionAssignment", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorModularDivisionAssignment);
+        addSubTest("testOperatorIncrementPrefix", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorIncrementPrefix);
+        addSubTest("testOperatorIncrementPostfix", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorIncrementPostfix);
+        addSubTest("testOperatorDecrementPrefix", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorDecrementPrefix);
+        addSubTest("testOperatorDecrementPostfix", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorDecrementPostfix);
+        addSubTest("testOperatorNegative", (PFNUNITSUBTEST)&PgeOldNewValueTest::testOperatorNegative);
 
     } // PgeOldNewValueTest()
 

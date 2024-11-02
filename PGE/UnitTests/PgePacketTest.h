@@ -27,36 +27,36 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
-        AddSubTest("test_initPktBasic_ZeroFill", (PFNUNITSUBTEST)&PgePacketTest::test_initPktBasic_ZeroFill);
-        AddSubTest("test_initPktBasic_NoFill", (PFNUNITSUBTEST)&PgePacketTest::test_initPktBasic_NoFill);
-        AddSubTest("test_initPktPgeMsgUserConnected_Good", (PFNUNITSUBTEST)&PgePacketTest::test_initPktPgeMsgUserConnected_Good);
-        AddSubTest("test_initPktPgeMsgUserConnected_Bad", (PFNUNITSUBTEST)&PgePacketTest::test_initPktPgeMsgUserConnected_Bad);
-        AddSubTest("test_initPktPgeMsgUserDisconnected", (PFNUNITSUBTEST)&PgePacketTest::test_initPktPgeMsgUserDisconnected);
-        AddSubTest("test_initPktMsgApp", (PFNUNITSUBTEST)&PgePacketTest::test_initPktMsgApp);
-        AddSubTest("test_initPktMsgApp_NoZeroFill", (PFNUNITSUBTEST)&PgePacketTest::test_initPktMsgApp_NoZeroFill);
-        AddSubTest("test_fillMsgApp", (PFNUNITSUBTEST)&PgePacketTest::test_fillMsgApp);
-        AddSubTest("test_getMsgAppFromPkt", (PFNUNITSUBTEST)&PgePacketTest::test_getMsgAppFromPkt);
-        AddSubTest(
+        addSubTest("test_initPktBasic_ZeroFill", (PFNUNITSUBTEST)&PgePacketTest::test_initPktBasic_ZeroFill);
+        addSubTest("test_initPktBasic_NoFill", (PFNUNITSUBTEST)&PgePacketTest::test_initPktBasic_NoFill);
+        addSubTest("test_initPktPgeMsgUserConnected_Good", (PFNUNITSUBTEST)&PgePacketTest::test_initPktPgeMsgUserConnected_Good);
+        addSubTest("test_initPktPgeMsgUserConnected_Bad", (PFNUNITSUBTEST)&PgePacketTest::test_initPktPgeMsgUserConnected_Bad);
+        addSubTest("test_initPktPgeMsgUserDisconnected", (PFNUNITSUBTEST)&PgePacketTest::test_initPktPgeMsgUserDisconnected);
+        addSubTest("test_initPktMsgApp", (PFNUNITSUBTEST)&PgePacketTest::test_initPktMsgApp);
+        addSubTest("test_initPktMsgApp_NoZeroFill", (PFNUNITSUBTEST)&PgePacketTest::test_initPktMsgApp_NoZeroFill);
+        addSubTest("test_fillMsgApp", (PFNUNITSUBTEST)&PgePacketTest::test_fillMsgApp);
+        addSubTest("test_getMsgAppFromPkt", (PFNUNITSUBTEST)&PgePacketTest::test_getMsgAppFromPkt);
+        addSubTest(
             "test_getMsgAppData_and_getMsgAppDataFromPkt_returns_the_same",
             (PFNUNITSUBTEST)&PgePacketTest::test_getMsgAppData_and_getMsgAppDataFromPkt_returns_the_same);
-        AddSubTest("test_addPktMsgApp_Good", (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Good);
-        AddSubTest("test_addPktMsgApp_Bad_PktId", (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Bad_PktId);
-        AddSubTest("test_addPktMsgApp_Bad_MsgAppDataSizeTooBig", (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Bad_MsgAppDataSizeTooBig);
-        AddSubTest(
+        addSubTest("test_addPktMsgApp_Good", (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Good);
+        addSubTest("test_addPktMsgApp_Bad_PktId", (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Bad_PktId);
+        addSubTest("test_addPktMsgApp_Bad_MsgAppDataSizeTooBig", (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Bad_MsgAppDataSizeTooBig);
+        addSubTest(
             "test_addPktMsgApp_Bad_MsgAppAreaActualLengthAlreadyFilledTooMuch",
             (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Bad_MsgAppAreaActualLengthAlreadyFilledTooMuch);
-        AddSubTest(
+        addSubTest(
             "test_addPktMsgApp_Bad_MaxMessageCountReached",
             (PFNUNITSUBTEST)&PgePacketTest::test_addPktMsgApp_Bad_MaxMessageCountReached);
-        AddSubTest("test_preparePktMsgAppFill_Good", (PFNUNITSUBTEST)&PgePacketTest::test_preparePktMsgAppFill_Good);
-        AddSubTest("test_preparePktMsgAppFill_Bad_PktId", (PFNUNITSUBTEST)&PgePacketTest::test_preparePktMsgAppFill_Bad_PktId);
-        AddSubTest("test_preparePktMsgAppFill_Bad_MsgAppDataSizeTooBig", (PFNUNITSUBTEST)&PgePacketTest::test_preparePktMsgAppFill_Bad_MsgAppDataSizeTooBig);
-        AddSubTest(
+        addSubTest("test_preparePktMsgAppFill_Good", (PFNUNITSUBTEST)&PgePacketTest::test_preparePktMsgAppFill_Good);
+        addSubTest("test_preparePktMsgAppFill_Bad_PktId", (PFNUNITSUBTEST)&PgePacketTest::test_preparePktMsgAppFill_Bad_PktId);
+        addSubTest("test_preparePktMsgAppFill_Bad_MsgAppDataSizeTooBig", (PFNUNITSUBTEST)&PgePacketTest::test_preparePktMsgAppFill_Bad_MsgAppDataSizeTooBig);
+        addSubTest(
             "test_preparePktMsgAppFill_Bad_MsgAppAreaActualLengthAlreadyFilledTooMuch",
             (PFNUNITSUBTEST)&PgePacketTest::test_preparePktMsgAppFill_Bad_MsgAppAreaActualLengthAlreadyFilledTooMuch);
-        AddSubTest(
+        addSubTest(
             "test_preparePktMsgAppFill_Bad_MaxMessageCountReached",
             (PFNUNITSUBTEST)&PgePacketTest::test_preparePktMsgAppFill_Bad_MaxMessageCountReached);
     }

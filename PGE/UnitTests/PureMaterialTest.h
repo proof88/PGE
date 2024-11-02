@@ -102,12 +102,12 @@ public:
 
     virtual ~PureMaterialTest()
     {
-        Finalize();
+        finalize();
     } // ~PureMaterialTest()
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         /*
         CConsole::getConsoleInstance().SetLoggingState(PureMaterial::getLoggerModuleName(), true);
@@ -123,21 +123,21 @@ protected:
         tm = &engine->getTextureManager();
         mm = &engine->getMaterialManager();
 
-        AddSubTest("testIsBlendFuncBlends", (PFNUNITSUBTEST) &PureMaterialTest::testIsBlendFuncBlends);
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureMaterialTest::testCtor);
-        AddSubTest("testDtor", (PFNUNITSUBTEST) &PureMaterialTest::testDtor);
-        AddSubTest("testAllocateArrays", (PFNUNITSUBTEST) &PureMaterialTest::testAllocateArrays);
-        AddSubTest("testSetTexture", (PFNUNITSUBTEST) &PureMaterialTest::testSetTexture);
-        AddSubTest("testGetTextureCount", (PFNUNITSUBTEST) &PureMaterialTest::testGetTextureCount);
-        AddSubTest("testIsTextured", (PFNUNITSUBTEST) &PureMaterialTest::testIsTextured);
-        AddSubTest("testIsSingleTextured", (PFNUNITSUBTEST) &PureMaterialTest::testIsSingleTextured);
-        AddSubTest("testIsMultiTextured", (PFNUNITSUBTEST) &PureMaterialTest::testIsMultiTextured);
-        AddSubTest("testSetSourceBlendFunc", (PFNUNITSUBTEST) &PureMaterialTest::testSetSourceBlendFunc);
-        AddSubTest("testSetDestinationBlendFunc", (PFNUNITSUBTEST) &PureMaterialTest::testSetDestinationBlendFunc);
-        AddSubTest("testSetBlendFuncs", (PFNUNITSUBTEST) &PureMaterialTest::testSetBlendFuncs);
-        AddSubTest("testSetBlendMode", (PFNUNITSUBTEST) &PureMaterialTest::testSetBlendMode);
-        AddSubTest("testCopyFromMaterial", (PFNUNITSUBTEST) &PureMaterialTest::testCopyFromMaterial);
-        AddSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureMaterialTest::testGetUsedSystemMemory);
+        addSubTest("testIsBlendFuncBlends", (PFNUNITSUBTEST) &PureMaterialTest::testIsBlendFuncBlends);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureMaterialTest::testCtor);
+        addSubTest("testDtor", (PFNUNITSUBTEST) &PureMaterialTest::testDtor);
+        addSubTest("testAllocateArrays", (PFNUNITSUBTEST) &PureMaterialTest::testAllocateArrays);
+        addSubTest("testSetTexture", (PFNUNITSUBTEST) &PureMaterialTest::testSetTexture);
+        addSubTest("testGetTextureCount", (PFNUNITSUBTEST) &PureMaterialTest::testGetTextureCount);
+        addSubTest("testIsTextured", (PFNUNITSUBTEST) &PureMaterialTest::testIsTextured);
+        addSubTest("testIsSingleTextured", (PFNUNITSUBTEST) &PureMaterialTest::testIsSingleTextured);
+        addSubTest("testIsMultiTextured", (PFNUNITSUBTEST) &PureMaterialTest::testIsMultiTextured);
+        addSubTest("testSetSourceBlendFunc", (PFNUNITSUBTEST) &PureMaterialTest::testSetSourceBlendFunc);
+        addSubTest("testSetDestinationBlendFunc", (PFNUNITSUBTEST) &PureMaterialTest::testSetDestinationBlendFunc);
+        addSubTest("testSetBlendFuncs", (PFNUNITSUBTEST) &PureMaterialTest::testSetBlendFuncs);
+        addSubTest("testSetBlendMode", (PFNUNITSUBTEST) &PureMaterialTest::testSetBlendMode);
+        addSubTest("testCopyFromMaterial", (PFNUNITSUBTEST) &PureMaterialTest::testCopyFromMaterial);
+        addSubTest("testGetUsedSystemMemory", (PFNUNITSUBTEST) &PureMaterialTest::testGetUsedSystemMemory);
 
     }
 
@@ -147,13 +147,13 @@ protected:
         return assertNotNull(mat, "mat null");
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
         mm->DeleteAll();
         mat = NULL;
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         tm = NULL;
         mm = NULL;

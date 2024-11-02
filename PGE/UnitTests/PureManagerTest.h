@@ -23,20 +23,20 @@ public:
     PureManagerTest() :
         UnitTest( __FILE__ )
     {
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureManagerTest::testCtor);
-        AddSubTest("testGetCount", (PFNUNITSUBTEST) &PureManagerTest::testGetCount);
-        AddSubTest("testIsEmpty", (PFNUNITSUBTEST) &PureManagerTest::testIsEmpty);
-        AddSubTest("testGetSize", (PFNUNITSUBTEST) &PureManagerTest::testGetSize);
-        AddSubTest("testGetAttachedAt", (PFNUNITSUBTEST) &PureManagerTest::testGetAttachedAt);
-        AddSubTest("testGetAttachedIndex", (PFNUNITSUBTEST) &PureManagerTest::testGetAttachedIndex);
-        AddSubTest("testPreAlloc", (PFNUNITSUBTEST) &PureManagerTest::testPreAlloc);
-        AddSubTest("testHasAttached2", (PFNUNITSUBTEST) &PureManagerTest::testHasAttached2);
-        AddSubTest("testAttach", (PFNUNITSUBTEST) &PureManagerTest::testAttach);
-        AddSubTest("testDetach", (PFNUNITSUBTEST) &PureManagerTest::testDetach);
-        AddSubTest("testDeleteAttachedInstance", (PFNUNITSUBTEST) &PureManagerTest::testDeleteAttachedInstance);
-        AddSubTest("testDeleteAll", (PFNUNITSUBTEST) &PureManagerTest::testDeleteAll);
-        AddSubTest("testGetUsedSystemMemoryTotal", (PFNUNITSUBTEST) &PureManagerTest::testGetUsedSystemMemoryTotal);
-        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PureManagerTest::testWriteList);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureManagerTest::testCtor);
+        addSubTest("testGetCount", (PFNUNITSUBTEST) &PureManagerTest::testGetCount);
+        addSubTest("testIsEmpty", (PFNUNITSUBTEST) &PureManagerTest::testIsEmpty);
+        addSubTest("testGetSize", (PFNUNITSUBTEST) &PureManagerTest::testGetSize);
+        addSubTest("testGetAttachedAt", (PFNUNITSUBTEST) &PureManagerTest::testGetAttachedAt);
+        addSubTest("testGetAttachedIndex", (PFNUNITSUBTEST) &PureManagerTest::testGetAttachedIndex);
+        addSubTest("testPreAlloc", (PFNUNITSUBTEST) &PureManagerTest::testPreAlloc);
+        addSubTest("testHasAttached2", (PFNUNITSUBTEST) &PureManagerTest::testHasAttached2);
+        addSubTest("testAttach", (PFNUNITSUBTEST) &PureManagerTest::testAttach);
+        addSubTest("testDetach", (PFNUNITSUBTEST) &PureManagerTest::testDetach);
+        addSubTest("testDeleteAttachedInstance", (PFNUNITSUBTEST) &PureManagerTest::testDeleteAttachedInstance);
+        addSubTest("testDeleteAll", (PFNUNITSUBTEST) &PureManagerTest::testDeleteAll);
+        addSubTest("testGetUsedSystemMemoryTotal", (PFNUNITSUBTEST) &PureManagerTest::testGetUsedSystemMemoryTotal);
+        addSubTest("testWriteList", (PFNUNITSUBTEST) &PureManagerTest::testWriteList);
     } // PureManagerTest()
 
     virtual ~PureManagerTest()
@@ -44,13 +44,13 @@ public:
         
     }
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureManaged::getLoggerModuleName(), true);
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PureManager::getLoggerModuleName(), false);
         CConsole::getConsoleInstance().SetLoggingState(PureManaged::getLoggerModuleName(), false);    

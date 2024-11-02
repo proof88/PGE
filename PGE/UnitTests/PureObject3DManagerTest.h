@@ -33,7 +33,7 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3DManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureMesh3D::getLoggerModuleName(), true);
@@ -42,28 +42,28 @@ protected:
         //CConsole::getConsoleInstance().SetLoggingState(PureObject3D::getLoggerModuleName(), true);
         engine = NULL;
         om = NULL;
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureObject3DManagerTest::testCtor);
-        AddSubTest("testIsInitialized", (PFNUNITSUBTEST) &PureObject3DManagerTest::testIsInitialized);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureObject3DManagerTest::testCtor);
+        addSubTest("testIsInitialized", (PFNUNITSUBTEST) &PureObject3DManagerTest::testIsInitialized);
         
         // some functions from PureManager are overrid here
-        AddSubTest("testAttachAndDetach", (PFNUNITSUBTEST) &PureObject3DManagerTest::testAttachAndDetach);
-        AddSubTest("testDeleteAttachedInstance", (PFNUNITSUBTEST) &PureObject3DManagerTest::testDeleteAttachedInstance);
+        addSubTest("testAttachAndDetach", (PFNUNITSUBTEST) &PureObject3DManagerTest::testAttachAndDetach);
+        addSubTest("testDeleteAttachedInstance", (PFNUNITSUBTEST) &PureObject3DManagerTest::testDeleteAttachedInstance);
 
         // getOccluders() , get3dOpaqueOccludees(), etc. don't have their own test cases since they are
         // tested in almost all testcases here and in PureObject3DTest::testSetOccluder() too.
-        AddSubTest("testCreatePlane", (PFNUNITSUBTEST) &PureObject3DManagerTest::testCreatePlane);
-        AddSubTest("testCreateBox", (PFNUNITSUBTEST) &PureObject3DManagerTest::testCreateBox);
-        AddSubTest("testCreateCube", (PFNUNITSUBTEST) &PureObject3DManagerTest::testCreateCube);
-        AddSubTest("testCreateFromFile", (PFNUNITSUBTEST) &PureObject3DManagerTest::testCreateFromFile);
-        AddSubTest("testCreateCloned", (PFNUNITSUBTEST) &PureObject3DManagerTest::testCreateCloned);
-        AddSubTest("testUpdateOccluderStates", (PFNUNITSUBTEST) &PureObject3DManagerTest::testUpdateOccluderStates);
-        AddSubTest("testGetOccluderSelectionBias", (PFNUNITSUBTEST) &PureObject3DManagerTest::testGetOccluderSelectionBias);
-        AddSubTest("testSetOccluderSelectionBias", (PFNUNITSUBTEST) &PureObject3DManagerTest::testSetOccluderSelectionBias);
-        AddSubTest("testGetMaxOccluderCount", (PFNUNITSUBTEST) &PureObject3DManagerTest::testGetMaxOccluderCount);
-        AddSubTest("testSetMaxOccluderCount", (PFNUNITSUBTEST) &PureObject3DManagerTest::testSetMaxOccluderCount);
-        AddSubTest("testHandleManagedPropertyChanged", (PFNUNITSUBTEST) &PureObject3DManagerTest::testHandleManagedPropertyChanged);
-        AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PureObject3DManagerTest::testGetUsedVideoMemory);
-        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PureObject3DManagerTest::testWriteList);
+        addSubTest("testCreatePlane", (PFNUNITSUBTEST) &PureObject3DManagerTest::testCreatePlane);
+        addSubTest("testCreateBox", (PFNUNITSUBTEST) &PureObject3DManagerTest::testCreateBox);
+        addSubTest("testCreateCube", (PFNUNITSUBTEST) &PureObject3DManagerTest::testCreateCube);
+        addSubTest("testCreateFromFile", (PFNUNITSUBTEST) &PureObject3DManagerTest::testCreateFromFile);
+        addSubTest("testCreateCloned", (PFNUNITSUBTEST) &PureObject3DManagerTest::testCreateCloned);
+        addSubTest("testUpdateOccluderStates", (PFNUNITSUBTEST) &PureObject3DManagerTest::testUpdateOccluderStates);
+        addSubTest("testGetOccluderSelectionBias", (PFNUNITSUBTEST) &PureObject3DManagerTest::testGetOccluderSelectionBias);
+        addSubTest("testSetOccluderSelectionBias", (PFNUNITSUBTEST) &PureObject3DManagerTest::testSetOccluderSelectionBias);
+        addSubTest("testGetMaxOccluderCount", (PFNUNITSUBTEST) &PureObject3DManagerTest::testGetMaxOccluderCount);
+        addSubTest("testSetMaxOccluderCount", (PFNUNITSUBTEST) &PureObject3DManagerTest::testSetMaxOccluderCount);
+        addSubTest("testHandleManagedPropertyChanged", (PFNUNITSUBTEST) &PureObject3DManagerTest::testHandleManagedPropertyChanged);
+        addSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PureObject3DManagerTest::testGetUsedVideoMemory);
+        addSubTest("testWriteList", (PFNUNITSUBTEST) &PureObject3DManagerTest::testWriteList);
     }
 
     virtual bool setUp() override
@@ -80,13 +80,13 @@ protected:
         return ret;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
-        Finalize();
+        finalize();
         om = NULL;
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         if ( engine )
         {

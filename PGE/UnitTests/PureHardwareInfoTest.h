@@ -31,52 +31,52 @@ public:
 
     ~PRREHardwareInfoTest()
     {
-        Finalize();   
+        finalize();   
     }
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         engine = NULL;
         hw = NULL;
-        /**AddSubTest("testCtor1", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testCtor1);
-        AddSubTest("testCtor2", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testCtor2);*/
-        AddSubTest("testDeInitialize", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testDeInitialize);
-        AddSubTest("testGetFreeSystemMemory", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetFreeSystemMemory);
-        AddSubTest("testGetTotalSystemMemory", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetTotalSystemMemory);
-        AddSubTest("testFreeTotalSystemMemoryRelation", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testFreeTotalSystemMemoryRelation);
-        AddSubTest("testIsExtensionSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsExtensionSupported);
-        AddSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetUsedVideoMemory);
-        AddSubTest("testGetUsedTextureMemory", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetUsedTextureMemory);
-        AddSubTest("testGetColorBufferPixelCount", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetColorBufferPixelCount);
-        AddSubTest("testGetColorBufferSize", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetColorBufferSize);
-        AddSubTest("testGetDepthBufferSize", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetDepthBufferSize);
-        AddSubTest("testGetStencilBufferSize", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetStencilBufferSize);
-        AddSubTest("testGetSampleBufferSize", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetSampleBufferSize);
-        AddSubTest("testGetUsedFrameBufferMemory", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetUsedFrameBufferMemory);
-        AddSubTest("testIsVSyncSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsVSyncSupported);
-        AddSubTest("testIsMultiTexturingSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsMultiTexturingSupported);
-        AddSubTest("testGetTextureUnitsCount", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetTextureUnitsCount);
-        AddSubTest("testIsHardwareMipMapGenerationSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsHardwareMipMapGenerationSupported);
-        AddSubTest("testIsNativeDIBFormatSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsNativeDIBFormatSupported);
-        AddSubTest("testIsAnisoFilteringSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsAnisoFilteringSupported);
-        AddSubTest("testGetMaximumAnisoFiltering", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetMaximumAnisoFiltering);
-        AddSubTest("testIsTextureCompressionSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsTextureCompressionSupported);
-        AddSubTest("testIsVTCSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsVTCSupported);
-        AddSubTest("testIs3DcSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIs3DcSupported);
-        AddSubTest("testIsRGTCSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsRGTCSupported);
-        AddSubTest("testIsLATCCSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsLATCSupported);
-        AddSubTest("testIsFullSceneAntiAliasingSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsFullSceneAntiAliasingSupported);
-        AddSubTest("testGetMaxSamplesCount", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetMaxSamplesCount);
-        AddSubTest("testIsSamplesSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsSamplesSupported);
-        AddSubTest("testGetVideocardOSName", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetVideocardOSName);
-        AddSubTest("testGetVideocardOGLName", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetVideocardOGLName);
-        AddSubTest("testGetVideocardOGLVersion", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetVideocardOGLVersion);
-        AddSubTest("testGetVideocardOGLVendor", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetVideocardOGLVendor);
-        AddSubTest("testGetVideocardOGLFeatureList", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetVideocardOGLFeatureList);
-        AddSubTest("testGetVideocardWGLFeatureList", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetVideocardWGLFeatureList);
-        AddSubTest("testWriteStats", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testWriteStats);
+        /**addSubTest("testCtor1", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testCtor1);
+        addSubTest("testCtor2", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testCtor2);*/
+        addSubTest("testDeInitialize", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testDeInitialize);
+        addSubTest("testGetFreeSystemMemory", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetFreeSystemMemory);
+        addSubTest("testGetTotalSystemMemory", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetTotalSystemMemory);
+        addSubTest("testFreeTotalSystemMemoryRelation", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testFreeTotalSystemMemoryRelation);
+        addSubTest("testIsExtensionSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsExtensionSupported);
+        addSubTest("testGetUsedVideoMemory", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetUsedVideoMemory);
+        addSubTest("testGetUsedTextureMemory", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetUsedTextureMemory);
+        addSubTest("testGetColorBufferPixelCount", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetColorBufferPixelCount);
+        addSubTest("testGetColorBufferSize", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetColorBufferSize);
+        addSubTest("testGetDepthBufferSize", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetDepthBufferSize);
+        addSubTest("testGetStencilBufferSize", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetStencilBufferSize);
+        addSubTest("testGetSampleBufferSize", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetSampleBufferSize);
+        addSubTest("testGetUsedFrameBufferMemory", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetUsedFrameBufferMemory);
+        addSubTest("testIsVSyncSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsVSyncSupported);
+        addSubTest("testIsMultiTexturingSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsMultiTexturingSupported);
+        addSubTest("testGetTextureUnitsCount", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetTextureUnitsCount);
+        addSubTest("testIsHardwareMipMapGenerationSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsHardwareMipMapGenerationSupported);
+        addSubTest("testIsNativeDIBFormatSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsNativeDIBFormatSupported);
+        addSubTest("testIsAnisoFilteringSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsAnisoFilteringSupported);
+        addSubTest("testGetMaximumAnisoFiltering", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetMaximumAnisoFiltering);
+        addSubTest("testIsTextureCompressionSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsTextureCompressionSupported);
+        addSubTest("testIsVTCSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsVTCSupported);
+        addSubTest("testIs3DcSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIs3DcSupported);
+        addSubTest("testIsRGTCSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsRGTCSupported);
+        addSubTest("testIsLATCCSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsLATCSupported);
+        addSubTest("testIsFullSceneAntiAliasingSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsFullSceneAntiAliasingSupported);
+        addSubTest("testGetMaxSamplesCount", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetMaxSamplesCount);
+        addSubTest("testIsSamplesSupported", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testIsSamplesSupported);
+        addSubTest("testGetVideocardOSName", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetVideocardOSName);
+        addSubTest("testGetVideocardOGLName", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetVideocardOGLName);
+        addSubTest("testGetVideocardOGLVersion", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetVideocardOGLVersion);
+        addSubTest("testGetVideocardOGLVendor", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetVideocardOGLVendor);
+        addSubTest("testGetVideocardOGLFeatureList", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetVideocardOGLFeatureList);
+        addSubTest("testGetVideocardWGLFeatureList", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testGetVideocardWGLFeatureList);
+        addSubTest("testWriteStats", (PFNUNITSUBTEST) &PRREHardwareInfoTest::testWriteStats);
     }
 
     virtual void SetUp()
@@ -89,12 +89,12 @@ protected:
         }
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
         
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         if ( engine )
         {

@@ -35,26 +35,26 @@ public:
     PureFiledManagerTest() :
         UnitTest( __FILE__ )
     {
-        Initialize();
+        initialize();
     } // PureFiledManagerTest()
 
     virtual ~PureFiledManagerTest()
     {
-        Finalize();
+        finalize();
     }
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureFiledManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureManager::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureFiledManaged::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureManaged::getLoggerModuleName(), true);
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureFiledManagerTest::testCtor);
-        AddSubTest("testGetByFilename", (PFNUNITSUBTEST) &PureFiledManagerTest::testGetByFilename);
-        AddSubTest("testCreateFromFile", (PFNUNITSUBTEST) &PureFiledManagerTest::testCreateFromFile);
-        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PureFiledManagerTest::testWriteList);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureFiledManagerTest::testCtor);
+        addSubTest("testGetByFilename", (PFNUNITSUBTEST) &PureFiledManagerTest::testGetByFilename);
+        addSubTest("testCreateFromFile", (PFNUNITSUBTEST) &PureFiledManagerTest::testCreateFromFile);
+        addSubTest("testWriteList", (PFNUNITSUBTEST) &PureFiledManagerTest::testWriteList);
     }
 
     virtual bool setUp() override
@@ -62,12 +62,12 @@ protected:
         return true;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
-        Finalize();
+        finalize();
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PureFiledManager::getLoggerModuleName(), false);
         CConsole::getConsoleInstance().SetLoggingState(PureManager::getLoggerModuleName(), false);

@@ -35,8 +35,8 @@ public:
     PureFiledManagedTest() :
         UnitTest( __FILE__ )
     {
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureFiledManagedTest::testCtor);
-        AddSubTest("testSubclass", (PFNUNITSUBTEST) &PureFiledManagedTest::testSubclass);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureFiledManagedTest::testCtor);
+        addSubTest("testSubclass", (PFNUNITSUBTEST) &PureFiledManagedTest::testSubclass);
     } // PureFiledManagedTest()
 
     virtual ~PureFiledManagedTest()
@@ -44,7 +44,7 @@ public:
         
     }
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PureFiledManaged::getLoggerModuleName(), true);
         //CConsole::getConsoleInstance().SetLoggingState(PureManaged::getLoggerModuleName(), true);
@@ -52,7 +52,7 @@ public:
         //CConsole::getConsoleInstance().SetLoggingState(PureManager::getLoggerModuleName(), true);
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PureFiledManaged::getLoggerModuleName(), false);
         CConsole::getConsoleInstance().SetLoggingState(PureManaged::getLoggerModuleName(), false);

@@ -24,31 +24,31 @@ public:
     PureColorTest() :
         UnitTest( __FILE__ )
     {
-        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PureColorTest::testCtor1);
-        AddSubTest("testCtor2", (PFNUNITSUBTEST) &PureColorTest::testCtor2);
-        AddSubTest("testCopyCtor", (PFNUNITSUBTEST) &PureColorTest::testCopyCtor);
-        AddSubTest("testGetRed", (PFNUNITSUBTEST) &PureColorTest::testGetRed);
-        AddSubTest("testGetGreen", (PFNUNITSUBTEST) &PureColorTest::testGetGreen);
-        AddSubTest("testGetBlue", (PFNUNITSUBTEST) &PureColorTest::testGetBlue);
-        AddSubTest("testGetAlpha", (PFNUNITSUBTEST) &PureColorTest::testGetAlpha);
-        AddSubTest("testGetRedAsFloat", (PFNUNITSUBTEST) &PureColorTest::testGetRedAsFloat);
-        AddSubTest("testGetGreenAsFloat", (PFNUNITSUBTEST) &PureColorTest::testGetGreenAsFloat);
-        AddSubTest("testGetBlueAsFloat", (PFNUNITSUBTEST) &PureColorTest::testGetBlueAsFloat);
-        AddSubTest("testGetAlphaAsFloat", (PFNUNITSUBTEST) &PureColorTest::testGetAlphaAsFloat);
-        AddSubTest("testSet", (PFNUNITSUBTEST) &PureColorTest::testSet);
-        AddSubTest("testSetf", (PFNUNITSUBTEST) &PureColorTest::testSetf);
-        AddSubTest("testSetRed", (PFNUNITSUBTEST) &PureColorTest::testSetRed);
-        AddSubTest("testSetRedf", (PFNUNITSUBTEST) &PureColorTest::testSetRedf);
-        AddSubTest("testSetGreen", (PFNUNITSUBTEST) &PureColorTest::testSetGreen);
-        AddSubTest("testSetGreenf", (PFNUNITSUBTEST) &PureColorTest::testSetGreenf);
-        AddSubTest("testSetBlue", (PFNUNITSUBTEST) &PureColorTest::testSetBlue);
-        AddSubTest("testSetBluef", (PFNUNITSUBTEST) &PureColorTest::testSetBluef);
-        AddSubTest("testSetAlpha", (PFNUNITSUBTEST) &PureColorTest::testSetAlpha);
-        AddSubTest("testSetAlphaf", (PFNUNITSUBTEST) &PureColorTest::testSetAlphaf);
-        AddSubTest("testOperatorEquals", (PFNUNITSUBTEST) &PureColorTest::testOperatorEquals);
-        AddSubTest("testOperatorNotEquals", (PFNUNITSUBTEST) &PureColorTest::testOperatorNotEquals);
-        AddSubTest("testOperatorAssignment", (PFNUNITSUBTEST) &PureColorTest::testOperatorAssignment);
-        AddSubTest("testOperatorWriteToStream", (PFNUNITSUBTEST) &PureColorTest::testOperatorWriteToStream);
+        addSubTest("testCtor1", (PFNUNITSUBTEST) &PureColorTest::testCtor1);
+        addSubTest("testCtor2", (PFNUNITSUBTEST) &PureColorTest::testCtor2);
+        addSubTest("testCopyCtor", (PFNUNITSUBTEST) &PureColorTest::testCopyCtor);
+        addSubTest("testGetRed", (PFNUNITSUBTEST) &PureColorTest::testGetRed);
+        addSubTest("testGetGreen", (PFNUNITSUBTEST) &PureColorTest::testGetGreen);
+        addSubTest("testGetBlue", (PFNUNITSUBTEST) &PureColorTest::testGetBlue);
+        addSubTest("testGetAlpha", (PFNUNITSUBTEST) &PureColorTest::testGetAlpha);
+        addSubTest("testGetRedAsFloat", (PFNUNITSUBTEST) &PureColorTest::testGetRedAsFloat);
+        addSubTest("testGetGreenAsFloat", (PFNUNITSUBTEST) &PureColorTest::testGetGreenAsFloat);
+        addSubTest("testGetBlueAsFloat", (PFNUNITSUBTEST) &PureColorTest::testGetBlueAsFloat);
+        addSubTest("testGetAlphaAsFloat", (PFNUNITSUBTEST) &PureColorTest::testGetAlphaAsFloat);
+        addSubTest("testSet", (PFNUNITSUBTEST) &PureColorTest::testSet);
+        addSubTest("testSetf", (PFNUNITSUBTEST) &PureColorTest::testSetf);
+        addSubTest("testSetRed", (PFNUNITSUBTEST) &PureColorTest::testSetRed);
+        addSubTest("testSetRedf", (PFNUNITSUBTEST) &PureColorTest::testSetRedf);
+        addSubTest("testSetGreen", (PFNUNITSUBTEST) &PureColorTest::testSetGreen);
+        addSubTest("testSetGreenf", (PFNUNITSUBTEST) &PureColorTest::testSetGreenf);
+        addSubTest("testSetBlue", (PFNUNITSUBTEST) &PureColorTest::testSetBlue);
+        addSubTest("testSetBluef", (PFNUNITSUBTEST) &PureColorTest::testSetBluef);
+        addSubTest("testSetAlpha", (PFNUNITSUBTEST) &PureColorTest::testSetAlpha);
+        addSubTest("testSetAlphaf", (PFNUNITSUBTEST) &PureColorTest::testSetAlphaf);
+        addSubTest("testOperatorEquals", (PFNUNITSUBTEST) &PureColorTest::testOperatorEquals);
+        addSubTest("testOperatorNotEquals", (PFNUNITSUBTEST) &PureColorTest::testOperatorNotEquals);
+        addSubTest("testOperatorAssignment", (PFNUNITSUBTEST) &PureColorTest::testOperatorAssignment);
+        addSubTest("testOperatorWriteToStream", (PFNUNITSUBTEST) &PureColorTest::testOperatorWriteToStream);
 
     } // PureColorTest()
 
@@ -59,7 +59,7 @@ protected:
         return true;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
 
     }

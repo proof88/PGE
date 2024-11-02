@@ -43,12 +43,12 @@ public:
 
     virtual ~PureTextureManagerTest()
     {
-        Finalize();
+        finalize();
     } // ~PureTextureManagerTest()
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         /*CConsole::getConsoleInstance().SetLoggingState(PureTexture::getLoggerModuleName(), true);
         CConsole::getConsoleInstance().SetLoggingState(PureTextureManager::getLoggerModuleName(), true);
@@ -58,37 +58,37 @@ protected:
         engine = NULL;
         im = NULL;
         tm = NULL;
-        AddSubTest("testGetMIPmapCount", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetMIPmapCount);
-        AddSubTest("testGetWidthAtLevel", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetWidthAtLevel);
-        AddSubTest("testGetHeightAtLevel", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetHeightAtLevel);
-        AddSubTest("testGetMIPmappedTexSize", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetMIPmappedTexSize);
-        AddSubTest("testGetPureanisoTexFilteringNameFromFloat", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetPureanisoTexFilteringNameFromFloat);
-        AddSubTest("testGetPureanisoTexFilteringNameFromUInt", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetPureanisoTexFilteringNameFromUInt);
-        AddSubTest("testGetFloatFromPureanisoTexFilteringName", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetFloatFromPureanisoTexFilteringName);
-        AddSubTest("testGetUIntFromPureanisoTexFilteringName", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetUIntFromPureanisoTexFilteringName);
-        AddSubTest("testCtor1", (PFNUNITSUBTEST) &PureTextureManagerTest::testCtor1);
-        AddSubTest("testCtor2", (PFNUNITSUBTEST) &PureTextureManagerTest::testCtor2);
-        AddSubTest("testDtor", (PFNUNITSUBTEST) &PureTextureManagerTest::testDtor);
-        AddSubTest("testGetUsedTextureMemory", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetUsedTextureMemory);
-        AddSubTest("testSetHardwareMipMapGenerationEnabled", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetHardwareMipMapGenerationEnabled);
-        AddSubTest("testSetNativeDIBFormatSupportEnabled", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetNativeDIBFormatSupportEnabled);
-        AddSubTest("testSetLazyInstancingEnabled", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetLazyInstancingEnabled);
-        AddSubTest("testSetPixelPreservingEnabled", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetPixelPreservingEnabled);
-        AddSubTest("testCreateTextureFromImage", (PFNUNITSUBTEST) &PureTextureManagerTest::testCreateTextureFromImage);
-        AddSubTest("testCreateTextureFromFile", (PFNUNITSUBTEST) &PureTextureManagerTest::testCreateTextureFromFile);
-        AddSubTest("testCreateTextureFromFileMIP", (PFNUNITSUBTEST) &PureTextureManagerTest::testCreateTextureFromFileMIP);
-        AddSubTest("testCreateTextureFromFileComp", (PFNUNITSUBTEST) &PureTextureManagerTest::testCreateTextureFromFileComp);
-        AddSubTest("testCreateTextureFromFileCompMIP", (PFNUNITSUBTEST) &PureTextureManagerTest::testCreateTextureFromFileCompMIP);
-        AddSubTest("testCreateTextureFromFileBorder", (PFNUNITSUBTEST) &PureTextureManagerTest::testCreateTextureFromFileBorder);
-        AddSubTest("testSetDefaultMinFilteringMode", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultMinFilteringMode);
-        AddSubTest("testSetDefaultMagFilteringMode", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultMagFilteringMode);
-        AddSubTest("testSetDefaultIsoFilteringMode", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultIsoFilteringMode);
-        AddSubTest("testSetDefaultAnisoFilteringMode", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultAnisoFilteringMode);
-        AddSubTest("testSetDefaultWrappingMode", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultWrappingMode);
-        AddSubTest("testSetDefaultCompressionMode", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultCompressionMode);
-        AddSubTest("testSetDefaultBorder", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultBorder);
-        AddSubTest("testSetDefaultBorderColor", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultBorderColor);
-        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PureTextureManagerTest::testWriteList);
+        addSubTest("testGetMIPmapCount", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetMIPmapCount);
+        addSubTest("testGetWidthAtLevel", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetWidthAtLevel);
+        addSubTest("testGetHeightAtLevel", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetHeightAtLevel);
+        addSubTest("testGetMIPmappedTexSize", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetMIPmappedTexSize);
+        addSubTest("testGetPureanisoTexFilteringNameFromFloat", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetPureanisoTexFilteringNameFromFloat);
+        addSubTest("testGetPureanisoTexFilteringNameFromUInt", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetPureanisoTexFilteringNameFromUInt);
+        addSubTest("testGetFloatFromPureanisoTexFilteringName", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetFloatFromPureanisoTexFilteringName);
+        addSubTest("testGetUIntFromPureanisoTexFilteringName", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetUIntFromPureanisoTexFilteringName);
+        addSubTest("testCtor1", (PFNUNITSUBTEST) &PureTextureManagerTest::testCtor1);
+        addSubTest("testCtor2", (PFNUNITSUBTEST) &PureTextureManagerTest::testCtor2);
+        addSubTest("testDtor", (PFNUNITSUBTEST) &PureTextureManagerTest::testDtor);
+        addSubTest("testGetUsedTextureMemory", (PFNUNITSUBTEST) &PureTextureManagerTest::testGetUsedTextureMemory);
+        addSubTest("testSetHardwareMipMapGenerationEnabled", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetHardwareMipMapGenerationEnabled);
+        addSubTest("testSetNativeDIBFormatSupportEnabled", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetNativeDIBFormatSupportEnabled);
+        addSubTest("testSetLazyInstancingEnabled", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetLazyInstancingEnabled);
+        addSubTest("testSetPixelPreservingEnabled", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetPixelPreservingEnabled);
+        addSubTest("testCreateTextureFromImage", (PFNUNITSUBTEST) &PureTextureManagerTest::testCreateTextureFromImage);
+        addSubTest("testCreateTextureFromFile", (PFNUNITSUBTEST) &PureTextureManagerTest::testCreateTextureFromFile);
+        addSubTest("testCreateTextureFromFileMIP", (PFNUNITSUBTEST) &PureTextureManagerTest::testCreateTextureFromFileMIP);
+        addSubTest("testCreateTextureFromFileComp", (PFNUNITSUBTEST) &PureTextureManagerTest::testCreateTextureFromFileComp);
+        addSubTest("testCreateTextureFromFileCompMIP", (PFNUNITSUBTEST) &PureTextureManagerTest::testCreateTextureFromFileCompMIP);
+        addSubTest("testCreateTextureFromFileBorder", (PFNUNITSUBTEST) &PureTextureManagerTest::testCreateTextureFromFileBorder);
+        addSubTest("testSetDefaultMinFilteringMode", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultMinFilteringMode);
+        addSubTest("testSetDefaultMagFilteringMode", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultMagFilteringMode);
+        addSubTest("testSetDefaultIsoFilteringMode", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultIsoFilteringMode);
+        addSubTest("testSetDefaultAnisoFilteringMode", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultAnisoFilteringMode);
+        addSubTest("testSetDefaultWrappingMode", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultWrappingMode);
+        addSubTest("testSetDefaultCompressionMode", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultCompressionMode);
+        addSubTest("testSetDefaultBorder", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultBorder);
+        addSubTest("testSetDefaultBorderColor", (PFNUNITSUBTEST) &PureTextureManagerTest::testSetDefaultBorderColor);
+        addSubTest("testWriteList", (PFNUNITSUBTEST) &PureTextureManagerTest::testWriteList);
     }
 
     virtual bool setUp() override
@@ -107,14 +107,14 @@ protected:
         return ret;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
-        Finalize();
+        finalize();
         im = NULL;
         tm = NULL;
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         if ( engine )
         {

@@ -29,37 +29,37 @@ public:
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState(PR00FsUltimateRenderingEngine::getLoggerModuleName(), true);
 
         engine = NULL;
         
-        AddSubTest("testInitializeInvalidResolution2", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeInvalidResolution2);
-        AddSubTest("testInitializeInvalidColorDepth", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeInvalidColorDepth);
-        AddSubTest("testInitializeInvalidZDepth", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeInvalidZDepth);
-        AddSubTest("testInitializeInvalidRefreshRate", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeInvalidRefreshRate);
-        AddSubTest("testInitializeWindowed800x600x32x24x0", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeWindowed800x600x32x24x0);
-        AddSubTest("testInitializeWindowed800x600x32x24x8", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeWindowed800x600x32x24x8);
-        AddSubTest("testInitializeFullScreen800x600x32x24x0", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeFullScreen800x600x32x24x0);
-        AddSubTest("testInitializeFullScreenRefreshRate0", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeFullScreenRefreshRate0);
-        AddSubTest("testInitializeWindowedCurrentResolution", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeWindowedCurrentResolution);
-        AddSubTest("testInitializeFullScreenCurrentResolution", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeFullScreenCurrentResolution);
-        AddSubTest("testShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testShutdown);
-        AddSubTest("testIsInitialized", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testIsInitialized);
-        AddSubTest("testGetScreen", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetScreen);
-        AddSubTest("testGetWindow", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetWindow);
-        AddSubTest("testGetHardwareInfo", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetHardwareInfo);
-        AddSubTest("testGetImageManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetImageManager);
-        AddSubTest("testGetTextureManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetTextureManager);
-        AddSubTest("testGetObject3DManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetObject3DManager);
-        AddSubTest("testGetCamera", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetCamera);
-        AddSubTest("testGetUImanager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetUImanager);
-        AddSubTest("testGetRenderer", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetRenderer);
-        AddSubTest("testCopyScreenToTexture", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testCopyScreenToTexture);
-        AddSubTest("testWriteList", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testWriteList);
-        AddSubTest("testGetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetAutoWriteStatsAtShutdown);
-        AddSubTest("testSetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testSetAutoWriteStatsAtShutdown);
+        addSubTest("testInitializeInvalidResolution2", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeInvalidResolution2);
+        addSubTest("testInitializeInvalidColorDepth", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeInvalidColorDepth);
+        addSubTest("testInitializeInvalidZDepth", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeInvalidZDepth);
+        addSubTest("testInitializeInvalidRefreshRate", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeInvalidRefreshRate);
+        addSubTest("testInitializeWindowed800x600x32x24x0", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeWindowed800x600x32x24x0);
+        addSubTest("testInitializeWindowed800x600x32x24x8", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeWindowed800x600x32x24x8);
+        addSubTest("testInitializeFullScreen800x600x32x24x0", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeFullScreen800x600x32x24x0);
+        addSubTest("testInitializeFullScreenRefreshRate0", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeFullScreenRefreshRate0);
+        addSubTest("testInitializeWindowedCurrentResolution", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeWindowedCurrentResolution);
+        addSubTest("testInitializeFullScreenCurrentResolution", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testInitializeFullScreenCurrentResolution);
+        addSubTest("testShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testShutdown);
+        addSubTest("testIsInitialized", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testIsInitialized);
+        addSubTest("testGetScreen", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetScreen);
+        addSubTest("testGetWindow", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetWindow);
+        addSubTest("testGetHardwareInfo", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetHardwareInfo);
+        addSubTest("testGetImageManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetImageManager);
+        addSubTest("testGetTextureManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetTextureManager);
+        addSubTest("testGetObject3DManager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetObject3DManager);
+        addSubTest("testGetCamera", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetCamera);
+        addSubTest("testGetUImanager", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetUImanager);
+        addSubTest("testGetRenderer", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetRenderer);
+        addSubTest("testCopyScreenToTexture", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testCopyScreenToTexture);
+        addSubTest("testWriteList", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testWriteList);
+        addSubTest("testGetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testGetAutoWriteStatsAtShutdown);
+        addSubTest("testSetAutoWriteStatsAtShutdown", (PFNUNITSUBTEST) &PR00FsUltimateRenderingEngineTest::testSetAutoWriteStatsAtShutdown);
     }
 
     virtual bool setUp() override
@@ -70,7 +70,7 @@ protected:
         return assertNotNull(engine, "engine null");
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
         if ( engine )
         {
@@ -79,7 +79,7 @@ protected:
         }
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         CConsole::getConsoleInstance().SetLoggingState(PR00FsUltimateRenderingEngine::getLoggerModuleName(), false);    
     }

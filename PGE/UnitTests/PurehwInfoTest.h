@@ -30,19 +30,19 @@ public:
 
     virtual ~PureHwInfoTest()
     {
-        Finalize();
+        finalize();
     }
 
 protected:
 
-    virtual void Initialize() override
+    virtual void initialize() override
     {
         //CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", true);
         engine = NULL;
-        AddSubTest("testCtor", (PFNUNITSUBTEST) &PureHwInfoTest::testCtor);
-        AddSubTest("testInitialize", (PFNUNITSUBTEST) &PureHwInfoTest::testInitialize);
-        AddSubTest("testDeinitialize", (PFNUNITSUBTEST) &PureHwInfoTest::testDeinitialize);
-        AddSubTest("testWriteStats", (PFNUNITSUBTEST) &PureHwInfoTest::testWriteStats);
+        addSubTest("testCtor", (PFNUNITSUBTEST) &PureHwInfoTest::testCtor);
+        addSubTest("testInitialize", (PFNUNITSUBTEST) &PureHwInfoTest::testInitialize);
+        addSubTest("testDeinitialize", (PFNUNITSUBTEST) &PureHwInfoTest::testDeinitialize);
+        addSubTest("testWriteStats", (PFNUNITSUBTEST) &PureHwInfoTest::testWriteStats);
     }
 
     virtual bool setUp() override
@@ -57,12 +57,12 @@ protected:
         return ret;
     }
 
-    virtual void TearDown() override
+    virtual void tearDown() override
     {
         CConsole::getConsoleInstance().SetLoggingState("4LLM0DUL3S", false);    
     }
 
-    virtual void Finalize() override
+    virtual void finalize() override
     {
         if ( engine )
         {
