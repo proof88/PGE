@@ -6,9 +6,11 @@
     ################################################
 */
 
+// need to define this macro so we can use Test::runTests() with Console lib
+#ifndef TEST_WITH_CCONSOLE
+#define TEST_WITH_CCONSOLE
+#endif
 #include "UnitTest.h"  // PCH
-
-#include <memory>  // for std::unique_ptr; requires cpp11
 
 #ifndef WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
 #define WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
@@ -20,9 +22,7 @@
 #ifndef WINPROOF88_ALLOW_SOUND
 #define WINPROOF88_ALLOW_SOUND
 #endif
-#include "../../../PFL/PFL/winproof88.h"
-
-#include "../../../Console/CConsole/src/CConsole.h"
+#include "winproof88.h"   // part of PFL lib: https://github.com/proof88/PFL
 
 #include "PFLTest.h"
 #include "PgeObjectPoolTest.h"
@@ -87,161 +87,96 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     getConsole().Initialize(CON_TITLE, true);
     //getConsole().SetLoggingState("4LLM0DUL3S", true);
     getConsole().SetErrorsAlwaysOn(false);
-    getConsole().OLn(CON_TITLE);
-    getConsole().L();
-    getConsole().OLn("");
-    
-    std::vector<std::unique_ptr<UnitTest>> tests;
-    
-    //tests.push_back(std::unique_ptr<UnitTest>(new PFLTest));
 
-    //tests.push_back(std::unique_ptr<UnitTest>(new PgeObjectPoolTest));
+    getConsole().OLn("");
+    // Expecting NDEBUG to be reliable: https://man7.org/linux/man-pages/man3/assert.3.html
+#ifdef NDEBUG
+    const char* const szBuildType = "Release";
+#else
+    const char* const szBuildType = "Debug";
+#endif 
+    getConsole().OLn("%s. Build Type: %s, Timestamp: %s @ %s", CON_TITLE, szBuildType, __DATE__, __TIME__);
+
+    std::vector<std::unique_ptr<Test>> tests;
+    
+    tests.push_back(std::unique_ptr<Test>(new PFLTest));
+
+    //tests.push_back(std::unique_ptr<Test>(new PgeObjectPoolTest));
     
     /*
-    tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgVariableTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgFileTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PGEcfgProfilesTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PgeOldNewValueTest));
+    tests.push_back(std::unique_ptr<Test>(new PGEcfgVariableTest));
+    tests.push_back(std::unique_ptr<Test>(new PGEcfgFileTest));
+    tests.push_back(std::unique_ptr<Test>(new PGEcfgProfilesTest));
+    tests.push_back(std::unique_ptr<Test>(new PgeOldNewValueTest));
     */
     
-    //tests.push_back(std::unique_ptr<UnitTest>(new PgePacketTest));
+    //tests.push_back(std::unique_ptr<Test>(new PgePacketTest));
     
-    //tests.push_back(std::unique_ptr<UnitTest>(new PgeWeaponsTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PGEBulletTest));
+    //tests.push_back(std::unique_ptr<Test>(new PgeWeaponsTest));
+    tests.push_back(std::unique_ptr<Test>(new PGEBulletTest));
     /**/
     
     /*  
-    tests.push_back(std::unique_ptr<UnitTest>(new PureScreenTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureSharedSettingsTest));
+    tests.push_back(std::unique_ptr<Test>(new PureScreenTest));
+    tests.push_back(std::unique_ptr<Test>(new PureSharedSettingsTest));
     */
     
     /*  
-    tests.push_back(std::unique_ptr<UnitTest>(new PurePosUpTargetTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureVectorTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureMatrixTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureTransformMatrixTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureAxisAlignedBoundingBoxTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureOctreeTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureBoundingVolumeHierarchyTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureScissorTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureProjectionTest));
+    tests.push_back(std::unique_ptr<Test>(new PurePosUpTargetTest));
+    tests.push_back(std::unique_ptr<Test>(new PureVectorTest));
+    tests.push_back(std::unique_ptr<Test>(new PureMatrixTest));
+    tests.push_back(std::unique_ptr<Test>(new PureTransformMatrixTest));
+    tests.push_back(std::unique_ptr<Test>(new PureAxisAlignedBoundingBoxTest));
+    tests.push_back(std::unique_ptr<Test>(new PureOctreeTest));
+    tests.push_back(std::unique_ptr<Test>(new PureBoundingVolumeHierarchyTest));
+    tests.push_back(std::unique_ptr<Test>(new PureScissorTest));
+    tests.push_back(std::unique_ptr<Test>(new PureProjectionTest));
     */
 
     /*   
-    tests.push_back(std::unique_ptr<UnitTest>(new PureColorTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureManagerTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureManagedTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureFiledManagerTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureFiledManagedTest));
+    tests.push_back(std::unique_ptr<Test>(new PureColorTest));
+    tests.push_back(std::unique_ptr<Test>(new PureManagerTest));
+    tests.push_back(std::unique_ptr<Test>(new PureManagedTest));
+    tests.push_back(std::unique_ptr<Test>(new PureFiledManagerTest));
+    tests.push_back(std::unique_ptr<Test>(new PureFiledManagedTest));
 
-    tests.push_back(std::unique_ptr<UnitTest>(new PureHwInfoTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PurehwCentralProcessorTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureHwSystemMemoryTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureHwAudioTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureHwVideoTest));
+    tests.push_back(std::unique_ptr<Test>(new PureHwInfoTest));
+    tests.push_back(std::unique_ptr<Test>(new PurehwCentralProcessorTest));
+    tests.push_back(std::unique_ptr<Test>(new PureHwSystemMemoryTest));
+    tests.push_back(std::unique_ptr<Test>(new PureHwAudioTest));
+    tests.push_back(std::unique_ptr<Test>(new PureHwVideoTest));
 
-    tests.push_back(std::unique_ptr<UnitTest>(new PureImageManagerTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureImageTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureTextureManagerTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureTextureTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureMaterialManagerTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureMaterialTest));
+    tests.push_back(std::unique_ptr<Test>(new PureImageManagerTest));
+    tests.push_back(std::unique_ptr<Test>(new PureImageTest));
+    tests.push_back(std::unique_ptr<Test>(new PureTextureManagerTest));
+    tests.push_back(std::unique_ptr<Test>(new PureTextureTest));
+    tests.push_back(std::unique_ptr<Test>(new PureMaterialManagerTest));
+    tests.push_back(std::unique_ptr<Test>(new PureMaterialTest));
     */
 
-    //tests.push_back(std::unique_ptr<UnitTest>(new PureCameraTest));
+    //tests.push_back(std::unique_ptr<Test>(new PureCameraTest));
     
     /*  
-    tests.push_back(std::unique_ptr<UnitTest>(new PureMesh3DManagerTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureMesh3DTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureVertexTransferTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureObject3DManagerTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureObject3DTest));
+    tests.push_back(std::unique_ptr<Test>(new PureMesh3DManagerTest));
+    tests.push_back(std::unique_ptr<Test>(new PureMesh3DTest));
+    tests.push_back(std::unique_ptr<Test>(new PureVertexTransferTest));
+    tests.push_back(std::unique_ptr<Test>(new PureObject3DManagerTest));
+    tests.push_back(std::unique_ptr<Test>(new PureObject3DTest));
     */
     
     /*   
-    tests.push_back(std::unique_ptr<UnitTest>(new PureWindowTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PureWindowTest2));
+    tests.push_back(std::unique_ptr<Test>(new PureWindowTest));
+    tests.push_back(std::unique_ptr<Test>(new PureWindowTest2));
     */
 
-    //tests.push_back(std::unique_ptr<UnitTest>(new PureRendererHWfixedPipeTest));
+    //tests.push_back(std::unique_ptr<Test>(new PureRendererHWfixedPipeTest));
     
     /*  
-    tests.push_back(std::unique_ptr<UnitTest>(new PR00FsUltimateRenderingEngineTest));
-    tests.push_back(std::unique_ptr<UnitTest>(new PR00FsUltimateRenderingEngineTest2));
+    tests.push_back(std::unique_ptr<Test>(new PR00FsUltimateRenderingEngineTest));
+    tests.push_back(std::unique_ptr<Test>(new PR00FsUltimateRenderingEngineTest2));
     */
 
-    size_t nSucceededTests = 0;
-    size_t nTotalSubTests = 0;
-    size_t nTotalPassedSubTests = 0;
-    for (size_t i = 0; i < tests.size(); ++i)
-    {
-        getConsole().OLn("Running test %d / %d ... ", i+1, tests.size());
-        tests[i]->run();
-    }
-
-    // summarizing
-    getConsole().OLn("");
-    for (size_t i = 0; i < tests.size(); ++i)
-    {
-        if ( tests[i]->isPassed() )
-        {
-            ++nSucceededTests;
-            getConsole().SOn();
-            if ( tests[i]->getName().empty() )
-            {
-                getConsole().OLn("Test passed: %s(%d)!", tests[i]->getFile().c_str(), tests[i]->getSubTestCount());
-            }
-            else if ( tests[i]->getFile().empty() )
-            {
-                getConsole().OLn("Test passed: %s(%d)!", tests[i]->getName().c_str(), tests[i]->getSubTestCount());
-            }
-            else
-            {
-                getConsole().OLn("Test passed: %s(%d) in %s!", tests[i]->getName().c_str(), tests[i]->getSubTestCount(), tests[i]->getFile().c_str());
-            }
-            getConsole().SOff();
-        }
-        else
-        {
-            getConsole().EOn();
-            if ( tests[i]->getName().empty() )
-            {
-                getConsole().OLn("Test failed: %s", tests[i]->getFile().c_str());
-            }
-            else if ( tests[i]->getFile().empty() )
-            {
-                getConsole().OLn("Test failed: %s", tests[i]->getName().c_str());
-            }
-            else
-            {
-                getConsole().OLn("Test failed: %s in %s", tests[i]->getName().c_str(), tests[i]->getFile().c_str());
-            }
-            getConsole().Indent();
-            for (size_t j = 0; j < tests[i]->getErrorMessages().size(); ++j)
-            {
-                getConsole().OLn("%s", tests[i]->getErrorMessages()[j].c_str());
-            }
-            getConsole().Outdent();
-            getConsole().EOff();
-        }
-        nTotalSubTests += tests[i]->getSubTestCount();
-        nTotalPassedSubTests += tests[i]->getPassedSubTestCount();
-    }
-
-    getConsole().OLn("");
-    getConsole().OLn("========================================================");
-    if ( nSucceededTests == tests.size() )
-    {
-        getConsole().SOn();
-    }
-    else
-    {
-        getConsole().EOn();
-    }
-    getConsole().OLn("Passed tests: %d / %d (SubTests: %d / %d)", nSucceededTests, tests.size(), nTotalPassedSubTests, nTotalSubTests);
-    getConsole().NOn();
-    getConsole().OLn("========================================================");
-    
+    Test::runTests(tests, getConsole(), "Running Unit Tests ...");
     system("pause");
 
     getConsole().Deinitialize();
