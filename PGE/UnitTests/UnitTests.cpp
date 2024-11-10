@@ -25,6 +25,7 @@
 #include "winproof88.h"   // part of PFL lib: https://github.com/proof88/PFL
 
 #include "PFLTest.h"
+#include "PFLFixFIFOTest.h"
 #include "PgeObjectPoolTest.h"
 #include "PGEcfgVariableTest.h"
 #include "PGEcfgFileTest.h"
@@ -99,7 +100,8 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
 
     std::vector<std::unique_ptr<Test>> tests;
     
-    tests.push_back(std::unique_ptr<Test>(new PFLTest));
+    //tests.push_back(std::unique_ptr<Test>(new PFLTest));
+    tests.push_back(std::unique_ptr<Test>(new PFLFixFIFOTest));
 
     //tests.push_back(std::unique_ptr<Test>(new PgeObjectPoolTest));
     
@@ -113,7 +115,7 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     //tests.push_back(std::unique_ptr<Test>(new PgePacketTest));
     
     //tests.push_back(std::unique_ptr<Test>(new PgeWeaponsTest));
-    tests.push_back(std::unique_ptr<Test>(new PGEBulletTest));
+    //tests.push_back(std::unique_ptr<Test>(new PGEBulletTest));
     /**/
     
     /*  

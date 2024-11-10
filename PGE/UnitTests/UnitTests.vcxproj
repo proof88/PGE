@@ -391,6 +391,7 @@
     <ClInclude Include="..\..\..\455-355-7357-88\455-355-7357-88\ScopeBenchmarker.h" />
     <ClInclude Include="..\..\..\455-355-7357-88\455-355-7357-88\UnitTest.h" />
     <ClInclude Include="..\..\..\Console\CConsole\src\CConsole.h" />
+    <ClInclude Include="..\..\..\PFL\PFL\FixFIFO.h" />
     <ClInclude Include="..\..\..\PFL\PFL\PFL.h" />
     <ClInclude Include="..\..\..\PFL\PFL\winproof88.h" />
     <ClInclude Include="..\Audio\PgeAudio.h" />
@@ -446,6 +447,7 @@
     <ClInclude Include="..\PURE\include\external\Render\PureIRenderer.h" />
     <ClInclude Include="..\PURE\include\external\Render\PureRendererHWfixedPipe.h" />
     <ClInclude Include="..\PURE\include\external\Render\PureRendererSWincremental.h" />
+    <ClInclude Include="PFLFixFIFOTest.h" />
     <ClInclude Include="PGEBulletTest.h" />
     <ClInclude Include="PgeObjectPoolTest.h" />
     <ClInclude Include="PgeOldNewValueTest.h" />
