@@ -36,8 +36,10 @@ protected:
         addSubTest("test_ctor", static_cast<PFNUNITSUBTEST>(&PFLFixFIFOTest::test_ctor));
         addSubTest("test_push_back", static_cast<PFNUNITSUBTEST>(&PFLFixFIFOTest::test_push_back));
         addSubTest("test_front_empty", static_cast<PFNUNITSUBTEST>(&PFLFixFIFOTest::test_front_empty));
-        addSubTest("test_pop_empty", static_cast<PFNUNITSUBTEST>(&PFLFixFIFOTest::test_pop_empty));
-        addSubTest("test_front_and_pop", static_cast<PFNUNITSUBTEST>(&PFLFixFIFOTest::test_front_and_pop));
+        addSubTest("test_pop_front_empty", static_cast<PFNUNITSUBTEST>(&PFLFixFIFOTest::test_pop_front_empty));
+        addSubTest("test_pop_front_noreturn_empty", static_cast<PFNUNITSUBTEST>(&PFLFixFIFOTest::test_pop_front_noreturn_empty));
+        addSubTest("test_front_and_pop_front", static_cast<PFNUNITSUBTEST>(&PFLFixFIFOTest::test_front_and_pop_front));
+        addSubTest("test_front_and_pop_front_noreturn", static_cast<PFNUNITSUBTEST>(&PFLFixFIFOTest::test_front_and_pop_front_noreturn));
         addSubTest("test_clear", static_cast<PFNUNITSUBTEST>(&PFLFixFIFOTest::test_clear));
         addSubTest("test_begin_index_next_index", static_cast<PFNUNITSUBTEST>(&PFLFixFIFOTest::test_begin_index_next_index));
     }
@@ -200,7 +202,7 @@ private:
         return b;
     }
 
-    bool test_pop_empty()
+    bool test_pop_front_empty()
     {
         static constexpr size_t capacity = 3;
         pfl::FixFIFO<int> fifo(capacity);
@@ -223,7 +225,30 @@ private:
         return b;
     }
 
-    bool test_front_and_pop()
+    bool test_pop_front_noreturn_empty()
+    {
+        static constexpr size_t capacity = 3;
+        pfl::FixFIFO<int> fifo(capacity);
+
+        bool b = true;
+
+        try
+        {
+            fifo.pop_front_noreturn();
+            b = assertFalse(true, "Exception needed!");
+        }
+        catch (const std::exception& e)
+        {
+            b &= assertEquals(
+                std::string("Container is empty!"),
+                std::string(e.what()),
+                "ex what");
+        }
+
+        return b;
+    }
+
+    bool test_front_and_pop_front()
     {
         static constexpr size_t capacity = 3;
         pfl::FixFIFO<int> fifo(capacity);
@@ -244,6 +269,40 @@ private:
                 const auto expectedElem = elemsToBePopped[vecIndex];
                 b &= assertEquals(expectedElem, fifo.front(), "front");
                 b &= assertEquals(expectedElem, fifo.pop_front(), "pop front");
+            }
+
+            b &= assertTrue(fifo.empty(), "empty final") &
+                assertEquals(0u, fifo.size(), "size final");
+        }
+        catch (const std::exception&)
+        {
+            b = assertFalse(true, "Exception thrown!");
+        }
+
+        return b;
+    }
+
+    bool test_front_and_pop_front_noreturn()
+    {
+        static constexpr size_t capacity = 3;
+        pfl::FixFIFO<int> fifo(capacity);
+
+        bool b = true;
+        b &= assertTrue(fifo.push_back(5), "push 5");
+        b &= assertTrue(fifo.push_back(3), "push 3");
+        b &= assertTrue(fifo.push_back(1), "push 1");
+
+        try
+        {
+            const std::vector<int> elemsToBePopped{ 1, 3, 5 };
+            size_t vecIndex = elemsToBePopped.size();
+            while (!fifo.empty() && (vecIndex > 0))
+            {
+                b &= assertEquals(vecIndex, fifo.size(), "size");
+                vecIndex--;
+                const auto expectedElem = elemsToBePopped[vecIndex];
+                b &= assertEquals(expectedElem, fifo.front(), "front");
+                fifo.pop_front_noreturn();
             }
 
             b &= assertTrue(fifo.empty(), "empty final") &
