@@ -101,7 +101,7 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     std::vector<std::unique_ptr<Test>> tests;
     
     //tests.push_back(std::unique_ptr<Test>(new PFLTest));
-    tests.push_back(std::unique_ptr<Test>(new PFLFixFIFOTest));
+    //tests.push_back(std::unique_ptr<Test>(new PFLFixFIFOTest));
 
     //tests.push_back(std::unique_ptr<Test>(new PgeObjectPoolTest));
     
@@ -151,7 +151,7 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     tests.push_back(std::unique_ptr<Test>(new PureImageManagerTest));
     tests.push_back(std::unique_ptr<Test>(new PureImageTest));
     tests.push_back(std::unique_ptr<Test>(new PureTextureManagerTest));
-    tests.push_back(std::unique_ptr<Test>(new PureTextureTest));
+    tests.push_back(std::unique_ptr<Test>(new PureTextureTest));   
     tests.push_back(std::unique_ptr<Test>(new PureMaterialManagerTest));
     tests.push_back(std::unique_ptr<Test>(new PureMaterialTest));
     */

@@ -274,6 +274,18 @@ const PureColor& PureMaterial::PureMaterialImpl::getTextureEnvColor(TPureUInt le
 }
 
 
+const TPureBool& PureMaterial::PureMaterialImpl::isDecalOffsetEnabled() const
+{
+    return bDecalOffset;
+}
+
+
+void PureMaterial::PureMaterialImpl::setDecalOffset(TPureBool state)
+{
+    bDecalOffset = state;
+}
+
+
 TPURE_BLENDFACTOR PureMaterial::PureMaterialImpl::getSourceBlendFunc(TPureUInt level) const
 {
     if ( level < ((PureMaterialManager*)_pOwner->getManager())->getMaximumLayerCount() )
@@ -471,6 +483,7 @@ PureMaterial::PureMaterialImpl::PureMaterialImpl(
 
     nIndices = 0;
     fShininessBackFace = fShininessFrontFace = 1.0f;
+    bDecalOffset = false;
 
     // we dont store nLayers because from now layers.size() is fix until this instance is deleted
 
@@ -785,6 +798,34 @@ PureColor& PureMaterial::getTextureEnvColor(TPureUInt level)
 const PureColor& PureMaterial::getTextureEnvColor(TPureUInt level) const
 {
     return pImpl->getTextureEnvColor(level);
+}
+
+
+/**
+    Gets whether material is used as decal rendering.
+    See details at setDecalOffset().
+
+    @return True if decal / polygon offseting is enabled, false otherwise.
+*/
+const TPureBool& PureMaterial::isDecalOffsetEnabled() const
+{
+    return pImpl->isDecalOffsetEnabled();
+}
+
+/**
+    Sets decal rendering for this material.
+    Useful when you have coplanar overlaying surfaces, to avoid Z-fighting/bleeding:
+    enable this for the decal surface which supposed to be on top of the other surface.
+    If enabled, the calculated depth values of the fragments will be offset enough to make the fragments appear on top of the
+    fragments of the other surface.
+    Basically this controls glPolygonOffset() behind the scene.
+    By default it is disabled.
+
+    @param state True for enabling decal / polygon offseting, false for disabling it.
+*/
+void PureMaterial::setDecalOffset(TPureBool state)
+{
+    pImpl->setDecalOffset(state);
 }
 
 

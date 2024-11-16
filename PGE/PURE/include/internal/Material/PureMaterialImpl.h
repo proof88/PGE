@@ -70,6 +70,9 @@ public:
             PureColor&   getTextureEnvColor(TPureUInt level = 0);
     const   PureColor&   getTextureEnvColor(TPureUInt level = 0) const;
 
+    const   TPureBool&   isDecalOffsetEnabled() const;
+    void                 setDecalOffset(TPureBool state);
+
             TPURE_BLENDFACTOR getSourceBlendFunc(TPureUInt level = 0) const;
             TPureBool          setSourceBlendFunc(
                                 TPURE_BLENDFACTOR value,
@@ -126,6 +129,7 @@ private:
     TPureFloat  fShininessFrontFace;
     TPureFloat  fShininessBackFace;
     std::vector<TPURE_MATERIAL_LAYER> layers;
+    TPureBool   bDecalOffset;
 
     // ---------------------------------------------------------------------------
 

@@ -1102,15 +1102,23 @@ void PureRendererHWfixedPipeImpl::SetBasicThingsInOpenGL()
 {
     glEnable(GL_DEPTH_TEST);  // some objects like sticked objects or 2-sided AND wireframed objects may temporarily modify this
     glClearDepth(1.0f);
-    glDepthFunc(GL_LEQUAL);  // permanent setting, don't change in middle of rendering to get use of depth buffer optimisations
-    glDepthRange(0, 1);    // permanent
+    glDepthFunc(GL_LEQUAL);   // permanent setting, don't change in middle of rendering to get use of depth buffer optimisations
+    glDepthRange(0, 1);       // permanent
+
+    glPolygonOffset(-1.f, -2.f);  // permanent values (copied them from Quake 3), but offseting is per-material enabled/disabled for each object
+
     glCullFace(GL_BACK);      // 2-sided objects may temporarily modify this
     glFrontFace(GL_CCW);      // usually this is true, however some negative-scaled objects may temporarily modify this
+
     glEnable(GL_SCISSOR_TEST);
+
     pglHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);  // permanent setting
+
     glShadeModel(GL_SMOOTH);
     //glShadeModel(GL_FLAT);
+
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  // instead of the default 4-byte boundary, we use 1 to support textures like 2x2
+
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     GLfloat white[4] = {1.0f, 1.0f, 1.0f, 1.0};
@@ -1118,6 +1126,7 @@ void PureRendererHWfixedPipeImpl::SetBasicThingsInOpenGL()
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, white);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
+
     glFlush();
     glFinish();
 } // SetBasicThingsInOpenGL()

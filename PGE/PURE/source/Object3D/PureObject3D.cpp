@@ -1150,6 +1150,15 @@ void PureObject3D::PureObject3DImpl::Draw_PrepareGLBeforeDrawNormal(bool bLighti
         else
             glEnable(GL_CULL_FACE);
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        if (_pOwner->getMaterial(false).isDecalOffsetEnabled())
+        {
+            glEnable(GL_POLYGON_OFFSET_LINE);
+        }
+        else
+        {
+            glDisable(GL_POLYGON_OFFSET_LINE);
+        }
     }
     else
     {
@@ -1159,13 +1168,22 @@ void PureObject3D::PureObject3DImpl::Draw_PrepareGLBeforeDrawNormal(bool bLighti
             //glLightfv(GL_LIGHT0, GL_POSITION, AmbientLightPos);
         }
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        if (_pOwner->getMaterial(false).isDecalOffsetEnabled())
+        {
+            glEnable(GL_POLYGON_OFFSET_FILL);
+        }
+        else
+        {
+            glDisable(GL_POLYGON_OFFSET_FILL);
+        }
     } // isWireframed()
     
     if ( isTestingAgainstZBuffer() )
         glEnable(GL_DEPTH_TEST);
     else
         glDisable(GL_DEPTH_TEST);
-    
+
     // TODO: nope, we shouldnt specify color this way because glColor4f() is called per-vertex anyway later
     // getTextureEnvColor() is used by texture environment mode / function, not blending!
     // we should rather use glBlendColor() for this with GL_*_CONSTANT_* blendfunc, or modify the code not to specify color per-vertex
@@ -1189,6 +1207,10 @@ void PureObject3D::PureObject3DImpl::Draw_PrepareGLBeforeDrawNormal(bool bLighti
         "glDepthMask(GL_FALSE);
          Note that this only has effect if depth testing is enabled."
         https://learnopengl.com/Advanced-OpenGL/Depth-testing
+
+        "Even if the depth buffer exists and the depth mask is non-zero, the depth buffer is not updated if the depth test is disabled.
+         In order to unconditionally write to the depth buffer, the depth test should be enabled and set to GL_ALWAYS."
+        https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDepthFunc.xhtml
     */
     if ( PureMaterial::isBlendFuncReallyBlending(_pOwner->getMaterial(false).getSourceBlendFunc(), _pOwner->getMaterial(false).getDestinationBlendFunc()) )
     {

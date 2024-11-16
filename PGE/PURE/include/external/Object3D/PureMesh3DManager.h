@@ -71,7 +71,7 @@ public:
     virtual const TXYZ* getVertices(TPureBool implicitAccessSubobject = true) const;           /**< Gets the pointer to vertices. */
     virtual       TXYZ* getVertices(TPureBool implicitAccessSubobject = true);                 /**< Gets the pointer to vertices. */
 
-    virtual  TPureUInt   getVertexIndicesCount() const;                                         /**< Gets the number of total vertex indices. */
+    virtual TPureUInt   getVertexIndicesCount() const;                                         /**< Gets the number of total vertex indices. */
     virtual const void* getVertexIndices(TPureBool implicitAccessSubobject = true) const;      /**< Gets the pointer to vertex indices. */
     /* HACK: using unsigned int here instead of GLenum to avoid using GL header. */
     /* TODO: create own type for the index type. */

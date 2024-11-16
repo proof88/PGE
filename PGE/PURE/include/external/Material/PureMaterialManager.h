@@ -193,6 +193,9 @@ public:
             PureColor&   getTextureEnvColor(TPureUInt level = 0);             /**< Gets the texture environment color of the material on the specified level. */
     const   PureColor&   getTextureEnvColor(TPureUInt level = 0) const;       /**< Gets the texture environment color of the material on the specified level. */
 
+    const   TPureBool&   isDecalOffsetEnabled() const;                        /**< Gets whether material is used as decal rendering. */
+    void                 setDecalOffset(TPureBool state);                     /**< Sets decal rendering for this material. */
+
             TPURE_BLENDFACTOR getSourceBlendFunc(TPureUInt level = 0) const;       /**< Gets the source blend factor on the specified level. */
             TPureBool         setSourceBlendFunc(
                                TPURE_BLENDFACTOR value,

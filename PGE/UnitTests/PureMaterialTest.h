@@ -132,6 +132,7 @@ protected:
         addSubTest("testIsTextured", (PFNUNITSUBTEST) &PureMaterialTest::testIsTextured);
         addSubTest("testIsSingleTextured", (PFNUNITSUBTEST) &PureMaterialTest::testIsSingleTextured);
         addSubTest("testIsMultiTextured", (PFNUNITSUBTEST) &PureMaterialTest::testIsMultiTextured);
+        addSubTest("testIsDecalOffsetEnabled", (PFNUNITSUBTEST)&PureMaterialTest::testIsDecalOffsetEnabled);
         addSubTest("testSetSourceBlendFunc", (PFNUNITSUBTEST) &PureMaterialTest::testSetSourceBlendFunc);
         addSubTest("testSetDestinationBlendFunc", (PFNUNITSUBTEST) &PureMaterialTest::testSetDestinationBlendFunc);
         addSubTest("testSetBlendFuncs", (PFNUNITSUBTEST) &PureMaterialTest::testSetBlendFuncs);
@@ -235,7 +236,8 @@ private:
             assertNotEquals(std::string::npos, mat->getName().find("Material "), "img128x128x24 name") &
             assertFalse(mat->isTextured(), "isTextured") &
             assertFalse(mat->isSingleTextured(), "isSingleTextured") &
-            assertFalse(mat->isMultiTextured(), "isMultiTextured");
+            assertFalse(mat->isMultiTextured(), "isMultiTextured") &
+            assertFalse(mat->isDecalOffsetEnabled(), "isDecalOffsetEnabled");
     }
 
     bool testDtor()
@@ -373,6 +375,19 @@ private:
 
         b &= assertTrue(mat->setTexture(tex128x128x24), "setTexture text128x128x24");
         b &= assertTrue(mat->isMultiTextured(), "4th");
+
+        return b;
+    }
+
+    bool testIsDecalOffsetEnabled()
+    {
+        bool b = assertFalse(mat->isDecalOffsetEnabled(), "1st");
+
+        mat->setDecalOffset(true);
+        b &= assertTrue(mat->isDecalOffsetEnabled(), "2nd");
+
+        mat->setDecalOffset(false);
+        b &= assertFalse(mat->isDecalOffsetEnabled(), "3rd");
 
         return b;
     }
