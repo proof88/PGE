@@ -12,6 +12,7 @@
 
 #include "../PGEallHeaders.h"
 
+#include <chrono>   // requires Cpp11
 #include <ostream>
 
 #include "../PURE/include/external/Math/PureVector.h"  // for specialization of PgeOldNewValue::set()
@@ -62,6 +63,20 @@ public:
     bool set(const T& value);
 
     /**
+    * Returns the timestamp recorded when new (current) value was last updated, i.e. when its value was actually changed.
+    * Timestamp is recorded only for changes done by set() functions, assignment-, increment- and decrement operators.
+    * 
+    * Neither revert() nor commit() counts as an actual change to new (current) value.
+    * Construction also does not count as an actual change to new (current) value.
+    * 
+    * Note that constructing a new PgeOldNewValue instance from an existing also copies this timestamp, so
+    * the newly constructed PgeOldNewValue instance will have the same timestamp as the original has.
+    * 
+    * @return Timestamp when new (current) value was last updated, i.e. when its value was actually changed.
+    */
+    const std::chrono::time_point<std::chrono::steady_clock>& getLastTimeNewValueChanged() const;
+
+    /**
     * Dirty flag.
     * @return True (dirty flag set) if old value is different to new value, false (dirty flag cleared) otherwise.
     */
@@ -69,11 +84,13 @@ public:
 
     /**
     * Resets new value to be same as old value and clears dirty flag.
+    * Does not alter getLastTimeNewValueChanged().
     */
     void revert();
 
     /**
     * Saves new value to old value and clears dirty flag.
+    * Does not alter getLastTimeNewValueChanged().
     */
     void commit();
 
@@ -113,6 +130,8 @@ protected:
 private:
     T m_newValue;
     T m_oldValue;
+
+    std::chrono::time_point<std::chrono::steady_clock> m_timeLastChange;
 };
 
 template <typename T>
@@ -164,6 +183,7 @@ bool PgeOldNewValue<T>::set(const T& value)
 {
     if (value != m_newValue)
     {
+        m_timeLastChange = std::chrono::steady_clock::now();
         m_newValue = value;
         return isDirty();
     }
@@ -175,6 +195,7 @@ inline bool PgeOldNewValue<float>::set(const float& value)
 {
     if (abs(value - m_newValue) > 0.00001f)
     {
+        m_timeLastChange = std::chrono::steady_clock::now();
         m_newValue = value;
         return isDirty();
     }
@@ -188,10 +209,17 @@ inline bool PgeOldNewValue<PureVector>::set(const PureVector& value)
         (abs(value.getY() - m_newValue.getY()) > 0.00001f) ||
         (abs(value.getZ() - m_newValue.getZ()) > 0.00001f))
     {
+        m_timeLastChange = std::chrono::steady_clock::now();
         m_newValue = value;
         return isDirty();
     }
     return false;
+}
+
+template <typename T>
+inline const std::chrono::time_point<std::chrono::steady_clock>& PgeOldNewValue<T>::getLastTimeNewValueChanged() const
+{
+    return m_timeLastChange;
 }
 
 template <typename T>

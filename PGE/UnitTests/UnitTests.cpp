@@ -105,10 +105,10 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
 
     //tests.push_back(std::unique_ptr<Test>(new PgeObjectPoolTest));
     
-    /*
+    /*    
     tests.push_back(std::unique_ptr<Test>(new PGEcfgVariableTest));
     tests.push_back(std::unique_ptr<Test>(new PGEcfgFileTest));
-    tests.push_back(std::unique_ptr<Test>(new PGEcfgProfilesTest));
+    tests.push_back(std::unique_ptr<Test>(new PGEcfgProfilesTest));  
     tests.push_back(std::unique_ptr<Test>(new PgeOldNewValueTest));
     */
     
