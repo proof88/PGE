@@ -16,9 +16,21 @@ PGE uses the following open-source libraries:
 Since the PURE graphics engine is part of the PGE game engine, their versioning is hard-tied and incremented together.  
 So whenever you read something like `PGE vA.B` it always implicitly means `PURE vA.B` and vice versa.
 
-### v0.4 (TBD)
+### v0.5 (TBD)
 
-TBD  
+### v0.4 (Dec 19, 2024)
+
+During this 3 years period since the previous release, all engine developments were on-demand as required by [my game PRooFPS-dd](https://github.com/proof88/PRooFPS-dd) which had the primary focus.
+
+Change list:
+ - started writing **engine doc** in mediawiki format, and occasionally [an online html version](https://proof88.github.io/pge-doc/index.html) is generated from that;
+ - added new classes **Bullet, Weapon and WeaponManager** that can be used in any future games for handling weapons;
+ - input: added **mouse button click** handling in **PureWindow**;
+ - config: added **PGEcfgFile** for config file handling that can be used in any future games for handling user configuration;
+ - network: included [Valve's GameNetworkingSockets library](https://github.com/ValveSoftware/GameNetworkingSockets) and added **PgeNetwork, PgeServer, PgeClient** classes for basic client-server model **multiplayer** handling in any future games;
+ - GUI: included [Dear ImGui](https://github.com/ocornut/imgui) to be used in any future games for handling graphic user interface;
+ - audio: included [SoLoud](https://github.com/jarikomppa/soloud) to be used in any future games for handling sound effects and music;
+ - 
 
 ### v0.3 (Nov 1, 2021)
 
