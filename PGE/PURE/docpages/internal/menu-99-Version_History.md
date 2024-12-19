@@ -2,6 +2,18 @@
 
 [TOC]
 
+\section v0_4 v0.4 - December 19, 2024
+
+Just a few changes happened in the recent 3 years as my focus was on developing my game: [PRooFPS-dd](https://github.com/proof88/PRooFPS-dd).
+
+Changes:
+ - all "PRRE" text has been renamed to "Pure" within functions, filenames, variable names, etc;
+ - GUI: included [Dear ImGui](https://github.com/ocornut/imgui) to be used in any future games for handling **graphic user interface**, exposed over the original `PureUiManager` class;
+ - GUI: `PureUiText` is now considered **deprecated** but kept to stay compatible with older applications such as the legacy PR00FPS from 2007;
+ - GUI: added **drop shadow feature for PureUiText**;
+ - added `PureProjection` class to be used for **2D->3D unprojection or 3D->2D projection** calculations in any future games;
+ - added `PureMaterial::setDecalOffset()` to support rendering of **decals on surfaces** such as bullet holes on walls.
+
 \section v0_3 v0.3 - November 1, 2021
 
 Following features have been implemented:
