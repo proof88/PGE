@@ -20,6 +20,10 @@ So whenever you read something like `PGE vA.B` it always implicitly means `PURE 
 
 ### v0.4 (Dec 19, 2024)
 
+**v0.4 Requires:**
+ - [PFL v1.2](https://github.com/proof88/PFL);
+ - [CConsole v1.3](https://github.com/proof88/Console).
+
 During this 3 years period since the previous release, all engine developments were on-demand as required by [my game PRooFPS-dd](https://github.com/proof88/PRooFPS-dd) which had the primary focus.
 
 Change list:
