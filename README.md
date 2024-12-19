@@ -24,13 +24,26 @@ During this 3 years period since the previous release, all engine developments w
 
 Change list:
  - started writing **engine doc** in mediawiki format, and occasionally [an online html version](https://proof88.github.io/pge-doc/index.html) is generated from that;
- - added new classes **Bullet, Weapon and WeaponManager** that can be used in any future games for handling weapons;
+ - build: **windows.h** is now not included anywhere directly, instead **PFL/winproof88.h** is used with fine-grained control of exactly what portions we really include from windows.h and relevant headers;
+ - build: **UnitTest.h** has been moved to a separate repo: [455-355-7357-88](https://github.com/proof88/455-355-7357-88);
+ - engine loop frequency, also called as **target FPS** can be set now, see `PGE::setGameRunningFrequency()`;
+ - added `PGE::setCookie()` and revised shutdown for supporting **application restart** without starting a new process;
+ - added a basic **PgeOldNewValue** class for holding arbitrary-typed variable with an old and a new value, revert/commit/isDirty() functions, very useful to decide if there is anything we need to send to network by the end of the game loop;
+ - added new classes **Bullet, Weapon and WeaponManager** that can be used in any future games for **handling weapons**;
+ - added **PgeObjectPool** for rapid creation/deletion of repeated game objects such as particle objects or bullets;
  - input: added **mouse button click** handling in **PureWindow**;
- - config: added **PGEcfgFile** for config file handling that can be used in any future games for handling user configuration;
+ - input: added `PGEInputKeyboard::isKeyPressedOnce()` for handling single **keypress-and-release actions** instead of continuous keypress actions;
+ - input: added optional `nFilterMillisecs` argument to `PGEInputKeyboard::isKeyPressed()` to set minimum required time between 2 same consecutive keypress;
+ - config: added **PGEcfgFile** for config file handling that can be used in any future games for **handling user configuration**;
+ - config: added **PGEcfgProfiles** for user profile handling, on top of PGEcfgFile;
  - network: included [Valve's GameNetworkingSockets library](https://github.com/ValveSoftware/GameNetworkingSockets) and added **PgeNetwork, PgeServer, PgeClient** classes for basic client-server model **multiplayer** handling in any future games;
- - GUI: included [Dear ImGui](https://github.com/ocornut/imgui) to be used in any future games for handling graphic user interface;
- - audio: included [SoLoud](https://github.com/jarikomppa/soloud) to be used in any future games for handling sound effects and music;
- - 
+ - audio: included [SoLoud](https://github.com/jarikomppa/soloud) and added **PgeAudio** class to be used in any future games for handling sound effects and music;
+ - graphics: all "PRRE" text has been renamed to "Pure" within functions, filenames, variable names, etc.;
+ - graphics: GUI: included [Dear ImGui](https://github.com/ocornut/imgui) to be used in any future games for handling **graphic user interface**, exposed over the original PureUiManager class;
+ - graphics: GUI: **PureUiText** is now considered **deprecated** but kept to stay compatible with older applications such as the legacy PR00FPS from 2007;
+ - graphics: GUI: added **drop shadow feature for PureUiText**;
+ - graphics: added **PureProjection** class to be used for **2D->3D unprojection or 3D->2D projection** calculations in any future games;
+ - graphics: added `PureMaterial::setDecalOffset()` to support rendering of **decals on surfaces** such as bullet holes on walls.
 
 ### v0.3 (Nov 1, 2021)
 
