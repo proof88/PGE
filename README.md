@@ -28,7 +28,7 @@ During this 3 years period since the previous release, all engine developments w
 
 Change list:
  - started writing **engine doc** in mediawiki format, and occasionally [an online html version](https://proof88.github.io/pge-doc/index.html) is generated from that;
- - build: **windows.h** is now not included anywhere directly, instead **PFL/winproof88.h** is used with fine-grained control of exactly what portions we really include from windows.h and relevant headers;
+ - build: **windows.h** is now not included anywhere directly, instead [PFL/winproof88.h](https://github.com/proof88/PFL/blob/master/PFL/winproof88.h) is used with fine-grained control of exactly what portions we really include from windows.h and relevant headers;
  - build: **UnitTest.h** has been moved to a separate repo: [455-355-7357-88](https://github.com/proof88/455-355-7357-88);
  - engine loop frequency, also called as **target FPS** can be set now, see `PGE::setGameRunningFrequency()`;
  - added `PGE::setCookie()` and revised shutdown for supporting **application restart** without starting a new process;
