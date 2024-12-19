@@ -22,7 +22,8 @@ So whenever you read something like `PGE vA.B` it always implicitly means `PURE 
 
 **v0.4 Requires:**
  - [PFL v1.2](https://github.com/proof88/PFL);
- - [CConsole v1.3](https://github.com/proof88/Console).
+ - [CConsole v1.3](https://github.com/proof88/Console);
+ - [455-355-7357-88 v1.1](https://github.com/proof88/455-355-7357-88).
 
 During this 3 years period since the previous release, all engine developments were on-demand as required by [my game PRooFPS-dd](https://github.com/proof88/PRooFPS-dd) which had the primary focus.
 
