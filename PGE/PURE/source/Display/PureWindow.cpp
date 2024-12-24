@@ -1539,6 +1539,20 @@ TPureBool PureWindowImpl::actualCreateWindow(TPureUInt width, TPureUInt height, 
         https://stackoverflow.com/questions/2399216/why-might-ws-clipchildren-be-necessary-for-the-display-of-directshow-window-on-x
 
         AFAIK WS_CLIPSIBLINGS is only for child windows, but specifying here doesn't cause any issues anyway so I'm using it.
+
+        Another topic is how to force fullscreen exclusive mode.
+        But, I don't need that. The reason is described below.
+        It cannot be explicitly set, and if you try to set it then it might or might not be applied.
+        Based on the following article, must have things are: WS_POPUP + DPI Awareness.
+        https://www.gamedeveloper.com/programming/fullscreen-exclusive-is-a-lie-sort-of-
+        But still there is not 100% chance it will be exclusive.
+
+        Also, from Windows 10, it will be exclusive automatically based on the OS windowing system:
+        "we enhanced the DWM to recognize when a game is running in a borderless full screen window with no other applications on the screen.
+         In this circumstance, the DWM gives control of the display and almost all the CPU/GPU power to the game.
+         Which in turn allows equivalent performance to running a game in FSE.
+         Fullscreen Optimizations is essentially FSE with the flexibility to go back to DWM composition in a simple manner."
+         source: https://devblogs.microsoft.com/directx/demystifying-full-screen-optimizations/
     */
     dwStyle = bFullscreen ? WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS : WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
     dwStyleEx = bFullscreen ? WS_EX_APPWINDOW : WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;

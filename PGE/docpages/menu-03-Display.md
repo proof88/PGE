@@ -1,6 +1,3 @@
 \page display Display
 
-[TOC]
-
-\section display_pages Pages of this Topic
-
+Display/graphics in PGE is handled by the [PURE engine which has its own documentation](https://proof88.github.io/pure-doc/index.html).

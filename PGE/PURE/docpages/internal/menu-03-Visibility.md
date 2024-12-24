@@ -157,22 +157,22 @@ maintained: \subpage occlusion_culling.
 
 By default occlusion culling is enabled by PURE.  
 Occluders and occludees are automatically selected, the user doesn't have to add any extra code to client application.  
-Currently the most important factor in deciding if an object is an occluder or occludee is its PRREObject3D::getBiggestAreaScaled(), compared to the average biggest area of all objects. **Some sample calculations with different methods can be checked in [PURE-occluder-selection.xlsx.](PURE-occluder-selection.xlsx)**
+Currently the most important factor in deciding if an object is an occluder or occludee is its PureObject3D::getBiggestAreaScaled(), compared to the average biggest area of all objects. **Some sample calculations with different methods can be checked in [PURE-occluder-selection.xlsx.](PURE-occluder-selection.xlsx)**
 
-Not all occludees are tested for occlusion. There is a hidden function PRREObject3DManager::PRREObject3DManagerImpl::isEligibleForOcclusionQuery() that decides if occlusion query will be generated for an object or not.  
+Not all occludees are tested for occlusion. There is a hidden function PureObject3DManager::PureObject3DManagerImpl::isEligibleForOcclusionQuery() that decides if occlusion query will be generated for an object or not.  
 Public functions related to this occluder-occludee-occlusion topic are below, some can control the automatic occluder/occludee selection:
- - PRREObject3D::isOccluder()
- - PRREObject3D::SetOccluder()
- - PRREObject3D::isOccluded()
- - PRREObject3D::isOcclusionTested()
- - PRREObject3D::SetOcclusionTested()
- - PRREObject3D::getBoundingBoxObject()
- - PRREObject3D::ForceFinishOcclusionTest()
- - PRREObject3DManager::UpdateOccluderStates()
- - PRREObject3DManager::getOccluderSelectionBias()
- - PRREObject3DManager::SetOccluderSelectionBias()
- - PRREObject3DManager::getMaxOccluderCount()
- - PRREObject3DManager::SetMaxOccluderCount()
+ - PureObject3D::isOccluder()
+ - PureObject3D::SetOccluder()
+ - PureObject3D::isOccluded()
+ - PureObject3D::isOcclusionTested()
+ - PureObject3D::SetOcclusionTested()
+ - PureObject3D::getBoundingBoxObject()
+ - PureObject3D::ForceFinishOcclusionTest()
+ - PureObject3DManager::UpdateOccluderStates()
+ - PureObject3DManager::getOccluderSelectionBias()
+ - PureObject3DManager::SetOccluderSelectionBias()
+ - PureObject3DManager::getMaxOccluderCount()
+ - PureObject3DManager::SetMaxOccluderCount()
 
 \subsubsection h_occlusion Hierarchical Occlusion Culling
 

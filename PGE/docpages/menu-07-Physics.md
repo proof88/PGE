@@ -1,3 +1,4 @@
+\page physics Physics
 
 A v0.1.2-ben a szerver még a mp-enkénti képkockaszámnak (framerate) megfelelő gyakorisággal
 számolta a fizikát és küldte ki a klienseknek a frissítéseket. A framerate 60 FPS-nél volt/van maximalizálva (egyelőre).
