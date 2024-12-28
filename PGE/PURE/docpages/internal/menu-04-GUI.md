@@ -13,8 +13,8 @@ From the list, in 2024 **I revised the following 4 libraries** that are suitable
  - Nuklear: https://github.com/Immediate-Mode-UI/Nuklear
  - Dear ImGui: https://github.com/ocornut/imgui
 
-The first 2 are not maintaned anymore, the third is pure C, so I have opted for the last one: **Dear ImGui**.  
-Note: later I noticed the [existence of TGUI](https://github.com/texus/TGUI/), which seems to meet all the requirements as well, including my general requirements for 3rd party libraries. TODO add link to that page
+The first 2 are not maintaned anymore, the third is pure C, so **I have opted for the last one: Dear ImGui**.  
+Note: later I noticed the [existence of TGUI](https://github.com/texus/TGUI/), which seems to meet all the requirements as well, including my general requirements for 3rd party libraries that I listed at [the 3rd Party libs page](#pure_used_libs).
 
 \section gui_usage Usage
 
