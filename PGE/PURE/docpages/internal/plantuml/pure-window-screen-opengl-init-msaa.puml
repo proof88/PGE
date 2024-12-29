@@ -1,0 +1,29 @@
+' Syntax: https://plantuml.com/activity-diagram-beta
+' Online generator: https://www.plantuml.com/plantuml/uml/
+
+' UML Activity diagram for PURE v0.4 OpenGL initialization with advanced pixel format support
+
+@startuml
+
+start
+
+:msaaSamples = getMsaaSamplesFromConfig();
+:isLoopNeeded = true;
+:requestAdvancedPixelFormat = false;
+
+while ( isLoopNeeded ) is (true)
+  :PureWindow.initialize();
+  :PureScreen.applyDisplaySettings( PureWindow.getWndDC(), msaaSamples );
+  :initializeOpenGL( PureWindow.getWndDC() );
+  if ( (msaaSamples > 0) &&
+  not requestAdvancedPixelFormat ) then (yes)
+    :requestAdvancedPixelFormat = true;
+    :shutdown();
+  else (no)
+    :isLoopNeeded = false;
+  endif
+endwhile (false)
+
+stop
+
+@enduml

@@ -31,10 +31,21 @@ To be more detailed, a window is required by PURE not only for rendering, but al
 Before v0.5, `PureWindow` had WinAPI-based implementation to create and manage such window, and using this, `PGEInputHandler` handled keyboard- and mouse input.  
 This was not platform-independent, so I decided to find a better solution.
 
-TODO: add sequence of selecting display mode and creating window, with extra step when MSAA is requested!
-TODO: add what commands I use for beginning a frame and ending a frame, including swapbuffers, glflush.
+Note: a small reminder on PURE's internal behavior on initializing OpenGL:
+<table>
+<tr><td>[![](img/pure-window-screen-opengl-init-msaa-thumb.png)](pure-window-screen-opengl-init-msaa.png)
+</table>
+If we want MSAA, we need to select an advanced pixel format using WGL functionality. WGL functions are required to list and select advanced pixel formats which support MSAA.  
+However, WGL functionality is available only after we initialize OpenGL!  
+So in any case, first we do the following sequence of actions:
+ - `PureWindow::initialize()`: create a window, to have a [DC (Device Context)](https://www.khronos.org/opengl/wiki/Creating_an_OpenGL_Context_(WGL)),
+ - `PureScreen::applyDisplaySettings()`: apply selected display settings and for the DC we also select a regular pixel format first, or an advanced pixel format if MSAA is requested AND we have WGL functions pointers already,
+ - `PureRendererHWfixedPipeImpl::initializeOpenGL()`: with the DC we can create an [OpenGL RC (Rendering Context)](https://www.khronos.org/opengl/wiki/Creating_an_OpenGL_Context_(WGL)) and query for some specific function pointers, including pointers to WGL functions.
+ 
+So at this point, if MSAA was originally requested, we do a shutdown (destroy RC, DC and window), and do the previous sequence again, but this time, we can use WGL functionality to select and apply an advanced pixel format.  
+Selecting and applying pixel format always happens in `PureScreen::applyDisplaySettings()`, but only in 2nd iteration we have access to WGL and can select an MSAA-compliant pixel format.
 
-TODO: add [freeglut](https://github.com/freeglut/freeglut)
+This explained behavior is also not platform-independent due to WinAPI usage in `PureWindow` and `PureScreen`, this shall be also handled by my selected 3rd party lib.
 
 **My requirements for windowing libraries:**
  - shall support **creating window for 3D-acceleration** (e.g. on Windows, the selected [pixel format shall have PFD_GENERIC_ACCELERATED, PFD_SUPPORT_OPENGL and PFD_DOUBLEBUFFER flags](https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-pixelformatdescriptor#members)) which implies it shall support selecting proper pixel format as well;

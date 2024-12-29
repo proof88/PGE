@@ -1,4 +1,4 @@
-**Important:** you are reading a markdown file that can be rendered by github, but this and other markdown files are the input for the [official doxygen-generated documentation of PURE](https://proof88.github.io/pure-doc/). So please go to that site for full navigation and else, because here you can see only partial content.
+**Important:** you are reading a markdown file that can be rendered by github, but this and other markdown files are the input for the [official doxygen-generated documentation of PURE](https://proof88.github.io/pure-doc/). So please go to that site for full navigation and else, if you are not there already.
 
 # Introduction
 
