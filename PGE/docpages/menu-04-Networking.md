@@ -4,6 +4,7 @@
 
 \section networking_intro Intro
 
+PGE uses the [Valve's GameNetworkingSockets](https://github.com/ValveSoftware/GameNetworkingSockets) networking library.  
 When it was time to add multiplayer support to my game engine, I browsed the internet for already existing solutions I could integrate, because the networking topic itself on its own contains lots of challenges.  
 I didn't want to reinvent the wheel, for me it was enough to read about the problems and possible solutions in this area, and to use an existing solution instead of implementing my own.  
 Establishing communication between computers behind NAT devices, handling different endianness of computers, or lag compensation are just a few examples of the challenges in this area.
@@ -15,7 +16,7 @@ For lists of networking libraries, check these pages:
  - https://www.reddit.com/r/gamedev/comments/93kr9h/recommended_c_udp_networking_library/
  - https://github.com/MFatihMAR/Game-Networking-Resources
 
-During my research, I checked the following 3 popular libraries from a closer perspective:
+During my research, **I checked the following 3** popular libraries from a closer perspective:
  - **yojimbo**: https://github.com/networkprotocol/yojimbo
    - https://github.com/networkprotocol/yojimbo/issues/25
    - https://www.gamedev.net/forums/topic/697635-is-anyone-using-yojimbo-for-networking/
