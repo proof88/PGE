@@ -352,7 +352,7 @@ static void busyWait(double microsecsToWait)
     }
 
     const std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-    long long microsecsWaited = 0;
+    std::chrono::microseconds::rep microsecsWaited = 0;
     while (microsecsWaited < microsecsToWait)
     {
         microsecsWaited = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start).count();
@@ -369,7 +369,7 @@ void PGE::PGEimpl::frameLimit(
     }
 
     timeNow = std::chrono::steady_clock::now();
-    const long long durElapsedMicrosecs = (std::chrono::duration_cast<std::chrono::microseconds>(timeNow - timeLastTime)).count();
+    const auto durElapsedMicrosecs = (std::chrono::duration_cast<std::chrono::microseconds>(timeNow - timeLastTime)).count();
     if (durElapsedMicrosecs < m_minFrameTimeMicrosecs)
     {
         // not nice, but effective without using sleep

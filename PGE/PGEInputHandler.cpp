@@ -369,8 +369,8 @@ public:
 
     virtual ~PGEInputKeyboardImpl();
 
-    bool isKeyPressed(unsigned char key, unsigned int nFilterMillisecs);
-    bool isKeyPressedOnce(unsigned char key, unsigned int nFilterMillisecs);
+    bool isKeyPressed(unsigned char key, std::chrono::milliseconds::rep nFilterMillisecs);
+    bool isKeyPressedOnce(unsigned char key, std::chrono::milliseconds::rep nFilterMillisecs);
     void SetKeyPressed(unsigned char key, bool state);
 
 protected:
@@ -406,7 +406,7 @@ PGEInputKeyboardImpl::~PGEInputKeyboardImpl()
 }
 
 
-bool PGEInputKeyboardImpl::isKeyPressed(unsigned char key, unsigned int nFilterMillisecs)
+bool PGEInputKeyboardImpl::isKeyPressed(unsigned char key, std::chrono::milliseconds::rep nFilterMillisecs)
 {
     const std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::steady_clock::now();
     const bool bTimeFilterOk =
@@ -425,7 +425,7 @@ bool PGEInputKeyboardImpl::isKeyPressed(unsigned char key, unsigned int nFilterM
     return bPressAccepted;
 }
 
-bool PGEInputKeyboardImpl::isKeyPressedOnce(unsigned char key, unsigned int nFilterMillisecs)
+bool PGEInputKeyboardImpl::isKeyPressedOnce(unsigned char key, std::chrono::milliseconds::rep nFilterMillisecs)
 {
     const std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::steady_clock::now();
     const bool bTimeFilterOk =

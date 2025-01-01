@@ -13,6 +13,8 @@
 
 #include "PGEallHeaders.h"
 
+#include <chrono>
+
 #include "Config/PGEcfgProfiles.h"
 
 /**
@@ -117,7 +119,7 @@ public:
     * @param nFilterMillisecs Minimum time needs to elapse before accepting another keypress event.
     * @return True if given key is pressed, false otherwise.
     */
-    virtual bool isKeyPressed(unsigned char key, unsigned int nFilterMillisecs = 0) = 0;
+    virtual bool isKeyPressed(unsigned char key, std::chrono::milliseconds::rep nFilterMillisecs = 0) = 0;
 
     /**
     * Useful if we want to distinguish between different keypresses of the same key.
@@ -128,7 +130,7 @@ public:
     * @param nFilterMillisecs Minimum time needs to elapse before accepting another keypress event.
     * @return True if given key has just been changed to pressed state, false otherwise.
     */
-    virtual bool isKeyPressedOnce(unsigned char key, unsigned int nFilterMillisecs = 0) = 0;
+    virtual bool isKeyPressedOnce(unsigned char key, std::chrono::milliseconds::rep nFilterMillisecs = 0) = 0;
     
     /**
     * Sets the pressed state of the given key to the given value.
