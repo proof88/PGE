@@ -13,6 +13,7 @@
 
 #include "../PureAllHeaders.h"
 #include "../../../../../../PFL/PFL/PFL.h"
+#include "../../../../../../PFL/PFL/bitmanip.h"
 #include "PureMesh3DManager.h"
 #include "../Material/PureMaterialManager.h"
 

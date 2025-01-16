@@ -12,6 +12,7 @@
 
 #include "../../../../../../Console/CConsole/src/CConsole.h"
 #include "../../../../../../PFL/PFL/PFL.h"
+#include "../../../../../../PFL/PFL/bitmanip.h"
 #include "../../../../Config/PGEcfgProfiles.h"
 #include "PureIRenderer.h"
 #include "../Display/PureScreen.h"
