@@ -6957,6 +6957,34 @@ void ImGui::EndDisabled()
         g.Style.Alpha = g.DisabledAlphaBackup; //PopStyleVar();
 }
 
+// ===========================================
+// PR00F88 (West Whiskhyll) change starts here
+// ===========================================
+//
+// Custom BeginDisabled()/EndDisabled() implementation, without affecting alpha.
+// Because I could not find anything like that to easily disable user input while keeping the display unchanged.
+
+void ImGui::BeginDisabled_proof88()
+{
+    ImGuiContext& g = *GImGui;
+    g.CurrentItemFlags |= ImGuiItemFlags_Disabled;
+    g.ItemFlagsStack.push_back(g.CurrentItemFlags);
+    g.DisabledStackSize++;
+}
+
+void ImGui::EndDisabled_proof88()
+{
+    ImGuiContext& g = *GImGui;
+    IM_ASSERT(g.DisabledStackSize > 0);
+    g.DisabledStackSize--;
+    g.ItemFlagsStack.pop_back();
+    g.CurrentItemFlags = g.ItemFlagsStack.back();
+}
+
+// =========================================
+// PR00F88 (West Whiskhyll) change ends here
+// =========================================
+
 // FIXME: Look into renaming this once we have settled the new Focus/Activation/TabStop system.
 void ImGui::PushAllowKeyboardFocus(bool allow_keyboard_focus)
 {
