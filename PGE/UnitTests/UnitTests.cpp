@@ -10,7 +10,7 @@
 #ifndef TEST_WITH_CCONSOLE
 #define TEST_WITH_CCONSOLE
 #endif
-#include "UnitTest.h"  // PCH
+#include "Test.h"  // PCH
 
 #ifndef WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
 #define WINPROOF88_ALLOW_CONTROLS_AND_DIALOGS
@@ -178,7 +178,7 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     tests.push_back(std::unique_ptr<Test>(new PR00FsUltimateRenderingEngineTest2));
     */
 
-    Test::runTests(tests, getConsole(), "Running Unit Tests ...");
+    Test::runTests(tests, getConsole, "Running Unit Tests ...");
     system("pause");
 
     getConsole().Deinitialize();
