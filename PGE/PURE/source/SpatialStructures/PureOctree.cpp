@@ -8,7 +8,7 @@
 */
 
 #include "PureBaseIncludes.h"  // PCH
-#include "../../include/internal/SpatialStructures/PureOctree.h"
+#include "../../include/external/SpatialStructures/PureOctree.h"
 
 #include <cassert>
 

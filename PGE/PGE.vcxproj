@@ -512,6 +512,9 @@
     <ClInclude Include="PURE\include\external\Render\PureIRenderer.h" />
     <ClInclude Include="PURE\include\external\Render\PureRendererHWfixedPipe.h" />
     <ClInclude Include="PURE\include\external\Render\PureRendererSWincremental.h" />
+    <ClInclude Include="PURE\include\external\SpatialStructures\PureAxisAlignedBoundingBox.h" />
+    <ClInclude Include="PURE\include\external\SpatialStructures\PureBoundingVolumeHierarchy.h" />
+    <ClInclude Include="PURE\include\external\SpatialStructures\PureOctree.h" />
     <ClInclude Include="PURE\include\internal\Display\PureSharedSettings.h" />
     <ClInclude Include="PURE\include\internal\gl\GL.h" />
     <ClInclude Include="PURE\include\internal\gl\GLAux.h" />
@@ -560,9 +563,6 @@
     <ClInclude Include="PURE\include\internal\PurePragmas.h" />
     <ClInclude Include="PURE\include\internal\PureUiFontWin.h" />
     <ClInclude Include="PURE\include\internal\PureUiText.h" />
-    <ClInclude Include="PURE\include\internal\SpatialStructures\PureBoundingVolumeHierarchy.h" />
-    <ClInclude Include="PURE\include\internal\SpatialStructures\PureOctree.h" />
-    <ClInclude Include="PURE\include\internal\SpatialStructures\PureAxisAlignedBoundingBox.h" />
     <ClInclude Include="Weapons\WeaponManager.h" />
   </ItemGroup>
   <ItemGroup>

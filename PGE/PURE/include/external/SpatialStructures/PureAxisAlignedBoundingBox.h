@@ -12,7 +12,7 @@
 
 
 #include "../../../../PGEallHeaders.h"
-#include "../../external/Math/PureVector.h"
+#include "../Math/PureVector.h"
 
 
 /**

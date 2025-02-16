@@ -109,9 +109,6 @@
     <Filter Include="Header Files\PURE\include\internal\Object3D">
       <UniqueIdentifier>{087c0e75-19a1-424e-bbc7-2410e374ec25}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\PURE\include\internal\SpatialStructures">
-      <UniqueIdentifier>{6bbb0d33-a1da-4548-96ca-cc757df9d043}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\PURE\include\internal\GUI">
       <UniqueIdentifier>{89784676-9136-4c28-b0ff-d23fde578769}</UniqueIdentifier>
     </Filter>
@@ -150,6 +147,9 @@
     </Filter>
     <Filter Include="Source Files\Memory">
       <UniqueIdentifier>{0a3373d0-4ca0-4ecd-b033-9a826a8a2bdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PURE\include\external\SpatialStructures">
+      <UniqueIdentifier>{6bbb0d33-a1da-4548-96ca-cc757df9d043}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -350,15 +350,6 @@
     </ClInclude>
     <ClInclude Include="PURE\include\internal\PureManagedImpl.h">
       <Filter>Header Files\PURE\include\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="PURE\include\internal\SpatialStructures\PureAxisAlignedBoundingBox.h">
-      <Filter>Header Files\PURE\include\internal\SpatialStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="PURE\include\internal\SpatialStructures\PureOctree.h">
-      <Filter>Header Files\PURE\include\internal\SpatialStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="PURE\include\internal\SpatialStructures\PureBoundingVolumeHierarchy.h">
-      <Filter>Header Files\PURE\include\internal\SpatialStructures</Filter>
     </ClInclude>
     <ClInclude Include="Weapons\WeaponManager.h">
       <Filter>Header Files\Weapons</Filter>
@@ -644,6 +635,15 @@
     </ClInclude>
     <ClInclude Include="Memory\PgeObjectPool.h">
       <Filter>Header Files\Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="PURE\include\external\SpatialStructures\PureAxisAlignedBoundingBox.h">
+      <Filter>Header Files\PURE\include\external\SpatialStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="PURE\include\external\SpatialStructures\PureBoundingVolumeHierarchy.h">
+      <Filter>Header Files\PURE\include\external\SpatialStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="PURE\include\external\SpatialStructures\PureOctree.h">
+      <Filter>Header Files\PURE\include\external\SpatialStructures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

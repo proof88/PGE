@@ -9,7 +9,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../Pure/include/internal/SpatialStructures/PureBoundingVolumeHierarchy.h"
+#include "../Pure/include/external/SpatialStructures/PureBoundingVolumeHierarchy.h"
 
 class PureBoundingVolumeHierarchyTest :
     public UnitTest

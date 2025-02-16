@@ -12,8 +12,8 @@
 
 
 #include "../../../../PGEallHeaders.h"
-#include "../../internal/SpatialStructures/PureAxisAlignedBoundingBox.h"
-#include "../../internal/SpatialStructures/PureOctree.h"
+#include "PureAxisAlignedBoundingBox.h"
+#include "PureOctree.h"
 
 
 /**

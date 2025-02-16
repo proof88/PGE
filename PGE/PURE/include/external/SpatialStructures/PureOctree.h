@@ -15,8 +15,8 @@
 #include <vector>
 
 #include "../../../../PGEallHeaders.h"
-#include "../../external/Math/PureVector.h"
-#include "../../external/Object3D/PureObject3DManager.h"
+#include "../Math/PureVector.h"
+#include "../Object3D/PureObject3DManager.h"
 
 
 /**

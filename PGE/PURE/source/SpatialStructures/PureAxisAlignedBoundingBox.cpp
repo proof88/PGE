@@ -8,7 +8,7 @@
 */
 
 #include "PureBaseIncludes.h"  // PCH
-#include "../../include/internal/SpatialStructures/PureAxisAlignedBoundingBox.h"
+#include "../../include/external/SpatialStructures/PureAxisAlignedBoundingBox.h"
 
 using namespace std;
 

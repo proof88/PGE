@@ -9,7 +9,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../Pure/include/internal/SpatialStructures/PureOctree.h"
+#include "../Pure/include/external/SpatialStructures/PureOctree.h"
 
 class PureOctreeTest :
     public UnitTest

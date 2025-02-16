@@ -8,7 +8,7 @@
 */
 
 #include "PureBaseIncludes.h"  // PCH
-#include "../../include/internal/SpatialStructures/PureBoundingVolumeHierarchy.h"
+#include "../../include/external/SpatialStructures/PureBoundingVolumeHierarchy.h"
 
 #include <cassert>
 

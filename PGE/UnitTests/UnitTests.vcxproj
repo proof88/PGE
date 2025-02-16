@@ -447,6 +447,9 @@
     <ClInclude Include="..\PURE\include\external\Render\PureIRenderer.h" />
     <ClInclude Include="..\PURE\include\external\Render\PureRendererHWfixedPipe.h" />
     <ClInclude Include="..\PURE\include\external\Render\PureRendererSWincremental.h" />
+    <ClInclude Include="..\PURE\include\external\SpatialStructures\PureAxisAlignedBoundingBox.h" />
+    <ClInclude Include="..\PURE\include\external\SpatialStructures\PureBoundingVolumeHierarchy.h" />
+    <ClInclude Include="..\PURE\include\external\SpatialStructures\PureOctree.h" />
     <ClInclude Include="PFLFixFIFOTest.h" />
     <ClInclude Include="PGEBulletTest.h" />
     <ClInclude Include="PgeObjectPoolTest.h" />

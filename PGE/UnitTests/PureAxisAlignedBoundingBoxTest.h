@@ -9,7 +9,7 @@
 */
 
 #include "UnitTest.h"  // PCH
-#include "../Pure/include/internal/SpatialStructures/PureAxisAlignedBoundingBox.h"
+#include "../Pure/include/external/SpatialStructures/PureAxisAlignedBoundingBox.h"
 
 class PureAxisAlignedBoundingBoxTest :
     public UnitTest
