@@ -1,3 +1,4 @@
+#include "PureBoundingVolumeHierarchy.h"
 /*
     ###################################################################################
     PureBoundingVolumeHierarchy.cpp
@@ -33,7 +34,8 @@ using namespace std;
     @param currentDepthLevel The depth level of this specific node being created. For global use, just specify 0 so this will be the root node of the BVH.
 */
 PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy(TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
-    PureOctree(maxDepthLevel, currentDepthLevel)
+    PureOctree(maxDepthLevel, currentDepthLevel),
+    objDebugBox(nullptr)
 {
 }
 
@@ -48,9 +50,10 @@ PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy(TPureUInt maxDepthLevel
     @param currentDepthLevel The depth level of this specific node being created. For global use, just specify 0 so this will be the root node of the BVH.
 */
 PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy(const PureVector& pos, TPureFloat size, TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
-    PureOctree(pos, size, maxDepthLevel, currentDepthLevel)
+    PureOctree(pos, size, maxDepthLevel, currentDepthLevel),
+    objDebugBox(nullptr)
 {
-    // TODO: AABB update with pos & size ??? Well, in 2023 I explicitly stated in the API comment for the size argument that it is NOT the size of the AABB, 
+    // TODO: AABB update with pos & size ??? Well, in 2023 I explicitly stated in the API comment for the size argument above that it is NOT the size of the AABB, 
     // so most probably I dont need to update AABB here.
 } // PureBoundingVolumeHierarchy(...)
 
@@ -58,6 +61,10 @@ PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy(const PureVector& pos, 
 PureBoundingVolumeHierarchy::~PureBoundingVolumeHierarchy()
 {
     DeleteChildren();
+    if (objDebugBox)
+    {
+        delete objDebugBox; // Object3D dtor triggers removing from ObjectManager too
+    }
 } // ~PureBoundingVolumeHierarchy()
 
 
@@ -129,6 +136,11 @@ bool PureBoundingVolumeHierarchy::reset()
     if (PureOctree::reset())
     {
         aabb = PureAxisAlignedBoundingBox();
+        if (objDebugBox)
+        {
+            delete objDebugBox; // Object3D dtor triggers removing from ObjectManager too
+            objDebugBox = nullptr;
+        }
         return true;
     }
 
@@ -148,6 +160,67 @@ bool PureBoundingVolumeHierarchy::reset()
 const PureAxisAlignedBoundingBox& PureBoundingVolumeHierarchy::getAABB() const
 {
     return aabb;
+}
+
+/**
+    Enables rendering wireframed boxes representing AABB of this node.
+    Note that the debug boxes are not automatically updated after inserting further objects into the tree.
+    Can be invoked again if further updates to the tree happened.
+*/
+void PureBoundingVolumeHierarchy::updateAndEnableAabbDebugRendering(
+    PureObject3DManager& objmgr,
+    PureColor colorWireframe /* copy-elision probably */)
+{
+    if (getNodeType() == LeafEmpty)
+    {
+        return;
+    }
+
+    if (!objDebugBox)
+    {
+        objDebugBox = objmgr.createBox(1.f, 1.f, 1.f);
+        objDebugBox->SetWireframed(true);
+        //objDebugBox->SetWireframedCulled(false);
+        objDebugBox->getMaterial(false).getTextureEnvColor(0) = colorWireframe;
+    }
+    objDebugBox->getPosVec() = aabb.getPosVec();
+    objDebugBox->SetScaling(aabb.getSizeVec());
+
+    if (getNodeType() == Parent)
+    {
+        for (auto pNode : vChildren)
+        {
+            assert(pNode);
+            PureBoundingVolumeHierarchy& bvhNode = static_cast<PureBoundingVolumeHierarchy&>(*pNode);
+            bvhNode.updateAndEnableAabbDebugRendering(objmgr, colorWireframe);
+        }
+    }
+}
+
+/**
+    Disables rendering wireframed boxes representing AABB of this node.
+*/
+void PureBoundingVolumeHierarchy::disableAabbDebugRendering()
+{
+    if (getNodeType() == LeafEmpty)
+    {
+        return;
+    }
+
+    if (objDebugBox)
+    {
+        objDebugBox->Hide();
+    }
+
+    if (getNodeType() == Parent)
+    {
+        for (auto pNode : vChildren)
+        {
+            assert(pNode);
+            PureBoundingVolumeHierarchy& bvhNode = static_cast<PureBoundingVolumeHierarchy&>(*pNode);
+            bvhNode.disableAabbDebugRendering();
+        }
+    }
 }
 
 

@@ -118,6 +118,11 @@ public:
     const std::set<const PureObject3D*>& getObjects() const;        /**< Gets the stored objects of this node. */
     virtual bool reset();                                           /**< Removes all children from this root node. */
 
+    void updateAndEnableNodeDebugRendering(
+        PureObject3DManager& objmgr,
+        PureColor colorWireframe = PureColor(255, 255, 255, 255));  /**< Enables rendering wireframed boxes representing this node and its children. */
+    void disableNodeDebugRendering();                               /**< Disables rendering wireframed boxes representing this node and its children. */
+
 protected:
 
     // ---------------------------------------------------------------------------
@@ -137,6 +142,8 @@ private:
     TPureUInt nMaxDepth;
     NodeType nodeType;
     std::set<const PureObject3D*> vObjects;
+
+    PureObject3D* objDebugBox;
 
 }; // class PureOctree 
 

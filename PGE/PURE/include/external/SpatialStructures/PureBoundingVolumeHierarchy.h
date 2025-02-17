@@ -56,7 +56,12 @@ public:
     virtual const PureBoundingVolumeHierarchy* findObject(const PureObject3D& obj) const override;    /**< Finds the given object in the octree. */
     virtual bool reset() override;                                                                    /**< Removes all children from this root node. */
 
-    const PureAxisAlignedBoundingBox& getAABB() const;                                       /**< Gets the AABB of this node. */
+    const PureAxisAlignedBoundingBox& getAABB() const;              /**< Gets the AABB of this node. */
+
+    void updateAndEnableAabbDebugRendering(
+        PureObject3DManager& objmgr,
+        PureColor colorWireframe = PureColor(0, 255, 0, 255));      /**< Enables rendering wireframed boxes representing AABB of this node and its children. */
+    void disableAabbDebugRendering();                               /**< Disables rendering wireframed boxes representing AABB of this node and its children. */
 
 protected:
 
@@ -67,6 +72,7 @@ protected:
 private:
 
     PureAxisAlignedBoundingBox aabb;
+    PureObject3D* objDebugBox;
 
 
 }; // class PureBoundingVolumeHierarchy 

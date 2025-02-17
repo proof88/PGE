@@ -51,7 +51,8 @@ PureOctree::PureOctree(TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
     nMaxDepth(maxDepthLevel),
     nCurrentDepth(currentDepthLevel),
     nodeType(NodeType::LeafEmpty),
-    parent(PGENULL)
+    parent(PGENULL),
+    objDebugBox(nullptr)
 {
     
 } // PureOctree(...)
@@ -71,7 +72,8 @@ PureOctree::PureOctree(const PureVector& pos, TPureFloat size, TPureUInt maxDept
     nMaxDepth(maxDepthLevel),
     nCurrentDepth(currentDepthLevel),
     nodeType(NodeType::LeafEmpty),
-    parent(PGENULL)
+    parent(PGENULL),
+    objDebugBox(nullptr)
 {
 
 } // PureOctree(...)
@@ -80,6 +82,10 @@ PureOctree::PureOctree(const PureVector& pos, TPureFloat size, TPureUInt maxDept
 PureOctree::~PureOctree()
 {
     DeleteChildren();
+    if (objDebugBox)
+    {
+        delete objDebugBox; // Object3D dtor triggers removing from ObjectManager too
+    }
 } // ~PureOctree()
 
 
@@ -386,7 +392,80 @@ bool PureOctree::reset()
     vObjects.clear(); // just in case
     nodeType = getNodeType(); // expecting NodeType::LeafEmpty
 
+    // objDebugBox at this root level should be kept if it exists, no need to update since its pos and size are fixed in ctor / by setSize().
+    // BUT, there is no other way to destroy ALL dynamic resources of the octree, and if we dont do this, the ptr would become invalid
+    // when the application is exiting, since Object3DManager will destroy all objects including this, and THEN octree dtor is invoked which
+    // would then operate on invalid ptr. Therefore, we make sure this ptr is handled here, and expect application to invoke reset() before exiting.
+    // This could be solved by shared_ptr but engine does not support.
+    if (objDebugBox)
+    {
+        delete objDebugBox; // Object3D dtor triggers removing from ObjectManager too
+        objDebugBox = nullptr;
+    }
+
     return true;
+}
+
+/**
+    Enables rendering wireframed boxes representing this node and its children.
+
+    Note that the debug boxes are not automatically updated after inserting further objects into the tree.
+    Can be invoked again if further updates to the tree happened.
+
+    Due to implementation of reset(), the root node is not rendered after a call to reset(), before inserting at least 1 object again into the tree.
+*/
+void PureOctree::updateAndEnableNodeDebugRendering(
+    PureObject3DManager& objmgr,
+    PureColor colorWireframe /* copy-elision probably */)
+{
+    if (getNodeType() == LeafEmpty)
+    {
+        return;
+    }
+
+    if (!objDebugBox)
+    {
+        objDebugBox = objmgr.createBox(1.f, 1.f, 1.f);
+        objDebugBox->SetWireframed(true);
+        //objDebugBox->SetWireframedCulled(false);
+        objDebugBox->getMaterial(false).getTextureEnvColor(0) = colorWireframe;
+    }
+    objDebugBox->getPosVec() = getPos();
+    objDebugBox->SetScaling(getSize());
+
+    if (getNodeType() == Parent)
+    {
+        for (auto pNode : vChildren)
+        {
+            assert(pNode);
+            pNode->updateAndEnableNodeDebugRendering(objmgr, colorWireframe);
+        }
+    }
+}
+
+/**
+    Disables rendering wireframed boxes representing this node and its children.
+*/
+void PureOctree::disableNodeDebugRendering()
+{
+    if (getNodeType() == LeafEmpty)
+    {
+        return;
+    }
+
+    if (objDebugBox)
+    {
+        objDebugBox->Hide();
+    }
+
+    if (getNodeType() == Parent)
+    {
+        for (auto pNode : vChildren)
+        {
+            assert(pNode);
+            pNode->disableNodeDebugRendering();
+        }
+    }
 }
 
 
