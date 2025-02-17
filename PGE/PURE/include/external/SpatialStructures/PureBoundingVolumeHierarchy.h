@@ -25,6 +25,12 @@
     We recursively progressing up towards the root node, where the biggest bounding volume containing all previously calculated bounding volumes is created.
 
     This implementation is basically extending PureOctree nodes with bounding box calculation.
+
+    Further material:
+     - https://proof88.github.io/pure-doc/visibility.html
+     - https://github.com/brandonpelfrey/Fast-BVH/tree/master/include
+     - https://github.com/GrandPiaf/Raytracer/blob/master/Raytracer/AABB.h
+     - https://github.com/taqu/BoundingVolumeHierarchy
 */
 class PureBoundingVolumeHierarchy : public PureOctree
 {
@@ -36,23 +42,25 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    PureBoundingVolumeHierarchy(TPureUInt maxDepthLevel, TPureUInt currentDepthLevel);
     PureBoundingVolumeHierarchy(const PureVector& pos, TPureFloat size, TPureUInt maxDepthLevel, TPureUInt currentDepthLevel);
     virtual ~PureBoundingVolumeHierarchy();
 
+    PureBoundingVolumeHierarchy(const PureBoundingVolumeHierarchy&) = delete;
+    PureBoundingVolumeHierarchy& operator=(const PureBoundingVolumeHierarchy&) = delete;
+    PureBoundingVolumeHierarchy(PureBoundingVolumeHierarchy&&) = delete;
+    PureBoundingVolumeHierarchy& operator=(PureBoundingVolumeHierarchy&&) = delete;
+
     // yes, this is valid: overriding base method with a return type derived from the original return type: called as "covariant return type"
-    virtual PureBoundingVolumeHierarchy* insertObject(const PureObject3D& obj);              /**< Inserts the given object in the octree. */
-    virtual const PureBoundingVolumeHierarchy* findObject(const PureObject3D& obj) const;    /**< Finds the given object in the octree. */
+    virtual PureBoundingVolumeHierarchy* insertObject(const PureObject3D& obj) override;              /**< Inserts the given object in the octree. */
+    virtual const PureBoundingVolumeHierarchy* findObject(const PureObject3D& obj) const override;    /**< Finds the given object in the octree. */
+    virtual bool reset() override;                                                                    /**< Removes all children from this root node. */
 
     const PureAxisAlignedBoundingBox& getAABB() const;                                       /**< Gets the AABB of this node. */
 
 protected:
 
     // ---------------------------------------------------------------------------
-       
-    PureBoundingVolumeHierarchy();
-    
-    PureBoundingVolumeHierarchy(const PureBoundingVolumeHierarchy&);
-    PureBoundingVolumeHierarchy& operator=(const PureBoundingVolumeHierarchy&);
 
     virtual TPureBool subdivide(); // override
 

@@ -40,7 +40,27 @@ const PureOctree::ChildIndex PureOctree::BACK   = BIT(PureOctree::BIT_AXIS_Z);
 /**
     Creates an octree node.
     Initially the type of this node will be LeafEmpty.
-    @param pos The world-space position of this node. For global use, you can specify just (0;0;0).
+    This ctor initializes size to 0 and position to [0,0,0].
+    Size and position can be set later by setSize() and setPos() only if the tree is empty.
+
+    @param maxDepthLevel The maximum node depth level supported by this octree. 0 means there is no depth limit.
+    @param currentDepthLevel The depth level of this specific node being created. For global use, just specify 0 so this will be the root node of the octree.
+*/
+PureOctree::PureOctree(TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
+    fSize(0.f),
+    nMaxDepth(maxDepthLevel),
+    nCurrentDepth(currentDepthLevel),
+    nodeType(NodeType::LeafEmpty),
+    parent(PGENULL)
+{
+    
+} // PureOctree(...)
+
+/**
+    Creates an octree node.
+    Initially the type of this node will be LeafEmpty.
+
+    @param pos The world-space position of this node. For global use, you can specify just [0,0,0].
     @param size The length of the side of the cube represented by this node. Recommend this to be big enough to contain any scene objects.
     @param maxDepthLevel The maximum node depth level supported by this octree. 0 means there is no depth limit.
     @param currentDepthLevel The depth level of this specific node being created. For global use, just specify 0 so this will be the root node of the octree.
@@ -252,6 +272,27 @@ const PureVector& PureOctree::getPos() const
     return vPos;
 }
 
+/**
+    Sets the world-space position of this root node. 
+    
+    Valid only for the root node (level 0), and only if it is still empty.
+
+    @param pos The new world-space position of this root node.
+
+    @return True in case of success, false if invoked on non-root node or non-empty node.
+*/
+bool PureOctree::setPos(const PureVector& pos)
+{
+    if ((parent != PGENULL) || (getNodeType() != NodeType::LeafEmpty))
+    {
+        return false;
+    }
+
+    vPos = pos;
+
+    return true;
+}
+
 
 /**
     Gets the length of the side of the cube represented by this node as it was specified in the constructor.
@@ -264,6 +305,28 @@ const PureVector& PureOctree::getPos() const
 TPureFloat PureOctree::getSize() const
 {
     return fSize;
+}
+
+/**
+    Sets the length of the side of the cube represented by this root node. 
+    
+    Valid only for the root node (level 0), and only if it is still empty.
+
+    @param size The new length of the side of the cube represented by this root node.
+
+    @return True in case of success, false if invoked on non-root node or non-empty node.
+
+*/
+bool PureOctree::setSize(TPureFloat size)
+{
+    if ((parent != PGENULL) || (getNodeType() != NodeType::LeafEmpty))
+    {
+        return false;
+    }
+
+    fSize = size;
+
+    return true;
 }
 
 
@@ -301,30 +364,33 @@ const std::set<const PureObject3D*>& PureOctree::getObjects() const
     return vObjects;
 }
 
+/**
+    Removes all children and objects from this node.
+    Objects are not destroyed, just get forgot by this tree.
+
+    Valid only for the root node (level 0).
+    Useful before rebuilding the tree.
+
+    @return True in case of success, false if invoked on non-root node.
+*/
+bool PureOctree::reset()
+{
+    if (parent != PGENULL)
+    {
+        return false;
+    }
+
+    // i.e. nCurrentDepth is 0 here cause we are the root node
+
+    DeleteChildren();
+    vObjects.clear(); // just in case
+    nodeType = getNodeType(); // expecting NodeType::LeafEmpty
+
+    return true;
+}
+
 
 // ############################## PROTECTED ##############################
-
-
-PureOctree::PureOctree() :
-    fSize(0.f),
-    nMaxDepth(0),
-    nCurrentDepth(0),
-    nodeType(NodeType::LeafEmpty),
-    parent(PGENULL)
-{
-
-} // PureOctree()
-
-
-PureOctree::PureOctree(const PureOctree&)
-{
-}
-
-
-PureOctree& PureOctree::operator=(const PureOctree&)
-{
-    return *this;
-}
 
 
 TPureBool PureOctree::subdivide()
@@ -363,6 +429,7 @@ void PureOctree::DeleteChildren()
             delete vChildren[i];
         }
         vChildren.resize(0);
+        // do not update node type here because it might become leaf_empty or leaf_container, higher level logic shall call getNodeType() to decide!
     }
 }
 

@@ -21,6 +21,13 @@ public:
     {
     } // PureBoundingVolumeHierarchyTest()
 
+    ~PureBoundingVolumeHierarchyTest() = default;
+
+    PureBoundingVolumeHierarchyTest(const PureBoundingVolumeHierarchyTest&) = delete;
+    PureBoundingVolumeHierarchyTest& operator=(const PureBoundingVolumeHierarchyTest&) = delete;
+    PureBoundingVolumeHierarchyTest(PureBoundingVolumeHierarchyTest&&) = delete;
+    PureBoundingVolumeHierarchyTest& operator=(PureBoundingVolumeHierarchyTest&&) = delete;
+
 protected:
 
     virtual void initialize() override
@@ -28,6 +35,7 @@ protected:
         engine = NULL;
         om = NULL;
         addSubTest("testCtor1", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testCtor1);
+        addSubTest("testCtor2", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testCtor2);
         addSubTest("testInsertObject", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testInsertObject);
     }
 
@@ -67,15 +75,29 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PureBoundingVolumeHierarchyTest(const PureBoundingVolumeHierarchyTest&)
-    {}         
-
-    PureBoundingVolumeHierarchyTest& operator=(const PureBoundingVolumeHierarchyTest&)
+    bool assertTreeIsReset(const PureBoundingVolumeHierarchy& tree)
     {
-        return *this;
+        return assertEquals(PureOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
+            assertEquals((std::size_t)0, tree.getChildren().size(), "children") &
+            assertEquals((std::size_t)0, tree.getObjects().size(), "objects") &
+            assertEquals(PureVector(), tree.getAABB().getPosVec(), "aabb pos") &
+            assertEquals(PureVector(), tree.getAABB().getSizeVec(), "aabb size");
     }
 
     bool testCtor1()
+    {
+        PureBoundingVolumeHierarchy tree(3, 0);
+
+        return assertEquals(0.0f, tree.getPos().getX(), "pos.x") &
+            assertEquals(0.0f, tree.getPos().getY(), "pos.y") &
+            assertEquals(0.0f, tree.getPos().getZ(), "pos.z") &
+            assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
+            assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
+            assertEquals(0.f, tree.getSize(), "size") &
+            assertTrue(assertTreeIsReset(tree), "reset");
+    }
+
+    bool testCtor2()
     {
         PureBoundingVolumeHierarchy tree(PureVector(1, 2, 3), 1000.0f, 3, 0);
         
@@ -85,9 +107,7 @@ private:
         assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
         assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
         assertEquals(1000.0f, tree.getSize(), "size") &
-        assertEquals(PureOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
-        assertEquals((std::size_t)0, tree.getChildren().size(), "children") &
-        assertEquals((std::size_t)0, tree.getObjects().size(), "objects");
+        assertTrue(assertTreeIsReset(tree), "reset"); 
     }
 
     bool testInsertObject()
@@ -257,6 +277,10 @@ private:
 
         b &= assertEquals(aabb_root_expected.getPosVec(), tree.getAABB().getPosVec(),  "root AABB pos") &
             assertEquals(aabb_root_expected.getSizeVec(), tree.getAABB().getSizeVec(), "root AABB size");
+
+        // reset(): compared to the PureOctree test, we only test if AABB is also reset (see in assertTreeIsReset())!
+        b &= assertTrue(tree.reset(), "reset level 0");
+        b &= assertTrue(assertTreeIsReset(tree), "tree is reset 1");
 
         return b;
     }

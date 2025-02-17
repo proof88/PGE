@@ -21,18 +21,28 @@ public:
     {
     } // PureOctreeTest()
 
+    ~PureOctreeTest() = default;
+
+    PureOctreeTest(const PureOctreeTest&) = delete;
+    PureOctreeTest& operator=(const PureOctreeTest&) = delete;
+    PureOctreeTest(PureOctreeTest&&) = delete;
+    PureOctreeTest& operator=(PureOctreeTest&&) = delete;
+
 protected:
 
     virtual void initialize() override
     {
         engine = NULL;
         om = NULL;
-        addSubTest("testCtor1", (PFNUNITSUBTEST) &PureOctreeTest::testCtor1);
+        addSubTest("testCtor1", (PFNUNITSUBTEST)&PureOctreeTest::testCtor1);
+        addSubTest("testCtor2", (PFNUNITSUBTEST) &PureOctreeTest::testCtor2);
         addSubTest("testCalculateIndex", (PFNUNITSUBTEST) &PureOctreeTest::testCalculateIndex);
         addSubTest("testInsertObject", (PFNUNITSUBTEST) &PureOctreeTest::testInsertObject);
         addSubTest("testFindObject", (PFNUNITSUBTEST) &PureOctreeTest::testFindObject);
+        addSubTest("testSetSize", (PFNUNITSUBTEST)&PureOctreeTest::testSetSize);
+        addSubTest("testSetPos", (PFNUNITSUBTEST)&PureOctreeTest::testSetPos);
         
-        // getDepthLevel(), getMaxDepthLevel(), getNodeType(), getChildren() and getObjects() are tested within above functions
+        // reset(), getDepthLevel(), getMaxDepthLevel(), getNodeType(), getChildren() and getObjects() are tested within above functions
     }
 
     virtual bool setUp() override
@@ -71,28 +81,39 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    PureOctreeTest(const PureOctreeTest&)
-    {}         
-
-    PureOctreeTest& operator=(const PureOctreeTest&)
+    bool assertTreeIsReset(const PureOctree& tree)
     {
-        return *this;
+        return assertEquals(PureOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
+            assertEquals((std::size_t)0, tree.getChildren().size(), "children") &
+            assertEquals((std::size_t)0, tree.getObjects().size(), "objects");
     }
 
     bool testCtor1()
     {
+        PureOctree tree(3, 0);
+
+        return assertEquals(0.0f, tree.getPos().getX(), "pos.x") &
+            assertEquals(0.0f, tree.getPos().getY(), "pos.y") &
+            assertEquals(0.0f, tree.getPos().getZ(), "pos.z") &
+            assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
+            assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
+            assertEquals(0.f, tree.getSize(), "size") &
+            assertEquals((PureOctree*)PGENULL, tree.getParent(), "parent") &
+            assertTrue(assertTreeIsReset(tree), "reset");
+    }
+    
+    bool testCtor2()
+    {
         PureOctree tree(PureVector(1, 2, 3), 1000.0f, 3, 0);
         
         return assertEquals(1.0f, tree.getPos().getX(), "pos.x") &
-        assertEquals(2.0f, tree.getPos().getY(), "pos.y") &
-        assertEquals(3.0f, tree.getPos().getZ(), "pos.z") &
-        assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
-        assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
-        assertEquals(1000.0f, tree.getSize(), "size") &
-        assertEquals(PureOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
-        assertEquals((std::size_t)0, tree.getChildren().size(), "children") &
-        assertEquals((PureOctree*)PGENULL, tree.getParent(), "parent") &
-        assertEquals((std::size_t)0, tree.getObjects().size(), "objects");
+            assertEquals(2.0f, tree.getPos().getY(), "pos.y") &
+            assertEquals(3.0f, tree.getPos().getZ(), "pos.z") &
+            assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
+            assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
+            assertEquals(1000.0f, tree.getSize(), "size") &
+            assertEquals((PureOctree*)PGENULL, tree.getParent(), "parent") &
+            assertTrue(assertTreeIsReset(tree), "reset");
     }
 
     bool testCalculateIndex()
@@ -347,6 +368,51 @@ private:
             assertEquals(treeOrigin.getY()-375.0f, tree_BRF_BRB.getPos().getY(), "tree_BRF_BRB pos.y") &
             assertEquals(treeOrigin.getZ()-125.0f, tree_BRF_BRB.getPos().getZ(), "tree_BRF_BRB pos.z");
 
+
+        // now check reset() behavior
+
+        // reset() negative test: try reset level 2 nodes (we have level 2 because tree_BRF node have children)
+        for (std::size_t i = 0; i < tree_BRF.getChildren().size(); i++)
+        {
+            b &= assertFalse(tree_BRF.getChildren()[i]->reset(), (std::string("reset level 2 node ") + std::to_string(i)).c_str());
+            b &= assertEquals(250.0f, tree_BRF.getChildren()[i]->getSize(), (std::string("tree_BRF children ") + std::to_string(i) + " size").c_str());
+            b &= assertEquals(&tree_BRF, tree_BRF.getChildren()[i]->getParent(), (std::string("node 1 children ") + std::to_string(i) + " parent").c_str());
+            b &= assertEquals((TPureUInt)2, tree_BRF.getChildren()[i]->getMaxDepthLevel(), (std::string("tree_BRF children ") + std::to_string(i) + " maxDepthLevel").c_str());
+            b &= assertEquals((TPureUInt)2, tree_BRF.getChildren()[i]->getDepthLevel(), (std::string("tree_BRF children ") + std::to_string(i) + " depthLevel").c_str());
+        }
+
+        // reset() negative test: try reset level 1 nodes
+        for (std::size_t i = 0; i < tree.getChildren().size(); i++)
+        {
+            b &= assertFalse(tree.getChildren()[i]->reset(), (std::string("reset level 1 node ") + std::to_string(i)).c_str());
+            b &= assertEquals(500.0f, tree.getChildren()[i]->getSize(), (std::string("node 1 children ") + std::to_string(i) + " size").c_str());
+            b &= assertEquals(&tree, tree.getChildren()[i]->getParent(), (std::string("node 1 children ") + std::to_string(i) + " parent").c_str());
+            b &= assertEquals((TPureUInt)2, tree.getChildren()[i]->getMaxDepthLevel(), (std::string("node 1 children ") + std::to_string(i) + " maxDepthLevel").c_str());
+            b &= assertEquals((TPureUInt)1, tree.getChildren()[i]->getDepthLevel(), (std::string("node 1 children ") + std::to_string(i) + " depthLevel").c_str());
+        }
+        // check level 2 nodes unaffected
+        for (std::size_t i = 0; i < tree_BRF.getChildren().size(); i++)
+        {
+            b &= assertEquals(250.0f, tree_BRF.getChildren()[i]->getSize(), (std::string("tree_BRF children ") + std::to_string(i) + " size").c_str());
+            b &= assertEquals(&tree_BRF, tree_BRF.getChildren()[i]->getParent(), (std::string("node 1 children ") + std::to_string(i) + " parent").c_str());
+            b &= assertEquals((TPureUInt)2, tree_BRF.getChildren()[i]->getMaxDepthLevel(), (std::string("tree_BRF children ") + std::to_string(i) + " maxDepthLevel").c_str());
+            b &= assertEquals((TPureUInt)2, tree_BRF.getChildren()[i]->getDepthLevel(), (std::string("tree_BRF children ") + std::to_string(i) + " depthLevel").c_str());
+        }
+
+        // reset() positive test when we have multi-level tree built above
+        b &= assertTrue(tree.reset(), "reset level 0");
+        b &= assertTrue(assertTreeIsReset(tree), "tree is reset 1");
+
+        // reset() positive test when only 1 object is in root node
+        const PureOctree* const node1_newtree = tree.insertObject(*obj1);
+        if (!assertNotNull(node1_newtree, "node1_newtree 1"))
+        {
+            return false;
+        }
+        b &= assertEquals(&tree, node1_newtree, "tree root is node1_newtree");
+        b &= assertTrue(tree.reset(), "reset level 0 again");
+        b &= assertTrue(assertTreeIsReset(tree), "tree is reset 2");
+
         return b;
     }
 
@@ -412,6 +478,112 @@ private:
 
         b &= assertEquals(&tree_BRF_TLB, found_node2, "found_node2 is tree_BRF_TLB");
         b &= assertEquals(&tree_BRF_TLB, found_node3, "found_node3 is tree_BRF_TLB");
+
+        return b;
+    }
+
+    bool testSetSize()
+    {
+        PureOctree treeCtor1(2, 0);
+
+        bool b = true;
+        b &= assertTrue(treeCtor1.setSize(50.f), "size 0");
+
+        PureObject3D* const obj1 = om->createBox(1.0f, 1.0f, 1.0f);
+        PureObject3D* const obj2 = om->createBox(1.0f, 1.0f, 1.0f);
+        if (!assertNotNull(obj1, "obj1 not null") || !assertNotNull(obj2, "obj2 not null"))
+        {
+            return false;
+        }
+
+        // 1 level
+        const PureOctree* const node1 = treeCtor1.insertObject(*obj1);
+        if (!assertNotNull(node1, "node 1"))
+        {
+            return false;
+        }
+
+        b &= assertFalse(treeCtor1.setSize(2.f), "size 1");
+        b &= assertEquals(50.f, treeCtor1.getSize(), "size 2");
+
+        // 2 levels
+        PureOctree* const node2 = treeCtor1.insertObject(*obj2);
+        if (!assertNotNull(node2, "node 2"))
+        {
+            return false;
+        }
+
+        const TPureFloat childNodeSize = node2->getSize();
+        b &= assertFalse(node2->setSize(60.f), "size 3");
+        b &= assertEquals(childNodeSize, node2->getSize(), "size 4");
+
+        b &= assertFalse(treeCtor1.setSize(2.f), "size 5");
+        b &= assertEquals(50.f, treeCtor1.getSize(), "size 6");
+
+        // after reset()
+        b &= assertTrue(treeCtor1.reset(), "reset 1");
+        b &= assertTrue(treeCtor1.setSize(2.f), "size 7");
+        b &= assertEquals(2.f, treeCtor1.getSize(), "size 8");
+        
+        // different ctor
+        const PureVector treeOrigin(100.f, 200.f, 300.f);
+        PureOctree treeCtor2(treeOrigin, 1000.0f, 2, 0);
+        b &= assertTrue(treeCtor2.setSize(2.f), "size 9");
+        b &= assertEquals(2.f, treeCtor1.getSize(), "size 10");
+        
+        return b;
+    }
+
+    bool testSetPos()
+    {
+        PureOctree treeCtor1(2, 0);
+
+        bool b = true;
+        b &= assertTrue(treeCtor1.setSize(5000.f), "size 0");
+
+        const PureVector treeOrigin(100.f, 200.f, 300.f);
+        b &= assertTrue(treeCtor1.setPos(treeOrigin), "pos 0");
+
+        PureObject3D* const obj1 = om->createBox(1.0f, 1.0f, 1.0f);
+        PureObject3D* const obj2 = om->createBox(1.0f, 1.0f, 1.0f);
+        if (!assertNotNull(obj1, "obj1 not null") || !assertNotNull(obj2, "obj2 not null"))
+        {
+            return false;
+        }
+
+        // 1 level
+        const PureOctree* const node1 = treeCtor1.insertObject(*obj1);
+        if (!assertNotNull(node1, "node 1"))
+        {
+            return false;
+        }
+
+        b &= assertFalse(treeCtor1.setPos(PureVector(5, 6, 7)), "pos 1");
+        b &= assertEquals(treeOrigin, treeCtor1.getPos(), "pos 2");
+
+        // 2 levels
+        PureOctree* const node2 = treeCtor1.insertObject(*obj2);
+        if (!assertNotNull(node2, "node 2"))
+        {
+            return false;
+        }
+
+        const PureVector childNodePos = node2->getPos();
+        b &= assertFalse(node2->setPos(PureVector(5, 6, 7)), "pos 3");
+        b &= assertEquals(childNodePos, node2->getPos(), "pos 4");
+
+        b &= assertFalse(treeCtor1.setPos(PureVector(5, 6, 7)), "pos 5");
+        b &= assertEquals(treeOrigin, treeCtor1.getPos(), "pos 6");
+
+        // after reset()
+        b &= assertTrue(treeCtor1.reset(), "reset 1");
+        b &= assertTrue(treeCtor1.setPos(PureVector(5, 6, 7)), "pos 7");
+        b &= assertEquals(PureVector(5, 6, 7), treeCtor1.getPos(), "pos 8");
+        
+        // different ctor
+        PureOctree treeCtor2(treeOrigin, 1000.0f, 2, 0);
+        b &= assertTrue(treeCtor2.setPos(PureVector(5, 6, 7)), "pos 9");
+        b &= assertEquals(PureVector(5, 6, 7), treeCtor2.getPos(), "pos 10");
 
         return b;
     }

@@ -90,8 +90,14 @@ public:
 
     // ---------------------------------------------------------------------------
 
+    PureOctree(TPureUInt maxDepthLevel, TPureUInt currentDepthLevel);
     PureOctree(const PureVector& pos, TPureFloat size, TPureUInt maxDepthLevel, TPureUInt currentDepthLevel);
     virtual ~PureOctree();
+
+    PureOctree(const PureOctree&) = delete;
+    PureOctree& operator=(const PureOctree&) = delete;
+    PureOctree(PureOctree&&) = delete;
+    PureOctree& operator=(PureOctree&&) = delete;
 
     ChildIndex calculateIndex(const PureVector& pos) const;         /**< Calculates child node index for the given position in the current node. */
 
@@ -104,10 +110,13 @@ public:
     TPureUInt getMaxDepthLevel() const;                             /**< Gets the maximum depth level of the octree node as it was specified in the constructor of the octree. */
     NodeType getNodeType() const;                                   /**< Gets the type of the octree node which depends on if the node has any objects or children nodes. */
     const PureVector& getPos() const;                               /**< Gets the world-space position of the node as specified in the constructor. */
+    bool setPos(const PureVector& pos);                             /**< Sets the world-space position of this root node. */
     TPureFloat getSize() const;                                     /**< Gets the length of the side of the cube represented by this node as it was specified in the constructor. */
+    bool setSize(TPureFloat);                                       /**< Sets the length of the side of the cube represented by this root node. */
     const std::vector<PureOctree*>& getChildren() const;            /**< Gets the children nodes of this node. */
     const PureOctree* getParent() const;                            /**< Gets the parent node of this node. */
     const std::set<const PureObject3D*>& getObjects() const;        /**< Gets the stored objects of this node. */
+    virtual bool reset();                                           /**< Removes all children from this root node. */
 
 protected:
 
@@ -115,11 +124,6 @@ protected:
        
     std::vector<PureOctree*> vChildren;   // TODO: with Cpp11 we could use std::reference_wrapper and store references instead of ptrs.
     PureOctree* parent;
-    
-    PureOctree();
-    
-    PureOctree(const PureOctree&);
-    PureOctree& operator=(const PureOctree&);
 
     // virtual subdivide so derived can override by resizing vector with derived instances!
     virtual TPureBool subdivide();

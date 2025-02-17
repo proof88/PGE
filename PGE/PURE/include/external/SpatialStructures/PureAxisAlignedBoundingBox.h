@@ -17,11 +17,6 @@
 
 /**
     AABB: Axis-Aligned Bounding Box class.
-
-    file:///D:/__PR00F__/___developing___/projects/PGE/PGE/Docs/PURE/html/visibility.html
-    https://github.com/brandonpelfrey/Fast-BVH/tree/master/include
-    https://github.com/GrandPiaf/Raytracer/blob/master/Raytracer/AABB.h
-    https://github.com/taqu/BoundingVolumeHierarchy
 */
 class PureAxisAlignedBoundingBox
 {
@@ -33,9 +28,15 @@ public:
 
     // ---------------------------------------------------------------------------
 
-    PureAxisAlignedBoundingBox();
+    PureAxisAlignedBoundingBox() = default;
     PureAxisAlignedBoundingBox(const PureVector& pos_, const PureVector& size_);
-    virtual ~PureAxisAlignedBoundingBox();
+
+    ~PureAxisAlignedBoundingBox() = default;
+
+    PureAxisAlignedBoundingBox(const PureAxisAlignedBoundingBox&) = default;
+    PureAxisAlignedBoundingBox& operator=(const PureAxisAlignedBoundingBox&) = default;
+    PureAxisAlignedBoundingBox(PureAxisAlignedBoundingBox&&) = default;
+    PureAxisAlignedBoundingBox& operator=(PureAxisAlignedBoundingBox&&) = default;
 
     const PureVector& getPosVec() const;                      /**< Gets the world-space position which is the center of the bounding box. */
     const PureVector& getSizeVec() const;                     /**< Gets the base sizes. */

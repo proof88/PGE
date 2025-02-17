@@ -21,24 +21,12 @@ using namespace std;
 // ############################### PUBLIC ################################
 
 
-PureAxisAlignedBoundingBox::PureAxisAlignedBoundingBox()
-{
-
-} // PureAxisAlignedBoundingBox
-
-
 PureAxisAlignedBoundingBox::PureAxisAlignedBoundingBox(const PureVector& pos_, const PureVector& size_) :
     pos(pos_),
     size(size_)
 {
 
 } // PureAxisAlignedBoundingBox()
-
-
-PureAxisAlignedBoundingBox::~PureAxisAlignedBoundingBox()
-{
-
-} // ~PureAxisAlignedBoundingBox()
 
 
 /**

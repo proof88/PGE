@@ -36,19 +36,18 @@ public:
         addSubTest("testExtendByBoxInside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByBoxInside);
     } // PureAxisAlignedBoundingBoxTest()
 
+    ~PureAxisAlignedBoundingBoxTest() = default;
+
+    PureAxisAlignedBoundingBoxTest(const PureAxisAlignedBoundingBoxTest&) = delete;
+    PureAxisAlignedBoundingBoxTest& operator=(const PureAxisAlignedBoundingBoxTest&) = delete;
+    PureAxisAlignedBoundingBoxTest(PureAxisAlignedBoundingBoxTest&&) = delete;
+    PureAxisAlignedBoundingBoxTest& operator=(PureAxisAlignedBoundingBoxTest&&) = delete;
+
 protected:
 
 private:
 
     // ---------------------------------------------------------------------------
-
-    PureAxisAlignedBoundingBoxTest(const PureAxisAlignedBoundingBoxTest&)
-    {};         
-
-    PureAxisAlignedBoundingBoxTest& operator=(const PureAxisAlignedBoundingBoxTest&)
-    {
-        return *this;
-    };
 
     bool testCtor1()
     {

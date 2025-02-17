@@ -27,17 +27,31 @@ using namespace std;
 
 /**
     Creates an octree-derived bounding volume hierarchy (BVH) node.
-    Basically this is doing the same octree initialization as PureOctree's public constructor.
-    @param pos The world-space position of this node. For global use, you can specify just (0;0;0).
+    Basically this is doing the same octree initialization as PureOctree's public constructor with the same arguments.
+
+    @param maxDepthLevel     The maximum node depth level supported by this BVH. 0 means there is no depth limit.
+    @param currentDepthLevel The depth level of this specific node being created. For global use, just specify 0 so this will be the root node of the BVH.
+*/
+PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy(TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
+    PureOctree(maxDepthLevel, currentDepthLevel)
+{
+}
+
+/**
+    Creates an octree-derived bounding volume hierarchy (BVH) node.
+    Basically this is doing the same octree initialization as PureOctree's public constructor with the same arguments.
+
+    @param pos  The world-space position of this node. For global use, you can specify just (0;0;0).
     @param size The length of the side of the cube represented by this octree-derived node. Recommend this to be big enough to contain any scene objects.
-           Note that this is NOT the size of the bounding box used by the BVH, that will be calculated.
-    @param maxDepthLevel The maximum node depth level supported by this BVH. 0 means there is no depth limit.
+                Note that this is NOT the size of the bounding box used by the BVH, that will be calculated.
+    @param maxDepthLevel     The maximum node depth level supported by this BVH. 0 means there is no depth limit.
     @param currentDepthLevel The depth level of this specific node being created. For global use, just specify 0 so this will be the root node of the BVH.
 */
 PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy(const PureVector& pos, TPureFloat size, TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
     PureOctree(pos, size, maxDepthLevel, currentDepthLevel)
 {
-
+    // TODO: AABB update with pos & size ??? Well, in 2023 I explicitly stated in the API comment for the size argument that it is NOT the size of the AABB, 
+    // so most probably I dont need to update AABB here.
 } // PureBoundingVolumeHierarchy(...)
 
 
@@ -106,6 +120,23 @@ const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findObject(const
 
 
 /**
+    Extending PureOctree::reset() behavior by resetting the AABB also.
+
+    @return True in case of success, false if invoked on non-root node.
+*/
+bool PureBoundingVolumeHierarchy::reset()
+{
+    if (PureOctree::reset())
+    {
+        aabb = PureAxisAlignedBoundingBox();
+        return true;
+    }
+
+    return false;
+}
+
+
+/**
     Gets the AABB of this node.
     Note that the AABB has nothing to do with the position and size of the ancestor Octree node.
     Position and size of Octree node is just for determining which node should be the storage for an inserted object.
@@ -121,23 +152,6 @@ const PureAxisAlignedBoundingBox& PureBoundingVolumeHierarchy::getAABB() const
 
 
 // ############################## PROTECTED ##############################
-
-
-PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy()
-{
-
-} // PureBoundingVolumeHierarchy()
-
-
-PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy(const PureBoundingVolumeHierarchy&)
-{
-}
-
-
-PureBoundingVolumeHierarchy& PureBoundingVolumeHierarchy::operator=(const PureBoundingVolumeHierarchy&)
-{
-    return *this;
-}
 
 
 TPureBool PureBoundingVolumeHierarchy::subdivide()
