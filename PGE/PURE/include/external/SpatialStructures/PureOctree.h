@@ -127,8 +127,8 @@ protected:
 
     // ---------------------------------------------------------------------------
        
-    std::vector<PureOctree*> vChildren;   // TODO: with Cpp11 we could use std::reference_wrapper and store references instead of ptrs.
-    PureOctree* parent;
+    std::vector<PureOctree*> m_vChildren;   // TODO: with Cpp11 we could use std::reference_wrapper and store references instead of ptrs.
+    PureOctree* m_parent;
 
     // virtual subdivide so derived can override by resizing vector with derived instances!
     virtual TPureBool subdivide();
@@ -136,14 +136,14 @@ protected:
 
 private:
 
-    PureVector vPos;
-    TPureFloat fSize;
-    TPureUInt nCurrentDepth;
-    TPureUInt nMaxDepth;
-    NodeType nodeType;
-    std::set<const PureObject3D*> vObjects;
+    PureVector m_vPos;
+    TPureFloat m_fSize;
+    TPureUInt m_nCurrentDepth;
+    TPureUInt m_nMaxDepth;
+    NodeType m_nodeType;
+    std::set<const PureObject3D*> m_vObjects;
 
-    PureObject3D* objDebugBox;
+    PureObject3D* m_objDebugBox;
 
 }; // class PureOctree 
 

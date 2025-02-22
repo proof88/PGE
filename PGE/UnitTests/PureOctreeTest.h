@@ -81,60 +81,40 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    bool assertTreeIsReset(const PureOctree& tree)
+    /**
+    * Helper function to build up the given empty tree.
+    * Creates 5 new PureObject3D boxes with different positions and try to insert them into the tree.
+    * Note that obj5 cannot be inserted into the tree (on purpose) hence there is node5 in the argument list.
+    * So the expectation is that after calling this function, only 4 PureObject3D boxes will be inside the tree.
+    * The given pointers will be updated.
+    *
+    * @param tree       An empty input tree where 5 new boxes will be inserted.
+    * @param treeOrigin This will be set as the position of the tree.
+    * @param obj1       A new box will be created and this pointer will be updated with the address of this new box.
+    * @param obj2       Same purpose as obj1.
+    * @param obj3       Same purpose as obj1.
+    * @param obj4       Same purpose as obj1.
+    * @param obj5       Same purpose as obj1.
+    * @param node1      The tree node holding obj1.
+    * @param node2      The tree node holding obj2.
+    * @param node3      The tree node holding obj3.
+    * @param node4      The tree node holding obj4.
+    *
+    * @return True if PureOctree is successfully built with the 4 new boxes inserted, false otherwise.
+    */
+    bool buildOctree(
+        PureOctree& tree,
+        const PureVector& treeOrigin,
+        PureObject3D*& obj1,
+        PureObject3D*& obj2,
+        PureObject3D*& obj3,
+        PureObject3D*& obj4,
+        PureObject3D*& obj5,
+        const PureOctree*& node1,
+        const PureOctree*& node2,
+        const PureOctree*& node3,
+        const PureOctree*& node4)
     {
-        return assertEquals(PureOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
-            assertEquals((std::size_t)0, tree.getChildren().size(), "children") &
-            assertEquals((std::size_t)0, tree.getObjects().size(), "objects");
-    }
-
-    bool testCtor1()
-    {
-        PureOctree tree(3, 0);
-
-        return assertEquals(0.0f, tree.getPos().getX(), "pos.x") &
-            assertEquals(0.0f, tree.getPos().getY(), "pos.y") &
-            assertEquals(0.0f, tree.getPos().getZ(), "pos.z") &
-            assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
-            assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
-            assertEquals(0.f, tree.getSize(), "size") &
-            assertEquals((PureOctree*)PGENULL, tree.getParent(), "parent") &
-            assertTrue(assertTreeIsReset(tree), "reset");
-    }
-    
-    bool testCtor2()
-    {
-        PureOctree tree(PureVector(1, 2, 3), 1000.0f, 3, 0);
-        
-        return assertEquals(1.0f, tree.getPos().getX(), "pos.x") &
-            assertEquals(2.0f, tree.getPos().getY(), "pos.y") &
-            assertEquals(3.0f, tree.getPos().getZ(), "pos.z") &
-            assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
-            assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
-            assertEquals(1000.0f, tree.getSize(), "size") &
-            assertEquals((PureOctree*)PGENULL, tree.getParent(), "parent") &
-            assertTrue(assertTreeIsReset(tree), "reset");
-    }
-
-    bool testCalculateIndex()
-    {
-        PureOctree tree(PureVector(), 1000.0f, 2, 0);
-        PureVector vec1(-200.f, 200.f, 200.f);
-        PureVector vec2(200.f, -200.f, -200.f);
-        PureVector vec3;
-
-        return assertEquals(PureOctree::ChildIndex(PureOctree::TOP | PureOctree::LEFT | PureOctree::BACK), tree.calculateIndex(vec1), "vec1") &
-            assertEquals(PureOctree::ChildIndex(PureOctree::BOTTOM | PureOctree::RIGHT | PureOctree::FRONT), tree.calculateIndex(vec2), "vec2") &
-            assertEquals(PureOctree::ChildIndex(PureOctree::TOP | PureOctree::RIGHT | PureOctree::BACK), tree.calculateIndex(vec3), "vec3");
-    }
-
-    bool testInsertObject()
-    {
-        // used to test if the given world-space position other than (0,0,0) is really taken into calculations;
-        // if there is any issue, change this to (0,0,0) to find out probable reason of tree not properly taking origin pos into account!
-        const PureVector treeOrigin(100.f, 200.f, 300.f);
-
-        PureOctree tree(treeOrigin, 1000.0f, 2, 0);
         /*
 
         This is a 1000 x 1000 x 1000 size octree, in pos treeOrigin.
@@ -174,13 +154,13 @@ private:
          - obj5 is placed at (3000, 0, 0), intentionally outside tree root node volume, so it should not be inserted in tree!
 
         */
-        
-        PureObject3D* const obj1 = om->createBox(2.0f, 2.0f, 2.0f);
-        PureObject3D* const obj2 = om->createBox(2.0f, 2.0f, 2.0f);
-        PureObject3D* const obj3 = om->createBox(2.0f, 2.0f, 2.0f);
-        PureObject3D* const obj4 = om->createBox(2.0f, 2.0f, 2.0f);
-        PureObject3D* const obj5 = om->createBox(2.0f, 2.0f, 2.0f);
-        if ( !assertNotNull(obj1, "obj1 not null") || !assertNotNull(obj2, "obj2 not null") || !assertNotNull(obj3, "obj3 not null") || !assertNotNull(obj4, "obj4 not null") || !assertNotNull(obj5, "obj5 not null") )
+
+        obj1 = om->createBox(2.0f, 2.0f, 2.0f);
+        obj2 = om->createBox(2.0f, 2.0f, 2.0f);
+        obj3 = om->createBox(2.0f, 2.0f, 2.0f);
+        obj4 = om->createBox(2.0f, 2.0f, 2.0f);
+        obj5 = om->createBox(2.0f, 2.0f, 2.0f);
+        if (!assertNotNull(obj1, "obj1 not null") || !assertNotNull(obj2, "obj2 not null") || !assertNotNull(obj3, "obj3 not null") || !assertNotNull(obj4, "obj4 not null") || !assertNotNull(obj5, "obj5 not null"))
         {
             return false;
         }
@@ -191,18 +171,120 @@ private:
         obj4->getPosVec().Set(treeOrigin.getX(), treeOrigin.getY(), treeOrigin.getZ());
         obj5->getPosVec().Set(treeOrigin.getX() + 3000.f, treeOrigin.getY(), treeOrigin.getZ());
 
-        const PureOctree* const node1 = tree.insertObject(*obj1);
-        const PureOctree* const node2 = tree.insertObject(*obj2);
-        const PureOctree* const node3 = tree.insertObject(*obj3);
-        const PureOctree* const node4 = tree.insertObject(*obj4);
-        const PureOctree* const node5 = tree.insertObject(*obj5);  // out of tree bounds
-        if ( !assertNotNull(node1, "node 1") || !assertNotNull(node2, "node 2") || !assertNotNull(node3, "node 3") || !assertNotNull(node4, "node 4") || !assertNull(node5, "node 5") )
+        node1 = tree.insertObject(*obj1);
+        node2 = tree.insertObject(*obj2);
+        node3 = tree.insertObject(*obj3);
+        node4 = tree.insertObject(*obj4);
+        const PureOctree* node5 = tree.insertObject(*obj5);  // out of tree bounds
+        if (!assertNotNull(node1, "node 1 insert") ||
+            !assertNotNull(node2, "node 2 insert") ||
+            !assertNotNull(node3, "node 3 insert") ||
+            !assertNotNull(node4, "node 4 insert") ||
+            !assertNull(node5, "node 5 insert"))
+        {
+            return false;
+        }
+
+        // since nodes might be subdivided and objects might be moved down to another level when more objects are inserted, the above node ptrs need to be refreshed now!
+        node1 = tree.findObject(*obj1);
+        node2 = tree.findObject(*obj2);
+        node3 = tree.findObject(*obj3);
+        node4 = tree.findObject(*obj4);
+        node5 = tree.findObject(*obj5);
+        if (!assertNotNull(node1, "node 1 find") ||
+            !assertNotNull(node2, "node 2 find") ||
+            !assertNotNull(node3, "node 3 find") ||
+            !assertNotNull(node4, "node 4 find") ||
+            !assertNull(node5, "node 5 find") ||
+            !assertTrue(node2 == node3, "obj2 and obj3 in same node") ||
+            !assertTrue(node1 != node4, "obj1 and obj4 in different node") ||
+            !assertTrue(node1 != node2, "obj1 and obj2,3 in different node") ||
+            !assertTrue(node4 != node2, "obj4 and obj2,3 in different node") ||
+            !assertEquals(1u, node1->getDepthLevel(), "node 1 depth") ||
+            !assertEquals(1u, node4->getDepthLevel(), "node 4 depth") ||
+            !assertEquals(2u, node2->getDepthLevel(), "node 2,3 depth"))
+        {
+            return false;
+        }
+
+        if (!assertEquals(PureOctree::NodeType::Parent, tree.getNodeType(), "tree nodeType"))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool assertTreeIsReset(const PureOctree& tree)
+    {
+        return (assertEquals(PureOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
+            assertEquals((std::size_t)0, tree.getChildren().size(), "children") &
+            assertEquals((std::size_t)0, tree.getObjects().size(), "objects")) != 0;
+    }
+
+    bool testCtor1()
+    {
+        PureOctree tree(3, 0);
+
+        return (assertEquals(0.0f, tree.getPos().getX(), "pos.x") &
+            assertEquals(0.0f, tree.getPos().getY(), "pos.y") &
+            assertEquals(0.0f, tree.getPos().getZ(), "pos.z") &
+            assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
+            assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
+            assertEquals(0.f, tree.getSize(), "size") &
+            assertEquals((PureOctree*)PGENULL, tree.getParent(), "parent") &
+            assertTrue(assertTreeIsReset(tree), "reset")) != 0;
+    }
+    
+    bool testCtor2()
+    {
+        PureOctree tree(PureVector(1, 2, 3), 1000.0f, 3, 0);
+        
+        return (assertEquals(1.0f, tree.getPos().getX(), "pos.x") &
+            assertEquals(2.0f, tree.getPos().getY(), "pos.y") &
+            assertEquals(3.0f, tree.getPos().getZ(), "pos.z") &
+            assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
+            assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
+            assertEquals(1000.0f, tree.getSize(), "size") &
+            assertEquals((PureOctree*)PGENULL, tree.getParent(), "parent") &
+            assertTrue(assertTreeIsReset(tree), "reset")) != 0;
+    }
+
+    bool testCalculateIndex()
+    {
+        PureOctree tree(PureVector(), 1000.0f, 2, 0);
+        PureVector vec1(-200.f, 200.f, 200.f);
+        PureVector vec2(200.f, -200.f, -200.f);
+        PureVector vec3;
+
+        return (assertEquals(PureOctree::ChildIndex(PureOctree::TOP | PureOctree::LEFT | PureOctree::BACK), tree.calculateIndex(vec1), "vec1") &
+            assertEquals(PureOctree::ChildIndex(PureOctree::BOTTOM | PureOctree::RIGHT | PureOctree::FRONT), tree.calculateIndex(vec2), "vec2") &
+            assertEquals(PureOctree::ChildIndex(PureOctree::TOP | PureOctree::RIGHT | PureOctree::BACK), tree.calculateIndex(vec3), "vec3")) != 0;
+    }
+
+    bool testInsertObject()
+    {
+        // used to test if the given world-space position other than (0,0,0) is really taken into calculations;
+        // if there is any issue, change this to (0,0,0) to find out probable reason of tree not properly taking origin pos into account!
+        const PureVector treeOrigin(100.f, 200.f, 300.f);
+
+        PureObject3D* obj1 = nullptr;
+        PureObject3D* obj2 = nullptr;
+        PureObject3D* obj3 = nullptr;
+        PureObject3D* obj4 = nullptr;
+        PureObject3D* obj5 = nullptr;
+        const PureOctree* node1 = nullptr;
+        const PureOctree* node2 = nullptr;
+        const PureOctree* node3 = nullptr;
+        const PureOctree* node4 = nullptr;
+        PureOctree tree(treeOrigin, 1000.0f, 2, 0);
+        if (!assertTrue(buildOctree(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH"))
         {
             return false;
         }
 
         // check level 0 alias root node
-        bool b = assertEquals(&tree, node1, "tree root is node1") &
+        bool b = (
             assertEquals(treeOrigin.getX(), tree.getPos().getX(), "tree pos.x") &
             assertEquals(treeOrigin.getY(), tree.getPos().getY(), "tree pos.y") &
             assertEquals(treeOrigin.getZ(), tree.getPos().getZ(), "tree pos.z") &
@@ -212,7 +294,7 @@ private:
             assertEquals(PureOctree::NodeType::Parent, tree.getNodeType(), "tree nodeType") &
             assertEquals((std::size_t)8, tree.getChildren().size(), "tree children") &
             assertEquals((PureOctree*)PGENULL, tree.getParent(), "parent") &
-            assertEquals((std::size_t)0, tree.getObjects().size(), "tree objects");
+            assertEquals((std::size_t)0, tree.getObjects().size(), "tree objects")) != 0;
 
         // check level 1 nodes' common properties
         for (std::size_t i = 0; i < tree.getChildren().size(); i++)
@@ -418,41 +500,21 @@ private:
 
     bool testFindObject()
     {
-        // we are building the same tree as in testInsertObject()
+        // used to test if the given world-space position other than (0,0,0) is really taken into calculations;
+        // if there is any issue, change this to (0,0,0) to find out probable reason of tree not properly taking origin pos into account!
+        const PureVector treeOrigin(100.f, 200.f, 300.f);
 
-        PureOctree tree(PureVector(), 1000.0f, 2, 0);
-        
-        PureObject3D* const obj1 = om->createBox(2.0f, 2.0f, 2.0f);
-        PureObject3D* const obj2 = om->createBox(2.0f, 2.0f, 2.0f);
-        PureObject3D* const obj3 = om->createBox(2.0f, 2.0f, 2.0f);
-        PureObject3D* const obj4 = om->createBox(2.0f, 2.0f, 2.0f);
-        PureObject3D* const obj5 = om->createBox(2.0f, 2.0f, 2.0f);
-        if ( !assertNotNull(obj1, "obj1 not null") || !assertNotNull(obj2, "obj2 not null") || !assertNotNull(obj3, "obj3 not null") || !assertNotNull(obj4, "obj4 not null") || !assertNotNull(obj5, "obj5 not null") )
-        {
-            return false;
-        }
-
-        obj1->getPosVec().Set(-200.f, 200.f, 200.f);
-        obj2->getPosVec().Set(200.f, -200.f, -200.f);
-        obj3->getPosVec().Set(200.f, -200.f, -200.f);
-        // obj4 is at default (0,0,0)
-
-        const PureOctree* const node1 = tree.insertObject(*obj1);
-        const PureOctree* const node2 = tree.insertObject(*obj2);
-        const PureOctree* const node3 = tree.insertObject(*obj3);
-        const PureOctree* const node4 = tree.insertObject(*obj4);
-        // we intentionally not inserting obj5
-        if ( !assertNotNull(node1, "node 1") || !assertNotNull(node2, "node 2") || !assertNotNull(node3, "node 3") || !assertNotNull(node4, "node 4") )
-        {
-            return false;
-        }
-
-        const PureOctree* const found_node1 = tree.findObject(*obj1);
-        const PureOctree* const found_node2 = tree.findObject(*obj2);
-        const PureOctree* const found_node3 = tree.findObject(*obj3);
-        const PureOctree* const found_node4 = tree.findObject(*obj4);
-        const PureOctree* const not_found_node5 = tree.findObject(*obj5);
-        if ( !assertNotNull(found_node1, "found_node1") || !assertNotNull(found_node2, "found_node2") || !assertNotNull(found_node3, "found_node3") || !assertNotNull(found_node4, "found_node4") || !assertNull(not_found_node5, "not_found_node5") )
+        PureObject3D* obj1 = nullptr;
+        PureObject3D* obj2 = nullptr;
+        PureObject3D* obj3 = nullptr;
+        PureObject3D* obj4 = nullptr;
+        PureObject3D* obj5 = nullptr;
+        const PureOctree* node1 = nullptr;
+        const PureOctree* node2 = nullptr;
+        const PureOctree* node3 = nullptr;
+        const PureOctree* node4 = nullptr;
+        PureOctree tree(treeOrigin, 1000.0f, 2, 0);
+        if (!assertTrue(buildOctree(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH"))
         {
             return false;
         }
@@ -467,8 +529,8 @@ private:
         const PureOctree& tree_BRF = *(tree.getChildren()[PureOctree::BOTTOM | PureOctree::RIGHT | PureOctree::FRONT]);
         const PureOctree& tree_TRB = *(tree.getChildren()[PureOctree::TOP    | PureOctree::RIGHT | PureOctree::BACK ]);
 
-        bool b = assertEquals(&tree_TLB, found_node1, "found_node1 is tree_TLB");
-        b &= assertEquals(&tree_TRB, found_node4, "found_node4 is tree_TRB");
+        bool b = assertEquals(&tree_TLB, node1, "node1 is tree_TLB");
+        b &= assertEquals(&tree_TRB, node4, "node4 is tree_TRB");
 
         if ( !assertEquals((std::size_t)8, tree_BRF.getChildren().size(), "tree_BRF children size") )
         {   // avoid crash
@@ -476,8 +538,8 @@ private:
         }
         const PureOctree& tree_BRF_TLB = *(tree_BRF.getChildren()[PureOctree::TOP    | PureOctree::LEFT  | PureOctree::BACK ]);
 
-        b &= assertEquals(&tree_BRF_TLB, found_node2, "found_node2 is tree_BRF_TLB");
-        b &= assertEquals(&tree_BRF_TLB, found_node3, "found_node3 is tree_BRF_TLB");
+        b &= assertEquals(&tree_BRF_TLB, node2, "found_node2 is tree_BRF_TLB");
+        b &= assertEquals(&tree_BRF_TLB, node3, "found_node3 is tree_BRF_TLB");
 
         return b;
     }

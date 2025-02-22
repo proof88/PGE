@@ -160,19 +160,5 @@ void PureAxisAlignedBoundingBox::ExtendBy(const PureAxisAlignedBoundingBox& aabb
 // ############################## PROTECTED ##############################
 
 
-/*
-PureAxisAlignedBoundingBox::PureAxisAlignedBoundingBox(const PureAxisAlignedBoundingBox& other)
-{
-
-}
-
-
-PureAxisAlignedBoundingBox& PureAxisAlignedBoundingBox::operator=(const PureAxisAlignedBoundingBox& other)
-{
-    return *this;
-}
-*/
-
-
 // ############################### PRIVATE ###############################
 

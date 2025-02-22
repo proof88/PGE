@@ -47,12 +47,12 @@ const PureOctree::ChildIndex PureOctree::BACK   = BIT(PureOctree::BIT_AXIS_Z);
     @param currentDepthLevel The depth level of this specific node being created. For global use, just specify 0 so this will be the root node of the octree.
 */
 PureOctree::PureOctree(TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
-    fSize(0.f),
-    nMaxDepth(maxDepthLevel),
-    nCurrentDepth(currentDepthLevel),
-    nodeType(NodeType::LeafEmpty),
-    parent(PGENULL),
-    objDebugBox(nullptr)
+    m_fSize(0.f),
+    m_nMaxDepth(maxDepthLevel),
+    m_nCurrentDepth(currentDepthLevel),
+    m_nodeType(NodeType::LeafEmpty),
+    m_parent(PGENULL),
+    m_objDebugBox(nullptr)
 {
     
 } // PureOctree(...)
@@ -67,13 +67,13 @@ PureOctree::PureOctree(TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
     @param currentDepthLevel The depth level of this specific node being created. For global use, just specify 0 so this will be the root node of the octree.
 */
 PureOctree::PureOctree(const PureVector& pos, TPureFloat size, TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
-    vPos(pos),
-    fSize(size),
-    nMaxDepth(maxDepthLevel),
-    nCurrentDepth(currentDepthLevel),
-    nodeType(NodeType::LeafEmpty),
-    parent(PGENULL),
-    objDebugBox(nullptr)
+    m_vPos(pos),
+    m_fSize(size),
+    m_nMaxDepth(maxDepthLevel),
+    m_nCurrentDepth(currentDepthLevel),
+    m_nodeType(NodeType::LeafEmpty),
+    m_parent(PGENULL),
+    m_objDebugBox(nullptr)
 {
 
 } // PureOctree(...)
@@ -82,9 +82,9 @@ PureOctree::PureOctree(const PureVector& pos, TPureFloat size, TPureUInt maxDept
 PureOctree::~PureOctree()
 {
     DeleteChildren();
-    if (objDebugBox)
+    if (m_objDebugBox)
     {
-        delete objDebugBox; // Object3D dtor triggers removing from ObjectManager too
+        delete m_objDebugBox; // Object3D dtor triggers removing from ObjectManager too
     }
 } // ~PureOctree()
 
@@ -100,15 +100,15 @@ PureOctree::ChildIndex PureOctree::calculateIndex(const PureVector& pos) const
 {
     ChildIndex iChild = 0;  // TopLeftFront
     
-    if ( pos.getX() >= vPos.getX() )
+    if ( pos.getX() >= m_vPos.getX() )
     {
         iChild |= RIGHT;
     }
-    if ( pos.getY() < vPos.getY() )
+    if ( pos.getY() < m_vPos.getY() )
     {
         iChild |= BOTTOM;
     }
-    if ( pos.getZ() >= vPos.getZ() )
+    if ( pos.getZ() >= m_vPos.getZ() )
     {
         iChild |= BACK;
     }
@@ -130,32 +130,32 @@ PureOctree::ChildIndex PureOctree::calculateIndex(const PureVector& pos) const
 */
 PureOctree* PureOctree::insertObject(const PureObject3D& obj)
 {
-    if ( (obj.getPosVec().getX() < vPos.getX() - fSize/2.f) || (obj.getPosVec().getX() > vPos.getX() + fSize/2.f) )
+    if ( (obj.getPosVec().getX() < m_vPos.getX() - m_fSize /2.f) || (obj.getPosVec().getX() > m_vPos.getX() + m_fSize /2.f) )
         return PGENULL;
 
-    if ( (obj.getPosVec().getY() < vPos.getY() - fSize/2.f) || (obj.getPosVec().getY() > vPos.getY() + fSize/2.f) )
+    if ( (obj.getPosVec().getY() < m_vPos.getY() - m_fSize /2.f) || (obj.getPosVec().getY() > m_vPos.getY() + m_fSize /2.f) )
         return PGENULL;
 
-    if ( (obj.getPosVec().getZ() < vPos.getZ() - fSize/2.f) || (obj.getPosVec().getZ() > vPos.getZ() + fSize/2.f) )
+    if ( (obj.getPosVec().getZ() < m_vPos.getZ() - m_fSize /2.f) || (obj.getPosVec().getZ() > m_vPos.getZ() + m_fSize /2.f) )
         return PGENULL;
 
     if ( getNodeType() == LeafEmpty )
     {   // simply store the object at this level
-        vObjects.insert(&obj);
+        m_vObjects.insert(&obj);
         return this;
     }
     
     if ( getNodeType() == Parent )
     {   // pass the object to next depth level
         const ChildIndex iChild = calculateIndex(obj.getPosVec());
-        return vChildren[iChild]->insertObject(obj);
+        return m_vChildren[iChild]->insertObject(obj);
     }
     
     // getNodeType() == LeafContainer
-    if ( nCurrentDepth == nMaxDepth )
+    if (m_nCurrentDepth == m_nMaxDepth)
     {
         // cannot subdivide more, so just simply store the object at this last level
-        vObjects.insert(&obj);
+        m_vObjects.insert(&obj);
         return this;
     }
     else
@@ -165,28 +165,28 @@ PureOctree* PureOctree::insertObject(const PureObject3D& obj)
         {
             return PGENULL;
         }
-        for (TPureUInt i = 0; i < vChildren.size(); i++)
+        for (TPureUInt i = 0; i < m_vChildren.size(); i++)
         {
-            vChildren[i]->parent = this;
+            m_vChildren[i]->m_parent = this;
         }
-        vChildren[TOP    | LEFT  | FRONT]->vPos.Set(vPos.getX() - fSize/4.f, vPos.getY() + fSize/4.f, vPos.getZ() - fSize/4.f);
-        vChildren[BOTTOM | LEFT  | FRONT]->vPos.Set(vPos.getX() - fSize/4.f, vPos.getY() - fSize/4.f, vPos.getZ() - fSize/4.f);
-        vChildren[TOP    | RIGHT | FRONT]->vPos.Set(vPos.getX() + fSize/4.f, vPos.getY() + fSize/4.f, vPos.getZ() - fSize/4.f);
-        vChildren[BOTTOM | RIGHT | FRONT]->vPos.Set(vPos.getX() + fSize/4.f, vPos.getY() - fSize/4.f, vPos.getZ() - fSize/4.f);
-        vChildren[TOP    | LEFT  | BACK ]->vPos.Set(vPos.getX() - fSize/4.f, vPos.getY() + fSize/4.f, vPos.getZ() + fSize/4.f);
-        vChildren[BOTTOM | LEFT  | BACK ]->vPos.Set(vPos.getX() - fSize/4.f, vPos.getY() - fSize/4.f, vPos.getZ() + fSize/4.f);
-        vChildren[TOP    | RIGHT | BACK ]->vPos.Set(vPos.getX() + fSize/4.f, vPos.getY() + fSize/4.f, vPos.getZ() + fSize/4.f);
-        vChildren[BOTTOM | RIGHT | BACK ]->vPos.Set(vPos.getX() + fSize/4.f, vPos.getY() - fSize/4.f, vPos.getZ() + fSize/4.f);
+        m_vChildren[TOP    | LEFT  | FRONT]->m_vPos.Set(m_vPos.getX() - m_fSize/4.f, m_vPos.getY() + m_fSize/4.f, m_vPos.getZ() - m_fSize/4.f);
+        m_vChildren[BOTTOM | LEFT  | FRONT]->m_vPos.Set(m_vPos.getX() - m_fSize/4.f, m_vPos.getY() - m_fSize/4.f, m_vPos.getZ() - m_fSize/4.f);
+        m_vChildren[TOP    | RIGHT | FRONT]->m_vPos.Set(m_vPos.getX() + m_fSize/4.f, m_vPos.getY() + m_fSize/4.f, m_vPos.getZ() - m_fSize/4.f);
+        m_vChildren[BOTTOM | RIGHT | FRONT]->m_vPos.Set(m_vPos.getX() + m_fSize/4.f, m_vPos.getY() - m_fSize/4.f, m_vPos.getZ() - m_fSize/4.f);
+        m_vChildren[TOP    | LEFT  | BACK ]->m_vPos.Set(m_vPos.getX() - m_fSize/4.f, m_vPos.getY() + m_fSize/4.f, m_vPos.getZ() + m_fSize/4.f);
+        m_vChildren[BOTTOM | LEFT  | BACK ]->m_vPos.Set(m_vPos.getX() - m_fSize/4.f, m_vPos.getY() - m_fSize/4.f, m_vPos.getZ() + m_fSize/4.f);
+        m_vChildren[TOP    | RIGHT | BACK ]->m_vPos.Set(m_vPos.getX() + m_fSize/4.f, m_vPos.getY() + m_fSize/4.f, m_vPos.getZ() + m_fSize/4.f);
+        m_vChildren[BOTTOM | RIGHT | BACK ]->m_vPos.Set(m_vPos.getX() + m_fSize/4.f, m_vPos.getY() - m_fSize/4.f, m_vPos.getZ() + m_fSize/4.f);
         
         // add the already inserted object to one of the new child nodes, remove it from this node
-        const PureObject3D* objAlreadyInTree = *(vObjects.begin());
-        vObjects.clear();
+        const PureObject3D* objAlreadyInTree = *(m_vObjects.begin());
+        m_vObjects.clear();
         const ChildIndex iChildForObjAlreadyInTree = calculateIndex(objAlreadyInTree->getPosVec());
-        vChildren[iChildForObjAlreadyInTree]->insertObject(*objAlreadyInTree);
+        m_vChildren[iChildForObjAlreadyInTree]->insertObject(*objAlreadyInTree);
 
         // add the new object also to one of the new child nodes
         const ChildIndex iChild = calculateIndex(obj.getPosVec());
-        return vChildren[iChild]->insertObject(obj);
+        return m_vChildren[iChild]->insertObject(obj);
     }
 } // insertObject()
 
@@ -210,11 +210,11 @@ const PureOctree* PureOctree::findObject(const PureObject3D& obj) const
     {
         // request the suitable children on next depth level to try find the object
         const ChildIndex iChild = calculateIndex(obj.getPosVec());
-        return vChildren[iChild]->findObject(obj);
+        return m_vChildren[iChild]->findObject(obj);
     }
 
     // getNodeType() == LeafContainer
-    if ( vObjects.find(&obj) != vObjects.end() )
+    if (m_vObjects.find(&obj) != m_vObjects.end() )
     {
         return this;
     }
@@ -231,7 +231,7 @@ const PureOctree* PureOctree::findObject(const PureObject3D& obj) const
 */
 TPureUInt PureOctree::getDepthLevel() const
 {
-    return nCurrentDepth;
+    return m_nCurrentDepth;
 }
 
 
@@ -242,7 +242,7 @@ TPureUInt PureOctree::getDepthLevel() const
 */
 TPureUInt PureOctree::getMaxDepthLevel() const
 {
-    return nMaxDepth;
+    return m_nMaxDepth;
 }
 
 
@@ -252,11 +252,11 @@ TPureUInt PureOctree::getMaxDepthLevel() const
 */
 PureOctree::NodeType PureOctree::getNodeType() const
 {
-    if ( vChildren.size() > 0 )
+    if (m_vChildren.size() > 0 )
     {
         return NodeType::Parent;
     }
-    else if ( vObjects.size() > 0 )
+    else if (m_vObjects.size() > 0 )
     {
         return NodeType::LeafContainer;
     }
@@ -275,7 +275,7 @@ PureOctree::NodeType PureOctree::getNodeType() const
 */
 const PureVector& PureOctree::getPos() const
 {
-    return vPos;
+    return m_vPos;
 }
 
 /**
@@ -289,12 +289,12 @@ const PureVector& PureOctree::getPos() const
 */
 bool PureOctree::setPos(const PureVector& pos)
 {
-    if ((parent != PGENULL) || (getNodeType() != NodeType::LeafEmpty))
+    if ((m_parent != PGENULL) || (getNodeType() != NodeType::LeafEmpty))
     {
         return false;
     }
 
-    vPos = pos;
+    m_vPos = pos;
 
     return true;
 }
@@ -310,7 +310,7 @@ bool PureOctree::setPos(const PureVector& pos)
 */
 TPureFloat PureOctree::getSize() const
 {
-    return fSize;
+    return m_fSize;
 }
 
 /**
@@ -325,12 +325,12 @@ TPureFloat PureOctree::getSize() const
 */
 bool PureOctree::setSize(TPureFloat size)
 {
-    if ((parent != PGENULL) || (getNodeType() != NodeType::LeafEmpty))
+    if ((m_parent != PGENULL) || (getNodeType() != NodeType::LeafEmpty))
     {
         return false;
     }
 
-    fSize = size;
+    m_fSize = size;
 
     return true;
 }
@@ -344,7 +344,7 @@ bool PureOctree::setSize(TPureFloat size)
 */
 const std::vector<PureOctree*>& PureOctree::getChildren() const
 {
-    return vChildren;
+    return m_vChildren;
 }
 
 
@@ -356,7 +356,7 @@ const std::vector<PureOctree*>& PureOctree::getChildren() const
 */
 const PureOctree* PureOctree::getParent() const
 {
-    return parent;
+    return m_parent;
 }
 
 
@@ -367,7 +367,7 @@ const PureOctree* PureOctree::getParent() const
 */
 const std::set<const PureObject3D*>& PureOctree::getObjects() const
 {
-    return vObjects;
+    return m_vObjects;
 }
 
 /**
@@ -381,7 +381,7 @@ const std::set<const PureObject3D*>& PureOctree::getObjects() const
 */
 bool PureOctree::reset()
 {
-    if (parent != PGENULL)
+    if (m_parent != PGENULL)
     {
         return false;
     }
@@ -389,18 +389,18 @@ bool PureOctree::reset()
     // i.e. nCurrentDepth is 0 here cause we are the root node
 
     DeleteChildren();
-    vObjects.clear(); // just in case
-    nodeType = getNodeType(); // expecting NodeType::LeafEmpty
+    m_vObjects.clear(); // just in case
+    m_nodeType = getNodeType(); // expecting NodeType::LeafEmpty
 
-    // objDebugBox at this root level should be kept if it exists, no need to update since its pos and size are fixed in ctor / by setSize().
+    // m_objDebugBox at this root level should be kept if it exists, no need to update since its pos and size are fixed in ctor / by setSize().
     // BUT, there is no other way to destroy ALL dynamic resources of the octree, and if we dont do this, the ptr would become invalid
     // when the application is exiting, since Object3DManager will destroy all objects including this, and THEN octree dtor is invoked which
     // would then operate on invalid ptr. Therefore, we make sure this ptr is handled here, and expect application to invoke reset() before exiting.
     // This could be solved by shared_ptr but engine does not support.
-    if (objDebugBox)
+    if (m_objDebugBox)
     {
-        delete objDebugBox; // Object3D dtor triggers removing from ObjectManager too
-        objDebugBox = nullptr;
+        delete m_objDebugBox; // Object3D dtor triggers removing from ObjectManager too
+        m_objDebugBox = nullptr;
     }
 
     return true;
@@ -423,19 +423,21 @@ void PureOctree::updateAndEnableNodeDebugRendering(
         return;
     }
 
-    if (!objDebugBox)
+    if (!m_objDebugBox)
     {
-        objDebugBox = objmgr.createBox(1.f, 1.f, 1.f);
-        objDebugBox->SetWireframed(true);
-        //objDebugBox->SetWireframedCulled(false);
-        objDebugBox->getMaterial(false).getTextureEnvColor(0) = colorWireframe;
+        m_objDebugBox = objmgr.createBox(1.f, 1.f, 1.f);
+        m_objDebugBox->SetWireframed(true);
+        //m_objDebugBox->SetWireframedCulled(false);
+        m_objDebugBox->SetAffectingZBuffer(false);
+        m_objDebugBox->SetTestingAgainstZBuffer(false);
+        m_objDebugBox->getMaterial(false).getTextureEnvColor(0) = colorWireframe;
     }
-    objDebugBox->getPosVec() = getPos();
-    objDebugBox->SetScaling(getSize());
+    m_objDebugBox->getPosVec() = getPos();
+    m_objDebugBox->SetScaling(getSize());
 
     if (getNodeType() == Parent)
     {
-        for (auto pNode : vChildren)
+        for (auto pNode : m_vChildren)
         {
             assert(pNode);
             pNode->updateAndEnableNodeDebugRendering(objmgr, colorWireframe);
@@ -453,14 +455,14 @@ void PureOctree::disableNodeDebugRendering()
         return;
     }
 
-    if (objDebugBox)
+    if (m_objDebugBox)
     {
-        objDebugBox->Hide();
+        m_objDebugBox->Hide();
     }
 
     if (getNodeType() == Parent)
     {
-        for (auto pNode : vChildren)
+        for (auto pNode : m_vChildren)
         {
             assert(pNode);
             pNode->disableNodeDebugRendering();
@@ -478,19 +480,19 @@ TPureBool PureOctree::subdivide()
     {
       for (TPureUInt i = 0; i < 8; i++)
       {
-          PureOctree* const pChildNode = new PureOctree(PureVector(), fSize/2.f, nMaxDepth, nCurrentDepth + 1);
-          vChildren.push_back(pChildNode);
+          PureOctree* const pChildNode = new PureOctree(PureVector(), m_fSize /2.f, m_nMaxDepth, m_nCurrentDepth + 1);
+          m_vChildren.push_back(pChildNode);
       }
     }
     catch (const std::exception&)
     {
         for (TPureUInt i = 0; i < 8; i++)
         {
-            if ( vChildren[i] != PGENULL )
+            if (m_vChildren[i] != PGENULL )
             {
-                delete vChildren[i];
+                delete m_vChildren[i];
             }
-            vChildren.resize(0);
+            m_vChildren.resize(0);
         }
         return false;
     }
@@ -504,10 +506,10 @@ void PureOctree::DeleteChildren()
     {
         for (TPureUInt i = 0; i < 8; i++)
         {
-            vChildren[i]->DeleteChildren();
-            delete vChildren[i];
+            m_vChildren[i]->DeleteChildren();
+            delete m_vChildren[i];
         }
-        vChildren.resize(0);
+        m_vChildren.resize(0);
         // do not update node type here because it might become leaf_empty or leaf_container, higher level logic shall call getNodeType() to decide!
     }
 }

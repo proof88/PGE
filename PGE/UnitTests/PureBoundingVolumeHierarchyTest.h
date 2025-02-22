@@ -37,6 +37,7 @@ protected:
         addSubTest("testCtor1", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testCtor1);
         addSubTest("testCtor2", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testCtor2);
         addSubTest("testInsertObject", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testInsertObject);
+        addSubTest("testFindTightestFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindTightestFittingNode);
     }
 
     virtual bool setUp() override
@@ -75,51 +76,40 @@ private:
 
     // ---------------------------------------------------------------------------
 
-    bool assertTreeIsReset(const PureBoundingVolumeHierarchy& tree)
+    /**
+    * Helper function to build up the given empty tree.
+    * Creates 5 new PureObject3D boxes with different positions and try to insert them into the tree.
+    * Note that obj5 cannot be inserted into the tree (on purpose) hence there is node5 in the argument list.
+    * So the expectation is that after calling this function, only 4 PureObject3D boxes will be inside the tree.
+    * The given pointers will be updated.
+    * 
+    * @param tree       An empty input tree where 5 new boxes will be inserted.
+    * @param treeOrigin This will be set as the position of the tree.
+    * @param obj1       A new box will be created and this pointer will be updated with the address of this new box.
+    * @param obj2       Same purpose as obj1.
+    * @param obj3       Same purpose as obj1.
+    * @param obj4       Same purpose as obj1.
+    * @param obj5       Same purpose as obj1.
+    * @param node1      The tree node holding obj1.
+    * @param node2      The tree node holding obj2.
+    * @param node3      The tree node holding obj3.
+    * @param node4      The tree node holding obj4.
+    * 
+    * @return True if BVH is successfully built with the 4 new boxes inserted, false otherwise.
+    */
+    bool buildBVH(
+        PureBoundingVolumeHierarchy& tree,
+        const PureVector& treeOrigin,
+        PureObject3D*& obj1,
+        PureObject3D*& obj2, 
+        PureObject3D*& obj3, 
+        PureObject3D*& obj4, 
+        PureObject3D*& obj5,
+        PureBoundingVolumeHierarchy*& node1,
+        PureBoundingVolumeHierarchy*& node2, 
+        PureBoundingVolumeHierarchy*& node3, 
+        PureBoundingVolumeHierarchy*& node4)
     {
-        return assertEquals(PureOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
-            assertEquals((std::size_t)0, tree.getChildren().size(), "children") &
-            assertEquals((std::size_t)0, tree.getObjects().size(), "objects") &
-            assertEquals(PureVector(), tree.getAABB().getPosVec(), "aabb pos") &
-            assertEquals(PureVector(), tree.getAABB().getSizeVec(), "aabb size");
-    }
-
-    bool testCtor1()
-    {
-        PureBoundingVolumeHierarchy tree(3, 0);
-
-        return assertEquals(0.0f, tree.getPos().getX(), "pos.x") &
-            assertEquals(0.0f, tree.getPos().getY(), "pos.y") &
-            assertEquals(0.0f, tree.getPos().getZ(), "pos.z") &
-            assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
-            assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
-            assertEquals(0.f, tree.getSize(), "size") &
-            assertTrue(assertTreeIsReset(tree), "reset");
-    }
-
-    bool testCtor2()
-    {
-        PureBoundingVolumeHierarchy tree(PureVector(1, 2, 3), 1000.0f, 3, 0);
-        
-        return assertEquals(1.0f, tree.getPos().getX(), "pos.x") &
-        assertEquals(2.0f, tree.getPos().getY(), "pos.y") &
-        assertEquals(3.0f, tree.getPos().getZ(), "pos.z") &
-        assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
-        assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
-        assertEquals(1000.0f, tree.getSize(), "size") &
-        assertTrue(assertTreeIsReset(tree), "reset"); 
-    }
-
-    bool testInsertObject()
-    {
-        // basically this is the same test as found in PureOctreeTest.h, but here we are interested in the
-        // BVH-related stuff only
-
-        // used to test if the given world-space position other than (0,0,0) is really taken into calculations;
-        // if there is any issue, change this to (0,0,0) to find out probable reason of tree not properly taking origin pos into account!
-        const PureVector treeOrigin(100.f, 200.f, 300.f);
-
-        PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
         /*
 
         This is a 1000 x 1000 x 1000 size octree, in pos treeOrigin.
@@ -159,13 +149,13 @@ private:
          - obj5 is placed at (3000, 0, 0), intentionally outside tree root node volume, so it should not be inserted in tree!
 
         */
-        
-        PureObject3D* const obj1 = om->createBox(2.0f, 2.0f, 2.0f);
-        PureObject3D* const obj2 = om->createBox(2.0f, 2.0f, 2.0f);
-        PureObject3D* const obj3 = om->createBox(2.0f, 2.0f, 2.0f);
-        PureObject3D* const obj4 = om->createBox(2.0f, 2.0f, 2.0f);
-        PureObject3D* const obj5 = om->createBox(2.0f, 2.0f, 2.0f);
-        if ( !assertNotNull(obj1, "obj1 not null") || !assertNotNull(obj2, "obj2 not null") || !assertNotNull(obj3, "obj3 not null") || !assertNotNull(obj4, "obj4 not null") || !assertNotNull(obj5, "obj5 not null") )
+
+        obj1 = om->createBox(2.0f, 2.0f, 2.0f);
+        obj2 = om->createBox(2.0f, 2.0f, 2.0f);
+        obj3 = om->createBox(2.0f, 2.0f, 2.0f);
+        obj4 = om->createBox(2.0f, 2.0f, 2.0f);
+        obj5 = om->createBox(2.0f, 2.0f, 2.0f);
+        if (!assertNotNull(obj1, "obj1 not null") || !assertNotNull(obj2, "obj2 not null") || !assertNotNull(obj3, "obj3 not null") || !assertNotNull(obj4, "obj4 not null") || !assertNotNull(obj5, "obj5 not null"))
         {
             return false;
         }
@@ -176,17 +166,105 @@ private:
         obj4->getPosVec().Set(treeOrigin.getX(), treeOrigin.getY(), treeOrigin.getZ());
         obj5->getPosVec().Set(treeOrigin.getX() + 3000.f, treeOrigin.getY(), treeOrigin.getZ());
 
-        const PureBoundingVolumeHierarchy* const node1 = tree.insertObject(*obj1);
-        const PureBoundingVolumeHierarchy* const node2 = tree.insertObject(*obj2);
-        const PureBoundingVolumeHierarchy* const node3 = tree.insertObject(*obj3);
-        const PureBoundingVolumeHierarchy* const node4 = tree.insertObject(*obj4);
-        const PureBoundingVolumeHierarchy* const node5 = tree.insertObject(*obj5);  // out of tree bounds
-        if ( !assertNotNull(node1, "node 1") || !assertNotNull(node2, "node 2") || !assertNotNull(node3, "node 3") || !assertNotNull(node4, "node 4") || !assertNull(node5, "node 5") )
+        node1 = tree.insertObject(*obj1);
+        node2 = tree.insertObject(*obj2);
+        node3 = tree.insertObject(*obj3);
+        node4 = tree.insertObject(*obj4);
+        const PureBoundingVolumeHierarchy* node5 = tree.insertObject(*obj5);  // out of tree bounds
+        if (!assertNotNull(node1, "node 1 insert") ||
+            !assertNotNull(node2, "node 2 insert") ||
+            !assertNotNull(node3, "node 3 insert") ||
+            !assertNotNull(node4, "node 4 insert") ||
+            !assertNull(node5, "node 5 insert"))
         {
             return false;
         }
 
-        if ( !assertEquals(PureOctree::NodeType::Parent, tree.getNodeType(), "tree nodeType") )
+        // since nodes might be subdivided and objects might be moved down to another level when more objects are inserted, the above node ptrs need to be refreshed now!
+        node1 = tree.findObject(*obj1);
+        node2 = tree.findObject(*obj2);
+        node3 = tree.findObject(*obj3);
+        node4 = tree.findObject(*obj4);
+        node5 = tree.findObject(*obj5);
+        if (!assertNotNull(node1, "node 1 find") ||
+            !assertNotNull(node2, "node 2 find") ||
+            !assertNotNull(node3, "node 3 find") ||
+            !assertNotNull(node4, "node 4 find") ||
+            !assertNull(node5, "node 5 find") ||
+            !assertTrue(node2 == node3, "obj2 and obj3 in same node") ||
+            !assertTrue(node1 != node4, "obj1 and obj4 in different node") ||
+            !assertTrue(node1 != node2, "obj1 and obj2,3 in different node") ||
+            !assertTrue(node4 != node2, "obj4 and obj2,3 in different node") ||
+            !assertEquals(1u, node1->getDepthLevel(), "node 1 depth") ||
+            !assertEquals(1u, node4->getDepthLevel(), "node 4 depth") ||
+            !assertEquals(2u, node2->getDepthLevel(), "node 2,3 depth"))
+        {
+            return false;
+        }
+
+        if (!assertEquals(PureOctree::NodeType::Parent, tree.getNodeType(), "tree nodeType"))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool assertTreeIsReset(const PureBoundingVolumeHierarchy& tree)
+    {
+        return (assertEquals(PureOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
+            assertEquals((std::size_t)0, tree.getChildren().size(), "children") &
+            assertEquals((std::size_t)0, tree.getObjects().size(), "objects") &
+            assertEquals(PureVector(), tree.getAABB().getPosVec(), "aabb pos") &
+            assertEquals(PureVector(), tree.getAABB().getSizeVec(), "aabb size")) != 0;
+    }
+
+    bool testCtor1()
+    {
+        PureBoundingVolumeHierarchy tree(3, 0);
+
+        return (assertEquals(0.0f, tree.getPos().getX(), "pos.x") &
+            assertEquals(0.0f, tree.getPos().getY(), "pos.y") &
+            assertEquals(0.0f, tree.getPos().getZ(), "pos.z") &
+            assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
+            assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
+            assertEquals(0.f, tree.getSize(), "size") &
+            assertTrue(assertTreeIsReset(tree), "reset")) != 0;
+    }
+
+    bool testCtor2()
+    {
+        PureBoundingVolumeHierarchy tree(PureVector(1, 2, 3), 1000.0f, 3, 0);
+        
+        return (assertEquals(1.0f, tree.getPos().getX(), "pos.x") &
+        assertEquals(2.0f, tree.getPos().getY(), "pos.y") &
+        assertEquals(3.0f, tree.getPos().getZ(), "pos.z") &
+        assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
+        assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
+        assertEquals(1000.0f, tree.getSize(), "size") &
+        assertTrue(assertTreeIsReset(tree), "reset")) != 0;
+    }
+
+    bool testInsertObject()
+    {
+        // basically this is the same test as found in PureOctreeTest.h, but here we are interested in the
+        // BVH-related stuff only
+
+        // used to test if the given world-space position other than (0,0,0) is really taken into calculations;
+        // if there is any issue, change this to (0,0,0) to find out probable reason of tree not properly taking origin pos into account!
+        const PureVector treeOrigin(100.f, 200.f, 300.f);
+
+        PureObject3D* obj1 = nullptr;
+        PureObject3D* obj2 = nullptr;
+        PureObject3D* obj3 = nullptr;
+        PureObject3D* obj4 = nullptr;
+        PureObject3D* obj5 = nullptr;
+        PureBoundingVolumeHierarchy* node1 = nullptr;
+        PureBoundingVolumeHierarchy* node2 = nullptr;
+        PureBoundingVolumeHierarchy* node3 = nullptr;
+        PureBoundingVolumeHierarchy* node4 = nullptr;
+        PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
+        if (!assertTrue(buildBVH(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH"))
         {
             return false;
         }
@@ -223,7 +301,8 @@ private:
         aabb_BRF_TLB_expected.ExtendBy(aabb_obj2);
         aabb_BRF_TLB_expected.ExtendBy(aabb_obj3);
 
-        bool b = assertEquals(aabb_BRF_TLB_expected.getPosVec(), tree_BRF_TLB->getAABB().getPosVec(), "tree_BRF_TLB AABB pos") &
+        bool b = true;
+        b &= assertEquals(aabb_BRF_TLB_expected.getPosVec(), tree_BRF_TLB->getAABB().getPosVec(), "tree_BRF_TLB AABB pos") &
             assertEquals(aabb_BRF_TLB_expected.getSizeVec(), tree_BRF_TLB->getAABB().getSizeVec(), "tree_BRF_TLB AABB size");
 
         b &= assertEquals(PureVector(), tree_BRF_TLF->getAABB().getPosVec(), "tree_BRF_TLF AABB pos") &
@@ -281,6 +360,42 @@ private:
         // reset(): compared to the PureOctree test, we only test if AABB is also reset (see in assertTreeIsReset())!
         b &= assertTrue(tree.reset(), "reset level 0");
         b &= assertTrue(assertTreeIsReset(tree), "tree is reset 1");
+
+        return b;
+    }
+
+    bool testFindTightestFittingNode()
+    {
+        // used to test if the given world-space position other than (0,0,0) is really taken into calculations;
+        // if there is any issue, change this to (0,0,0) to find out probable reason of tree not properly taking origin pos into account!
+        const PureVector treeOrigin(100.f, 200.f, 300.f);
+
+        PureObject3D* obj1 = nullptr;
+        PureObject3D* obj2 = nullptr;
+        PureObject3D* obj3 = nullptr;
+        PureObject3D* obj4 = nullptr;
+        PureObject3D* obj5 = nullptr;
+        PureBoundingVolumeHierarchy* node1 = nullptr;
+        PureBoundingVolumeHierarchy* node2 = nullptr;
+        PureBoundingVolumeHierarchy* node3 = nullptr;
+        PureBoundingVolumeHierarchy* node4 = nullptr;
+        PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
+        if (!assertTrue(buildBVH(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH"))
+        {
+            return false;
+        }
+
+        bool b = assertTrue(node1 == tree.findTightestFittingNode(*obj1), "find 1 from root 1");
+        b &= assertTrue(node2 == tree.findTightestFittingNode(*obj2), "find 2 from root 2");
+        b &= assertTrue(node3 == tree.findTightestFittingNode(*obj3), "find 3 from root 3");
+        b &= assertTrue(node4 == tree.findTightestFittingNode(*obj4), "find 4 from root 4");
+        b &= assertTrue(nullptr == tree.findTightestFittingNode(*obj5), "find 5 from root 5");
+
+        b &= assertTrue(node1 == node1->findTightestFittingNode(*obj1), "find 1 from node 1");
+        b &= assertTrue(node2 == node2->findTightestFittingNode(*obj2), "find 2 from node 2");
+        b &= assertTrue(node3 == node3->findTightestFittingNode(*obj3), "find 3 from node 3");
+        b &= assertTrue(node4 == node4->findTightestFittingNode(*obj4), "find 4 from node 4");
+
 
         return b;
     }

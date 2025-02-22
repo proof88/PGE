@@ -1,4 +1,3 @@
-#include "PureBoundingVolumeHierarchy.h"
 /*
     ###################################################################################
     PureBoundingVolumeHierarchy.cpp
@@ -35,7 +34,7 @@ using namespace std;
 */
 PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy(TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
     PureOctree(maxDepthLevel, currentDepthLevel),
-    objDebugBox(nullptr)
+    m_objDebugBox(nullptr)
 {
 }
 
@@ -51,7 +50,7 @@ PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy(TPureUInt maxDepthLevel
 */
 PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy(const PureVector& pos, TPureFloat size, TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
     PureOctree(pos, size, maxDepthLevel, currentDepthLevel),
-    objDebugBox(nullptr)
+    m_objDebugBox(nullptr)
 {
     // TODO: AABB update with pos & size ??? Well, in 2023 I explicitly stated in the API comment for the size argument above that it is NOT the size of the AABB, 
     // so most probably I dont need to update AABB here.
@@ -61,9 +60,9 @@ PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy(const PureVector& pos, 
 PureBoundingVolumeHierarchy::~PureBoundingVolumeHierarchy()
 {
     DeleteChildren();
-    if (objDebugBox)
+    if (m_objDebugBox)
     {
-        delete objDebugBox; // Object3D dtor triggers removing from ObjectManager too
+        delete m_objDebugBox; // Object3D dtor triggers removing from ObjectManager too
     }
 } // ~PureBoundingVolumeHierarchy()
 
@@ -91,15 +90,15 @@ PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::insertObject(const Pur
     }
 
     const PureAxisAlignedBoundingBox obj_bbox(obj.getPosVec(), obj.getScaledSizeVec());
-    node->aabb.ExtendBy(obj_bbox);
+    node->m_aabb.ExtendBy(obj_bbox);
 
     PureBoundingVolumeHierarchy* prevChild = node;
-    PureBoundingVolumeHierarchy* p = static_cast<PureBoundingVolumeHierarchy*>(node->parent);
+    PureBoundingVolumeHierarchy* p = static_cast<PureBoundingVolumeHierarchy*>(node->m_parent);
     while (p != PGENULL)
     {
-        p->aabb.ExtendBy(prevChild->aabb);
+        p->m_aabb.ExtendBy(prevChild->m_aabb);
         prevChild = p;
-        p = static_cast<PureBoundingVolumeHierarchy*>(p->parent);
+        p = static_cast<PureBoundingVolumeHierarchy*>(p->m_parent);
     }
 
     return node;
@@ -135,16 +134,30 @@ bool PureBoundingVolumeHierarchy::reset()
 {
     if (PureOctree::reset())
     {
-        aabb = PureAxisAlignedBoundingBox();
-        if (objDebugBox)
+        m_aabb = PureAxisAlignedBoundingBox();
+        if (m_objDebugBox)
         {
-            delete objDebugBox; // Object3D dtor triggers removing from ObjectManager too
-            objDebugBox = nullptr;
+            delete m_objDebugBox; // Object3D dtor triggers removing from ObjectManager too
+            m_objDebugBox = nullptr;
         }
         return true;
     }
 
     return false;
+}
+
+
+/**
+    Non-const version of findObject(), required in some cases because insertObject() also non-const due to these nodes
+    shall be modifiable just for the sake of PureBoundingVolumeHierarchyRoot::markAabbDebugRendering().
+
+    @param obj The object to be found.
+    @return The BVH node containing the object. If the object is not found, PGENULL is returned.
+*/
+PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findObject(const PureObject3D& obj)
+{
+    // simply invoke the const-version of findObject() above by const-casting:
+    return const_cast<PureBoundingVolumeHierarchy*>(static_cast<const PureBoundingVolumeHierarchy*>(this)->findObject(obj));
 }
 
 
@@ -159,7 +172,64 @@ bool PureBoundingVolumeHierarchy::reset()
 */
 const PureAxisAlignedBoundingBox& PureBoundingVolumeHierarchy::getAABB() const
 {
-    return aabb;
+    return m_aabb;
+}
+
+/**
+    Finds the smallest node within the tree which still FULLY contains the given AABB.
+
+    @param objAabb The AABB for which we are searching the smallest node that fully bounds this AABB.
+
+    @return The smallest node within the tree which still FULLY contains the given AABB, or nullptr if there is no such node.
+*/
+PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findTightestFittingNode(const PureAxisAlignedBoundingBox& objAabb)
+{
+    if (m_aabb.isInside(objAabb))
+    {
+        if (getNodeType() == Parent)
+        {
+            assert(!m_vChildren.empty());
+
+            // the naive approach: iterate over children and try find one which is more tightly fitting.
+            //for (auto pNode : m_vChildren)
+            //{
+            //    assert(pNode);
+            //    PureBoundingVolumeHierarchy& bvhNode = static_cast<PureBoundingVolumeHierarchy&>(*pNode);
+            //    PureBoundingVolumeHierarchy* const pBvhNodeTightestFittingChild = bvhNode.findTightestFittingNode(objAabb);
+            //    if (pBvhNodeTightestFittingChild)
+            //    {
+            //        return pBvhNodeTightestFittingChild;
+            //    }
+            //}
+
+            // the optimal approach:
+            // since BVH nodes at the same level are NOT intersecting each other, therefore the closest child should be checked only,
+            // since there CANNOT BE another child at the same level which fully fits. Only the closest could fit, if that does not fit then no other either!
+            // This is another example of the power octree has!
+            const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
+            PureBoundingVolumeHierarchy& bvhNode = static_cast<PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
+            PureBoundingVolumeHierarchy* const pBvhNodeTightestFittingChild = bvhNode.findTightestFittingNode(objAabb);
+            if (pBvhNodeTightestFittingChild)
+            {
+                return pBvhNodeTightestFittingChild;
+            }
+        }
+        return this;
+    }
+    return nullptr;
+}
+
+/**
+    Finds the smallest node within the tree which still FULLY contains the given Object3D.
+
+    @param obj The Object3D for which we are searching the smallest node that fully bounds this Object3D.
+
+    @return The smallest node within the tree which still FULLY contains the given Object3D, or nullptr if there is no such node.
+*/
+PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findTightestFittingNode(const PureObject3D& obj)
+{
+    PureAxisAlignedBoundingBox objAabb(obj.getPosVec(), obj.getScaledSizeVec());
+    return findTightestFittingNode(objAabb);
 }
 
 /**
@@ -173,28 +243,41 @@ void PureBoundingVolumeHierarchy::updateAndEnableAabbDebugRendering(
 {
     if (getNodeType() == LeafEmpty)
     {
+        // yes, empty leaf node also has aabb but that is the default-initialized [0,0,0]-sized :)
         return;
     }
 
-    if (!objDebugBox)
+    if (!m_objDebugBox)
     {
-        objDebugBox = objmgr.createBox(1.f, 1.f, 1.f);
-        objDebugBox->SetWireframed(true);
-        //objDebugBox->SetWireframedCulled(false);
-        objDebugBox->getMaterial(false).getTextureEnvColor(0) = colorWireframe;
+        m_objDebugBox = objmgr.createBox(1.f, 1.f, 1.f);
+        m_objDebugBox->SetWireframed(true);
+        //m_objDebugBox->SetWireframedCulled(false);
+        m_objDebugBox->SetAffectingZBuffer(false);
+        m_objDebugBox->SetTestingAgainstZBuffer(false);
+        m_objDebugBox->getMaterial(false).getTextureEnvColor(0) = colorWireframe;
     }
-    objDebugBox->getPosVec() = aabb.getPosVec();
-    objDebugBox->SetScaling(aabb.getSizeVec());
+    m_objDebugBox->getPosVec() = m_aabb.getPosVec();
+    m_objDebugBox->SetScaling(m_aabb.getSizeVec());
 
     if (getNodeType() == Parent)
     {
-        for (auto pNode : vChildren)
+        for (auto pNode : m_vChildren)
         {
             assert(pNode);
             PureBoundingVolumeHierarchy& bvhNode = static_cast<PureBoundingVolumeHierarchy&>(*pNode);
             bvhNode.updateAndEnableAabbDebugRendering(objmgr, colorWireframe);
         }
     }
+}
+
+PureObject3D* PureBoundingVolumeHierarchy::getDebugBox()
+{
+    return m_objDebugBox;
+}
+
+const PureObject3D* PureBoundingVolumeHierarchy::getDebugBox() const
+{
+    return m_objDebugBox;
 }
 
 /**
@@ -207,14 +290,14 @@ void PureBoundingVolumeHierarchy::disableAabbDebugRendering()
         return;
     }
 
-    if (objDebugBox)
+    if (m_objDebugBox)
     {
-        objDebugBox->Hide();
+        m_objDebugBox->Hide();
     }
 
     if (getNodeType() == Parent)
     {
-        for (auto pNode : vChildren)
+        for (auto pNode : m_vChildren)
         {
             assert(pNode);
             PureBoundingVolumeHierarchy& bvhNode = static_cast<PureBoundingVolumeHierarchy&>(*pNode);
@@ -229,29 +312,118 @@ void PureBoundingVolumeHierarchy::disableAabbDebugRendering()
 
 TPureBool PureBoundingVolumeHierarchy::subdivide()
 {
-    assert(vChildren.size() == 0);
+    assert(m_vChildren.size() == 0);
     try
     {
       for (TPureUInt i = 0; i < 8; i++)
       {
           PureBoundingVolumeHierarchy* const pChildNode = new PureBoundingVolumeHierarchy(PureVector(), getSize()/2.f, getMaxDepthLevel(), getDepthLevel() + 1);
-          vChildren.push_back(pChildNode);
+          m_vChildren.push_back(pChildNode);
       }
     }
     catch (const std::exception&)
     {
         for (TPureUInt i = 0; i < 8; i++)
         {
-            if ( vChildren[i] != PGENULL )
+            if (m_vChildren[i] != PGENULL )
             {
-                delete vChildren[i];
+                delete m_vChildren[i];
             }
-            vChildren.resize(0);
+            m_vChildren.resize(0);
         }
         return false;
     }
     return true;
 }
+
+
+// ############################### PRIVATE ###############################
+
+
+/*
+   PureBoundingVolumeHierarchyRoot
+   ###########################################################################
+*/
+
+
+// ############################### PUBLIC ################################
+
+
+/**
+    Same functionality as PureBoundingVolumeHierarchy() with the same arguments.
+*/
+PureBoundingVolumeHierarchyRoot::PureBoundingVolumeHierarchyRoot(TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
+    PureBoundingVolumeHierarchy(maxDepthLevel, currentDepthLevel),
+    m_objPrevMarkedDebugBox(nullptr)
+{
+}
+
+/**
+    Same functionality as PureBoundingVolumeHierarchy() with the same arguments.
+*/
+PureBoundingVolumeHierarchyRoot::PureBoundingVolumeHierarchyRoot(const PureVector& pos, TPureFloat size, TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
+    PureBoundingVolumeHierarchy(pos, size, maxDepthLevel, currentDepthLevel),
+    m_objPrevMarkedDebugBox(nullptr)
+{
+}
+
+
+PureBoundingVolumeHierarchyRoot::~PureBoundingVolumeHierarchyRoot()
+{
+    m_objPrevMarkedDebugBox = nullptr;
+} // ~PureBoundingVolumeHierarchyRoot()
+
+/**
+    Extending PureBoundingVolumeHierarchy::reset() behavior by clearing marked AABB debug box.
+
+    @return True in case of success, false if invoked on non-root node.
+*/
+bool PureBoundingVolumeHierarchyRoot::reset()
+{
+    if (PureBoundingVolumeHierarchy::reset())
+    {
+        m_objPrevMarkedDebugBox = nullptr;
+        return true;
+    }
+    return false;
+}
+
+/**
+    Marks the specified node in debug rendering i.e. its rendering will be different compared to other AABB debug boxes.
+
+    The previously marked node will be unmarked i.e. its debug rendering will be reset back to its original unmarked rendering.
+    Valid only if updateAndEnableAabbDebugRendering() is invoked previously, otherwise no effect.
+
+    @param nodeToBeMarked The node we want to mark.
+                          If nullptr, no node will be marked, and the currently marked node (if there is any) will be unmarked.
+    @param color          The color we want to use for marking the specified node.
+*/
+void PureBoundingVolumeHierarchyRoot::markAabbDebugRendering(
+    PureBoundingVolumeHierarchy* nodeToBeMarked,
+    PureColor color /* copy-elision probably */)
+{
+    if (m_objPrevMarkedDebugBox)
+    {
+        m_objPrevMarkedDebugBox->SetWireframed(true);
+        m_objPrevMarkedDebugBox->getMaterial(false).getTextureEnvColor(0) = m_colorPrevDebugBoxBeforeMarking;
+        m_objPrevMarkedDebugBox->getMaterial(false).setBlendMode(TPURE_BLENDMODE::PURE_BM_NONE);
+    }
+
+    if (!nodeToBeMarked || !nodeToBeMarked->getDebugBox())
+    {
+        return;
+    }
+
+    m_objPrevMarkedDebugBox = nodeToBeMarked->getDebugBox();
+    m_colorPrevDebugBoxBeforeMarking = nodeToBeMarked->getDebugBox()->getMaterial(false).getTextureEnvColor(0);
+
+    nodeToBeMarked->getDebugBox()->SetWireframed(false);
+    nodeToBeMarked->getDebugBox()->getMaterial(false).getTextureEnvColor(0) = color;
+    nodeToBeMarked->getDebugBox()->getMaterial(false).setBlendMode(TPURE_BLENDMODE::PURE_BM_STANDARD_TRANSPARENCY);
+}
+
+
+// ############################## PROTECTED ##############################
 
 
 // ############################### PRIVATE ###############################

@@ -55,16 +55,16 @@ private:
         const PureVector size(1.0f, 2.0f, 3.0f);
         const PureAxisAlignedBoundingBox bbox(pos, size);
 
-        return assertEquals(pos, bbox.getPosVec(), "pos") &
-            assertEquals(size, bbox.getSizeVec(), "size");    
+        return (assertEquals(pos, bbox.getPosVec(), "pos") &
+            assertEquals(size, bbox.getSizeVec(), "size")) != 0;
     }
 
     bool testCtor2()
     {
         const PureAxisAlignedBoundingBox bbox;
 
-        return assertEquals(PureVector(), bbox.getPosVec(), "pos") &
-            assertEquals(PureVector(), bbox.getSizeVec(), "size");    
+        return (assertEquals(PureVector(), bbox.getPosVec(), "pos") &
+            assertEquals(PureVector(), bbox.getSizeVec(), "size")) != 0;
     }
 
     bool testIsPointInside()
@@ -82,21 +82,21 @@ private:
 
         const PureVector goodPoint1(pos.getX(), pos.getY(), pos.getZ());
 
-        return assertFalse(bbox.isInside(badPoint1), "badPoint 1") &
+        return (assertFalse(bbox.isInside(badPoint1), "badPoint 1") &
             assertFalse(bbox.isInside(badPoint2), "badPoint 2") &
             assertFalse(bbox.isInside(badPoint3), "badPoint 3") &
             assertFalse(bbox.isInside(badPoint4), "badPoint 4") &
             assertFalse(bbox.isInside(badPoint5), "badPoint 5") &
             assertFalse(bbox.isInside(badPoint6), "badPoint 6") &
-            assertTrue(bbox.isInside(goodPoint1), "goodPoint 1");
+            assertTrue(bbox.isInside(goodPoint1), "goodPoint 1")) != 0;
     }
 
     bool testIsPointInside_no_bounds()
     {
         const PureAxisAlignedBoundingBox bbox;
 
-        return assertFalse(bbox.isInside(PureVector(1.f, 2.f, 3.f)), "badPoint 1") &
-            assertFalse(bbox.isInside(PureVector()), "badPoint 2");
+        return (assertFalse(bbox.isInside(PureVector(1.f, 2.f, 3.f)), "badPoint 1") &
+            assertFalse(bbox.isInside(PureVector()), "badPoint 2")) != 0;
     }
 
     bool testIsBoxInside()
@@ -117,9 +117,9 @@ private:
         const PureAxisAlignedBoundingBox insideBox1(posInsideBox1, sizeInsideBox1);
         const PureAxisAlignedBoundingBox insideBox2(posInsideBox2, sizeInsideBox2);
 
-        return assertTrue(bbox.isInside(insideBox1), "insideBox1") &
+        return (assertTrue(bbox.isInside(insideBox1), "insideBox1") &
             assertTrue(bbox.isInside(insideBox2), "insideBox2") &
-            assertFalse(bbox.isInside(outsideBox), "outsideBox");
+            assertFalse(bbox.isInside(outsideBox), "outsideBox")) != 0;
     }
 
     bool testIsBoxInside_no_bounds()

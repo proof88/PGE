@@ -56,24 +56,64 @@ public:
     virtual const PureBoundingVolumeHierarchy* findObject(const PureObject3D& obj) const override;    /**< Finds the given object in the octree. */
     virtual bool reset() override;                                                                    /**< Removes all children from this root node. */
 
+    PureBoundingVolumeHierarchy* findObject(const PureObject3D& obj);                                 /**< Finds the given object in the octree. */
+
     const PureAxisAlignedBoundingBox& getAABB() const;              /**< Gets the AABB of this node. */
+
+    PureBoundingVolumeHierarchy* findTightestFittingNode(const PureAxisAlignedBoundingBox& objAabb);
+    PureBoundingVolumeHierarchy* findTightestFittingNode(const PureObject3D& obj);
 
     void updateAndEnableAabbDebugRendering(
         PureObject3DManager& objmgr,
         PureColor colorWireframe = PureColor(0, 255, 0, 255));      /**< Enables rendering wireframed boxes representing AABB of this node and its children. */
     void disableAabbDebugRendering();                               /**< Disables rendering wireframed boxes representing AABB of this node and its children. */
+    
+    PureObject3D* getDebugBox();     // RFR: shall not exist, but needed due to bad design around PureBoundingVolumeHierarchyRoot::markAabbDebugRendering()
+    const PureObject3D* getDebugBox() const;
 
 protected:
 
+    PureObject3D* m_objDebugBox;
+
     // ---------------------------------------------------------------------------
 
-    virtual TPureBool subdivide(); // override
+    virtual TPureBool subdivide() override;
 
 private:
 
-    PureAxisAlignedBoundingBox aabb;
-    PureObject3D* objDebugBox;
+    PureAxisAlignedBoundingBox m_aabb;
+
+}; // class PureBoundingVolumeHierarchy
 
 
-}; // class PureBoundingVolumeHierarchy 
+/**
+    Root node for PureBoundingVolumeHierarchy.
+    It is NOT mandatory to use it, however some functionality is implemented here only.
+    These functionalities have effect on the overall tree, their helper variables are not needed in regular nodes.
+*/
+class PureBoundingVolumeHierarchyRoot : public PureBoundingVolumeHierarchy
+{
+#ifdef PURE_CLASS_IS_INCLUDED_NOTIFICATION
+#pragma message("  PureBoundingVolumeHierarchyRoot is included")
+#endif
 
+public:
+
+    // ---------------------------------------------------------------------------
+
+    PureBoundingVolumeHierarchyRoot(TPureUInt maxDepthLevel, TPureUInt currentDepthLevel);
+    PureBoundingVolumeHierarchyRoot(const PureVector& pos, TPureFloat size, TPureUInt maxDepthLevel, TPureUInt currentDepthLevel);
+    virtual ~PureBoundingVolumeHierarchyRoot();
+
+    virtual bool reset() override;                                  /**< Removes all children from this root node. */
+
+    void markAabbDebugRendering(
+        PureBoundingVolumeHierarchy* nodeToBeMarked,
+        PureColor color = PureColor(255, 0, 0, 100));  /**< Marks the specified node in debug rendering i.e. its rendering will be different compared to other AABB debug boxes. */
+
+private:
+
+    PureColor m_colorPrevDebugBoxBeforeMarking;
+    PureObject3D* m_objPrevMarkedDebugBox;
+
+}; // class PureBoundingVolumeHierarchyRoot
