@@ -26,6 +26,12 @@
 
     This implementation is basically extending PureOctree nodes with bounding box calculation.
 
+    Note that there are also other ways to build up a BVH, for example here binary tree is used:
+    https://www.haroldserrano.com/blog/visualizing-the-boundary-volume-hierarchy-collision-algorithm
+
+    Also, there are way more ways to optimize, for example, exploiting spatial coherence: most moving objects will be at the same OR similar position in the
+    next frame as in the current frame.
+
     Further material:
      - https://proof88.github.io/pure-doc/visibility.html
      - https://github.com/brandonpelfrey/Fast-BVH/tree/master/include
@@ -60,8 +66,22 @@ public:
 
     const PureAxisAlignedBoundingBox& getAABB() const;              /**< Gets the AABB of this node. */
 
+    const PureBoundingVolumeHierarchy* findTightestFittingNode(const PureAxisAlignedBoundingBox& objAabb) const;
+    const PureBoundingVolumeHierarchy* findTightestFittingNode(const PureObject3D& obj) const;
+
     PureBoundingVolumeHierarchy* findTightestFittingNode(const PureAxisAlignedBoundingBox& objAabb);
     PureBoundingVolumeHierarchy* findTightestFittingNode(const PureObject3D& obj);
+
+    const PureObject3D* findOneColliderObject(
+        const PureAxisAlignedBoundingBox& objAabb,
+        const PureBoundingVolumeHierarchy* pStartNode) const;
+    const PureObject3D* findOneColliderObject(const PureObject3D& obj) const;
+
+    bool findAllColliderObjects(
+        const PureAxisAlignedBoundingBox& objAabb,
+        const PureBoundingVolumeHierarchy* pStartNode,
+        std::vector<const PureObject3D*>& colliders) const;
+    bool findAllColliderObjects(const PureObject3D& obj, std::vector<const PureObject3D*>& colliders) const;
 
     void updateAndEnableAabbDebugRendering(
         PureObject3DManager& objmgr,
@@ -82,6 +102,10 @@ protected:
 private:
 
     PureAxisAlignedBoundingBox m_aabb;
+
+    static bool colliding2(
+        float o1px, float o1py, float o1pz, float o1sx, float o1sy, float o1sz,
+        float o2px, float o2py, float o2pz, float o2sx, float o2sy, float o2sz);
 
 }; // class PureBoundingVolumeHierarchy
 

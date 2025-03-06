@@ -108,6 +108,7 @@ public:
     virtual const PureOctree* findObject(const PureObject3D& obj) const;  /**< Finds the given object in the octree. */
     TPureUInt getDepthLevel() const;                                /**< Gets the current depth level of the octree node. */
     TPureUInt getMaxDepthLevel() const;                             /**< Gets the maximum depth level of the octree node as it was specified in the constructor of the octree. */
+    bool setMaxDepthLevel(TPureUInt maxLevel);                      /**< Sets the maximum depth level of the octree node. */
     NodeType getNodeType() const;                                   /**< Gets the type of the octree node which depends on if the node has any objects or children nodes. */
     const PureVector& getPos() const;                               /**< Gets the world-space position of the node as specified in the constructor. */
     bool setPos(const PureVector& pos);                             /**< Sets the world-space position of this root node. */

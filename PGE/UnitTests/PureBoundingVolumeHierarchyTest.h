@@ -38,6 +38,8 @@ protected:
         addSubTest("testCtor2", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testCtor2);
         addSubTest("testInsertObject", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testInsertObject);
         addSubTest("testFindTightestFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindTightestFittingNode);
+        addSubTest("testFindOneColliderObject", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject);
+        addSubTest("testFindAllColliderObjects", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects);
     }
 
     virtual bool setUp() override
@@ -83,7 +85,7 @@ private:
     * So the expectation is that after calling this function, only 4 PureObject3D boxes will be inside the tree.
     * The given pointers will be updated.
     * 
-    * @param tree       An empty input tree where 5 new boxes will be inserted.
+    * @param tree       An empty input tree where we will try to insert 5 new boxes.
     * @param treeOrigin This will be set as the position of the tree.
     * @param obj1       A new box will be created and this pointer will be updated with the address of this new box.
     * @param obj2       Same purpose as obj1.
@@ -396,6 +398,208 @@ private:
         b &= assertTrue(node3 == node3->findTightestFittingNode(*obj3), "find 3 from node 3");
         b &= assertTrue(node4 == node4->findTightestFittingNode(*obj4), "find 4 from node 4");
 
+
+        return b;
+    }
+
+    bool testFindOneColliderObject()
+    {
+        const PureVector treeOrigin(100.f, 200.f, 300.f);
+
+        PureObject3D* obj1 = nullptr;
+        PureObject3D* obj2 = nullptr;
+        PureObject3D* obj3 = nullptr;
+        PureObject3D* obj4 = nullptr;
+        PureObject3D* obj5 = nullptr;
+        PureBoundingVolumeHierarchy* node1 = nullptr;
+        PureBoundingVolumeHierarchy* node2 = nullptr;
+        PureBoundingVolumeHierarchy* node3 = nullptr;
+        PureBoundingVolumeHierarchy* node4 = nullptr;
+        PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
+        if (!assertTrue(buildBVH(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH"))
+        {
+            return false;
+        }
+
+        bool b = true;
+
+        // obj5 is outside of tree bounds, hence it cannot collide with anything within the tree
+        b &= assertNull(tree.findOneColliderObject(*obj5), "obj5 collider, object version");
+        
+        const PureAxisAlignedBoundingBox obj5Aabb(obj5->getPosVec(), obj5->getScaledSizeVec());
+        b &= assertNull(tree.findOneColliderObject(obj5Aabb, nullptr), "obj5 collider, aabb version");
+
+        // obj1, being in the tree, is expected to be colliding with itself
+        const PureObject3D* const pObj1CollidingWith = tree.findOneColliderObject(*obj1);
+        b &= assertEquals(obj1, pObj1CollidingWith, "obj1 collider, object version");
+        
+        const PureAxisAlignedBoundingBox obj1Aabb(obj1->getPosVec(), obj1->getScaledSizeVec());
+        b &= assertEquals(pObj1CollidingWith, tree.findOneColliderObject(obj1Aabb, nullptr), "obj1 collider, aabb version");
+
+        // obj2, being in the tree, is expected to be colliding with itself or obj3 as they have same position and size!
+        const PureObject3D* const pObj2CollidingWith = tree.findOneColliderObject(*obj2);
+        b &= assertTrue((obj2 == pObj2CollidingWith) || (obj3 == pObj2CollidingWith), "obj2 collider, object version");
+        
+        const PureAxisAlignedBoundingBox obj2Aabb(obj2->getPosVec(), obj2->getScaledSizeVec());
+        const PureObject3D* const pObj2CollidingWithAabb = tree.findOneColliderObject(obj2Aabb, nullptr);
+        b &= assertTrue((obj2 == pObj2CollidingWithAabb) || (obj3 == pObj2CollidingWithAabb), "obj2 collider, aabb version");
+
+        // obj3, same story
+        const PureObject3D* const pObj3CollidingWith = tree.findOneColliderObject(*obj3);
+        b &= assertTrue((obj2 == pObj3CollidingWith) || (obj3 == pObj3CollidingWith), "obj3 collider, object version");
+
+        const PureAxisAlignedBoundingBox obj3Aabb(obj3->getPosVec(), obj3->getScaledSizeVec());
+        const PureObject3D* const pObj3CollidingWithAabb = tree.findOneColliderObject(obj3Aabb, nullptr);
+        b &= assertTrue((obj2 == pObj3CollidingWithAabb) || (obj3 == pObj3CollidingWithAabb), "obj3 collider, aabb version");
+
+        // obj4, being in the tree, is expected to be colliding with itself
+        const PureObject3D* const pObj4CollidingWith = tree.findOneColliderObject(*obj4);
+        b &= assertEquals(obj4, pObj4CollidingWith, "obj4 collider, object version");
+
+        const PureAxisAlignedBoundingBox obj4Aabb(obj4->getPosVec(), obj4->getScaledSizeVec());
+        b &= assertEquals(pObj4CollidingWith, tree.findOneColliderObject(obj4Aabb, nullptr), "obj4 collider, aabb version");
+
+        return b;
+    }
+
+    bool testFindAllColliderObjects()
+    {
+        const PureVector treeOrigin(100.f, 200.f, 300.f);
+
+        PureObject3D* obj1 = nullptr;
+        PureObject3D* obj2 = nullptr;
+        PureObject3D* obj3 = nullptr;
+        PureObject3D* obj4 = nullptr;
+        PureObject3D* obj5 = nullptr;
+        PureBoundingVolumeHierarchy* node1 = nullptr;
+        PureBoundingVolumeHierarchy* node2 = nullptr;
+        PureBoundingVolumeHierarchy* node3 = nullptr;
+        PureBoundingVolumeHierarchy* node4 = nullptr;
+        PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
+        if (!assertTrue(buildBVH(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH"))
+        {
+            return false;
+        }
+
+        bool b = true;
+
+        std::vector<const PureObject3D*> colliders;
+
+        // obj5 is outside of tree bounds, hence it cannot collide with anything within the tree
+        b &= assertFalse(tree.findAllColliderObjects(*obj5, colliders), "obj5 colliders 0, object version");
+        b &= assertTrue(colliders.empty(), "obj5 colliders empty, object version");
+
+        const PureAxisAlignedBoundingBox obj5Aabb(obj5->getPosVec(), obj5->getScaledSizeVec());
+        b &= assertFalse(tree.findAllColliderObjects(obj5Aabb, nullptr, colliders), "obj5 colliders 0, aabb version");
+        b &= assertTrue(colliders.empty(), "obj5 colliders empty, aabb version");
+
+        // obj1, being in the tree, is expected to be colliding with itself
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects(*obj1, colliders), "obj1 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj1 colliders empty, object version");
+        if (b)
+        {
+            b &= assertEquals(obj1, *colliders.begin(), "obj1 colliders exact check, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj1Aabb(obj1->getPosVec(), obj1->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects(obj1Aabb, nullptr, colliders), "obj1 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj1 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertEquals(obj1, *colliders.begin(), "obj1 colliders exact check, aabb version");
+        }
+
+        // obj2, being in the tree, is expected to be colliding with itself and obj3 as they have same position and size!
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects(*obj2, colliders), "obj2 colliders 1, object version");
+        b &= assertEquals(2u, colliders.size(), "obj2 colliders size, object version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj2) != colliders.end(), "obj2 colliders exact check 1, object version");
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3) != colliders.end(), "obj2 colliders exact check 2, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj2Aabb(obj2->getPosVec(), obj2->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects(obj2Aabb, nullptr, colliders), "obj2 colliders 1, aabb version");
+        b &= assertEquals(2u, colliders.size(), "obj2 colliders size, aabb version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj2) != colliders.end(), "obj2 colliders exact check 1, aabb version");
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3) != colliders.end(), "obj2 colliders exact check 2, aabb version");
+        }
+
+        // same story for obj3
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects(*obj3, colliders), "obj3 colliders 1, object version");
+        b &= assertEquals(2u, colliders.size(), "obj3 colliders size, object version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj2) != colliders.end(), "obj3 colliders exact check 1, object version");
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3) != colliders.end(), "obj3 colliders exact check 2, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj3Aabb(obj3->getPosVec(), obj3->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects(obj3Aabb, nullptr, colliders), "obj3 colliders 1, aabb version");
+        b &= assertEquals(2u, colliders.size(), "obj3 colliders size, aabb version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj2) != colliders.end(), "obj3 colliders exact check 1, aabb version");
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3) != colliders.end(), "obj3 colliders exact check 2, aabb version");
+        }
+
+        // obj4, being in the tree, is expected to be colliding with itself
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects(*obj4, colliders), "obj4 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj4 colliders empty, object version");
+        if (b)
+        {
+            b &= assertEquals(obj4, *colliders.begin(), "obj4 colliders exact check, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj4Aabb(obj4->getPosVec(), obj4->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects(obj4Aabb, nullptr, colliders), "obj4 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj4 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertEquals(obj4, *colliders.begin(), "obj4 colliders exact check, aabb version");
+        }
+
+        // and now we create a very big object which shall be colliding with all objects in the tree
+        PureObject3D* const objBig = om->createBox(1.0f, 1.0f, 1.0f);  // will scale it
+        b &= assertNotNull(objBig, "objBig created");
+        if (b)
+        {
+            objBig->getPosVec() = treeOrigin;
+            objBig->SetScaling(tree.getSize());  // intentionally scaling to see if scaled size is used for collision calculation
+            
+            colliders.clear();
+            b &= assertTrue(tree.findAllColliderObjects(*objBig, colliders), "objBig colliders 1, object version");
+            b &= assertEquals(4u, colliders.size(), "objBig colliders size, object version");
+            if (b)
+            {
+                b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj1) != colliders.end(), "objBig colliders exact check 1, object version");
+                b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj2) != colliders.end(), "objBig colliders exact check 2, object version");
+                b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3) != colliders.end(), "objBig colliders exact check 3, object version");
+                b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj4) != colliders.end(), "objBig colliders exact check 4, object version");
+            }
+
+            colliders.clear();
+            const PureAxisAlignedBoundingBox objBigAabb(objBig->getPosVec(), objBig->getScaledSizeVec());
+            b &= assertTrue(tree.findAllColliderObjects(objBigAabb, nullptr, colliders), "objBig colliders 1, aabb version");
+            b &= assertEquals(4u, colliders.size(), "objBig colliders size, aabb version");
+            if (b)
+            {
+                b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj1) != colliders.end(), "objBig colliders exact check 1, object version");
+                b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj2) != colliders.end(), "objBig colliders exact check 2, object version");
+                b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3) != colliders.end(), "objBig colliders exact check 3, object version");
+                b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj4) != colliders.end(), "objBig colliders exact check 4, object version");
+            }
+        }
 
         return b;
     }

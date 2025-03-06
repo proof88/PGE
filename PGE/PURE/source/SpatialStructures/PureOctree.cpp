@@ -245,6 +245,28 @@ TPureUInt PureOctree::getMaxDepthLevel() const
     return m_nMaxDepth;
 }
 
+/**
+    Sets the maximum depth level of the octree node.
+
+    Shall be a positive value.
+    Valid only for the root node (level 0), and only if it is still empty.
+
+    @param maxLevel The new maximum depth level of the octree node.
+
+    @return True in case of success, false if invoked on non-root node or non-empty node, or specified invalid value.
+*/
+bool PureOctree::setMaxDepthLevel(TPureUInt maxLevel)
+{
+    if ((m_parent != PGENULL) || (getNodeType() != NodeType::LeafEmpty) || (maxLevel == 0))
+    {
+        return false;
+    }
+
+    m_nMaxDepth = maxLevel;
+
+    return true;
+}
+
 
 /**
     Gets the type of the octree node which depends on if the node has any objects or children nodes.

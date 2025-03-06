@@ -41,6 +41,7 @@ protected:
         addSubTest("testFindObject", (PFNUNITSUBTEST) &PureOctreeTest::testFindObject);
         addSubTest("testSetSize", (PFNUNITSUBTEST)&PureOctreeTest::testSetSize);
         addSubTest("testSetPos", (PFNUNITSUBTEST)&PureOctreeTest::testSetPos);
+        addSubTest("testSetMaxDepthLevel", (PFNUNITSUBTEST)&PureOctreeTest::testSetMaxDepthLevel);
         
         // reset(), getDepthLevel(), getMaxDepthLevel(), getNodeType(), getChildren() and getObjects() are tested within above functions
     }
@@ -646,6 +647,60 @@ private:
         PureOctree treeCtor2(treeOrigin, 1000.0f, 2, 0);
         b &= assertTrue(treeCtor2.setPos(PureVector(5, 6, 7)), "pos 9");
         b &= assertEquals(PureVector(5, 6, 7), treeCtor2.getPos(), "pos 10");
+
+        return b;
+    }
+
+    bool testSetMaxDepthLevel()
+    {
+        PureOctree treeCtor1(2, 0);
+
+        bool b = true;
+        b &= assertFalse(treeCtor1.setMaxDepthLevel(0), "size 0");
+        b &= assertEquals(2u, treeCtor1.getMaxDepthLevel(), "size 1");
+        b &= assertTrue(treeCtor1.setMaxDepthLevel(4), "size 2");
+        b &= assertEquals(4u, treeCtor1.getMaxDepthLevel(), "size 3");
+
+        PureObject3D* const obj1 = om->createBox(1.0f, 1.0f, 1.0f);
+        PureObject3D* const obj2 = om->createBox(1.0f, 1.0f, 1.0f);
+        if (!assertNotNull(obj1, "obj1 not null") || !assertNotNull(obj2, "obj2 not null"))
+        {
+            return false;
+        }
+
+        // 1 level
+        const PureOctree* const node1 = treeCtor1.insertObject(*obj1);
+        if (!assertNotNull(node1, "node 1"))
+        {
+            return false;
+        }
+
+        b &= assertFalse(treeCtor1.setMaxDepthLevel(2), "size 4");
+        b &= assertEquals(4u, treeCtor1.getMaxDepthLevel(), "size 5");
+
+        // 2 levels
+        PureOctree* const node2 = treeCtor1.insertObject(*obj2);
+        if (!assertNotNull(node2, "node 2"))
+        {
+            return false;
+        }
+
+        b &= assertFalse(node2->setMaxDepthLevel(2), "size 6");
+        b &= assertEquals(4u, node2->getMaxDepthLevel(), "size 7");
+
+        b &= assertFalse(treeCtor1.setMaxDepthLevel(2), "size 8");
+        b &= assertEquals(4u, treeCtor1.getMaxDepthLevel(), "size 9");
+
+        // after reset()
+        b &= assertTrue(treeCtor1.reset(), "reset 1");
+        b &= assertTrue(treeCtor1.setMaxDepthLevel(2), "size 10");
+        b &= assertEquals(2u, treeCtor1.getMaxDepthLevel(), "size 11");
+
+        // different ctor
+        const PureVector treeOrigin(100.f, 200.f, 300.f);
+        PureOctree treeCtor2(treeOrigin, 1000.0f, 2, 0);
+        b &= assertTrue(treeCtor2.setMaxDepthLevel(4), "size 12");
+        b &= assertEquals(4u, treeCtor2.getMaxDepthLevel(), "size 13");
 
         return b;
     }

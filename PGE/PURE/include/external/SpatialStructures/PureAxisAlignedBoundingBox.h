@@ -42,9 +42,9 @@ public:
     const PureVector& getSizeVec() const;                     /**< Gets the base sizes. */
 
     TPureBool isInside(const PureVector& p) const;                     /**< Is the given point inside the bounding box? */
-    TPureBool isInside(const PureAxisAlignedBoundingBox& aabb) const;  /**< Is the given box inside the bounding box? */
+    TPureBool isInside(const PureAxisAlignedBoundingBox& aabb) const;  /**< Is the given box fully inside the bounding box? */
     void ExtendBy(const PureVector& p);                                /**< Extends the size of the bounding box so the given point will be inside the box. */
-    void ExtendBy(const PureAxisAlignedBoundingBox& aabb);             /**< Extends the size of the bounding box so the given box will be inside the box. */
+    void ExtendBy(const PureAxisAlignedBoundingBox& aabb);             /**< Extends the size of the bounding box so the given box will be fully inside the box. */
 
 protected:
 

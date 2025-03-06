@@ -65,7 +65,8 @@ TPureBool PureAxisAlignedBoundingBox::isInside(const PureVector& p) const
 }
 
 /**
-    Is the given box inside the bounding box?
+    Is the given box fully inside the bounding box?
+
     @param aabb The box to be tested.
     @return True if the given box is fully inside the bounding box, false otherwise. Partial contain also results false.
 */
@@ -128,7 +129,7 @@ void PureAxisAlignedBoundingBox::ExtendBy(const PureVector& p)
 
 
 /**
-    Extends the size of the bounding box so the given box will be inside the box.
+    Extends the size of the bounding box so the given box will be fully inside the box.
     The position of the bounding box is also expected to change after the extend.
     If this is a 0-sized (uninitialized) box, its position and size will be set to the position and size of the given box (copy).
 
