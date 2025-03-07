@@ -72,14 +72,16 @@ TPureBool PureAxisAlignedBoundingBox::isInside(const PureVector& p) const
 */
 TPureBool PureAxisAlignedBoundingBox::isInside(const PureAxisAlignedBoundingBox& aabb) const
 {
+    const PureVector& vecAabbPos = aabb.getPosVec();
+    const PureVector& vecAabbSize = aabb.getSizeVec();
     const PureVector aabb_min(
-        aabb.getPosVec().getX() - aabb.getSizeVec().getX()/2.f,
-        aabb.getPosVec().getY() - aabb.getSizeVec().getY()/2.f,
-        aabb.getPosVec().getZ() - aabb.getSizeVec().getZ()/2.f);
+        vecAabbPos.getX() - vecAabbSize.getX() / 2.f,
+        vecAabbPos.getY() - vecAabbSize.getY() / 2.f,
+        vecAabbPos.getZ() - vecAabbSize.getZ() / 2.f);
     const PureVector aabb_max(
-        aabb.getPosVec().getX() + aabb.getSizeVec().getX()/2.f,
-        aabb.getPosVec().getY() + aabb.getSizeVec().getY()/2.f,
-        aabb.getPosVec().getZ() + aabb.getSizeVec().getZ()/2.f);
+        vecAabbPos.getX() + vecAabbSize.getX() / 2.f,
+        vecAabbPos.getY() + vecAabbSize.getY() / 2.f,
+        vecAabbPos.getZ() + vecAabbSize.getZ() / 2.f);
 
 
     return isInside(aabb_min) && isInside(aabb_max);

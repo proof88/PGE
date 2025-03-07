@@ -302,9 +302,11 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject(const Pur
     for (const auto& pStoredObj : getObjects())
     {
         assert(pStoredObj);
+        const PureVector& vecStoredObjPos = pStoredObj->getPosVec();
+        const PureVector vecStoredObjSize = pStoredObj->getScaledSizeVec();
         if (colliding2(
-            pStoredObj->getPosVec().getX(), pStoredObj->getPosVec().getY(), pStoredObj->getPosVec().getZ(),
-            pStoredObj->getScaledSizeVec().getX(), pStoredObj->getScaledSizeVec().getY(), pStoredObj->getScaledSizeVec().getZ(),
+            vecStoredObjPos.getX(), vecStoredObjPos.getY(), vecStoredObjPos.getZ(),
+            vecStoredObjSize.getX(), vecStoredObjSize.getY(), vecStoredObjSize.getZ(),
             objAabb.getPosVec().getX(), objAabb.getPosVec().getY(), objAabb.getPosVec().getZ(),
             objAabb.getSizeVec().getX(), objAabb.getSizeVec().getY(), objAabb.getSizeVec().getZ()
         ))
@@ -374,9 +376,11 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects(
     for (const auto& pStoredObj : getObjects())
     {
         assert(pStoredObj);
+        const PureVector& vecStoredObjPos = pStoredObj->getPosVec();
+        const PureVector vecStoredObjSize = pStoredObj->getScaledSizeVec();
         if (colliding2(
-            pStoredObj->getPosVec().getX(), pStoredObj->getPosVec().getY(), pStoredObj->getPosVec().getZ(),
-            pStoredObj->getScaledSizeVec().getX(), pStoredObj->getScaledSizeVec().getY(), pStoredObj->getScaledSizeVec().getZ(),
+            vecStoredObjPos.getX(), vecStoredObjPos.getY(), vecStoredObjPos.getZ(),
+            vecStoredObjSize.getX(), vecStoredObjSize.getY(), vecStoredObjSize.getZ(),
             objAabb.getPosVec().getX(), objAabb.getPosVec().getY(), objAabb.getPosVec().getZ(),
             objAabb.getSizeVec().getX(), objAabb.getSizeVec().getY(), objAabb.getSizeVec().getZ()
         ))
