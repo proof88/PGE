@@ -13,6 +13,7 @@
 #include <cassert>
 
 #include "../../../../../PFL/PFL/PFL.h"
+#include "../../../../../455-355-7357-88/455-355-7357-88/Benchmarks.h"
 
 using namespace std;
 
@@ -185,6 +186,7 @@ const PureAxisAlignedBoundingBox& PureBoundingVolumeHierarchy::getAABB() const
 */
 const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findTightestFittingNode(const PureAxisAlignedBoundingBox& objAabb) const
 {
+    ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
     if (m_aabb.isInside(objAabb))
     {
         if (getNodeType() == Parent)
@@ -275,6 +277,7 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject(const Pur
 {
     if (!pStartNode)
     {
+        ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
         const auto pTightestFittingNode = findTightestFittingNode(objAabb);
         pStartNode = pTightestFittingNode ? pTightestFittingNode : this;
         return pStartNode->findOneColliderObject(objAabb, pStartNode);
@@ -350,6 +353,7 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects(
 {
     if (!pStartNode)
     {
+        ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
         colliders.clear();
         const auto pTightestFittingNode = findTightestFittingNode(objAabb);
         pStartNode = pTightestFittingNode ? pTightestFittingNode : this;

@@ -157,7 +157,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../PFL/PFL;PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -188,7 +188,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../PFL/PFL;PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -219,7 +219,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../PFL/PFL;PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -250,7 +250,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../PFL/PFL;PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -286,7 +286,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../PFL/PFL;PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -323,7 +323,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <TreatWarningAsError>true</TreatWarningAsError>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../PFL/PFL;PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -355,7 +355,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../PFL/PFL;PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -384,7 +384,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../PFL/PFL;PURE\include\external\GUI\imgui-1.88\;PURE\include\internal\;PURE\include\internal\GUI\imgui-1.88;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
