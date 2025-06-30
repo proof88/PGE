@@ -141,7 +141,6 @@ private:
     TPureFloat m_fSize;
     TPureUInt m_nCurrentDepth;
     TPureUInt m_nMaxDepth;
-    NodeType m_nodeType;
     std::set<const PureObject3D*> m_vObjects;
 
     PureObject3D* m_objDebugBox;

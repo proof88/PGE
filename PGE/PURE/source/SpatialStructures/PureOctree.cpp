@@ -43,14 +43,13 @@ const PureOctree::ChildIndex PureOctree::BACK   = BIT(PureOctree::BIT_AXIS_Z);
     This ctor initializes size to 0 and position to [0,0,0].
     Size and position can be set later by setSize() and setPos() only if the tree is empty.
 
-    @param maxDepthLevel The maximum node depth level supported by this octree. 0 means there is no depth limit.
+    @param maxDepthLevel     The maximum node depth level supported by this octree. 0 means there is no depth limit.
     @param currentDepthLevel The depth level of this specific node being created. For global use, just specify 0 so this will be the root node of the octree.
 */
 PureOctree::PureOctree(TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
     m_fSize(0.f),
     m_nMaxDepth(maxDepthLevel),
     m_nCurrentDepth(currentDepthLevel),
-    m_nodeType(NodeType::LeafEmpty),
     m_parent(PGENULL),
     m_objDebugBox(nullptr)
 {
@@ -61,9 +60,9 @@ PureOctree::PureOctree(TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
     Creates an octree node.
     Initially the type of this node will be LeafEmpty.
 
-    @param pos The world-space position of this node. For global use, you can specify just [0,0,0].
-    @param size The length of the side of the cube represented by this node. Recommend this to be big enough to contain any scene objects.
-    @param maxDepthLevel The maximum node depth level supported by this octree. 0 means there is no depth limit.
+    @param pos               The world-space position of this node. For global use, you can specify just [0,0,0].
+    @param size              The length of the side of the cube represented by this node. Recommend this to be big enough to contain any scene objects.
+    @param maxDepthLevel     The maximum node depth level supported by this octree. 0 means there is no depth limit.
     @param currentDepthLevel The depth level of this specific node being created. For global use, just specify 0 so this will be the root node of the octree.
 */
 PureOctree::PureOctree(const PureVector& pos, TPureFloat size, TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
@@ -71,7 +70,6 @@ PureOctree::PureOctree(const PureVector& pos, TPureFloat size, TPureUInt maxDept
     m_fSize(size),
     m_nMaxDepth(maxDepthLevel),
     m_nCurrentDepth(currentDepthLevel),
-    m_nodeType(NodeType::LeafEmpty),
     m_parent(PGENULL),
     m_objDebugBox(nullptr)
 {
@@ -412,7 +410,6 @@ bool PureOctree::reset()
 
     DeleteChildren();
     m_vObjects.clear(); // just in case
-    m_nodeType = getNodeType(); // expecting NodeType::LeafEmpty
 
     // m_objDebugBox at this root level should be kept if it exists, no need to update since its pos and size are fixed in ctor / by setSize().
     // BUT, there is no other way to destroy ALL dynamic resources of the octree, and if we dont do this, the ptr would become invalid
