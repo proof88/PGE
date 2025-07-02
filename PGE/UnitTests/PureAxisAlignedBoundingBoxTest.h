@@ -56,7 +56,8 @@ private:
         const PureAxisAlignedBoundingBox bbox(pos, size);
 
         return (assertEquals(pos, bbox.getPosVec(), "pos") &
-            assertEquals(size, bbox.getSizeVec(), "size")) != 0;
+            assertEquals(size, bbox.getSizeVec(), "size") &
+            assertTrue(bbox.isInitialized(), "inited")) != 0;
     }
 
     bool testCtor2()
@@ -64,7 +65,8 @@ private:
         const PureAxisAlignedBoundingBox bbox;
 
         return (assertEquals(PureVector(), bbox.getPosVec(), "pos") &
-            assertEquals(PureVector(), bbox.getSizeVec(), "size")) != 0;
+            assertEquals(PureVector(), bbox.getSizeVec(), "size") &
+            assertFalse(bbox.isInitialized(), "inited")) != 0;
     }
 
     bool testIsPointInside()
@@ -183,6 +185,9 @@ private:
         PureAxisAlignedBoundingBox bbox_original_1(PureVector(10.f, 20.f, 30.f), PureVector(5.f, 6.f, 7.f));
         PureAxisAlignedBoundingBox bbox_original_2(bbox_original_1);
 
+        bool b = assertTrue(bbox_original_1.isInitialized(), "inited 1");
+        b &= assertTrue(bbox_original_2.isInitialized(), "inited 2");
+
         const PureVector newPoint_1(12.f, 20.f, 40.0f);
         const PureVector newPoint_2(30.f, 40.f, 60.0f);
 
@@ -192,7 +197,7 @@ private:
         bbox_original_2.ExtendBy(newPoint_2);
         bbox_original_2.ExtendBy(newPoint_1);
 
-        bool b = assertEquals(bbox_original_1.getPosVec(), bbox_original_2.getPosVec(), "new pos");
+        b &= assertEquals(bbox_original_1.getPosVec(), bbox_original_2.getPosVec(), "new pos");
         b &= assertEquals(bbox_original_1.getSizeVec(), bbox_original_2.getSizeVec(), "new size");
 
         return b;
@@ -205,11 +210,13 @@ private:
         const PureVector newPoint(12.f, 20.f, 40.0f);
 
         bool b = assertFalse(bbox.isInside(newPoint), "newPoint before");
+        b &= assertFalse(bbox.isInitialized(), "inited 1");
 
         // nothing should happen, as an uninitialized box can be altered by another box only
         bbox.ExtendBy(newPoint);
 
         b &= assertFalse(bbox.isInside(newPoint), "newPoint after");
+        b &= assertFalse(bbox.isInitialized(), "inited 2");
 
         b &= assertEquals(PureVector(), bbox.getPosVec(), "new pos");
         b &= assertEquals(PureVector(), bbox.getSizeVec(), "new size");
@@ -255,6 +262,7 @@ private:
         const PureVector newPoint(2.f, 15.f, 20.f);
 
         bool b = assertFalse(bbox.isInside(newPoint), "newPoint before");
+        b &= assertTrue(bbox.isInitialized(), "inited");
 
         bbox.ExtendBy(newPoint);
 
@@ -272,11 +280,13 @@ private:
         const PureVector size(1.0f, 3.0f, 3.0f);
         PureAxisAlignedBoundingBox bbox(pos, size);
 
+        bool b = assertTrue(bbox.isInitialized(), "inited");
+
         const PureVector newPoint(pos.getX() + size.getX()/2.f - 1, pos.getY(), pos.getZ());
 
         bbox.ExtendBy(newPoint);
 
-        bool b = assertTrue(bbox.isInside(newPoint), "newPoint after");
+        b &= assertTrue(bbox.isInside(newPoint), "newPoint after");
 
         // pos and size doesnt change as point is inside even before extending
         b &= assertEquals(pos, bbox.getPosVec(), "new pos");
@@ -331,9 +341,11 @@ private:
         const PureAxisAlignedBoundingBox bboxExtender(PureVector(20.f, 30.f, 40.f), PureVector(5.f, 6.f, 7.f));
 
         // bboxExtender is basically copied
+        bool b = assertFalse(bbox.isInitialized(), "inited 1");
         bbox.ExtendBy(bboxExtender);
+        b &= assertTrue(bbox.isInitialized(), "inited 2");
 
-        bool b = assertEquals(bboxExtender.getPosVec(), bbox.getPosVec(), "new pos");
+        b &= assertEquals(bboxExtender.getPosVec(), bbox.getPosVec(), "new pos");
         b &= assertEquals(bboxExtender.getSizeVec(), bbox.getSizeVec(), "new size");
 
         return b;

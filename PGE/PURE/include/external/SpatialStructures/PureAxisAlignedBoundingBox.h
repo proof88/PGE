@@ -38,6 +38,8 @@ public:
     PureAxisAlignedBoundingBox(PureAxisAlignedBoundingBox&&) = default;
     PureAxisAlignedBoundingBox& operator=(PureAxisAlignedBoundingBox&&) = default;
 
+    const bool isInitialized() const;
+
     const PureVector& getPosVec() const;                      /**< Gets the world-space position which is the center of the bounding box. */
     const PureVector& getSizeVec() const;                     /**< Gets the base sizes. */
 

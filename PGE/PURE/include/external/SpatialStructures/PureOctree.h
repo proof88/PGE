@@ -131,8 +131,9 @@ protected:
     std::vector<PureOctree*> m_vChildren;   // TODO: with Cpp11 we could use std::reference_wrapper and store references instead of ptrs.
     PureOctree* m_parent;
 
-    // virtual subdivide so derived can override by resizing vector with derived instances!
+    // virtual subdivide so derived can override by resizing vector with derived instances instead of PureOctree instances!
     virtual TPureBool subdivide();
+    virtual TPureBool postSubdivideDone();
     void DeleteChildren();
 
 private:

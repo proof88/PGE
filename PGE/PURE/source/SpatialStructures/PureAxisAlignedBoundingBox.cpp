@@ -28,6 +28,13 @@ PureAxisAlignedBoundingBox::PureAxisAlignedBoundingBox(const PureVector& pos_, c
 
 } // PureAxisAlignedBoundingBox()
 
+/**
+* @return True if all sides of this box is non-zero, false otherwise.
+*/
+const bool PureAxisAlignedBoundingBox::isInitialized() const
+{
+    return ((size.getX() != 0.f) && (size.getY() != 0.f) && (size.getZ() != 0.f));
+}
 
 /**
     Gets the world-space position which is the center of the bounding box.
@@ -56,8 +63,10 @@ const PureVector& PureAxisAlignedBoundingBox::getSizeVec() const
 */
 TPureBool PureAxisAlignedBoundingBox::isInside(const PureVector& p) const
 {
-    if ( (size.getX() == 0.f) || (size.getY() == 0.f) || (size.getZ() == 0.f) )
+    if (!isInitialized())
+    {
         return false;
+    }
 
     return ( (p.getX() >= (pos.getX() - size.getX()/2.f)) && (p.getX() <= (pos.getX() + size.getX()/2.f)) ) &&
         ( (p.getY() >= (pos.getY() - size.getY()/2.f)) && (p.getY() <= (pos.getY() + size.getY()/2.f)) ) &&
@@ -97,7 +106,7 @@ TPureBool PureAxisAlignedBoundingBox::isInside(const PureAxisAlignedBoundingBox&
 */
 void PureAxisAlignedBoundingBox::ExtendBy(const PureVector& p)
 {
-    if ( (size.getX() == 0.f) || (size.getY() == 0.f) || (size.getZ() == 0.f) )
+    if (!isInitialized())
     {
         return;
     }
@@ -139,7 +148,7 @@ void PureAxisAlignedBoundingBox::ExtendBy(const PureVector& p)
 */
 void PureAxisAlignedBoundingBox::ExtendBy(const PureAxisAlignedBoundingBox& aabb)
 {
-    if ( (size.getX() == 0.f) || (size.getY() == 0.f) || (size.getZ() == 0.f) )
+    if (!isInitialized())
     {
         pos = aabb.pos;
         size = aabb.size;

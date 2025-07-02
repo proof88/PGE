@@ -38,8 +38,9 @@ protected:
         addSubTest("testCtor2", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testCtor2);
         addSubTest("testInsertObject", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testInsertObject);
         addSubTest("testFindTightestFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindTightestFittingNode);
-        addSubTest("testFindOneColliderObject", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject);
-        addSubTest("testFindAllColliderObjects", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects);
+        addSubTest("testFindOneColliderObject_1", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_1);
+        addSubTest("testFindAllColliderObjects_1", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects_1);
+        addSubTest("testFindOneColliderObject_2", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_2);
     }
 
     virtual bool setUp() override
@@ -99,7 +100,7 @@ private:
     * 
     * @return True if BVH is successfully built with the 4 new boxes inserted, false otherwise.
     */
-    bool buildBVH(
+    bool buildBVH_1(
         PureBoundingVolumeHierarchy& tree,
         const PureVector& treeOrigin,
         PureObject3D*& obj1,
@@ -212,6 +213,218 @@ private:
         return true;
     }
 
+    /**
+    * Helper function to build up the given empty tree.
+    * This specialized version builds up a tree with size and objects in a way to mimic the
+    * object of map_test_good_2_collision.txt from PRooFPS-dd which contains the minimal map layout
+    * to reproduce the collision issue that was present in PRooFPS-dd v0.5 with BVH method.
+    *
+    * @param tree       An empty input tree where we will try to insert 5 new boxes.
+    * @param treeOrigin This will be set as the position of the tree.
+    * @param obj1       A new box will be created and this pointer will be updated with the address of this new box.
+    * @param obj2       Same purpose as obj1.
+    * @param obj3       Same purpose as obj1.
+    * @param obj4       Same purpose as obj1.
+    * @param obj5       Same purpose as obj1.
+    * @param node1      The tree node holding obj1.
+    * @param node2      The tree node holding obj2.
+    * @param node3      The tree node holding obj3.
+    * @param node4      The tree node holding obj4.
+    *
+    * @return True if BVH is successfully built, false otherwise.
+    */
+    bool buildBVH_2(
+        PureBoundingVolumeHierarchy& tree,
+        const PureVector& /*treeOrigin*/,
+        PureObject3D*& obj1,
+        PureObject3D*& obj2,
+        PureObject3D*& obj3_stair_1,
+        PureObject3D*& obj3_stair_2,
+        PureObject3D*& obj3_stair_3,
+        PureObject3D*& obj3_stair_4,
+        PureObject3D*& obj4,
+        PureBoundingVolumeHierarchy*& node1,
+        PureBoundingVolumeHierarchy*& node2,
+        PureBoundingVolumeHierarchy*& node3_stair_1,
+        PureBoundingVolumeHierarchy*& node3_stair_2,
+        PureBoundingVolumeHierarchy*& node3_stair_3,
+        PureBoundingVolumeHierarchy*& node3_stair_4,
+        PureBoundingVolumeHierarchy*& node4)
+    {
+        /*
+
+        This is a 85 x 85 x 85 size octree, in pos treeOrigin.
+        Max tree depth is set to 3.
+        Copied layout from map_test_good_2_collision.txt:
+
+          e                                                                                   e
+          e
+          e
+          e
+          e
+          e
+          e
+          e
+          e
+          e
+          e
+          e
+          e
+          e
+          e
+          e
+          e
+          e
+          e
+          e
+          e                            F
+          e
+          e
+          e
+          e
+          e                         S
+          e
+          e                      F /F
+          e
+          e
+          e
+          e
+
+        As we can see there are only 3 regular unit-sized foreground blocks and 1 stairs block that is made up from 4 smaller foreground blocks.
+
+        Inserting the objects into the tree happens like this step-by-step:
+         - obj1 insert: added to object of the empty root node, tree depth stays 0;
+         - obj2 insert: 
+           - root node not empty, we not yet reached depth limit 3, so subdivide root into 8 children nodes:
+             - move the already inserted obj1 to the "left bottom front" child node;
+               - parent nodes' AABB are extended recursively up to the root node with obj1's AABB;
+             - tree depth is now 1;
+           - due to its position, obj2 shall be also inserted into root's "left bottom front" child node, so:
+             - we not yet reached depth limit 3, so this child node now needs to be subdivided into 8 child nodes:
+               - the already inserted obj1 goes to root's "left bottom front" child node's "right top back" child node;
+                 - parent nodes' AABB are extended recursively up to the root node with obj1's AABB;
+               - tree depth is now 2;
+           - obj2 node index also gets calculated as root's "left bottom front" child node's "right top back" child node, so:
+             - we not yet reached depth limit 3, so this child node now needs to be subdivided into 8 child nodes:
+               - the already inserted obj1 goes to root's "left bottom front" child node's "right top back" child node's "left top back"
+                 child node;
+                 - parent nodes' AABB are extended recursively up to the root node with obj1's AABB;
+               - tree depth is now 3;
+           - obj2 is finally inserted to root's "left bottom front" child node's "right top back" child node's "left top front" child node, so:
+             - parent nodes' AABB are extended recursively up to the root node with obj1's AABB.
+
+        As we can see from above, AABB of sibling nodes CAN OVERLAP.
+        The quadtree or octree idea originally assumes perfect spatial subdivision into non-overlapping children — but when used as a dynamic BVH
+        with tight AABBs that grow, you lose the strict non-overlapping guarantee. However, this is true only for the node AABBs maintained by
+        BVH logic, so the original node position and sizes at Octree level stay unchanged, providing perfect spatial subdivision always.
+
+        To explain why:
+        Since the objects are inserted into nodes based on their position, based on the Octree logic, but their containing node's AABB is adjusted
+        based on the object's AABB by the BVH logic, it is not necessary but normal that after the insertion, the position and size of the node is modified, and
+        these changes are being reflected upwards to all levels until reaching the root.
+        During this expansion propagation upwards, obviously sibling nodes are not modified, not shrinked.
+
+        This is the reason why 2 objects with similar position MIGHT end up in different nodes even if both would initially fall into the same node:
+        because after the 1st object is inserted, its container node MIGHT HAVE changed its position too, leading the Octree logic choosing a
+        different node for the 2nd object!
+
+        What remains true is that parent nodes always maintain themselves to fully contain all their children nodes, even though children
+        of the same parent can overlap with each other within their parent.
+
+        This implies that parents can also overlap with their siblings on their level.
+
+        The initially equal division of space into 8 children AABB nodes can easily become unequal, as after each insertion the position and size of
+        the node AABBs might change.
+        Similar to parents always fully bound their children nodes, all nodes always fully bound their contained objects using their AABB.
+
+        The tree stays valid for broad-phase culling and hierarchical collision checks.
+        This is because for collision check I always start from root node, and the only fact I'm relying on is if a node's AABB does not
+        intersect the collision checked object's AABB then none of that node's children nodes are intersecting it either.
+
+        Over time, as more objects are inserted and AABBs keep expanding, the hierarchy can get less tight and that can introduce more
+        unnecessary checks, however this can be improved by rebuilding or rebalancing the tree - this is not supported at the moment.
+        */
+
+        // 2 normal foreground blocks in PRooFPS-dd terms
+        obj1 = om->createBox(1.0f, 1.0f, 1.0f);
+        obj1->getPosVec().Set(30.f, -20.f, -1.f);
+
+        obj2 = om->createBox(1.0f, 1.0f, 1.0f);
+        obj2->getPosVec().Set(24.f, -27.f, -1.f);
+
+        // 1 stairs block in PRooFPS-dd terms, consisting of 4 different size boxes
+        obj3_stair_1 = om->createBox(1.0f, 0.25f, 1.0f);
+        obj3_stair_1->getPosVec().Set(26.f, -27.375f, -1.f);
+
+        obj3_stair_2 = om->createBox(0.75f, 0.25f, 1.0f);
+        obj3_stair_2->getPosVec().Set(26.125f, -27.125f, -1.f);
+
+        obj3_stair_3 = om->createBox(0.5f, 0.25f, 1.0f);
+        obj3_stair_3->getPosVec().Set(26.25f, -26.875f, -1.f);
+
+        obj3_stair_4 = om->createBox(0.25f, 0.25f, 1.0f);
+        obj3_stair_4->getPosVec().Set(26.375f, -26.625f, -1.f);
+        
+        // 1 more normal foreground block in PRooFPS-dd terms
+        obj4 = om->createBox(1.0f, 1.0f, 1.0f);
+        obj4->getPosVec().Set(27.f, -27.f, -1.f);
+
+        if (!assertNotNull(obj1, "obj1 not null") ||
+            !assertNotNull(obj2, "obj2 not null") ||
+            !assertNotNull(obj3_stair_1, "obj3_stair_1 not null") ||
+            !assertNotNull(obj3_stair_2, "obj3_stair_2 not null") ||
+            !assertNotNull(obj3_stair_3, "obj3_stair_3 not null") ||
+            !assertNotNull(obj3_stair_4, "obj3_stair_4 not null") ||
+            !assertNotNull(obj4, "obj4 not null"))
+        {
+            return false;
+        }
+
+        node1 = tree.insertObject(*obj1);
+        node2 = tree.insertObject(*obj2);
+        node3_stair_1 = tree.insertObject(*obj3_stair_1);
+        node3_stair_2 = tree.insertObject(*obj3_stair_2);
+        node3_stair_3 = tree.insertObject(*obj3_stair_3);
+        node3_stair_4 = tree.insertObject(*obj3_stair_4);
+        node4 = tree.insertObject(*obj4);
+        if (!assertNotNull(obj1, "node1 insert") ||
+            !assertNotNull(obj2, "node2 insert") ||
+            !assertNotNull(obj3_stair_1, "node3_stair_1 insert") ||
+            !assertNotNull(obj3_stair_2, "node3_stair_2 insert") ||
+            !assertNotNull(obj3_stair_3, "node3_stair_3 insert") ||
+            !assertNotNull(obj3_stair_4, "node3_stair_4 insert") ||
+            !assertNotNull(obj4, "node4 insert"))
+        {
+            return false;
+        }
+
+        // since nodes might be subdivided and objects might be moved down to another level when more objects are inserted, the above node ptrs need to be refreshed now!
+        node1 = tree.findObject(*obj1);
+        node2 = tree.findObject(*obj2);
+        node3_stair_1 = tree.findObject(*obj3_stair_1);
+        node3_stair_2 = tree.findObject(*obj3_stair_2);
+        node3_stair_3 = tree.findObject(*obj3_stair_3);
+        node3_stair_4 = tree.findObject(*obj3_stair_4);
+        node4 = tree.findObject(*obj4);
+        if (!assertNotNull(obj1, "node1 find") ||
+            !assertNotNull(obj2, "node2 find") ||
+            !assertNotNull(obj3_stair_1, "node3_stair_1 find") ||
+            !assertNotNull(obj3_stair_2, "node3_stair_2 find") ||
+            !assertNotNull(obj3_stair_3, "node3_stair_3 find") ||
+            !assertNotNull(obj3_stair_4, "node3_stair_4 find") ||
+            !assertNotNull(obj4, "node4 find"))
+        {
+            return false;
+        }
+
+        if (!assertEquals(PureOctree::NodeType::Parent, tree.getNodeType(), "tree nodeType"))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     bool assertTreeIsReset(const PureBoundingVolumeHierarchy& tree)
     {
         return (assertEquals(PureOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
@@ -266,7 +479,7 @@ private:
         PureBoundingVolumeHierarchy* node3 = nullptr;
         PureBoundingVolumeHierarchy* node4 = nullptr;
         PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
-        if (!assertTrue(buildBVH(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH"))
+        if (!assertTrue(buildBVH_1(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH_1"))
         {
             return false;
         }
@@ -382,7 +595,7 @@ private:
         PureBoundingVolumeHierarchy* node3 = nullptr;
         PureBoundingVolumeHierarchy* node4 = nullptr;
         PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
-        if (!assertTrue(buildBVH(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH"))
+        if (!assertTrue(buildBVH_1(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH_1"))
         {
             return false;
         }
@@ -402,7 +615,7 @@ private:
         return b;
     }
 
-    bool testFindOneColliderObject()
+    bool testFindOneColliderObject_1()
     {
         const PureVector treeOrigin(100.f, 200.f, 300.f);
 
@@ -416,7 +629,7 @@ private:
         PureBoundingVolumeHierarchy* node3 = nullptr;
         PureBoundingVolumeHierarchy* node4 = nullptr;
         PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
-        if (!assertTrue(buildBVH(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH"))
+        if (!assertTrue(buildBVH_1(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH_1"))
         {
             return false;
         }
@@ -462,7 +675,7 @@ private:
         return b;
     }
 
-    bool testFindAllColliderObjects()
+    bool testFindAllColliderObjects_1()
     {
         const PureVector treeOrigin(100.f, 200.f, 300.f);
 
@@ -476,7 +689,7 @@ private:
         PureBoundingVolumeHierarchy* node3 = nullptr;
         PureBoundingVolumeHierarchy* node4 = nullptr;
         PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
-        if (!assertTrue(buildBVH(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH"))
+        if (!assertTrue(buildBVH_1(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH_1"))
         {
             return false;
         }
@@ -600,6 +813,106 @@ private:
                 b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj4) != colliders.end(), "objBig colliders exact check 4, object version");
             }
         }
+
+        return b;
+    }
+
+    bool testFindOneColliderObject_2()
+    {
+        const PureVector treeOrigin(42.5f, -16.f, 0.f);
+        PureBoundingVolumeHierarchy tree(treeOrigin, 85.0f /* size as calculated during loading map_test_good_2_collision.txt */, 3, 0);
+
+        PureObject3D* obj1 = nullptr;
+        PureObject3D* obj2 = nullptr;
+        PureObject3D* obj3_stair_1 = nullptr;
+        PureObject3D* obj3_stair_2 = nullptr;
+        PureObject3D* obj3_stair_3 = nullptr;
+        PureObject3D* obj3_stair_4 = nullptr;
+        PureObject3D* obj4 = nullptr;
+        PureBoundingVolumeHierarchy* node1 = nullptr;
+        PureBoundingVolumeHierarchy* node2 = nullptr;
+        PureBoundingVolumeHierarchy* node3_stair_1 = nullptr;
+        PureBoundingVolumeHierarchy* node3_stair_2 = nullptr;
+        PureBoundingVolumeHierarchy* node3_stair_3 = nullptr;
+        PureBoundingVolumeHierarchy* node3_stair_4 = nullptr;
+        PureBoundingVolumeHierarchy* node4 = nullptr;
+        
+        if (!assertTrue(
+            buildBVH_2(
+                tree, treeOrigin,
+                obj1, obj2, obj3_stair_1, obj3_stair_2, obj3_stair_3, obj3_stair_4, obj4,
+                node1, node2, node3_stair_1, node3_stair_2, node3_stair_3, node3_stair_4, node4), "buildBVH_2"))
+        {
+            return false;
+        }
+
+        bool b = true;
+
+        // obj1, being in the tree, is expected to be colliding with itself
+        const PureObject3D* const pObj1CollidingWith = tree.findOneColliderObject(*obj1);
+        b &= assertEquals(obj1, pObj1CollidingWith, "obj1 collider, object version");
+
+        const PureAxisAlignedBoundingBox obj1Aabb(obj1->getPosVec(), obj1->getScaledSizeVec());
+        b &= assertEquals(pObj1CollidingWith, tree.findOneColliderObject(obj1Aabb, nullptr), "obj1 collider, aabb version");
+
+        // obj2, being in the tree, is expected to be colliding with itself
+        const PureObject3D* const pObj2CollidingWith = tree.findOneColliderObject(*obj2);
+        b &= assertEquals(obj2, pObj2CollidingWith, "obj2 collider, object version");
+
+        const PureAxisAlignedBoundingBox obj2Aabb(obj2->getPosVec(), obj2->getScaledSizeVec());
+        b &= assertEquals(pObj2CollidingWith, tree.findOneColliderObject(obj2Aabb, nullptr), "obj2 collider, aabb version");
+
+        // obj3_stair_1, being in the tree, is expected to be colliding with either itself or another block right next to it
+        const PureObject3D* const pObj3_stair_1CollidingWith = tree.findOneColliderObject(*obj3_stair_1);
+        b &= assertNotNull(pObj3_stair_1CollidingWith, "obj3_stair_1 collider, object version");
+
+        const PureAxisAlignedBoundingBox obj3_stair_1Aabb(obj3_stair_1->getPosVec(), obj3_stair_1->getScaledSizeVec());
+        b &= assertNotNull( tree.findOneColliderObject(obj3_stair_1Aabb, nullptr), "obj3_stair_1 collider, aabb version");
+
+        // obj3_stair_2, being in the tree, is expected to be colliding with either itself or another block right next to it
+        const PureObject3D* const pObj3_stair_2CollidingWith = tree.findOneColliderObject(*obj3_stair_2);
+        b &= assertNotNull(pObj3_stair_2CollidingWith, "obj3_stair_2 collider, object version");
+
+        const PureAxisAlignedBoundingBox obj3_stair_2Aabb(obj3_stair_2->getPosVec(), obj3_stair_2->getScaledSizeVec());
+        b &= assertNotNull( tree.findOneColliderObject(obj3_stair_2Aabb, nullptr), "obj3_stair_2 collider, aabb version");
+
+        // obj3_stair_3, being in the tree, is expected to be colliding with either itself or another block right next to it
+        const PureObject3D* const pObj3_stair_3CollidingWith = tree.findOneColliderObject(*obj3_stair_3);
+        b &= assertNotNull(pObj3_stair_3CollidingWith, "obj3_stair_3 collider, object version");
+
+        const PureAxisAlignedBoundingBox obj3_stair_3Aabb(obj3_stair_3->getPosVec(), obj3_stair_3->getScaledSizeVec());
+        b &= assertNotNull( tree.findOneColliderObject(obj3_stair_3Aabb, nullptr), "obj3_stair_3 collider, aabb version");
+
+        // obj3_stair_4, being in the tree, is expected to be colliding with either itself or another block right next to it
+        const PureObject3D* const pObj3_stair_4CollidingWith = tree.findOneColliderObject(*obj3_stair_4);
+        b &= assertNotNull(pObj3_stair_4CollidingWith, "obj3_stair_4 collider, object version");
+
+        const PureAxisAlignedBoundingBox obj3_stair_4Aabb(obj3_stair_4->getPosVec(), obj3_stair_4->getScaledSizeVec());
+        b &= assertNotNull( tree.findOneColliderObject(obj3_stair_4Aabb, nullptr), "obj3_stair_4 collider, aabb version");
+
+        // obj4, being in the tree, is expected to be colliding with either itself or another block right next to it
+        const PureObject3D* const pObj4CollidingWith = tree.findOneColliderObject(*obj4);
+        b &= assertNotNull(pObj4CollidingWith, "obj4 collider, object version");
+
+        const PureAxisAlignedBoundingBox obj4Aabb(obj4->getPosVec(), obj4->getScaledSizeVec());
+        b &= assertNotNull( tree.findOneColliderObject(obj4Aabb, nullptr), "obj4 collider, aabb version");
+
+        // create a player-sized object
+        PureObject3D* objPlayer = om->createPlane(0.95f, 1.88f);
+
+        // initially it should not touch any foreground blocks
+        objPlayer->getPosVec().Set(
+            obj4->getPosVec().getX(),
+            obj4->getPosVec().getY() + obj4->getSizeVec().getY() / 2.f + objPlayer->getScaledSizeVec().getY() / 2.f + 0.1f /* shall not touch obj4 FG block */,
+            -1.2f /*GAME_PLAYERS_POS_Z*/);
+        b &= assertNull(tree.findOneColliderObject(*objPlayer), "objPlayer collider 1");
+
+        //const PureAxisAlignedBoundingBox aabbPlayer(
+        //    PureVector(objPlayer->getPosVec().getX(), objPlayer->getPosVec().getY(), objPlayer->getPosVec().getZ()),
+        //    PureVector(objPlayer->getScaledSizeVec().getX(), objPlayer->getScaledSizeVec().getY(), objPlayer->getScaledSizeVec().getZ()));
+
+        objPlayer->getPosVec().SetY(obj4->getPosVec().getY() + obj4->getSizeVec().getY() / 2.f + objPlayer->getScaledSizeVec().getY() / 2.f - 0.1f);
+        b &= assertEquals(obj4, tree.findOneColliderObject(*objPlayer), "objPlayer collider 2");
 
         return b;
     }

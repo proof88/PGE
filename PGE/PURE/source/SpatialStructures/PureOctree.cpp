@@ -163,18 +163,23 @@ PureOctree* PureOctree::insertObject(const PureObject3D& obj)
         {
             return PGENULL;
         }
-        for (TPureUInt i = 0; i < m_vChildren.size(); i++)
+
+        assert(m_vChildren.size() == 8);
+        for (TPureUInt i = 0; i < 8; i++)
         {
             m_vChildren[i]->m_parent = this;
         }
-        m_vChildren[TOP    | LEFT  | FRONT]->m_vPos.Set(m_vPos.getX() - m_fSize/4.f, m_vPos.getY() + m_fSize/4.f, m_vPos.getZ() - m_fSize/4.f);
-        m_vChildren[BOTTOM | LEFT  | FRONT]->m_vPos.Set(m_vPos.getX() - m_fSize/4.f, m_vPos.getY() - m_fSize/4.f, m_vPos.getZ() - m_fSize/4.f);
-        m_vChildren[TOP    | RIGHT | FRONT]->m_vPos.Set(m_vPos.getX() + m_fSize/4.f, m_vPos.getY() + m_fSize/4.f, m_vPos.getZ() - m_fSize/4.f);
-        m_vChildren[BOTTOM | RIGHT | FRONT]->m_vPos.Set(m_vPos.getX() + m_fSize/4.f, m_vPos.getY() - m_fSize/4.f, m_vPos.getZ() - m_fSize/4.f);
-        m_vChildren[TOP    | LEFT  | BACK ]->m_vPos.Set(m_vPos.getX() - m_fSize/4.f, m_vPos.getY() + m_fSize/4.f, m_vPos.getZ() + m_fSize/4.f);
-        m_vChildren[BOTTOM | LEFT  | BACK ]->m_vPos.Set(m_vPos.getX() - m_fSize/4.f, m_vPos.getY() - m_fSize/4.f, m_vPos.getZ() + m_fSize/4.f);
-        m_vChildren[TOP    | RIGHT | BACK ]->m_vPos.Set(m_vPos.getX() + m_fSize/4.f, m_vPos.getY() + m_fSize/4.f, m_vPos.getZ() + m_fSize/4.f);
-        m_vChildren[BOTTOM | RIGHT | BACK ]->m_vPos.Set(m_vPos.getX() + m_fSize/4.f, m_vPos.getY() - m_fSize/4.f, m_vPos.getZ() + m_fSize/4.f);
+
+        m_vChildren[TOP    | LEFT  | FRONT]->m_vPos.Set(m_vPos.getX() - m_fSize / 4.f, m_vPos.getY() + m_fSize / 4.f, m_vPos.getZ() - m_fSize / 4.f);
+        m_vChildren[BOTTOM | LEFT  | FRONT]->m_vPos.Set(m_vPos.getX() - m_fSize / 4.f, m_vPos.getY() - m_fSize / 4.f, m_vPos.getZ() - m_fSize / 4.f);
+        m_vChildren[TOP    | RIGHT | FRONT]->m_vPos.Set(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() + m_fSize / 4.f, m_vPos.getZ() - m_fSize / 4.f);
+        m_vChildren[BOTTOM | RIGHT | FRONT]->m_vPos.Set(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() - m_fSize / 4.f, m_vPos.getZ() - m_fSize / 4.f);
+        m_vChildren[TOP    | LEFT  | BACK]->m_vPos.Set(m_vPos.getX() - m_fSize / 4.f, m_vPos.getY() + m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f);
+        m_vChildren[BOTTOM | LEFT  | BACK]->m_vPos.Set(m_vPos.getX() - m_fSize / 4.f, m_vPos.getY() - m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f);
+        m_vChildren[TOP    | RIGHT | BACK]->m_vPos.Set(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() + m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f);
+        m_vChildren[BOTTOM | RIGHT | BACK]->m_vPos.Set(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() - m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f);
+
+        postSubdivideDone(); // so derived class can take action now
         
         // add the already inserted object to one of the new child nodes, remove it from this node
         const PureObject3D* objAlreadyInTree = *(m_vObjects.begin());
@@ -495,13 +500,15 @@ void PureOctree::disableNodeDebugRendering()
 
 TPureBool PureOctree::subdivide()
 {
+    // TODO: change assert to returnin false!
+    assert(m_vChildren.size() == 0);
     try
     {
-      for (TPureUInt i = 0; i < 8; i++)
-      {
-          PureOctree* const pChildNode = new PureOctree(PureVector(), m_fSize /2.f, m_nMaxDepth, m_nCurrentDepth + 1);
-          m_vChildren.push_back(pChildNode);
-      }
+        for (TPureUInt i = 0; i < 8; i++)
+        {
+            PureOctree* const pChildNode = new PureOctree(PureVector(), m_fSize / 2.f, m_nMaxDepth, m_nCurrentDepth + 1);
+            m_vChildren.push_back(pChildNode);
+        }
     }
     catch (const std::exception&)
     {
@@ -515,6 +522,11 @@ TPureBool PureOctree::subdivide()
         }
         return false;
     }
+    return true;
+}
+
+TPureBool PureOctree::postSubdivideDone()
+{
     return true;
 }
 

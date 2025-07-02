@@ -29,6 +29,9 @@ using namespace std;
 /**
     Creates an octree-derived bounding volume hierarchy (BVH) node.
     Basically this is doing the same octree initialization as PureOctree's public constructor with the same arguments.
+    This shorter form ctor is useful if we want to set the position and size of the root BVH node later, for example after
+    we loaded a map and finally know its dimensions.
+    AABB of the BVH is also left uninitialized with this ctor.
 
     @param maxDepthLevel     The maximum node depth level supported by this BVH. 0 means there is no depth limit.
     @param currentDepthLevel The depth level of this specific node being created. For global use, just specify 0 so this will be the root node of the BVH.
@@ -45,16 +48,15 @@ PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy(TPureUInt maxDepthLevel
 
     @param pos  The world-space position of this node. For global use, you can specify just (0;0;0).
     @param size The length of the side of the cube represented by this octree-derived node. Recommend this to be big enough to contain any scene objects.
-                Note that this is NOT the size of the bounding box used by the BVH, that will be calculated.
+                It is also used to initialize the size of the AABB of the BVH as well.
     @param maxDepthLevel     The maximum node depth level supported by this BVH. 0 means there is no depth limit.
     @param currentDepthLevel The depth level of this specific node being created. For global use, just specify 0 so this will be the root node of the BVH.
 */
 PureBoundingVolumeHierarchy::PureBoundingVolumeHierarchy(const PureVector& pos, TPureFloat size, TPureUInt maxDepthLevel, TPureUInt currentDepthLevel) :
     PureOctree(pos, size, maxDepthLevel, currentDepthLevel),
-    m_objDebugBox(nullptr)
+    m_objDebugBox(nullptr),
+    m_aabb(pos, PureVector(size, size, size))
 {
-    // TODO: AABB update with pos & size ??? Well, in 2023 I explicitly stated in the API comment for the size argument above that it is NOT the size of the AABB, 
-    // so most probably I dont need to update AABB here.
 } // PureBoundingVolumeHierarchy(...)
 
 
@@ -69,7 +71,7 @@ PureBoundingVolumeHierarchy::~PureBoundingVolumeHierarchy()
 
 
 /**
-    Same behavior as PureOctree::insertObject().
+    Same behavior as PureOctree::insertObject(), extended by extending affected AABBs.
 
     @param obj The object to be inserted in the octree.
     @return The node where the object ends up after insertion. In case of error, PGENULL is returned.
@@ -165,9 +167,10 @@ PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findObject(const PureO
 
 /**
     Gets the AABB of this node.
-    Note that the AABB has nothing to do with the position and size of the ancestor Octree node.
+    Note that the AABB has just slight relation to the position and size of the ancestor Octree node.
     Position and size of Octree node is just for determining which node should be the storage for an inserted object.
-    However, the AABB is calculated purely by the position and size of the inserted objects, thus its position and size
+    Initially, AABB position and size is aligned to the ancestor Octree node's position and size.
+    However, the AABB is recalculated by the position and size of the inserted objects, thus its position and size
     can easily differ from the position and size of the Octree node.
 
     @return The calculated AABB volume for this node.
@@ -205,10 +208,9 @@ const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findTightestFitt
             //    }
             //}
 
-            // the optimal approach:
-            // since BVH nodes at the same level are NOT intersecting each other, therefore the closest child should be checked only,
-            // since there CANNOT BE another child at the same level which fully fits. Only the closest could fit, if that does not fit then no other either!
-            // This is another example of the power octree has!
+            // Beware that BVH sibling nodes might overlap under the same parent! Therefore, even on the lowest tree level, an object
+            // might be colliding with multiple sibling nodes, and even multiple might fully bound it even though obviously only one
+            // of them will actually list it amongst its m_vObjects.
             const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
             PureBoundingVolumeHierarchy& bvhNode = static_cast<PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
             PureBoundingVolumeHierarchy* const pBvhNodeTightestFittingChild = bvhNode.findTightestFittingNode(objAabb);
@@ -408,6 +410,8 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects(const PureObject3D& obj
 
 /**
     Enables rendering wireframed boxes representing AABB of this node.
+    Empty leaf nodes are rendered using gray wireframes, others are rendered using the specified color.
+
     Note that the debug boxes are not automatically updated after inserting further objects into the tree.
     Can be invoked again if further updates to the tree happened.
 */
@@ -415,25 +419,31 @@ void PureBoundingVolumeHierarchy::updateAndEnableAabbDebugRendering(
     PureObject3DManager& objmgr,
     PureColor colorWireframe /* copy-elision probably */)
 {
-    if (getNodeType() == LeafEmpty)
-    {
-        // yes, empty leaf node also has aabb but that is the default-initialized [0,0,0]-sized :)
-        return;
-    }
+    const auto nodeType = getNodeType();
+    const PureColor colorLeafNodeWireframe(128, 128, 128, 255);
 
     if (!m_objDebugBox)
     {
         m_objDebugBox = objmgr.createBox(1.f, 1.f, 1.f);
-        m_objDebugBox->SetWireframed(true);
-        //m_objDebugBox->SetWireframedCulled(false);
-        m_objDebugBox->SetAffectingZBuffer(false);
-        m_objDebugBox->SetTestingAgainstZBuffer(false);
-        m_objDebugBox->getMaterial(false).getTextureEnvColor(0) = colorWireframe;
     }
+    m_objDebugBox->SetWireframed(true);
+    m_objDebugBox->SetWireframedCulled(false);
+    m_objDebugBox->SetAffectingZBuffer(false);
+    m_objDebugBox->SetTestingAgainstZBuffer(false);
+    m_objDebugBox->getMaterial(false).getTextureEnvColor(0) = ((nodeType == LeafEmpty) ? colorLeafNodeWireframe : colorWireframe);
     m_objDebugBox->getPosVec() = m_aabb.getPosVec();
-    m_objDebugBox->SetScaling(m_aabb.getSizeVec());
 
-    if (getNodeType() == Parent)
+    if (nodeType == LeafEmpty)
+    {
+        // yes, empty leaf node also has aabb but that is the default-initialized [0,0,0]-sized :) so we use Octree node's size
+        m_objDebugBox->SetScaling(getSize());
+    }
+    else
+    {
+        m_objDebugBox->SetScaling(m_aabb.getSizeVec());
+    }
+
+    if (nodeType == Parent)
     {
         for (auto pNode : m_vChildren)
         {
@@ -459,11 +469,6 @@ const PureObject3D* PureBoundingVolumeHierarchy::getDebugBox() const
 */
 void PureBoundingVolumeHierarchy::disableAabbDebugRendering()
 {
-    if (getNodeType() == LeafEmpty)
-    {
-        return;
-    }
-
     if (m_objDebugBox)
     {
         m_objDebugBox->Hide();
@@ -486,14 +491,19 @@ void PureBoundingVolumeHierarchy::disableAabbDebugRendering()
 
 TPureBool PureBoundingVolumeHierarchy::subdivide()
 {
+    // TODO: change assert to returnin false!
     assert(m_vChildren.size() == 0);
     try
     {
-      for (TPureUInt i = 0; i < 8; i++)
-      {
-          PureBoundingVolumeHierarchy* const pChildNode = new PureBoundingVolumeHierarchy(PureVector(), getSize()/2.f, getMaxDepthLevel(), getDepthLevel() + 1);
-          m_vChildren.push_back(pChildNode);
-      }
+        for (TPureUInt i = 0; i < 8; i++)
+        {
+            // pos being set up by Octree code after subdivide() and then Octree calls postSubdivideDone() so we can initialize our AABB accordingly
+            PureBoundingVolumeHierarchy* const pChildNode = new PureBoundingVolumeHierarchy(getMaxDepthLevel(), getDepthLevel() + 1);
+            m_vChildren.push_back(pChildNode);
+            pChildNode->setSize(getSize() / 2.f); // we do it here, not in ctor above. Reason: Longer Ctor would set size for AABB too, but here we don't know position, which
+                                                  // is also required for that longer Ctor. Position is set by Octree code after we are returning from here, but before
+                                                  // postSubdivideDone() is invoked by Octree code.
+        }
     }
     catch (const std::exception&)
     {
@@ -506,6 +516,25 @@ TPureBool PureBoundingVolumeHierarchy::subdivide()
             m_vChildren.resize(0);
         }
         return false;
+    }
+    return true;
+}
+
+TPureBool PureBoundingVolumeHierarchy::postSubdivideDone()
+{
+    // TODO: change assert to returnin false!
+    assert(m_vChildren.size() == 8);
+
+    for (TPureUInt i = 0; i < 8; i++)
+    {
+        assert(m_vChildren[i]);
+        PureBoundingVolumeHierarchy& childNode = static_cast<PureBoundingVolumeHierarchy&>(*m_vChildren[i]);
+        assert(!childNode.m_aabb.isInitialized());
+        // since AABB is not initialized yet, calling extendBy() will simply set the given pos and size:
+        childNode.m_aabb.ExtendBy(
+            PureAxisAlignedBoundingBox(
+                childNode.getPos() /* after subdivide(), Octree has updated child node positions */,
+                PureVector(childNode.getSize(), childNode.getSize(), childNode.getSize()) /* subdivide() set size already */));
     }
     return true;
 }
