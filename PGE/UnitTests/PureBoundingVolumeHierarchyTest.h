@@ -219,17 +219,22 @@ private:
     * object of map_test_good_2_collision.txt from PRooFPS-dd which contains the minimal map layout
     * to reproduce the collision issue that was present in PRooFPS-dd v0.5 with BVH method.
     *
-    * @param tree       An empty input tree where we will try to insert 5 new boxes.
-    * @param treeOrigin This will be set as the position of the tree.
-    * @param obj1       A new box will be created and this pointer will be updated with the address of this new box.
-    * @param obj2       Same purpose as obj1.
-    * @param obj3       Same purpose as obj1.
-    * @param obj4       Same purpose as obj1.
-    * @param obj5       Same purpose as obj1.
-    * @param node1      The tree node holding obj1.
-    * @param node2      The tree node holding obj2.
-    * @param node3      The tree node holding obj3.
-    * @param node4      The tree node holding obj4.
+    * @param tree          An empty input tree where we will try to insert 5 new boxes.
+    * @param treeOrigin    This will be set as the position of the tree.
+    * @param obj1          A new box will be created and this pointer will be updated with the address of this new box.
+    * @param obj2          Same purpose as obj1.
+    * @param obj3_stair_1  Same purpose as obj1, but this is a smallstairstep piece (the bottom) of stair object.
+    * @param obj3_stair_2  Same purpose as obj1, but this is a smallstairstep piece of stair object.
+    * @param obj3_stair_3  Same purpose as obj1, but this is a smallstairstep piece of stair object.
+    * @param obj3_stair_4  Same purpose as obj1, but this is a smallstairstep piece (the top) of stair object.
+    * @param obj4          Same purpose as obj1.
+    * @param node1         The tree node holding obj1.
+    * @param node2         The tree node holding obj2.
+    * @param node3_stair_1 The tree node holding obj3_stair_1.
+    * @param node3_stair_2 The tree node holding obj3_stair_2.
+    * @param node3_stair_3 The tree node holding obj3_stair_3.
+    * @param node3_stair_4 The tree node holding obj3_stair_4.
+    * @param node4         The tree node holding obj4.
     *
     * @return True if BVH is successfully built, false otherwise.
     */
@@ -293,25 +298,60 @@ private:
         As we can see there are only 3 regular unit-sized foreground blocks and 1 stairs block that is made up from 4 smaller foreground blocks.
 
         Inserting the objects into the tree happens like this step-by-step:
-         - obj1 insert: added to object of the empty root node, tree depth stays 0;
+         - obj1 insert:
+           - root node is LeafEmpty, obj1 is added to objects of the empty root node;
+           - tree depth stays 0;
+
          - obj2 insert: 
-           - root node not empty, we not yet reached depth limit 3, so subdivide root into 8 children nodes:
-             - move the already inserted obj1 to the "left bottom front" child node;
-               - parent nodes' AABB are extended recursively up to the root node with obj1's AABB;
+           - root node is LeafContainer, we not yet reached depth limit 3, so subdivide root into 8 children nodes:
              - tree depth is now 1;
-           - due to its position, obj2 shall be also inserted into root's "left bottom front" child node, so:
+             - move the already inserted obj1 to the "left bottom front" (1) child node, and:
+               parent nodes' AABB are extended recursively up to the root node with obj1's AABB;
+           - due to its position, obj2 shall be also inserted into root's "left bottom front" (1) child node, so:
              - we not yet reached depth limit 3, so this child node now needs to be subdivided into 8 child nodes:
-               - the already inserted obj1 goes to root's "left bottom front" child node's "right top back" child node;
-                 - parent nodes' AABB are extended recursively up to the root node with obj1's AABB;
                - tree depth is now 2;
-           - obj2 node index also gets calculated as root's "left bottom front" child node's "right top back" child node, so:
+               - the already inserted obj1 goes to root's "left bottom front" (1) child node's "right top back" (6) child node, and:
+                 parent nodes' AABB are extended recursively up to the root node with obj1's AABB;
+           - obj2 node index also gets calculated as root's "left bottom front" (1) child node's "right top back" (6) child node, so:
              - we not yet reached depth limit 3, so this child node now needs to be subdivided into 8 child nodes:
-               - the already inserted obj1 goes to root's "left bottom front" child node's "right top back" child node's "left top back"
-                 child node;
-                 - parent nodes' AABB are extended recursively up to the root node with obj1's AABB;
                - tree depth is now 3;
-           - obj2 is finally inserted to root's "left bottom front" child node's "right top back" child node's "left top front" child node, so:
-             - parent nodes' AABB are extended recursively up to the root node with obj1's AABB.
+               - the already inserted obj1 goes to root's "left bottom front" (1) child node's "right top back" (6) child node's "left top back" (4)
+                 child node, and:
+                 parent nodes' AABB are extended recursively up to the root node with obj1's AABB;
+           - obj2 is finally inserted to root's "left bottom front" (1) child node's "right top back" (6) child node's "left bottom back" (5) child node, and:
+             parent nodes' AABB are extended recursively up to the root node with obj1's AABB.
+
+         - ascending stairs object (obj 3) insert:
+           - smallstairstep1 (bottom piece) insert:
+             - root node is LeafParent, we pass insertion to its "left bottom front" (1) child node;
+             - we are at level 1, and "left bottom front" (1) child node is also LeafParent, we pass insertion to its "right top back" (6) child node;
+             - we are at level 2, and this child node is also LeafParent, we pass insertion to its "left bottom back" (5) child node;
+             - we are at level 3, and this child node is LeafContainer, and we have already reached max tree depth, therefore we cannot subdivide
+               anymore, we are inserting this object into the objects container of this child node.
+           - smallstairstep2 insert:
+             - exactly same as previous stairstep insertion;
+           - smallstairstep3 insert:
+             - exactly same as previous stairstep insertion;
+           - smallstairstep4 (top piece) insert:
+             - root node is LeafParent, we pass insertion to its "left bottom front" (1) child node;
+             - we are at level 1, and "left bottom front" (1) child node is also LeafParent, we pass insertion to its "right top back" (6) child node;
+             - we are at level 2, and this child node is also LeafParent, we pass insertion to its "left top back" (4) child node;
+             - we are at level 3, and this child node is LeafContainer, and we have already reached max tree depth, therefore we cannot subdivide
+               anymore, we are inserting this object into the objects container of this child node.
+
+         - obj4 insert:
+           - root node is LeafParent, we pass insertion to its "left bottom front" (1) child node;
+           - we are at level 1, and "left bottom front" (1) child node is also LeafParent, we pass insertion to its "right top back" (6) child node;
+           - we are at level 2, and this child node is also LeafParent, we pass insertion to its "left bottom back" (5) child node;
+           - we are at level 3, and this child node is LeafContainer, and we have already reached max tree depth, therefore we cannot subdivide
+             anymore, we are inserting this object into the objects container of this child node.
+
+        Summary after all these insertions:
+         - root node's "left bottom front" (1) child's "right top back" (6) child's "left bottom back" (5) child contains the following objects:
+           obj2, obj3_smallstairstep1, obj3_smallstairstep2, obj3_smallstairstep3, obj4.
+
+         - root node's "left bottom front" (1) child node's "right top back" (6) child node's "left top back" (4) child contains the following objects:
+           obj1, obj3_smallstairstep4.
 
         As we can see from above, AABB of sibling nodes CAN OVERLAP.
         The quadtree or octree idea originally assumes perfect spatial subdivision into non-overlapping children — but when used as a dynamic BVH
@@ -343,6 +383,9 @@ private:
 
         Over time, as more objects are inserted and AABBs keep expanding, the hierarchy can get less tight and that can introduce more
         unnecessary checks, however this can be improved by rebuilding or rebalancing the tree - this is not supported at the moment.
+
+        To conclude, because of sibling BVH nodes can overlap, it is NOT enough to check for collision with the objects within the tightest fitting node, but
+        to check for collision with ALL siblings of the tightest fitting node.
         */
 
         // 2 normal foreground blocks in PRooFPS-dd terms
@@ -352,7 +395,8 @@ private:
         obj2 = om->createBox(1.0f, 1.0f, 1.0f);
         obj2->getPosVec().Set(24.f, -27.f, -1.f);
 
-        // 1 stairs block in PRooFPS-dd terms, consisting of 4 different size boxes
+        // 1 ascending stairs block ('/') in PRooFPS-dd terms, consisting of 4 different size boxes.
+        // starting with bottom piece.
         obj3_stair_1 = om->createBox(1.0f, 0.25f, 1.0f);
         obj3_stair_1->getPosVec().Set(26.f, -27.375f, -1.f);
 
@@ -362,6 +406,7 @@ private:
         obj3_stair_3 = om->createBox(0.5f, 0.25f, 1.0f);
         obj3_stair_3->getPosVec().Set(26.25f, -26.875f, -1.f);
 
+        // ending with top piece
         obj3_stair_4 = om->createBox(0.25f, 0.25f, 1.0f);
         obj3_stair_4->getPosVec().Set(26.375f, -26.625f, -1.f);
         

@@ -179,7 +179,12 @@ PureOctree* PureOctree::insertObject(const PureObject3D& obj)
         m_vChildren[TOP    | RIGHT | BACK]->m_vPos.Set(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() + m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f);
         m_vChildren[BOTTOM | RIGHT | BACK]->m_vPos.Set(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() - m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f);
 
-        postSubdivideDone(); // so derived class can take action now
+        // so derived class can take action now, for example, BVH can initialize its new nodes' AABB positions and dimensions based on the new Octree nodes.
+        // Remember that over time Octree node dimensions DO NOT change, unlike in derived class AABB dimensions might change.
+        if (!postSubdivideDone())
+        {
+            return PGENULL;
+        }
         
         // add the already inserted object to one of the new child nodes, remove it from this node
         const PureObject3D* objAlreadyInTree = *(m_vObjects.begin());

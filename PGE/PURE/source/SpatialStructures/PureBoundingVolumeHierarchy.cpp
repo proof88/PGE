@@ -30,7 +30,7 @@ using namespace std;
     Creates an octree-derived bounding volume hierarchy (BVH) node.
     Basically this is doing the same octree initialization as PureOctree's public constructor with the same arguments.
     This shorter form ctor is useful if we want to set the position and size of the root BVH node later, for example after
-    we loaded a map and finally know its dimensions.
+    we loaded a scene and finally know its dimensions.
     AABB of the BVH is also left uninitialized with this ctor.
 
     @param maxDepthLevel     The maximum node depth level supported by this BVH. 0 means there is no depth limit.
@@ -85,7 +85,7 @@ PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::insertObject(const Pur
     // since we are in PureBoundingVolumeHierarchy method. So we can use static_cast for faster cast.
 
     // Note 2: although we call ancestor's insertObject(), due to polymorphism it will still call our
-    // derived Subdivide() method, so children will be PureBoundingVolumeHierarchy instances!
+    // derived subdivide() method, so children will be PureBoundingVolumeHierarchy instances!
     PureBoundingVolumeHierarchy* node = static_cast<PureBoundingVolumeHierarchy*>(PureOctree::insertObject(obj));
     if ( PGENULL == node )
     {
@@ -181,11 +181,11 @@ const PureAxisAlignedBoundingBox& PureBoundingVolumeHierarchy::getAABB() const
 }
 
 /**
-    Finds the smallest node within the tree which still FULLY contains the given AABB.
+    Finds the smallest (lowest-level) node within the tree which still FULLY contains the given AABB.
 
-    @param objAabb The AABB for which we are searching the smallest node that fully bounds this AABB.
+    @param objAabb The AABB for which we are searching the smallest (lowest-level) node that fully bounds this AABB.
 
-    @return The smallest node within the tree which still FULLY contains the given AABB, or nullptr if there is no such node.
+    @return The smallest (lowest-level) node within the tree which still FULLY contains the given AABB, or nullptr if there is no such node.
 */
 const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findTightestFittingNode(const PureAxisAlignedBoundingBox& objAabb) const
 {
@@ -232,11 +232,11 @@ const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findTightestFitt
 }
 
 /**
-    Finds the smallest node within the tree which still FULLY contains the given Object3D.
+    Finds the smallest (lowest-level) node within the tree which still FULLY contains the given Object3D.
 
-    @param obj The Object3D for which we are searching the smallest node that fully bounds this Object3D.
+    @param obj The Object3D for which we are searching the smallest (lowest-level) node that fully bounds this Object3D.
 
-    @return The smallest node within the tree which still FULLY contains the given Object3D, or nullptr if there is no such node.
+    @return The smallest (lowest-level) node within the tree which still FULLY contains the given Object3D, or nullptr if there is no such node.
 */
 const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findTightestFittingNode(const PureObject3D& obj) const
 {
@@ -279,6 +279,10 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject(const Pur
 {
     if (!pStartNode)
     {
+        // TODO: it is NOT enough to check collision with the tightest fitting node, the reason is that sibling BVH nodes can overlap,
+        // therefore collision check shall be done with ALL siblings of the tightest fitting node too, or simply saying, with
+        // all children of the tig
+
         ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
         const auto pTightestFittingNode = findTightestFittingNode(objAabb);
         pStartNode = pTightestFittingNode ? pTightestFittingNode : this;
@@ -324,9 +328,6 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject(const Pur
     Finds an inserted object within the tree which is colliding (at least partially overlapping) with the given object.
     
     Only 1 object is returned, even if there are multiple colliding objects with the given object.
-    The reason is that because at application physics level we place the moving objects initially to position where they don't collide with anything, and
-    then on each axis we move them and check if there is ANY collision, if so then place them to their previous position on that current axis.
-    For this implementation, it is enough to return only 1 collider.
 
     @param obj The Object3D for which we are searching any colliding object within the tree.
 
@@ -359,6 +360,10 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects(
     {
         ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
         colliders.clear();
+        // TODO: it is NOT enough to check collision with the tightest fitting node, the reason is that sibling BVH nodes can overlap,
+        // therefore collision check shall be done with ALL siblings of the tightest fitting node too, or simply saying, with
+        // all children of the tightest fitting node's parent. This is explained in more detail in PureBoundingVolumeHierarchyTest.h's
+        // buildBVH_2 function.
         const auto pTightestFittingNode = findTightestFittingNode(objAabb);
         pStartNode = pTightestFittingNode ? pTightestFittingNode : this;
         return pStartNode->findAllColliderObjects(objAabb, pStartNode, colliders);
@@ -426,6 +431,7 @@ void PureBoundingVolumeHierarchy::updateAndEnableAabbDebugRendering(
     {
         m_objDebugBox = objmgr.createBox(1.f, 1.f, 1.f);
     }
+    assert(m_objDebugBox);
     m_objDebugBox->SetWireframed(true);
     m_objDebugBox->SetWireframedCulled(false);
     m_objDebugBox->SetAffectingZBuffer(false);
@@ -491,7 +497,6 @@ void PureBoundingVolumeHierarchy::disableAabbDebugRendering()
 
 TPureBool PureBoundingVolumeHierarchy::subdivide()
 {
-    // TODO: change assert to returnin false!
     assert(m_vChildren.size() == 0);
     try
     {
@@ -522,8 +527,10 @@ TPureBool PureBoundingVolumeHierarchy::subdivide()
 
 TPureBool PureBoundingVolumeHierarchy::postSubdivideDone()
 {
-    // TODO: change assert to returnin false!
-    assert(m_vChildren.size() == 8);
+    if (m_vChildren.size() != 8)
+    {
+        return false;
+    }
 
     for (TPureUInt i = 0; i < 8; i++)
     {

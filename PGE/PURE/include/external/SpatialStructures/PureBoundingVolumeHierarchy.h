@@ -26,6 +26,10 @@
 
     This implementation is basically extending PureOctree nodes with bounding box calculation.
 
+    With this implementation, only the AABB of the BVH nodes are being updated over time with each insertion, i.e. their sizes might change to be able to
+    fully bound all their children and contained objects, and this implies that their position also changes with each size updates.
+    BUT, size and position of their ancestor Octree nodes DO NOT change over time at all.
+
     Note that there are also other ways to build up a BVH, for example here binary tree is used:
     https://www.haroldserrano.com/blog/visualizing-the-boundary-volume-hierarchy-collision-algorithm
 
