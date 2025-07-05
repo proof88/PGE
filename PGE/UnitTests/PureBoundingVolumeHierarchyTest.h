@@ -37,7 +37,7 @@ protected:
         addSubTest("testCtor1", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testCtor1);
         addSubTest("testCtor2", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testCtor2);
         addSubTest("testInsertObject", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testInsertObject);
-        addSubTest("testFindTightestFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindTightestFittingNode);
+        addSubTest("testFindLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindLowestLevelFittingNode);
         addSubTest("testFindOneColliderObject_1", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_1);
         addSubTest("testFindAllColliderObjects_1", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects_1);
         addSubTest("testFindOneColliderObject_2", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_2);
@@ -624,7 +624,7 @@ private:
         return b;
     }
 
-    bool testFindTightestFittingNode()
+    bool testFindLowestLevelFittingNode()
     {
         // used to test if the given world-space position other than (0,0,0) is really taken into calculations;
         // if there is any issue, change this to (0,0,0) to find out probable reason of tree not properly taking origin pos into account!
@@ -645,16 +645,16 @@ private:
             return false;
         }
 
-        bool b = assertTrue(node1 == tree.findTightestFittingNode(*obj1), "find 1 from root 1");
-        b &= assertTrue(node2 == tree.findTightestFittingNode(*obj2), "find 2 from root 2");
-        b &= assertTrue(node3 == tree.findTightestFittingNode(*obj3), "find 3 from root 3");
-        b &= assertTrue(node4 == tree.findTightestFittingNode(*obj4), "find 4 from root 4");
-        b &= assertTrue(nullptr == tree.findTightestFittingNode(*obj5), "find 5 from root 5");
+        bool b = assertTrue(node1 == tree.findLowestLevelFittingNode(*obj1), "find 1 from root 1");
+        b &= assertTrue(node2 == tree.findLowestLevelFittingNode(*obj2), "find 2 from root 2");
+        b &= assertTrue(node3 == tree.findLowestLevelFittingNode(*obj3), "find 3 from root 3");
+        b &= assertTrue(node4 == tree.findLowestLevelFittingNode(*obj4), "find 4 from root 4");
+        b &= assertTrue(nullptr == tree.findLowestLevelFittingNode(*obj5), "find 5 from root 5");
 
-        b &= assertTrue(node1 == node1->findTightestFittingNode(*obj1), "find 1 from node 1");
-        b &= assertTrue(node2 == node2->findTightestFittingNode(*obj2), "find 2 from node 2");
-        b &= assertTrue(node3 == node3->findTightestFittingNode(*obj3), "find 3 from node 3");
-        b &= assertTrue(node4 == node4->findTightestFittingNode(*obj4), "find 4 from node 4");
+        b &= assertTrue(node1 == node1->findLowestLevelFittingNode(*obj1), "find 1 from node 1");
+        b &= assertTrue(node2 == node2->findLowestLevelFittingNode(*obj2), "find 2 from node 2");
+        b &= assertTrue(node3 == node3->findLowestLevelFittingNode(*obj3), "find 3 from node 3");
+        b &= assertTrue(node4 == node4->findLowestLevelFittingNode(*obj4), "find 4 from node 4");
 
 
         return b;
