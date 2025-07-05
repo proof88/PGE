@@ -76,16 +76,16 @@ public:
     PureBoundingVolumeHierarchy* findLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb);
     PureBoundingVolumeHierarchy* findLowestLevelFittingNode(const PureObject3D& obj);
 
-    const PureObject3D* findOneColliderObject(
+    const PureObject3D* findOneColliderObject_startFromLowestLevelFittingNode(
         const PureAxisAlignedBoundingBox& objAabb,
         const PureBoundingVolumeHierarchy* pStartNode) const;
-    const PureObject3D* findOneColliderObject(const PureObject3D& obj) const;
+    const PureObject3D* findOneColliderObject_startFromLowestLevelFittingNode(const PureObject3D& obj) const;
 
-    bool findAllColliderObjects(
+    bool findAllColliderObjects_startFromLowestLevelFittingNode(
         const PureAxisAlignedBoundingBox& objAabb,
         const PureBoundingVolumeHierarchy* pStartNode,
         std::vector<const PureObject3D*>& colliders) const;
-    bool findAllColliderObjects(const PureObject3D& obj, std::vector<const PureObject3D*>& colliders) const;
+    bool findAllColliderObjects_startFromLowestLevelFittingNode(const PureObject3D& obj, std::vector<const PureObject3D*>& colliders) const;
 
     void updateAndEnableAabbDebugRendering(
         PureObject3DManager& objmgr,

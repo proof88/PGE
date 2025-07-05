@@ -283,7 +283,7 @@ PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findLowestLevelFitting
 
 /**
     Finds an inserted Object3D within the tree which is colliding (at least partially overlapping) with the given AABB.
-    Basically same as findOneColliderObject(const PureObject3D&) but using the given Object3D's AABB.
+    Basically same as findOneColliderObject_startFromLowestLevelFittingNode(const PureObject3D&) but using the given Object3D's AABB.
 
     @param objAabb    The AABB for which we are searching any colliding Object3D within the tree.
     @param pStartNode From which BVH node collision detection will start.
@@ -292,7 +292,8 @@ PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findLowestLevelFitting
     @return An Object3D within the tree colliding with the specified AABB.
             Nullptr if no colliding Object3D was found.
 */
-const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject(const PureAxisAlignedBoundingBox& objAabb, const PureBoundingVolumeHierarchy* pStartNode) const
+const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFromLowestLevelFittingNode(
+    const PureAxisAlignedBoundingBox& objAabb, const PureBoundingVolumeHierarchy* pStartNode) const
 {
     if (!pStartNode)
     {
@@ -313,7 +314,7 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject(const Pur
             pStartNode = this;
         }
 
-        return pStartNode->findOneColliderObject(objAabb, pStartNode);
+        return pStartNode->findOneColliderObject_startFromLowestLevelFittingNode(objAabb, pStartNode);
     }
 
     if (getNodeType() == Parent)
@@ -321,13 +322,13 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject(const Pur
         // TODO: this calculateIndex()-based logic should work, check why is this commented out? Looks faster.
         //const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
         //const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
-        //return bvhNode.findOneColliderObject(objAabb, &bvhNode);
+        //return bvhNode.findOneColliderObject_startFromLowestLevelFittingNode(objAabb, &bvhNode);
 
         const PureObject3D* pCollider = nullptr;
         for (size_t iChild = 0; (iChild < m_vChildren.size()) && !pCollider; iChild++)
         {
             const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
-            pCollider = bvhNode.findOneColliderObject(objAabb, &bvhNode);
+            pCollider = bvhNode.findOneColliderObject_startFromLowestLevelFittingNode(objAabb, &bvhNode);
         }
         return pCollider;
     }
@@ -357,20 +358,23 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject(const Pur
     
     Only 1 Object3D instance is returned, even if there are multiple colliding Object3D instances with the given object.
 
+    The _startFromLowestLevelFittingNode postfix in the name means the implementation starts doing collision checks around
+    the lowest level node still fitting the given object, including the siblings of that lowest level fitting node.
+
     @param obj The Object3D for which we are searching any colliding object within the tree.
 
     @return An Object3D within the tree colliding with the specified Object3D.
             Nullptr if no colliding Object3D was found.
 */
-const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject(const PureObject3D& obj) const
+const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFromLowestLevelFittingNode(const PureObject3D& obj) const
 {
     PureAxisAlignedBoundingBox objAabb(obj.getPosVec(), obj.getScaledSizeVec());
-    return findOneColliderObject(objAabb, nullptr);
+    return findOneColliderObject_startFromLowestLevelFittingNode(objAabb, nullptr);
 }
 
 /**
     Finds all inserted Object3D instances within the tree which are colliding (at least partially overlapping) with the given AABB.
-    Basically same as findAllColliderObjects(const PureObject3D&) but using the given Object3D's AABB.
+    Basically same as findAllColliderObjects_startFromLowestLevelFittingNode(const PureObject3D&) but using the given Object3D's AABB.
 
     @param objAabb    The AABB for which we are searching all colliding objects within the tree.
     @param pStartNode From which BVH node collision detection will start.
@@ -379,7 +383,7 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject(const Pur
 
     @return True if at least 1 colliding object was found, false otherwise.
 */
-bool PureBoundingVolumeHierarchy::findAllColliderObjects(
+bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFittingNode(
     const PureAxisAlignedBoundingBox& objAabb,
     const PureBoundingVolumeHierarchy* pStartNode,
     std::vector<const PureObject3D*>& colliders) const
@@ -404,7 +408,7 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects(
             pStartNode = this;
         }
 
-        return pStartNode->findAllColliderObjects(objAabb, pStartNode, colliders);
+        return pStartNode->findAllColliderObjects_startFromLowestLevelFittingNode(objAabb, pStartNode, colliders);
     }
 
     if (getNodeType() == Parent)
@@ -412,12 +416,12 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects(
         // TODO: this calculateIndex()-based logic should work, check why is this commented out? Looks faster.
         //const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
         //const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
-        //return bvhNode.findAllColliderObjects(objAabb, &bvhNode, colliders);
+        //return bvhNode.findAllColliderObjects_startFromLowestLevelFittingNode(objAabb, &bvhNode, colliders);
 
         for (size_t iChild = 0; iChild < m_vChildren.size(); iChild++)
         {
             const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
-            bvhNode.findAllColliderObjects(objAabb, &bvhNode, colliders);
+            bvhNode.findAllColliderObjects_startFromLowestLevelFittingNode(objAabb, &bvhNode, colliders);
         }
         return !colliders.empty();
     }
@@ -445,15 +449,18 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects(
 /**
     Finds all inserted objects within the tree which are colliding (at least partially overlapping) with the given Object3D.
 
+    The _startFromLowestLevelFittingNode postfix in the name means the implementation starts doing collision checks around
+    the lowest level node still fitting the given object, including the siblings of that lowest level fitting node.
+
     @param obj       The Object3D for which we are searching any colliding Object3D within the tree.
     @param colliders Output container where all collider Object3D instances will be stored.
 
     @return True if at least 1 colliding Object3D was found, false otherwise.
 */
-bool PureBoundingVolumeHierarchy::findAllColliderObjects(const PureObject3D& obj, std::vector<const PureObject3D*>& colliders) const
+bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFittingNode(const PureObject3D& obj, std::vector<const PureObject3D*>& colliders) const
 {
     PureAxisAlignedBoundingBox objAabb(obj.getPosVec(), obj.getScaledSizeVec());
-    return findAllColliderObjects(objAabb, nullptr, colliders);
+    return findAllColliderObjects_startFromLowestLevelFittingNode(objAabb, nullptr, colliders);
 }
 
 /**
