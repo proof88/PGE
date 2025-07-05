@@ -285,6 +285,12 @@ PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findLowestLevelFitting
     Finds an inserted Object3D within the tree which is colliding (at least partially overlapping) with the given AABB.
     Basically same as findOneColliderObject_startFromLowestLevelFittingNode(const PureObject3D&) but using the given Object3D's AABB.
 
+    If there are multiple colliders with the given AABB, this _startFromLowestLevelFittingNode and the _startFromFirstNode version can have
+    different result i.e. one might return one collider while the other might return another collider, but both are correct.
+    Performance can differ, that's why I'm experimenting with both.
+
+    If you want to find all colliders, use the findAllColliderObjects-named functions.
+
     @param objAabb    The AABB for which we are searching any colliding Object3D within the tree.
     @param pStartNode From which BVH node collision detection will start.
                       For application, passing nullptr is recommended so the function will determine the proper start node.
@@ -360,6 +366,16 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFrom
 
     The _startFromLowestLevelFittingNode postfix in the name means the implementation starts doing collision checks around
     the lowest level node still fitting the given object, including the siblings of that lowest level fitting node.
+    So the algorithm first goes down in the Octree hierarchy based on the Object3D's position to decide on which level it should
+    start collision checks.
+    This is definitely a different strategy compared to the _startFromFirstNode implementation which starts collision checks
+    right at the top level of the given hierarchy.
+
+    If there are multiple colliders with the given Object3D, this _startFromLowestLevelFittingNode and the _startFromFirstNode version can have
+    different result i.e. one might return one collider while the other might return another collider, but both are correct.
+    Performance can differ, that's why I'm experimenting with both.
+
+    If you want to find all colliders, use the findAllColliderObjects-named functions.
 
     @param obj The Object3D for which we are searching any colliding object within the tree.
 
@@ -373,8 +389,63 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFrom
 }
 
 /**
+    Finds an inserted Object3D within the tree which is colliding (at least partially overlapping) with the given AABB.
+    Basically same as findOneColliderObject_startFromFirstNode(const PureObject3D&) but using the given Object3D's AABB.
+
+    If there are multiple colliders with the given AABB, this _startFromFirstNode and the _startFromLowestLevelFittingNode version can have
+    different result i.e. one might return one collider while the other might return another collider, but both are correct.
+    Performance can differ, that's why I'm experimenting with both.
+
+    If you want to find all colliders, use the findAllColliderObjects-named functions.
+
+    @param objAabb    The AABB for which we are searching any colliding Object3D within the tree.
+    @param pStartNode From which BVH node collision detection will start.
+                      For application, passing nullptr is recommended so the function will determine the proper start node.
+
+    @return An Object3D within the tree colliding with the specified AABB.
+            Nullptr if no colliding Object3D was found.
+*/
+const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFromFirstNode(
+    const PureAxisAlignedBoundingBox& objAabb, const PureBoundingVolumeHierarchy* pStartNode) const
+{
+    (void)objAabb;
+    (void)pStartNode;
+    return nullptr; // TODO
+}
+
+/**
+    Finds an inserted object within the tree which is colliding (at least partially overlapping) with the given Object3D.
+
+    Only 1 Object3D instance is returned, even if there are multiple colliding Object3D instances with the given object.
+
+    The _startFromFirstNode postfix in the name means the implementation starts doing collision checks on the level of the
+    first encountered node (which is the root node). This is different strategy compared to the _startFromLowestLevelFittingNode
+    version which goes down in the Octree hierarchy based on the Object3D's position to decide on which level it should
+    start collision checks.
+
+    If there are multiple colliders with the given Object3D, this _startFromFirstNode and the _startFromLowestLevelFittingNode version can have
+    different result i.e. one might return one collider while the other might return another collider, but both are correct.
+    Performance can differ, that's why I'm experimenting with both.
+
+    If you want to find all colliders, use the findAllColliderObjects-named functions.
+
+    @param obj The Object3D for which we are searching any colliding object within the tree.
+
+    @return An Object3D within the tree colliding with the specified Object3D.
+            Nullptr if no colliding Object3D was found.
+*/
+const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFromFirstNode(const PureObject3D& obj) const
+{
+    PureAxisAlignedBoundingBox objAabb(obj.getPosVec(), obj.getScaledSizeVec());
+    return findOneColliderObject_startFromFirstNode(objAabb, nullptr);
+}
+
+/**
     Finds all inserted Object3D instances within the tree which are colliding (at least partially overlapping) with the given AABB.
     Basically same as findAllColliderObjects_startFromLowestLevelFittingNode(const PureObject3D&) but using the given Object3D's AABB.
+
+    Both this _startFromLowestLevelFittingNode and the _startFromFirstNode version have the same result but performance can differ, that's
+    why I'm experimenting with both.
 
     @param objAabb    The AABB for which we are searching all colliding objects within the tree.
     @param pStartNode From which BVH node collision detection will start.
@@ -451,6 +522,13 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFit
 
     The _startFromLowestLevelFittingNode postfix in the name means the implementation starts doing collision checks around
     the lowest level node still fitting the given object, including the siblings of that lowest level fitting node.
+    So the algorithm first goes down in the Octree hierarchy based on the Object3D's position to decide on which level it should
+    start collision checks.
+    This is definitely a different strategy compared to the _startFromFirstNode implementation which starts collision checks
+    right at the top level of the given hierarchy.
+
+    Both this _startFromLowestLevelFittingNode and the _startFromFirstNode have the same result but performance can differ, that's
+    why I'm experimenting with both.
 
     @param obj       The Object3D for which we are searching any colliding Object3D within the tree.
     @param colliders Output container where all collider Object3D instances will be stored.
@@ -461,6 +539,53 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFit
 {
     PureAxisAlignedBoundingBox objAabb(obj.getPosVec(), obj.getScaledSizeVec());
     return findAllColliderObjects_startFromLowestLevelFittingNode(objAabb, nullptr, colliders);
+}
+
+/**
+    Finds all inserted Object3D instances within the tree which are colliding (at least partially overlapping) with the given AABB.
+    Basically same as findAllColliderObjects_startFromFirstNode(const PureObject3D&) but using the given Object3D's AABB.
+
+    Both this _startFromFirstNode and the _startFromLowestLevelFittingNode version have the same result but performance can differ, that's
+    why I'm experimenting with both.
+
+    @param objAabb    The AABB for which we are searching all colliding objects within the tree.
+    @param pStartNode From which BVH node collision detection will start.
+                      For application, passing nullptr is recommended so the function will determine the proper start node.
+    @param colliders  Output container where all collider Object3D instances will be stored.
+
+    @return True if at least 1 colliding object was found, false otherwise.
+*/
+bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromFirstNode(
+    const PureAxisAlignedBoundingBox& objAabb,
+    const PureBoundingVolumeHierarchy* pStartNode,
+    std::vector<const PureObject3D*>& colliders) const
+{
+    (void)objAabb;
+    (void)pStartNode;
+    (void)colliders;
+    return false; // TODO
+}
+
+/**
+    Finds all inserted objects within the tree which are colliding (at least partially overlapping) with the given Object3D.
+
+    The _startFromFirstNode postfix in the name means the implementation starts doing collision checks on the level of the
+    first encountered node (which is the root node). This is different strategy compared to the _startFromLowestLevelFittingNode
+    version which goes down in the Octree hierarchy based on the Object3D's position to decide on which level it should
+    start collision checks.
+
+    Both this _startFromFirstNode and the _startFromLowestLevelFittingNode have the same result but performance can differ, that's
+    why I'm experimenting with both.
+
+    @param obj       The Object3D for which we are searching any colliding Object3D within the tree.
+    @param colliders Output container where all collider Object3D instances will be stored.
+
+    @return True if at least 1 colliding Object3D was found, false otherwise.
+*/
+bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromFirstNode(const PureObject3D& obj, std::vector<const PureObject3D*>& colliders) const
+{
+    PureAxisAlignedBoundingBox objAabb(obj.getPosVec(), obj.getScaledSizeVec());
+    return findAllColliderObjects_startFromFirstNode(objAabb, nullptr, colliders);
 }
 
 /**

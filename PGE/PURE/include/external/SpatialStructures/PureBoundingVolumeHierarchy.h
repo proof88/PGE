@@ -81,11 +81,26 @@ public:
         const PureBoundingVolumeHierarchy* pStartNode) const;
     const PureObject3D* findOneColliderObject_startFromLowestLevelFittingNode(const PureObject3D& obj) const;
 
+    const PureObject3D* findOneColliderObject_startFromFirstNode(
+        const PureAxisAlignedBoundingBox& objAabb,
+        const PureBoundingVolumeHierarchy* pStartNode) const;
+    const PureObject3D* findOneColliderObject_startFromFirstNode(const PureObject3D& obj) const;
+
     bool findAllColliderObjects_startFromLowestLevelFittingNode(
         const PureAxisAlignedBoundingBox& objAabb,
         const PureBoundingVolumeHierarchy* pStartNode,
         std::vector<const PureObject3D*>& colliders) const;
-    bool findAllColliderObjects_startFromLowestLevelFittingNode(const PureObject3D& obj, std::vector<const PureObject3D*>& colliders) const;
+    bool findAllColliderObjects_startFromLowestLevelFittingNode(
+        const PureObject3D& obj,
+        std::vector<const PureObject3D*>& colliders) const;
+
+    bool findAllColliderObjects_startFromFirstNode(
+        const PureAxisAlignedBoundingBox& objAabb,
+        const PureBoundingVolumeHierarchy* pStartNode,
+        std::vector<const PureObject3D*>& colliders) const;
+    bool findAllColliderObjects_startFromFirstNode(
+        const PureObject3D& obj,
+        std::vector<const PureObject3D*>& colliders) const;
 
     void updateAndEnableAabbDebugRendering(
         PureObject3DManager& objmgr,
