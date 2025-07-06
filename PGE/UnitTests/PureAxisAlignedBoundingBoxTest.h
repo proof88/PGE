@@ -25,6 +25,7 @@ public:
         addSubTest("testIsPointInside_no_bounds", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testIsPointInside_no_bounds);
         addSubTest("testIsBoxInside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testIsBoxInside);
         addSubTest("testIsBoxInside_no_bounds", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testIsBoxInside_no_bounds);
+        addSubTest("testIsBoxIntersecting", (PFNUNITSUBTEST)&PureAxisAlignedBoundingBoxTest::testIsBoxIntersecting);
         addSubTest("testExtendByPointOutside", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByPointOutside);
         addSubTest("testExtendByPointOutside_is_commutative", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByPointOutside_is_commutative);
         addSubTest("testExtendByPointOutside_no_bounds", (PFNUNITSUBTEST) &PureAxisAlignedBoundingBoxTest::testExtendByPointOutside_no_bounds);
@@ -105,23 +106,34 @@ private:
     {
         const PureVector pos(10.0f, 20.0f, 30.0f);
         const PureVector size(3.0f, 3.0f, 3.0f);
-        const PureVector posOutsideBox(pos.getX() + 4.0f, pos.getY() - 2.0f, pos.getZ() + 5.0f);
-        const PureVector sizeOutsideBox(3.0f, 5.0f, 3.0f);
-
-        const PureVector posInsideBox1(pos);
-        const PureVector sizeInsideBox1(size);
-
-        const PureVector posInsideBox2(pos);
-        const PureVector sizeInsideBox2(size.getX()-1.f, size.getY()-1.f, size.getZ()-1.f);
-
         const PureAxisAlignedBoundingBox bbox(pos, size);
-        const PureAxisAlignedBoundingBox outsideBox(posOutsideBox, sizeOutsideBox);
-        const PureAxisAlignedBoundingBox insideBox1(posInsideBox1, sizeInsideBox1);
-        const PureAxisAlignedBoundingBox insideBox2(posInsideBox2, sizeInsideBox2);
 
-        return (assertTrue(bbox.isInside(insideBox1), "insideBox1") &
-            assertTrue(bbox.isInside(insideBox2), "insideBox2") &
-            assertFalse(bbox.isInside(outsideBox), "outsideBox")) != 0;
+        const PureVector posOutsideBox1(pos.getX() + size.getX() + 1.f, pos.getY() - size.getY() - 1.f, pos.getZ() + size.getZ() + 1.f);
+        const PureVector sizeOutsideBox1(size.getX(), size.getY() + 2.f, size.getZ());
+        const PureAxisAlignedBoundingBox outsideBox1(posOutsideBox1, sizeOutsideBox1);
+
+        const PureVector posInsideBoxSamePos(pos);
+        const PureVector sizeInsideBoxSameSize(size);
+        const PureAxisAlignedBoundingBox insideBoxSamePosAndSize(posInsideBoxSamePos, sizeInsideBoxSameSize);
+
+        const PureVector sizeInsideBoxSmaller(size.getX() - 1.f, size.getY() - 1.f, size.getZ() - 1.f);
+        const PureAxisAlignedBoundingBox insideBoxSamePosButSmallerSize(posInsideBoxSamePos, sizeInsideBoxSmaller);
+
+        const PureVector posPartiallyInsideBoxOnXAxis(pos.getX() + 1.f, pos.getY(), pos.getZ());
+        const PureAxisAlignedBoundingBox partiallyInsideBoxOnXAxis(posPartiallyInsideBoxOnXAxis, size);
+
+        const PureVector posPartiallyInsideBoxOnYAxis(pos.getX(), pos.getY() - 1.f, pos.getZ());
+        const PureAxisAlignedBoundingBox partiallyInsideBoxOnYAxis(posPartiallyInsideBoxOnYAxis, size);
+
+        const PureVector posPartiallyInsideBoxOnZAxis(pos.getX(), pos.getY(), pos.getZ() + 1.f);
+        const PureAxisAlignedBoundingBox partiallyInsideBoxOnZAxis(posPartiallyInsideBoxOnZAxis, size);
+
+        return (assertTrue(bbox.isInside(insideBoxSamePosAndSize), "insideBoxSamePosAndSize") &
+            assertTrue(bbox.isInside(insideBoxSamePosButSmallerSize), "insideBoxSamePosButSmallerSize") &
+            assertFalse(bbox.isInside(partiallyInsideBoxOnXAxis), "partiallyInsideBoxOnXAxis") &
+            assertFalse(bbox.isInside(partiallyInsideBoxOnYAxis), "partiallyInsideBoxOnYAxis") &
+            assertFalse(bbox.isInside(partiallyInsideBoxOnZAxis), "partiallyInsideBoxOnZAxis") &
+            assertFalse(bbox.isInside(outsideBox1), "outsideBox1")) != 0;
     }
 
     bool testIsBoxInside_no_bounds()
@@ -130,6 +142,40 @@ private:
         const PureAxisAlignedBoundingBox outsideBox(PureVector(1.f, 2.f, 3.f), PureVector(1.f, 2.f, 3.f));
 
         return assertFalse(bbox.isInside(outsideBox), "outsideBox");
+    }
+
+    bool testIsBoxIntersecting()
+    {
+        const PureVector pos(10.0f, 20.0f, 30.0f);
+        const PureVector size(3.0f, 3.0f, 3.0f);
+        const PureAxisAlignedBoundingBox bbox(pos, size);
+
+        const PureVector posOutsideBox1(pos.getX() + size.getX() + 1.f, pos.getY() - size.getY() - 1.f, pos.getZ() + size.getZ() + 1.f);
+        const PureVector sizeOutsideBox1(size.getX(), size.getY() + 2.f, size.getZ());
+        const PureAxisAlignedBoundingBox outsideBox1(posOutsideBox1, sizeOutsideBox1);
+
+        const PureVector posInsideBoxSamePos(pos);
+        const PureVector sizeInsideBoxSameSize(size);
+        const PureAxisAlignedBoundingBox insideBoxSamePosAndSize(posInsideBoxSamePos, sizeInsideBoxSameSize);
+
+        const PureVector sizeInsideBoxSmaller(size.getX() - 1.f, size.getY() - 1.f, size.getZ() - 1.f);
+        const PureAxisAlignedBoundingBox insideBoxSamePosButSmallerSize(posInsideBoxSamePos, sizeInsideBoxSmaller);
+
+        const PureVector posPartiallyInsideBoxOnXAxis(pos.getX() + 1.f, pos.getY(), pos.getZ());
+        const PureAxisAlignedBoundingBox partiallyInsideBoxOnXAxis(posPartiallyInsideBoxOnXAxis, size);
+        
+        const PureVector posPartiallyInsideBoxOnYAxis(pos.getX(), pos.getY() - 1.f, pos.getZ());
+        const PureAxisAlignedBoundingBox partiallyInsideBoxOnYAxis(posPartiallyInsideBoxOnYAxis, size);
+
+        const PureVector posPartiallyInsideBoxOnZAxis(pos.getX(), pos.getY(), pos.getZ() + 1.f);
+        const PureAxisAlignedBoundingBox partiallyInsideBoxOnZAxis(posPartiallyInsideBoxOnZAxis, size);
+
+        return (assertTrue(bbox.intersects(insideBoxSamePosAndSize), "insideBoxSamePosAndSize") &
+            assertTrue(bbox.intersects(insideBoxSamePosButSmallerSize), "insideBoxSamePosButSmallerSize") &
+            assertTrue(bbox.intersects(partiallyInsideBoxOnXAxis), "partiallyInsideBoxOnXAxis") &
+            assertTrue(bbox.intersects(partiallyInsideBoxOnYAxis), "partiallyInsideBoxOnYAxis") &
+            assertTrue(bbox.intersects(partiallyInsideBoxOnZAxis), "partiallyInsideBoxOnZAxis") &
+            assertFalse(bbox.intersects(outsideBox1), "outsideBox1")) != 0;
     }
 
     bool testExtendByPointOutside()

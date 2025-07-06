@@ -68,6 +68,9 @@ TPureBool PureAxisAlignedBoundingBox::isInside(const PureVector& p) const
         return false;
     }
 
+    // TODO: OPT: min and max points shall be also members and always kept updated in the class, so during
+    // no need to create these objects on the stack all the time during BVH collision tests!
+
     return ( (p.getX() >= (pos.getX() - size.getX()/2.f)) && (p.getX() <= (pos.getX() + size.getX()/2.f)) ) &&
         ( (p.getY() >= (pos.getY() - size.getY()/2.f)) && (p.getY() <= (pos.getY() + size.getY()/2.f)) ) &&
         ( (p.getZ() >= (pos.getZ() - size.getZ()/2.f)) && (p.getZ() <= (pos.getZ() + size.getZ()/2.f)) );
@@ -83,6 +86,10 @@ TPureBool PureAxisAlignedBoundingBox::isInside(const PureAxisAlignedBoundingBox&
 {
     const PureVector& vecAabbPos = aabb.getPosVec();
     const PureVector& vecAabbSize = aabb.getSizeVec();
+
+    // TODO: OPT: min and max points shall be also members and always kept updated in the class, so during
+    // no need to create these objects on the stack all the time during BVH collision tests!
+
     const PureVector aabb_min(
         vecAabbPos.getX() - vecAabbSize.getX() / 2.f,
         vecAabbPos.getY() - vecAabbSize.getY() / 2.f,
@@ -94,6 +101,51 @@ TPureBool PureAxisAlignedBoundingBox::isInside(const PureAxisAlignedBoundingBox&
 
 
     return isInside(aabb_min) && isInside(aabb_max);
+}
+
+/**
+    Is the given box intersecting (partially inside) the bounding box?
+
+    @return True if the given box is intersecting (partially inside) the bounding box, false otherwise.
+            False is also returned if any of the bounding boxes is not initialized.
+*/
+TPureBool PureAxisAlignedBoundingBox::intersects(const PureAxisAlignedBoundingBox& aabb) const
+{
+    if (!isInitialized() || !aabb.isInitialized())
+    {
+        return false;
+    }
+
+    const PureVector& vecOtherAabbPos = aabb.getPosVec();
+    const PureVector& vecOtherAabbSize = aabb.getSizeVec();
+
+    // TODO: OPT: min and max points shall be also members and always kept updated in the class, so during
+    // no need to create these objects on the stack all the time during BVH collision tests!
+
+    const PureVector other_aabb_min(
+        vecOtherAabbPos.getX() - vecOtherAabbSize.getX() / 2.f,
+        vecOtherAabbPos.getY() - vecOtherAabbSize.getY() / 2.f,
+        vecOtherAabbPos.getZ() - vecOtherAabbSize.getZ() / 2.f);
+    const PureVector other_aabb_max(
+        vecOtherAabbPos.getX() + vecOtherAabbSize.getX() / 2.f,
+        vecOtherAabbPos.getY() + vecOtherAabbSize.getY() / 2.f,
+        vecOtherAabbPos.getZ() + vecOtherAabbSize.getZ() / 2.f);
+
+    const PureVector& vecThisAabbPos = getPosVec();
+    const PureVector& vecThisAabbSize = getSizeVec();
+
+    const PureVector this_aabb_min(
+        vecThisAabbPos.getX() - vecThisAabbSize.getX() / 2.f,
+        vecThisAabbPos.getY() - vecThisAabbSize.getY() / 2.f,
+        vecThisAabbPos.getZ() - vecThisAabbSize.getZ() / 2.f);
+    const PureVector this_aabb_max(
+        vecThisAabbPos.getX() + vecThisAabbSize.getX() / 2.f,
+        vecThisAabbPos.getY() + vecThisAabbSize.getY() / 2.f,
+        vecThisAabbPos.getZ() + vecThisAabbSize.getZ() / 2.f);
+
+    return ((this_aabb_min.getX() <= other_aabb_max.getX()) && (this_aabb_max.getX() >= other_aabb_min.getX())) &&
+        ((this_aabb_min.getY() <= other_aabb_max.getY()) && (this_aabb_max.getY() >= other_aabb_min.getY())) &&
+        ((this_aabb_min.getZ() <= other_aabb_max.getZ()) && (this_aabb_max.getZ() >= other_aabb_min.getZ()));
 }
 
 
@@ -112,6 +164,9 @@ void PureAxisAlignedBoundingBox::ExtendBy(const PureVector& p)
     }
 
     const PureVector oldPos = pos;
+
+    // TODO: OPT: min and max points shall be also members and always kept updated in the class, so during
+    // no need to create these objects on the stack all the time during BVH collision tests!
 
     if ( p.getX() < pos.getX() - size.getX()/2.f ) {
         pos.SetX( (p.getX() + pos.getX()+size.getX()/2.f) / 2.f );
@@ -154,6 +209,9 @@ void PureAxisAlignedBoundingBox::ExtendBy(const PureAxisAlignedBoundingBox& aabb
         size = aabb.size;
         return;
     }
+
+    // TODO: OPT: min and max points shall be also members and always kept updated in the class, so during
+    // no need to create these objects on the stack all the time during BVH collision tests!
 
     const PureVector aabb_min(
         aabb.getPosVec().getX() - aabb.getSizeVec().getX()/2.f,

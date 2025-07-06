@@ -43,18 +43,11 @@ public:
     const PureVector& getPosVec() const;                      /**< Gets the world-space position which is the center of the bounding box. */
     const PureVector& getSizeVec() const;                     /**< Gets the base sizes. */
 
-    TPureBool isInside(const PureVector& p) const;                     /**< Is the given point inside the bounding box? */
-    TPureBool isInside(const PureAxisAlignedBoundingBox& aabb) const;  /**< Is the given box fully inside the bounding box? */
-    void ExtendBy(const PureVector& p);                                /**< Extends the size of the bounding box so the given point will be inside the box. */
-    void ExtendBy(const PureAxisAlignedBoundingBox& aabb);             /**< Extends the size of the bounding box so the given box will be fully inside the box. */
-
-protected:
-
-    // ---------------------------------------------------------------------------
-    
-    // allow the defaults to be generated
-    /*PureAxisAlignedBoundingBox(const PureAxisAlignedBoundingBox&);
-    PureAxisAlignedBoundingBox& operator=(const PureAxisAlignedBoundingBox&);*/
+    TPureBool isInside(const PureVector& p) const;                       /**< Is the given point inside the bounding box? */
+    TPureBool isInside(const PureAxisAlignedBoundingBox& aabb) const;    /**< Is the given box fully inside the bounding box? */
+    TPureBool intersects(const PureAxisAlignedBoundingBox& aabb) const;  /**< Is the given box intersecting (partially inside) the bounding box? */
+    void ExtendBy(const PureVector& p);                                  /**< Extends the size of the bounding box so the given point will be inside the box. */
+    void ExtendBy(const PureAxisAlignedBoundingBox& aabb);               /**< Extends the size of the bounding box so the given box will be fully inside the box. */
 
 private:
 
