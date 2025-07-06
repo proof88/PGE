@@ -479,9 +479,7 @@ private:
     {
         return (assertEquals(PureOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
             assertEquals((std::size_t)0, tree.getChildren().size(), "children") &
-            assertEquals((std::size_t)0, tree.getObjects().size(), "objects") &
-            assertEquals(PureVector(), tree.getAABB().getPosVec(), "aabb pos") &
-            assertEquals(PureVector(), tree.getAABB().getSizeVec(), "aabb size")) != 0;
+            assertEquals((std::size_t)0, tree.getObjects().size(), "objects")) != 0;
     }
 
     bool testCtor1()
@@ -494,6 +492,8 @@ private:
             assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
             assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
             assertEquals(0.f, tree.getSize(), "size") &
+            assertEquals(tree.getPos(), tree.getAABB().getPosVec(), "aabb pos") &
+            assertEquals(PureVector(tree.getSize(), tree.getSize(), tree.getSize()), tree.getAABB().getSizeVec(), "aabb size") &
             assertTrue(assertTreeIsReset(tree), "reset")) != 0;
     }
 
@@ -507,6 +507,8 @@ private:
         assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
         assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
         assertEquals(1000.0f, tree.getSize(), "size") &
+        assertEquals(tree.getPos(), tree.getAABB().getPosVec(), "aabb pos") &
+        assertEquals(PureVector(tree.getSize(), tree.getSize(), tree.getSize()), tree.getAABB().getSizeVec(), "aabb size") &
         assertTrue(assertTreeIsReset(tree), "reset")) != 0;
     }
 
@@ -622,9 +624,11 @@ private:
         b &= assertEquals(aabb_root_expected.getPosVec(), tree.getAABB().getPosVec(),  "root AABB pos") &
             assertEquals(aabb_root_expected.getSizeVec(), tree.getAABB().getSizeVec(), "root AABB size");
 
-        // reset(): compared to the PureOctree test, we only test if AABB is also reset (see in assertTreeIsReset())!
+        // reset(): compared to the PureOctree test, we only test if AABB stays intact!
         b &= assertTrue(tree.reset(), "reset level 0");
         b &= assertTrue(assertTreeIsReset(tree), "tree is reset 1");
+        b &= assertEquals(tree.getPos(), tree.getAABB().getPosVec(), "aabb pos");
+        b &= assertEquals(PureVector(tree.getSize(), tree.getSize(), tree.getSize()), tree.getAABB().getSizeVec(), "aabb size");
 
         return b;
     }
@@ -950,20 +954,24 @@ private:
         // create a player-sized object
         PureObject3D* objPlayer = om->createPlane(0.95f, 1.88f);
 
-        // initially it should not touch any foreground blocks
+        // initially it should not touch any foreground blocks and obviously not colliding with self since player is not added to the tree
         objPlayer->getPosVec().Set(
             obj4->getPosVec().getX(),
             obj4->getPosVec().getY() + obj4->getSizeVec().getY() / 2.f + objPlayer->getScaledSizeVec().getY() / 2.f + 0.1f /* shall not touch obj4 FG block */,
             -1.2f /*GAME_PLAYERS_POS_Z*/);
-        b &= assertNull(tree.findOneColliderObject_startFromLowestLevelFittingNode(*objPlayer), "objPlayer collider 1");
+        
+        b &= assertNull(tree.findOneColliderObject_startFromLowestLevelFittingNode(*objPlayer), "objPlayer collider 1, object version");
 
-        //const PureAxisAlignedBoundingBox aabbPlayer(
-        //    PureVector(objPlayer->getPosVec().getX(), objPlayer->getPosVec().getY(), objPlayer->getPosVec().getZ()),
-        //    PureVector(objPlayer->getScaledSizeVec().getX(), objPlayer->getScaledSizeVec().getY(), objPlayer->getScaledSizeVec().getZ()));
+        const PureAxisAlignedBoundingBox objPlayerAabb(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
+        b &= assertNull(tree.findOneColliderObject_startFromLowestLevelFittingNode(objPlayerAabb, nullptr), "objPlayer collider 1, aabb version");
 
         // but then, as gravity pulls player down, it shall be colliding with a block object too
         objPlayer->getPosVec().SetY(objPlayer->getPosVec().getY() - 0.2f);
-        b &= assertEquals(obj4, tree.findOneColliderObject_startFromLowestLevelFittingNode(*objPlayer), "objPlayer collider 2");
+
+        b &= assertEquals(obj4, tree.findOneColliderObject_startFromLowestLevelFittingNode(*objPlayer), "objPlayer collider 2, object version");
+
+        const PureAxisAlignedBoundingBox objPlayerAabb_2(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
+        b &= assertEquals(obj4, tree.findOneColliderObject_startFromLowestLevelFittingNode(objPlayerAabb_2, nullptr), "objPlayer collider 2, aabb version");
 
         return b;
     }
@@ -1131,28 +1139,20 @@ private:
         // create a player-sized object
         PureObject3D* objPlayer = om->createPlane(0.95f, 1.88f);
 
-        // initially it should not touch any foreground blocks
+        // initially it should not touch any foreground blocks and obviously not colliding with self since player is not added to the tree
         objPlayer->getPosVec().Set(
             obj4->getPosVec().getX(),
             obj4->getPosVec().getY() + obj4->getSizeVec().getY() / 2.f + objPlayer->getScaledSizeVec().getY() / 2.f + 0.1f /* shall not touch obj4 FG block */,
             -1.2f /*GAME_PLAYERS_POS_Z*/);
-        
+
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*objPlayer, colliders), "objPlayer colliders 1, object version");
-        b &= assertFalse(colliders.empty(), "objPlayer colliders empty, object version 1");
-        if (b)
-        {
-            b &= assertEquals(objPlayer, *colliders.begin(), "objPlayer colliders exact check, object version");
-        }
+        b &= assertFalse(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*objPlayer, colliders), "objPlayer colliders 1, object version");
+        b &= assertTrue(colliders.empty(), "objPlayer colliders empty, object version 1");
 
         colliders.clear();
         const PureAxisAlignedBoundingBox objPlayerAabb(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(objPlayerAabb, nullptr, colliders), "objPlayer colliders 1, aabb version");
-        b &= assertFalse(colliders.empty(), "objPlayer colliders empty, aabb version 1");
-        if (b)
-        {
-            b &= assertEquals(objPlayer, *colliders.begin(), "objPlayer colliders exact check, aabb version");
-        }
+        b &= assertFalse(tree.findAllColliderObjects_startFromLowestLevelFittingNode(objPlayerAabb, nullptr, colliders), "objPlayer colliders 1, aabb version");
+        b &= assertTrue(colliders.empty(), "objPlayer colliders empty, aabb version 1");
 
         // but then, as gravity pulls player down, it shall be colliding with a block object too
         objPlayer->getPosVec().SetY(objPlayer->getPosVec().getY() - 0.2f);
@@ -1162,8 +1162,7 @@ private:
         b &= assertFalse(colliders.empty(), "objPlayer colliders empty, object version 2");
         if (b)
         {
-            b &= assertTrue(std::find(colliders.begin(), colliders.end(), objPlayer) != colliders.end(), "objPlayer colliders exact check 2, object version");
-            b &= assertGequals(colliders.size(), 2u, "objPlayer colliders count 2, object version"); // self is 1 object but there shall be at least another
+            b &= assertEquals(obj4, *colliders.begin(), "objPlayer colliders exact check 2, object version");
         }
 
         colliders.clear();
@@ -1172,8 +1171,7 @@ private:
         b &= assertFalse(colliders.empty(), "objPlayer colliders empty, aabb version 2");
         if (b)
         {
-            b &= assertTrue(std::find(colliders.begin(), colliders.end(), objPlayer) != colliders.end(), "objPlayer colliders exact check 2, aabb version");
-            b &= assertGequals(colliders.size(), 2u, "objPlayer colliders count 2, aabb version"); // self is 1 object but there shall be at least another
+            b &= assertEquals(obj4, *colliders.begin(), "objPlayer colliders exact check 2, aabb version");
         }
 
         return b;
@@ -1464,21 +1462,24 @@ private:
         // create a player-sized object
         PureObject3D* objPlayer = om->createPlane(0.95f, 1.88f);
 
-        // initially it should not touch any foreground blocks
+        // initially it should not touch any foreground blocks and obviously not colliding with self since player is not added to the tree
         objPlayer->getPosVec().Set(
             obj4->getPosVec().getX(),
             obj4->getPosVec().getY() + obj4->getSizeVec().getY() / 2.f + objPlayer->getScaledSizeVec().getY() / 2.f + 0.1f /* shall not touch obj4 FG block */,
             -1.2f /*GAME_PLAYERS_POS_Z*/);
-        b &= assertNull(tree.findOneColliderObject_startFromFirstNode(*objPlayer), "objPlayer collider 1");
+        
+        b &= assertNull(tree.findOneColliderObject_startFromFirstNode(*objPlayer), "objPlayer collider 1, object version");
 
-        // TODO: add AABB version:
-        //const PureAxisAlignedBoundingBox aabbPlayer(
-        //    PureVector(objPlayer->getPosVec().getX(), objPlayer->getPosVec().getY(), objPlayer->getPosVec().getZ()),
-        //    PureVector(objPlayer->getScaledSizeVec().getX(), objPlayer->getScaledSizeVec().getY(), objPlayer->getScaledSizeVec().getZ()));
+        const PureAxisAlignedBoundingBox objPlayerAabb(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
+        b &= assertNull(tree.findOneColliderObject_startFromFirstNode(objPlayerAabb, nullptr), "objPlayer collider 1, aabb version");
 
         // but then, as gravity pulls player down, it shall be colliding with a block object too
         objPlayer->getPosVec().SetY(objPlayer->getPosVec().getY() - 0.2f);
-        b &= assertEquals(obj4, tree.findOneColliderObject_startFromFirstNode(*objPlayer), "objPlayer collider 2");
+
+        b &= assertEquals(obj4, tree.findOneColliderObject_startFromFirstNode(*objPlayer), "objPlayer collider 2, object version");
+
+        const PureAxisAlignedBoundingBox objPlayerAabb_2(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
+        b &= assertEquals(obj4, tree.findOneColliderObject_startFromFirstNode(objPlayerAabb_2, nullptr), "objPlayer collider 2, aabb version");
 
         return b;
     }
@@ -1646,30 +1647,22 @@ private:
         // create a player-sized object
         PureObject3D* objPlayer = om->createPlane(0.95f, 1.88f);
 
-        // initially it should not touch any foreground blocks
+        // initially it should not touch any foreground blocks and obviously not colliding with self since player is not added to the tree
         objPlayer->getPosVec().Set(
             obj4->getPosVec().getX(),
             obj4->getPosVec().getY() + obj4->getSizeVec().getY() / 2.f + objPlayer->getScaledSizeVec().getY() / 2.f + 0.1f /* shall not touch obj4 FG block */,
             -1.2f /*GAME_PLAYERS_POS_Z*/);
 
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(*objPlayer, colliders), "objPlayer colliders 1, object version");
-        b &= assertFalse(colliders.empty(), "objPlayer colliders empty, object version 1");
-        if (b)
-        {
-            b &= assertEquals(objPlayer, *colliders.begin(), "objPlayer colliders exact check, object version");
-        }
+        b &= assertFalse(tree.findAllColliderObjects_startFromFirstNode(*objPlayer, colliders), "objPlayer colliders 1, object version");
+        b &= assertTrue(colliders.empty(), "objPlayer colliders empty, object version 1");
 
         colliders.clear();
         const PureAxisAlignedBoundingBox objPlayerAabb(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(objPlayerAabb, nullptr, colliders), "objPlayer colliders 1, aabb version");
-        b &= assertFalse(colliders.empty(), "objPlayer colliders empty, aabb version 1");
-        if (b)
-        {
-            b &= assertEquals(objPlayer, *colliders.begin(), "objPlayer colliders exact check, aabb version");
-        }
+        b &= assertFalse(tree.findAllColliderObjects_startFromFirstNode(objPlayerAabb, nullptr, colliders), "objPlayer colliders 1, aabb version");
+        b &= assertTrue(colliders.empty(), "objPlayer colliders empty, aabb version 1");
 
-        // but then, as gravity pulls player down, it shall be colliding with a block object too
+        // but then, as gravity pulls player down, it shall be colliding with a block object
         objPlayer->getPosVec().SetY(objPlayer->getPosVec().getY() - 0.2f);
 
         colliders.clear();
@@ -1677,8 +1670,7 @@ private:
         b &= assertFalse(colliders.empty(), "objPlayer colliders empty, object version 2");
         if (b)
         {
-            b &= assertTrue(std::find(colliders.begin(), colliders.end(), objPlayer) != colliders.end(), "objPlayer colliders exact check 2, object version");
-            b &= assertGequals(colliders.size(), 2u, "objPlayer colliders count 2, object version"); // self is 1 object but there shall be at least another
+            b &= assertEquals(obj4, *colliders.begin(), "objPlayer colliders exact check 2, object version");
         }
 
         colliders.clear();
@@ -1687,8 +1679,7 @@ private:
         b &= assertFalse(colliders.empty(), "objPlayer colliders empty, aabb version 2");
         if (b)
         {
-            b &= assertTrue(std::find(colliders.begin(), colliders.end(), objPlayer) != colliders.end(), "objPlayer colliders exact check 2, aabb version");
-            b &= assertGequals(colliders.size(), 2u, "objPlayer colliders count 2, aabb version"); // self is 1 object but there shall be at least another
+            b &= assertEquals(obj4, *colliders.begin(), "objPlayer colliders exact check 2, aabb version");
         }
 
         return b;

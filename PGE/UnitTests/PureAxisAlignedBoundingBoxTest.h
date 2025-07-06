@@ -54,11 +54,14 @@ private:
     {
         const PureVector pos(10.0f, 20.0f, 30.0f);
         const PureVector size(1.0f, 2.0f, 3.0f);
+        const PureVector sizePlane(1.f, 2.f, 0.f);
         const PureAxisAlignedBoundingBox bbox(pos, size);
+        const PureAxisAlignedBoundingBox bboxPlane(pos, sizePlane); // to check if bounding box is also considered as initialized when Z-size is 0, as with planes!
 
         return (assertEquals(pos, bbox.getPosVec(), "pos") &
             assertEquals(size, bbox.getSizeVec(), "size") &
-            assertTrue(bbox.isInitialized(), "inited")) != 0;
+            assertTrue(bbox.isInitialized(), "inited") &
+            assertTrue(bboxPlane.isInitialized(), "inited plane")) != 0;
     }
 
     bool testCtor2()

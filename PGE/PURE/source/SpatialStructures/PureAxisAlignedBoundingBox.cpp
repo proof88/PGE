@@ -29,11 +29,12 @@ PureAxisAlignedBoundingBox::PureAxisAlignedBoundingBox(const PureVector& pos_, c
 } // PureAxisAlignedBoundingBox()
 
 /**
-* @return True if all sides of this box is non-zero, false otherwise.
+* @return True if width and height (sizes on the X- and Y-axes) of this box are non-zero, false otherwise.
+*         Depth (size on the Z-axis) can be 0, this is to support planes created with Object3DManager::createPlane().
 */
 const bool PureAxisAlignedBoundingBox::isInitialized() const
 {
-    return ((size.getX() != 0.f) && (size.getY() != 0.f) && (size.getZ() != 0.f));
+    return ((size.getX() != 0.f) && (size.getY() != 0.f));
 }
 
 /**
