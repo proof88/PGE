@@ -41,9 +41,11 @@ protected:
         addSubTest("testFindOneColliderObject_1_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_1_startFromLowestLevelFittingNode);
         addSubTest("testFindAllColliderObjects_1_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects_1_startFromLowestLevelFittingNode);
         addSubTest("testFindOneColliderObject_2_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_2_startFromLowestLevelFittingNode);
+        addSubTest("testFindAllColliderObjects_2_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects_2_startFromLowestLevelFittingNode);
         addSubTest("testFindOneColliderObject_1_startFromFirstNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_1_startFromFirstNode);
         addSubTest("testFindAllColliderObjects_1_startFromFirstNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects_1_startFromFirstNode);
         addSubTest("testFindOneColliderObject_2_startFromFirstNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_2_startFromFirstNode);
+        addSubTest("testFindAllColliderObjects_2_startFromFirstNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects_2_startFromFirstNode);
     }
 
     virtual bool setUp() override
@@ -959,8 +961,220 @@ private:
         //    PureVector(objPlayer->getPosVec().getX(), objPlayer->getPosVec().getY(), objPlayer->getPosVec().getZ()),
         //    PureVector(objPlayer->getScaledSizeVec().getX(), objPlayer->getScaledSizeVec().getY(), objPlayer->getScaledSizeVec().getZ()));
 
-        objPlayer->getPosVec().SetY(obj4->getPosVec().getY() + obj4->getSizeVec().getY() / 2.f + objPlayer->getScaledSizeVec().getY() / 2.f - 0.1f);
+        // but then, as gravity pulls player down, it shall be colliding with a block object too
+        objPlayer->getPosVec().SetY(objPlayer->getPosVec().getY() - 0.2f);
         b &= assertEquals(obj4, tree.findOneColliderObject_startFromLowestLevelFittingNode(*objPlayer), "objPlayer collider 2");
+
+        return b;
+    }
+
+    bool testFindAllColliderObjects_2_startFromLowestLevelFittingNode()
+    {
+        const PureVector treeOrigin(42.5f, -16.f, 0.f);
+        PureBoundingVolumeHierarchy tree(treeOrigin, 85.0f /* size as calculated during loading map_test_good_2_collision.txt */, 3, 0);
+
+        PureObject3D* obj1 = nullptr;
+        PureObject3D* obj2 = nullptr;
+        PureObject3D* obj3_stair_1 = nullptr;
+        PureObject3D* obj3_stair_2 = nullptr;
+        PureObject3D* obj3_stair_3 = nullptr;
+        PureObject3D* obj3_stair_4 = nullptr;
+        PureObject3D* obj4 = nullptr;
+        PureBoundingVolumeHierarchy* node1 = nullptr;
+        PureBoundingVolumeHierarchy* node2 = nullptr;
+        PureBoundingVolumeHierarchy* node3_stair_1 = nullptr;
+        PureBoundingVolumeHierarchy* node3_stair_2 = nullptr;
+        PureBoundingVolumeHierarchy* node3_stair_3 = nullptr;
+        PureBoundingVolumeHierarchy* node3_stair_4 = nullptr;
+        PureBoundingVolumeHierarchy* node4 = nullptr;
+
+        if (!assertTrue(
+            buildBVH_2(
+                tree, treeOrigin,
+                obj1, obj2, obj3_stair_1, obj3_stair_2, obj3_stair_3, obj3_stair_4, obj4,
+                node1, node2, node3_stair_1, node3_stair_2, node3_stair_3, node3_stair_4, node4), "buildBVH_2"))
+        {
+            return false;
+        }
+
+        bool b = true;
+
+        std::vector<const PureObject3D*> colliders;
+
+
+        // obj1, being in the tree, is expected to be colliding with itself
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj1, colliders), "obj1 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj1 colliders empty, object version");
+        if (b)
+        {
+            b &= assertEquals(obj1, *colliders.begin(), "obj1 colliders exact check, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj1Aabb(obj1->getPosVec(), obj1->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj1Aabb, nullptr, colliders), "obj1 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj1 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertEquals(obj1, *colliders.begin(), "obj1 colliders exact check, aabb version");
+        }
+
+        // obj2, being in the tree, is expected to be colliding with itself
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj2, colliders), "obj2 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj2 colliders empty, object version");
+        if (b)
+        {
+            b &= assertEquals(obj2, *colliders.begin(), "obj2 colliders exact check, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj2Aabb(obj2->getPosVec(), obj2->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj2Aabb, nullptr, colliders), "obj2 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj2 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertEquals(obj2, *colliders.begin(), "obj2 colliders exact check, aabb version");
+        }
+
+        // obj3_stair_1, being in the tree, is expected to be colliding with either itself or another block right next to it
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3_stair_1, colliders), "obj3_stair_1 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_1 colliders empty, object version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_1) != colliders.end(), "obj3_stair_1 colliders exact check 1, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj3_stair_1Aabb(obj3_stair_1->getPosVec(), obj3_stair_1->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3_stair_1Aabb, nullptr, colliders), "obj3_stair_1 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_1 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_1) != colliders.end(), "obj3_stair_1 colliders exact check 1, aabb version");
+        }
+
+        // obj3_stair_2, being in the tree, is expected to be colliding with either itself or another block right next to it
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3_stair_2, colliders), "obj3_stair_2 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_2 colliders empty, object version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_2) != colliders.end(), "obj3_stair_2 colliders exact check 1, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj3_stair_2Aabb(obj3_stair_2->getPosVec(), obj3_stair_2->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3_stair_2Aabb, nullptr, colliders), "obj3_stair_2 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_2 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_2) != colliders.end(), "obj3_stair_2 colliders exact check 1, aabb version");
+        }
+
+        // obj3_stair_3, being in the tree, is expected to be colliding with either itself or another block right next to it
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3_stair_3, colliders), "obj3_stair_3 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_3 colliders empty, object version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_3) != colliders.end(), "obj3_stair_3 colliders exact check 1, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj3_stair_3Aabb(obj3_stair_3->getPosVec(), obj3_stair_3->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3_stair_3Aabb, nullptr, colliders), "obj3_stair_3 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_3 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_3) != colliders.end(), "obj3_stair_3 colliders exact check 1, aabb version");
+        }
+
+        // obj3_stair_4, being in the tree, is expected to be colliding with either itself or another block right next to it
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3_stair_4, colliders), "obj3_stair_4 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_4 colliders empty, object version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_4) != colliders.end(), "obj3_stair_4 colliders exact check 1, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj3_stair_4Aabb(obj3_stair_4->getPosVec(), obj3_stair_4->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3_stair_4Aabb, nullptr, colliders), "obj3_stair_4 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_4 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_4) != colliders.end(), "obj3_stair_4 colliders exact check 1, aabb version");
+        }
+
+        // obj4, being in the tree, is expected to be colliding with either itself or another block right next to it
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj4, colliders), "obj4 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj4 colliders empty, object version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj4) != colliders.end(), "obj4 colliders exact check 1, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj4Aabb(obj4->getPosVec(), obj4->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj4Aabb, nullptr, colliders), "obj4 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj4 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj4) != colliders.end(), "obj4 colliders exact check 1, aabb version");
+        }
+
+        // create a player-sized object
+        PureObject3D* objPlayer = om->createPlane(0.95f, 1.88f);
+
+        // initially it should not touch any foreground blocks
+        objPlayer->getPosVec().Set(
+            obj4->getPosVec().getX(),
+            obj4->getPosVec().getY() + obj4->getSizeVec().getY() / 2.f + objPlayer->getScaledSizeVec().getY() / 2.f + 0.1f /* shall not touch obj4 FG block */,
+            -1.2f /*GAME_PLAYERS_POS_Z*/);
+        
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*objPlayer, colliders), "objPlayer colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "objPlayer colliders empty, object version 1");
+        if (b)
+        {
+            b &= assertEquals(objPlayer, *colliders.begin(), "objPlayer colliders exact check, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox objPlayerAabb(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(objPlayerAabb, nullptr, colliders), "objPlayer colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "objPlayer colliders empty, aabb version 1");
+        if (b)
+        {
+            b &= assertEquals(objPlayer, *colliders.begin(), "objPlayer colliders exact check, aabb version");
+        }
+
+        // but then, as gravity pulls player down, it shall be colliding with a block object too
+        objPlayer->getPosVec().SetY(objPlayer->getPosVec().getY() - 0.2f);
+        
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*objPlayer, colliders), "objPlayer colliders 2, object version");
+        b &= assertFalse(colliders.empty(), "objPlayer colliders empty, object version 2");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), objPlayer) != colliders.end(), "objPlayer colliders exact check 2, object version");
+            b &= assertGequals(colliders.size(), 2u, "objPlayer colliders count 2, object version"); // self is 1 object but there shall be at least another
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox objPlayerAabb_2(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(objPlayerAabb_2, nullptr, colliders), "objPlayer colliders 2, aabb version");
+        b &= assertFalse(colliders.empty(), "objPlayer colliders empty, aabb version 2");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), objPlayer) != colliders.end(), "objPlayer colliders exact check 2, aabb version");
+            b &= assertGequals(colliders.size(), 2u, "objPlayer colliders count 2, aabb version"); // self is 1 object but there shall be at least another
+        }
 
         return b;
     }
@@ -1257,12 +1471,225 @@ private:
             -1.2f /*GAME_PLAYERS_POS_Z*/);
         b &= assertNull(tree.findOneColliderObject_startFromFirstNode(*objPlayer), "objPlayer collider 1");
 
+        // TODO: add AABB version:
         //const PureAxisAlignedBoundingBox aabbPlayer(
         //    PureVector(objPlayer->getPosVec().getX(), objPlayer->getPosVec().getY(), objPlayer->getPosVec().getZ()),
         //    PureVector(objPlayer->getScaledSizeVec().getX(), objPlayer->getScaledSizeVec().getY(), objPlayer->getScaledSizeVec().getZ()));
 
-        objPlayer->getPosVec().SetY(obj4->getPosVec().getY() + obj4->getSizeVec().getY() / 2.f + objPlayer->getScaledSizeVec().getY() / 2.f - 0.1f);
+        // but then, as gravity pulls player down, it shall be colliding with a block object too
+        objPlayer->getPosVec().SetY(objPlayer->getPosVec().getY() - 0.2f);
         b &= assertEquals(obj4, tree.findOneColliderObject_startFromFirstNode(*objPlayer), "objPlayer collider 2");
+
+        return b;
+    }
+
+    bool testFindAllColliderObjects_2_startFromFirstNode()
+    {
+        const PureVector treeOrigin(42.5f, -16.f, 0.f);
+        PureBoundingVolumeHierarchy tree(treeOrigin, 85.0f /* size as calculated during loading map_test_good_2_collision.txt */, 3, 0);
+
+        PureObject3D* obj1 = nullptr;
+        PureObject3D* obj2 = nullptr;
+        PureObject3D* obj3_stair_1 = nullptr;
+        PureObject3D* obj3_stair_2 = nullptr;
+        PureObject3D* obj3_stair_3 = nullptr;
+        PureObject3D* obj3_stair_4 = nullptr;
+        PureObject3D* obj4 = nullptr;
+        PureBoundingVolumeHierarchy* node1 = nullptr;
+        PureBoundingVolumeHierarchy* node2 = nullptr;
+        PureBoundingVolumeHierarchy* node3_stair_1 = nullptr;
+        PureBoundingVolumeHierarchy* node3_stair_2 = nullptr;
+        PureBoundingVolumeHierarchy* node3_stair_3 = nullptr;
+        PureBoundingVolumeHierarchy* node3_stair_4 = nullptr;
+        PureBoundingVolumeHierarchy* node4 = nullptr;
+
+        if (!assertTrue(
+            buildBVH_2(
+                tree, treeOrigin,
+                obj1, obj2, obj3_stair_1, obj3_stair_2, obj3_stair_3, obj3_stair_4, obj4,
+                node1, node2, node3_stair_1, node3_stair_2, node3_stair_3, node3_stair_4, node4), "buildBVH_2"))
+        {
+            return false;
+        }
+
+        bool b = true;
+
+        std::vector<const PureObject3D*> colliders;
+
+
+        // obj1, being in the tree, is expected to be colliding with itself
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(*obj1, colliders), "obj1 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj1 colliders empty, object version");
+        if (b)
+        {
+            b &= assertEquals(obj1, *colliders.begin(), "obj1 colliders exact check, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj1Aabb(obj1->getPosVec(), obj1->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(obj1Aabb, nullptr, colliders), "obj1 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj1 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertEquals(obj1, *colliders.begin(), "obj1 colliders exact check, aabb version");
+        }
+
+        // obj2, being in the tree, is expected to be colliding with itself
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(*obj2, colliders), "obj2 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj2 colliders empty, object version");
+        if (b)
+        {
+            b &= assertEquals(obj2, *colliders.begin(), "obj2 colliders exact check, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj2Aabb(obj2->getPosVec(), obj2->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(obj2Aabb, nullptr, colliders), "obj2 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj2 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertEquals(obj2, *colliders.begin(), "obj2 colliders exact check, aabb version");
+        }
+
+        // obj3_stair_1, being in the tree, is expected to be colliding with either itself or another block right next to it
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(*obj3_stair_1, colliders), "obj3_stair_1 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_1 colliders empty, object version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_1) != colliders.end(), "obj3_stair_1 colliders exact check 1, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj3_stair_1Aabb(obj3_stair_1->getPosVec(), obj3_stair_1->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(obj3_stair_1Aabb, nullptr, colliders), "obj3_stair_1 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_1 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_1) != colliders.end(), "obj3_stair_1 colliders exact check 1, aabb version");
+        }
+
+        // obj3_stair_2, being in the tree, is expected to be colliding with either itself or another block right next to it
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(*obj3_stair_2, colliders), "obj3_stair_2 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_2 colliders empty, object version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_2) != colliders.end(), "obj3_stair_2 colliders exact check 1, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj3_stair_2Aabb(obj3_stair_2->getPosVec(), obj3_stair_2->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(obj3_stair_2Aabb, nullptr, colliders), "obj3_stair_2 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_2 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_2) != colliders.end(), "obj3_stair_2 colliders exact check 1, aabb version");
+        }
+
+        // obj3_stair_3, being in the tree, is expected to be colliding with either itself or another block right next to it
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(*obj3_stair_3, colliders), "obj3_stair_3 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_3 colliders empty, object version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_3) != colliders.end(), "obj3_stair_3 colliders exact check 1, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj3_stair_3Aabb(obj3_stair_3->getPosVec(), obj3_stair_3->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(obj3_stair_3Aabb, nullptr, colliders), "obj3_stair_3 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_3 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_3) != colliders.end(), "obj3_stair_3 colliders exact check 1, aabb version");
+        }
+
+        // obj3_stair_4, being in the tree, is expected to be colliding with either itself or another block right next to it
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(*obj3_stair_4, colliders), "obj3_stair_4 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_4 colliders empty, object version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_4) != colliders.end(), "obj3_stair_4 colliders exact check 1, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj3_stair_4Aabb(obj3_stair_4->getPosVec(), obj3_stair_4->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(obj3_stair_4Aabb, nullptr, colliders), "obj3_stair_4 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj3_stair_4 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj3_stair_4) != colliders.end(), "obj3_stair_4 colliders exact check 1, aabb version");
+        }
+
+        // obj4, being in the tree, is expected to be colliding with either itself or another block right next to it
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(*obj4, colliders), "obj4 colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "obj4 colliders empty, object version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj4) != colliders.end(), "obj4 colliders exact check 1, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox obj4Aabb(obj4->getPosVec(), obj4->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(obj4Aabb, nullptr, colliders), "obj4 colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "obj4 colliders empty, aabb version");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), obj4) != colliders.end(), "obj4 colliders exact check 1, aabb version");
+        }
+
+        // create a player-sized object
+        PureObject3D* objPlayer = om->createPlane(0.95f, 1.88f);
+
+        // initially it should not touch any foreground blocks
+        objPlayer->getPosVec().Set(
+            obj4->getPosVec().getX(),
+            obj4->getPosVec().getY() + obj4->getSizeVec().getY() / 2.f + objPlayer->getScaledSizeVec().getY() / 2.f + 0.1f /* shall not touch obj4 FG block */,
+            -1.2f /*GAME_PLAYERS_POS_Z*/);
+
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(*objPlayer, colliders), "objPlayer colliders 1, object version");
+        b &= assertFalse(colliders.empty(), "objPlayer colliders empty, object version 1");
+        if (b)
+        {
+            b &= assertEquals(objPlayer, *colliders.begin(), "objPlayer colliders exact check, object version");
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox objPlayerAabb(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(objPlayerAabb, nullptr, colliders), "objPlayer colliders 1, aabb version");
+        b &= assertFalse(colliders.empty(), "objPlayer colliders empty, aabb version 1");
+        if (b)
+        {
+            b &= assertEquals(objPlayer, *colliders.begin(), "objPlayer colliders exact check, aabb version");
+        }
+
+        // but then, as gravity pulls player down, it shall be colliding with a block object too
+        objPlayer->getPosVec().SetY(objPlayer->getPosVec().getY() - 0.2f);
+
+        colliders.clear();
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(*objPlayer, colliders), "objPlayer colliders 2, object version");
+        b &= assertFalse(colliders.empty(), "objPlayer colliders empty, object version 2");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), objPlayer) != colliders.end(), "objPlayer colliders exact check 2, object version");
+            b &= assertGequals(colliders.size(), 2u, "objPlayer colliders count 2, object version"); // self is 1 object but there shall be at least another
+        }
+
+        colliders.clear();
+        const PureAxisAlignedBoundingBox objPlayerAabb_2(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
+        b &= assertTrue(tree.findAllColliderObjects_startFromFirstNode(objPlayerAabb_2, nullptr, colliders), "objPlayer colliders 2, aabb version");
+        b &= assertFalse(colliders.empty(), "objPlayer colliders empty, aabb version 2");
+        if (b)
+        {
+            b &= assertTrue(std::find(colliders.begin(), colliders.end(), objPlayer) != colliders.end(), "objPlayer colliders exact check 2, aabb version");
+            b &= assertGequals(colliders.size(), 2u, "objPlayer colliders count 2, aabb version"); // self is 1 object but there shall be at least another
+        }
 
         return b;
     }
