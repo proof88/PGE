@@ -64,7 +64,7 @@ public:
     // yes, this is valid: overriding base method with a return type derived from the original return type: called as "covariant return type"
     virtual PureBoundingVolumeHierarchy* insertObject(const PureObject3D& obj) override;              /**< Inserts the given object in the octree. */
     virtual const PureBoundingVolumeHierarchy* findObject(const PureObject3D& obj) const override;    /**< Finds the given object in the octree. */
-    virtual bool reset() override;                                                                    /**< Removes all children from this root node. */
+    virtual bool reset() override;
 
     PureBoundingVolumeHierarchy* findObject(const PureObject3D& obj);                                 /**< Finds the given object in the octree. */
 

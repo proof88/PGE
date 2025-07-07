@@ -479,7 +479,9 @@ private:
     {
         return (assertEquals(PureOctree::NodeType::LeafEmpty, tree.getNodeType(), "nodeType") &
             assertEquals((std::size_t)0, tree.getChildren().size(), "children") &
-            assertEquals((std::size_t)0, tree.getObjects().size(), "objects")) != 0;
+            assertEquals((std::size_t)0, tree.getObjects().size(), "objects") &
+            assertEquals(tree.getPos(), tree.getAABB().getPosVec(), "aabb pos") &
+            assertEquals(PureVector(tree.getSize(), tree.getSize(), tree.getSize()), tree.getAABB().getSizeVec(), "aabb size")) != 0;
     }
 
     bool testCtor1()
@@ -492,8 +494,6 @@ private:
             assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
             assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
             assertEquals(0.f, tree.getSize(), "size") &
-            assertEquals(tree.getPos(), tree.getAABB().getPosVec(), "aabb pos") &
-            assertEquals(PureVector(tree.getSize(), tree.getSize(), tree.getSize()), tree.getAABB().getSizeVec(), "aabb size") &
             assertTrue(assertTreeIsReset(tree), "reset")) != 0;
     }
 
@@ -507,8 +507,6 @@ private:
         assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
         assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
         assertEquals(1000.0f, tree.getSize(), "size") &
-        assertEquals(tree.getPos(), tree.getAABB().getPosVec(), "aabb pos") &
-        assertEquals(PureVector(tree.getSize(), tree.getSize(), tree.getSize()), tree.getAABB().getSizeVec(), "aabb size") &
         assertTrue(assertTreeIsReset(tree), "reset")) != 0;
     }
 
@@ -536,35 +534,37 @@ private:
             return false;
         }
 
-        const PureBoundingVolumeHierarchy* tree_TLF = static_cast<const PureBoundingVolumeHierarchy*>(tree.getChildren()[PureOctree::TOP    | PureOctree::LEFT  | PureOctree::FRONT]);
-        const PureBoundingVolumeHierarchy* tree_BLF = static_cast<const PureBoundingVolumeHierarchy*>(tree.getChildren()[PureOctree::BOTTOM | PureOctree::LEFT  | PureOctree::FRONT]);
-        const PureBoundingVolumeHierarchy* tree_TRF = static_cast<const PureBoundingVolumeHierarchy*>(tree.getChildren()[PureOctree::TOP    | PureOctree::RIGHT | PureOctree::FRONT]);
+        //const PureBoundingVolumeHierarchy* tree_TLF = static_cast<const PureBoundingVolumeHierarchy*>(tree.getChildren()[PureOctree::TOP    | PureOctree::LEFT  | PureOctree::FRONT]);
+        //const PureBoundingVolumeHierarchy* tree_BLF = static_cast<const PureBoundingVolumeHierarchy*>(tree.getChildren()[PureOctree::BOTTOM | PureOctree::LEFT  | PureOctree::FRONT]);
+        //const PureBoundingVolumeHierarchy* tree_TRF = static_cast<const PureBoundingVolumeHierarchy*>(tree.getChildren()[PureOctree::TOP    | PureOctree::RIGHT | PureOctree::FRONT]);
         const PureBoundingVolumeHierarchy* tree_BRF = static_cast<const PureBoundingVolumeHierarchy*>(tree.getChildren()[PureOctree::BOTTOM | PureOctree::RIGHT | PureOctree::FRONT]);
         const PureBoundingVolumeHierarchy* tree_TLB = static_cast<const PureBoundingVolumeHierarchy*>(tree.getChildren()[PureOctree::TOP    | PureOctree::LEFT  | PureOctree::BACK ]);
-        const PureBoundingVolumeHierarchy* tree_BLB = static_cast<const PureBoundingVolumeHierarchy*>(tree.getChildren()[PureOctree::BOTTOM | PureOctree::LEFT  | PureOctree::BACK ]);
+        //const PureBoundingVolumeHierarchy* tree_BLB = static_cast<const PureBoundingVolumeHierarchy*>(tree.getChildren()[PureOctree::BOTTOM | PureOctree::LEFT  | PureOctree::BACK ]);
         const PureBoundingVolumeHierarchy* tree_TRB = static_cast<const PureBoundingVolumeHierarchy*>(tree.getChildren()[PureOctree::TOP    | PureOctree::RIGHT | PureOctree::BACK ]);
-        const PureBoundingVolumeHierarchy* tree_BRB = static_cast<const PureBoundingVolumeHierarchy*>(tree.getChildren()[PureOctree::BOTTOM | PureOctree::RIGHT | PureOctree::BACK ]);
+        //const PureBoundingVolumeHierarchy* tree_BRB = static_cast<const PureBoundingVolumeHierarchy*>(tree.getChildren()[PureOctree::BOTTOM | PureOctree::RIGHT | PureOctree::BACK ]);
 
         if ( !assertEquals(PureOctree::NodeType::Parent, tree_BRF->getNodeType(), "tree_BRF nodeType") )
         {
             return false;
         }
 
-        const PureBoundingVolumeHierarchy* tree_BRF_TLF = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::TOP    | PureOctree::LEFT  | PureOctree::FRONT]);
-        const PureBoundingVolumeHierarchy* tree_BRF_BLF = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::BOTTOM | PureOctree::LEFT  | PureOctree::FRONT]);
-        const PureBoundingVolumeHierarchy* tree_BRF_TRF = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::TOP    | PureOctree::RIGHT | PureOctree::FRONT]);
-        const PureBoundingVolumeHierarchy* tree_BRF_BRF = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::BOTTOM | PureOctree::RIGHT | PureOctree::FRONT]);
+        //const PureBoundingVolumeHierarchy* tree_BRF_TLF = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::TOP    | PureOctree::LEFT  | PureOctree::FRONT]);
+        //const PureBoundingVolumeHierarchy* tree_BRF_BLF = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::BOTTOM | PureOctree::LEFT  | PureOctree::FRONT]);
+        //const PureBoundingVolumeHierarchy* tree_BRF_TRF = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::TOP    | PureOctree::RIGHT | PureOctree::FRONT]);
+        //const PureBoundingVolumeHierarchy* tree_BRF_BRF = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::BOTTOM | PureOctree::RIGHT | PureOctree::FRONT]);
         const PureBoundingVolumeHierarchy* tree_BRF_TLB = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::TOP    | PureOctree::LEFT  | PureOctree::BACK ]);
-        const PureBoundingVolumeHierarchy* tree_BRF_BLB = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::BOTTOM | PureOctree::LEFT  | PureOctree::BACK ]);
-        const PureBoundingVolumeHierarchy* tree_BRF_TRB = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::TOP    | PureOctree::RIGHT | PureOctree::BACK ]);
-        const PureBoundingVolumeHierarchy* tree_BRF_BRB = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::BOTTOM | PureOctree::RIGHT | PureOctree::BACK ]);
+        //const PureBoundingVolumeHierarchy* tree_BRF_BLB = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::BOTTOM | PureOctree::LEFT  | PureOctree::BACK ]);
+        //const PureBoundingVolumeHierarchy* tree_BRF_TRB = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::TOP    | PureOctree::RIGHT | PureOctree::BACK ]);
+        //const PureBoundingVolumeHierarchy* tree_BRF_BRB = static_cast<const PureBoundingVolumeHierarchy*>(tree_BRF->getChildren()[PureOctree::BOTTOM | PureOctree::RIGHT | PureOctree::BACK ]);
 
         // checking bounding boxes bottom-up
 
         // level-2 bounds
         const PureAxisAlignedBoundingBox aabb_obj2(obj2->getPosVec(), obj2->getScaledSizeVec());
         const PureAxisAlignedBoundingBox aabb_obj3(obj3->getPosVec(), obj3->getScaledSizeVec());
-        PureAxisAlignedBoundingBox aabb_BRF_TLB_expected;
+        PureAxisAlignedBoundingBox aabb_BRF_TLB_expected(
+            tree_BRF_TLB->getPos(),
+            PureVector(tree_BRF_TLB->getSize(), tree_BRF_TLB->getSize(), tree_BRF_TLB->getSize()));
         aabb_BRF_TLB_expected.ExtendBy(aabb_obj2);
         aabb_BRF_TLB_expected.ExtendBy(aabb_obj3);
 
@@ -572,63 +572,84 @@ private:
         b &= assertEquals(aabb_BRF_TLB_expected.getPosVec(), tree_BRF_TLB->getAABB().getPosVec(), "tree_BRF_TLB AABB pos") &
             assertEquals(aabb_BRF_TLB_expected.getSizeVec(), tree_BRF_TLB->getAABB().getSizeVec(), "tree_BRF_TLB AABB size");
 
-        b &= assertEquals(PureVector(), tree_BRF_TLF->getAABB().getPosVec(), "tree_BRF_TLF AABB pos") &
-            assertEquals(PureVector(), tree_BRF_TLF->getAABB().getSizeVec(), "tree_BRF_TLF AABB size") &
-            assertEquals(PureVector(), tree_BRF_BLF->getAABB().getPosVec(),  "tree_BRF_BLF AABB pos") &
-            assertEquals(PureVector(), tree_BRF_BLF->getAABB().getSizeVec(), "tree_BRF_BLF AABB size") &
-            assertEquals(PureVector(), tree_BRF_TRF->getAABB().getPosVec(),  "tree_BRF_TRF AABB pos") &
-            assertEquals(PureVector(), tree_BRF_TRF->getAABB().getSizeVec(), "tree_BRF_TRF AABB size") &
-            assertEquals(PureVector(), tree_BRF_BRF->getAABB().getPosVec(),  "tree_BRF_BRF AABB pos") &
-            assertEquals(PureVector(), tree_BRF_BRF->getAABB().getSizeVec(), "tree_BRF_BRF AABB size") &
-            assertEquals(PureVector(), tree_BRF_BLB->getAABB().getPosVec(),  "tree_BRF_BLB AABB pos") &
-            assertEquals(PureVector(), tree_BRF_BLB->getAABB().getSizeVec(), "tree_BRF_BLB AABB size") &
-            assertEquals(PureVector(), tree_BRF_TRB->getAABB().getPosVec(),  "tree_BRF_TRB AABB pos") &
-            assertEquals(PureVector(), tree_BRF_TRB->getAABB().getSizeVec(), "tree_BRF_TRB AABB size") &
-            assertEquals(PureVector(), tree_BRF_BRB->getAABB().getPosVec(),  "tree_BRF_BRB AABB pos") &
-            assertEquals(PureVector(), tree_BRF_BRB->getAABB().getSizeVec(), "tree_BRF_BRB AABB size");
+        b &= assertEquals(8u, tree.getChildren().size(), "tree children size");
+        if (!b)
+        {
+            return false;
+        }
+
+        for (size_t j = 0; j < tree.getChildren().size(); j++)
+        {
+            const PureBoundingVolumeHierarchy* const bvhChildNode = static_cast<PureBoundingVolumeHierarchy*>(tree.getChildren()[j]);
+            for (size_t i = 0; i < bvhChildNode->getChildren().size(); i++)
+            {
+                const PureBoundingVolumeHierarchy* const bvhChildChildNode = static_cast<PureBoundingVolumeHierarchy*>(bvhChildNode->getChildren()[i]);
+                if (bvhChildChildNode != tree_BRF_TLB)
+                {
+                    b &= assertEquals(bvhChildChildNode->getPos(), bvhChildChildNode->getAABB().getPosVec(), "level 2 child AABB pos") &
+                        assertEquals(
+                            PureVector(bvhChildChildNode->getSize(), bvhChildChildNode->getSize(), bvhChildChildNode->getSize()),
+                            bvhChildChildNode->getAABB().getSizeVec(),
+                            "level 2 child AABB size");
+                }
+            }
+        }
 
         // level-1 bounds
-        const PureAxisAlignedBoundingBox aabb_TLB_expected(obj1->getPosVec(), obj1->getScaledSizeVec());
+        const PureAxisAlignedBoundingBox aabb_obj1(obj1->getPosVec(), obj1->getScaledSizeVec());
+        PureAxisAlignedBoundingBox aabb_TLB_expected(
+            tree_TLB->getPos(),
+            PureVector(tree_TLB->getSize(), tree_TLB->getSize(), tree_TLB->getSize()));
+        aabb_TLB_expected.ExtendBy(aabb_obj1);
 
         b &= assertEquals(aabb_TLB_expected.getPosVec(), tree_TLB->getAABB().getPosVec(), "tree_TLB AABB pos") &
             assertEquals(aabb_TLB_expected.getSizeVec(), tree_TLB->getAABB().getSizeVec(), "tree_TLB AABB size");
 
-        const PureAxisAlignedBoundingBox aabb_TRB_expected(obj4->getPosVec(), obj4->getScaledSizeVec());
+        const PureAxisAlignedBoundingBox aabb_obj4(obj4->getPosVec(), obj4->getScaledSizeVec());
+        PureAxisAlignedBoundingBox aabb_TRB_expected(
+            tree_TRB->getPos(),
+            PureVector(tree_TRB->getSize(), tree_TRB->getSize(), tree_TRB->getSize()));
+        aabb_TRB_expected.ExtendBy(aabb_obj4);
 
         b &= assertEquals(aabb_TRB_expected.getPosVec(), tree_TRB->getAABB().getPosVec(),  "tree_TRB AABB pos") &
             assertEquals(aabb_TRB_expected.getSizeVec(), tree_TRB->getAABB().getSizeVec(), "tree_TRB AABB size");
 
-        PureAxisAlignedBoundingBox aabb_BRF_expected;
+        PureAxisAlignedBoundingBox aabb_BRF_expected(
+            tree_BRF->getPos(),
+            PureVector(tree_BRF->getSize(), tree_BRF->getSize(), tree_BRF->getSize()));
         aabb_BRF_expected.ExtendBy(aabb_obj2);
         aabb_BRF_expected.ExtendBy(aabb_obj3);
 
         b &= assertEquals(aabb_BRF_expected.getPosVec(), tree_BRF->getAABB().getPosVec(),  "tree_BRF AABB pos") &
             assertEquals(aabb_BRF_expected.getSizeVec(), tree_BRF->getAABB().getSizeVec(), "tree_BRF AABB size");
 
-        b &= assertEquals(PureVector(), tree_TLF->getAABB().getPosVec(), "tree_TLF AABB pos") &
-            assertEquals(PureVector(), tree_TLF->getAABB().getSizeVec(), "tree_TLF AABB size") &
-            assertEquals(PureVector(), tree_BLF->getAABB().getPosVec(),  "tree_BLF AABB pos") &
-            assertEquals(PureVector(), tree_BLF->getAABB().getSizeVec(), "tree_BLF AABB size") &
-            assertEquals(PureVector(), tree_TRF->getAABB().getPosVec(),  "tree_TRF AABB pos") &
-            assertEquals(PureVector(), tree_TRF->getAABB().getSizeVec(), "tree_TRF AABB size") &
-            assertEquals(PureVector(), tree_BLB->getAABB().getPosVec(),  "tree_BLB AABB pos") &
-            assertEquals(PureVector(), tree_BLB->getAABB().getSizeVec(), "tree_BLB AABB size") &
-            assertEquals(PureVector(), tree_BRB->getAABB().getPosVec(),  "tree_BRB AABB pos") &
-            assertEquals(PureVector(), tree_BRB->getAABB().getSizeVec(), "tree_BRB AABB size");
+        for (size_t i = 0; i < tree.getChildren().size(); i++)
+        {
+            const PureBoundingVolumeHierarchy* const bvhNode = static_cast<PureBoundingVolumeHierarchy*>(tree.getChildren()[i]);
+            if ((bvhNode != tree_BRF) && (bvhNode != tree_TLB) && (bvhNode != tree_TRB))
+            {
+                b &= assertEquals(bvhNode->getPos(), bvhNode->getAABB().getPosVec(), "level 1 child AABB pos") &
+                    assertEquals(
+                        PureVector(bvhNode->getSize(), bvhNode->getSize(), bvhNode->getSize()),
+                        bvhNode->getAABB().getSizeVec(),
+                        "level 1 child AABB size");
+            }
+        }
 
         // level-0 bounds
-        PureAxisAlignedBoundingBox aabb_root_expected(aabb_TLB_expected);
+        PureAxisAlignedBoundingBox aabb_root_expected(
+            tree.getPos(),
+            PureVector(tree.getSize(), tree.getSize(), tree.getSize()));
+        aabb_root_expected.ExtendBy(aabb_TLB_expected);
         aabb_root_expected.ExtendBy(aabb_TRB_expected);
         aabb_root_expected.ExtendBy(aabb_BRF_expected);
 
         b &= assertEquals(aabb_root_expected.getPosVec(), tree.getAABB().getPosVec(),  "root AABB pos") &
             assertEquals(aabb_root_expected.getSizeVec(), tree.getAABB().getSizeVec(), "root AABB size");
 
-        // reset(): compared to the PureOctree test, we only test if AABB stays intact!
+        // reset(): compared to the PureOctree test, we only test if AABB stays intact (see in assertTreeIsReset())!
         b &= assertTrue(tree.reset(), "reset level 0");
         b &= assertTrue(assertTreeIsReset(tree), "tree is reset 1");
-        b &= assertEquals(tree.getPos(), tree.getAABB().getPosVec(), "aabb pos");
-        b &= assertEquals(PureVector(tree.getSize(), tree.getSize(), tree.getSize()), tree.getAABB().getSizeVec(), "aabb size");
 
         return b;
     }

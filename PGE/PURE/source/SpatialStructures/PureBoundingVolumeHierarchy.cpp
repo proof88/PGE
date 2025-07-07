@@ -129,7 +129,8 @@ const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findObject(const
 
 
 /**
-    Extending PureOctree::reset() behavior by resetting the AABB also.
+    Extending PureOctree::reset() behavior by resetting the AABB to its original value:
+    same position and sizes as the Octree root node.
 
     @return True in case of success, false if invoked on non-root node.
 */
@@ -138,6 +139,11 @@ bool PureBoundingVolumeHierarchy::reset()
     if (PureOctree::reset())
     {
         m_aabb = PureAxisAlignedBoundingBox();
+        // since AABB is not initialized yet, calling extendBy() will simply set the given pos and size:
+        m_aabb.ExtendBy(
+            PureAxisAlignedBoundingBox(
+                getPos(), PureVector(getSize(), getSize(), getSize())));
+        
         if (m_objDebugBox)
         {
             delete m_objDebugBox; // Object3D dtor triggers removing from ObjectManager too
