@@ -165,25 +165,22 @@ PureOctree* PureOctree::insertObject(const PureObject3D& obj)
         }
 
         assert(m_vChildren.size() == 8);
+
+        m_vChildren[TOP    | LEFT  | FRONT]->setPos(PureVector(m_vPos.getX() - m_fSize / 4.f, m_vPos.getY() + m_fSize / 4.f, m_vPos.getZ() - m_fSize / 4.f));
+        m_vChildren[BOTTOM | LEFT  | FRONT]->setPos(PureVector(m_vPos.getX() - m_fSize / 4.f, m_vPos.getY() - m_fSize / 4.f, m_vPos.getZ() - m_fSize / 4.f));
+        m_vChildren[TOP    | RIGHT | FRONT]->setPos(PureVector(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() + m_fSize / 4.f, m_vPos.getZ() - m_fSize / 4.f));
+        m_vChildren[BOTTOM | RIGHT | FRONT]->setPos(PureVector(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() - m_fSize / 4.f, m_vPos.getZ() - m_fSize / 4.f));
+        m_vChildren[TOP    | LEFT  | BACK]->setPos(PureVector(m_vPos.getX() - m_fSize / 4.f, m_vPos.getY() + m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f));
+        m_vChildren[BOTTOM | LEFT  | BACK]->setPos(PureVector(m_vPos.getX() - m_fSize / 4.f, m_vPos.getY() - m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f));
+        m_vChildren[TOP    | RIGHT | BACK]->setPos(PureVector(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() + m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f));
+        m_vChildren[BOTTOM | RIGHT | BACK]->setPos(PureVector(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() - m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f));
+
+        // we set parent only here, so above the public setPos() can still work without returning with error: those children look like
+        // they don't have parent so they are root, so setPos() will succeed.
+        // It is important to set position using setPos() and not directly setting m_vPos, because derived class might override setPos().
         for (TPureUInt i = 0; i < 8; i++)
         {
             m_vChildren[i]->m_parent = this;
-        }
-
-        m_vChildren[TOP    | LEFT  | FRONT]->m_vPos.Set(m_vPos.getX() - m_fSize / 4.f, m_vPos.getY() + m_fSize / 4.f, m_vPos.getZ() - m_fSize / 4.f);
-        m_vChildren[BOTTOM | LEFT  | FRONT]->m_vPos.Set(m_vPos.getX() - m_fSize / 4.f, m_vPos.getY() - m_fSize / 4.f, m_vPos.getZ() - m_fSize / 4.f);
-        m_vChildren[TOP    | RIGHT | FRONT]->m_vPos.Set(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() + m_fSize / 4.f, m_vPos.getZ() - m_fSize / 4.f);
-        m_vChildren[BOTTOM | RIGHT | FRONT]->m_vPos.Set(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() - m_fSize / 4.f, m_vPos.getZ() - m_fSize / 4.f);
-        m_vChildren[TOP    | LEFT  | BACK]->m_vPos.Set(m_vPos.getX() - m_fSize / 4.f, m_vPos.getY() + m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f);
-        m_vChildren[BOTTOM | LEFT  | BACK]->m_vPos.Set(m_vPos.getX() - m_fSize / 4.f, m_vPos.getY() - m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f);
-        m_vChildren[TOP    | RIGHT | BACK]->m_vPos.Set(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() + m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f);
-        m_vChildren[BOTTOM | RIGHT | BACK]->m_vPos.Set(m_vPos.getX() + m_fSize / 4.f, m_vPos.getY() - m_fSize / 4.f, m_vPos.getZ() + m_fSize / 4.f);
-
-        // so derived class can take action now, for example, BVH can initialize its new nodes' AABB positions and dimensions based on the new Octree nodes.
-        // Remember that over time Octree node dimensions DO NOT change, unlike in derived class AABB dimensions might change.
-        if (!postSubdivideDone())
-        {
-            return PGENULL;
         }
         
         // add the already inserted object to one of the new child nodes, remove it from this node
@@ -313,6 +310,8 @@ const PureVector& PureOctree::getPos() const
     
     Valid only for the root node (level 0), and only if it is still empty.
 
+    Derived class overriding this method must execute PureOctree::setPos() first and continue with further actions based on returned value!
+
     @param pos The new world-space position of this root node.
 
     @return True in case of success, false if invoked on non-root node or non-empty node.
@@ -347,6 +346,8 @@ TPureFloat PureOctree::getSize() const
     Sets the length of the side of the cube represented by this root node. 
     
     Valid only for the root node (level 0), and only if it is still empty.
+
+    Derived class overriding this method must execute PureOctree::setPos() first and continue with further actions based on returned value!
 
     @param size The new length of the side of the cube represented by this root node.
 
@@ -526,11 +527,6 @@ TPureBool PureOctree::subdivide()
         }
         return false;
     }
-    return true;
-}
-
-TPureBool PureOctree::postSubdivideDone()
-{
     return true;
 }
 

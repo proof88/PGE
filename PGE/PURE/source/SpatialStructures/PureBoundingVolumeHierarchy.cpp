@@ -866,33 +866,6 @@ TPureBool PureBoundingVolumeHierarchy::subdivide()
     return true;
 }
 
-TPureBool PureBoundingVolumeHierarchy::postSubdivideDone()
-{
-    if (m_vChildren.size() != 8)
-    {
-        return false;
-    }
-
-    for (TPureUInt i = 0; i < 8; i++)
-    {
-        assert(m_vChildren[i]);
-        PureBoundingVolumeHierarchy& childNode = static_cast<PureBoundingVolumeHierarchy&>(*m_vChildren[i]);
-
-        // here I should update position of AABB based on Octree position just updated by Octree logic after subdivide()
-        // but I cannot find a better way for that since AABB does not have setPos(), just ctor for setting pos.
-        // Also, it would be nice if Octree would invoke setPos() BVH node since it is overridden, BUT
-        // that is part of public API which does allow that only for empty root nodes.
-        // 
-        // TODO: check if in Octree setting the parent could be done AFTER setPos() is invoked, in such case
-        // Octree could invoke overridden setPos() and then we would not need this postSubdivideDone() at all!
-        childNode.m_aabb = PureAxisAlignedBoundingBox(
-            childNode.getPos() /* after subdivide(), Octree has updated child node positions */,
-            childNode.m_aabb.getSizeVec() /* subdivide() set size already */
-        );
-    }
-    return true;
-}
-
 
 // ############################### PRIVATE ###############################
 

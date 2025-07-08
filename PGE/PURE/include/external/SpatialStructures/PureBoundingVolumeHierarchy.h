@@ -126,7 +126,6 @@ protected:
     // ---------------------------------------------------------------------------
 
     virtual TPureBool subdivide() override;
-    virtual TPureBool postSubdivideDone() override;
 
 private:
 

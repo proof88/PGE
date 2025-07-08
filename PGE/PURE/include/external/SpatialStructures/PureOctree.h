@@ -133,7 +133,6 @@ protected:
 
     // virtual subdivide so derived can override by resizing vector with derived instances instead of PureOctree instances!
     virtual TPureBool subdivide();
-    virtual TPureBool postSubdivideDone();
     void DeleteChildren();
 
 private:
