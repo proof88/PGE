@@ -370,19 +370,22 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFrom
 
     if (getNodeType() == Parent)
     {
-        // TODO: this calculateIndex()-based logic should work, check why is this commented out? Looks faster.
-        // Update: because nodes can overlap. Calculating index will get a node which contains colliding objects with high probability,
+        // Reminder: this calculateIndex()-based logic cannot work:
+        //   const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
+        //   const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
+        //   return bvhNode.findXXX(objAabb, &bvhNode);
+        // Because nodes can overlap. Calculating index will get a node which contains colliding objects with high probability,
         // BUT there could be another overlapping sibling node which actually contains a colliding object.
         // Also, Octree-position based calculateIndex() is more like for determining close objects based on position, not
-        // taking sizes into account.
-        // However, we can introduce a distance-based optimization. Instead of iterating over the child nodes from 0 to 7,
-        // we could iterator over them in the order of their distance from the given AABB. Ordering them takes some time,
+        // taking sizes into account i.e. there can be an object with its position further away from us but due to its size
+        // still colliding with us, unlike a much closer but smaller object.
+        // 
+        // TODO: OPT: However, we can introduce a distance-based optimization. Instead of iterating over the child nodes from 0 to 7,
+        // we could iterate over them in the order of their distance from the given AABB. Ordering them takes some time,
         // but most probably we can detect the collision with the first 1-2 sibling nodes and can skip the rest of siblings,
         // and this approach on each consecutive level could greatly improve detection time, if we have a deeper tree.
         // Of course the linear approach will be always faster if the collision always happens around children indices 0 or 1.
-        //const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
-        //const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
-        //return bvhNode.findOneColliderObject_startFromLowestLevelFittingNode(objAabb, &bvhNode);
+        // Note that for more precise ordering, not the AABBs central position but their closer corner shall be the base for ordering.
 
         const PureObject3D* pCollider = nullptr;
         for (size_t iChild = 0; (iChild < m_vChildren.size()) && !pCollider; iChild++)
@@ -475,19 +478,22 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFrom
 
     if (getNodeType() == Parent)
     {
-        // TODO: this calculateIndex()-based logic should work, check why is this commented out? Looks faster.
-        // Update: because nodes can overlap. Calculating index will get a node which contains colliding objects with high probability,
+        // Reminder: this calculateIndex()-based logic cannot work:
+        //   const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
+        //   const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
+        //   return bvhNode.findXXX(objAabb, &bvhNode);
+        // Because nodes can overlap. Calculating index will get a node which contains colliding objects with high probability,
         // BUT there could be another overlapping sibling node which actually contains a colliding object.
         // Also, Octree-position based calculateIndex() is more like for determining close objects based on position, not
-        // taking sizes into account.
-        // However, we can introduce a distance-based optimization. Instead of iterating over the child nodes from 0 to 7,
-        // we could iterator over them in the order of their distance from the given AABB. Ordering them takes some time,
+        // taking sizes into account i.e. there can be an object with its position further away from us but due to its size
+        // still colliding with us, unlike a much closer but smaller object.
+        // 
+        // TODO: OPT: However, we can introduce a distance-based optimization. Instead of iterating over the child nodes from 0 to 7,
+        // we could iterate over them in the order of their distance from the given AABB. Ordering them takes some time,
         // but most probably we can detect the collision with the first 1-2 sibling nodes and can skip the rest of siblings,
         // and this approach on each consecutive level could greatly improve detection time, if we have a deeper tree.
         // Of course the linear approach will be always faster if the collision always happens around children indices 0 or 1.
-        //const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
-        //const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
-        //return bvhNode.findOneColliderObject_startFromFirstNode(objAabb, &bvhNode);
+        // Note that for more precise ordering, not the AABBs central position but their closer corner shall be the base for ordering.
 
         const PureObject3D* pCollider = nullptr;
         for (size_t iChild = 0; (iChild < m_vChildren.size()) && !pCollider; iChild++)
@@ -589,19 +595,22 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFit
 
     if (getNodeType() == Parent)
     {
-        // TODO: this calculateIndex()-based logic should work, check why is this commented out? Looks faster.
-        // Update: because nodes can overlap. Calculating index will get a node which contains colliding objects with high probability,
+        // Reminder: this calculateIndex()-based logic cannot work:
+        //   const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
+        //   const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
+        //   return bvhNode.findXXX(objAabb, &bvhNode);
+        // Because nodes can overlap. Calculating index will get a node which contains colliding objects with high probability,
         // BUT there could be another overlapping sibling node which actually contains a colliding object.
         // Also, Octree-position based calculateIndex() is more like for determining close objects based on position, not
-        // taking sizes into account.
-        // However, we can introduce a distance-based optimization. Instead of iterating over the child nodes from 0 to 7,
-        // we could iterator over them in the order of their distance from the given AABB. Ordering them takes some time,
+        // taking sizes into account i.e. there can be an object with its position further away from us but due to its size
+        // still colliding with us, unlike a much closer but smaller object.
+        // 
+        // TODO: OPT: However, we can introduce a distance-based optimization. Instead of iterating over the child nodes from 0 to 7,
+        // we could iterate over them in the order of their distance from the given AABB. Ordering them takes some time,
         // but most probably we can detect the collision with the first 1-2 sibling nodes and can skip the rest of siblings,
         // and this approach on each consecutive level could greatly improve detection time, if we have a deeper tree.
         // Of course the linear approach will be always faster if the collision always happens around children indices 0 or 1.
-        //const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
-        //const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
-        //return bvhNode.findAllColliderObjects_startFromLowestLevelFittingNode(objAabb, &bvhNode, colliders);
+        // Note that for more precise ordering, not the AABBs central position but their closer corner shall be the base for ordering.
 
         for (size_t iChild = 0; iChild < m_vChildren.size(); iChild++)
         {
@@ -689,19 +698,22 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromFirstNode(
 
     if (getNodeType() == Parent)
     {
-        // TODO: this calculateIndex()-based logic should work, check why is this commented out? Looks faster.
-        // Update: because nodes can overlap. Calculating index will get a node which contains colliding objects with high probability,
+        // Reminder: this calculateIndex()-based logic cannot work:
+        //   const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
+        //   const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
+        //   return bvhNode.findXXX(objAabb, &bvhNode);
+        // Because nodes can overlap. Calculating index will get a node which contains colliding objects with high probability,
         // BUT there could be another overlapping sibling node which actually contains a colliding object.
         // Also, Octree-position based calculateIndex() is more like for determining close objects based on position, not
-        // taking sizes into account.
-        // However, we can introduce a distance-based optimization. Instead of iterating over the child nodes from 0 to 7,
-        // we could iterator over them in the order of their distance from the given AABB. Ordering them takes some time,
+        // taking sizes into account i.e. there can be an object with its position further away from us but due to its size
+        // still colliding with us, unlike a much closer but smaller object.
+        // 
+        // TODO: OPT: However, we can introduce a distance-based optimization. Instead of iterating over the child nodes from 0 to 7,
+        // we could iterate over them in the order of their distance from the given AABB. Ordering them takes some time,
         // but most probably we can detect the collision with the first 1-2 sibling nodes and can skip the rest of siblings,
         // and this approach on each consecutive level could greatly improve detection time, if we have a deeper tree.
         // Of course the linear approach will be always faster if the collision always happens around children indices 0 or 1.
-        //const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
-        //const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
-        //return bvhNode.findAllColliderObjects_startFromFirstNode(objAabb, &bvhNode, colliders);
+        // Note that for more precise ordering, not the AABBs central position but their closer corner shall be the base for ordering.
 
         for (size_t iChild = 0; iChild < m_vChildren.size(); iChild++)
         {
@@ -782,7 +794,7 @@ void PureBoundingVolumeHierarchy::updateAndEnableAabbDebugRendering(
 
     if (nodeType == LeafEmpty)
     {
-        // yes, empty leaf node also has aabb but that is the default-initialized [0,0,0]-sized :) so we use Octree node's size
+        // yes, empty leaf node also has aabb with this current implementation
         m_objDebugBox->SetScaling(getSize());
     }
     else
@@ -847,8 +859,7 @@ TPureBool PureBoundingVolumeHierarchy::subdivide()
             PureBoundingVolumeHierarchy* const pChildNode = new PureBoundingVolumeHierarchy(getMaxDepthLevel(), getDepthLevel() + 1);
             m_vChildren.push_back(pChildNode);
             pChildNode->setSize(getSize() / 2.f); // we do it here, not in ctor above. Reason: Longer Ctor would set size for AABB too, but here we don't know position, which
-                                                  // is also required for that longer Ctor. Position is set by Octree code after we are returning from here, but before
-                                                  // postSubdivideDone() is invoked by Octree code.
+                                                  // is also required for that longer Ctor. Position is set by Octree code after we are returning from here.
         }
     }
     catch (const std::exception&)
