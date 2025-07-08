@@ -505,7 +505,6 @@ void PureOctree::disableNodeDebugRendering()
 
 TPureBool PureOctree::subdivide()
 {
-    // TODO: change assert to returnin false!
     assert(m_vChildren.size() == 0);
     try
     {

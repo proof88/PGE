@@ -547,8 +547,8 @@ private:
         b &= assertFalse(treeShortCtor.setPos(treeOrigin2), "setpos shortctor 2");
         b &= assertEquals(treeOrigin, treeShortCtor.getAABB().getPosVec(), "aabb shortctor 2");
 
-        b &= assertFalse(treeLongCtor.setPos(treeOrigin), "setpos treeLongCtor 2");
-        b &= assertEquals(treeOrigin2, treeLongCtor.getAABB().getPosVec(), "aabb treeLongCtor 2");
+        b &= assertFalse(treeLongCtor.setPos(treeOrigin2), "setpos treeLongCtor 2");
+        b &= assertEquals(treeOrigin, treeLongCtor.getAABB().getPosVec(), "aabb treeLongCtor 2");
 
         return b;
     }

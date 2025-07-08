@@ -30,6 +30,12 @@
     fully bound all their children and contained objects, and this implies that their position also changes with each size updates.
     BUT, size and position of their ancestor Octree nodes DO NOT change over time at all.
 
+    Also note that in my implementation, for some reason I decided to initialize the AABB of BVH nodes to have the same position and size as their
+    Octree ancestor node. I don't exactly remember the reason, however this shall not add significant performance penalty to the collision checks.
+    If this need to be changed in the future i.e. revert to the original behavior where AABB of BVH nodes are NOT initialized like this, it shall be
+    done on a NEW class, by copying this and updating the behavior, and copying and updating the relevant unit tests accordingly, because I want
+    to keep this current behavior also for some time for future experiments with different use cases.
+
     Note that there are also other ways to build up a BVH, for example here binary tree is used:
     https://www.haroldserrano.com/blog/visualizing-the-boundary-volume-hierarchy-collision-algorithm
 
@@ -60,6 +66,9 @@ public:
     PureBoundingVolumeHierarchy& operator=(const PureBoundingVolumeHierarchy&) = delete;
     PureBoundingVolumeHierarchy(PureBoundingVolumeHierarchy&&) = delete;
     PureBoundingVolumeHierarchy& operator=(PureBoundingVolumeHierarchy&&) = delete;
+
+    virtual bool setPos(const PureVector& pos) override;
+    virtual bool setSize(TPureFloat) override;
 
     // yes, this is valid: overriding base method with a return type derived from the original return type: called as "covariant return type"
     virtual PureBoundingVolumeHierarchy* insertObject(const PureObject3D& obj) override;              /**< Inserts the given object in the octree. */

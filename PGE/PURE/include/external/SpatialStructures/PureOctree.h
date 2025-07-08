@@ -111,9 +111,9 @@ public:
     bool setMaxDepthLevel(TPureUInt maxLevel);                      /**< Sets the maximum depth level of the octree node. */
     NodeType getNodeType() const;                                   /**< Gets the type of the octree node which depends on if the node has any objects or children nodes. */
     const PureVector& getPos() const;                               /**< Gets the world-space position of the node as specified in the constructor. */
-    bool setPos(const PureVector& pos);                             /**< Sets the world-space position of this root node. */
+    virtual bool setPos(const PureVector& pos);                     /**< Sets the world-space position of this root node. */
     TPureFloat getSize() const;                                     /**< Gets the length of the side of the cube represented by this node as it was specified in the constructor. */
-    bool setSize(TPureFloat);                                       /**< Sets the length of the side of the cube represented by this root node. */
+    virtual bool setSize(TPureFloat);                               /**< Sets the length of the side of the cube represented by this root node. */
     const std::vector<PureOctree*>& getChildren() const;            /**< Gets the children nodes of this node. */
     const PureOctree* getParent() const;                            /**< Gets the parent node of this node. */
     const std::set<const PureObject3D*>& getObjects() const;        /**< Gets the stored objects of this node. */
