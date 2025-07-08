@@ -36,6 +36,8 @@ protected:
         om = NULL;
         addSubTest("testCtor1", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testCtor1);
         addSubTest("testCtor2", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testCtor2);
+        addSubTest("testSetPosVecAffectsAabb", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testSetPosVecAffectsAabb);
+        addSubTest("testSetSizeAffectsAabb", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testSetSizeAffectsAabb);
         addSubTest("testInsertObject", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testInsertObject);
         addSubTest("testFindLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindLowestLevelFittingNode);
         addSubTest("testFindOneColliderObject_1_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_1_startFromLowestLevelFittingNode);
@@ -502,12 +504,94 @@ private:
         PureBoundingVolumeHierarchy tree(PureVector(1, 2, 3), 1000.0f, 3, 0);
         
         return (assertEquals(1.0f, tree.getPos().getX(), "pos.x") &
-        assertEquals(2.0f, tree.getPos().getY(), "pos.y") &
-        assertEquals(3.0f, tree.getPos().getZ(), "pos.z") &
-        assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
-        assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
-        assertEquals(1000.0f, tree.getSize(), "size") &
-        assertTrue(assertTreeIsReset(tree), "reset")) != 0;
+            assertEquals(2.0f, tree.getPos().getY(), "pos.y") &
+            assertEquals(3.0f, tree.getPos().getZ(), "pos.z") &
+            assertEquals((TPureUInt)3, tree.getMaxDepthLevel(), "max depth level") &
+            assertEquals((TPureUInt)0, tree.getDepthLevel(), "root node depth level") &
+            assertEquals(1000.0f, tree.getSize(), "size") &
+            assertTrue(assertTreeIsReset(tree), "reset")) != 0;
+    }
+
+    bool testSetPosVecAffectsAabb()
+    {
+        const PureVector treeOrigin(100.f, 200.f, 300.f);
+        const float treeSize = 1000.f;
+
+        PureBoundingVolumeHierarchy treeShortCtor(3, 0);
+        treeShortCtor.setSize(treeSize);
+
+        bool b = true;
+        b &= assertTrue(treeShortCtor.setPos(treeOrigin), "setpos shortctor 1");
+        b &= assertEquals(treeOrigin, treeShortCtor.getAABB().getPosVec(), "aabb shortctor 1");
+
+        const PureVector treeOrigin2(1.f, 2.f, 3.f);
+        PureBoundingVolumeHierarchy treeLongCtor(treeOrigin2, treeSize, 3, 0);
+        // these should also pass since tree is still empty
+        b &= assertTrue(treeLongCtor.setPos(treeOrigin), "setpos treeLongCtor 1");
+        b &= assertEquals(treeOrigin, treeLongCtor.getAABB().getPosVec(), "aabb treeLongCtor 1");
+
+        PureObject3D* const obj1 = om->createBox(2.0f, 2.0f, 2.0f);
+        if (!obj1)
+        {
+            return assertFalse(true, "obj1 null");
+        }
+
+        b &= assertNotNull(treeShortCtor.insertObject(*obj1), "insert short");
+        b &= assertNotNull(treeLongCtor.insertObject(*obj1), "insert long");
+        if (!b)
+        {
+            return false;
+        }
+
+        // now none of the trees is empty so operation shall fail
+        b &= assertFalse(treeShortCtor.setPos(treeOrigin2), "setpos shortctor 2");
+        b &= assertEquals(treeOrigin, treeShortCtor.getAABB().getPosVec(), "aabb shortctor 2");
+
+        b &= assertFalse(treeLongCtor.setPos(treeOrigin), "setpos treeLongCtor 2");
+        b &= assertEquals(treeOrigin2, treeLongCtor.getAABB().getPosVec(), "aabb treeLongCtor 2");
+
+        return b;
+    }
+
+    bool testSetSizeAffectsAabb()
+    {
+        const PureVector treeOrigin(100.f, 200.f, 300.f);
+        const float treeSize = 1000.f;
+
+        PureBoundingVolumeHierarchy treeShortCtor(3, 0);
+        treeShortCtor.setPos(treeOrigin);
+
+        bool b = true;
+        b &= assertTrue(treeShortCtor.setSize(treeSize), "setsize shortctor 1");
+        b &= assertEquals(PureVector(treeSize, treeSize, treeSize), treeShortCtor.getAABB().getSizeVec(), "aabb shortctor 1");
+
+        const float treeSize2 = 10.f;
+        PureBoundingVolumeHierarchy treeLongCtor(treeOrigin, treeSize2, 3, 0);
+        // these should also pass since tree is still empty
+        b &= assertTrue(treeLongCtor.setSize(treeSize), "setsize treeLongCtor 1");
+        b &= assertEquals(PureVector(treeSize, treeSize, treeSize), treeLongCtor.getAABB().getSizeVec(), "aabb treeLongCtor 1");
+
+        PureObject3D* const obj1 = om->createBox(2.0f, 2.0f, 2.0f);
+        if (!obj1)
+        {
+            return assertFalse(true, "obj1 null");
+        }
+
+        b &= assertNotNull(treeShortCtor.insertObject(*obj1), "insert short");
+        b &= assertNotNull(treeLongCtor.insertObject(*obj1), "insert long");
+        if (!b)
+        {
+            return false;
+        }
+
+        // now none of the trees is empty so operation shall fail
+        b &= assertFalse(treeShortCtor.setSize(treeSize2), "setsize shortctor 2");
+        b &= assertEquals(PureVector(treeSize, treeSize, treeSize), treeShortCtor.getAABB().getSizeVec(), "aabb shortctor 2");
+
+        b &= assertFalse(treeShortCtor.setSize(treeSize2), "setsize treeLongCtor 2");
+        b &= assertEquals(PureVector(treeSize, treeSize, treeSize), treeLongCtor.getAABB().getSizeVec(), "aabb treeLongCtor 2");
+
+        return b;
     }
 
     bool testInsertObject_main(bool initTreeDimensionsInCtor)
