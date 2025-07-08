@@ -94,7 +94,7 @@ PureOctree::~PureOctree()
     @param pos The world-space position for which child index should be selected in the current node.
     @return Calculated child index. If given position is same as Octree Node position, index will be TopRightBack.
 */
-PureOctree::ChildIndex PureOctree::calculateIndex(const PureVector& pos) const
+PureOctree::ChildIndex PureOctree::calculateChildIndex(const PureVector& pos) const
 {
     ChildIndex iChild = 0;  // TopLeftFront
     
@@ -112,7 +112,7 @@ PureOctree::ChildIndex PureOctree::calculateIndex(const PureVector& pos) const
     }
 
     return iChild;
-} // calculateIndex()
+} // calculateChildIndex()
 
 
 /**
@@ -145,7 +145,7 @@ PureOctree* PureOctree::insertObject(const PureObject3D& obj)
     
     if ( getNodeType() == Parent )
     {   // pass the object to next depth level
-        const ChildIndex iChild = calculateIndex(obj.getPosVec());
+        const ChildIndex iChild = calculateChildIndex(obj.getPosVec());
         return m_vChildren[iChild]->insertObject(obj);
     }
     
@@ -186,11 +186,11 @@ PureOctree* PureOctree::insertObject(const PureObject3D& obj)
         // add the already inserted object to one of the new child nodes, remove it from this node
         const PureObject3D* objAlreadyInTree = *(m_vObjects.begin());
         m_vObjects.clear();
-        const ChildIndex iChildForObjAlreadyInTree = calculateIndex(objAlreadyInTree->getPosVec());
+        const ChildIndex iChildForObjAlreadyInTree = calculateChildIndex(objAlreadyInTree->getPosVec());
         m_vChildren[iChildForObjAlreadyInTree]->insertObject(*objAlreadyInTree);
 
         // add the new object also to one of the new child nodes
-        const ChildIndex iChild = calculateIndex(obj.getPosVec());
+        const ChildIndex iChild = calculateChildIndex(obj.getPosVec());
         return m_vChildren[iChild]->insertObject(obj);
     }
 } // insertObject()
@@ -214,7 +214,7 @@ const PureOctree* PureOctree::findObject(const PureObject3D& obj) const
     else if ( getNodeType() == Parent )
     {
         // request the suitable children on next depth level to try find the object
-        const ChildIndex iChild = calculateIndex(obj.getPosVec());
+        const ChildIndex iChild = calculateChildIndex(obj.getPosVec());
         return m_vChildren[iChild]->findObject(obj);
     }
 

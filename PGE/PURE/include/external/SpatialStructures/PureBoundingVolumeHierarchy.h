@@ -79,11 +79,11 @@ public:
 
     const PureAxisAlignedBoundingBox& getAABB() const;              /**< Gets the AABB of this node. */
 
-    const PureBoundingVolumeHierarchy* findLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb) const;
-    const PureBoundingVolumeHierarchy* findLowestLevelFittingNode(const PureObject3D& obj) const;
+    const PureBoundingVolumeHierarchy* findOneLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb) const;
+    const PureBoundingVolumeHierarchy* findOneLowestLevelFittingNode(const PureObject3D& obj) const;
 
-    PureBoundingVolumeHierarchy* findLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb);
-    PureBoundingVolumeHierarchy* findLowestLevelFittingNode(const PureObject3D& obj);
+    PureBoundingVolumeHierarchy* findOneLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb);
+    PureBoundingVolumeHierarchy* findOneLowestLevelFittingNode(const PureObject3D& obj);
 
     const PureObject3D* findOneColliderObject_startFromLowestLevelFittingNode(
         const PureAxisAlignedBoundingBox& objAabb,

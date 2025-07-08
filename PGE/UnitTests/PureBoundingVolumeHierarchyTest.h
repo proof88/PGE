@@ -39,7 +39,7 @@ protected:
         addSubTest("testSetPosVecAffectsAabb", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testSetPosVecAffectsAabb);
         addSubTest("testSetSizeAffectsAabb", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testSetSizeAffectsAabb);
         addSubTest("testInsertObject", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testInsertObject);
-        addSubTest("testFindLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindLowestLevelFittingNode);
+        addSubTest("testFindOneLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneLowestLevelFittingNode);
         addSubTest("testFindOneColliderObject_1_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_1_startFromLowestLevelFittingNode);
         addSubTest("testFindAllColliderObjects_1_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects_1_startFromLowestLevelFittingNode);
         addSubTest("testFindOneColliderObject_2_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_2_startFromLowestLevelFittingNode);
@@ -769,7 +769,7 @@ private:
         return b;
     }
 
-    bool testFindLowestLevelFittingNode_main(bool initTreeDimensionsInCtor)
+    bool testFindOneLowestLevelFittingNode_main(bool initTreeDimensionsInCtor)
     {
         // used to test if the given world-space position other than (0,0,0) is really taken into calculations;
         // if there is any issue, change this to (0,0,0) to find out probable reason of tree not properly taking origin pos into account!
@@ -805,22 +805,22 @@ private:
             return false;
         }
 
-        bool b = assertTrue(node1 == tree.findLowestLevelFittingNode(*obj1), "find 1 from root 1");
-        b &= assertTrue(node2 == tree.findLowestLevelFittingNode(*obj2), "find 2 from root 2");
-        b &= assertTrue(node3 == tree.findLowestLevelFittingNode(*obj3), "find 3 from root 3");
-        b &= assertTrue(node4 == tree.findLowestLevelFittingNode(*obj4), "find 4 from root 4");
-        b &= assertTrue(nullptr == tree.findLowestLevelFittingNode(*obj5), "find 5 from root 5");
+        bool b = assertTrue(node1 == tree.findOneLowestLevelFittingNode(*obj1), "find 1 from root 1");
+        b &= assertTrue(node2 == tree.findOneLowestLevelFittingNode(*obj2), "find 2 from root 2");
+        b &= assertTrue(node3 == tree.findOneLowestLevelFittingNode(*obj3), "find 3 from root 3");
+        b &= assertTrue(node4 == tree.findOneLowestLevelFittingNode(*obj4), "find 4 from root 4");
+        b &= assertTrue(nullptr == tree.findOneLowestLevelFittingNode(*obj5), "find 5 from root 5");
 
-        b &= assertTrue(node1 == node1->findLowestLevelFittingNode(*obj1), "find 1 from node 1");
-        b &= assertTrue(node2 == node2->findLowestLevelFittingNode(*obj2), "find 2 from node 2");
-        b &= assertTrue(node3 == node3->findLowestLevelFittingNode(*obj3), "find 3 from node 3");
-        b &= assertTrue(node4 == node4->findLowestLevelFittingNode(*obj4), "find 4 from node 4");
+        b &= assertTrue(node1 == node1->findOneLowestLevelFittingNode(*obj1), "find 1 from node 1");
+        b &= assertTrue(node2 == node2->findOneLowestLevelFittingNode(*obj2), "find 2 from node 2");
+        b &= assertTrue(node3 == node3->findOneLowestLevelFittingNode(*obj3), "find 3 from node 3");
+        b &= assertTrue(node4 == node4->findOneLowestLevelFittingNode(*obj4), "find 4 from node 4");
 
 
         return b;
     }
 
-    bool testFindLowestLevelFittingNode()
+    bool testFindOneLowestLevelFittingNode()
     {
         bool b = true;
 
@@ -828,7 +828,7 @@ private:
         for (int i = 0; i < 2; i++)
         {
             b &= assertTrue(
-                testFindLowestLevelFittingNode_main(bInitTreeDimensionsInCtor),
+                testFindOneLowestLevelFittingNode_main(bInitTreeDimensionsInCtor),
                 (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
             bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
         }

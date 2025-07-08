@@ -226,7 +226,7 @@ const PureAxisAlignedBoundingBox& PureBoundingVolumeHierarchy::getAABB() const
 }
 
 /**
-    Finds the lowest-level node within the tree which still FULLY contains the given AABB.
+    Finds a lowest-level node within the tree which still FULLY contains the given AABB.
 
     Note that on the same level, BVH nodes are allowed to overlap with their AABBs, therefore in some situations
     a given AABB might be fully contained by more than 1 BVH child on the same level.
@@ -235,9 +235,9 @@ const PureAxisAlignedBoundingBox& PureBoundingVolumeHierarchy::getAABB() const
 
     @param objAabb The AABB for which we are searching the lowest-level node that fully bounds this AABB.
 
-    @return The lowest-level node within the tree which still FULLY contains the given AABB, or nullptr if there is no such node.
+    @return A lowest-level node within the tree which still FULLY contains the given AABB, or nullptr if there is no such node.
 */
-const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb) const
+const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb) const
 {
     ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
     if (m_aabb.isInside(objAabb))
@@ -251,7 +251,7 @@ const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findLowestLevelF
             //{
             //    assert(pNode);
             //    PureBoundingVolumeHierarchy& bvhNode = static_cast<PureBoundingVolumeHierarchy&>(*pNode);
-            //    PureBoundingVolumeHierarchy* const pBvhNodeTightestFittingChild = bvhNode.findLowestLevelFittingNode(objAabb);
+            //    PureBoundingVolumeHierarchy* const pBvhNodeTightestFittingChild = bvhNode.findOneLowestLevelFittingNode(objAabb);
             //    if (pBvhNodeTightestFittingChild)
             //    {
             //        return pBvhNodeTightestFittingChild;
@@ -262,11 +262,11 @@ const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findLowestLevelF
             // might be colliding with multiple sibling nodes, and even multiple might fully bound it even though obviously only one
             // of them will actually list it amongst its m_vObjects (if the object is already inserted into the tree).
 
-            // Since calculateIndex() is implemented in the Octree, and Octree node positions and dimensions do not change over time
+            // Since calculateChildIndex() is implemented in the Octree, and Octree node positions and dimensions do not change over time
             // (unlike BVH node's AABB), it stays reliable over time to quickly go down in children hierarchy fast.
-            const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
+            const ChildIndex iChild = calculateChildIndex(objAabb.getPosVec());
             PureBoundingVolumeHierarchy& bvhNode = static_cast<PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
-            PureBoundingVolumeHierarchy* const pBvhNodeTightestFittingChild = bvhNode.findLowestLevelFittingNode(objAabb);
+            PureBoundingVolumeHierarchy* const pBvhNodeTightestFittingChild = bvhNode.findOneLowestLevelFittingNode(objAabb);
             if (pBvhNodeTightestFittingChild)
             {
                 return pBvhNodeTightestFittingChild;
@@ -275,7 +275,7 @@ const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findLowestLevelF
             // if we are here, it means even though we are parent, none of our children contain the given aabb, even though we have checked
             // only 1 immediate child, so we are the tightest fitting node.
 
-            // TODO: OPT: but another optimal approach could be to simply go down in the hierarchy by only using calculateIndex() at each level,
+            // TODO: OPT: but another optimal approach could be to simply go down in the hierarchy by only using calculateChildIndex() at each level,
             // and from there, start going up by invoking that m_aabb.isInside() that we are now doing from root towards down.
             // I'm also thinking that a parameter might control if we going like this or the other way that is currently implemented, because
             // this extra parameter specified by the app who could have more clue based on the size/kind of object, can better fine-tune the algorithm.
@@ -289,7 +289,7 @@ const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findLowestLevelF
 }
 
 /**
-    Finds the lowest-level node within the tree which still FULLY contains the given Object3D.
+    Finds a lowest-level node within the tree which still FULLY contains the given Object3D.
 
     Note that on the same level, BVH nodes are allowed to overlap with their AABBs, therefore in some situations
     a given object might be fully contained by more than 1 BVH child on the same level.
@@ -298,32 +298,32 @@ const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findLowestLevelF
 
     @param obj The Object3D for which we are searching the smallest (lowest-level) node that fully bounds this Object3D.
 
-    @return The lowest-level node within the tree which still FULLY contains the given Object3D, or nullptr if there is no such node.
+    @return A lowest-level node within the tree which still FULLY contains the given Object3D, or nullptr if there is no such node.
 */
-const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findLowestLevelFittingNode(const PureObject3D& obj) const
+const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLevelFittingNode(const PureObject3D& obj) const
 {
     PureAxisAlignedBoundingBox objAabb(obj.getPosVec(), obj.getScaledSizeVec());
-    return findLowestLevelFittingNode(objAabb);
+    return findOneLowestLevelFittingNode(objAabb);
 }
 
 /**
     Same as the const-version, however we need a non-const version as well for the same reason as why we have non-const version of
     other functions as well such as getDebugBox().
 */
-PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb)
+PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb)
 {
     // simply invoke the const-version by const-casting:
-    return const_cast<PureBoundingVolumeHierarchy*>(static_cast<const PureBoundingVolumeHierarchy*>(this)->findLowestLevelFittingNode(objAabb));
+    return const_cast<PureBoundingVolumeHierarchy*>(static_cast<const PureBoundingVolumeHierarchy*>(this)->findOneLowestLevelFittingNode(objAabb));
 }
 
 /**
     Same as the const-version, however we need a non-const version as well for the same reason as why we have non-const version of
     other functions as well such as getDebugBox().
 */
-PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findLowestLevelFittingNode(const PureObject3D& obj)
+PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLevelFittingNode(const PureObject3D& obj)
 {
     // simply invoke the const-version by const-casting:
-    return const_cast<PureBoundingVolumeHierarchy*>(static_cast<const PureBoundingVolumeHierarchy*>(this)->findLowestLevelFittingNode(obj));
+    return const_cast<PureBoundingVolumeHierarchy*>(static_cast<const PureBoundingVolumeHierarchy*>(this)->findOneLowestLevelFittingNode(obj));
 }
 
 /**
@@ -350,7 +350,7 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFrom
     {
         ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
 
-        const auto pLowestLevelFittingNode = findLowestLevelFittingNode(objAabb);
+        const auto pLowestLevelFittingNode = findOneLowestLevelFittingNode(objAabb);
         if (pLowestLevelFittingNode)
         {
             // it is NOT enough to check collision with the tightest fitting node, the reason is that sibling BVH nodes can overlap,
@@ -370,13 +370,13 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFrom
 
     if (getNodeType() == Parent)
     {
-        // Reminder: this calculateIndex()-based logic cannot work:
-        //   const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
+        // Reminder: this calculateChildIndex()-based logic cannot work:
+        //   const ChildIndex iChild = calculateChildIndex(objAabb.getPosVec());
         //   const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
         //   return bvhNode.findXXX(objAabb, &bvhNode);
         // Because nodes can overlap. Calculating index will get a node which contains colliding objects with high probability,
         // BUT there could be another overlapping sibling node which actually contains a colliding object.
-        // Also, Octree-position based calculateIndex() is more like for determining close objects based on position, not
+        // Also, Octree-position based calculateChildIndex() is more like for determining close objects based on position, not
         // taking sizes into account i.e. there can be an object with its position further away from us but due to its size
         // still colliding with us, unlike a much closer but smaller object.
         // 
@@ -478,13 +478,13 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFrom
 
     if (getNodeType() == Parent)
     {
-        // Reminder: this calculateIndex()-based logic cannot work:
-        //   const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
+        // Reminder: this calculateChildIndex()-based logic cannot work:
+        //   const ChildIndex iChild = calculateChildIndex(objAabb.getPosVec());
         //   const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
         //   return bvhNode.findXXX(objAabb, &bvhNode);
         // Because nodes can overlap. Calculating index will get a node which contains colliding objects with high probability,
         // BUT there could be another overlapping sibling node which actually contains a colliding object.
-        // Also, Octree-position based calculateIndex() is more like for determining close objects based on position, not
+        // Also, Octree-position based calculateChildIndex() is more like for determining close objects based on position, not
         // taking sizes into account i.e. there can be an object with its position further away from us but due to its size
         // still colliding with us, unlike a much closer but smaller object.
         // 
@@ -575,7 +575,7 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFit
         ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
         colliders.clear();
 
-        const auto pLowestLevelFittingNode = findLowestLevelFittingNode(objAabb);
+        const auto pLowestLevelFittingNode = findOneLowestLevelFittingNode(objAabb);
         if (pLowestLevelFittingNode)
         {
             // it is NOT enough to check collision with the tightest fitting node, the reason is that sibling BVH nodes can overlap,
@@ -595,13 +595,13 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFit
 
     if (getNodeType() == Parent)
     {
-        // Reminder: this calculateIndex()-based logic cannot work:
-        //   const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
+        // Reminder: this calculateChildIndex()-based logic cannot work:
+        //   const ChildIndex iChild = calculateChildIndex(objAabb.getPosVec());
         //   const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
         //   return bvhNode.findXXX(objAabb, &bvhNode);
         // Because nodes can overlap. Calculating index will get a node which contains colliding objects with high probability,
         // BUT there could be another overlapping sibling node which actually contains a colliding object.
-        // Also, Octree-position based calculateIndex() is more like for determining close objects based on position, not
+        // Also, Octree-position based calculateChildIndex() is more like for determining close objects based on position, not
         // taking sizes into account i.e. there can be an object with its position further away from us but due to its size
         // still colliding with us, unlike a much closer but smaller object.
         // 
@@ -698,13 +698,13 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromFirstNode(
 
     if (getNodeType() == Parent)
     {
-        // Reminder: this calculateIndex()-based logic cannot work:
-        //   const ChildIndex iChild = calculateIndex(objAabb.getPosVec());
+        // Reminder: this calculateChildIndex()-based logic cannot work:
+        //   const ChildIndex iChild = calculateChildIndex(objAabb.getPosVec());
         //   const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
         //   return bvhNode.findXXX(objAabb, &bvhNode);
         // Because nodes can overlap. Calculating index will get a node which contains colliding objects with high probability,
         // BUT there could be another overlapping sibling node which actually contains a colliding object.
-        // Also, Octree-position based calculateIndex() is more like for determining close objects based on position, not
+        // Also, Octree-position based calculateChildIndex() is more like for determining close objects based on position, not
         // taking sizes into account i.e. there can be an object with its position further away from us but due to its size
         // still colliding with us, unlike a much closer but smaller object.
         // 

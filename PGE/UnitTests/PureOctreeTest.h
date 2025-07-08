@@ -36,7 +36,7 @@ protected:
         om = NULL;
         addSubTest("testCtor1", (PFNUNITSUBTEST)&PureOctreeTest::testCtor1);
         addSubTest("testCtor2", (PFNUNITSUBTEST) &PureOctreeTest::testCtor2);
-        addSubTest("testCalculateIndex", (PFNUNITSUBTEST) &PureOctreeTest::testCalculateIndex);
+        addSubTest("testCalculateChildIndex", (PFNUNITSUBTEST) &PureOctreeTest::testCalculateChildIndex);
         addSubTest("testInsertObject", (PFNUNITSUBTEST) &PureOctreeTest::testInsertObject);
         addSubTest("testFindObject", (PFNUNITSUBTEST) &PureOctreeTest::testFindObject);
         addSubTest("testSetSize", (PFNUNITSUBTEST)&PureOctreeTest::testSetSize);
@@ -251,16 +251,16 @@ private:
             assertTrue(assertTreeIsReset(tree), "reset")) != 0;
     }
 
-    bool testCalculateIndex()
+    bool testCalculateChildIndex()
     {
         PureOctree tree(PureVector(), 1000.0f, 2, 0);
         PureVector vec1(-200.f, 200.f, 200.f);
         PureVector vec2(200.f, -200.f, -200.f);
         PureVector vec3;
 
-        return (assertEquals(PureOctree::ChildIndex(PureOctree::TOP | PureOctree::LEFT | PureOctree::BACK), tree.calculateIndex(vec1), "vec1") &
-            assertEquals(PureOctree::ChildIndex(PureOctree::BOTTOM | PureOctree::RIGHT | PureOctree::FRONT), tree.calculateIndex(vec2), "vec2") &
-            assertEquals(PureOctree::ChildIndex(PureOctree::TOP | PureOctree::RIGHT | PureOctree::BACK), tree.calculateIndex(vec3), "vec3")) != 0;
+        return (assertEquals(PureOctree::ChildIndex(PureOctree::TOP | PureOctree::LEFT | PureOctree::BACK), tree.calculateChildIndex(vec1), "vec1") &
+            assertEquals(PureOctree::ChildIndex(PureOctree::BOTTOM | PureOctree::RIGHT | PureOctree::FRONT), tree.calculateChildIndex(vec2), "vec2") &
+            assertEquals(PureOctree::ChildIndex(PureOctree::TOP | PureOctree::RIGHT | PureOctree::BACK), tree.calculateChildIndex(vec3), "vec3")) != 0;
     }
 
     bool testInsertObject()

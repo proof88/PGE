@@ -99,7 +99,7 @@ public:
     PureOctree(PureOctree&&) = delete;
     PureOctree& operator=(PureOctree&&) = delete;
 
-    ChildIndex calculateIndex(const PureVector& pos) const;         /**< Calculates child node index for the given position in the current node. */
+    ChildIndex calculateChildIndex(const PureVector& pos) const;         /**< Calculates child node index for the given position in the current node. */
 
     virtual PureOctree* insertObject(const PureObject3D& obj);      /**< Inserts the given object in the octree. */
     // remove is not supported, since currently Octree is used for static objects, which are not being deleted,
