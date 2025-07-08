@@ -510,7 +510,7 @@ private:
         assertTrue(assertTreeIsReset(tree), "reset")) != 0;
     }
 
-    bool testInsertObject()
+    bool testInsertObject_main(bool initTreeDimensionsInCtor)
     {
         // basically this is the same test as found in PureOctreeTest.h, but here we are interested in the
         // BVH-related stuff only
@@ -518,6 +518,7 @@ private:
         // used to test if the given world-space position other than (0,0,0) is really taken into calculations;
         // if there is any issue, change this to (0,0,0) to find out probable reason of tree not properly taking origin pos into account!
         const PureVector treeOrigin(100.f, 200.f, 300.f);
+        const float treeSize = 1000.f;
 
         PureObject3D* obj1 = nullptr;
         PureObject3D* obj2 = nullptr;
@@ -528,7 +529,21 @@ private:
         PureBoundingVolumeHierarchy* node2 = nullptr;
         PureBoundingVolumeHierarchy* node3 = nullptr;
         PureBoundingVolumeHierarchy* node4 = nullptr;
-        PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
+        
+        PureBoundingVolumeHierarchy tree_dimensionsInCtor(treeOrigin, treeSize, 2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy tree_dimensionsAfterCtor(2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy& tree = initTreeDimensionsInCtor ? tree_dimensionsInCtor : tree_dimensionsAfterCtor;
+        if (!initTreeDimensionsInCtor)
+        {
+            bool bInit = true;
+            bInit &= assertTrue(tree.setPos(treeOrigin), "tree setpos after ctor");
+            bInit &= assertTrue(tree.setSize(treeSize), "tree setsize after ctor");
+            if (!bInit)
+            {
+                return false;
+            }
+        }
+        
         if (!assertTrue(buildBVH_1(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH_1"))
         {
             return false;
@@ -654,11 +669,28 @@ private:
         return b;
     }
 
-    bool testFindLowestLevelFittingNode()
+    bool testInsertObject()
+    {
+        bool b = true;
+
+        bool bInitTreeDimensionsInCtor = true;
+        for (int i = 0; i < 2; i++)
+        {
+            b &= assertTrue(
+                testInsertObject_main(bInitTreeDimensionsInCtor),
+                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
+            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+        }
+
+        return b;
+    }
+
+    bool testFindLowestLevelFittingNode_main(bool initTreeDimensionsInCtor)
     {
         // used to test if the given world-space position other than (0,0,0) is really taken into calculations;
         // if there is any issue, change this to (0,0,0) to find out probable reason of tree not properly taking origin pos into account!
         const PureVector treeOrigin(100.f, 200.f, 300.f);
+        const float treeSize = 1000.f;
 
         PureObject3D* obj1 = nullptr;
         PureObject3D* obj2 = nullptr;
@@ -669,7 +701,21 @@ private:
         PureBoundingVolumeHierarchy* node2 = nullptr;
         PureBoundingVolumeHierarchy* node3 = nullptr;
         PureBoundingVolumeHierarchy* node4 = nullptr;
-        PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
+
+        PureBoundingVolumeHierarchy tree_dimensionsInCtor(treeOrigin, treeSize, 2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy tree_dimensionsAfterCtor(2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy& tree = initTreeDimensionsInCtor ? tree_dimensionsInCtor : tree_dimensionsAfterCtor;
+        if (!initTreeDimensionsInCtor)
+        {
+            bool bInit = true;
+            bInit &= assertTrue(tree.setPos(treeOrigin), "tree setpos after ctor");
+            bInit &= assertTrue(tree.setSize(treeSize), "tree setsize after ctor");
+            if (!bInit)
+            {
+                return false;
+            }
+        }
+
         if (!assertTrue(buildBVH_1(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH_1"))
         {
             return false;
@@ -690,9 +736,26 @@ private:
         return b;
     }
 
-    bool testFindOneColliderObject_1_startFromLowestLevelFittingNode()
+    bool testFindLowestLevelFittingNode()
+    {
+        bool b = true;
+
+        bool bInitTreeDimensionsInCtor = true;
+        for (int i = 0; i < 2; i++)
+        {
+            b &= assertTrue(
+                testFindLowestLevelFittingNode_main(bInitTreeDimensionsInCtor),
+                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
+            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+        }
+
+        return b;
+    }
+
+    bool testFindOneColliderObject_1_startFromLowestLevelFittingNode_main(bool initTreeDimensionsInCtor)
     {
         const PureVector treeOrigin(100.f, 200.f, 300.f);
+        const float treeSize = 1000.f;
 
         PureObject3D* obj1 = nullptr;
         PureObject3D* obj2 = nullptr;
@@ -703,7 +766,21 @@ private:
         PureBoundingVolumeHierarchy* node2 = nullptr;
         PureBoundingVolumeHierarchy* node3 = nullptr;
         PureBoundingVolumeHierarchy* node4 = nullptr;
-        PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
+
+        PureBoundingVolumeHierarchy tree_dimensionsInCtor(treeOrigin, treeSize, 2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy tree_dimensionsAfterCtor(2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy& tree = initTreeDimensionsInCtor ? tree_dimensionsInCtor : tree_dimensionsAfterCtor;
+        if (!initTreeDimensionsInCtor)
+        {
+            bool bInit = true;
+            bInit &= assertTrue(tree.setPos(treeOrigin), "tree setpos after ctor");
+            bInit &= assertTrue(tree.setSize(treeSize), "tree setsize after ctor");
+            if (!bInit)
+            {
+                return false;
+            }
+        }
+
         if (!assertTrue(buildBVH_1(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH_1"))
         {
             return false;
@@ -750,9 +827,26 @@ private:
         return b;
     }
 
-    bool testFindAllColliderObjects_1_startFromLowestLevelFittingNode()
+    bool testFindOneColliderObject_1_startFromLowestLevelFittingNode()
+    {
+        bool b = true;
+
+        bool bInitTreeDimensionsInCtor = true;
+        for (int i = 0; i < 2; i++)
+        {
+            b &= assertTrue(
+                testFindOneColliderObject_1_startFromLowestLevelFittingNode_main(bInitTreeDimensionsInCtor),
+                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
+            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+        }
+
+        return b;
+    }
+
+    bool testFindAllColliderObjects_1_startFromLowestLevelFittingNode_main(bool initTreeDimensionsInCtor)
     {
         const PureVector treeOrigin(100.f, 200.f, 300.f);
+        const float treeSize = 1000.f;
 
         PureObject3D* obj1 = nullptr;
         PureObject3D* obj2 = nullptr;
@@ -763,7 +857,21 @@ private:
         PureBoundingVolumeHierarchy* node2 = nullptr;
         PureBoundingVolumeHierarchy* node3 = nullptr;
         PureBoundingVolumeHierarchy* node4 = nullptr;
-        PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
+
+        PureBoundingVolumeHierarchy tree_dimensionsInCtor(treeOrigin, treeSize, 2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy tree_dimensionsAfterCtor(2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy& tree = initTreeDimensionsInCtor ? tree_dimensionsInCtor : tree_dimensionsAfterCtor;
+        if (!initTreeDimensionsInCtor)
+        {
+            bool bInit = true;
+            bInit &= assertTrue(tree.setPos(treeOrigin), "tree setpos after ctor");
+            bInit &= assertTrue(tree.setSize(treeSize), "tree setsize after ctor");
+            if (!bInit)
+            {
+                return false;
+            }
+        }
+
         if (!assertTrue(buildBVH_1(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH_1"))
         {
             return false;
@@ -892,10 +1000,40 @@ private:
         return b;
     }
 
-    bool testFindOneColliderObject_2_startFromLowestLevelFittingNode()
+    bool testFindAllColliderObjects_1_startFromLowestLevelFittingNode()
+    {
+        bool b = true;
+
+        bool bInitTreeDimensionsInCtor = true;
+        for (int i = 0; i < 2; i++)
+        {
+            b &= assertTrue(
+                testFindAllColliderObjects_1_startFromLowestLevelFittingNode_main(bInitTreeDimensionsInCtor),
+                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
+            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+        }
+
+        return b;
+    }
+
+    bool testFindOneColliderObject_2_startFromLowestLevelFittingNode_main(bool initTreeDimensionsInCtor)
     {
         const PureVector treeOrigin(42.5f, -16.f, 0.f);
-        PureBoundingVolumeHierarchy tree(treeOrigin, 85.0f /* size as calculated during loading map_test_good_2_collision.txt */, 3, 0);
+        const float treeSize = 85.0f;  /* size as calculated during loading map_test_good_2_collision.txt */
+
+        PureBoundingVolumeHierarchy tree_dimensionsInCtor(treeOrigin, treeSize, 3 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy tree_dimensionsAfterCtor(3 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy& tree = initTreeDimensionsInCtor ? tree_dimensionsInCtor : tree_dimensionsAfterCtor;
+        if (!initTreeDimensionsInCtor)
+        {
+            bool bInit = true;
+            bInit &= assertTrue(tree.setPos(treeOrigin), "tree setpos after ctor");
+            bInit &= assertTrue(tree.setSize(treeSize), "tree setsize after ctor");
+            if (!bInit)
+            {
+                return false;
+            }
+        }
 
         PureObject3D* obj1 = nullptr;
         PureObject3D* obj2 = nullptr;
@@ -997,10 +1135,40 @@ private:
         return b;
     }
 
-    bool testFindAllColliderObjects_2_startFromLowestLevelFittingNode()
+    bool testFindOneColliderObject_2_startFromLowestLevelFittingNode()
+    {
+        bool b = true;
+
+        bool bInitTreeDimensionsInCtor = true;
+        for (int i = 0; i < 2; i++)
+        {
+            b &= assertTrue(
+                testFindOneColliderObject_2_startFromLowestLevelFittingNode_main(bInitTreeDimensionsInCtor),
+                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
+            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+        }
+
+        return b;
+    }
+
+    bool testFindAllColliderObjects_2_startFromLowestLevelFittingNode_main(bool initTreeDimensionsInCtor)
     {
         const PureVector treeOrigin(42.5f, -16.f, 0.f);
-        PureBoundingVolumeHierarchy tree(treeOrigin, 85.0f /* size as calculated during loading map_test_good_2_collision.txt */, 3, 0);
+        const float treeSize = 85.f;  /* size as calculated during loading map_test_good_2_collision.txt */
+
+        PureBoundingVolumeHierarchy tree_dimensionsInCtor(treeOrigin, treeSize, 3 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy tree_dimensionsAfterCtor(3 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy& tree = initTreeDimensionsInCtor ? tree_dimensionsInCtor : tree_dimensionsAfterCtor;
+        if (!initTreeDimensionsInCtor)
+        {
+            bool bInit = true;
+            bInit &= assertTrue(tree.setPos(treeOrigin), "tree setpos after ctor");
+            bInit &= assertTrue(tree.setSize(treeSize), "tree setsize after ctor");
+            if (!bInit)
+            {
+                return false;
+            }
+        }
 
         PureObject3D* obj1 = nullptr;
         PureObject3D* obj2 = nullptr;
@@ -1198,9 +1366,26 @@ private:
         return b;
     }
 
-    bool testFindOneColliderObject_1_startFromFirstNode()
+    bool testFindAllColliderObjects_2_startFromLowestLevelFittingNode()
+    {
+        bool b = true;
+
+        bool bInitTreeDimensionsInCtor = true;
+        for (int i = 0; i < 2; i++)
+        {
+            b &= assertTrue(
+                testFindAllColliderObjects_2_startFromLowestLevelFittingNode_main(bInitTreeDimensionsInCtor),
+                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
+            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+        }
+
+        return b;
+    }
+
+    bool testFindOneColliderObject_1_startFromFirstNode_main(bool initTreeDimensionsInCtor)
     {
         const PureVector treeOrigin(100.f, 200.f, 300.f);
+        const float treeSize = 1000.f;
 
         PureObject3D* obj1 = nullptr;
         PureObject3D* obj2 = nullptr;
@@ -1211,7 +1396,21 @@ private:
         PureBoundingVolumeHierarchy* node2 = nullptr;
         PureBoundingVolumeHierarchy* node3 = nullptr;
         PureBoundingVolumeHierarchy* node4 = nullptr;
-        PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
+
+        PureBoundingVolumeHierarchy tree_dimensionsInCtor(treeOrigin, treeSize, 2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy tree_dimensionsAfterCtor(2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy& tree = initTreeDimensionsInCtor ? tree_dimensionsInCtor : tree_dimensionsAfterCtor;
+        if (!initTreeDimensionsInCtor)
+        {
+            bool bInit = true;
+            bInit &= assertTrue(tree.setPos(treeOrigin), "tree setpos after ctor");
+            bInit &= assertTrue(tree.setSize(treeSize), "tree setsize after ctor");
+            if (!bInit)
+            {
+                return false;
+            }
+        }
+
         if (!assertTrue(buildBVH_1(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH_1"))
         {
             return false;
@@ -1258,9 +1457,26 @@ private:
         return b;
     }
 
-    bool testFindAllColliderObjects_1_startFromFirstNode()
+    bool testFindOneColliderObject_1_startFromFirstNode()
+    {
+        bool b = true;
+
+        bool bInitTreeDimensionsInCtor = true;
+        for (int i = 0; i < 2; i++)
+        {
+            b &= assertTrue(
+                testFindOneColliderObject_1_startFromFirstNode_main(bInitTreeDimensionsInCtor),
+                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
+            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+        }
+
+        return b;
+    }
+
+    bool testFindAllColliderObjects_1_startFromFirstNode_main(bool initTreeDimensionsInCtor)
     {
         const PureVector treeOrigin(100.f, 200.f, 300.f);
+        const float treeSize = 1000.f;
 
         PureObject3D* obj1 = nullptr;
         PureObject3D* obj2 = nullptr;
@@ -1271,7 +1487,21 @@ private:
         PureBoundingVolumeHierarchy* node2 = nullptr;
         PureBoundingVolumeHierarchy* node3 = nullptr;
         PureBoundingVolumeHierarchy* node4 = nullptr;
-        PureBoundingVolumeHierarchy tree(treeOrigin, 1000.0f, 2, 0);
+
+        PureBoundingVolumeHierarchy tree_dimensionsInCtor(treeOrigin, treeSize, 2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy tree_dimensionsAfterCtor(2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy& tree = initTreeDimensionsInCtor ? tree_dimensionsInCtor : tree_dimensionsAfterCtor;
+        if (!initTreeDimensionsInCtor)
+        {
+            bool bInit = true;
+            bInit &= assertTrue(tree.setPos(treeOrigin), "tree setpos after ctor");
+            bInit &= assertTrue(tree.setSize(treeSize), "tree setsize after ctor");
+            if (!bInit)
+            {
+                return false;
+            }
+        }
+
         if (!assertTrue(buildBVH_1(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH_1"))
         {
             return false;
@@ -1400,10 +1630,40 @@ private:
         return b;
     }
 
-    bool testFindOneColliderObject_2_startFromFirstNode()
+    bool testFindAllColliderObjects_1_startFromFirstNode()
+    {
+        bool b = true;
+
+        bool bInitTreeDimensionsInCtor = true;
+        for (int i = 0; i < 2; i++)
+        {
+            b &= assertTrue(
+                testFindAllColliderObjects_1_startFromFirstNode_main(bInitTreeDimensionsInCtor),
+                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
+            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+        }
+
+        return b;
+    }
+
+    bool testFindOneColliderObject_2_startFromFirstNode_main(bool initTreeDimensionsInCtor)
     {
         const PureVector treeOrigin(42.5f, -16.f, 0.f);
-        PureBoundingVolumeHierarchy tree(treeOrigin, 85.0f /* size as calculated during loading map_test_good_2_collision.txt */, 3, 0);
+        const float treeSize = 85.f;  /* size as calculated during loading map_test_good_2_collision.txt */
+
+        PureBoundingVolumeHierarchy tree_dimensionsInCtor(treeOrigin, treeSize, 3 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy tree_dimensionsAfterCtor(3 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy& tree = initTreeDimensionsInCtor ? tree_dimensionsInCtor : tree_dimensionsAfterCtor;
+        if (!initTreeDimensionsInCtor)
+        {
+            bool bInit = true;
+            bInit &= assertTrue(tree.setPos(treeOrigin), "tree setpos after ctor");
+            bInit &= assertTrue(tree.setSize(treeSize), "tree setsize after ctor");
+            if (!bInit)
+            {
+                return false;
+            }
+        }
 
         PureObject3D* obj1 = nullptr;
         PureObject3D* obj2 = nullptr;
@@ -1505,10 +1765,40 @@ private:
         return b;
     }
 
-    bool testFindAllColliderObjects_2_startFromFirstNode()
+    bool testFindOneColliderObject_2_startFromFirstNode()
+    {
+        bool b = true;
+
+        bool bInitTreeDimensionsInCtor = true;
+        for (int i = 0; i < 2; i++)
+        {
+            b &= assertTrue(
+                testFindOneColliderObject_2_startFromFirstNode_main(bInitTreeDimensionsInCtor),
+                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
+            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+        }
+
+        return b;
+    }
+
+    bool testFindAllColliderObjects_2_startFromFirstNode_main(bool initTreeDimensionsInCtor)
     {
         const PureVector treeOrigin(42.5f, -16.f, 0.f);
-        PureBoundingVolumeHierarchy tree(treeOrigin, 85.0f /* size as calculated during loading map_test_good_2_collision.txt */, 3, 0);
+        const float treeSize = 85.f;  /* size as calculated during loading map_test_good_2_collision.txt */
+
+        PureBoundingVolumeHierarchy tree_dimensionsInCtor(treeOrigin, treeSize, 3 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy tree_dimensionsAfterCtor(3 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy& tree = initTreeDimensionsInCtor ? tree_dimensionsInCtor : tree_dimensionsAfterCtor;
+        if (!initTreeDimensionsInCtor)
+        {
+            bool bInit = true;
+            bInit &= assertTrue(tree.setPos(treeOrigin), "tree setpos after ctor");
+            bInit &= assertTrue(tree.setSize(treeSize), "tree setsize after ctor");
+            if (!bInit)
+            {
+                return false;
+            }
+        }
 
         PureObject3D* obj1 = nullptr;
         PureObject3D* obj2 = nullptr;
@@ -1701,6 +1991,22 @@ private:
         if (b)
         {
             b &= assertEquals(obj4, *colliders.begin(), "objPlayer colliders exact check 2, aabb version");
+        }
+
+        return b;
+    }
+
+    bool testFindAllColliderObjects_2_startFromFirstNode()
+    {
+        bool b = true;
+
+        bool bInitTreeDimensionsInCtor = true;
+        for (int i = 0; i < 2; i++)
+        {
+            b &= assertTrue(
+                testFindAllColliderObjects_2_startFromFirstNode_main(bInitTreeDimensionsInCtor),
+                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
+            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
         }
 
         return b;
