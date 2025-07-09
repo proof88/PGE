@@ -94,8 +94,11 @@ public:
 
     const PureObject3D* findOneColliderObject_startFromLowestLevelFittingNode(
         const PureAxisAlignedBoundingBox& objAabb,
-        const PureBoundingVolumeHierarchy* pStartNode) const;
-    const PureObject3D* findOneColliderObject_startFromLowestLevelFittingNode(const PureObject3D& obj) const;
+        const PureBoundingVolumeHierarchy* pStartNode,
+        const BvhSearchDirection& searchDir) const;
+    const PureObject3D* findOneColliderObject_startFromLowestLevelFittingNode(
+        const PureObject3D& obj,
+        const BvhSearchDirection& searchDir) const;
 
     const PureObject3D* findOneColliderObject_startFromFirstNode(
         const PureAxisAlignedBoundingBox& objAabb,
@@ -105,10 +108,12 @@ public:
     bool findAllColliderObjects_startFromLowestLevelFittingNode(
         const PureAxisAlignedBoundingBox& objAabb,
         const PureBoundingVolumeHierarchy* pStartNode,
-        std::vector<const PureObject3D*>& colliders) const;
+        std::vector<const PureObject3D*>& colliders,
+        const BvhSearchDirection& searchDir) const;
     bool findAllColliderObjects_startFromLowestLevelFittingNode(
         const PureObject3D& obj,
-        std::vector<const PureObject3D*>& colliders) const;
+        std::vector<const PureObject3D*>& colliders,
+        const BvhSearchDirection& searchDir) const;
 
     bool findAllColliderObjects_startFromFirstNode(
         const PureAxisAlignedBoundingBox& objAabb,

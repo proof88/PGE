@@ -394,18 +394,22 @@ PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLevelFitt
     @param objAabb    The AABB for which we are searching any colliding Object3D within the tree.
     @param pStartNode From which BVH node collision detection will start.
                       For application, passing nullptr is recommended so the function will determine the proper start node.
+    @param searchDir  This argument is passed to the same argument of findOneLowestLevelFittingNode().
+                      That function is used here to determine from which node should we check for collision.
 
     @return An Object3D within the tree colliding with the specified AABB.
             Nullptr if no colliding Object3D was found.
 */
 const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFromLowestLevelFittingNode(
-    const PureAxisAlignedBoundingBox& objAabb, const PureBoundingVolumeHierarchy* pStartNode) const
+    const PureAxisAlignedBoundingBox& objAabb,
+    const PureBoundingVolumeHierarchy* pStartNode,
+    const BvhSearchDirection& searchDir) const
 {
     if (!pStartNode)
     {
         ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
 
-        const auto pOneLowestLevelFittingNode = findOneLowestLevelFittingNode(objAabb, BvhSearchDirection::DownFromRootNode);
+        const auto pOneLowestLevelFittingNode = findOneLowestLevelFittingNode(objAabb, searchDir);
         if (pOneLowestLevelFittingNode)
         {
             // it is NOT enough to check collision with the tightest fitting node, the reason is that sibling BVH nodes can overlap,
@@ -420,7 +424,7 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFrom
             pStartNode = this;
         }
 
-        return pStartNode->findOneColliderObject_startFromLowestLevelFittingNode(objAabb, pStartNode);
+        return pStartNode->findOneColliderObject_startFromLowestLevelFittingNode(objAabb, pStartNode, searchDir);
     }
 
     if (getNodeType() == Parent)
@@ -446,7 +450,7 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFrom
         for (size_t iChild = 0; (iChild < m_vChildren.size()) && !pCollider; iChild++)
         {
             const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
-            pCollider = bvhNode.findOneColliderObject_startFromLowestLevelFittingNode(objAabb, &bvhNode);
+            pCollider = bvhNode.findOneColliderObject_startFromLowestLevelFittingNode(objAabb, &bvhNode, searchDir);
         }
         return pCollider;
     }
@@ -489,15 +493,19 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFrom
 
     If you want to find all colliders, use the findAllColliderObjects-named functions.
 
-    @param obj The Object3D for which we are searching any colliding object within the tree.
+    @param obj        The Object3D for which we are searching any colliding object within the tree.
+    @param searchDir  This argument is passed to the same argument of findOneLowestLevelFittingNode().
+                      That function is used here to determine from which node should we check for collision.
 
     @return An Object3D within the tree colliding with the specified Object3D.
             Nullptr if no colliding Object3D was found.
 */
-const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFromLowestLevelFittingNode(const PureObject3D& obj) const
+const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFromLowestLevelFittingNode(
+    const PureObject3D& obj,
+    const BvhSearchDirection& searchDir) const
 {
     PureAxisAlignedBoundingBox objAabb(obj.getPosVec(), obj.getScaledSizeVec());
-    return findOneColliderObject_startFromLowestLevelFittingNode(objAabb, nullptr);
+    return findOneColliderObject_startFromLowestLevelFittingNode(objAabb, nullptr, searchDir);
 }
 
 /**
@@ -617,20 +625,23 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFrom
     @param pStartNode From which BVH node collision detection will start.
                       For application, passing nullptr is recommended so the function will determine the proper start node.
     @param colliders  Output container where all collider Object3D instances will be stored.
+    @param searchDir  This argument is passed to the same argument of findOneLowestLevelFittingNode().
+                      That function is used here to determine from which node should we check for collision.
 
     @return True if at least 1 colliding object was found, false otherwise.
 */
 bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFittingNode(
     const PureAxisAlignedBoundingBox& objAabb,
     const PureBoundingVolumeHierarchy* pStartNode,
-    std::vector<const PureObject3D*>& colliders) const
+    std::vector<const PureObject3D*>& colliders,
+    const BvhSearchDirection& searchDir) const
 {
     if (!pStartNode)
     {
         ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
         colliders.clear();
 
-        const auto pOneLowestLevelFittingNode = findOneLowestLevelFittingNode(objAabb, BvhSearchDirection::DownFromRootNode);
+        const auto pOneLowestLevelFittingNode = findOneLowestLevelFittingNode(objAabb, searchDir);
         if (pOneLowestLevelFittingNode)
         {
             // it is NOT enough to check collision with the tightest fitting node, the reason is that sibling BVH nodes can overlap,
@@ -645,7 +656,7 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFit
             pStartNode = this;
         }
 
-        return pStartNode->findAllColliderObjects_startFromLowestLevelFittingNode(objAabb, pStartNode, colliders);
+        return pStartNode->findAllColliderObjects_startFromLowestLevelFittingNode(objAabb, pStartNode, colliders, searchDir);
     }
 
     if (getNodeType() == Parent)
@@ -671,7 +682,7 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFit
         {
             // due to sibling nodes can overlap, we have to iterate over all sibling nodes, cannot stop if we find colliders
             const PureBoundingVolumeHierarchy& bvhNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
-            bvhNode.findAllColliderObjects_startFromLowestLevelFittingNode(objAabb, &bvhNode, colliders);
+            bvhNode.findAllColliderObjects_startFromLowestLevelFittingNode(objAabb, &bvhNode, colliders, searchDir);
         }
         return !colliders.empty();
     }
@@ -709,15 +720,20 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFit
     Both this _startFromLowestLevelFittingNode and the _startFromFirstNode have the same result but performance can differ, that's
     why I'm experimenting with both.
 
-    @param obj       The Object3D for which we are searching any colliding Object3D within the tree.
-    @param colliders Output container where all collider Object3D instances will be stored.
+    @param obj        The Object3D for which we are searching any colliding Object3D within the tree.
+    @param colliders  Output container where all collider Object3D instances will be stored.
+    @param searchDir  This argument is passed to the same argument of findOneLowestLevelFittingNode().
+                      That function is used here to determine from which node should we check for collision.
 
     @return True if at least 1 colliding Object3D was found, false otherwise.
 */
-bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFittingNode(const PureObject3D& obj, std::vector<const PureObject3D*>& colliders) const
+bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFittingNode(
+    const PureObject3D& obj,
+    std::vector<const PureObject3D*>& colliders,
+    const BvhSearchDirection& searchDir) const
 {
     PureAxisAlignedBoundingBox objAabb(obj.getPosVec(), obj.getScaledSizeVec());
-    return findAllColliderObjects_startFromLowestLevelFittingNode(objAabb, nullptr, colliders);
+    return findAllColliderObjects_startFromLowestLevelFittingNode(objAabb, nullptr, colliders, searchDir);
 }
 
 /**

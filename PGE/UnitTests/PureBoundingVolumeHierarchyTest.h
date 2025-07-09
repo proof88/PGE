@@ -42,10 +42,18 @@ protected:
         addSubTest("testInsertObject", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testInsertObject);
         addSubTest("testFindOneLowestLevelFittingNode_DownFromRootNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneLowestLevelFittingNode_DownFromRootNode);
         addSubTest("testFindOneLowestLevelFittingNode_UpFromLeafNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneLowestLevelFittingNode_UpFromLeafNode);
-        addSubTest("testFindOneColliderObject_1_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_1_startFromLowestLevelFittingNode);
-        addSubTest("testFindAllColliderObjects_1_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects_1_startFromLowestLevelFittingNode);
-        addSubTest("testFindOneColliderObject_2_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_2_startFromLowestLevelFittingNode);
-        addSubTest("testFindAllColliderObjects_2_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects_2_startFromLowestLevelFittingNode);
+        addSubTest(
+            "testFindOneColliderObject_1_startFromLowestLevelFittingNode",
+            (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_1_startFromLowestLevelFittingNode);
+        addSubTest(
+            "testFindAllColliderObjects_1_startFromLowestLevelFittingNode",
+            (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects_1_startFromLowestLevelFittingNode);
+        addSubTest(
+            "testFindOneColliderObject_2_startFromLowestLevelFittingNode",
+            (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_2_startFromLowestLevelFittingNode);
+        addSubTest(
+            "testFindAllColliderObjects_2_startFromLowestLevelFittingNode",
+            (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects_2_startFromLowestLevelFittingNode);
         addSubTest("testFindOneColliderObject_1_startFromFirstNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_1_startFromFirstNode);
         addSubTest("testFindAllColliderObjects_1_startFromFirstNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects_1_startFromFirstNode);
         addSubTest("testFindOneColliderObject_2_startFromFirstNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_2_startFromFirstNode);
@@ -904,7 +912,7 @@ private:
         return b;
     }
 
-    bool testFindOneColliderObject_1_startFromLowestLevelFittingNode_main(bool initTreeDimensionsInCtor)
+    bool testFindOneColliderObject_1_startFromLowestLevelFittingNode_main(bool initTreeDimensionsInCtor, const BvhSearchDirection& searchDir)
     {
         const PureVector treeOrigin(100.f, 200.f, 300.f);
         const float treeSize = 1000.f;
@@ -941,40 +949,40 @@ private:
         bool b = true;
 
         // obj5 is outside of tree bounds, hence it cannot collide with anything within the tree
-        b &= assertNull(tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj5), "obj5 collider, object version");
+        b &= assertNull(tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj5, searchDir), "obj5 collider, object version");
         
         const PureAxisAlignedBoundingBox obj5Aabb(obj5->getPosVec(), obj5->getScaledSizeVec());
-        b &= assertNull(tree.findOneColliderObject_startFromLowestLevelFittingNode(obj5Aabb, nullptr), "obj5 collider, aabb version");
+        b &= assertNull(tree.findOneColliderObject_startFromLowestLevelFittingNode(obj5Aabb, nullptr, searchDir), "obj5 collider, aabb version");
 
         // obj1, being in the tree, is expected to be colliding with itself
-        const PureObject3D* const pObj1CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj1);
+        const PureObject3D* const pObj1CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj1, searchDir);
         b &= assertEquals(obj1, pObj1CollidingWith, "obj1 collider, object version");
         
         const PureAxisAlignedBoundingBox obj1Aabb(obj1->getPosVec(), obj1->getScaledSizeVec());
-        b &= assertEquals(pObj1CollidingWith, tree.findOneColliderObject_startFromLowestLevelFittingNode(obj1Aabb, nullptr), "obj1 collider, aabb version");
+        b &= assertEquals(pObj1CollidingWith, tree.findOneColliderObject_startFromLowestLevelFittingNode(obj1Aabb, nullptr, searchDir), "obj1 collider, aabb version");
 
         // obj2, being in the tree, is expected to be colliding with itself or obj3 as they have same position and size!
-        const PureObject3D* const pObj2CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj2);
+        const PureObject3D* const pObj2CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj2, searchDir);
         b &= assertTrue((obj2 == pObj2CollidingWith) || (obj3 == pObj2CollidingWith), "obj2 collider, object version");
         
         const PureAxisAlignedBoundingBox obj2Aabb(obj2->getPosVec(), obj2->getScaledSizeVec());
-        const PureObject3D* const pObj2CollidingWithAabb = tree.findOneColliderObject_startFromLowestLevelFittingNode(obj2Aabb, nullptr);
+        const PureObject3D* const pObj2CollidingWithAabb = tree.findOneColliderObject_startFromLowestLevelFittingNode(obj2Aabb, nullptr, searchDir);
         b &= assertTrue((obj2 == pObj2CollidingWithAabb) || (obj3 == pObj2CollidingWithAabb), "obj2 collider, aabb version");
 
         // obj3, same story
-        const PureObject3D* const pObj3CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj3);
+        const PureObject3D* const pObj3CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj3, searchDir);
         b &= assertTrue((obj2 == pObj3CollidingWith) || (obj3 == pObj3CollidingWith), "obj3 collider, object version");
 
         const PureAxisAlignedBoundingBox obj3Aabb(obj3->getPosVec(), obj3->getScaledSizeVec());
-        const PureObject3D* const pObj3CollidingWithAabb = tree.findOneColliderObject_startFromLowestLevelFittingNode(obj3Aabb, nullptr);
+        const PureObject3D* const pObj3CollidingWithAabb = tree.findOneColliderObject_startFromLowestLevelFittingNode(obj3Aabb, nullptr, searchDir);
         b &= assertTrue((obj2 == pObj3CollidingWithAabb) || (obj3 == pObj3CollidingWithAabb), "obj3 collider, aabb version");
 
         // obj4, being in the tree, is expected to be colliding with itself
-        const PureObject3D* const pObj4CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj4);
+        const PureObject3D* const pObj4CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj4, searchDir);
         b &= assertEquals(obj4, pObj4CollidingWith, "obj4 collider, object version");
 
         const PureAxisAlignedBoundingBox obj4Aabb(obj4->getPosVec(), obj4->getScaledSizeVec());
-        b &= assertEquals(pObj4CollidingWith, tree.findOneColliderObject_startFromLowestLevelFittingNode(obj4Aabb, nullptr), "obj4 collider, aabb version");
+        b &= assertEquals(pObj4CollidingWith, tree.findOneColliderObject_startFromLowestLevelFittingNode(obj4Aabb, nullptr, searchDir), "obj4 collider, aabb version");
 
         return b;
     }
@@ -983,19 +991,26 @@ private:
     {
         bool b = true;
 
-        bool bInitTreeDimensionsInCtor = true;
-        for (int i = 0; i < 2; i++)
+        for (int j = 0; j < 2; j++)
         {
-            b &= assertTrue(
-                testFindOneColliderObject_1_startFromLowestLevelFittingNode_main(bInitTreeDimensionsInCtor),
-                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
-            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+            const BvhSearchDirection searchDir = ((j == 0) ? BvhSearchDirection::DownFromRootNode : BvhSearchDirection::UpFromLeafNode);
+            bool bInitTreeDimensionsInCtor = true;
+            for (int i = 0; i < 2; i++)
+            {
+                b &= assertTrue(
+                    testFindOneColliderObject_1_startFromLowestLevelFittingNode_main(bInitTreeDimensionsInCtor, searchDir),
+                    (std::string(__func__) +
+                        ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor) +
+                        ": searchDir = " + std::to_string(static_cast<int>(searchDir))
+                    ).c_str());
+                bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+            }
         }
 
         return b;
     }
 
-    bool testFindAllColliderObjects_1_startFromLowestLevelFittingNode_main(bool initTreeDimensionsInCtor)
+    bool testFindAllColliderObjects_1_startFromLowestLevelFittingNode_main(bool initTreeDimensionsInCtor, const BvhSearchDirection& searchDir)
     {
         const PureVector treeOrigin(100.f, 200.f, 300.f);
         const float treeSize = 1000.f;
@@ -1034,16 +1049,16 @@ private:
         std::vector<const PureObject3D*> colliders;
 
         // obj5 is outside of tree bounds, hence it cannot collide with anything within the tree
-        b &= assertFalse(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj5, colliders), "obj5 colliders 0, object version");
+        b &= assertFalse(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj5, colliders, searchDir), "obj5 colliders 0, object version");
         b &= assertTrue(colliders.empty(), "obj5 colliders empty, object version");
 
         const PureAxisAlignedBoundingBox obj5Aabb(obj5->getPosVec(), obj5->getScaledSizeVec());
-        b &= assertFalse(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj5Aabb, nullptr, colliders), "obj5 colliders 0, aabb version");
+        b &= assertFalse(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj5Aabb, nullptr, colliders, searchDir), "obj5 colliders 0, aabb version");
         b &= assertTrue(colliders.empty(), "obj5 colliders empty, aabb version");
 
         // obj1, being in the tree, is expected to be colliding with itself
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj1, colliders), "obj1 colliders 1, object version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj1, colliders, searchDir), "obj1 colliders 1, object version");
         b &= assertFalse(colliders.empty(), "obj1 colliders empty, object version");
         if (b)
         {
@@ -1052,7 +1067,7 @@ private:
 
         colliders.clear();
         const PureAxisAlignedBoundingBox obj1Aabb(obj1->getPosVec(), obj1->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj1Aabb, nullptr, colliders), "obj1 colliders 1, aabb version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj1Aabb, nullptr, colliders, searchDir), "obj1 colliders 1, aabb version");
         b &= assertFalse(colliders.empty(), "obj1 colliders empty, aabb version");
         if (b)
         {
@@ -1061,7 +1076,7 @@ private:
 
         // obj2, being in the tree, is expected to be colliding with itself and obj3 as they have same position and size!
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj2, colliders), "obj2 colliders 1, object version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj2, colliders, searchDir), "obj2 colliders 1, object version");
         b &= assertEquals(2u, colliders.size(), "obj2 colliders size, object version");
         if (b)
         {
@@ -1071,7 +1086,7 @@ private:
 
         colliders.clear();
         const PureAxisAlignedBoundingBox obj2Aabb(obj2->getPosVec(), obj2->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj2Aabb, nullptr, colliders), "obj2 colliders 1, aabb version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj2Aabb, nullptr, colliders, searchDir), "obj2 colliders 1, aabb version");
         b &= assertEquals(2u, colliders.size(), "obj2 colliders size, aabb version");
         if (b)
         {
@@ -1081,7 +1096,7 @@ private:
 
         // same story for obj3
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3, colliders), "obj3 colliders 1, object version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3, colliders, searchDir), "obj3 colliders 1, object version");
         b &= assertEquals(2u, colliders.size(), "obj3 colliders size, object version");
         if (b)
         {
@@ -1091,7 +1106,7 @@ private:
 
         colliders.clear();
         const PureAxisAlignedBoundingBox obj3Aabb(obj3->getPosVec(), obj3->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3Aabb, nullptr, colliders), "obj3 colliders 1, aabb version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3Aabb, nullptr, colliders, searchDir), "obj3 colliders 1, aabb version");
         b &= assertEquals(2u, colliders.size(), "obj3 colliders size, aabb version");
         if (b)
         {
@@ -1101,7 +1116,7 @@ private:
 
         // obj4, being in the tree, is expected to be colliding with itself
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj4, colliders), "obj4 colliders 1, object version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj4, colliders, searchDir), "obj4 colliders 1, object version");
         b &= assertFalse(colliders.empty(), "obj4 colliders empty, object version");
         if (b)
         {
@@ -1110,7 +1125,7 @@ private:
 
         colliders.clear();
         const PureAxisAlignedBoundingBox obj4Aabb(obj4->getPosVec(), obj4->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj4Aabb, nullptr, colliders), "obj4 colliders 1, aabb version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj4Aabb, nullptr, colliders, searchDir), "obj4 colliders 1, aabb version");
         b &= assertFalse(colliders.empty(), "obj4 colliders empty, aabb version");
         if (b)
         {
@@ -1126,7 +1141,7 @@ private:
             objBig->SetScaling(tree.getSize());  // intentionally scaling to see if scaled size is used for collision calculation
             
             colliders.clear();
-            b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*objBig, colliders), "objBig colliders 1, object version");
+            b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*objBig, colliders, searchDir), "objBig colliders 1, object version");
             b &= assertEquals(4u, colliders.size(), "objBig colliders size, object version");
             if (b)
             {
@@ -1138,7 +1153,7 @@ private:
 
             colliders.clear();
             const PureAxisAlignedBoundingBox objBigAabb(objBig->getPosVec(), objBig->getScaledSizeVec());
-            b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(objBigAabb, nullptr, colliders), "objBig colliders 1, aabb version");
+            b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(objBigAabb, nullptr, colliders, searchDir), "objBig colliders 1, aabb version");
             b &= assertEquals(4u, colliders.size(), "objBig colliders size, aabb version");
             if (b)
             {
@@ -1156,19 +1171,26 @@ private:
     {
         bool b = true;
 
-        bool bInitTreeDimensionsInCtor = true;
-        for (int i = 0; i < 2; i++)
+        for (int j = 0; j < 2; j++)
         {
-            b &= assertTrue(
-                testFindAllColliderObjects_1_startFromLowestLevelFittingNode_main(bInitTreeDimensionsInCtor),
-                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
-            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+            const BvhSearchDirection searchDir = ((j == 0) ? BvhSearchDirection::DownFromRootNode : BvhSearchDirection::UpFromLeafNode);
+            bool bInitTreeDimensionsInCtor = true;
+            for (int i = 0; i < 2; i++)
+            {
+                b &= assertTrue(
+                    testFindAllColliderObjects_1_startFromLowestLevelFittingNode_main(bInitTreeDimensionsInCtor, searchDir),
+                    (std::string(__func__) +
+                        ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor) +
+                        ": searchDir = " + std::to_string(static_cast<int>(searchDir))
+                    ).c_str());
+                bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+            }
         }
 
         return b;
     }
 
-    bool testFindOneColliderObject_2_startFromLowestLevelFittingNode_main(bool initTreeDimensionsInCtor)
+    bool testFindOneColliderObject_2_startFromLowestLevelFittingNode_main(bool initTreeDimensionsInCtor, const BvhSearchDirection& searchDir)
     {
         const PureVector treeOrigin(42.5f, -16.f, 0.f);
         const float treeSize = 85.0f;  /* size as calculated during loading map_test_good_2_collision.txt */
@@ -1214,53 +1236,53 @@ private:
         bool b = true;
 
         // obj1, being in the tree, is expected to be colliding with itself
-        const PureObject3D* const pObj1CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj1);
+        const PureObject3D* const pObj1CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj1, searchDir);
         b &= assertEquals(obj1, pObj1CollidingWith, "obj1 collider, object version");
 
         const PureAxisAlignedBoundingBox obj1Aabb(obj1->getPosVec(), obj1->getScaledSizeVec());
-        b &= assertEquals(pObj1CollidingWith, tree.findOneColliderObject_startFromLowestLevelFittingNode(obj1Aabb, nullptr), "obj1 collider, aabb version");
+        b &= assertEquals(pObj1CollidingWith, tree.findOneColliderObject_startFromLowestLevelFittingNode(obj1Aabb, nullptr, searchDir), "obj1 collider, aabb version");
 
         // obj2, being in the tree, is expected to be colliding with itself
-        const PureObject3D* const pObj2CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj2);
+        const PureObject3D* const pObj2CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj2, searchDir);
         b &= assertEquals(obj2, pObj2CollidingWith, "obj2 collider, object version");
 
         const PureAxisAlignedBoundingBox obj2Aabb(obj2->getPosVec(), obj2->getScaledSizeVec());
-        b &= assertEquals(pObj2CollidingWith, tree.findOneColliderObject_startFromLowestLevelFittingNode(obj2Aabb, nullptr), "obj2 collider, aabb version");
+        b &= assertEquals(pObj2CollidingWith, tree.findOneColliderObject_startFromLowestLevelFittingNode(obj2Aabb, nullptr, searchDir), "obj2 collider, aabb version");
 
         // obj3_stair_1, being in the tree, is expected to be colliding with either itself or another block right next to it
-        const PureObject3D* const pObj3_stair_1CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj3_stair_1);
+        const PureObject3D* const pObj3_stair_1CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj3_stair_1, searchDir);
         b &= assertNotNull(pObj3_stair_1CollidingWith, "obj3_stair_1 collider, object version");
 
         const PureAxisAlignedBoundingBox obj3_stair_1Aabb(obj3_stair_1->getPosVec(), obj3_stair_1->getScaledSizeVec());
-        b &= assertNotNull( tree.findOneColliderObject_startFromLowestLevelFittingNode(obj3_stair_1Aabb, nullptr), "obj3_stair_1 collider, aabb version");
+        b &= assertNotNull( tree.findOneColliderObject_startFromLowestLevelFittingNode(obj3_stair_1Aabb, nullptr, searchDir), "obj3_stair_1 collider, aabb version");
 
         // obj3_stair_2, being in the tree, is expected to be colliding with either itself or another block right next to it
-        const PureObject3D* const pObj3_stair_2CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj3_stair_2);
+        const PureObject3D* const pObj3_stair_2CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj3_stair_2, searchDir);
         b &= assertNotNull(pObj3_stair_2CollidingWith, "obj3_stair_2 collider, object version");
 
         const PureAxisAlignedBoundingBox obj3_stair_2Aabb(obj3_stair_2->getPosVec(), obj3_stair_2->getScaledSizeVec());
-        b &= assertNotNull( tree.findOneColliderObject_startFromLowestLevelFittingNode(obj3_stair_2Aabb, nullptr), "obj3_stair_2 collider, aabb version");
+        b &= assertNotNull( tree.findOneColliderObject_startFromLowestLevelFittingNode(obj3_stair_2Aabb, nullptr, searchDir), "obj3_stair_2 collider, aabb version");
 
         // obj3_stair_3, being in the tree, is expected to be colliding with either itself or another block right next to it
-        const PureObject3D* const pObj3_stair_3CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj3_stair_3);
+        const PureObject3D* const pObj3_stair_3CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj3_stair_3, searchDir);
         b &= assertNotNull(pObj3_stair_3CollidingWith, "obj3_stair_3 collider, object version");
 
         const PureAxisAlignedBoundingBox obj3_stair_3Aabb(obj3_stair_3->getPosVec(), obj3_stair_3->getScaledSizeVec());
-        b &= assertNotNull( tree.findOneColliderObject_startFromLowestLevelFittingNode(obj3_stair_3Aabb, nullptr), "obj3_stair_3 collider, aabb version");
+        b &= assertNotNull( tree.findOneColliderObject_startFromLowestLevelFittingNode(obj3_stair_3Aabb, nullptr, searchDir), "obj3_stair_3 collider, aabb version");
 
         // obj3_stair_4, being in the tree, is expected to be colliding with either itself or another block right next to it
-        const PureObject3D* const pObj3_stair_4CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj3_stair_4);
+        const PureObject3D* const pObj3_stair_4CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj3_stair_4, searchDir);
         b &= assertNotNull(pObj3_stair_4CollidingWith, "obj3_stair_4 collider, object version");
 
         const PureAxisAlignedBoundingBox obj3_stair_4Aabb(obj3_stair_4->getPosVec(), obj3_stair_4->getScaledSizeVec());
-        b &= assertNotNull( tree.findOneColliderObject_startFromLowestLevelFittingNode(obj3_stair_4Aabb, nullptr), "obj3_stair_4 collider, aabb version");
+        b &= assertNotNull( tree.findOneColliderObject_startFromLowestLevelFittingNode(obj3_stair_4Aabb, nullptr, searchDir), "obj3_stair_4 collider, aabb version");
 
         // obj4, being in the tree, is expected to be colliding with either itself or another block right next to it
-        const PureObject3D* const pObj4CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj4);
+        const PureObject3D* const pObj4CollidingWith = tree.findOneColliderObject_startFromLowestLevelFittingNode(*obj4, searchDir);
         b &= assertNotNull(pObj4CollidingWith, "obj4 collider, object version");
 
         const PureAxisAlignedBoundingBox obj4Aabb(obj4->getPosVec(), obj4->getScaledSizeVec());
-        b &= assertNotNull( tree.findOneColliderObject_startFromLowestLevelFittingNode(obj4Aabb, nullptr), "obj4 collider, aabb version");
+        b &= assertNotNull( tree.findOneColliderObject_startFromLowestLevelFittingNode(obj4Aabb, nullptr, searchDir), "obj4 collider, aabb version");
 
         // create a player-sized object
         PureObject3D* objPlayer = om->createPlane(0.95f, 1.88f);
@@ -1271,18 +1293,18 @@ private:
             obj4->getPosVec().getY() + obj4->getSizeVec().getY() / 2.f + objPlayer->getScaledSizeVec().getY() / 2.f + 0.1f /* shall not touch obj4 FG block */,
             -1.2f /*GAME_PLAYERS_POS_Z*/);
         
-        b &= assertNull(tree.findOneColliderObject_startFromLowestLevelFittingNode(*objPlayer), "objPlayer collider 1, object version");
+        b &= assertNull(tree.findOneColliderObject_startFromLowestLevelFittingNode(*objPlayer, searchDir), "objPlayer collider 1, object version");
 
         const PureAxisAlignedBoundingBox objPlayerAabb(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
-        b &= assertNull(tree.findOneColliderObject_startFromLowestLevelFittingNode(objPlayerAabb, nullptr), "objPlayer collider 1, aabb version");
+        b &= assertNull(tree.findOneColliderObject_startFromLowestLevelFittingNode(objPlayerAabb, nullptr, searchDir), "objPlayer collider 1, aabb version");
 
         // but then, as gravity pulls player down, it shall be colliding with a block object too
         objPlayer->getPosVec().SetY(objPlayer->getPosVec().getY() - 0.2f);
 
-        b &= assertEquals(obj4, tree.findOneColliderObject_startFromLowestLevelFittingNode(*objPlayer), "objPlayer collider 2, object version");
+        b &= assertEquals(obj4, tree.findOneColliderObject_startFromLowestLevelFittingNode(*objPlayer, searchDir), "objPlayer collider 2, object version");
 
         const PureAxisAlignedBoundingBox objPlayerAabb_2(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
-        b &= assertEquals(obj4, tree.findOneColliderObject_startFromLowestLevelFittingNode(objPlayerAabb_2, nullptr), "objPlayer collider 2, aabb version");
+        b &= assertEquals(obj4, tree.findOneColliderObject_startFromLowestLevelFittingNode(objPlayerAabb_2, nullptr, searchDir), "objPlayer collider 2, aabb version");
 
         return b;
     }
@@ -1291,19 +1313,26 @@ private:
     {
         bool b = true;
 
-        bool bInitTreeDimensionsInCtor = true;
-        for (int i = 0; i < 2; i++)
+        for (int j = 0; j < 2; j++)
         {
-            b &= assertTrue(
-                testFindOneColliderObject_2_startFromLowestLevelFittingNode_main(bInitTreeDimensionsInCtor),
-                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
-            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+            const BvhSearchDirection searchDir = ((j == 0) ? BvhSearchDirection::DownFromRootNode : BvhSearchDirection::UpFromLeafNode);
+            bool bInitTreeDimensionsInCtor = true;
+            for (int i = 0; i < 2; i++)
+            {
+                b &= assertTrue(
+                    testFindOneColliderObject_2_startFromLowestLevelFittingNode_main(bInitTreeDimensionsInCtor, searchDir),
+                    (std::string(__func__) +
+                        ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor) +
+                        ": searchDir = " + std::to_string(static_cast<int>(searchDir))
+                    ).c_str());
+                bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+            }
         }
 
         return b;
     }
 
-    bool testFindAllColliderObjects_2_startFromLowestLevelFittingNode_main(bool initTreeDimensionsInCtor)
+    bool testFindAllColliderObjects_2_startFromLowestLevelFittingNode_main(bool initTreeDimensionsInCtor, const BvhSearchDirection& searchDir)
     {
         const PureVector treeOrigin(42.5f, -16.f, 0.f);
         const float treeSize = 85.f;  /* size as calculated during loading map_test_good_2_collision.txt */
@@ -1353,7 +1382,7 @@ private:
 
         // obj1, being in the tree, is expected to be colliding with itself
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj1, colliders), "obj1 colliders 1, object version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj1, colliders, searchDir), "obj1 colliders 1, object version");
         b &= assertFalse(colliders.empty(), "obj1 colliders empty, object version");
         if (b)
         {
@@ -1362,7 +1391,7 @@ private:
 
         colliders.clear();
         const PureAxisAlignedBoundingBox obj1Aabb(obj1->getPosVec(), obj1->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj1Aabb, nullptr, colliders), "obj1 colliders 1, aabb version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj1Aabb, nullptr, colliders, searchDir), "obj1 colliders 1, aabb version");
         b &= assertFalse(colliders.empty(), "obj1 colliders empty, aabb version");
         if (b)
         {
@@ -1371,7 +1400,7 @@ private:
 
         // obj2, being in the tree, is expected to be colliding with itself
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj2, colliders), "obj2 colliders 1, object version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj2, colliders, searchDir), "obj2 colliders 1, object version");
         b &= assertFalse(colliders.empty(), "obj2 colliders empty, object version");
         if (b)
         {
@@ -1380,7 +1409,7 @@ private:
 
         colliders.clear();
         const PureAxisAlignedBoundingBox obj2Aabb(obj2->getPosVec(), obj2->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj2Aabb, nullptr, colliders), "obj2 colliders 1, aabb version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj2Aabb, nullptr, colliders, searchDir), "obj2 colliders 1, aabb version");
         b &= assertFalse(colliders.empty(), "obj2 colliders empty, aabb version");
         if (b)
         {
@@ -1389,7 +1418,7 @@ private:
 
         // obj3_stair_1, being in the tree, is expected to be colliding with either itself or another block right next to it
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3_stair_1, colliders), "obj3_stair_1 colliders 1, object version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3_stair_1, colliders, searchDir), "obj3_stair_1 colliders 1, object version");
         b &= assertFalse(colliders.empty(), "obj3_stair_1 colliders empty, object version");
         if (b)
         {
@@ -1398,7 +1427,7 @@ private:
 
         colliders.clear();
         const PureAxisAlignedBoundingBox obj3_stair_1Aabb(obj3_stair_1->getPosVec(), obj3_stair_1->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3_stair_1Aabb, nullptr, colliders), "obj3_stair_1 colliders 1, aabb version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3_stair_1Aabb, nullptr, colliders, searchDir), "obj3_stair_1 colliders 1, aabb version");
         b &= assertFalse(colliders.empty(), "obj3_stair_1 colliders empty, aabb version");
         if (b)
         {
@@ -1407,7 +1436,7 @@ private:
 
         // obj3_stair_2, being in the tree, is expected to be colliding with either itself or another block right next to it
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3_stair_2, colliders), "obj3_stair_2 colliders 1, object version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3_stair_2, colliders, searchDir), "obj3_stair_2 colliders 1, object version");
         b &= assertFalse(colliders.empty(), "obj3_stair_2 colliders empty, object version");
         if (b)
         {
@@ -1416,7 +1445,7 @@ private:
 
         colliders.clear();
         const PureAxisAlignedBoundingBox obj3_stair_2Aabb(obj3_stair_2->getPosVec(), obj3_stair_2->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3_stair_2Aabb, nullptr, colliders), "obj3_stair_2 colliders 1, aabb version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3_stair_2Aabb, nullptr, colliders, searchDir), "obj3_stair_2 colliders 1, aabb version");
         b &= assertFalse(colliders.empty(), "obj3_stair_2 colliders empty, aabb version");
         if (b)
         {
@@ -1425,7 +1454,7 @@ private:
 
         // obj3_stair_3, being in the tree, is expected to be colliding with either itself or another block right next to it
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3_stair_3, colliders), "obj3_stair_3 colliders 1, object version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3_stair_3, colliders, searchDir), "obj3_stair_3 colliders 1, object version");
         b &= assertFalse(colliders.empty(), "obj3_stair_3 colliders empty, object version");
         if (b)
         {
@@ -1434,7 +1463,7 @@ private:
 
         colliders.clear();
         const PureAxisAlignedBoundingBox obj3_stair_3Aabb(obj3_stair_3->getPosVec(), obj3_stair_3->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3_stair_3Aabb, nullptr, colliders), "obj3_stair_3 colliders 1, aabb version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3_stair_3Aabb, nullptr, colliders, searchDir), "obj3_stair_3 colliders 1, aabb version");
         b &= assertFalse(colliders.empty(), "obj3_stair_3 colliders empty, aabb version");
         if (b)
         {
@@ -1443,7 +1472,7 @@ private:
 
         // obj3_stair_4, being in the tree, is expected to be colliding with either itself or another block right next to it
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3_stair_4, colliders), "obj3_stair_4 colliders 1, object version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj3_stair_4, colliders, searchDir), "obj3_stair_4 colliders 1, object version");
         b &= assertFalse(colliders.empty(), "obj3_stair_4 colliders empty, object version");
         if (b)
         {
@@ -1452,7 +1481,7 @@ private:
 
         colliders.clear();
         const PureAxisAlignedBoundingBox obj3_stair_4Aabb(obj3_stair_4->getPosVec(), obj3_stair_4->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3_stair_4Aabb, nullptr, colliders), "obj3_stair_4 colliders 1, aabb version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj3_stair_4Aabb, nullptr, colliders, searchDir), "obj3_stair_4 colliders 1, aabb version");
         b &= assertFalse(colliders.empty(), "obj3_stair_4 colliders empty, aabb version");
         if (b)
         {
@@ -1461,7 +1490,7 @@ private:
 
         // obj4, being in the tree, is expected to be colliding with either itself or another block right next to it
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj4, colliders), "obj4 colliders 1, object version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*obj4, colliders, searchDir), "obj4 colliders 1, object version");
         b &= assertFalse(colliders.empty(), "obj4 colliders empty, object version");
         if (b)
         {
@@ -1470,7 +1499,7 @@ private:
 
         colliders.clear();
         const PureAxisAlignedBoundingBox obj4Aabb(obj4->getPosVec(), obj4->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj4Aabb, nullptr, colliders), "obj4 colliders 1, aabb version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(obj4Aabb, nullptr, colliders, searchDir), "obj4 colliders 1, aabb version");
         b &= assertFalse(colliders.empty(), "obj4 colliders empty, aabb version");
         if (b)
         {
@@ -1487,19 +1516,19 @@ private:
             -1.2f /*GAME_PLAYERS_POS_Z*/);
 
         colliders.clear();
-        b &= assertFalse(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*objPlayer, colliders), "objPlayer colliders 1, object version");
+        b &= assertFalse(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*objPlayer, colliders, searchDir), "objPlayer colliders 1, object version");
         b &= assertTrue(colliders.empty(), "objPlayer colliders empty, object version 1");
 
         colliders.clear();
         const PureAxisAlignedBoundingBox objPlayerAabb(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
-        b &= assertFalse(tree.findAllColliderObjects_startFromLowestLevelFittingNode(objPlayerAabb, nullptr, colliders), "objPlayer colliders 1, aabb version");
+        b &= assertFalse(tree.findAllColliderObjects_startFromLowestLevelFittingNode(objPlayerAabb, nullptr, colliders, searchDir), "objPlayer colliders 1, aabb version");
         b &= assertTrue(colliders.empty(), "objPlayer colliders empty, aabb version 1");
 
         // but then, as gravity pulls player down, it shall be colliding with a block object too
         objPlayer->getPosVec().SetY(objPlayer->getPosVec().getY() - 0.2f);
         
         colliders.clear();
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*objPlayer, colliders), "objPlayer colliders 2, object version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(*objPlayer, colliders, searchDir), "objPlayer colliders 2, object version");
         b &= assertFalse(colliders.empty(), "objPlayer colliders empty, object version 2");
         if (b)
         {
@@ -1508,7 +1537,7 @@ private:
 
         colliders.clear();
         const PureAxisAlignedBoundingBox objPlayerAabb_2(objPlayer->getPosVec(), objPlayer->getScaledSizeVec());
-        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(objPlayerAabb_2, nullptr, colliders), "objPlayer colliders 2, aabb version");
+        b &= assertTrue(tree.findAllColliderObjects_startFromLowestLevelFittingNode(objPlayerAabb_2, nullptr, colliders, searchDir), "objPlayer colliders 2, aabb version");
         b &= assertFalse(colliders.empty(), "objPlayer colliders empty, aabb version 2");
         if (b)
         {
@@ -1522,13 +1551,20 @@ private:
     {
         bool b = true;
 
-        bool bInitTreeDimensionsInCtor = true;
-        for (int i = 0; i < 2; i++)
+        for (int j = 0; j < 2; j++)
         {
-            b &= assertTrue(
-                testFindAllColliderObjects_2_startFromLowestLevelFittingNode_main(bInitTreeDimensionsInCtor),
-                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
-            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+            const BvhSearchDirection searchDir = ((j == 0) ? BvhSearchDirection::DownFromRootNode : BvhSearchDirection::UpFromLeafNode);
+            bool bInitTreeDimensionsInCtor = true;
+            for (int i = 0; i < 2; i++)
+            {
+                b &= assertTrue(
+                    testFindAllColliderObjects_2_startFromLowestLevelFittingNode_main(bInitTreeDimensionsInCtor, searchDir),
+                    (std::string(__func__) +
+                        ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor) +
+                        ": searchDir = " + std::to_string(static_cast<int>(searchDir))
+                    ).c_str());
+                bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+            }
         }
 
         return b;
