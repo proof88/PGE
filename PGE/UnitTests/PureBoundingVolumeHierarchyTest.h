@@ -9,6 +9,7 @@
 */
 
 #include "UnitTest.h"  // PCH
+#include "../PGE.h"
 #include "../Pure/include/external/SpatialStructures/PureBoundingVolumeHierarchy.h"
 
 class PureBoundingVolumeHierarchyTest :
@@ -39,7 +40,8 @@ protected:
         addSubTest("testSetPosVecAffectsAabb", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testSetPosVecAffectsAabb);
         addSubTest("testSetSizeAffectsAabb", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testSetSizeAffectsAabb);
         addSubTest("testInsertObject", (PFNUNITSUBTEST) &PureBoundingVolumeHierarchyTest::testInsertObject);
-        addSubTest("testFindOneLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneLowestLevelFittingNode);
+        addSubTest("testFindOneLowestLevelFittingNode_DownFromRootNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneLowestLevelFittingNode_DownFromRootNode);
+        addSubTest("testFindOneLowestLevelFittingNode_UpFromLeafNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneLowestLevelFittingNode_UpFromLeafNode);
         addSubTest("testFindOneColliderObject_1_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_1_startFromLowestLevelFittingNode);
         addSubTest("testFindAllColliderObjects_1_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindAllColliderObjects_1_startFromLowestLevelFittingNode);
         addSubTest("testFindOneColliderObject_2_startFromLowestLevelFittingNode", (PFNUNITSUBTEST)&PureBoundingVolumeHierarchyTest::testFindOneColliderObject_2_startFromLowestLevelFittingNode);
@@ -769,7 +771,7 @@ private:
         return b;
     }
 
-    bool testFindOneLowestLevelFittingNode_main(bool initTreeDimensionsInCtor)
+    bool testFindOneLowestLevelFittingNode_DownFromRootNode_main(bool initTreeDimensionsInCtor)
     {
         // used to test if the given world-space position other than (0,0,0) is really taken into calculations;
         // if there is any issue, change this to (0,0,0) to find out probable reason of tree not properly taking origin pos into account!
@@ -805,22 +807,22 @@ private:
             return false;
         }
 
-        bool b = assertTrue(node1 == tree.findOneLowestLevelFittingNode(*obj1), "find 1 from root 1");
-        b &= assertTrue(node2 == tree.findOneLowestLevelFittingNode(*obj2), "find 2 from root 2");
-        b &= assertTrue(node3 == tree.findOneLowestLevelFittingNode(*obj3), "find 3 from root 3");
-        b &= assertTrue(node4 == tree.findOneLowestLevelFittingNode(*obj4), "find 4 from root 4");
-        b &= assertTrue(nullptr == tree.findOneLowestLevelFittingNode(*obj5), "find 5 from root 5");
+        bool b = assertTrue(node1 == tree.findOneLowestLevelFittingNode(*obj1, BvhSearchDirection::DownFromRootNode), "find 1 from root 1");
+        b &= assertTrue(node2 == tree.findOneLowestLevelFittingNode(*obj2, BvhSearchDirection::DownFromRootNode), "find 2 from root 2");
+        b &= assertTrue(node3 == tree.findOneLowestLevelFittingNode(*obj3, BvhSearchDirection::DownFromRootNode), "find 3 from root 3");
+        b &= assertTrue(node4 == tree.findOneLowestLevelFittingNode(*obj4, BvhSearchDirection::DownFromRootNode), "find 4 from root 4");
+        b &= assertTrue(nullptr == tree.findOneLowestLevelFittingNode(*obj5, BvhSearchDirection::DownFromRootNode), "find 5 from root 5");
 
-        b &= assertTrue(node1 == node1->findOneLowestLevelFittingNode(*obj1), "find 1 from node 1");
-        b &= assertTrue(node2 == node2->findOneLowestLevelFittingNode(*obj2), "find 2 from node 2");
-        b &= assertTrue(node3 == node3->findOneLowestLevelFittingNode(*obj3), "find 3 from node 3");
-        b &= assertTrue(node4 == node4->findOneLowestLevelFittingNode(*obj4), "find 4 from node 4");
+        b &= assertTrue(node1 == node1->findOneLowestLevelFittingNode(*obj1, BvhSearchDirection::DownFromRootNode), "find 1 from node 1");
+        b &= assertTrue(node2 == node2->findOneLowestLevelFittingNode(*obj2, BvhSearchDirection::DownFromRootNode), "find 2 from node 2");
+        b &= assertTrue(node3 == node3->findOneLowestLevelFittingNode(*obj3, BvhSearchDirection::DownFromRootNode), "find 3 from node 3");
+        b &= assertTrue(node4 == node4->findOneLowestLevelFittingNode(*obj4, BvhSearchDirection::DownFromRootNode), "find 4 from node 4");
 
 
         return b;
     }
 
-    bool testFindOneLowestLevelFittingNode()
+    bool testFindOneLowestLevelFittingNode_DownFromRootNode()
     {
         bool b = true;
 
@@ -828,7 +830,73 @@ private:
         for (int i = 0; i < 2; i++)
         {
             b &= assertTrue(
-                testFindOneLowestLevelFittingNode_main(bInitTreeDimensionsInCtor),
+                testFindOneLowestLevelFittingNode_DownFromRootNode_main(bInitTreeDimensionsInCtor),
+                (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
+            bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
+        }
+
+        return b;
+    }
+
+    bool testFindOneLowestLevelFittingNode_UpFromLeafNode_main(bool initTreeDimensionsInCtor)
+    {
+        // used to test if the given world-space position other than (0,0,0) is really taken into calculations;
+        // if there is any issue, change this to (0,0,0) to find out probable reason of tree not properly taking origin pos into account!
+        const PureVector treeOrigin(100.f, 200.f, 300.f);
+        const float treeSize = 1000.f;
+
+        PureObject3D* obj1 = nullptr;
+        PureObject3D* obj2 = nullptr;
+        PureObject3D* obj3 = nullptr;
+        PureObject3D* obj4 = nullptr;
+        PureObject3D* obj5 = nullptr;
+        PureBoundingVolumeHierarchy* node1 = nullptr;
+        PureBoundingVolumeHierarchy* node2 = nullptr;
+        PureBoundingVolumeHierarchy* node3 = nullptr;
+        PureBoundingVolumeHierarchy* node4 = nullptr;
+
+        PureBoundingVolumeHierarchy tree_dimensionsInCtor(treeOrigin, treeSize, 2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy tree_dimensionsAfterCtor(2 /* maxDepth */, 0 /* currentDepth */);
+        PureBoundingVolumeHierarchy& tree = initTreeDimensionsInCtor ? tree_dimensionsInCtor : tree_dimensionsAfterCtor;
+        if (!initTreeDimensionsInCtor)
+        {
+            bool bInit = true;
+            bInit &= assertTrue(tree.setPos(treeOrigin), "tree setpos after ctor");
+            bInit &= assertTrue(tree.setSize(treeSize), "tree setsize after ctor");
+            if (!bInit)
+            {
+                return false;
+            }
+        }
+
+        if (!assertTrue(buildBVH_1(tree, treeOrigin, obj1, obj2, obj3, obj4, obj5, node1, node2, node3, node4), "buildBVH_1"))
+        {
+            return false;
+        }
+
+        bool b = assertTrue(node1 == tree.findOneLowestLevelFittingNode(*obj1, BvhSearchDirection::UpFromLeafNode), "find 1 from root 1");
+        b &= assertTrue(node2 == tree.findOneLowestLevelFittingNode(*obj2, BvhSearchDirection::UpFromLeafNode), "find 2 from root 2");
+        b &= assertTrue(node3 == tree.findOneLowestLevelFittingNode(*obj3, BvhSearchDirection::UpFromLeafNode), "find 3 from root 3");
+        b &= assertTrue(node4 == tree.findOneLowestLevelFittingNode(*obj4, BvhSearchDirection::UpFromLeafNode), "find 4 from root 4");
+        b &= assertTrue(nullptr == tree.findOneLowestLevelFittingNode(*obj5, BvhSearchDirection::UpFromLeafNode), "find 5 from root 5");
+
+        b &= assertTrue(node1 == node1->findOneLowestLevelFittingNode(*obj1, BvhSearchDirection::UpFromLeafNode), "find 1 from node 1");
+        b &= assertTrue(node2 == node2->findOneLowestLevelFittingNode(*obj2, BvhSearchDirection::UpFromLeafNode), "find 2 from node 2");
+        b &= assertTrue(node3 == node3->findOneLowestLevelFittingNode(*obj3, BvhSearchDirection::UpFromLeafNode), "find 3 from node 3");
+        b &= assertTrue(node4 == node4->findOneLowestLevelFittingNode(*obj4, BvhSearchDirection::UpFromLeafNode), "find 4 from node 4");
+
+        return b;
+    }
+
+    bool testFindOneLowestLevelFittingNode_UpFromLeafNode()
+    {
+        bool b = true;
+
+        bool bInitTreeDimensionsInCtor = true;
+        for (int i = 0; i < 2; i++)
+        {
+            b &= assertTrue(
+                testFindOneLowestLevelFittingNode_UpFromLeafNode_main(bInitTreeDimensionsInCtor),
                 (std::string(__func__) + ": bInitTreeDimensionsInCtor = " + std::to_string(bInitTreeDimensionsInCtor)).c_str());
             bInitTreeDimensionsInCtor = !bInitTreeDimensionsInCtor;
         }

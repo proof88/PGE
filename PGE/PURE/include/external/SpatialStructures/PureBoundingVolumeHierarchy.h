@@ -15,6 +15,11 @@
 #include "PureAxisAlignedBoundingBox.h"
 #include "PureOctree.h"
 
+enum class BvhSearchDirection
+{
+    DownFromRootNode,
+    UpFromLeafNode
+};
 
 /**
     BVH: Bounding Volume Hierarchy class.
@@ -30,10 +35,12 @@
     fully bound all their children and contained objects, and this implies that their position also changes with each size updates.
     BUT, size and position of their ancestor Octree nodes DO NOT change over time at all.
 
-    Also note that in my implementation, for some reason I decided to initialize the AABB of BVH nodes to have the same position and size as their
+    Also note that in this implementation, for some reason I decided to initialize the AABB of leaf BVH nodes to have the same position and size as their
     Octree ancestor node. I don't exactly remember the reason, however this shall not add significant performance penalty to the collision checks.
-    If this need to be changed in the future i.e. revert to the original behavior where AABB of BVH nodes are NOT initialized like this, it shall be
-    done on a NEW class, by copying this and updating the behavior, and copying and updating the relevant unit tests accordingly, because I want
+    This results in bigger AABBs, since they are initially big when empty, and inserting object might not extend their dimensions at all.
+    If there are too many objects in the leaf nodes, simply the subdivision shall be increased i.e. the maximum tree depth shall be increased.
+    If this need to be changed in the future i.e. revert to the original behavior where AABB of leaf BVH nodes were NOT initialized like this, it shall be
+    done in a NEW class, by copying this and updating the behavior, and copying and updating the relevant unit tests accordingly, because I want
     to keep this current behavior also for some time for future experiments with different use cases.
 
     Note that there are also other ways to build up a BVH, for example here binary tree is used:
@@ -79,11 +86,11 @@ public:
 
     const PureAxisAlignedBoundingBox& getAABB() const;              /**< Gets the AABB of this node. */
 
-    const PureBoundingVolumeHierarchy* findOneLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb) const;
-    const PureBoundingVolumeHierarchy* findOneLowestLevelFittingNode(const PureObject3D& obj) const;
+    const PureBoundingVolumeHierarchy* findOneLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb, const BvhSearchDirection& searchDir) const;
+    const PureBoundingVolumeHierarchy* findOneLowestLevelFittingNode(const PureObject3D& obj, const BvhSearchDirection& searchDir) const;
 
-    PureBoundingVolumeHierarchy* findOneLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb);
-    PureBoundingVolumeHierarchy* findOneLowestLevelFittingNode(const PureObject3D& obj);
+    PureBoundingVolumeHierarchy* findOneLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb, const BvhSearchDirection& searchDir);
+    PureBoundingVolumeHierarchy* findOneLowestLevelFittingNode(const PureObject3D& obj, const BvhSearchDirection& searchDir);
 
     const PureObject3D* findOneColliderObject_startFromLowestLevelFittingNode(
         const PureAxisAlignedBoundingBox& objAabb,

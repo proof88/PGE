@@ -233,59 +233,108 @@ const PureAxisAlignedBoundingBox& PureBoundingVolumeHierarchy::getAABB() const
     This function just returns one of them, however that one might NOT be the smallest BVH node fully containing the given AABB, as
     there might be a sibling BVH node also fully containing the given AABB.
 
-    @param objAabb The AABB for which we are searching the lowest-level node that fully bounds this AABB.
+    @param objAabb   The AABB for which we are searching the lowest-level node that fully bounds this AABB.
+    @param searchDir Should we start the AABB isInside() checks from the root while going down in the tree hierarchy, or
+                     from a leaf node while going up towards the root.
+                     Application can fine-tune the performance of this function using this argument.
+                     For example, if we are querying for a big building, DownFromRootNode might be faster, but for small objects in a city, the
+                     other approach might be faster due to much fewer calls to AABB isInside().
 
     @return A lowest-level node within the tree which still FULLY contains the given AABB, or nullptr if there is no such node.
 */
-const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb) const
+const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLevelFittingNode(
+    const PureAxisAlignedBoundingBox& objAabb,
+    const BvhSearchDirection& searchDir) const
 {
-    ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
-    if (m_aabb.isInside(objAabb))
+    if (m_parent == nullptr)
     {
-        if (getNodeType() == Parent)
+        ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
+
+        if (searchDir == BvhSearchDirection::UpFromLeafNode)
         {
-            assert(!m_vChildren.empty());
-
-            // the naive approach: iterate over children and try find one which is more tightly fitting.
-            //for (auto pNode : m_vChildren)
-            //{
-            //    assert(pNode);
-            //    PureBoundingVolumeHierarchy& bvhNode = static_cast<PureBoundingVolumeHierarchy&>(*pNode);
-            //    PureBoundingVolumeHierarchy* const pBvhNodeTightestFittingChild = bvhNode.findOneLowestLevelFittingNode(objAabb);
-            //    if (pBvhNodeTightestFittingChild)
-            //    {
-            //        return pBvhNodeTightestFittingChild;
-            //    }
-            //}
-
-            // Beware that BVH sibling nodes might overlap under the same parent! Therefore, even on the lowest tree level, an object
-            // might be colliding with multiple sibling nodes, and even multiple might fully bound it even though obviously only one
-            // of them will actually list it amongst its m_vObjects (if the object is already inserted into the tree).
-
-            // Since calculateChildIndex() is implemented in the Octree, and Octree node positions and dimensions do not change over time
-            // (unlike BVH node's AABB), it stays reliable over time to quickly go down in children hierarchy fast.
-            const ChildIndex iChild = calculateChildIndex(objAabb.getPosVec());
-            PureBoundingVolumeHierarchy& bvhNode = static_cast<PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
-            PureBoundingVolumeHierarchy* const pBvhNodeTightestFittingChild = bvhNode.findOneLowestLevelFittingNode(objAabb);
-            if (pBvhNodeTightestFittingChild)
+            // first we quickly determine our start node from root down to a leaf node, from where we can execute the UpFromLeafNode strategy
+            const PureBoundingVolumeHierarchy* pStartLeafNode = this;
+            while (pStartLeafNode->getNodeType() == Parent)
             {
-                return pBvhNodeTightestFittingChild;
+                assert(!pStartLeafNode->getChildren().empty());
+                const ChildIndex iChild = pStartLeafNode->calculateChildIndex(objAabb.getPosVec());
+                pStartLeafNode = static_cast<PureBoundingVolumeHierarchy*>(pStartLeafNode->getChildren()[iChild]);
+                assert(pStartLeafNode); // children are never null
             }
 
-            // if we are here, it means even though we are parent, none of our children contain the given aabb, even though we have checked
-            // only 1 immediate child, so we are the tightest fitting node.
+            if (!pStartLeafNode->getParent())
+            {
+                // we as root didn't even have any children so it is only us a potential fitting node
+                return m_aabb.isInside(objAabb) ? this : nullptr;
+            }
 
-            // TODO: OPT: but another optimal approach could be to simply go down in the hierarchy by only using calculateChildIndex() at each level,
-            // and from there, start going up by invoking that m_aabb.isInside() that we are now doing from root towards down.
-            // I'm also thinking that a parameter might control if we going like this or the other way that is currently implemented, because
-            // this extra parameter specified by the app who could have more clue based on the size/kind of object, can better fine-tune the algorithm.
-            // For example, if we are querying for a big building, the current implementation might be faster, but for small objects in a city, the other
-            // approach might be faster due to much less call to m_aabb.isInside().
+            // we have found a leaf node so let do the UpFromLeafNode strategy from there
+            return pStartLeafNode->findOneLowestLevelFittingNode(objAabb, searchDir);
+        }
+    }
+    
+    if (searchDir == BvhSearchDirection::DownFromRootNode)
+    {
+        if (m_aabb.isInside(objAabb))
+        {
+            if (getNodeType() == Parent)
+            {
+                assert(!m_vChildren.empty());
+
+                // Beware that BVH sibling nodes might overlap under the same parent! Therefore, even on the lowest tree level, an object
+                // might be colliding with multiple sibling nodes, and even multiple might fully bound it even though obviously only one
+                // of them will actually list it amongst its m_vObjects (if the object is already inserted into the tree).
+
+                // Since calculateChildIndex() is implemented in the Octree, and Octree node positions and dimensions do not change over time
+                // (unlike BVH node's AABB), it stays reliable over time to quickly go down in children hierarchy fast.
+                const ChildIndex iChild = calculateChildIndex(objAabb.getPosVec());
+                PureBoundingVolumeHierarchy& bvhNode = static_cast<PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
+                PureBoundingVolumeHierarchy* const pBvhNodeTightestFittingChild = bvhNode.findOneLowestLevelFittingNode(objAabb, searchDir);
+                if (pBvhNodeTightestFittingChild)
+                {
+                    return pBvhNodeTightestFittingChild;
+                }
+
+                // if we are here, it means even though we are parent, none of our children contain the given aabb, even though we have checked
+                // only 1 immediate child, so we are a tightest fitting node on our level.
+            }
+
+            return this;
+        }
+        return nullptr;
+    }
+
+    assert(searchDir == BvhSearchDirection::UpFromLeafNode);
+    
+    assert(m_parent); // in this direction setting, if we are here, we must be a child of another node!
+
+    if (m_aabb.isInside(objAabb))
+    {
+        // we just came up to this level, however it might happen that on previous level down there another child node
+        // also fits the object due to siblings can overlap, so check only our children (would be nice
+        for (size_t iChild = 0; iChild < m_vChildren.size(); iChild++)
+        {
+            const PureBoundingVolumeHierarchy& bvhChildNode = static_cast<const PureBoundingVolumeHierarchy&>(*m_vChildren[iChild]);
+            if (bvhChildNode.getAABB().isInside(objAabb))
+            {
+                return &bvhChildNode;
+            }
         }
 
+        // no fit on lower level, we are a lowest level fitting node!
         return this;
     }
-    return nullptr;
+
+    // go 1 level up ONLY IF that is still not root node there, otherwise it will be forever recursitivity
+    if (m_parent->getParent())
+    {
+        // continue the UpFromLeafNode strategy 1 level up
+        return (static_cast<PureBoundingVolumeHierarchy*>(m_parent))->findOneLowestLevelFittingNode(objAabb, searchDir);
+    }
+
+    // above us is root, and we failed to find fitting node so far, return root if it fits, do not invoke on it to avoid recursitivity!
+    PureBoundingVolumeHierarchy& parentRootAsBvhNode = static_cast<PureBoundingVolumeHierarchy&>(*m_parent);
+    return parentRootAsBvhNode.getAABB().isInside(objAabb) ? &parentRootAsBvhNode : nullptr;
 }
 
 /**
@@ -300,30 +349,36 @@ const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLev
 
     @return A lowest-level node within the tree which still FULLY contains the given Object3D, or nullptr if there is no such node.
 */
-const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLevelFittingNode(const PureObject3D& obj) const
+const PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLevelFittingNode(
+    const PureObject3D& obj,
+    const BvhSearchDirection& searchDir) const
 {
     PureAxisAlignedBoundingBox objAabb(obj.getPosVec(), obj.getScaledSizeVec());
-    return findOneLowestLevelFittingNode(objAabb);
+    return findOneLowestLevelFittingNode(objAabb, searchDir);
 }
 
 /**
     Same as the const-version, however we need a non-const version as well for the same reason as why we have non-const version of
     other functions as well such as getDebugBox().
 */
-PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLevelFittingNode(const PureAxisAlignedBoundingBox& objAabb)
+PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLevelFittingNode(
+    const PureAxisAlignedBoundingBox& objAabb,
+    const BvhSearchDirection& searchDir)
 {
     // simply invoke the const-version by const-casting:
-    return const_cast<PureBoundingVolumeHierarchy*>(static_cast<const PureBoundingVolumeHierarchy*>(this)->findOneLowestLevelFittingNode(objAabb));
+    return const_cast<PureBoundingVolumeHierarchy*>(static_cast<const PureBoundingVolumeHierarchy*>(this)->findOneLowestLevelFittingNode(objAabb, searchDir));
 }
 
 /**
     Same as the const-version, however we need a non-const version as well for the same reason as why we have non-const version of
     other functions as well such as getDebugBox().
 */
-PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLevelFittingNode(const PureObject3D& obj)
+PureBoundingVolumeHierarchy* PureBoundingVolumeHierarchy::findOneLowestLevelFittingNode(
+    const PureObject3D& obj,
+    const BvhSearchDirection& searchDir)
 {
     // simply invoke the const-version by const-casting:
-    return const_cast<PureBoundingVolumeHierarchy*>(static_cast<const PureBoundingVolumeHierarchy*>(this)->findOneLowestLevelFittingNode(obj));
+    return const_cast<PureBoundingVolumeHierarchy*>(static_cast<const PureBoundingVolumeHierarchy*>(this)->findOneLowestLevelFittingNode(obj, searchDir));
 }
 
 /**
@@ -350,15 +405,15 @@ const PureObject3D* PureBoundingVolumeHierarchy::findOneColliderObject_startFrom
     {
         ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
 
-        const auto pLowestLevelFittingNode = findOneLowestLevelFittingNode(objAabb);
-        if (pLowestLevelFittingNode)
+        const auto pOneLowestLevelFittingNode = findOneLowestLevelFittingNode(objAabb, BvhSearchDirection::DownFromRootNode);
+        if (pOneLowestLevelFittingNode)
         {
             // it is NOT enough to check collision with the tightest fitting node, the reason is that sibling BVH nodes can overlap,
             // therefore collision check shall be done with ALL siblings of the tightest fitting node too, or simply saying, with
             // all children of the tightest fitting node's parent. This is explained in more detail in PureBoundingVolumeHierarchyTest.h's
             // buildBVH_2 function.
             // Because of this, it can happen that we find collider object only in one of the siblings!
-            pStartNode = pLowestLevelFittingNode->getParent() ? static_cast<const PureBoundingVolumeHierarchy*>(pLowestLevelFittingNode->getParent()) : this;
+            pStartNode = pOneLowestLevelFittingNode->getParent() ? static_cast<const PureBoundingVolumeHierarchy*>(pOneLowestLevelFittingNode->getParent()) : this;
         }
         else
         {
@@ -575,15 +630,15 @@ bool PureBoundingVolumeHierarchy::findAllColliderObjects_startFromLowestLevelFit
         ScopeBenchmarker<std::chrono::microseconds> bm(__func__);
         colliders.clear();
 
-        const auto pLowestLevelFittingNode = findOneLowestLevelFittingNode(objAabb);
-        if (pLowestLevelFittingNode)
+        const auto pOneLowestLevelFittingNode = findOneLowestLevelFittingNode(objAabb, BvhSearchDirection::DownFromRootNode);
+        if (pOneLowestLevelFittingNode)
         {
             // it is NOT enough to check collision with the tightest fitting node, the reason is that sibling BVH nodes can overlap,
             // therefore collision check shall be done with ALL siblings of the tightest fitting node too, or simply saying, with
             // all children of the tightest fitting node's parent. This is explained in more detail in PureBoundingVolumeHierarchyTest.h's
             // buildBVH_2 function.
             // Because of this, it can happen that we find collider object only in one of the siblings!
-            pStartNode = pLowestLevelFittingNode->getParent() ? static_cast<const PureBoundingVolumeHierarchy*>(pLowestLevelFittingNode->getParent()) : this;
+            pStartNode = pOneLowestLevelFittingNode->getParent() ? static_cast<const PureBoundingVolumeHierarchy*>(pOneLowestLevelFittingNode->getParent()) : this;
         }
         else
         {
