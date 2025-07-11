@@ -50,8 +50,13 @@ enum class BvhSearchDirection
     Note that there are also other ways to build up a BVH, for example here binary tree is used:
     https://www.haroldserrano.com/blog/visualizing-the-boundary-volume-hierarchy-collision-algorithm
 
-    Also, there are way more ways to optimize, for example, exploiting spatial coherence: most moving objects will be at the same OR similar position in the
-    next frame as in the current frame.
+    To optimize the code:
+     - PureAxisAlignedBoundingBox can be optimized by storing min and max points so those are not calculated
+       within functions like intersects(), etc.;
+     - use QuadTree base instead of Octree when only 2 dimensions are actually used.
+     - the _startFromFirstNode() functions could order children based on their distance from the queried AABB and be
+       checked in that order.
+     - exploiting spatial coherence: most moving objects will be at the same OR similar position in the next frame as in the current frame.
 
     Further material:
      - https://proof88.github.io/pure-doc/visibility.html
