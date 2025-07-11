@@ -35,6 +35,10 @@ enum class BvhSearchDirection
     fully bound all their children and contained objects, and this implies that their position also changes with each size updates.
     BUT, size and position of their ancestor Octree nodes DO NOT change over time at all.
 
+    For collision checks, I recommend using the functions ending with '_startFromFirstNode'.
+    Based on my tests in PRooFPS-dd, on warhouse map, these are ~2x faster than the '_startFromLowestLevelFittingNode' functions.
+    Also, those had some bugs with max tree depth 5, but '_startFromFirstNode' did not have that bug at some lower parts of the map.
+
     Also note that in this implementation, for some reason I decided to initialize the AABB of leaf BVH nodes to have the same position and size as their
     Octree ancestor node. I don't exactly remember the reason, however this shall not add significant performance penalty to the collision checks.
     This results in bigger AABBs, since they are initially big when empty, and inserting object might not extend their dimensions at all.
