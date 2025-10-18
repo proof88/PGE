@@ -116,10 +116,14 @@ public:
 
     /**
     * @param key              The virtual keycode of the key for which we are checking keypress event.
+    *                         The null character '\0' has special meaning explained in the return value.
     * @param nFilterMillisecs Minimum time needs to elapse before accepting another keypress event.
+    * 
     * @return True if given key is pressed, false otherwise.
+    *         If 'key' is specified as the null character '\0' any keypress event is considered instead
+    *         of a specific key, and in such case 'nFilterMillisecs' is ignored.
     */
-    virtual bool isKeyPressed(unsigned char key, std::chrono::milliseconds::rep nFilterMillisecs = 0) = 0;
+    virtual bool isKeyPressed(unsigned char key = '\0', std::chrono::milliseconds::rep nFilterMillisecs = 0) = 0;
 
     /**
     * Useful if we want to distinguish between different keypresses of the same key.

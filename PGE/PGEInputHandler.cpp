@@ -408,6 +408,18 @@ PGEInputKeyboardImpl::~PGEInputKeyboardImpl()
 
 bool PGEInputKeyboardImpl::isKeyPressed(unsigned char key, std::chrono::milliseconds::rep nFilterMillisecs)
 {
+    if (key == '\0')
+    {
+        for (const auto& bState : m_bKeysDown)
+        {
+            if (bState)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     const std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::steady_clock::now();
     const bool bTimeFilterOk =
         nFilterMillisecs > 0 ?
