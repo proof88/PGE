@@ -257,12 +257,28 @@ void PGEInputMouseImpl::ReceiveWheel(short int amount)
 
 bool PGEInputMouseImpl::isButtonPressed(MouseButton mbtn) const
 {
+    if (mbtn == MouseButton::MBTN_ANY)
+    {
+        for (const auto& btn : mapButtonsPressed)
+        {
+            if (btn.second)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     return mapButtonsPressed.at(mbtn);
 }
 
 
 void PGEInputMouseImpl::SetButtonPressed(MouseButton mbtn, bool pressed)
 {
+    if (mbtn == MouseButton::MBTN_ANY)
+    {
+        return;
+    }
     mapButtonsPressed[mbtn] = pressed;
 }
 

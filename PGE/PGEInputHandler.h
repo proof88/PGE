@@ -31,7 +31,8 @@ public:
     {
         MBTN_LEFT,
         MBTN_MIDDLE,
-        MBTN_RIGHT
+        MBTN_RIGHT,
+        MBTN_ANY
     };
 
     /** Creates and gets the singleton instance. */
@@ -86,9 +87,23 @@ public:
     virtual void ReceiveWheel(short int amount) = 0;
 
     /**
-        Mouse button interaction.
+    * @param mbtn The mouse button for which we are checking press state.
+    *             MouseButton::MBTN_ANY has special meaning explained in the return value.
+    * 
+    * @return True if given mouse button is pressed, false otherwise.
+    *         If MouseButton::MBTN_ANY is specified for 'mbtn' then any mouse button press event is
+    *         considered instead of a specific button.
     */
-    virtual bool isButtonPressed(MouseButton mbtn) const = 0;
+    virtual bool isButtonPressed(MouseButton mbtn = MouseButton::MBTN_ANY) const = 0;
+
+    /**
+    * Sets the pressed state of the given mouse button to the given value.
+    * This is used by the message handler callback function of the game window.
+    *
+    * @param mbtn  The mouse button for which we are setting press event.
+    *              Cannot be MouseButton::MBTN_ANY.
+    * @param state The state we want to set i.e. true for pressed, false for released.
+    */
     virtual void SetButtonPressed(MouseButton mbtn, bool pressed) = 0;
 
 }; // class PGEInputMouse
