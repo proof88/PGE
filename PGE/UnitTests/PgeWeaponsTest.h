@@ -137,7 +137,7 @@ protected:
         addSubTest("test_wpn_reload_per_bullet_is_one_by_one", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_per_bullet_is_one_by_one);
         addSubTest("test_wpn_reload_doesnt_reload_when_already_reloading", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_doesnt_reload_when_already_reloading);
 
-        /* operational tests: firing */
+        /* operational tests: firing (shooting) */
 
         addSubTest("test_wpn_accuracy_angle_by_pose", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_accuracy_angle_by_pose);
         addSubTest("test_wpn_get_lowest_accuracy_by_pose", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_lowest_accuracy_by_pose);
@@ -153,6 +153,7 @@ protected:
         addSubTest("test_wpn_automatic_shoot_continuously_in_loop_respects_cooldown_time", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_automatic_shoot_continuously_in_loop_respects_cooldown_time);
         addSubTest("test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop);
         addSubTest("test_wpn_reload_doesnt_reload_during_shooting", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_doesnt_reload_during_shooting);
+        addSubTest("test_wpn_with_subprojectiles_creates_multiple_bullets_at_once", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_with_subprojectiles_creates_multiple_bullets_at_once);
         addSubTest("test_wpn_reset_sets_defaults", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_reset_sets_defaults);
         
         /* WeaponManager */
@@ -993,6 +994,7 @@ private:
 
     bool test_wpn_get_firing_rate()
     {
+        // TODO: update for burst mode wpn
         bool b = false;
         try
         {
@@ -1013,6 +1015,7 @@ private:
 
     bool test_wpn_get_damage_per_second_rating()
     {
+        // TODO: update for burst mode wpn
         bool b = false;
         try
         {
@@ -1536,6 +1539,7 @@ private:
 
     bool test_wpn_get_random_relative_bullet_angle()
     {
+        // TODO: update for burst mode wpn
         bool b = false;
         try
         {
@@ -1563,6 +1567,7 @@ private:
 
     bool test_wpn_shoot_creates_bullet_within_momentary_accuracy_range_of_weapon()
     {
+        // TODO: update for burst mode wpn
         bool b = false;
 
         try
@@ -2049,6 +2054,11 @@ private:
         }
 
         return b;
+    }
+
+    bool test_wpn_with_subprojectiles_creates_multiple_bullets_at_once()
+    {
+        return false;
     }
 
     bool test_wpn_reset_sets_defaults()

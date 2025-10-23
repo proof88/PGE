@@ -114,7 +114,7 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     
     //tests.push_back(std::unique_ptr<Test>(new PgePacketTest));
     
-    //tests.push_back(std::unique_ptr<Test>(new PgeWeaponsTest));
+    tests.push_back(std::unique_ptr<Test>(new PgeWeaponsTest));
     //tests.push_back(std::unique_ptr<Test>(new PGEBulletTest));
     /**/
     
@@ -123,16 +123,17 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     tests.push_back(std::unique_ptr<Test>(new PureSharedSettingsTest));
     */
     
-    /*  */
-    //tests.push_back(std::unique_ptr<Test>(new PurePosUpTargetTest));
-    //tests.push_back(std::unique_ptr<Test>(new PureVectorTest));
-    //tests.push_back(std::unique_ptr<Test>(new PureMatrixTest));
-    //tests.push_back(std::unique_ptr<Test>(new PureTransformMatrixTest));
-    //tests.push_back(std::unique_ptr<Test>(new PureAxisAlignedBoundingBoxTest));
-    //tests.push_back(std::unique_ptr<Test>(new PureOctreeTest));
+    /*
+    tests.push_back(std::unique_ptr<Test>(new PurePosUpTargetTest));
+    tests.push_back(std::unique_ptr<Test>(new PureVectorTest));
+    tests.push_back(std::unique_ptr<Test>(new PureMatrixTest));
+    tests.push_back(std::unique_ptr<Test>(new PureTransformMatrixTest));
+    tests.push_back(std::unique_ptr<Test>(new PureAxisAlignedBoundingBoxTest));
+    tests.push_back(std::unique_ptr<Test>(new PureOctreeTest));
     tests.push_back(std::unique_ptr<Test>(new PureBoundingVolumeHierarchyTest));
-    //tests.push_back(std::unique_ptr<Test>(new PureScissorTest));
-    //tests.push_back(std::unique_ptr<Test>(new PureProjectionTest));
+    tests.push_back(std::unique_ptr<Test>(new PureScissorTest));
+    tests.push_back(std::unique_ptr<Test>(new PureProjectionTest));
+    */
     
 
     /*   
