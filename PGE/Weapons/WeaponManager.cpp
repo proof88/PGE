@@ -504,6 +504,7 @@ Weapon::Weapon(
         m_WpnAcceptedVars.insert("bullet_size_x");
         m_WpnAcceptedVars.insert("bullet_size_y");
         m_WpnAcceptedVars.insert("bullet_size_z");
+        m_WpnAcceptedVars.insert("bullet_subprojectiles");
         m_WpnAcceptedVars.insert("bullet_speed");
         m_WpnAcceptedVars.insert("bullet_gravity");
         m_WpnAcceptedVars.insert("bullet_drag");
@@ -621,18 +622,6 @@ Weapon::Weapon(
             getVars()["firing_mode_max"].getAsString().c_str(),
             fname);
         throw std::runtime_error("wrong order of default and max firing modes: " + getVars()["firing_mode_def"].getAsString() +
-            " and " + getVars()["firing_mode_max"].getAsString() + " in " + std::string(fname));
-    }
-
-    if (((getVars()["firing_mode_def"].getAsString() == "burst") && (getVars()["firing_mode_max"].getAsString() == "proj"))
-        ||
-        ((getVars()["firing_mode_def"].getAsString() == "proj") && (getVars()["firing_mode_max"].getAsString() == "burst")))
-    {
-        getConsole().EOLnOO("incompatiable default and max firing modes: %s and %s in %s! ",
-            getVars()["firing_mode_def"].getAsString().c_str(),
-            getVars()["firing_mode_max"].getAsString().c_str(),
-            fname);
-        throw std::runtime_error("incompatiable default and max firing modes: " + getVars()["firing_mode_def"].getAsString() +
             " and " + getVars()["firing_mode_max"].getAsString() + " in " + std::string(fname));
     }
 
@@ -1678,7 +1667,6 @@ const std::vector<Weapon::FiringModeEnumToStringPair> Weapon::m_vecOrderOfFiring
 {
     {WPN_FM_SEMI, "semi"},
     {WPN_FM_BURST, "burst"},
-    {WPN_FM_PROJ, "proj"},
     {WPN_FM_AUTO, "auto"}
 };
 

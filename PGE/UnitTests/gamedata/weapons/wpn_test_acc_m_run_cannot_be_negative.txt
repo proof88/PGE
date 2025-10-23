@@ -58,6 +58,8 @@ bullet_size_x = 1.0
 bullet_size_y = 2.0
 bullet_size_z = 3.0
 
+bullet_subprojectiles = 1
+
 bullet_speed = 2.0
 
 bullet_gravity = 0

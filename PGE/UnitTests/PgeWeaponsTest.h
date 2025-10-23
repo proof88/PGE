@@ -86,7 +86,6 @@ protected:
         addSubTest("test_wpn_load_weapon_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled);
         addSubTest("test_wpn_load_weapon_firing_cooldown_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_firing_cooldown_must_be_positive);
         addSubTest("test_wpn_load_weapon_firing_mode_max_cannot_be_less_than_default", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_firing_mode_max_cannot_be_less_than_default);
-        addSubTest("test_wpn_load_weapon_firing_modes_default_and_max_cannot_be_burst_and_proj", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_firing_modes_default_and_max_cannot_be_burst_and_proj);
         
         /* weapon load negative tests: bullet config errors */
 
@@ -530,13 +529,6 @@ private:
         return test_helper_wpn_load_and_expect_exception(
             "gamedata/weapons/wpn_test_firing_mode_max_cannot_be_less_than_default.txt",
             "wrong order of default and max firing modes: auto and semi");
-    }
-
-    bool test_wpn_load_weapon_firing_modes_default_and_max_cannot_be_burst_and_proj()
-    {
-        return test_helper_wpn_load_and_expect_exception(
-            "gamedata/weapons/wpn_test_firing_modes_default_and_max_cannot_be_burst_and_proj.txt",
-            "incompatiable default and max firing modes: burst and proj");
     }
 
     bool test_wpn_load_weapon_damage_hp_must_be_positive()

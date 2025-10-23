@@ -338,7 +338,6 @@ public:
     {
         WPN_FM_SEMI,  /**< Semi-automatic: trigger needs to be pulled-and-released as many times as many bullets we want to fire. */
         WPN_FM_BURST, /**< Similar to semi, but 1 trigger pull shots some (limited amount) bullets after each other. */
-        WPN_FM_PROJ,  /**< Similar to burst, but 1 trigger pull shots some (limited amount) of projectiles AT ONCE, e.g. shotguns. */
         WPN_FM_AUTO   /**< Trigger needs to be pulled only once to fire continuously until we have bullet. */
     };
 
