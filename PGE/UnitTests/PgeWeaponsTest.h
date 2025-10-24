@@ -55,40 +55,40 @@ protected:
 
         Bullet::resetGlobalBulletId();
 
-    //    /* weapon load negative tests: general config errors */
-    //
-    //    addSubTest("test_wpn_load_weapon_bad_assignment", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_bad_assignment);
-    //    addSubTest("test_wpn_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_unaccepted_var);
-    //    addSubTest("test_wpn_load_weapon_missing_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_missing_var);
-    //    addSubTest("test_wpn_load_weapon_double_defined_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_double_defined_var);
-    //    
-    //    /* weapon load negative tests: reload config errors */
-    //
-    //    addSubTest("test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag);
-    //    addSubTest("test_wpn_load_weapon_reloadable_cannot_be_greater_than_cap_max", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_reloadable_cannot_be_greater_than_cap_max);
-    //    addSubTest("test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable);
-    //    addSubTest("test_wpn_load_weapon_bullets_default_cannot_be_greater_than_cap_max", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_bullets_default_cannot_be_greater_than_cap_max);
-    //    addSubTest("test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag);
-    //    addSubTest("test_wpn_load_weapon_reload_end_snd_incompatible_with_no_reload_per_mag", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_reload_end_snd_incompatible_with_no_reload_per_mag);
-    //
-    //    /* weapon load negative tests: accuracy config errors */
-    //
-    //    addSubTest("test_wpn_load_weapon_acc_angle_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_acc_angle_cannot_be_negative);
-    //    addSubTest("test_wpn_load_weapon_acc_m_walk_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_acc_m_walk_cannot_be_negative);
-    //    addSubTest("test_wpn_load_weapon_acc_m_run_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_acc_m_run_cannot_be_negative);
-    //    addSubTest("test_wpn_load_weapon_acc_m_duck_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_acc_m_duck_cannot_be_negative);
-    //    
-    //    /* weapon load negative tests: firing, recoil and cooldown config errors */
-    //
-    //    addSubTest("test_wpn_load_weapon_recoil_cannot_be_less_than_1", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_recoil_cannot_be_less_than_1);
-    //    addSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown);
-    //    addSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control);
-    //    addSubTest("test_wpn_load_weapon_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled);
-    //    addSubTest("test_wpn_load_weapon_firing_cooldown_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_firing_cooldown_must_be_positive);
-    //    addSubTest("test_wpn_load_weapon_firing_mode_max_cannot_be_less_than_default", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_firing_mode_max_cannot_be_less_than_default);
+        /* weapon load negative tests: general config errors */
+    
+        addSubTest("test_wpn_load_weapon_bad_assignment", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_bad_assignment);
+        addSubTest("test_wpn_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_unaccepted_var);
+        addSubTest("test_wpn_load_weapon_missing_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_missing_var);
+        addSubTest("test_wpn_load_weapon_double_defined_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_double_defined_var);
+        
+        /* weapon load negative tests: reload config errors */
+    
+        addSubTest("test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag);
+        addSubTest("test_wpn_load_weapon_reloadable_cannot_be_greater_than_cap_max", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_reloadable_cannot_be_greater_than_cap_max);
+        addSubTest("test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_bullets_default_cannot_be_greater_than_non_zero_reloadable);
+        addSubTest("test_wpn_load_weapon_bullets_default_cannot_be_greater_than_cap_max", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_bullets_default_cannot_be_greater_than_cap_max);
+        addSubTest("test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_reload_whole_mag_incompatible_with_no_reload_per_mag);
+        addSubTest("test_wpn_load_weapon_reload_end_snd_incompatible_with_no_reload_per_mag", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_reload_end_snd_incompatible_with_no_reload_per_mag);
+    
+        /* weapon load negative tests: accuracy config errors */
+    
+        addSubTest("test_wpn_load_weapon_acc_angle_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_acc_angle_cannot_be_negative);
+        addSubTest("test_wpn_load_weapon_acc_m_walk_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_acc_m_walk_cannot_be_negative);
+        addSubTest("test_wpn_load_weapon_acc_m_run_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_acc_m_run_cannot_be_negative);
+        addSubTest("test_wpn_load_weapon_acc_m_duck_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_acc_m_duck_cannot_be_negative);
+        
+        /* weapon load negative tests: firing, recoil and cooldown config errors */
+    
+        addSubTest("test_wpn_load_weapon_recoil_cannot_be_less_than_1", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_recoil_cannot_be_less_than_1);
+        addSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_non_zero_recoil_cooldown);
+        addSubTest("test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_no_recoil_incompatible_with_recoil_control);
+        addSubTest("test_wpn_load_weapon_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_recoil_cooldown_cannot_be_less_than_firing_cooldown_when_recoil_is_enabled);
+        addSubTest("test_wpn_load_weapon_firing_cooldown_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_firing_cooldown_must_be_positive);
+        addSubTest("test_wpn_load_weapon_firing_mode_max_cannot_be_less_than_default", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_firing_mode_max_cannot_be_less_than_default);
         
         /* weapon load negative tests: bullet config errors */
-
+    
         addSubTest("test_wpn_load_weapon_bullet_subprojectiles_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_bullet_subprojectiles_must_be_positive);
         addSubTest("test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
         addSubTest("test_wpn_load_weapon_damage_area_size_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_damage_area_size_cannot_be_negative);
@@ -99,85 +99,86 @@ protected:
         addSubTest("test_wpn_load_weapon_bullet_distance_max_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_bullet_distance_max_cannot_be_negative);
         addSubTest("test_wpn_load_weapon_invalid_bullet_particle", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_invalid_bullet_particle);
         
-    //    /* weapon load positive tests and other use cases */
-    //
-    //    addSubTest("test_wpn_state_to_string", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_state_to_string);
-    //
-    //    addSubTest("test_wpn_load_weapon_good", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_good);
-    //
-    //    addSubTest("test_wpn_set_available", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_set_available);
-    //    addSubTest("test_wpn_set_owner", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_set_owner);
-    //    addSubTest("test_wpn_set_mag_bullet_count", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_set_mag_bullet_count);
-    //    addSubTest("test_wpn_set_unmag_bullet_count", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_set_unmag_bullet_count);
-    //    addSubTest("test_wpn_inc_bullet_count", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_inc_bullet_count);
-    //
-    //    addSubTest("test_wpn_update_position_updates_weapon_object_position", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_update_position_updates_weapon_object_position);
-    //    addSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle_1", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle_1);
-    //    addSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle_2", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle_2);
-    //
-    //    addSubTest("test_wpn_get_damage_per_fire_rating", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_damage_per_fire_rating);
-    //    addSubTest("test_wpn_get_firing_rate", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_firing_rate);
-    //    addSubTest("test_wpn_get_damage_per_second_rating", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_damage_per_second_rating);
-    //
-    //    addSubTest("test_wpn_client_receive_state_from_server", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_client_receive_state_from_server);
-    //    
-    //    /* operational tests: reload */
-    //
-    //    addSubTest("test_wpn_reload_when_no_more_bullets_does_not_reload", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_when_no_more_bullets_does_not_reload);
-    //    addSubTest("test_wpn_reload_when_full_does_not_reload", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_when_full_does_not_reload);
-    //    addSubTest("test_wpn_reload_when_not_reloadable_does_not_reload", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_when_not_reloadable_does_not_reload);
-    //    addSubTest("test_wpn_reload_per_mag_when_we_have_atleast_full_spare_mag_without_reload_whole_mag_does_not_waste_bullets",
-    //        (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_per_mag_when_we_have_atleast_full_spare_mag_without_reload_whole_mag_does_not_waste_bullets);
-    //    addSubTest("test_wpn_reload_per_mag_when_we_do_not_have_full_spare_mag_without_reload_whole_mag_does_not_waste_bullets",
-    //        (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_per_mag_when_we_do_not_have_full_spare_mag_without_reload_whole_mag_does_not_waste_bullets);
-    //    addSubTest("test_wpn_reload_per_mag_when_we_have_atleast_full_spare_mag_with_reload_whole_mag_wastes_bullets",
-    //        (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_per_mag_when_we_have_atleast_full_spare_mag_with_reload_whole_mag_wastes_bullets);
-    //    addSubTest("test_wpn_reload_per_mag_when_we_do_not_have_full_spare_mag_with_reload_whole_mag_wastes_bullets",
-    //        (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_per_mag_when_we_do_not_have_full_spare_mag_with_reload_whole_mag_wastes_bullets);
-    //    addSubTest("test_wpn_reload_per_bullet_is_one_by_one", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_per_bullet_is_one_by_one);
-    //    addSubTest("test_wpn_reload_doesnt_reload_when_already_reloading", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_doesnt_reload_when_already_reloading);
-    //
-    //    /* operational tests: firing (shooting) */
-    //
-    //    addSubTest("test_wpn_accuracy_angle_by_pose", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_accuracy_angle_by_pose);
-    //    addSubTest("test_wpn_get_lowest_accuracy_by_pose", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_lowest_accuracy_by_pose);
-    //    addSubTest("test_wpn_get_lowest_accuracy_possible", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_lowest_accuracy_possible);
-    //    addSubTest("test_wpn_get_random_relative_bullet_angle", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_random_relative_bullet_angle);
-    //    addSubTest("test_wpn_shoot_creates_bullet_within_momentary_accuracy_range_of_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_shoot_creates_bullet_within_momentary_accuracy_range_of_weapon);
-    //    addSubTest("test_wpn_release_trigger_after_shoot", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_release_trigger_after_shoot);
-    //    addSubTest("test_wpn_attack_does_not_decrease_mag_count_for_melee_type", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_attack_does_not_decrease_mag_count_for_melee_type);
-    //    addSubTest("test_wpn_shoot_when_empty_does_not_shoot", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_when_empty_does_not_shoot);
-    //    addSubTest("test_wpn_shoot_during_reloading_per_mag_does_not_shoot", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_during_reloading_per_mag_does_not_shoot);
-    //    addSubTest("test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading);
-    //    addSubTest("test_wpn_shoot_doesnt_shoot_when_already_shooting", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_doesnt_shoot_when_already_shooting);
-    //    addSubTest("test_wpn_automatic_shoot_continuously_in_loop_respects_cooldown_time", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_automatic_shoot_continuously_in_loop_respects_cooldown_time);
-    //    addSubTest("test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop);
-    //    addSubTest("test_wpn_reload_doesnt_reload_during_shooting", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_doesnt_reload_during_shooting);
-    //    addSubTest("test_wpn_with_subprojectiles_creates_multiple_bullets_at_once", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_with_subprojectiles_creates_multiple_bullets_at_once);
-    //    addSubTest("test_wpn_reset_sets_defaults", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_reset_sets_defaults);
-    //    
-    //    /* WeaponManager */
-    //
-    //    addSubTest("test_wm_initially_empty", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_initially_empty);
-    //    addSubTest("test_wm_clear_weapons", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_clear_weapons);
-    //    addSubTest("test_wm_set_default_available_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_set_default_available_weapon);
-    //    addSubTest("test_wm_load_weapon_bad_assignment", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_load_weapon_bad_assignment);
-    //    addSubTest("test_wm_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_load_weapon_unaccepted_var);
-    //    addSubTest("test_wm_load_weapon_missing_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_load_weapon_missing_var);
-    //    addSubTest("test_wm_load_weapon_double_defined_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_load_weapon_double_defined_var);
-    //    addSubTest("test_wm_load_weapon_good", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_load_weapon_good);
-    //    addSubTest("test_wm_load_same_weapon_twice", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_load_same_weapon_twice);
-    //    addSubTest("test_wm_get_weapon_by_filename", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_weapon_by_filename);
-    //    addSubTest("test_wm_get_weapon_by_id", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_weapon_by_id);
-    //    addSubTest("test_wm_get_set_current_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_set_current_weapon);
-    //    addSubTest("test_wm_get_prev_avail_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_prev_avail_weapon);
-    //    addSubTest("test_wm_get_prev_avail_weapon_not_in_keytoweaponmap", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_prev_avail_weapon_not_in_keytoweaponmap);
-    //    addSubTest("test_wm_get_next_avail_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_next_avail_weapon);
-    //    addSubTest("test_wm_get_next_avail_weapon_not_in_keytoweaponmap", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_next_avail_weapon_not_in_keytoweaponmap);
-    //    addSubTest("test_wm_get_next_best_avail_weapon_with_any_ammo", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_next_best_avail_weapon_with_any_ammo);
-    //    addSubTest("test_wm_get_next_best_avail_weapon_with_any_ammo_not_in_keytoweaponmap", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_next_best_avail_weapon_with_any_ammo_not_in_keytoweaponmap);
-    //    addSubTest("test_wm_get_next_best_avail_weapon_with_loaded_ammo", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_next_best_avail_weapon_with_loaded_ammo);
-    //    addSubTest("test_wm_get_next_best_avail_weapon_with_loaded_ammo_not_in_keytoweaponmap", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_next_best_avail_weapon_with_loaded_ammo_not_in_keytoweaponmap);
+        /* weapon load positive tests and other use cases */
+    
+        addSubTest("test_wpn_state_to_string", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_state_to_string);
+    
+        addSubTest("test_wpn_load_weapon_good", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_good);
+    
+        addSubTest("test_wpn_set_available", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_set_available);
+        addSubTest("test_wpn_set_owner", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_set_owner);
+        addSubTest("test_wpn_set_mag_bullet_count", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_set_mag_bullet_count);
+        addSubTest("test_wpn_set_unmag_bullet_count", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_set_unmag_bullet_count);
+        addSubTest("test_wpn_inc_bullet_count", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_inc_bullet_count);
+    
+        addSubTest("test_wpn_update_position_updates_weapon_object_position", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_update_position_updates_weapon_object_position);
+        addSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle_1", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle_1);
+        addSubTest("test_wpn_update_positions_updates_weapon_object_position_and_angle_2", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_update_positions_updates_weapon_object_position_and_angle_2);
+    
+        addSubTest("test_wpn_get_firing_rate", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_firing_rate);
+        addSubTest("test_wpn_get_bullet_rate", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_bullet_rate);
+        addSubTest("test_wpn_get_damage_per_fire_rating", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_damage_per_fire_rating);
+        addSubTest("test_wpn_get_damage_per_second_rating", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_damage_per_second_rating);
+    
+        addSubTest("test_wpn_client_receive_state_from_server", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_client_receive_state_from_server);
+        
+        /* operational tests: reload */
+    
+        addSubTest("test_wpn_reload_when_no_more_bullets_does_not_reload", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_when_no_more_bullets_does_not_reload);
+        addSubTest("test_wpn_reload_when_full_does_not_reload", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_when_full_does_not_reload);
+        addSubTest("test_wpn_reload_when_not_reloadable_does_not_reload", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_when_not_reloadable_does_not_reload);
+        addSubTest("test_wpn_reload_per_mag_when_we_have_atleast_full_spare_mag_without_reload_whole_mag_does_not_waste_bullets",
+            (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_per_mag_when_we_have_atleast_full_spare_mag_without_reload_whole_mag_does_not_waste_bullets);
+        addSubTest("test_wpn_reload_per_mag_when_we_do_not_have_full_spare_mag_without_reload_whole_mag_does_not_waste_bullets",
+            (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_per_mag_when_we_do_not_have_full_spare_mag_without_reload_whole_mag_does_not_waste_bullets);
+        addSubTest("test_wpn_reload_per_mag_when_we_have_atleast_full_spare_mag_with_reload_whole_mag_wastes_bullets",
+            (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_per_mag_when_we_have_atleast_full_spare_mag_with_reload_whole_mag_wastes_bullets);
+        addSubTest("test_wpn_reload_per_mag_when_we_do_not_have_full_spare_mag_with_reload_whole_mag_wastes_bullets",
+            (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_per_mag_when_we_do_not_have_full_spare_mag_with_reload_whole_mag_wastes_bullets);
+        addSubTest("test_wpn_reload_per_bullet_is_one_by_one", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_per_bullet_is_one_by_one);
+        addSubTest("test_wpn_reload_doesnt_reload_when_already_reloading", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_doesnt_reload_when_already_reloading);
+    
+        /* operational tests: firing (shooting) */
+    
+        addSubTest("test_wpn_accuracy_angle_by_pose", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_accuracy_angle_by_pose);
+        addSubTest("test_wpn_get_lowest_accuracy_by_pose", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_lowest_accuracy_by_pose);
+        addSubTest("test_wpn_get_lowest_accuracy_possible", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_lowest_accuracy_possible);
+        addSubTest("test_wpn_get_random_relative_bullet_angle", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_get_random_relative_bullet_angle);
+        addSubTest("test_wpn_shoot_creates_bullet_within_momentary_accuracy_range_of_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_shoot_creates_bullet_within_momentary_accuracy_range_of_weapon);
+        addSubTest("test_wpn_release_trigger_after_shoot", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_release_trigger_after_shoot);
+        addSubTest("test_wpn_attack_does_not_decrease_mag_count_for_melee_type", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_attack_does_not_decrease_mag_count_for_melee_type);
+        addSubTest("test_wpn_shoot_when_empty_does_not_shoot", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_when_empty_does_not_shoot);
+        addSubTest("test_wpn_shoot_during_reloading_per_mag_does_not_shoot", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_during_reloading_per_mag_does_not_shoot);
+        addSubTest("test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_during_reloading_per_bullet_interrupts_reloading);
+        addSubTest("test_wpn_shoot_doesnt_shoot_when_already_shooting", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_shoot_doesnt_shoot_when_already_shooting);
+        addSubTest("test_wpn_automatic_shoot_continuously_in_loop_respects_cooldown_time", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_automatic_shoot_continuously_in_loop_respects_cooldown_time);
+        addSubTest("test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_semi_shoot_has_to_release_and_pull_trigger_continuously_in_loop);
+        addSubTest("test_wpn_reload_doesnt_reload_during_shooting", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_reload_doesnt_reload_during_shooting);
+        addSubTest("test_wpn_with_subprojectiles_creates_multiple_bullets_at_once", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_with_subprojectiles_creates_multiple_bullets_at_once);
+        addSubTest("test_wpn_reset_sets_defaults", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_reset_sets_defaults);
+        
+        /* WeaponManager */
+    
+        addSubTest("test_wm_initially_empty", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_initially_empty);
+        addSubTest("test_wm_clear_weapons", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_clear_weapons);
+        addSubTest("test_wm_set_default_available_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_set_default_available_weapon);
+        addSubTest("test_wm_load_weapon_bad_assignment", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_load_weapon_bad_assignment);
+        addSubTest("test_wm_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_load_weapon_unaccepted_var);
+        addSubTest("test_wm_load_weapon_missing_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_load_weapon_missing_var);
+        addSubTest("test_wm_load_weapon_double_defined_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_load_weapon_double_defined_var);
+        addSubTest("test_wm_load_weapon_good", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wm_load_weapon_good);
+        addSubTest("test_wm_load_same_weapon_twice", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_load_same_weapon_twice);
+        addSubTest("test_wm_get_weapon_by_filename", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_weapon_by_filename);
+        addSubTest("test_wm_get_weapon_by_id", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_weapon_by_id);
+        addSubTest("test_wm_get_set_current_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_set_current_weapon);
+        addSubTest("test_wm_get_prev_avail_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_prev_avail_weapon);
+        addSubTest("test_wm_get_prev_avail_weapon_not_in_keytoweaponmap", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_prev_avail_weapon_not_in_keytoweaponmap);
+        addSubTest("test_wm_get_next_avail_weapon", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_next_avail_weapon);
+        addSubTest("test_wm_get_next_avail_weapon_not_in_keytoweaponmap", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_next_avail_weapon_not_in_keytoweaponmap);
+        addSubTest("test_wm_get_next_best_avail_weapon_with_any_ammo", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_next_best_avail_weapon_with_any_ammo);
+        addSubTest("test_wm_get_next_best_avail_weapon_with_any_ammo_not_in_keytoweaponmap", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_next_best_avail_weapon_with_any_ammo_not_in_keytoweaponmap);
+        addSubTest("test_wm_get_next_best_avail_weapon_with_loaded_ammo", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_next_best_avail_weapon_with_loaded_ammo);
+        addSubTest("test_wm_get_next_best_avail_weapon_with_loaded_ammo_not_in_keytoweaponmap", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wm_get_next_best_avail_weapon_with_loaded_ammo_not_in_keytoweaponmap);
     }
 
     virtual bool setUp() override
@@ -972,17 +973,22 @@ private:
         return b;
     }
 
-    bool test_wpn_get_damage_per_fire_rating()
+    bool test_wpn_get_firing_rate()
     {
         bool b = false;
         try
         {
             PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            Weapon wpnMchgun("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            Weapon wpnShotgun("gamedata/weapons/sample_good_wpn_shotgun.txt", bullets, m_audio, *engine, 0);
 
-            b = assertEquals((wpn.getVars().at("damage_hp").getAsInt() * wpn.getVars().at("damage_ap").getAsInt()) / 100.f,
-                wpn.getDamagePerFireRating(), 0.001f, "1");
-            b &= assertBetween(0.01f, 100.f, wpn.getDamagePerFireRating(), 0.001f, "2");
+            b = assertEquals(1000.f / wpnMchgun.getVars().at("firing_cooldown").getAsInt(),
+                wpnMchgun.getFiringRate(), 0.001f, "mchgun 1");
+            b &= assertGreater(wpnMchgun.getFiringRate(), 0.f, "mchgun 2");
+
+            b = assertEquals(1000.f / wpnShotgun.getVars().at("firing_cooldown").getAsInt(),
+                wpnShotgun.getFiringRate(), 0.001f, "shotgun 1");
+            b &= assertGreater(wpnShotgun.getFiringRate(), 0.f, "shotgun 2");
         }
         catch (const std::exception& e)
         {
@@ -992,18 +998,49 @@ private:
         return b;
     }
 
-    bool test_wpn_get_firing_rate()
+    bool test_wpn_get_bullet_rate()
     {
-        // TODO: update for burst mode wpn
         bool b = false;
         try
         {
             PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            Weapon wpnMchgun("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            Weapon wpnShotgun("gamedata/weapons/sample_good_wpn_shotgun.txt", bullets, m_audio, *engine, 0);
 
-            b = assertEquals(1000.f / wpn.getVars().at("firing_cooldown").getAsInt(),
-                 wpn.getFiringRate(), 0.001f, "1");
-            b &= assertGreater(wpn.getFiringRate(), 0.f, "2");
+            b = assertEquals(wpnMchgun.getFiringRate() * wpnMchgun.getVars().at("bullet_subprojectiles").getAsUInt(),
+                wpnMchgun.getBulletRate(), 0.001f, "mchgun 1");
+            b &= assertGreater(wpnMchgun.getBulletRate(), 0.f, "mchgun 2");
+
+            b = assertEquals(wpnShotgun.getFiringRate() * wpnShotgun.getVars().at("bullet_subprojectiles").getAsUInt(),
+                wpnShotgun.getBulletRate(), 0.001f, "shotgun 1");
+            b &= assertGreater(wpnShotgun.getBulletRate(), 0.f, "shotgun 2");
+        }
+        catch (const std::exception& e)
+        {
+            b &= assertTrue(false, e.what());
+        }
+
+        return b;
+    }
+
+    bool test_wpn_get_damage_per_fire_rating()
+    {
+        bool b = false;
+        try
+        {
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
+            Weapon wpnMchgun("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            Weapon wpnShotgun("gamedata/weapons/sample_good_wpn_shotgun.txt", bullets, m_audio, *engine, 0);
+
+            b = assertEquals(
+                (wpnMchgun.getVars().at("bullet_subprojectiles").getAsUInt() * wpnMchgun.getVars().at("damage_hp").getAsInt() * wpnMchgun.getVars().at("damage_ap").getAsInt()) / 100.f,
+                wpnMchgun.getDamagePerFireRating(), 0.001f, "mchgun 1");
+            b &= assertBetween(0.01f, 100.f, wpnMchgun.getDamagePerFireRating(), 0.001f, "mchgun 2");
+
+            b = assertEquals(
+                (wpnShotgun.getVars().at("bullet_subprojectiles").getAsUInt() * wpnShotgun.getVars().at("damage_hp").getAsInt() * wpnShotgun.getVars().at("damage_ap").getAsInt()) / 100.f,
+                wpnShotgun.getDamagePerFireRating(), 0.001f, "shotgun 1");
+            b &= assertBetween(0.01f, 100.f, wpnShotgun.getDamagePerFireRating(), 0.001f, "shotgun 2");
         }
         catch (const std::exception& e)
         {
@@ -1015,16 +1052,20 @@ private:
 
     bool test_wpn_get_damage_per_second_rating()
     {
-        // TODO: update for burst mode wpn
         bool b = false;
         try
         {
             PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
-            Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            Weapon wpnMchgun("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            Weapon wpnShotgun("gamedata/weapons/sample_good_wpn_shotgun.txt", bullets, m_audio, *engine, 0);
 
-            b = assertEquals(std::powf(1000.f / wpn.getVars().at("firing_cooldown").getAsInt() * wpn.getDamagePerFireRating(), 2.f),
-                wpn.getDamagePerSecondRating(), 0.001f, "1");
-            b &= assertGreater(wpn.getDamagePerSecondRating(), 0.f, "2");
+            b = assertEquals(std::powf(1000.f / wpnMchgun.getVars().at("firing_cooldown").getAsInt() * wpnMchgun.getDamagePerFireRating(), 2.f),
+                wpnMchgun.getDamagePerSecondRating(), 0.001f, "mchgun 1");
+            b &= assertGreater(wpnMchgun.getDamagePerSecondRating(), 0.f, "mchgun 2");
+
+            b = assertEquals(std::powf(1000.f / wpnShotgun.getVars().at("firing_cooldown").getAsInt() * wpnShotgun.getDamagePerFireRating(), 2.f),
+                wpnShotgun.getDamagePerSecondRating(), 0.001f, "shotgun 1");
+            b &= assertGreater(wpnShotgun.getDamagePerSecondRating(), 0.f, "shotgun 2");
         }
         catch (const std::exception& e)
         {
@@ -1539,7 +1580,6 @@ private:
 
     bool test_wpn_get_random_relative_bullet_angle()
     {
-        // TODO: update for burst mode wpn
         bool b = false;
         try
         {
@@ -1567,7 +1607,6 @@ private:
 
     bool test_wpn_shoot_creates_bullet_within_momentary_accuracy_range_of_weapon()
     {
-        // TODO: update for burst mode wpn
         bool b = false;
 
         try
@@ -2058,7 +2097,32 @@ private:
 
     bool test_wpn_with_subprojectiles_creates_multiple_bullets_at_once()
     {
-        return false;
+        bool b = false;
+
+        try
+        {
+            PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
+            Weapon wpn("gamedata/weapons/sample_good_wpn_shotgun.txt", bullets, m_audio, *engine, 0);
+            b = true;
+
+            const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
+            const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
+
+            // shall shoot multiple bullets by pulling the trigger only once
+            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot 1");
+            b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 1");
+            b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
+            b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
+            b &= assertEquals(3u, bullets.size(), "created bullets size 1");
+            b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count 1");
+            b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 1");
+        }
+        catch (const std::exception& e)
+        {
+            b &= assertTrue(false, e.what());
+        }
+
+        return b;
     }
 
     bool test_wpn_reset_sets_defaults()

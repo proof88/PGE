@@ -1322,40 +1322,47 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
         m_nMagBulletCount--;
     }
 
-    const float fRelativeBulletAngleZ = getRandomRelativeBulletAngle(bMoving, bRun, bDuck);
-    //getConsole().EOLn("bMoving: %b, bRun: %b, bDuck: %b, fRelativeBulletAngleZ: %f! ", bMoving, bRun, bDuck, fRelativeBulletAngleZ);
-    
-    // here create() invokes PooledBullet::init(), should invoke the server version!
-    if (!m_bullets.create(
-        m_id,
-        m_gfx,
-        m_connHandle,
-        m_obj->getPosVec().getX(), m_obj->getPosVec().getY(), m_obj->getPosVec().getZ(),
-        m_obj->getAngleVec().getX(), m_obj->getAngleVec().getY(), m_obj->getAngleVec().getZ() + fRelativeBulletAngleZ,
-        getVars()["bullet_visible"].getAsBool(),
-        getVars()["bullet_size_x"].getAsFloat(),
-        getVars()["bullet_size_y"].getAsFloat(),
-        getVars()["bullet_size_z"].getAsFloat(),
-        getVars()["bullet_speed"].getAsFloat(),
-        getVars()["bullet_gravity"].getAsFloat(),
-        getVars()["bullet_drag"].getAsFloat(),
-        getVars()["bullet_fragile"].getAsBool(),
-        getVars()["bullet_distance_max"].getAsFloat(),
-        (getVars()["bullet_particle"].getAsString() == "smoke" ?
-            Bullet::ParticleType::Smoke :
-            Bullet::ParticleType::None),
-        getVars()["damage_ap"].getAsInt(),
-        getVars()["damage_hp"].getAsInt(),
-        getVars()["damage_area_size"].getAsFloat(),
-        (getVars()["damage_area_effect"].getAsString() == "linear" ?
-            Bullet::DamageAreaEffect::Linear :
-            Bullet::DamageAreaEffect::Constant),
-        getVars()["damage_area_pulse"].getAsFloat()))
+    const unsigned int nSubprojectiles = getVars()["bullet_subprojectiles"].getAsUInt();
+    for (unsigned int i = 0; i < nSubprojectiles; i++)
     {
-        getConsole().EOLn("Weapon::pullTrigger(): pool did not create bullet!");
-        return false;
+        const float fRelativeBulletAngleZ = getRandomRelativeBulletAngle(bMoving, bRun, bDuck);
+        //getConsole().EOLn("bMoving: %b, bRun: %b, bDuck: %b, fRelativeBulletAngleZ: %f! ", bMoving, bRun, bDuck, fRelativeBulletAngleZ);
+
+        // here create() invokes PooledBullet::init(), should invoke the server version!
+        if (!m_bullets.create(
+            m_id,
+            m_gfx,
+            m_connHandle,
+            m_obj->getPosVec().getX(), m_obj->getPosVec().getY(), m_obj->getPosVec().getZ(),
+            m_obj->getAngleVec().getX(), m_obj->getAngleVec().getY(), m_obj->getAngleVec().getZ() + fRelativeBulletAngleZ,
+            getVars()["bullet_visible"].getAsBool(),
+            getVars()["bullet_size_x"].getAsFloat(),
+            getVars()["bullet_size_y"].getAsFloat(),
+            getVars()["bullet_size_z"].getAsFloat(),
+            getVars()["bullet_speed"].getAsFloat(),
+            getVars()["bullet_gravity"].getAsFloat(),
+            getVars()["bullet_drag"].getAsFloat(),
+            getVars()["bullet_fragile"].getAsBool(),
+            getVars()["bullet_distance_max"].getAsFloat(),
+            (getVars()["bullet_particle"].getAsString() == "smoke" ?
+                Bullet::ParticleType::Smoke :
+                Bullet::ParticleType::None),
+            getVars()["damage_ap"].getAsInt(),
+            getVars()["damage_hp"].getAsInt(),
+            getVars()["damage_area_size"].getAsFloat(),
+            (getVars()["damage_area_effect"].getAsString() == "linear" ?
+                Bullet::DamageAreaEffect::Linear :
+                Bullet::DamageAreaEffect::Constant),
+            getVars()["damage_area_pulse"].getAsFloat()))
+        {
+            getConsole().EOLn("Weapon::pullTrigger(): pool did not create bullet!");
+            return false;
+        }
     }
 
+    // momentary aim accuracy also depends on momentary recoil multiplier, which depends on time elapsed since m_timeLastShot, so
+    // we shall update it here only once, so that in case of subprojectiles bigger than 1, all bullets created in
+    // above loop will actually use the same momentary recoil multiplier.
     PFL::gettimeofday(&m_timeLastShot, 0);
 
     return true;
@@ -1437,6 +1444,53 @@ void Weapon::SetAvailable(bool bAvail)
 }
 
 /**
+* Returns a calculated firing rate per 1 second.
+* Firing rate tells how many cartridges (rounds) can be fired in each second.
+* May also be measured in RPM (rounds per minute), in that case it is simply 60 x getFiringRate().
+* Firing a cartridge results in shooting at least 1 bullet/projectile, for example in case of a shotgun,
+* a single firing will result in multiple bullets/subprojectiles.
+*
+* To get the maximum number of bullets/subprojectiles shot per 1 second, use getBulletRate().
+*
+* Currently it takes the firing cooldown into account, not considering magazine size and reload time.
+* So this is perfect only for those weapons which cannot be emptied within 1 second with continuous firing.
+* If a weapon can be emptied within 1 second and reload is needed to continue firing, this function returns imprecise value.
+*
+* Also, this function does not consider weapons with different firing modes yet.
+*
+* @return Firing rate per second i.e. how many times this weapon can fire a cartridge (not a bullet!) within 1 second.
+*/
+float Weapon::getFiringRate() const
+{
+    const int nCooldownMsecs = getVars().at("firing_cooldown").getAsInt();
+    assert(nCooldownMsecs > 0); // ctor throws if 0
+    return 1000.f / nCooldownMsecs;
+}
+
+/**
+* Returns a calculated bullet firing rate per 1 second.
+* Bullet firing rate tells how many bullets can be shot in each second.
+* Firing a cartridge results in shooting at least 1 bullet/projectile, for example in case of a shotgun,
+* a single firing will result in multiple bullets/subprojectiles.
+*
+* To get the maximum number of cartridges fired per 1 second, use getFiringRate().
+*
+* Currently it takes the firing cooldown into account, not considering magazine size and reload time.
+* So this is perfect only for those weapons which cannot be emptied within 1 second with continuous firing.
+* If a weapon can be emptied within 1 second and reload is needed to continue firing, this function returns imprecise value.
+*
+* Also, this function does not consider weapons with different firing modes yet.
+*
+* @return Bullet rate per second i.e. how many bullets this weapon can shoot within 1 second.
+*/
+float Weapon::getBulletRate() const
+{
+    const unsigned int nSubprojectiles = getVars().at("bullet_subprojectiles").getAsUInt();
+    assert(nSubprojectiles > 0); // ctor throws if non-positive
+    return getFiringRate() * nSubprojectiles;
+}
+
+/**
 * Returns a calculated rating of damage caused by a single shot fired: DPFR.
 * This is a positive number usually in range [0.01, 100], rarely even bigger.
 * 
@@ -1445,31 +1499,19 @@ void Weapon::SetAvailable(bool bAvail)
 float Weapon::getDamagePerFireRating() const
 {
     /*
-      damage_hp       -> greater is better
-      damage_ap       -> greater is better
-      damage_area_size-> greater is better
-      bullet distance -> greater is better
-      firing_mode_def -> greater is better
+      damage_hp             -> greater is better
+      damage_ap             -> greater is better
+      damage_area_size      -> greater is better
+      bullet distance       -> greater is better
+      bullet_subprojectiles -> greater is better
+      firing_mode_def       -> greater is better
     */
-    // later we can also add damage_area_size and bullet distance and firing_mode_def to this calculation
-    return (getVars().at("damage_hp").getAsInt() * getVars().at("damage_ap").getAsInt()) / 100.f;
-}
 
-/**
-* Returns a calculated firing rate per 1 second.
-* Currently it takes the firing cooldown into account, not considering magazine size and reload time.
-* So this is perfect only for those weapons which cannot be emptied within 1 second with continuous firing.
-* If a weapon can be emptied within 1 second and reload is needed to continue firing, this function returns imprecise value.
-*
-* Also, this function does not consider weapon with different firing modes yet.
-*
-* @return Firing rate per second i.e. how many bullets this weapon can fire within 1 second.
-*/
-float Weapon::getFiringRate() const
-{
-    const int nCooldownMsecs = getVars().at("firing_cooldown").getAsInt();
-    assert(nCooldownMsecs > 0); // ctor throws if 0
-    return 1000.f / nCooldownMsecs;
+    const unsigned int nSubprojectiles = getVars().at("bullet_subprojectiles").getAsUInt();
+    assert(nSubprojectiles > 0); // ctor throws if non-positive
+
+    // later we can also add damage_area_size and bullet distance and firing_mode_def to this calculation
+    return ((getVars().at("damage_hp").getAsInt() * getVars().at("damage_ap").getAsInt()) / 100.f) * nSubprojectiles;
 }
 
 /**
