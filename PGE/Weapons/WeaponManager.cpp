@@ -700,6 +700,12 @@ Weapon::Weapon(
         throw std::runtime_error("recoil_m is 1 but recoil_control is not off in " + std::string(fname));
     }
 
+    if (getVars()["bullet_subprojectiles"].getAsInt() < 1)
+    {
+        getConsole().EOLnOO("bullet_subprojectiles must be a positive value in %s! ", fname);
+        throw std::runtime_error("bullet_subprojectiles must be a positive value in " + std::string(fname));
+    }
+
     if ( (getVars()["bullet_speed"].getAsFloat() == 1000.f) && (getVars()["bullet_drag"].getAsFloat() > 0.f) )
     {
         getConsole().EOLnOO("bullet_speed is 1000 but bullet_drag is non-zero in %s! ", fname);
