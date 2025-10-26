@@ -91,6 +91,7 @@ protected:
     
         addSubTest("test_wpn_load_weapon_bullet_subprojectiles_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_bullet_subprojectiles_must_be_positive);
         addSubTest("test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
+        addSubTest("test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_gravity", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_gravity);
         addSubTest("test_wpn_load_weapon_damage_area_size_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_damage_area_size_cannot_be_negative);
         addSubTest("test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse);
         addSubTest("test_wpn_load_weapon_invalid_damage_area_effect", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_invalid_damage_area_effect);
@@ -512,6 +513,13 @@ private:
             "bullet_speed is 1000 but bullet_drag is non-zero");
     }
 
+    bool test_wpn_load_weapon_max_bullet_speed_incompatible_with_non_zero_bullet_gravity()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_max_bullet_speed_incompatible_with_non_zero_bullet_gravity.txt",
+            "bullet_speed is 1000 but bullet_gravity is non-zero");
+    }
+
     bool test_wpn_load_weapon_damage_area_size_cannot_be_negative()
     {
         return test_helper_wpn_load_and_expect_exception(
@@ -627,7 +635,7 @@ private:
                 assertEquals(2.f, wpn.getVars()["bullet_size_y"].getAsFloat(), "bullet_size_y") &
                 assertEquals(3.f, wpn.getVars()["bullet_size_z"].getAsFloat(), "bullet_size_z") &
                 assertEquals(2.0f, wpn.getVars()["bullet_speed"].getAsFloat(), "bullet_speed") &
-                assertEquals(0.f, wpn.getVars()["bullet_gravity"].getAsFloat(), "bullet_gravity") &
+                assertEquals(0.1f, wpn.getVars()["bullet_gravity"].getAsFloat(), "bullet_gravity") &
                 assertEquals(0.2f, wpn.getVars()["bullet_drag"].getAsFloat(), "bullet_drag") &
                 assertTrue(wpn.getVars()["bullet_fragile"].getAsBool(), "bullet_fragile") &
                 assertEquals(0.f, wpn.getVars()["bullet_distance_max"].getAsFloat(), "bullet_distance_max") &

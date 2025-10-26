@@ -712,6 +712,12 @@ Weapon::Weapon(
         throw std::runtime_error("bullet_speed is 1000 but bullet_drag is non-zero in " + std::string(fname));
     }
 
+    if ((getVars()["bullet_speed"].getAsFloat() == 1000.f) && (getVars()["bullet_gravity"].getAsFloat() > 0.f))
+    {
+        getConsole().EOLnOO("bullet_speed is 1000 but bullet_gravity is non-zero in %s! ", fname);
+        throw std::runtime_error("bullet_speed is 1000 but bullet_gravity is non-zero in " + std::string(fname));
+    }
+
     if (getVars()["bullet_distance_max"].getAsFloat() < 0.f)
     {
         getConsole().EOLnOO("bullet_distance_max cannot be negative in %s! ", fname);
