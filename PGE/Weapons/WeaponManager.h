@@ -114,7 +114,8 @@ public:
     //    m_connHandle(other.m_connHandle),
     //    m_put(other.m_put),
     //    m_speed(other.m_speed),
-    //    m_gravity(other.m_gravity),
+    //    m_gravityConfigured(other.m_gravityConfigured),
+    //    m_gravityCurrent(other.m_gravityCurrent),
     //    m_drag(other.m_drag),
     //    m_fragile(other.m_fragile),
     //    m_fDistMax(other.m_fDistMax),
@@ -141,7 +142,8 @@ public:
     //    m_connHandle = other.m_connHandle;
     //    m_put = other.m_put;
     //    m_speed = other.m_speed;
-    //    m_gravity = other.m_gravity;
+    //    m_gravityConfigured = other.m_gravityConfigured;
+    //    m_gravityCurrent = other.m_gravityCurrent;
     //    m_drag = other.m_drag;
     //    m_fragile = other.m_fragile;
     //    m_fDistMax = other.m_fDistMax;
@@ -171,7 +173,8 @@ public:
     const PurePosUpTarget& getPut() const;
 
     TPureFloat getSpeed() const;
-    TPureFloat getGravity() const;
+    TPureFloat getConfiguredGravity() const;
+    TPureFloat getCurrentGravity() const;
     TPureFloat getDrag() const;
     TPureBool isFragile() const;
     const ParticleType& getParticleType() const;
@@ -224,7 +227,10 @@ public:
         const DamageAreaEffect& eDamageAreaEffect,
         TPureFloat fDamageAreaPulse);
 
-    void Update(const unsigned int& nFactor);
+    void update(
+        const unsigned int& nFactor,
+        const float& fGravityChangePerTick,
+        const float& fGravityMin);
 
     PureObject3D& getObject3D();
     const PureObject3D& getObject3D() const;
@@ -242,7 +248,8 @@ private:
     pge_network::PgeNetworkConnectionHandle m_connHandle;  /**< Owner (shooter) of this bullet. Used by PGE server instance only. */
     PurePosUpTarget m_put;                                 /**< PUT to calculate next position. Used by both PGE client and server instances. */
     TPureFloat m_speed;                                    /**< Speed as defined by weapon file. Used by both PGE client and server instances. */
-    TPureFloat m_gravity;                                  /**< Gravity as defined by weapon file. Used by both PGE client and server instances. */
+    TPureFloat m_gravityConfigured;                        /**< Gravity as defined by weapon file. Used by both PGE client and server instances. */
+    TPureFloat m_gravityCurrent;                           /**< Gravity as defined by weapon file. Used by PGE server instance only. */
     TPureFloat m_drag;                                     /**< Drag as defined by weapon file. Used by both PGE client and server instances. */
     TPureBool m_fragile;                                   /**< Fragile flag as defined by weapon file. Used by PGE server instance only. */
     TPureFloat m_fDistMax;                                 /**< Max distance as defined by weapon file. Used by PGE server instance only. */

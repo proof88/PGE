@@ -169,9 +169,14 @@ TPureFloat Bullet::getSpeed() const
     return m_speed;
 }
 
-TPureFloat Bullet::getGravity() const
+TPureFloat Bullet::getConfiguredGravity() const
 {
-    return m_gravity;
+    return m_gravityConfigured;
+}
+
+TPureFloat Bullet::getCurrentGravity() const
+{
+    return m_gravityCurrent;
 }
 
 TPureFloat Bullet::getDrag() const
@@ -290,7 +295,8 @@ void Bullet::init(
     m_gfx = gfx;
     m_connHandle = connHandle;
     m_speed = speed;
-    m_gravity = gravity;
+    m_gravityConfigured = gravity;
+    m_gravityCurrent = 0.f;
     m_drag = drag;
     m_fragile = fragile;
     m_fDistMax = fDistMax;
@@ -373,7 +379,10 @@ void Bullet::init(
     m_id = id;
 }
 
-void Bullet::Update(const unsigned int& nFactor)
+void Bullet::update(
+    const unsigned int& nFactor /* physics rate from physics engine */,
+    const float& fGravityChangePerTick,
+    const float& fGravityMin)
 {
     /*
     * In the PR00FPS Promo flash game I did this:
@@ -390,12 +399,20 @@ void Bullet::Update(const unsigned int& nFactor)
     *     this._y += this.yMove * _root.BULLETSPEED;
     * 
     * Maybe this approach would be faster than using PUT.Move() like below.
-    * However, collision check is the most expensive thing now anyway, so I don't think about this now.
     */
     const float fMoveDistance = m_speed / nFactor;
     m_put.Move(fMoveDistance);
-    m_obj->getPosVec() = m_put.getPosVec();
     m_fDistTravelled += fMoveDistance;
+
+    if (m_gravityConfigured != 0.f)
+    {
+        m_gravityCurrent = std::max(
+            m_gravityCurrent + fGravityChangePerTick * m_gravityConfigured,
+            fGravityMin);
+        m_put.Elevate(m_gravityCurrent / nFactor);
+    }
+
+    m_obj->getPosVec() = m_put.getPosVec();
 
     // TODO: particle can be emitted here
 }
