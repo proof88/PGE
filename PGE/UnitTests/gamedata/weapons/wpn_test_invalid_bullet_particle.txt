@@ -81,6 +81,8 @@ damage_hp = 90
 
 damage_ap = 80
 
+damage_rel_distance = false
+
 damage_area_size = 2.0
 
 damage_area_effect = linear

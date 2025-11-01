@@ -68,7 +68,7 @@ bullet_drag = 0.2
 
 bullet_fragile = true
 
-bullet_distance_max = -1
+bullet_distance_max = 0
 
 bullet_particle = none
 
@@ -81,7 +81,7 @@ damage_hp = 20
 
 damage_ap = 10
 
-damage_rel_distance = false
+damage_rel_distance = true
 
 damage_area_size = 0
 

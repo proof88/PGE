@@ -59,7 +59,7 @@ Bullet::Bullet(
     bool visible,
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
-    TPureFloat fDistMax,
+    TPureFloat fDistMax, TPureBool bDmgRelDist,
     const ParticleType& particleType,
     int nDamageAp, int nDamageHp,
     TPureFloat fDamageAreaSize,
@@ -81,7 +81,7 @@ Bullet::Bullet(
         sx, sy, 0.f,
         speed, gravity, drag,
         fragile,
-        fDistMax,
+        fDistMax, bDmgRelDist,
         particleType,
         nDamageAp,
         nDamageHp,
@@ -101,6 +101,7 @@ Bullet::Bullet(
     bool visible,
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag,
+    TPureFloat fDistMax, TPureBool bDmgRelDist,
     const ParticleType& particleType,
     int nDamageHp,
     const TPureFloat& fDamageAreaSize,
@@ -122,7 +123,7 @@ Bullet::Bullet(
         sx, sy, 0.f,
         speed, gravity, drag,
         false /* fragile, irrelevant for this client-side ctor */,
-        0.f /* distMax, irrelevant for this client-side ctor */,
+        fDistMax, bDmgRelDist,
         particleType,
         0 /* nDamageAP, irrelevant for this client-side ctor */,
         nDamageHp,
@@ -228,19 +229,29 @@ TPureFloat Bullet::getTravelledDistance() const
 
 /**
 * Maximum damage to Player AP this bullet can cause.
+* 
+* If bullet has configured maximum travel distance and isDamageRelativeToDistance() is true, then
+* the returned value is the original AP damage decreased linearly with the already travelled bullet distance.
 */
 int Bullet::getDamageAp() const
 {
+    if (m_bDmgRelDist && (m_fDistMax > 0.f))
+    {
+        return static_cast<int>(std::lroundf(m_nDamageAp * (1.f - m_fDistTravelled / m_fDistMax)));
+    }
     return m_nDamageAp;
 }
 
 /**
 * Maximum damage to Player HP this bullet can cause.
 * 
+* If bullet has configured maximum travel distance and isDamageRelativeToDistance() is true, then
+* the returned value is the original HP damage decreased linearly with the already travelled bullet distance.
+* 
 * It is the game's responsibility to calculate actual damage to player.
 * A recommendation I was also doing in PRooFPS v0.2.7:
 *  - Player has AP and HP;
-*  - explosive bullets make radius damage where damage amount is linear decreasing from radius center until edge;
+*  - explosive bullets make radius damage where damage amount is linear decreasing from explosion center until edge;
 *  - non-explosive bullets make damage upon hitting target;
 *  - Player has takeDamage() function which is responsible for calculating the damage taken by AP and HP, based on
 *    input Bullet::getDamageAp() and Bullet::getDamageHp();
@@ -248,7 +259,16 @@ int Bullet::getDamageAp() const
 */
 int Bullet::getDamageHp() const
 {
+    if (m_bDmgRelDist && (m_fDistMax > 0.f))
+    {
+        return static_cast<int>(std::lroundf(m_nDamageHp * (1.f - m_fDistTravelled / m_fDistMax)));
+    }
     return m_nDamageHp;
+}
+
+TPureBool Bullet::isDamageRelativeToDistance() const
+{
+    return m_bDmgRelDist;
 }
 
 TPureFloat Bullet::getAreaDamageSize() const
@@ -280,7 +300,7 @@ void Bullet::init(
     bool visible,
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
-    TPureFloat fDistMax,
+    TPureFloat fDistMax, TPureBool bDmgRelDist,
     const ParticleType& particleType,
     int nDamageAp, int nDamageHp,
     TPureFloat fDamageAreaSize,
@@ -300,6 +320,7 @@ void Bullet::init(
     m_drag = drag;
     m_fragile = fragile;
     m_fDistMax = fDistMax;
+    m_bDmgRelDist = bDmgRelDist;
     m_fDistTravelled = 0.f;
     m_particleType = particleType;
     m_nParticleEmitPerNthPhysicsIterCntr = 0;
@@ -318,6 +339,12 @@ void Bullet::init(
 
     m_put.getPosVec().Set(wpn_px, wpn_py, wpn_pz);
     m_put.SetRotation(wpn_ax, (wpn_ay > 0.0f) ? 90.f : -90.f, (wpn_ay > 0.0f) ? wpn_az : -wpn_az);
+
+    m_obj->getMaterial(false).getTextureEnvColor().SetAlphaAsFloat(1.f);
+    m_obj->getMaterial(false).setBlendMode(
+        m_bDmgRelDist ?
+        TPURE_BLENDMODE::PURE_BM_STANDARD_TRANSPARENCY :
+        TPURE_BLENDMODE::PURE_BM_NONE);
 
     // TODO: actually these copy-pasted validations related to bullets should be defined in a public static validate function,
     // which should be invoked by WeaponManager when a new Weapon is constructed, to remove validation redundancy!
@@ -350,7 +377,7 @@ void Bullet::init(
     bool visible,
     TPureFloat sx, TPureFloat sy, TPureFloat sz,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use fragile */
-    /* client does not receive nor use fDistMax */
+    TPureFloat fDistMax, TPureBool bDmgRelDist,
     const ParticleType& particleType,
     /* client does not receive nor use nDamageAp */ int nDamageHp,
     TPureFloat fDamageAreaSize,
@@ -368,7 +395,7 @@ void Bullet::init(
         visible,
         sx, sy, sz,
         speed, gravity, drag, false /* client does not receive nor use fragile */,
-        0.f /* client does not receive nor use fDistMax */,
+        fDistMax, bDmgRelDist,
         particleType,
         0 /* client does not receive nor use nDamageAp */,
         nDamageHp,
@@ -385,7 +412,7 @@ void Bullet::update(
     const float& fGravityMin)
 {
     /*
-    * In the PR00FPS Promo flash game I did this:
+    * In the 2009 PR00FPS Promo flash game I did this:
     * 1.) when firing the bullet, the xMove and yMove properties of the new bullet were initialized like this:
     *     eval("_root.mc_map.mc_bullet"+_root.bulletCount).xMove = Math.cos((this.mc_player_arm1._rotation+aimShit)*Math.PI/180.0) * neg;
     *     eval("_root.mc_map.mc_bullet"+_root.bulletCount).yMove = Math.sin((this.mc_player_arm1._rotation+aimShit)*Math.PI/180.0) * neg;
@@ -402,7 +429,21 @@ void Bullet::update(
     */
     const float fMoveDistance = m_speed / nFactor;
     m_put.Move(fMoveDistance);
+
+    assert(m_obj);
+    
     m_fDistTravelled += fMoveDistance;
+    if (m_fDistMax > 0.f)
+    {
+        if (m_fDistTravelled > m_fDistMax)
+        {
+            m_fDistTravelled = m_fDistMax;
+        }
+        if (m_bDmgRelDist)
+        {
+            m_obj->getMaterial(false).getTextureEnvColor().SetAlphaAsFloat(1.f - m_fDistTravelled / m_fDistMax);
+        }
+    }
 
     if (m_gravityConfigured != 0.f)
     {
@@ -527,6 +568,7 @@ Weapon::Weapon(
         m_WpnAcceptedVars.insert("bullet_drag");
         m_WpnAcceptedVars.insert("bullet_fragile");
         m_WpnAcceptedVars.insert("bullet_distance_max");
+        m_WpnAcceptedVars.insert("damage_rel_distance");
         m_WpnAcceptedVars.insert("bullet_particle");
         m_WpnAcceptedVars.insert("damage_wall_snd");
         m_WpnAcceptedVars.insert("damage_player_snd");
@@ -739,6 +781,12 @@ Weapon::Weapon(
     {
         getConsole().EOLnOO("bullet_distance_max cannot be negative in %s! ", fname);
         throw std::runtime_error("bullet_distance_max cannot be negative in " + std::string(fname));
+    }
+
+    if ((getVars()["bullet_distance_max"].getAsFloat() == 0.f) && (getVars()["damage_rel_distance"].getAsBool()))
+    {
+        getConsole().EOLnOO("damage_rel_distance cannot be true when bullet_distance_max is 0 in %s! ", fname);
+        throw std::runtime_error("damage_rel_distance cannot be true when bullet_distance_max is 0 in " + std::string(fname));
     }
 
     if ((getVars()["bullet_particle"].getAsString() != "none") && (getVars()["bullet_particle"].getAsString() != "smoke"))
@@ -1367,6 +1415,7 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
             getVars()["bullet_drag"].getAsFloat(),
             getVars()["bullet_fragile"].getAsBool(),
             getVars()["bullet_distance_max"].getAsFloat(),
+            getVars()["damage_rel_distance"].getAsBool(),
             (getVars()["bullet_particle"].getAsString() == "smoke" ?
                 Bullet::ParticleType::Smoke :
                 Bullet::ParticleType::None),

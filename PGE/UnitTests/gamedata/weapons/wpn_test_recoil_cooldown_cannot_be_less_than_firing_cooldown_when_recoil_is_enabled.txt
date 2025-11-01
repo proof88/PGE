@@ -82,6 +82,8 @@ damage_ap = 10
 
 damage_area_size = 0
 
+damage_rel_distance = false
+
 damage_area_effect = constant
 
 damage_area_pulse = 0

@@ -50,6 +50,7 @@ protected:
             (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_zero_damage_area_size_incompatible_with_non_zero_damage_area_pulse);
         addSubTest("test_bullet_update_updates_position_without_gravity", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_update_updates_position_without_gravity);
         addSubTest("test_bullet_update_updates_position_with_gravity", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_update_updates_position_with_gravity);
+        addSubTest("test_bullet_update_updates_alpha_and_damages_when_damage_rel_distance_is_true", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_update_updates_alpha_and_damages_when_damage_rel_distance_is_true);
     }
 
     virtual bool setUp() override
@@ -100,6 +101,7 @@ private:
         const float fDrag = 25.f;
         const bool bFragile = true;
         const float fDistMax = 10.f;
+        const bool bDmgRelDist = true;
         const Bullet::ParticleType particleType = Bullet::ParticleType::None;
         const int nDamageAp = 20;
         const int nDamageHp = 30;
@@ -117,7 +119,7 @@ private:
             false /* visible */,
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag, bFragile,
-            fDistMax,
+            fDistMax, bDmgRelDist,
             particleType,
             nDamageAp, nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
@@ -141,6 +143,7 @@ private:
         //b &= assertEquals(0, bullet.getParticlesEmittedTotal(), "particles emitted total cntr");
         b &= assertEquals(nDamageAp, bullet.getDamageAp(), "damageAp");
         b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
+        b &= assertTrue(bullet.isDamageRelativeToDistance(), "dmgRelDist");
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
         b &= assertEquals(eDamageAreaEffect, bullet.getAreaDamageEffect(), "damage area effect");
         b &= assertEquals(fDamageAreaPulse, bullet.getAreaDamagePulse(), "damage area pulse");
@@ -159,6 +162,8 @@ private:
         const float fSpeed = 60.f;
         const float fGravity = 15.f;
         const float fDrag = 25.f;
+        const float fDistMax = 10.f;
+        const bool bDmgRelDist = true;
         const Bullet::ParticleType particleType = Bullet::ParticleType::None;
         const int nDamageHp = 30;
         const float fDamageAreaSize = 5.f;
@@ -173,6 +178,7 @@ private:
             false /* visible */,
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag,
+            fDistMax, bDmgRelDist,
             particleType,
             nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
@@ -189,11 +195,12 @@ private:
         b &= assertEquals(0.f, bullet.getCurrentGravity(), "current gravity");
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(false, bullet.isFragile(), "fragile");
-        b &= assertEquals(0.f, bullet.getTravelDistanceMax(), "fDistMax");
+        b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
         b &= assertEquals(0, bullet.getParticleEmitPerNthPhysicsIterationCntr(), "particle emit cntr");
         //b &= assertEquals(0, bullet.getParticlesEmittedTotal(), "particles emitted total cntr");
         b &= assertEquals(0, bullet.getDamageAp(), "damageAp");
         b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
+        b &= assertTrue(bullet.isDamageRelativeToDistance(), "dmgRelDist");
         b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
         b &= assertEquals(eDamageAreaEffect, bullet.getAreaDamageEffect(), "damage area effect");
         b &= assertEquals(fDamageAreaPulse, bullet.getAreaDamagePulse(), "damage area pulse");
@@ -214,6 +221,7 @@ private:
         const Bullet::ParticleType particleType = Bullet::ParticleType::None;
         const bool bFragile = true;
         const float fDistMax = 10.f;
+        const bool bDmgRelDist = false;
         const int nDamageAp = 20;
         const int nDamageHp = 30;
         const float fDamageAreaSize = 5.f;
@@ -230,7 +238,7 @@ private:
             false /* visible */,
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag, bFragile,
-            fDistMax,
+            fDistMax, bDmgRelDist,
             particleType,
             nDamageAp, nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
@@ -254,7 +262,7 @@ private:
                 false /* visible */,
                 4.f, 5.f, 0.f,
                 1000.f, 15.f, 25.f, true,
-                0.f /* fDistMax */,
+                0.f /* fDistMax */, false /* bDmgRelDist */,
                 Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
                 5.f, Bullet::DamageAreaEffect::Constant, 2.f);
@@ -280,7 +288,7 @@ private:
                 false /* visible */,
                 4.f, 5.f, 0.f,
                 1000.f, 15.f, 25.f, /* client does not receive nor use fragile */
-                /* client does not receive nor use fDistMax */
+                0.f /* fDistMax */, false /* bDmgRelDist */,
                 Bullet::ParticleType::None,
                 /* client does not receive nor use nDamageAp */
                 10 /* HP */,
@@ -308,7 +316,7 @@ private:
                 false /* visible */,
                 4.f, 5.f, 0.f,
                 1000.f, 15.f, 25.f, true,
-                0.f /* fDistMax */,
+                0.f /* fDistMax */, false /* bDmgRelDist */,
                 Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
                 5.f, Bullet::DamageAreaEffect::Constant, 2.f);
@@ -335,7 +343,7 @@ private:
                 false /* visible */,
                 4.f, 5.f, 0.f,
                 60.f, 15.f, 25.f, true,
-                0.f /* fDistMax */,
+                0.f /* fDistMax */, false /* bDmgRelDist */,
                 Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
                 -5.f, Bullet::DamageAreaEffect::Constant, 2.f);
@@ -362,7 +370,7 @@ private:
                 false /* visible */,
                 4.f, 5.f, 0.f,
                 60.f, 15.f, 25.f, true,
-                0.f /* fDistMax */,
+                0.f /* fDistMax */, false /* bDmgRelDist */,
                 Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
                 0.f, Bullet::DamageAreaEffect::Constant, 2.f);
@@ -381,6 +389,8 @@ private:
         constexpr float fSpeed = 60.f;
         constexpr int nFactor = 1;
         constexpr float fConfiguredBulletGravity = 0.f;
+        constexpr int nDamageAp = 20;
+        constexpr int nDamageHp = 30;
 
         PurePosUpTarget put;
         put.SetRotation(angleVec.getX(), angleVec.getY(), angleVec.getZ());
@@ -394,14 +404,19 @@ private:
             false /* visible */,
             1.f, 1.f, 1.f,
             fSpeed, fConfiguredBulletGravity, 25.f, true,
-            0.f /* fDistMax */,
+            100.f /* fDistMax */, false /* bDmgRelDist */,
             Bullet::ParticleType::None,
-            5 /* AP */, 10 /* HP */,
+            nDamageAp, nDamageHp,
             5.f, Bullet::DamageAreaEffect::Constant, 2.f);
         bullet.update(nFactor, 0.f, 0.f);
 
         bool b = assertEquals(put.getPosVec(), bullet.getObject3D().getPosVec(), "pos");
         b &= assertEquals(fSpeed / static_cast<float>(nFactor), bullet.getTravelledDistance(), "travelled distance");
+        
+        // isDamageRelativeToDistance() is false, so these shall stay unchanged even though there is configured maximum travel distance
+        b &= assertEquals(1.f, bullet.getObject3D().getMaterial(false).getTextureEnvColor().getAlphaAsFloat(), "alpha no change");
+        b &= assertEquals(nDamageAp, bullet.getDamageAp(), "damageAp no change");
+        b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp no change");
 
         return b;
     }
@@ -411,6 +426,8 @@ private:
         const PureVector angleVec(0.f, 90.f, 45.f);
         constexpr float fSpeed = 60.f;
         constexpr int nFactor = 1;
+        constexpr int nDamageAp = 20;
+        constexpr int nDamageHp = 30;
         constexpr float fConfiguredBulletGravity = 0.7f;
         constexpr float fGravityChangePerTick = -6.f;
         constexpr float fGravityMin = -8.f;
@@ -430,9 +447,9 @@ private:
             false /* visible */,
             1.f, 1.f, 1.f,
             fSpeed, fConfiguredBulletGravity, 25.f, true,
-            0.f /* fDistMax */,
+            0.f /* fDistMax */, false /* bDmgRelDist */,
             Bullet::ParticleType::None,
-            5 /* AP */, 10 /* HP */,
+            nDamageAp, nDamageHp,
             5.f, Bullet::DamageAreaEffect::Constant, 2.f);
 
         bullet.update(nFactor, fGravityChangePerTick, fGravityMin);
@@ -440,12 +457,71 @@ private:
         b &= assertEquals(fSpeed / static_cast<float>(nFactor), bullet.getTravelledDistance(), "travelled distance 1");
         b &= assertEquals(fGravityCurrent, bullet.getCurrentGravity(), "gravity 1");
 
+        // isDamageRelativeToDistance() is false, so these shall stay unchanged even though there is configured maximum travel distance
+        b &= assertEquals(1.f, bullet.getObject3D().getMaterial(false).getTextureEnvColor().getAlphaAsFloat(), "alpha no change");
+        b &= assertEquals(nDamageAp, bullet.getDamageAp(), "damageAp no change");
+        b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp no change");
+
         put.Move(fSpeed / nFactor);
         fGravityCurrent = std::max(fGravityCurrent + fGravityChangePerTick * fConfiguredBulletGravity, fGravityMin);
         put.Elevate(fGravityCurrent);
         bullet.update(nFactor, fGravityChangePerTick, fGravityMin);
         b &= assertEquals(put.getPosVec(), bullet.getObject3D().getPosVec(), "pos 2");
         b &= assertEquals(fGravityCurrent, bullet.getCurrentGravity(), "gravity 2");
+
+        // isDamageRelativeToDistance() is false, so these shall stay unchanged even though there is configured maximum travel distance
+        b &= assertEquals(1.f, bullet.getObject3D().getMaterial(false).getTextureEnvColor().getAlphaAsFloat(), "alpha 2 no change");
+        b &= assertEquals(nDamageAp, bullet.getDamageAp(), "damageAp 2 no change");
+        b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp 2 no change");
+
+        return b;
+    }
+
+    bool test_bullet_update_updates_alpha_and_damages_when_damage_rel_distance_is_true()
+    {
+        const PureVector angleVec(0.f, 90.f, 45.f);
+        constexpr float fSpeed = 60.f;
+        constexpr int nFactor = 1;
+        constexpr int nDamageAp = 20;
+        constexpr int nDamageHp = 30;
+        constexpr float fConfiguredBulletGravity = 0.f;
+        constexpr float fMaxDistance = 100.f;
+
+        Bullet bullet(
+            static_cast<WeaponId>(123u),
+            *engine,
+            0, 0.f, 0.f, 0.f,
+            angleVec.getX(), angleVec.getY(), angleVec.getZ(),
+            false /* visible */,
+            1.f, 1.f, 1.f,
+            fSpeed, fConfiguredBulletGravity, 25.f, true,
+            fMaxDistance, true /* bDmgRelDist */,
+            Bullet::ParticleType::None,
+            nDamageAp, nDamageHp,
+            5.f, Bullet::DamageAreaEffect::Constant, 2.f);
+        bullet.update(nFactor, 0.f, 0.f);
+
+        const float fTravelDistanceFactor = 1.f - bullet.getTravelledDistance() / fMaxDistance;
+
+        bool b = true;
+        b &= assertNotEquals(1.f, bullet.getObject3D().getMaterial(false).getTextureEnvColor().getAlphaAsFloat(), "alpha a 1");
+        b &= assertEquals(
+            fTravelDistanceFactor,
+            bullet.getObject3D().getMaterial(false).getTextureEnvColor().getAlphaAsFloat(), 0.01f, "alpha b 1");
+
+        b &= assertEquals(nDamageAp * fTravelDistanceFactor, static_cast<float>(bullet.getDamageAp()), 0.01f, "damageAp 1");
+        b &= assertEquals(nDamageHp * fTravelDistanceFactor, static_cast<float>(bullet.getDamageHp()), 0.01f, "damageHp 1");
+
+        // with another update() bullet reaches max travel distance
+        bullet.update(nFactor, 0.f, 0.f);
+
+        b &= assertEquals(bullet.getTravelDistanceMax(), bullet.getTravelledDistance(), 0.01f, "travel dist");
+        b &= assertEquals(
+            0.f,
+            bullet.getObject3D().getMaterial(false).getTextureEnvColor().getAlphaAsFloat(), 0.01f, "alpha b 1");
+
+        b &= assertEquals(0.f, static_cast<float>(bullet.getDamageAp()), 0.01f, "damageAp 1");
+        b &= assertEquals(0.f, static_cast<float>(bullet.getDamageHp()), 0.01f, "damageHp 1");
 
         return b;
     }

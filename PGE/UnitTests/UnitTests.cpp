@@ -114,7 +114,7 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     
     //tests.push_back(std::unique_ptr<Test>(new PgePacketTest));
     
-    //tests.push_back(std::unique_ptr<Test>(new PgeWeaponsTest));
+    tests.push_back(std::unique_ptr<Test>(new PgeWeaponsTest));
     tests.push_back(std::unique_ptr<Test>(new PGEBulletTest));
     /**/
     

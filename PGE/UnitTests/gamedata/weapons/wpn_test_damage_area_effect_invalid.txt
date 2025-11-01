@@ -81,6 +81,8 @@ damage_hp = 20
 
 damage_ap = 10
 
+damage_rel_distance = false
+
 damage_area_size = 5
 
 damage_area_effect = haha
