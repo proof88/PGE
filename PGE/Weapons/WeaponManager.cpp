@@ -479,7 +479,7 @@ void Bullet::build3dObject()
         m_pObjRef->SetDoubleSided(true);
         m_pObjRef->Hide();
     }
-
+    
     // TODO throw exception if cant create!
     m_obj = m_gfx.getObject3DManager().createCloned(*m_pObjRef);
 }

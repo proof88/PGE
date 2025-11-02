@@ -758,9 +758,15 @@ TPureUInt PureObject3D::PureObject3DImpl::getUsedSystemMemory() const
 } // getUsedSystemMemory()     
 
 
-TPureUInt PureObject3D::PureObject3DImpl::draw(const TPURE_RENDER_PASS& renderPass, TPureBool bASyncQuery, TPureBool bRenderIfQueryPending)
+TPureUInt PureObject3D::PureObject3DImpl::draw(
+    const TPURE_RENDER_PASS& renderPass,
+    TPureBool bASyncQuery,
+    TPureBool bRenderIfQueryPending,
+    PureObject3D* pObjLevel1Referee)
 {
     // caller renderer is expected to check for GL errors, probably only once per frame, so we don't check them here
+
+    assert(_pOwner->isLevel1() || pObjLevel1Referee);
 
     if ( _pOwner->isLevel1() )
     {
@@ -783,7 +789,7 @@ TPureUInt PureObject3D::PureObject3DImpl::draw(const TPURE_RENDER_PASS& renderPa
         // while second level (subobjects) own geometry, inherit basic things set by parent.
 
         // So transformations and other basic things are set by parent objects having subobjects.
-        // Or by cloned objects which refer to another original objects but still have their own position, angle, etc.        
+        // Or by cloned objects which refer to another original objects but still have their own position, angle, etc.
         if ( renderPass == PURE_RPASS_NORMAL )
         {
             if ( (nOcclusionQuery != 0) && draw_OcclusionQuery_Finish(bASyncQuery, bRenderIfQueryPending) )
@@ -828,16 +834,27 @@ TPureUInt PureObject3D::PureObject3DImpl::draw(const TPURE_RENDER_PASS& renderPa
         pWhichParent->pImpl->bParentInitiatedOperation = true;
         TPureUInt nRetSum = 0;
         for (TPureInt i = 0; i < pWhichParent->getCount(); i++)
-            nRetSum += ((PureObject3D*)pWhichParent->getAttachedAt(i))->draw(renderPass, bASyncQuery, bRenderIfQueryPending);
+        {
+            nRetSum += ((PureObject3D*)pWhichParent->getAttachedAt(i))->draw(renderPass, bASyncQuery, bRenderIfQueryPending, _pOwner);
+        }
         pWhichParent->pImpl->bParentInitiatedOperation = false;
         return nRetSum;
-    }
+    } // isLevel1()
 
-    // if we reach this point then either our parent is drawing us as its subobject, or a cloned object is drawing us on behalf of our parent
-    PureObject3D* pObjLevel1 = (PureObject3D*)_pOwner->getManager();
-    const TPureBool bObjLevel1Blended = PureMaterial::isBlendFuncReallyBlending(pObjLevel1->getMaterial(false).getSourceBlendFunc(), pObjLevel1->getMaterial(false).getDestinationBlendFunc());
+    assert(_pOwner->isLevel2() && pObjLevel1Referee);
 
+    // If we reach this point then:
+    //  - case 1: either our parent is drawing us as its subobject, or
+    //  - case 2: a cloned object is drawing us on behalf of our parent.
+    // Thus pObjLevel1Referee is either our parent (case 1) or the cloned object (case 2).
+    // Blending config shall always come from pObjLevel1Referee.  
+    const TPureBool bObjLevel1Blended = PureMaterial::isBlendFuncReallyBlending(
+        pObjLevel1Referee->getMaterial(false).getSourceBlendFunc(), pObjLevel1Referee->getMaterial(false).getDestinationBlendFunc());
+
+    const PureObject3D* const pObjLevel1 = (PureObject3D*)_pOwner->getManager();
+    assert(pObjLevel1);
     // subobject must ignore draw if its Draw() was not called by its parent level-1 object but someone else from outside ...
+    // Technically we could also use pObjLevel1Referee instead of pObjLevel1 but it is not really important.
     if ( !pObjLevel1->pImpl->bParentInitiatedOperation )
     {
         _pOwner->getManagedConsole().EOLn("Draw() of subobject called outside of its level-1 parent object, ignoring draw!");
@@ -1510,7 +1527,7 @@ TPureUInt PureObject3D::PureObject3DImpl::draw_DrawSW()
         PureObject3D* pWhichParent = getReferredObject() ? getReferredObject() : _pOwner;
         TPureUInt nRetSum = 0;
         for (TPureInt i = 0; i < pWhichParent->getCount(); i++)
-            nRetSum += ((PureObject3D*)pWhichParent->getAttachedAt(i))->draw(PURE_RPASS_NORMAL, false, false);
+            nRetSum += ((PureObject3D*)pWhichParent->getAttachedAt(i))->draw(PURE_RPASS_NORMAL, false, false, _pOwner);
         return nRetSum;
     }
 
@@ -2546,12 +2563,19 @@ TPureUInt PureObject3D::getUsedVideoMemory() const
                                  meaning that: if the last finished query said the object was occluded, the function will respond as the object was occluded,
                                  otherwise it will respond as the object was not occluded.
                                  This parameter is used only with async queries.
+    @param pObjLevel1Referee Must be nullptr when called for a level-1 object.
+                             Must be non-nullptr when called for a level-2 object: if level-1 object is a cloned object then this shall be the cloned object itself,
+                             otherwise it shall be the original level-1 parent object who manages this level-2 object.
 
     @return @return The number of vertices sent to the graphics pipeline.
 */
-TPureUInt PureObject3D::draw(const TPURE_RENDER_PASS& renderPass, TPureBool bASyncQuery, TPureBool bRenderIfQueryPending)
+TPureUInt PureObject3D::draw(
+    const TPURE_RENDER_PASS& renderPass,
+    TPureBool bASyncQuery,
+    TPureBool bRenderIfQueryPending,
+    PureObject3D* pObjLevel1Referee)
 {
-    return pImpl->draw(renderPass, bASyncQuery, bRenderIfQueryPending);
+    return pImpl->draw(renderPass, bASyncQuery, bRenderIfQueryPending, pObjLevel1Referee);
 } // Draw()
 
 

@@ -185,7 +185,8 @@ public:
     TPureUInt draw(
         const TPURE_RENDER_PASS& renderPass,
         TPureBool bASyncQuery,
-        TPureBool bRenderIfQueryPending);                 /**< Draws the object. */
+        TPureBool bRenderIfQueryPending,
+        PureObject3D* pObjLevel1Referee);                 /**< Draws the object. */
 
 protected:
 

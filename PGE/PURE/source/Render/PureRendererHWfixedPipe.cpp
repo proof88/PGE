@@ -1344,7 +1344,7 @@ void PureRendererHWfixedPipeImpl::Draw3DObjects_Legacy(PureIRenderer& renderer)
                )
             {
                 glPushMatrix();
-                obj->draw(PURE_RPASS_NORMAL, false, false);
+                obj->draw(PURE_RPASS_NORMAL, false, false, nullptr);
                 glPopMatrix();
                 lastFrameStats.Update(*obj, PURE_RPASS_NORMAL);
             }
@@ -1369,7 +1369,7 @@ void PureRendererHWfixedPipeImpl::Draw3DObjects_Ordered_Containers(PureIRenderer
     for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
     {
         glPushMatrix();
-        (*it)->draw(PURE_RPASS_NORMAL, false, false);
+        (*it)->draw(PURE_RPASS_NORMAL, false, false, nullptr);
         glPopMatrix();
         lastFrameStats.Update(*(*it), PURE_RPASS_NORMAL);
     }
@@ -1377,7 +1377,7 @@ void PureRendererHWfixedPipeImpl::Draw3DObjects_Ordered_Containers(PureIRenderer
     for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
     {
         glPushMatrix();
-        (*it)->draw(PURE_RPASS_NORMAL, false, false);
+        (*it)->draw(PURE_RPASS_NORMAL, false, false, nullptr);
         glPopMatrix();
         lastFrameStats.Update(*(*it), PURE_RPASS_NORMAL);
     }
@@ -1385,7 +1385,7 @@ void PureRendererHWfixedPipeImpl::Draw3DObjects_Ordered_Containers(PureIRenderer
     for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
     {
         glPushMatrix();
-        (*it)->draw(PURE_RPASS_NORMAL, false, false);
+        (*it)->draw(PURE_RPASS_NORMAL, false, false, nullptr);
         glPopMatrix();
         lastFrameStats.Update(*(*it), PURE_RPASS_NORMAL);
     }
@@ -1427,7 +1427,7 @@ void PureRendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PureIRenderer& re
         for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
         {
             glPushMatrix();
-            (*it)->draw(PURE_RPASS_Z_ONLY, bASyncQuery, bRenderIfQueryPending);
+            (*it)->draw(PURE_RPASS_Z_ONLY, bASyncQuery, bRenderIfQueryPending, nullptr);
             glPopMatrix();
             lastFrameStats.Update(*(*it), PURE_RPASS_Z_ONLY);
         }
@@ -1439,7 +1439,7 @@ void PureRendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PureIRenderer& re
     for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
     {
         glPushMatrix();
-        (*it)->draw(PURE_RPASS_NORMAL, bASyncQuery, bRenderIfQueryPending);
+        (*it)->draw(PURE_RPASS_NORMAL, bASyncQuery, bRenderIfQueryPending, nullptr);
         glPopMatrix();
         lastFrameStats.Update(*(*it), PURE_RPASS_NORMAL);
     }
@@ -1452,7 +1452,7 @@ void PureRendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PureIRenderer& re
         for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->draw((TPURE_RENDER_PASS)iRenderPass, bASyncQuery, bRenderIfQueryPending);
+            (*it)->draw((TPURE_RENDER_PASS)iRenderPass, bASyncQuery, bRenderIfQueryPending, nullptr);
             glPopMatrix();
             lastFrameStats.Update(*(*it), (TPURE_RENDER_PASS)iRenderPass);
         }
@@ -1460,7 +1460,7 @@ void PureRendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PureIRenderer& re
         for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->draw((TPURE_RENDER_PASS)iRenderPass, bASyncQuery, bRenderIfQueryPending);
+            (*it)->draw((TPURE_RENDER_PASS)iRenderPass, bASyncQuery, bRenderIfQueryPending, nullptr);
             glPopMatrix();
             lastFrameStats.Update(*(*it), (TPURE_RENDER_PASS)iRenderPass);
         }
@@ -1474,7 +1474,7 @@ void PureRendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PureIRenderer& re
         for (auto it = pObject3DMgr->getOccluders().begin(); it != pObject3DMgr->getOccluders().end(); it++)
         {
             glPushMatrix();
-            (*it)->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending);
+            (*it)->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending, nullptr);
             glPopMatrix();
             lastFrameStats.Update(*(*it), PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
         }
@@ -1482,7 +1482,7 @@ void PureRendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PureIRenderer& re
         for (auto it = pObject3DMgr->get3dOpaqueOccludees().begin(); it != pObject3DMgr->get3dOpaqueOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending);
+            (*it)->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending, nullptr);
             glPopMatrix();
             lastFrameStats.Update(*(*it), PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
         }
@@ -1490,7 +1490,7 @@ void PureRendererHWfixedPipeImpl::Draw3DObjects_OcclusionQuery(PureIRenderer& re
         for (auto it = pObject3DMgr->get3dBlendedOccludees().begin(); it != pObject3DMgr->get3dBlendedOccludees().end(); it++)
         {
             glPushMatrix();
-            (*it)->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending);
+            (*it)->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, bASyncQuery, bRenderIfQueryPending, nullptr);
             glPopMatrix();
             lastFrameStats.Update(*(*it), PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY);
         }
@@ -1537,7 +1537,7 @@ void PureRendererHWfixedPipeImpl::Draw2DObjects(PureIRenderer& renderer)
                 )
             {
                 glPushMatrix();
-                obj->draw(PURE_RPASS_NORMAL, false, false);
+                obj->draw(PURE_RPASS_NORMAL, false, false, nullptr);
                 glPopMatrix();
             }
         } // for i

@@ -1532,10 +1532,10 @@ private:
         objFromFile->SetOcclusionTested(true);
 
         // intentionally drawing both twice, to check if draw() properly resets the counters before transferring vertices!
-        obj->draw(PURE_RPASS_NORMAL, false, false);
-        objFromFile->draw(PURE_RPASS_NORMAL, false, false);
-        TPureUInt nObjLastTransferredVertices = obj->draw(PURE_RPASS_NORMAL, false, false);
-        TPureUInt nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_NORMAL, false, false);
+        obj->draw(PURE_RPASS_NORMAL, false, false, nullptr);
+        objFromFile->draw(PURE_RPASS_NORMAL, false, false, nullptr);
+        TPureUInt nObjLastTransferredVertices = obj->draw(PURE_RPASS_NORMAL, false, false, nullptr);
+        TPureUInt nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_NORMAL, false, false, nullptr);
 
         bool b = assertEquals(obj->getVertexIndicesCount(), obj->getLastTransferredVertexCount(), "obj 1") &
             assertEquals(objFromFile->getVertexIndicesCount(), objFromFile->getLastTransferredVertexCount(), "objFromFile 1") &
@@ -1547,8 +1547,8 @@ private:
         // hide the objects and expect their counters to be zero after draw (so they still reset their counters before deciding not drawing anything)
         obj->SetRenderingAllowed(false);
         objFromFile->SetRenderingAllowed(false);
-        nObjLastTransferredVertices = obj->draw(PURE_RPASS_NORMAL, false, false);
-        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_NORMAL, false, false);
+        nObjLastTransferredVertices = obj->draw(PURE_RPASS_NORMAL, false, false, nullptr);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_NORMAL, false, false, nullptr);
 
         b &= assertEquals(0u, obj->getLastTransferredVertexCount(), "obj 1 hidden 1") &
             assertEquals(0u, objFromFile->getLastTransferredVertexCount(), "objFromFile 1 hidden 1") &
@@ -1558,8 +1558,8 @@ private:
             assertEquals(0u, objFromFile->getLastTransferredTriangleCount(), "objFromFile 3 hidden 1");
         
         // check the same with PURE_RPASS_START_OCCLUSION_QUERY render pass
-        nObjLastTransferredVertices = obj->draw(PURE_RPASS_NORMAL, false, false);
-        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_NORMAL, false, false);
+        nObjLastTransferredVertices = obj->draw(PURE_RPASS_NORMAL, false, false, nullptr);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_NORMAL, false, false, nullptr);
 
         b &= assertEquals(0u, obj->getLastTransferredVertexCount(), "obj 1 hidden 2") &
             assertEquals(0u, objFromFile->getLastTransferredVertexCount(), "objFromFile 1 hidden 2") &
@@ -1576,8 +1576,8 @@ private:
         obj->getPosVec().SetZ(-100.f);
         objFromFile->getPosVec().SetZ(-100.f);
 
-        nObjLastTransferredVertices = obj->draw(PURE_RPASS_START_OCCLUSION_QUERY, false, false);
-        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_START_OCCLUSION_QUERY, false, false);
+        nObjLastTransferredVertices = obj->draw(PURE_RPASS_START_OCCLUSION_QUERY, false, false, nullptr);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_START_OCCLUSION_QUERY, false, false, nullptr);
 
         b &= assertEquals((TPureUInt)0, obj->getLastTransferredVertexCount(), "obj 4") &
             assertEquals((TPureUInt)24, objFromFile->getLastTransferredVertexCount(), "objFromFile 4") &
@@ -1586,8 +1586,8 @@ private:
             assertEquals((TPureUInt)0, obj->getLastTransferredTriangleCount(), "obj 6") &
             assertEquals((TPureUInt)12, objFromFile->getLastTransferredTriangleCount(), "objFromFile 6");
         
-        nObjLastTransferredVertices = obj->draw(PURE_RPASS_NORMAL, false, false);
-        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_NORMAL, false, false);
+        nObjLastTransferredVertices = obj->draw(PURE_RPASS_NORMAL, false, false, nullptr);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_NORMAL, false, false, nullptr);
 
         // expecting all zeros for objFromFile due to behind the camera and occlusion test fail, but
         // expecting same positive values as before for obj because it is not occlusion tested!
@@ -1600,8 +1600,8 @@ private:
 
         // debug bounding box must be rendered regardless of object occlusion state, but
         // it must not be rendered for an object which is not occlusion tested
-        nObjLastTransferredVertices = obj->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
-        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
+        nObjLastTransferredVertices = obj->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false, nullptr);
+        nObjFromFileLastTransferredVertices = objFromFile->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false, nullptr);
 
         b &= assertEquals((TPureUInt)0, obj->getLastTransferredVertexCount(), "obj 10") &
             assertEquals((TPureUInt)24, objFromFile->getLastTransferredVertexCount(), "objFromFile 10") &
@@ -1623,8 +1623,8 @@ private:
         objFromFile->SetOcclusionTested(true);
         objFromFileCloned->SetOcclusionTested(true);
 
-        TPureUInt nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_NORMAL, false, false);
-        objFromFileCloned->draw(PURE_RPASS_NORMAL, false, false);
+        TPureUInt nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_NORMAL, false, false, nullptr);
+        objFromFileCloned->draw(PURE_RPASS_NORMAL, false, false, nullptr);
 
         bool b = assertEquals(objFromFileCloned->getVertexIndicesCount(), objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 1") &
             assertEquals(nObjFromFileClonedLastTransferredVertices, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 2") &
@@ -1634,7 +1634,7 @@ private:
 
         // check if cloned object also properly resets counters to 0 when trying to draw it when it is not allowed to be drawn
         objFromFileCloned->SetRenderingAllowed(false);
-        objFromFileCloned->draw(PURE_RPASS_NORMAL, false, false);
+        objFromFileCloned->draw(PURE_RPASS_NORMAL, false, false, nullptr);
 
         b &= assertEquals(0u, objFromFile->getLastTransferredVertexCount(), "objFromFile 1 hidden 1") &
             assertEquals(0u, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 1 hidden 1") &
@@ -1646,7 +1646,7 @@ private:
         // allow draw again
         objFromFileCloned->SetRenderingAllowed(true);
 
-        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_START_OCCLUSION_QUERY, false, false);
+        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_START_OCCLUSION_QUERY, false, false, nullptr);
         objFromFileCloned->getLastTransferredVertexCount();
 
         b &= assertEquals(24u, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 4") &
@@ -1655,7 +1655,7 @@ private:
             assertEquals(12u, objFromFileCloned->getLastTransferredTriangleCount(), "objFromFileCloned 6") &
             assertEquals(12u, objFromFile->getLastTransferredTriangleCount(), "objFromFile 4");
         
-        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_NORMAL, false, false);
+        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_NORMAL, false, false, nullptr);
 
         // expecting all zeros for objFromFileCloned due to behind the camera and occlusion test fail
         b &= assertEquals(0u, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 7") &
@@ -1665,7 +1665,7 @@ private:
             assertEquals(0u, objFromFile->getLastTransferredTriangleCount(), "objFromFile 6");
 
         // debug bounding box must be rendered regardless of object occlusion state
-        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
+        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false, nullptr);
 
         b &= assertEquals(24u, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 10") &
             assertEquals(nObjFromFileClonedLastTransferredVertices, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 11") &
@@ -1676,7 +1676,7 @@ private:
         // debug bounding box must NOT be rendered if occlusion test is off
         objFromFileCloned->SetOcclusionTested(false);
         
-        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false);
+        nObjFromFileClonedLastTransferredVertices = objFromFileCloned->draw(PURE_RPASS_BOUNDING_BOX_DEBUG_FOR_OCCLUSION_QUERY, false, false, nullptr);
 
         b &= assertEquals(0u, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 13") &
             assertEquals(nObjFromFileClonedLastTransferredVertices, objFromFileCloned->getLastTransferredVertexCount(), "objFromFileCloned 14") &
