@@ -92,23 +92,25 @@ private:
     bool test_bullet_ctor_server_good()
     {
         const Bullet::BulletId iLastBulletId = Bullet::getGlobalBulletId();
-        const WeaponId iWpnId = static_cast<WeaponId>(123u);
+        constexpr WeaponId iWpnId = static_cast<WeaponId>(123u);
         const PureVector posVec(1.f, 2.f, 3.f);
         const PureVector angleVec(20.f, 40.f, 60.f);
         const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
-        const float fSpeed = 60.f;
-        const float fGravity = 15.f;
-        const float fDrag = 25.f;
-        const bool bFragile = true;
-        const float fDistMax = 10.f;
-        const bool bDmgRelDist = true;
-        const Bullet::ParticleType particleType = Bullet::ParticleType::None;
-        const int nDamageAp = 20;
-        const int nDamageHp = 30;
-        const float fDamageAreaSize = 5.f;
-        const Bullet::DamageAreaEffect eDamageAreaEffect = Bullet::DamageAreaEffect::Constant;
-        const float fDamageAreaPulse = 2.f;
-        const pge_network::PgeNetworkConnectionHandle connHandle = 52;
+        constexpr float fSpeed = 60.f;
+        constexpr float fGravity = 15.f;
+        constexpr float fDrag = 25.f;
+        constexpr bool bFragile = true;
+        constexpr float fDistMax = 10.f;
+        constexpr bool bDmgRelDist = true;
+        constexpr bool bBouncing = false;
+        constexpr int nTimer = 0;
+        constexpr Bullet::ParticleType particleType = Bullet::ParticleType::None;
+        constexpr int nDamageAp = 20;
+        constexpr int nDamageHp = 30;
+        constexpr float fDamageAreaSize = 5.f;
+        constexpr Bullet::DamageAreaEffect eDamageAreaEffect = Bullet::DamageAreaEffect::Constant;
+        constexpr float fDamageAreaPulse = 2.f;
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 52;
 
         Bullet bullet(
             iWpnId,
@@ -120,6 +122,8 @@ private:
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag, bFragile,
             fDistMax, bDmgRelDist,
+            bBouncing,
+            nTimer,
             particleType,
             nDamageAp, nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
@@ -138,6 +142,8 @@ private:
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(bFragile, bullet.isFragile(), "fragile");
         b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
+        b &= assertEquals(bBouncing, bullet.canBounce(), "bBouncing");
+        b &= assertEquals(nTimer, bullet.getTimerConfigSeconds(), "nTimer");
         b &= assertEquals(particleType, bullet.getParticleType(), "particleType");
         b &= assertEquals(0, bullet.getParticleEmitPerNthPhysicsIterationCntr(), "particle emit per iter cntr");
         //b &= assertEquals(0, bullet.getParticlesEmittedTotal(), "particles emitted total cntr");
@@ -155,20 +161,21 @@ private:
     bool test_bullet_ctor_client_good()
     {
         const Bullet::BulletId iLastBulletId = Bullet::getGlobalBulletId();
-        const WeaponId iWpnId = static_cast<WeaponId>(123u);
+        constexpr WeaponId iWpnId = static_cast<WeaponId>(123u);
         const PureVector posVec(1.f, 2.f, 3.f);
         const PureVector angleVec(20.f, 40.f, 60.f);
         const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
-        const float fSpeed = 60.f;
-        const float fGravity = 15.f;
-        const float fDrag = 25.f;
-        const float fDistMax = 10.f;
-        const bool bDmgRelDist = true;
-        const Bullet::ParticleType particleType = Bullet::ParticleType::None;
-        const int nDamageHp = 30;
-        const float fDamageAreaSize = 5.f;
-        const Bullet::DamageAreaEffect eDamageAreaEffect = Bullet::DamageAreaEffect::Constant;
-        const float fDamageAreaPulse = 2.f;
+        constexpr float fSpeed = 60.f;
+        constexpr float fGravity = 15.f;
+        constexpr float fDrag = 25.f;
+        constexpr float fDistMax = 10.f;
+        constexpr bool bDmgRelDist = true;
+        constexpr bool bBouncing = false;
+        constexpr Bullet::ParticleType particleType = Bullet::ParticleType::None;
+        constexpr int nDamageHp = 30;
+        constexpr float fDamageAreaSize = 5.f;
+        constexpr Bullet::DamageAreaEffect eDamageAreaEffect = Bullet::DamageAreaEffect::Constant;
+        constexpr float fDamageAreaPulse = 2.f;
 
         Bullet bullet(
             iWpnId,
@@ -179,6 +186,7 @@ private:
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag,
             fDistMax, bDmgRelDist,
+            bBouncing,
             particleType,
             nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
@@ -196,6 +204,8 @@ private:
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(false, bullet.isFragile(), "fragile");
         b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
+        b &= assertEquals(bBouncing, bullet.canBounce(), "bBouncing");
+        b &= assertEquals(0, bullet.getTimerConfigSeconds(), "nTimer");
         b &= assertEquals(0, bullet.getParticleEmitPerNthPhysicsIterationCntr(), "particle emit cntr");
         //b &= assertEquals(0, bullet.getParticlesEmittedTotal(), "particles emitted total cntr");
         b &= assertEquals(0, bullet.getDamageAp(), "damageAp");
@@ -211,23 +221,25 @@ private:
 
     bool test_reset_global_bullet_id()
     {
-        const WeaponId iWpnId = static_cast<WeaponId>(123u);
+        constexpr WeaponId iWpnId = static_cast<WeaponId>(123u);
         const PureVector posVec(1.f, 2.f, 3.f);
         const PureVector angleVec(20.f, 40.f, 60.f);
         const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
-        const float fSpeed = 60.f;
-        const float fGravity = 15.f;
-        const float fDrag = 25.f;
-        const Bullet::ParticleType particleType = Bullet::ParticleType::None;
-        const bool bFragile = true;
-        const float fDistMax = 10.f;
-        const bool bDmgRelDist = false;
-        const int nDamageAp = 20;
-        const int nDamageHp = 30;
-        const float fDamageAreaSize = 5.f;
-        const Bullet::DamageAreaEffect eDamageAreaEffect = Bullet::DamageAreaEffect::Constant;
-        const float fDamageAreaPulse = 2.f;
-        const pge_network::PgeNetworkConnectionHandle connHandle = 52;
+        constexpr float fSpeed = 60.f;
+        constexpr float fGravity = 15.f;
+        constexpr float fDrag = 25.f;
+        constexpr Bullet::ParticleType particleType = Bullet::ParticleType::None;
+        constexpr bool bFragile = true;
+        constexpr float fDistMax = 10.f;
+        constexpr bool bDmgRelDist = false;
+        constexpr bool bBouncing = false;
+        constexpr int nTimer = 0;
+        constexpr int nDamageAp = 20;
+        constexpr int nDamageHp = 30;
+        constexpr float fDamageAreaSize = 5.f;
+        constexpr Bullet::DamageAreaEffect eDamageAreaEffect = Bullet::DamageAreaEffect::Constant;
+        constexpr float fDamageAreaPulse = 2.f;
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 52;
 
         Bullet bullet(
             iWpnId,
@@ -239,6 +251,8 @@ private:
             sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
             fSpeed, fGravity, fDrag, bFragile,
             fDistMax, bDmgRelDist,
+            bBouncing,
+            nTimer,
             particleType,
             nDamageAp, nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
@@ -263,6 +277,8 @@ private:
                 4.f, 5.f, 0.f,
                 1000.f, 15.f, 25.f, true,
                 0.f /* fDistMax */, false /* bDmgRelDist */,
+                false /* bouncing */,
+                0 /* timer */,
                 Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
                 5.f, Bullet::DamageAreaEffect::Constant, 2.f);
@@ -289,6 +305,7 @@ private:
                 4.f, 5.f, 0.f,
                 1000.f, 15.f, 25.f, /* client does not receive nor use fragile */
                 0.f /* fDistMax */, false /* bDmgRelDist */,
+                false /* bouncing */,
                 Bullet::ParticleType::None,
                 /* client does not receive nor use nDamageAp */
                 10 /* HP */,
@@ -317,6 +334,8 @@ private:
                 4.f, 5.f, 0.f,
                 1000.f, 15.f, 25.f, true,
                 0.f /* fDistMax */, false /* bDmgRelDist */,
+                false /* bouncing */,
+                0 /* timer */,
                 Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
                 5.f, Bullet::DamageAreaEffect::Constant, 2.f);
@@ -344,6 +363,8 @@ private:
                 4.f, 5.f, 0.f,
                 60.f, 15.f, 25.f, true,
                 0.f /* fDistMax */, false /* bDmgRelDist */,
+                false /* bouncing */,
+                0 /* timer */,
                 Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
                 -5.f, Bullet::DamageAreaEffect::Constant, 2.f);
@@ -371,6 +392,8 @@ private:
                 4.f, 5.f, 0.f,
                 60.f, 15.f, 25.f, true,
                 0.f /* fDistMax */, false /* bDmgRelDist */,
+                false /* bouncing */,
+                0 /* timer */,
                 Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
                 0.f, Bullet::DamageAreaEffect::Constant, 2.f);
@@ -405,6 +428,8 @@ private:
             1.f, 1.f, 1.f,
             fSpeed, fConfiguredBulletGravity, 25.f, true,
             100.f /* fDistMax */, false /* bDmgRelDist */,
+            false /* bouncing */,
+            0 /* timer */,
             Bullet::ParticleType::None,
             nDamageAp, nDamageHp,
             5.f, Bullet::DamageAreaEffect::Constant, 2.f);
@@ -448,6 +473,8 @@ private:
             1.f, 1.f, 1.f,
             fSpeed, fConfiguredBulletGravity, 25.f, true,
             0.f /* fDistMax */, false /* bDmgRelDist */,
+            false /* bouncing */,
+            0 /* timer */,
             Bullet::ParticleType::None,
             nDamageAp, nDamageHp,
             5.f, Bullet::DamageAreaEffect::Constant, 2.f);
@@ -496,6 +523,8 @@ private:
             1.f, 1.f, 1.f,
             fSpeed, fConfiguredBulletGravity, 25.f, true,
             fMaxDistance, true /* bDmgRelDist */,
+            false /* bouncing */,
+            0 /* timer */,
             Bullet::ParticleType::None,
             nDamageAp, nDamageHp,
             5.f, Bullet::DamageAreaEffect::Constant, 2.f);

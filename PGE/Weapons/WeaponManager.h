@@ -76,6 +76,8 @@ public:
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
         TPureFloat fDistMax, TPureBool bDmgRelDist,
+        TPureBool bCanBounce,
+        int nTimerConfigSeconds,
         const ParticleType& particleType,
         int nDamageAp, int nDamageHp,
         TPureFloat fDamageAreaSize,
@@ -93,6 +95,8 @@ public:
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use fragile */
         TPureFloat fDistMax, TPureBool bDmgRelDist,
         /* client does not receive nor use fDistMax */
+        TPureBool bCanBounce,
+        /* client does not receive nor use nTimerConfigSeconds */
         const ParticleType& particleType,
         /* client does not receive nor use nDamageAp */ int nDamageHp,
         const TPureFloat& fDamageAreaSize,
@@ -185,6 +189,8 @@ public:
     const int& getParticlesEmittedTotal() const;
     TPureFloat getTravelDistanceMax() const;
     TPureFloat getTravelledDistance() const;
+    TPureBool canBounce() const;
+    int getTimerConfigSeconds() const;
     int getDamageAp() const;
     int getDamageHp() const;
     TPureBool isDamageRelativeToDistance() const;
@@ -205,6 +211,8 @@ public:
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
         TPureFloat fDistMax, TPureBool bDmgRelDist,
+        TPureBool bCanBounce,
+        int nTimerConfigSeconds,
         const ParticleType& particleType,
         int nDamageAp, int nDamageHp,
         TPureFloat fDamageAreaSize,
@@ -223,6 +231,7 @@ public:
         TPureFloat sx, TPureFloat sy, TPureFloat sz,
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use fragile */
         TPureFloat fDistMax, TPureBool bDmgRelDist,
+        TPureBool bCanBounce,
         const ParticleType& particleType,
         /* client does not receive nor use nDamageAp */ int nDamageHp,
         TPureFloat fDamageAreaSize,
@@ -257,6 +266,8 @@ private:
     TPureFloat m_fDistMax;                                 /**< Max distance as defined by weapon file. Used by both PGE client and server instances. */
     TPureBool m_bDmgRelDist;                               /**< Damage is relative to distance travelled by bullet, as defined by weapon file. Used by both PGE client and server instances. */
     TPureFloat m_fDistTravelled;                           /**< Distance travelled so far. Used by both PGE client and server instances. */
+    TPureBool m_bCanBounce;                                /**< Can bounce off walls, as defined by weapon file. Used by both PGE client and server instances. */
+    int m_nTimerConfigSeconds;                             /**< Configured timer, as defined by weapon file. Used by PGE server instance only. */
     ParticleType m_particleType;                           /**< Emitted particle type. Used by both PGE client and server instances. */
     int m_nParticleEmitPerNthPhysicsIterCntr;              /**< Counter to be used by particle emitter logic. Used by both PGE client and server instances. */
     int m_nParticlesEmittedCurrent;                         /**< Counter to be used by particle emitter logic. Used by both PGE client and server instances. */
@@ -306,6 +317,8 @@ public:
             1.f, 1.f, 0.f /* size */,
             0.f /* speed */, 0.f /* gravity */, 0.f /* drag */, false /* fragile */,
             0.f /* distMax */, false /* dmgRelDist */,
+            false /* can bounce */,
+            0 /* timer */,
             Bullet::ParticleType::None,
             0 /* AP */, 0 /* HP */,
             0.f /* dmg area size */, Bullet::DamageAreaEffect::Constant, 0.f /* dmg area pulse */)

@@ -68,11 +68,11 @@ bullet_drag = 0.2
 
 bullet_fragile = true
 
-bullet_distance_max = -1
+bullet_distance_max = 0
 
 bullet_bounces = false
 
-bullet_timer = 0
+bullet_timer = -1
 
 bullet_particle = none
 

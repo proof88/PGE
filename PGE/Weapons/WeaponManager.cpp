@@ -60,6 +60,8 @@ Bullet::Bullet(
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
     TPureFloat fDistMax, TPureBool bDmgRelDist,
+    TPureBool bCanBounce,
+    int nTimerConfigSeconds,
     const ParticleType& particleType,
     int nDamageAp, int nDamageHp,
     TPureFloat fDamageAreaSize,
@@ -82,6 +84,8 @@ Bullet::Bullet(
         speed, gravity, drag,
         fragile,
         fDistMax, bDmgRelDist,
+        bCanBounce,
+        nTimerConfigSeconds,
         particleType,
         nDamageAp,
         nDamageHp,
@@ -102,6 +106,7 @@ Bullet::Bullet(
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag,
     TPureFloat fDistMax, TPureBool bDmgRelDist,
+    TPureBool bCanBounce,
     const ParticleType& particleType,
     int nDamageHp,
     const TPureFloat& fDamageAreaSize,
@@ -124,6 +129,8 @@ Bullet::Bullet(
         speed, gravity, drag,
         false /* fragile, irrelevant for this client-side ctor */,
         fDistMax, bDmgRelDist,
+        bCanBounce,
+        0 /* timer, irrelevant for this client-side ctor */,
         particleType,
         0 /* nDamageAP, irrelevant for this client-side ctor */,
         nDamageHp,
@@ -227,6 +234,16 @@ TPureFloat Bullet::getTravelledDistance() const
     return m_fDistTravelled;
 }
 
+TPureBool Bullet::canBounce() const
+{
+    return m_bCanBounce;
+}
+
+int Bullet::getTimerConfigSeconds() const
+{
+    return m_nTimerConfigSeconds;
+}
+
 /**
 * Maximum damage to Player AP this bullet can cause.
 * 
@@ -301,6 +318,8 @@ void Bullet::init(
     TPureFloat sx, TPureFloat sy, TPureFloat /*sz*/,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
     TPureFloat fDistMax, TPureBool bDmgRelDist,
+    TPureBool bCanBounce,
+    int nTimerConfigSeconds,
     const ParticleType& particleType,
     int nDamageAp, int nDamageHp,
     TPureFloat fDamageAreaSize,
@@ -322,6 +341,8 @@ void Bullet::init(
     m_fDistMax = fDistMax;
     m_bDmgRelDist = bDmgRelDist;
     m_fDistTravelled = 0.f;
+    m_bCanBounce = bCanBounce;
+    m_nTimerConfigSeconds = nTimerConfigSeconds;
     m_particleType = particleType;
     m_nParticleEmitPerNthPhysicsIterCntr = 0;
     m_nParticlesEmittedCurrent = 0;
@@ -378,6 +399,7 @@ void Bullet::init(
     TPureFloat sx, TPureFloat sy, TPureFloat sz,
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, /* client does not receive nor use fragile */
     TPureFloat fDistMax, TPureBool bDmgRelDist,
+    TPureBool bCanBounce,
     const ParticleType& particleType,
     /* client does not receive nor use nDamageAp */ int nDamageHp,
     TPureFloat fDamageAreaSize,
@@ -396,6 +418,8 @@ void Bullet::init(
         sx, sy, sz,
         speed, gravity, drag, false /* client does not receive nor use fragile */,
         fDistMax, bDmgRelDist,
+        bCanBounce,
+        0 /* timer */,
         particleType,
         0 /* client does not receive nor use nDamageAp */,
         nDamageHp,
@@ -569,6 +593,8 @@ Weapon::Weapon(
         m_WpnAcceptedVars.insert("bullet_fragile");
         m_WpnAcceptedVars.insert("bullet_distance_max");
         m_WpnAcceptedVars.insert("damage_rel_distance");
+        m_WpnAcceptedVars.insert("bullet_bounces");
+        m_WpnAcceptedVars.insert("bullet_timer");
         m_WpnAcceptedVars.insert("bullet_particle");
         m_WpnAcceptedVars.insert("damage_wall_snd");
         m_WpnAcceptedVars.insert("damage_player_snd");
@@ -787,6 +813,12 @@ Weapon::Weapon(
     {
         getConsole().EOLnOO("damage_rel_distance cannot be true when bullet_distance_max is 0 in %s! ", fname);
         throw std::runtime_error("damage_rel_distance cannot be true when bullet_distance_max is 0 in " + std::string(fname));
+    }
+
+    if (getVars()["bullet_timer"].getAsInt() < 0)
+    {
+        getConsole().EOLnOO("bullet_timer cannot be negative in %s! ", fname);
+        throw std::runtime_error("bullet_timer cannot be negative in " + std::string(fname));
     }
 
     if ((getVars()["bullet_particle"].getAsString() != "none") && (getVars()["bullet_particle"].getAsString() != "smoke"))
@@ -1416,6 +1448,8 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
             getVars()["bullet_fragile"].getAsBool(),
             getVars()["bullet_distance_max"].getAsFloat(),
             getVars()["damage_rel_distance"].getAsBool(),
+            getVars()["bullet_bounces"].getAsBool(),
+            getVars()["bullet_timer"].getAsInt(),
             (getVars()["bullet_particle"].getAsString() == "smoke" ?
                 Bullet::ParticleType::Smoke :
                 Bullet::ParticleType::None),

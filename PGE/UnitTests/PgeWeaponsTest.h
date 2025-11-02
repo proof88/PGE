@@ -99,6 +99,7 @@ protected:
         addSubTest("test_wpn_load_weapon_damage_ap_must_be_positive", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_damage_ap_must_be_positive);
         addSubTest("test_wpn_load_weapon_bullet_distance_max_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_bullet_distance_max_cannot_be_negative);
         addSubTest("test_wpn_load_weapon_bullet_rel_distance_cannot_be_true_when_bullet_distance_max_0", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_bullet_rel_distance_cannot_be_true_when_bullet_distance_max_0);
+        addSubTest("test_wpn_load_weapon_bullet_timer_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_bullet_timer_cannot_be_negative);
         addSubTest("test_wpn_load_weapon_invalid_bullet_particle", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_invalid_bullet_particle);
         
         /* weapon load positive tests and other use cases */
@@ -575,6 +576,13 @@ private:
         return test_helper_wpn_load_and_expect_exception(
             "gamedata/weapons/wpn_test_bullet_rel_distance_cannot_be_true_when_bullet_distance_max_0.txt",
             "damage_rel_distance cannot be true when bullet_distance_max is 0");
+    }
+
+    bool test_wpn_load_weapon_bullet_timer_cannot_be_negative()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_bullet_timer_cannot_be_negative.txt",
+            "bullet_timer cannot be negative");
     }
 
     bool test_wpn_load_weapon_invalid_bullet_particle()

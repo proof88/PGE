@@ -70,6 +70,10 @@ bullet_fragile = true
 
 bullet_distance_max = 0
 
+bullet_bounces = false
+
+bullet_timer = 0
+
 bullet_particle = asdasd
 
 
