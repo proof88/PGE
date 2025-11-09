@@ -30,6 +30,9 @@ public:
         addSubTest("testStrafe", (PFNUNITSUBTEST) &PurePosUpTargetTest::testStrafe);
         addSubTest("testElevate", (PFNUNITSUBTEST) &PurePosUpTargetTest::testElevate);
         addSubTest("testRotation", (PFNUNITSUBTEST) &PurePosUpTargetTest::testRotation);
+        addSubTest("testFlipDirectionX", (PFNUNITSUBTEST)&PurePosUpTargetTest::testFlipDirectionX);
+        addSubTest("testFlipDirectionY", (PFNUNITSUBTEST)&PurePosUpTargetTest::testFlipDirectionY);
+        addSubTest("testFlipDirectionZ", (PFNUNITSUBTEST)&PurePosUpTargetTest::testFlipDirectionZ);
 
     } // PurePosUpTargetTest()
 
@@ -64,9 +67,9 @@ private:
         const PureVector vForward(0, 0, 1);
         const PureVector vPos(0, 0, 0);
 
-        return assertTrue(vUp == put.getUpVec(), "up") &
+        return (assertTrue(vUp == put.getUpVec(), "up") &
             assertTrue(vForward == put.getTargetVec(), "target") &
-            assertTrue(vPos == put.getPosVec(), "pos");
+            assertTrue(vPos == put.getPosVec(), "pos")) != 0;
     }
 
     bool testCopyCtor()
@@ -78,9 +81,9 @@ private:
 
         const PurePosUpTarget put2(put);
 
-        return assertTrue(put.getUpVec() == put2.getUpVec(), "up") &
+        return (assertTrue(put.getUpVec() == put2.getUpVec(), "up") &
             assertTrue(put.getTargetVec() == put2.getTargetVec(), "target") &
-            assertTrue(put.getPosVec() == put2.getPosVec(), "pos");
+            assertTrue(put.getPosVec() == put2.getPosVec(), "pos")) != 0;
     }
 
     bool testMove()
@@ -97,7 +100,7 @@ private:
 
         put.Move(MOVE);
 
-        bool b = assertEquals(vTargetOrig.getX(),        put.getTargetVec().getX(), E2, "target x 1") &
+        bool b = (assertEquals(vTargetOrig.getX(),        put.getTargetVec().getX(), E2, "target x 1") &
                  assertEquals(vTargetOrig.getY(),        put.getTargetVec().getY(), E2, "target y 1") &
                  assertEquals(vTargetOrig.getZ() + MOVE, put.getTargetVec().getZ(), E2, "target z 1") &
                  assertEquals(vPosOrig.getX(),           put.getPosVec().getX(), E2, "pos x 1") &
@@ -105,7 +108,7 @@ private:
                  assertEquals(vPosOrig.getZ() + MOVE,    put.getPosVec().getZ(), E2, "pos z 1") &
                  assertEquals(vUpOrig.getX(),            put.getUpVec().getX(), E2, "up x 1") &
                  assertEquals(vUpOrig.getY(),            put.getUpVec().getY(), E2, "up y 1") &
-                 assertEquals(vUpOrig.getZ(),            put.getUpVec().getZ(), E2, "up z 1");
+                 assertEquals(vUpOrig.getZ(),            put.getUpVec().getZ(), E2, "up z 1")) != 0;
 
         put.SetRotation(ROT_X, ROT_Y, 0);
 
@@ -121,7 +124,7 @@ private:
         
         put.Move(MOVE);
                                                                    
-        b = b & assertEquals(vExpTarget.getX(), put.getTargetVec().getX(), E2, "target x 2") &
+        b = (b & assertEquals(vExpTarget.getX(), put.getTargetVec().getX(), E2, "target x 2") &
                 assertEquals(vExpTarget.getY(), put.getTargetVec().getY(), E2, "target y 2") &
                 assertEquals(vExpTarget.getZ(), put.getTargetVec().getZ(), E2, "target z 2") &
                 assertEquals(vExpPos.getX(),    put.getPosVec().getX(), E2, "pos x 2") &
@@ -129,7 +132,7 @@ private:
                 assertEquals(vExpPos.getZ(),    put.getPosVec().getZ(), E2, "pos z 2") &
                 assertEquals(vExpUp.getX(),     put.getUpVec().getX(), E2, "up x 2") &
                 assertEquals(vExpUp.getY(),     put.getUpVec().getY(), E2, "up y 2") &
-                assertEquals(vExpUp.getZ(),     put.getUpVec().getZ(), E2, "up z 2");
+                assertEquals(vExpUp.getZ(),     put.getUpVec().getZ(), E2, "up z 2")) != 0;
 
         return b;
     }
@@ -148,7 +151,7 @@ private:
 
         put.Strafe(MOVE);
 
-        bool b = assertEquals(vTargetOrig.getX() + MOVE, put.getTargetVec().getX(), E2, "target x 1") &
+        bool b = (assertEquals(vTargetOrig.getX() + MOVE, put.getTargetVec().getX(), E2, "target x 1") &
                  assertEquals(vTargetOrig.getY(),        put.getTargetVec().getY(), E2, "target y 1") &
                  assertEquals(vTargetOrig.getZ(),        put.getTargetVec().getZ(), E2, "target z 1") &
                  assertEquals(vPosOrig.getX() + MOVE,    put.getPosVec().getX(), E2, "pos x 1") &
@@ -156,7 +159,7 @@ private:
                  assertEquals(vPosOrig.getZ(),           put.getPosVec().getZ(), E2, "pos z 1") &
                  assertEquals(vUpOrig.getX(),            put.getUpVec().getX(), E2, "up x 1") &
                  assertEquals(vUpOrig.getY(),            put.getUpVec().getY(), E2, "up y 1") &
-                 assertEquals(vUpOrig.getZ(),            put.getUpVec().getZ(), E2, "up z 1");
+                 assertEquals(vUpOrig.getZ(),            put.getUpVec().getZ(), E2, "up z 1")) != 0;
 
         put.SetRotation(ROT_X, ROT_Y, 0);
 
@@ -174,7 +177,7 @@ private:
         
         put.Strafe(MOVE);
                                                                    
-        b = b & assertEquals(vExpTarget.getX(), put.getTargetVec().getX(), E2, "target x 2") &
+        b = (b & assertEquals(vExpTarget.getX(), put.getTargetVec().getX(), E2, "target x 2") &
                 assertEquals(vExpTarget.getY(), put.getTargetVec().getY(), E2, "target y 2") &
                 assertEquals(vExpTarget.getZ(), put.getTargetVec().getZ(), E2, "target z 2") &
                 assertEquals(vExpPos.getX(),    put.getPosVec().getX(), E2, "pos x 2") &
@@ -182,7 +185,7 @@ private:
                 assertEquals(vExpPos.getZ(),    put.getPosVec().getZ(), E2, "pos z 2") &
                 assertEquals(vExpUp.getX(),     put.getUpVec().getX(), E2, "up x 2") &
                 assertEquals(vExpUp.getY(),     put.getUpVec().getY(), E2, "up y 2") &
-                assertEquals(vExpUp.getZ(),     put.getUpVec().getZ(), E2, "up z 2");
+                assertEquals(vExpUp.getZ(),     put.getUpVec().getZ(), E2, "up z 2")) != 0;
 
         return b;
     }
@@ -199,7 +202,7 @@ private:
 
         put.Elevate(MOVE);
 
-        return assertEquals(vTargetOrig.getX(),        put.getTargetVec().getX(), E2, "target x") &
+        return (assertEquals(vTargetOrig.getX(),        put.getTargetVec().getX(), E2, "target x") &
                  assertEquals(vTargetOrig.getY() + MOVE, put.getTargetVec().getY(), E2, "target y") &
                  assertEquals(vTargetOrig.getZ(),        put.getTargetVec().getZ(), E2, "target z") &
                  assertEquals(vPosOrig.getX(),           put.getPosVec().getX(), E2, "pos x") &
@@ -207,7 +210,7 @@ private:
                  assertEquals(vPosOrig.getZ(),           put.getPosVec().getZ(), E2, "pos z") &
                  assertEquals(vUpOrig.getX(),            put.getUpVec().getX(), E2, "up x") &
                  assertEquals(vUpOrig.getY(),            put.getUpVec().getY(), E2, "up y") &
-                 assertEquals(vUpOrig.getZ(),            put.getUpVec().getZ(), E2, "up z");
+                 assertEquals(vUpOrig.getZ(),            put.getUpVec().getZ(), E2, "up z")) != 0;
     }
 
     bool testRotation()
@@ -234,7 +237,7 @@ private:
         
         put.SetRotation(ROT_X, ROT_Y, 0);
                                                                    
-        return assertEquals(vExpTarget.getX(), put.getTargetVec().getX(), E2, "target x") &
+        return (assertEquals(vExpTarget.getX(), put.getTargetVec().getX(), E2, "target x") &
                 assertEquals(vExpTarget.getY(), put.getTargetVec().getY(), E2, "target y") &
                 assertEquals(vExpTarget.getZ(), put.getTargetVec().getZ(), E2, "target z") &
                 assertEquals(vExpPos.getX(),    put.getPosVec().getX(), E2, "pos x") &
@@ -242,7 +245,75 @@ private:
                 assertEquals(vExpPos.getZ(),    put.getPosVec().getZ(), E2, "pos z") &
                 assertEquals(vExpUp.getX(),     put.getUpVec().getX(), E2, "up x") &
                 assertEquals(vExpUp.getY(),     put.getUpVec().getY(), E2, "up y") &
-                assertEquals(vExpUp.getZ(),     put.getUpVec().getZ(), E2, "up z");
+                assertEquals(vExpUp.getZ(),     put.getUpVec().getZ(), E2, "up z")) != 0;
     }
 
+    bool testFlipDirectionX()
+    {
+        PurePosUpTarget put;
+        put.getPosVec().Set(2, 4, 6);
+        put.getTargetVec().Set(3, 6, 9);
+
+        const PureVector vExpTarget(1, 6, 9);
+        const PureVector vExpPos = put.getPosVec();
+        const PureVector vExpUp = put.getUpVec();
+
+        put.flipDirectionX();
+
+        return (assertEquals(vExpTarget.getX(), put.getTargetVec().getX(), E2, "target x") &
+            assertEquals(vExpTarget.getY(), put.getTargetVec().getY(), E2, "target y") &
+            assertEquals(vExpTarget.getZ(), put.getTargetVec().getZ(), E2, "target z") &
+            assertEquals(vExpPos.getX(), put.getPosVec().getX(), E2, "pos x") &
+            assertEquals(vExpPos.getY(), put.getPosVec().getY(), E2, "pos y") &
+            assertEquals(vExpPos.getZ(), put.getPosVec().getZ(), E2, "pos z") &
+            assertEquals(vExpUp.getX(), put.getUpVec().getX(), E2, "up x") &
+            assertEquals(vExpUp.getY(), put.getUpVec().getY(), E2, "up y") &
+            assertEquals(vExpUp.getZ(), put.getUpVec().getZ(), E2, "up z")) != 0;
+    }
+
+    bool testFlipDirectionY()
+    {
+        PurePosUpTarget put;
+        put.getPosVec().Set(2, 4, 6);
+        put.getTargetVec().Set(3, 6, 9);
+
+        const PureVector vExpTarget(3, 2, 9);
+        const PureVector vExpPos = put.getPosVec();
+        const PureVector vExpUp = put.getUpVec();
+
+        put.flipDirectionY();
+
+        return (assertEquals(vExpTarget.getX(), put.getTargetVec().getX(), E2, "target x") &
+            assertEquals(vExpTarget.getY(), put.getTargetVec().getY(), E2, "target y") &
+            assertEquals(vExpTarget.getZ(), put.getTargetVec().getZ(), E2, "target z") &
+            assertEquals(vExpPos.getX(), put.getPosVec().getX(), E2, "pos x") &
+            assertEquals(vExpPos.getY(), put.getPosVec().getY(), E2, "pos y") &
+            assertEquals(vExpPos.getZ(), put.getPosVec().getZ(), E2, "pos z") &
+            assertEquals(vExpUp.getX(), put.getUpVec().getX(), E2, "up x") &
+            assertEquals(vExpUp.getY(), put.getUpVec().getY(), E2, "up y") &
+            assertEquals(vExpUp.getZ(), put.getUpVec().getZ(), E2, "up z")) != 0;
+    }
+
+    bool testFlipDirectionZ()
+    {
+        PurePosUpTarget put;
+        put.getPosVec().Set(2, 4, 6);
+        put.getTargetVec().Set(3, 6, 9);
+
+        const PureVector vExpTarget(3, 6, 3);
+        const PureVector vExpPos = put.getPosVec();
+        const PureVector vExpUp = put.getUpVec();
+
+        put.flipDirectionZ();
+
+        return (assertEquals(vExpTarget.getX(), put.getTargetVec().getX(), E2, "target x") &
+            assertEquals(vExpTarget.getY(), put.getTargetVec().getY(), E2, "target y") &
+            assertEquals(vExpTarget.getZ(), put.getTargetVec().getZ(), E2, "target z") &
+            assertEquals(vExpPos.getX(), put.getPosVec().getX(), E2, "pos x") &
+            assertEquals(vExpPos.getY(), put.getPosVec().getY(), E2, "pos y") &
+            assertEquals(vExpPos.getZ(), put.getPosVec().getZ(), E2, "pos z") &
+            assertEquals(vExpUp.getX(), put.getUpVec().getX(), E2, "up x") &
+            assertEquals(vExpUp.getY(), put.getUpVec().getY(), E2, "up y") &
+            assertEquals(vExpUp.getZ(), put.getUpVec().getZ(), E2, "up z")) != 0;
+    }
 }; // class PurePosUpTargetTest

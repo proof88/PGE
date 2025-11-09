@@ -167,6 +167,36 @@ void PurePosUpTarget::SetRotation(TPureFloat x, TPureFloat y, TPureFloat z)
     vTarget = vPos + tmpView;
 }
 
+/**
+* Flips direction of the PUT on the X axis by updating its Target vector, mirroring the PUT on the Y axis.
+* This effectively means that is the PUT is looking in the left direction, it will look in the right direction as much as it was looking to the left before the call,
+* or vice versa.
+*/
+void PurePosUpTarget::flipDirectionX()
+{
+    vTarget.SetX(vPos.getX() - (vTarget.getX() - vPos.getX()));
+}
+
+/**
+* Flips direction of the PUT on the Y axis by updating its Target vector, mirroring the PUT on the X axis.
+* This effectively means that is the PUT is looking upwards, it will look downwards as much as it was looking upwards before the call,
+* or vice versa.
+*/
+void PurePosUpTarget::flipDirectionY()
+{
+    vTarget.SetY( vPos.getY() - (vTarget.getY() - vPos.getY()) );
+}
+
+/**
+* Flips direction of the PUT on the Z axis by updating its Target vector, mirroring the PUT on the Y axis.
+* This effectively means that is the PUT is looking forward, it will look backwards as much as it was looking forward before the call,
+* or vice versa.
+*/
+void PurePosUpTarget::flipDirectionZ()
+{
+    vTarget.SetZ(vPos.getZ() - (vTarget.getZ() - vPos.getZ()));
+}
+
 
 /**
     Equals to operator.

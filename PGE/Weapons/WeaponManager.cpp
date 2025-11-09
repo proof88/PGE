@@ -451,6 +451,7 @@ void Bullet::update(
     * 
     * Maybe this approach would be faster than using PUT.Move() like below.
     */
+    assert(nFactor > 0);
     const float fMoveDistance = m_speed / nFactor;
     m_put.Move(fMoveDistance);
 
@@ -480,6 +481,83 @@ void Bullet::update(
     m_obj->getPosVec() = m_put.getPosVec();
 
     // TODO: particle can be emitted here
+}
+
+void Bullet::handleVerticalCollision(
+    const PureObject3D& pObjectHit,
+    const TPureFloat& oldBulletY,
+    const unsigned int& /*nFactor*/ /* physics rate from physics engine */,
+    const float& /*fGravityMin*/)
+{
+    //const float fTheoreticalNewPosY = m_put.getPosVec().getY();
+
+    const int nAlignUnderOrAboveWall = pObjectHit.getPosVec().getY() < oldBulletY ? 1 : -1;
+    const float fAlignCloseToWall = nAlignUnderOrAboveWall * (pObjectHit.getSizeVec().getY() / 2.f + getObject3D().getScaledSizeVec().getY() / 2.f + 0.01f);
+    // TODO: we could write this simpler if PureVector::Set() would return the object itself!
+    // e.g.: player.getPos().set( PureVector(player.getPos().getNew()).setY(obj->getPosVec().getY() + fAlignCloseToWall) )
+    // do this everywhere where Ctrl+F finds this text (in Project): PPPKKKGGGGGG
+
+    m_put.getPosVec().SetY(pObjectHit.getPosVec().getY() + fAlignCloseToWall);
+    m_put.flipDirectionY();
+    assert(m_obj);
+    m_obj->getPosVec() = m_put.getPosVec();
+
+    // TODO: for now we decrease speed by 20%, but in the future we should decrease it by the
+    // amount of how hard we hit the wall vertically, as the below commented code intended.
+    // Instead of calculating the actual movement here, the actual recent movement shall be stored
+    // in update() and then used here, together with fTheoreticalYMovement, to find out the ratio
+    // that shall multiply m_speed. Note that gravity might also need to be changed somehow because
+    // that also applies to vertical position.
+    m_speed *= 0.8f;
+    if (m_speed <= 0.001f)
+    {
+        m_speed = 0.f;
+        //getConsole().EOLn("bullet speed reached 0!");
+    }
+
+    // decrease speed by how hard we hit the object
+    //const float fTheoreticalYMovement = abs(fTheoreticalNewPosY - oldBulletY);
+    //assert(nFactor > 0);
+    //const float fMoveDistance = m_speed / nFactor + m_gravityCurrent / nFactor;
+    //// TODO: use actual moevement stored in update()!
+    //const float fOldSpeedForLogging = m_speed;
+    //if (fMoveDistance > 0.001f)
+    //{
+    //    const float fSpeedMultiplier = 1.f - (fTheoreticalYMovement / fMoveDistance);
+    //    assert(fSpeedMultiplier >= 0.f);
+    //    m_speed *= fSpeedMultiplier;
+    //    if (m_speed < 0.001f)
+    //    {
+    //        m_speed = 0.f;
+    //    }
+    //}
+    //if (m_speed != fOldSpeedForLogging)
+    //{
+    //    getConsole().EOLn("speed before: %f, after: %f! ", fOldSpeedForLogging, m_speed);
+    //}
+
+    m_gravityCurrent = 0.f;
+}
+
+void Bullet::handleHorizontalCollision(const PureObject3D& pObjectHit, const TPureFloat& oldBulletX)
+{
+    // in case of horizontal collision, we should not reposition to previous position, but align next to the wall
+    const int nAlignLeftOrRightToWall = pObjectHit.getPosVec().getX() < oldBulletX ? 1 : -1;
+    const float fAlignNextToWall = nAlignLeftOrRightToWall * (pObjectHit.getSizeVec().getX() / 2.f + getObject3D().getScaledSizeVec().getX() / 2.f + 0.01f);
+
+    m_put.getPosVec().SetX(pObjectHit.getPosVec().getX() + fAlignNextToWall);
+    m_put.flipDirectionX();
+    assert(m_obj);
+    m_obj->getPosVec() = m_put.getPosVec();
+
+    // TODO: for now we decrease speed by const value, but in the future we should decrease it by the
+    // amount of how hard we hit the wall horizontally, similar to what needs to be done in handleVerticalCollision() as well.
+    m_speed *= 0.8f;
+    if (m_speed <= 0.001f)
+    {
+        m_speed = 0.f;
+        //getConsole().EOLn("bullet speed reached 0!");
+    }
 }
 
 

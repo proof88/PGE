@@ -56,6 +56,10 @@ public:
         TPureFloat y,
         TPureFloat z);                          /**< Sets direction. */
 
+    void flipDirectionX();                      /**< Flips direction of the PUT on the X axis by updating its Target vector. */
+    void flipDirectionY();                      /**< Flips direction of the PUT on the Y axis by updating its Target vector. */
+    void flipDirectionZ();                      /**< Flips direction of the PUT on the Z axis by updating its Target vector. */
+
     TPureBool operator==(const PurePosUpTarget& clr) const;  /**< Equals to operator. */
     TPureBool operator!=(const PurePosUpTarget& clr) const;  /**< Not equals to operator. */
     PurePosUpTarget& operator=(const PurePosUpTarget& vec);  /**< Assignment operator. */

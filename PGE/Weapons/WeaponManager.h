@@ -243,6 +243,15 @@ public:
         const float& fGravityChangePerTick,
         const float& fGravityMin);
 
+    void handleVerticalCollision(
+        const PureObject3D& pObjectHit,
+        const TPureFloat& oldBulletY,
+        const unsigned int& nFactor /* physics rate from physics engine */,
+        const float& fGravityMin);
+    void handleHorizontalCollision(
+        const PureObject3D& pObjectHit,
+        const TPureFloat& oldBulletX);
+
     PureObject3D& getObject3D();
     const PureObject3D& getObject3D() const;
 
