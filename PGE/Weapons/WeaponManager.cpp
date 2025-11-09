@@ -483,6 +483,9 @@ void Bullet::update(
     // TODO: particle can be emitted here
 }
 
+/**
+* Used by both server- and client-instances.
+*/
 void Bullet::handleVerticalCollision(
     const PureObject3D& pObjectHit,
     const TPureFloat& oldBulletY,
