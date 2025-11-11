@@ -686,6 +686,7 @@ Weapon::Weapon(
         m_WpnAcceptedVars.insert("damage_area_pulse");
         m_WpnAcceptedVars.insert("damage_area_gfx_obj");
         m_WpnAcceptedVars.insert("damage_area_snd");
+        m_WpnAcceptedVars.insert("bullet_bounce_snd");
     }
 
     // Need to think about better design ...
@@ -1015,6 +1016,11 @@ Weapon::Weapon(
     {
         m_audio.loadSound(m_sndDamageWall, std::string("gamedata\\audio\\weapons\\") + getVars()["damage_wall_snd"].getAsString());
         m_audio.loadSound(m_sndDamagePlayer, std::string("gamedata\\audio\\weapons\\") + getVars()["damage_player_snd"].getAsString());
+    }
+
+    if (getVars()["bullet_bounces"].getAsBool())
+    {
+        m_audio.loadSound(m_sndBulletBounce, std::string("gamedata\\audio\\weapons\\") + getVars()["bullet_bounce_snd"].getAsString());
     }
 
     getConsole().SOLnOO("Weapon loaded!");
@@ -1889,6 +1895,11 @@ SoLoud::Wav& Weapon::getPlayerHitSound()
 SoLoud::Wav& Weapon::getWallHitSound()
 {
     return m_sndDamageWall;
+}
+
+SoLoud::Wav& Weapon::getBulletBounceSound()
+{
+    return m_sndBulletBounce;
 }
 
 

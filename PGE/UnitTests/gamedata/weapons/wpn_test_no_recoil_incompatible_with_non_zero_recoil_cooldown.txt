@@ -71,6 +71,8 @@ bullet_distance_max = 0
 
 bullet_bounces = false
 
+bullet_bounce_snd =
+
 bullet_timer = 0
 
 bullet_particle = none

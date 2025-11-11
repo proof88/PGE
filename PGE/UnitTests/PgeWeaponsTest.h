@@ -652,6 +652,8 @@ private:
                 assertEquals(3.f, wpn.getVars()["bullet_size_z"].getAsFloat(), "bullet_size_z") &
                 assertEquals(2.0f, wpn.getVars()["bullet_speed"].getAsFloat(), "bullet_speed") &
                 assertEquals(0.1f, wpn.getVars()["bullet_gravity"].getAsFloat(), "bullet_gravity") &
+                assertFalse(wpn.getVars()["bullet_bounces"].getAsBool(), "bullet_bounces") &
+                assertEquals(0.0, wpn.getBulletBounceSound().getLength(), "bullet bounce snd len") &
                 assertEquals(0.2f, wpn.getVars()["bullet_drag"].getAsFloat(), "bullet_drag") &
                 assertTrue(wpn.getVars()["bullet_fragile"].getAsBool(), "bullet_fragile") &
                 assertEquals(0.f, wpn.getVars()["bullet_distance_max"].getAsFloat(), "bullet_distance_max") &
