@@ -500,10 +500,36 @@ void Bullet::handleVerticalCollision(
     // e.g.: player.getPos().set( PureVector(player.getPos().getNew()).setY(obj->getPosVec().getY() + fAlignCloseToWall) )
     // do this everywhere where Ctrl+F finds this text (in Project): PPPKKKGGGGGG
 
+    //getConsole().EOLn("Bullet::%s: posVec Y before alignment: %f", __func__, m_put.getPosVec().getY());
+    //getConsole().EOLn("Bullet::%s: targetVec Y before flip: %f", __func__, m_put.getTargetVec().getY());
+
     m_put.getPosVec().SetY(pObjectHit.getPosVec().getY() + fAlignCloseToWall);
-    m_put.flipDirectionY();
+    if (nAlignUnderOrAboveWall == -1)
+    {
+        // if bullet is coming from below the wall, so we have to face the bullet downwards now.
+        // We dont need to check for bullet direction like in the else branch, because the only
+        // way a bullet can collide from below the wall is if it was facing upwards, since
+        // gravity cannot move it upwards.
+        m_put.flipDirectionY();
+    }
+    else // bullet is coming from above the wall
+    {
+        // we should face the bullet upwards only if it is not looking already upwards, reason:
+        // if it is already looking upwards but gravity is so big it pulled it down, flipping PUT in Y direction
+        // would face it towards the wall which is non-sense, until next tick when collision with
+        // same object would be detected again and PUT would be flipped again in Y direction.
+        // The reason we have to complicate it like this is because in this case, the reason for
+        // coming down can be either the gravity itself or the bullet direction itself.
+        if (m_put.getTargetVec().getY() < m_put.getPosVec().getY())
+        {
+            m_put.flipDirectionY();
+        }
+    }
     assert(m_obj);
     m_obj->getPosVec() = m_put.getPosVec();
+
+    //getConsole().EOLn("Bullet::%s: posVec Y after alignment: %f", __func__, m_put.getPosVec().getY());
+    //getConsole().EOLn("Bullet::%s: targetVec Y after flip: %f", __func__, m_put.getTargetVec().getY());
 
     // TODO: for now we decrease speed by 20%, but in the future we should decrease it by the
     // amount of how hard we hit the wall vertically, as the below commented code intended.
