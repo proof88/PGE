@@ -191,6 +191,7 @@ public:
     TPureFloat getTravelledDistance() const;
     TPureBool canBounce() const;
     int getTimerConfigSeconds() const;
+    bool expired() const;
     int getDamageAp() const;
     int getDamageHp() const;
     TPureBool isDamageRelativeToDistance() const;
@@ -277,6 +278,8 @@ private:
     TPureFloat m_fDistTravelled;                           /**< Distance travelled so far. Used by both PGE client and server instances. */
     TPureBool m_bCanBounce;                                /**< Can bounce off walls, as defined by weapon file. Used by both PGE client and server instances. */
     int m_nTimerConfigSeconds;                             /**< Configured timer, as defined by weapon file. Used by PGE server instance only. */
+    std::chrono::time_point<std::chrono::steady_clock>
+        m_timeFired;                                       /**< Timestamp of firing the bullet. Used by PGE server instance only. */
     ParticleType m_particleType;                           /**< Emitted particle type. Used by both PGE client and server instances. */
     int m_nParticleEmitPerNthPhysicsIterCntr;              /**< Counter to be used by particle emitter logic. Used by both PGE client and server instances. */
     int m_nParticlesEmittedCurrent;                         /**< Counter to be used by particle emitter logic. Used by both PGE client and server instances. */

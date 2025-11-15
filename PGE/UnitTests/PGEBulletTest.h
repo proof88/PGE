@@ -12,6 +12,8 @@
 #include "UnitTest.h"  // PCH
 #include "../Weapons/WeaponManager.h"
 
+#include <thread>
+
 class PGEBulletTest :
     public UnitTest
 {
@@ -40,8 +42,6 @@ protected:
         addSubTest("test_bullet_ctor_client_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_good);
         // TODO: add test for copy ctor and assignment operator
         addSubTest("test_reset_global_bullet_id", (PFNUNITSUBTEST)&PGEBulletTest::test_reset_global_bullet_id);
-        addSubTest("test_bullet_ctor_server_does_not_accept_0_weapon_id", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_does_not_accept_0_weapon_id);
-        addSubTest("test_bullet_ctor_client_does_not_accept_0_weapon_id", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_does_not_accept_0_weapon_id);
         addSubTest("test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag",
             (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
         addSubTest("test_bullet_ctor_damage_area_size_cannot_be_negative",
@@ -51,6 +51,7 @@ protected:
         addSubTest("test_bullet_update_updates_position_without_gravity", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_update_updates_position_without_gravity);
         addSubTest("test_bullet_update_updates_position_with_gravity", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_update_updates_position_with_gravity);
         addSubTest("test_bullet_update_updates_alpha_and_damages_when_damage_rel_distance_is_true", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_update_updates_alpha_and_damages_when_damage_rel_distance_is_true);
+        addSubTest("test_bullet_expired", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_expired);
     }
 
     virtual bool setUp() override
@@ -103,7 +104,7 @@ private:
         constexpr float fDistMax = 10.f;
         constexpr bool bDmgRelDist = true;
         constexpr bool bBouncing = false;
-        constexpr int nTimer = 0;
+        constexpr int nTimer = 3;
         constexpr Bullet::ParticleType particleType = Bullet::ParticleType::None;
         constexpr int nDamageAp = 20;
         constexpr int nDamageHp = 30;
@@ -144,6 +145,7 @@ private:
         b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
         b &= assertEquals(bBouncing, bullet.canBounce(), "bBouncing");
         b &= assertEquals(nTimer, bullet.getTimerConfigSeconds(), "nTimer");
+        b &= assertFalse(bullet.expired(), "expired");
         b &= assertEquals(particleType, bullet.getParticleType(), "particleType");
         b &= assertEquals(0, bullet.getParticleEmitPerNthPhysicsIterationCntr(), "particle emit per iter cntr");
         //b &= assertEquals(0, bullet.getParticlesEmittedTotal(), "particles emitted total cntr");
@@ -205,7 +207,8 @@ private:
         b &= assertEquals(false, bullet.isFragile(), "fragile");
         b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
         b &= assertEquals(bBouncing, bullet.canBounce(), "bBouncing");
-        b &= assertEquals(0, bullet.getTimerConfigSeconds(), "nTimer");
+        b &= assertEquals(0, bullet.getTimerConfigSeconds(), "nTimer"); /* client is not aware about bullet timer */
+        b &= assertFalse(bullet.expired(), "expired");
         b &= assertEquals(0, bullet.getParticleEmitPerNthPhysicsIterationCntr(), "particle emit cntr");
         //b &= assertEquals(0, bullet.getParticlesEmittedTotal(), "particles emitted total cntr");
         b &= assertEquals(0, bullet.getDamageAp(), "damageAp");
@@ -262,63 +265,6 @@ private:
         return assertEquals(static_cast<Bullet::BulletId>(0), Bullet::getGlobalBulletId());
     }
 
-    bool test_bullet_ctor_server_does_not_accept_0_weapon_id()
-    {
-        bool b = false;
-        try
-        {
-            Bullet bullet(
-                static_cast<WeaponId>(0u),
-                *engine,
-                0 /* connHandle */,
-                1.f, 2.f, 3.f,
-                20.f, 40.f, 60.f,
-                false /* visible */,
-                4.f, 5.f, 0.f,
-                1000.f, 15.f, 25.f, true,
-                0.f /* fDistMax */, false /* bDmgRelDist */,
-                false /* bouncing */,
-                0 /* timer */,
-                Bullet::ParticleType::None,
-                5 /* AP */, 10 /* HP */,
-                5.f, Bullet::DamageAreaEffect::Constant, 2.f);
-        }
-        catch (const std::exception&)
-        {
-            b = true;
-        }
-
-        return b;
-    }
-
-    bool test_bullet_ctor_client_does_not_accept_0_weapon_id()
-    {
-        bool b = false;
-        try
-        {
-            Bullet bullet(
-                static_cast<WeaponId>(0u),
-                *engine,
-                1.f, 2.f, 3.f,
-                20.f, 40.f, 60.f,
-                false /* visible */,
-                4.f, 5.f, 0.f,
-                1000.f, 15.f, 25.f, /* client does not receive nor use fragile */
-                0.f /* fDistMax */, false /* bDmgRelDist */,
-                false /* bouncing */,
-                Bullet::ParticleType::None,
-                /* client does not receive nor use nDamageAp */
-                10 /* HP */,
-                5.f, Bullet::DamageAreaEffect::Constant, 2.f);
-        }
-        catch (const std::exception&)
-        {
-            b = true;
-        }
-
-        return b;
-    }
-
     bool test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag()
     {
         bool b = false;
@@ -332,7 +278,7 @@ private:
                 20.f, 40.f, 60.f,
                 false /* visible */,
                 4.f, 5.f, 0.f,
-                1000.f, 15.f, 25.f, true,
+                1000.f /* speed */, 15.f /* gravity */, 25.f /* drag */, true /* fragile */,
                 0.f /* fDistMax */, false /* bDmgRelDist */,
                 false /* bouncing */,
                 0 /* timer */,
@@ -361,7 +307,7 @@ private:
                 20.f, 40.f, 60.f,
                 false /* visible */,
                 4.f, 5.f, 0.f,
-                60.f, 15.f, 25.f, true,
+                60.f /* speed */, 15.f /* gravity */, 25.f /* drag */, true /* fragile */,
                 0.f /* fDistMax */, false /* bDmgRelDist */,
                 false /* bouncing */,
                 0 /* timer */,
@@ -390,7 +336,7 @@ private:
                 20.f, 40.f, 60.f,
                 false /* visible */,
                 4.f, 5.f, 0.f,
-                60.f, 15.f, 25.f, true,
+                60.f /* speed */, 15.f /* gravity */, 25.f /* drag */, true /* fragile */,
                 0.f /* fDistMax */, false /* bDmgRelDist */,
                 false /* bouncing */,
                 0 /* timer */,
@@ -551,6 +497,75 @@ private:
 
         b &= assertEquals(0.f, static_cast<float>(bullet.getDamageAp()), 0.01f, "damageAp 1");
         b &= assertEquals(0.f, static_cast<float>(bullet.getDamageHp()), 0.01f, "damageHp 1");
+
+        return b;
+    }
+
+    bool test_bullet_expired()
+    {
+        constexpr int nTimerSeconds = 2;
+        Bullet bullet(
+            static_cast<WeaponId>(123u),
+            *engine,
+            0 /* connHandle */,
+            1.f, 2.f, 3.f,
+            20.f, 40.f, 60.f,
+            false /* visible */,
+            4.f, 5.f, 0.f,
+            1000.f /* speed */, 15.f /* gravity */, 0.f /* drag */, true /* fragile */,
+            0.f /* fDistMax */, false /* bDmgRelDist */,
+            false /* bouncing */,
+            nTimerSeconds,
+            Bullet::ParticleType::None,
+            5 /* AP */, 10 /* HP */,
+            5.f, Bullet::DamageAreaEffect::Constant, 2.f);
+
+        bool b = true;
+
+        b &= assertFalse(bullet.expired(), "expired 1");
+        std::this_thread::sleep_for(std::chrono::seconds(nTimerSeconds));
+        b &= assertTrue(bullet.expired(), "expired 2");
+
+        // server version of init() is supposed to update the timestamp of the Bullet
+        bullet.init(
+            static_cast<WeaponId>(123u),
+            *engine,
+            0 /* connHandle */,
+            1.f, 2.f, 3.f,
+            20.f, 40.f, 60.f,
+            false /* visible */,
+            4.f, 5.f, 0.f,
+            1000.f /* speed */, 15.f /* gravity */, 0.f /* drag */, true /* fragile */,
+            0.f /* fDistMax */, false /* bDmgRelDist */,
+            false /* bouncing */,
+            2 * nTimerSeconds,
+            Bullet::ParticleType::None,
+            5 /* AP */, 10 /* HP */,
+            5.f, Bullet::DamageAreaEffect::Constant, 2.f);
+
+        b &= assertFalse(bullet.expired(), "expired 3");
+        std::this_thread::sleep_for(std::chrono::seconds(nTimerSeconds));
+        b &= assertFalse(bullet.expired(), "expired 4");
+        std::this_thread::sleep_for(std::chrono::seconds(nTimerSeconds));
+        b &= assertTrue(bullet.expired(), "expired 5");
+
+        // disable timer
+        bullet.init(
+            static_cast<WeaponId>(123u),
+            *engine,
+            0 /* connHandle */,
+            1.f, 2.f, 3.f,
+            20.f, 40.f, 60.f,
+            false /* visible */,
+            4.f, 5.f, 0.f,
+            1000.f /* speed */, 15.f /* gravity */, 0.f /* drag */, true /* fragile */,
+            0.f /* fDistMax */, false /* bDmgRelDist */,
+            false /* bouncing */,
+            0,
+            Bullet::ParticleType::None,
+            5 /* AP */, 10 /* HP */,
+            5.f, Bullet::DamageAreaEffect::Constant, 2.f);
+        b &= assertFalse(bullet.expired(), "expired 6");
 
         return b;
     }

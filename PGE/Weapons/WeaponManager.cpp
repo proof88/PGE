@@ -245,6 +245,20 @@ int Bullet::getTimerConfigSeconds() const
 }
 
 /**
+* @return True if the bullet has been travelling for at least the configured bullet timer, false otherwise.
+*         False is also returned when bullet timer is not configured i.e. timer is zero.
+*/
+bool Bullet::expired() const
+{
+    if (m_nTimerConfigSeconds == 0)
+    {
+        return false;
+    }
+
+    return (std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - m_timeFired).count() >= m_nTimerConfigSeconds);
+}
+
+/**
 * Maximum damage to Player AP this bullet can cause.
 * 
 * If bullet has configured maximum travel distance and isDamageRelativeToDistance() is true, then
@@ -343,6 +357,7 @@ void Bullet::init(
     m_fDistTravelled = 0.f;
     m_bCanBounce = bCanBounce;
     m_nTimerConfigSeconds = nTimerConfigSeconds;
+    m_timeFired = std::chrono::steady_clock::now();
     m_particleType = particleType;
     m_nParticleEmitPerNthPhysicsIterCntr = 0;
     m_nParticlesEmittedCurrent = 0;
@@ -406,6 +421,13 @@ void Bullet::init(
     const DamageAreaEffect& eDamageAreaEffect,
     TPureFloat fDamageAreaPulse)
 {
+    // this client-side init() is invoked when client receives Bullet info from server, in such case wpnId being zero is NOT permitted!
+    if (m_wpnId == 0u)
+    {
+        getConsole().EOLnOO("Bullet ctor init(): m_wpnId is zero!");
+        throw std::runtime_error("Bullet ctor init(): m_wpnId is zero");
+    }
+
     // must not do performance-extensive stuff in this function because if Bullet is pooled (PooledBullet) then the pool's create() invokes this!
 
     init(
