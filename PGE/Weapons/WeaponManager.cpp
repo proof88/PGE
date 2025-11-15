@@ -48,7 +48,8 @@ void Bullet::destroyReferenceObject()
 }
 
 /**
-    Ctor to be used by PGE server instance.
+    Ctor to be used by both PGE server- and client instances.
+    Client instance uses this when initializes its BulletPool, same way as server does.
 */
 Bullet::Bullet(
     const WeaponId& wpnId,
@@ -96,6 +97,9 @@ Bullet::Bullet(
 
 /**
     Ctor to be used by PGE client instance.
+    Note that with introduction of PooledBullet, PRooFPS-dd is not using this client-side ctor anymore:
+    server and client instances both use server-side ctor when filling up the bullet pool.
+    However, I'm still keeping this old client-side ctor for any future reason in case bullet pool would not be used in a project.
 */
 Bullet::Bullet(
     const WeaponId& wpnId,
@@ -116,6 +120,13 @@ Bullet::Bullet(
     m_gfx(gfx),
     m_obj(NULL)
 {
+    // this client-side ctor is invoked when client receives Bullet info from server, in such case wpnId being zero is NOT permitted!
+    if (wpnId == 0u)
+    {
+        getConsole().EOLnOO("Bullet ctor init(): wpnId is zero!");
+        throw std::runtime_error("Bullet ctor init(): wpnId is zero");
+    }
+
     build3dObject();
 
     init(
@@ -322,6 +333,9 @@ bool& Bullet::isCreateSentToClients()
     return m_bCreateSentToClients;
 }
 
+/**
+* Server-side init invoked by client-side init(), client-side ctor, and server-side ctor.
+*/
 void Bullet::init(
     const WeaponId& wpnId,
     PR00FsUltimateRenderingEngine& gfx,
@@ -404,6 +418,9 @@ void Bullet::init(
     }
 }
 
+/**
+*  Client-side init(), supposed to be invoked only when client receives bullet update from server. 
+*/
 void Bullet::init(
     const BulletId& id,
     const WeaponId& wpnId,
@@ -422,10 +439,10 @@ void Bullet::init(
     TPureFloat fDamageAreaPulse)
 {
     // this client-side init() is invoked when client receives Bullet info from server, in such case wpnId being zero is NOT permitted!
-    if (m_wpnId == 0u)
+    if (wpnId == 0u)
     {
-        getConsole().EOLnOO("Bullet ctor init(): m_wpnId is zero!");
-        throw std::runtime_error("Bullet ctor init(): m_wpnId is zero");
+        getConsole().EOLnOO("Bullet ctor init(): wpnId is zero!");
+        throw std::runtime_error("Bullet ctor init(): wpnId is zero");
     }
 
     // must not do performance-extensive stuff in this function because if Bullet is pooled (PooledBullet) then the pool's create() invokes this!

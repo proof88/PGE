@@ -42,6 +42,7 @@ protected:
         addSubTest("test_bullet_ctor_client_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_good);
         // TODO: add test for copy ctor and assignment operator
         addSubTest("test_reset_global_bullet_id", (PFNUNITSUBTEST)&PGEBulletTest::test_reset_global_bullet_id);
+        addSubTest("test_bullet_ctor_client_does_not_accept_0_weapon_id", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_does_not_accept_0_weapon_id);
         addSubTest("test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag",
             (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag);
         addSubTest("test_bullet_ctor_damage_area_size_cannot_be_negative",
@@ -263,6 +264,34 @@ private:
         Bullet::resetGlobalBulletId();
 
         return assertEquals(static_cast<Bullet::BulletId>(0), Bullet::getGlobalBulletId());
+    }
+
+    bool test_bullet_ctor_client_does_not_accept_0_weapon_id()
+    {
+        bool b = false;
+        try
+        {
+            Bullet bullet(
+                static_cast<WeaponId>(0u),
+                *engine,
+                1.f, 2.f, 3.f,
+                20.f, 40.f, 60.f,
+                false /* visible */,
+                4.f, 5.f, 0.f,
+                1000.f, 15.f, 25.f, /* client does not receive nor use fragile */
+                0.f /* fDistMax */, false /* bDmgRelDist */,
+                false /* bouncing */,
+                Bullet::ParticleType::None,
+                /* client does not receive nor use nDamageAp */
+                10 /* HP */,
+                5.f, Bullet::DamageAreaEffect::Constant, 2.f);
+        }
+        catch (const std::exception&)
+        {
+            b = true;
+        }
+
+        return b;
     }
 
     bool test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag()
