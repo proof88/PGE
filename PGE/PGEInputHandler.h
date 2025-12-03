@@ -141,15 +141,40 @@ public:
     virtual bool isKeyPressed(unsigned char key = '\0', std::chrono::milliseconds::rep nFilterMillisecs = 0) = 0;
 
     /**
+    * Similar to isKeyPressed(key, nFilterMillisecs) but applies nFilterMillisecs to 2 given keys together.
+    * Useful if a functionality is bound to multiple keys and we want to apply time filter for such functionality.
+    * 
+    * @param key              The virtual keycode of the key for which we are checking keypress event.
+    * @param key2             The virtual keycode of the other for which we are checking keypress event.
+    * @param nFilterMillisecs Minimum time needs to elapse before accepting another keypress event for both specified keys.
+    *
+    * @return True if any of the given keys is pressed, false otherwise.
+    */
+    virtual bool isKeyPressed(unsigned char key, unsigned char key2, std::chrono::milliseconds::rep nFilterMillisecs) = 0;
+
+    /**
     * Useful if we want to distinguish between different keypresses of the same key.
     * Unlike isKeyPressed(), this function also keeps track of the last released state of the key,
     * and will return true only if the state has just changed from released to pressed.
     * 
     * @param key              The virtual keycode of the key for which we are checking keypress event.
     * @param nFilterMillisecs Minimum time needs to elapse before accepting another keypress event.
-    * @return True if given key has just been changed to pressed state, false otherwise.
+    * 
+    * @return True if the given key has just changed its state to pressed, false otherwise.
     */
     virtual bool isKeyPressedOnce(unsigned char key, std::chrono::milliseconds::rep nFilterMillisecs = 0) = 0;
+
+    /**
+    * Similar to isKeyPressedOnce(key, nFilterMillisecs) but applies nFilterMillisecs to 2 given keys together.
+    * Useful if a functionality is bound to multiple keys and we want to apply time filter for such functionality.
+    *
+    * @param key              The virtual keycode of the key for which we are checking keypress event.
+    * @param key2             The virtual keycode of the other for which we are checking keypress event.
+    * @param nFilterMillisecs Minimum time needs to elapse before accepting another keypress event.
+    * 
+    * @return True if any of the given keys has just changed its state to pressed, false otherwise.
+    */
+    virtual bool isKeyPressedOnce(unsigned char key, unsigned char key2, std::chrono::milliseconds::rep nFilterMillisecs = 0) = 0;
     
     /**
     * Sets the pressed state of the given key to the given value.

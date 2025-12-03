@@ -386,7 +386,9 @@ public:
     virtual ~PGEInputKeyboardImpl();
 
     bool isKeyPressed(unsigned char key, std::chrono::milliseconds::rep nFilterMillisecs);
+    bool isKeyPressed(unsigned char key, unsigned char key2, std::chrono::milliseconds::rep nFilterMillisecs);
     bool isKeyPressedOnce(unsigned char key, std::chrono::milliseconds::rep nFilterMillisecs);
+    bool isKeyPressedOnce(unsigned char key, unsigned char key2, std::chrono::milliseconds::rep nFilterMillisecs = 0);
     void SetKeyPressed(unsigned char key, bool state);
 
 protected:
@@ -453,6 +455,24 @@ bool PGEInputKeyboardImpl::isKeyPressed(unsigned char key, std::chrono::millisec
     return bPressAccepted;
 }
 
+bool PGEInputKeyboardImpl::isKeyPressed(unsigned char key, unsigned char key2, std::chrono::milliseconds::rep nFilterMillisecs)
+{
+    const std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::steady_clock::now();
+    const bool bTimeFilterOk =
+        nFilterMillisecs > 0 ?
+        ((std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - m_timeKeysDownAccepted[key]).count() >= nFilterMillisecs) &&
+        (std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - m_timeKeysDownAccepted[key2]).count() >= nFilterMillisecs)) :
+        true;
+
+    const bool bPressAccepted = (m_bKeysDown[key] || m_bKeysDown[key2]) && bTimeFilterOk;
+    if (bPressAccepted)
+    {
+        m_timeKeysDownAccepted[key] = timeNow;
+        m_timeKeysDownAccepted[key2] = timeNow;
+    }
+    return bPressAccepted;
+}
+
 bool PGEInputKeyboardImpl::isKeyPressedOnce(unsigned char key, std::chrono::milliseconds::rep nFilterMillisecs)
 {
     const std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::steady_clock::now();
@@ -466,6 +486,26 @@ bool PGEInputKeyboardImpl::isKeyPressedOnce(unsigned char key, std::chrono::mill
     {
         m_bKeysReleasedSinceLastRead[key] = false;
         m_timeKeysDownAccepted[key] = timeNow;
+    }
+    return bPressedOnce;
+}
+
+bool PGEInputKeyboardImpl::isKeyPressedOnce(unsigned char key, unsigned char key2, std::chrono::milliseconds::rep nFilterMillisecs)
+{
+    const std::chrono::time_point<std::chrono::steady_clock> timeNow = std::chrono::steady_clock::now();
+    const bool bTimeFilterOk =
+        nFilterMillisecs > 0 ?
+        ((std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - m_timeKeysDownAccepted[key]).count() >= nFilterMillisecs) &&
+         (std::chrono::duration_cast<std::chrono::milliseconds>(timeNow - m_timeKeysDownAccepted[key2]).count() >= nFilterMillisecs)) :
+        true;
+
+    const bool bPressedOnce = (m_bKeysDown[key] && m_bKeysReleasedSinceLastRead[key]) || (m_bKeysDown[key2] && m_bKeysReleasedSinceLastRead[key2]) && bTimeFilterOk;
+    if (bPressedOnce)
+    {
+        m_bKeysReleasedSinceLastRead[key] = false;
+        m_bKeysReleasedSinceLastRead[key2] = false;
+        m_timeKeysDownAccepted[key] = timeNow;
+        m_timeKeysDownAccepted[key2] = timeNow;
     }
     return bPressedOnce;
 }
