@@ -133,6 +133,8 @@ public:
     * @param key              The virtual keycode of the key for which we are checking keypress event.
     *                         The null character '\0' has special meaning explained in the return value.
     * @param nFilterMillisecs Minimum time needs to elapse before accepting another keypress event.
+    *                         If nonzero, then consecutive calls for the same key will return false until the specified
+    *                         amount of milliseconds elapse, even if the same key is kept being pressed.
     * 
     * @return True if given key is pressed, false otherwise.
     *         If 'key' is specified as the null character '\0' any keypress event is considered instead
@@ -147,10 +149,11 @@ public:
     * @param key              The virtual keycode of the key for which we are checking keypress event.
     * @param key2             The virtual keycode of the other for which we are checking keypress event.
     * @param nFilterMillisecs Minimum time needs to elapse before accepting another keypress event for both specified keys.
-    *
+    *                         If nonzero, then consecutive calls for the same keys will return false until the specified
+    *                         amount of milliseconds elapse, even if any of the same key is kept being pressed.
     * @return True if any of the given keys is pressed, false otherwise.
     */
-    virtual bool isKeyPressed(unsigned char key, unsigned char key2, std::chrono::milliseconds::rep nFilterMillisecs) = 0;
+    virtual bool areKeysPressed(unsigned char key, unsigned char key2, std::chrono::milliseconds::rep nFilterMillisecs = 0) = 0;
 
     /**
     * Useful if we want to distinguish between different keypresses of the same key.
@@ -174,7 +177,7 @@ public:
     * 
     * @return True if any of the given keys has just changed its state to pressed, false otherwise.
     */
-    virtual bool isKeyPressedOnce(unsigned char key, unsigned char key2, std::chrono::milliseconds::rep nFilterMillisecs = 0) = 0;
+    virtual bool areKeysPressedOnce(unsigned char key, unsigned char key2, std::chrono::milliseconds::rep nFilterMillisecs = 0) = 0;
     
     /**
     * Sets the pressed state of the given key to the given value.
