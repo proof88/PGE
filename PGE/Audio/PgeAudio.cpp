@@ -185,7 +185,12 @@ SoLoud::handle pge_audio::PgeAudio::playSound(SoLoud::Wav& snd)
     return m_SoLoudCore.play(snd);
 }
 
-SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const float& posX, const float& posY, const float& posZ)
+SoLoud::handle pge_audio::PgeAudio::play3dSound(
+    SoLoud::Wav& snd,
+    const float& posX,
+    const float& posY,
+    const float& posZ,
+    const bool& bKillWhenInaudible)
 {
     // see comment in playSound() to understand why it is always required to use wrapper for play functions!
 
@@ -208,20 +213,27 @@ SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const float& p
     /* hack: set initial volume 0 and then set it back to 1, as WA for issue: https://github.com/jarikomppa/soloud/issues/175 */
     m_SoLoudCore.setVolume(sndHandle, 1.f);
 
-    // And now as volume is set to 1, I can also set the inaudible behavior to "kill"
-    m_SoLoudCore.setInaudibleBehavior(sndHandle, false /* must tick */, true /* kill */);
+    // And now as volume is set to 1, I can also set the inaudible behavior to "kill" if needed
+    if (bKillWhenInaudible)
+    {
+        m_SoLoudCore.setInaudibleBehavior(sndHandle, false /* must tick */, true /* kill */);
+    }
+    else
+    {
+        m_SoLoudCore.setInaudibleBehavior(sndHandle, true /* must tick */, false /* kill */);
+    }
 
     return sndHandle;
 }
 
-SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const PureVector& pos)
+SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const PureVector& pos, const bool& bKillWhenInaudible)
 {
-    return play3dSound(snd, pos.getX(), pos.getY(), pos.getZ());
+    return play3dSound(snd, pos.getX(), pos.getY(), pos.getZ(), bKillWhenInaudible);
 }
 
-SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const TXYZ& pos)
+SoLoud::handle pge_audio::PgeAudio::play3dSound(SoLoud::Wav& snd, const TXYZ& pos, const bool& bKillWhenInaudible)
 {
-    return play3dSound(snd, pos.x, pos.y, pos.z);
+    return play3dSound(snd, pos.x, pos.y, pos.z, bKillWhenInaudible);
 }
 
 void pge_audio::PgeAudio::stopSoundInstance(const SoLoud::handle& sndHandle)

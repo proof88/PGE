@@ -61,9 +61,10 @@ namespace pge_audio
             SoLoud::Wav& snd,
             const float& posX,
             const float& posY,
-            const float& posZ);
-        SoLoud::handle play3dSound(SoLoud::Wav& snd, const PureVector& pos);
-        SoLoud::handle play3dSound(SoLoud::Wav& snd, const TXYZ& pos);
+            const float& posZ,
+            const bool& bKillWhenInaudible = true);
+        SoLoud::handle play3dSound(SoLoud::Wav& snd, const PureVector& pos, const bool& bKillWhenInaudible = true);
+        SoLoud::handle play3dSound(SoLoud::Wav& snd, const TXYZ& pos, const bool& bKillWhenInaudible = true);
         void stopSoundInstance(const SoLoud::handle& sndHandle);
 
     protected:
