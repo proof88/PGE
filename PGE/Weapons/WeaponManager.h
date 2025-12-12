@@ -282,7 +282,7 @@ private:
         m_timeFired;                                       /**< Timestamp of firing the bullet. Used by PGE server instance only. */
     ParticleType m_particleType;                           /**< Emitted particle type. Used by both PGE client and server instances. */
     int m_nParticleEmitPerNthPhysicsIterCntr;              /**< Counter to be used by particle emitter logic. Used by both PGE client and server instances. */
-    int m_nParticlesEmittedCurrent;                         /**< Counter to be used by particle emitter logic. Used by both PGE client and server instances. */
+    int m_nParticlesEmittedCurrent;                        /**< Counter to be used by particle emitter logic. Used by both PGE client and server instances. */
     int m_nDamageAp;                                       /**< Damage to AP as defined by weapon file. Used by PGE server instance only. */
     int m_nDamageHp;                                       /**< Damage to HP as defined by weapon file. Used by both PGE client and server instances. */
     TPureFloat m_fDamageAreaSize;                          /**< Area damage size as defined by weapon file. Used by both PGE client and server instances. */
