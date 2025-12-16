@@ -105,7 +105,7 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
 
     //tests.push_back(std::unique_ptr<Test>(new PgeObjectPoolTest));
     
-    /*    
+    /*
     tests.push_back(std::unique_ptr<Test>(new PGEcfgVariableTest));
     tests.push_back(std::unique_ptr<Test>(new PGEcfgFileTest));
     tests.push_back(std::unique_ptr<Test>(new PGEcfgProfilesTest));  
@@ -115,13 +115,13 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     //tests.push_back(std::unique_ptr<Test>(new PgePacketTest));
     
     //tests.push_back(std::unique_ptr<Test>(new PgeWeaponsTest));
-    tests.push_back(std::unique_ptr<Test>(new PGEBulletTest));
-    /**/
+    //tests.push_back(std::unique_ptr<Test>(new PGEBulletTest));
     
-    /*  
+    /*
     tests.push_back(std::unique_ptr<Test>(new PureScreenTest));
     tests.push_back(std::unique_ptr<Test>(new PureSharedSettingsTest));
     */
+    
     
     /*
     tests.push_back(std::unique_ptr<Test>(new PurePosUpTargetTest));
@@ -134,9 +134,8 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     tests.push_back(std::unique_ptr<Test>(new PureScissorTest));
     tests.push_back(std::unique_ptr<Test>(new PureProjectionTest));
     */
-    
 
-    /*   
+    /*
     tests.push_back(std::unique_ptr<Test>(new PureColorTest));
     tests.push_back(std::unique_ptr<Test>(new PureManagerTest));
     tests.push_back(std::unique_ptr<Test>(new PureManagedTest));
@@ -159,7 +158,7 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
 
     //tests.push_back(std::unique_ptr<Test>(new PureCameraTest));
     
-    /*  
+    /*
     tests.push_back(std::unique_ptr<Test>(new PureMesh3DManagerTest));
     tests.push_back(std::unique_ptr<Test>(new PureMesh3DTest));
     tests.push_back(std::unique_ptr<Test>(new PureVertexTransferTest));
@@ -167,14 +166,14 @@ int WINAPI WinMain(_In_ HINSTANCE /*hInstance*/, _In_opt_ HINSTANCE /*hPrevInsta
     tests.push_back(std::unique_ptr<Test>(new PureObject3DTest));
     */
     
-    /*   
+    /*
     tests.push_back(std::unique_ptr<Test>(new PureWindowTest));
     tests.push_back(std::unique_ptr<Test>(new PureWindowTest2));
     */
 
     //tests.push_back(std::unique_ptr<Test>(new PureRendererHWfixedPipeTest));
     
-    /*  
+    /*
     tests.push_back(std::unique_ptr<Test>(new PR00FsUltimateRenderingEngineTest));
     tests.push_back(std::unique_ptr<Test>(new PR00FsUltimateRenderingEngineTest2));
     */
