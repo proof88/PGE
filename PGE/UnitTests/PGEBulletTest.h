@@ -105,6 +105,7 @@ private:
         constexpr float fDistMax = 10.f;
         constexpr bool bDmgRelDist = true;
         constexpr bool bBouncing = false;
+        constexpr bool bHitsPlayers = true;
         constexpr int nTimer = 3;
         constexpr Bullet::ParticleType particleType = Bullet::ParticleType::None;
         constexpr int nDamageAp = 20;
@@ -125,6 +126,7 @@ private:
             fSpeed, fGravity, fDrag, bFragile,
             fDistMax, bDmgRelDist,
             bBouncing,
+            bHitsPlayers,
             nTimer,
             particleType,
             nDamageAp, nDamageHp,
@@ -145,6 +147,7 @@ private:
         b &= assertEquals(bFragile, bullet.isFragile(), "fragile");
         b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
         b &= assertEquals(bBouncing, bullet.canBounce(), "bBouncing");
+        b &= assertEquals(bHitsPlayers, bullet.hitsPlayers(), "bHitsPlayers");
         b &= assertEquals(nTimer, bullet.getTimerConfigSeconds(), "nTimer");
         b &= assertFalse(bullet.expired(), "expired");
         b &= assertEquals(particleType, bullet.getParticleType(), "particleType");
@@ -208,6 +211,7 @@ private:
         b &= assertEquals(false, bullet.isFragile(), "fragile");
         b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
         b &= assertEquals(bBouncing, bullet.canBounce(), "bBouncing");
+        b &= assertEquals(true, bullet.hitsPlayers(), "bHitsPlayers");
         b &= assertEquals(0, bullet.getTimerConfigSeconds(), "nTimer"); /* client is not aware about bullet timer */
         b &= assertFalse(bullet.expired(), "expired");
         b &= assertEquals(0, bullet.getParticleEmitPerNthPhysicsIterationCntr(), "particle emit cntr");
@@ -237,6 +241,7 @@ private:
         constexpr float fDistMax = 10.f;
         constexpr bool bDmgRelDist = false;
         constexpr bool bBouncing = false;
+        constexpr bool bHitsPlayers = true;
         constexpr int nTimer = 0;
         constexpr int nDamageAp = 20;
         constexpr int nDamageHp = 30;
@@ -256,6 +261,7 @@ private:
             fSpeed, fGravity, fDrag, bFragile,
             fDistMax, bDmgRelDist,
             bBouncing,
+            bHitsPlayers,
             nTimer,
             particleType,
             nDamageAp, nDamageHp,
@@ -310,6 +316,7 @@ private:
                 1000.f /* speed */, 15.f /* gravity */, 25.f /* drag */, true /* fragile */,
                 0.f /* fDistMax */, false /* bDmgRelDist */,
                 false /* bouncing */,
+                true /* hitsPlayer */,
                 0 /* timer */,
                 Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
@@ -339,6 +346,7 @@ private:
                 60.f /* speed */, 15.f /* gravity */, 25.f /* drag */, true /* fragile */,
                 0.f /* fDistMax */, false /* bDmgRelDist */,
                 false /* bouncing */,
+                true /* hitsPlayer */,
                 0 /* timer */,
                 Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
@@ -368,6 +376,7 @@ private:
                 60.f /* speed */, 15.f /* gravity */, 25.f /* drag */, true /* fragile */,
                 0.f /* fDistMax */, false /* bDmgRelDist */,
                 false /* bouncing */,
+                true /* hitsPlayer */,
                 0 /* timer */,
                 Bullet::ParticleType::None,
                 5 /* AP */, 10 /* HP */,
@@ -404,6 +413,7 @@ private:
             fSpeed, fConfiguredBulletGravity, 25.f, true,
             100.f /* fDistMax */, false /* bDmgRelDist */,
             false /* bouncing */,
+            true /* hitsPlayer */,
             0 /* timer */,
             Bullet::ParticleType::None,
             nDamageAp, nDamageHp,
@@ -449,6 +459,7 @@ private:
             fSpeed, fConfiguredBulletGravity, 25.f, true,
             0.f /* fDistMax */, false /* bDmgRelDist */,
             false /* bouncing */,
+            true /* hitsPlayer */,
             0 /* timer */,
             Bullet::ParticleType::None,
             nDamageAp, nDamageHp,
@@ -499,6 +510,7 @@ private:
             fSpeed, fConfiguredBulletGravity, 25.f, true,
             fMaxDistance, true /* bDmgRelDist */,
             false /* bouncing */,
+            true /* hitsPlayer */,
             0 /* timer */,
             Bullet::ParticleType::None,
             nDamageAp, nDamageHp,
@@ -544,6 +556,7 @@ private:
             1000.f /* speed */, 15.f /* gravity */, 0.f /* drag */, true /* fragile */,
             0.f /* fDistMax */, false /* bDmgRelDist */,
             false /* bouncing */,
+            true /* hitsPlayer */,
             nTimerSeconds,
             Bullet::ParticleType::None,
             5 /* AP */, 10 /* HP */,
@@ -567,6 +580,7 @@ private:
             1000.f /* speed */, 15.f /* gravity */, 0.f /* drag */, true /* fragile */,
             0.f /* fDistMax */, false /* bDmgRelDist */,
             false /* bouncing */,
+            true /* hitsPlayer */,
             2 * nTimerSeconds,
             Bullet::ParticleType::None,
             5 /* AP */, 10 /* HP */,
@@ -590,6 +604,7 @@ private:
             1000.f /* speed */, 15.f /* gravity */, 0.f /* drag */, true /* fragile */,
             0.f /* fDistMax */, false /* bDmgRelDist */,
             false /* bouncing */,
+            true /* hitsPlayer */,
             0,
             Bullet::ParticleType::None,
             5 /* AP */, 10 /* HP */,

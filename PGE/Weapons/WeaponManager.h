@@ -77,6 +77,7 @@ public:
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
         TPureFloat fDistMax, TPureBool bDmgRelDist,
         TPureBool bCanBounce,
+        TPureBool bHitsPlayers,
         int nTimerConfigSeconds,
         const ParticleType& particleType,
         int nDamageAp, int nDamageHp,
@@ -112,63 +113,6 @@ public:
     Bullet(Bullet&&) = delete;
     Bullet& operator=(Bullet&&) = delete;
 
-    //Bullet(const Bullet& other) : // TODO check if we really cannot live with just compiler generated copy ctor?
-    //    m_id(other.m_id),
-    //    m_wpnId(other.m_wpnId),
-    //    m_gfx(other.m_gfx),
-    //    m_connHandle(other.m_connHandle),
-    //    m_put(other.m_put),
-    //    m_speed(other.m_speed),
-    //    m_gravityConfigured(other.m_gravityConfigured),
-    //    m_gravityCurrent(other.m_gravityCurrent),
-    //    m_drag(other.m_drag),
-    //    m_fragile(other.m_fragile),
-    //    m_fDistMax(other.m_fDistMax),
-    //    m_fDistTravelled(other.m_fDistTravelled),
-    //    m_nDamageAp(other.m_nDamageAp),
-    //    m_nDamageHp(other.m_nDamageHp),
-    //    m_fDamageAreaSize(other.m_fDamageAreaSize),
-    //    m_eDamageAreaEffect(other.m_eDamageAreaEffect),
-    //    m_fDamageAreaPulse(other.m_fDamageAreaPulse),
-    //    m_bCreateSentToClients(other.m_bCreateSentToClients)
-    //{
-    //    m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY()); // TODO: throw if cnanot creaate
-    //    m_obj->SetDoubleSided(true);
-    //    m_obj->getPosVec() = other.m_obj->getPosVec();
-    //    m_obj->getAngleVec() = other.m_obj->getAngleVec();
-    //    m_obj->SetRenderingAllowed(other.m_obj->isRenderingAllowed());
-    //}
-
-    //Bullet& operator=(const Bullet& other) // TODO check if we really cannot live with just compiler generated operator=?
-    //{
-    //    m_id = other.m_id;
-    //    m_wpnId = other.m_wpnId;
-    //    m_gfx = other.m_gfx;
-    //    m_connHandle = other.m_connHandle;
-    //    m_put = other.m_put;
-    //    m_speed = other.m_speed;
-    //    m_gravityConfigured = other.m_gravityConfigured;
-    //    m_gravityCurrent = other.m_gravityCurrent;
-    //    m_drag = other.m_drag;
-    //    m_fragile = other.m_fragile;
-    //    m_fDistMax = other.m_fDistMax;
-    //    m_fDistTravelled = other.m_fDistTravelled;
-    //    m_nDamageAp = other.m_nDamageAp;
-    //    m_nDamageHp = other.m_nDamageHp;
-    //    m_fDamageAreaSize = other.m_fDamageAreaSize;
-    //    m_eDamageAreaEffect = other.m_eDamageAreaEffect;
-    //    m_fDamageAreaPulse = other.m_fDamageAreaPulse;
-    //    m_bCreateSentToClients = other.m_bCreateSentToClients;
-    //
-    //    m_obj = m_gfx.getObject3DManager().createPlane(other.m_obj->getSizeVec().getX(), other.m_obj->getSizeVec().getY());  // TODO: throw if cnanot creaate
-    //    m_obj->SetDoubleSided(true);
-    //    m_obj->getPosVec() = other.m_obj->getPosVec();
-    //    m_obj->getAngleVec() = other.m_obj->getAngleVec();
-    //    m_obj->SetRenderingAllowed(other.m_obj->isRenderingAllowed());
-    //
-    //    return *this;
-    //}
-
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
     BulletId getId() const;
@@ -190,6 +134,7 @@ public:
     TPureFloat getTravelDistanceMax() const;
     TPureFloat getTravelledDistance() const;
     TPureBool canBounce() const;
+    TPureBool hitsPlayers() const;
     int getTimerConfigSeconds() const;
     bool expired() const;
     int getDamageAp() const;
@@ -213,6 +158,7 @@ public:
         TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
         TPureFloat fDistMax, TPureBool bDmgRelDist,
         TPureBool bCanBounce,
+        TPureBool bHitsPlayers,
         int nTimerConfigSeconds,
         const ParticleType& particleType,
         int nDamageAp, int nDamageHp,
@@ -277,6 +223,7 @@ private:
     TPureBool m_bDmgRelDist;                               /**< Damage is relative to distance travelled by bullet, as defined by weapon file. Used by both PGE client and server instances. */
     TPureFloat m_fDistTravelled;                           /**< Distance travelled so far. Used by both PGE client and server instances. */
     TPureBool m_bCanBounce;                                /**< Can bounce off walls, as defined by weapon file. Used by both PGE client and server instances. */
+    TPureBool m_bHitsPlayers;                              /**< Does damage to player upon colliding, as defined by weapon file. Used by PGE server instance only. */
     int m_nTimerConfigSeconds;                             /**< Configured timer, as defined by weapon file. Used by PGE server instance only. */
     std::chrono::time_point<std::chrono::steady_clock>
         m_timeFired;                                       /**< Timestamp of firing the bullet. Used by PGE server instance only. */
@@ -330,6 +277,7 @@ public:
             0.f /* speed */, 0.f /* gravity */, 0.f /* drag */, false /* fragile */,
             0.f /* distMax */, false /* dmgRelDist */,
             false /* can bounce */,
+            true /* hitsPlayer */,
             0 /* timer */,
             Bullet::ParticleType::None,
             0 /* AP */, 0 /* HP */,

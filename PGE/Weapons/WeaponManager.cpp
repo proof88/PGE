@@ -62,6 +62,7 @@ Bullet::Bullet(
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
     TPureFloat fDistMax, TPureBool bDmgRelDist,
     TPureBool bCanBounce,
+    TPureBool bHitsPlayers,
     int nTimerConfigSeconds,
     const ParticleType& particleType,
     int nDamageAp, int nDamageHp,
@@ -86,6 +87,7 @@ Bullet::Bullet(
         fragile,
         fDistMax, bDmgRelDist,
         bCanBounce,
+        bHitsPlayers,
         nTimerConfigSeconds,
         particleType,
         nDamageAp,
@@ -141,6 +143,7 @@ Bullet::Bullet(
         false /* fragile, irrelevant for this client-side ctor */,
         fDistMax, bDmgRelDist,
         bCanBounce,
+        true /* bHitsPlayers, irrelevant for this client-side ctor */,
         0 /* timer, irrelevant for this client-side ctor */,
         particleType,
         0 /* nDamageAP, irrelevant for this client-side ctor */,
@@ -250,6 +253,11 @@ TPureBool Bullet::canBounce() const
     return m_bCanBounce;
 }
 
+TPureBool Bullet::hitsPlayers() const
+{
+    return m_bHitsPlayers;
+}
+
 int Bullet::getTimerConfigSeconds() const
 {
     return m_nTimerConfigSeconds;
@@ -347,6 +355,7 @@ void Bullet::init(
     TPureFloat speed, TPureFloat gravity, TPureFloat drag, TPureBool fragile,
     TPureFloat fDistMax, TPureBool bDmgRelDist,
     TPureBool bCanBounce,
+    TPureBool bHitsPlayers,
     int nTimerConfigSeconds,
     const ParticleType& particleType,
     int nDamageAp, int nDamageHp,
@@ -370,6 +379,7 @@ void Bullet::init(
     m_bDmgRelDist = bDmgRelDist;
     m_fDistTravelled = 0.f;
     m_bCanBounce = bCanBounce;
+    m_bHitsPlayers = bHitsPlayers;
     m_nTimerConfigSeconds = nTimerConfigSeconds;
     m_timeFired = std::chrono::steady_clock::now();
     m_particleType = particleType;
@@ -458,6 +468,7 @@ void Bullet::init(
         speed, gravity, drag, false /* client does not receive nor use fragile */,
         fDistMax, bDmgRelDist,
         bCanBounce,
+        true /* bHitsPlayers, client does not receive and do not care */,
         0 /* timer */,
         particleType,
         0 /* client does not receive nor use nDamageAp */,
@@ -740,6 +751,7 @@ Weapon::Weapon(
         m_WpnAcceptedVars.insert("bullet_distance_max");
         m_WpnAcceptedVars.insert("damage_rel_distance");
         m_WpnAcceptedVars.insert("bullet_bounces");
+        m_WpnAcceptedVars.insert("bullet_hits_players");
         m_WpnAcceptedVars.insert("bullet_timer");
         m_WpnAcceptedVars.insert("bullet_particle");
         m_WpnAcceptedVars.insert("damage_wall_snd");
@@ -1601,6 +1613,7 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
             getVars()["bullet_distance_max"].getAsFloat(),
             getVars()["damage_rel_distance"].getAsBool(),
             getVars()["bullet_bounces"].getAsBool(),
+            getVars()["bullet_hits_players"].getAsBool(),
             getVars()["bullet_timer"].getAsInt(),
             (getVars()["bullet_particle"].getAsString() == "smoke" ?
                 Bullet::ParticleType::Smoke :

@@ -74,6 +74,8 @@ bullet_bounces = false
 
 bullet_bounce_snd =
 
+bullet_hits_players = true
+
 bullet_timer = 0
 
 bullet_particle = asdasd
