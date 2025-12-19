@@ -536,11 +536,12 @@ void Bullet::update(
 /**
 * Used by both server- and client-instances.
 */
-void Bullet::handleVerticalCollision(
+void Bullet::handleVerticalBounceOrRicochet(
     const PureObject3D& pObjectHit,
     const TPureFloat& oldBulletY,
     const unsigned int& /*nFactor*/ /* physics rate from physics engine */,
-    const float& /*fGravityMin*/)
+    const float& /*fGravityMin*/,
+    const float& fNewAngleZinDegrees)
 {
     //const float fTheoreticalNewPosY = m_put.getPosVec().getY();
 
@@ -577,6 +578,12 @@ void Bullet::handleVerticalCollision(
         }
     }
     m_obj->getPosVec() = m_put.getPosVec();
+    if (fNewAngleZinDegrees >= 0.f)
+    {
+        // negative fNewAngleZinDegrees means do not set new angle
+        getConsole().EOLn("Bullet::%s: obj3d current angle Z: %f, new angle Z: %f", __func__, m_obj->getAngleVec().getZ(), fNewAngleZinDegrees - 90.f);
+        m_obj->getAngleVec().SetZ(fNewAngleZinDegrees - 90.f);
+    }
 
     //getConsole().EOLn("Bullet::%s: posVec Y after alignment: %f", __func__, m_put.getPosVec().getY());
     //getConsole().EOLn("Bullet::%s: targetVec Y after flip: %f", __func__, m_put.getTargetVec().getY());
@@ -618,7 +625,7 @@ void Bullet::handleVerticalCollision(
     m_gravityCurrent = 0.f;
 }
 
-void Bullet::handleHorizontalCollision(const PureObject3D& pObjectHit, const TPureFloat& oldBulletX)
+void Bullet::handleHorizontalBounceOrRicochet(const PureObject3D& pObjectHit, const TPureFloat& oldBulletX)
 {
     // in case of horizontal collision, we should not reposition to previous position, but align next to the wall
     const int nAlignLeftOrRightToWall = pObjectHit.getPosVec().getX() < oldBulletX ? 1 : -1;
@@ -628,6 +635,9 @@ void Bullet::handleHorizontalCollision(const PureObject3D& pObjectHit, const TPu
     m_put.flipDirectionX();
     assert(m_obj);
     m_obj->getPosVec() = m_put.getPosVec();
+    m_obj->getAngleVec().SetY( (m_obj->getAngleVec().getY() == 0.f) ? 180.f : 0.f );
+
+    getConsole().EOLn("Bullet::%s: obj3d current angle Y: %f, angle Z: %f", __func__, m_obj->getAngleVec().getY(), m_obj->getAngleVec().getZ());
 
     // TODO: for now we decrease speed by const value, but in the future we should decrease it by the
     // amount of how hard we hit the wall horizontally, similar to what needs to be done in handleVerticalCollision() as well.

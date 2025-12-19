@@ -190,12 +190,13 @@ public:
         const float& fGravityChangePerTick,
         const float& fGravityMin);
 
-    void handleVerticalCollision(
+    void handleVerticalBounceOrRicochet(
         const PureObject3D& pObjectHit,
         const TPureFloat& oldBulletY,
         const unsigned int& nFactor /* physics rate from physics engine */,
-        const float& fGravityMin);
-    void handleHorizontalCollision(
+        const float& fGravityMin,
+        const float& fNewAngleZinDegrees);
+    void handleHorizontalBounceOrRicochet(
         const PureObject3D& pObjectHit,
         const TPureFloat& oldBulletX);
 
