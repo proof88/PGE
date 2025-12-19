@@ -581,7 +581,7 @@ void Bullet::handleVerticalBounceOrRicochet(
     if (fNewAngleZinDegrees >= 0.f)
     {
         // negative fNewAngleZinDegrees means do not set new angle
-        getConsole().EOLn("Bullet::%s: obj3d current angle Z: %f, new angle Z: %f", __func__, m_obj->getAngleVec().getZ(), fNewAngleZinDegrees - 90.f);
+        //getConsole().EOLn("Bullet::%s: obj3d current angle Z: %f, new angle Z: %f", __func__, m_obj->getAngleVec().getZ(), fNewAngleZinDegrees - 90.f);
         m_obj->getAngleVec().SetZ(fNewAngleZinDegrees - 90.f);
     }
 
@@ -637,7 +637,7 @@ void Bullet::handleHorizontalBounceOrRicochet(const PureObject3D& pObjectHit, co
     m_obj->getPosVec() = m_put.getPosVec();
     m_obj->getAngleVec().SetY( (m_obj->getAngleVec().getY() == 0.f) ? 180.f : 0.f );
 
-    getConsole().EOLn("Bullet::%s: obj3d current angle Y: %f, angle Z: %f", __func__, m_obj->getAngleVec().getY(), m_obj->getAngleVec().getZ());
+    //getConsole().EOLn("Bullet::%s: obj3d current angle Y: %f, angle Z: %f", __func__, m_obj->getAngleVec().getY(), m_obj->getAngleVec().getZ());
 
     // TODO: for now we decrease speed by const value, but in the future we should decrease it by the
     // amount of how hard we hit the wall horizontally, similar to what needs to be done in handleVerticalCollision() as well.
