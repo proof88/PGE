@@ -554,6 +554,7 @@ void Bullet::handleVerticalCollision(
     //getConsole().EOLn("Bullet::%s: targetVec Y before flip: %f", __func__, m_put.getTargetVec().getY());
 
     m_put.getPosVec().SetY(pObjectHit.getPosVec().getY() + fAlignCloseToWall);
+    assert(m_obj);
     if (nAlignUnderOrAboveWall == -1)
     {
         // if bullet is coming from below the wall, so we have to face the bullet downwards now.
@@ -575,7 +576,6 @@ void Bullet::handleVerticalCollision(
             m_put.flipDirectionY();
         }
     }
-    assert(m_obj);
     m_obj->getPosVec() = m_put.getPosVec();
 
     //getConsole().EOLn("Bullet::%s: posVec Y after alignment: %f", __func__, m_put.getPosVec().getY());
