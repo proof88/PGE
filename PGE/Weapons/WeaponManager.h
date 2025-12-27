@@ -115,6 +115,9 @@ public:
 
     CConsole&   getConsole() const;                    /**< Returns access to console preset with logger module name as this class. */
 
+    void markForDeletion();
+    bool isMarkedForDeletion() const;
+
     BulletId getId() const;
     const WeaponId& getWeaponId() const;
 
@@ -210,6 +213,8 @@ private:
     static BulletId m_globalBulletId;                      /**< Next unique bullet id for identifying. Used by PGE server instance only. */
     static PureObject3D* m_pObjRef;                        /**< Reference object for cloned bullet objects. */
 
+    bool m_bMarkForDeletion;                               /**< Server does not immediately deletes bullets in loops, just flags those to be deleted.
+                                                                Used by PGE server instance only. */
     BulletId m_id;                                         /**< Unique bullet id for identifying. Used by both PGE client and server instances. */
     WeaponId m_wpnId;                                      /**< Unique weapon id. Used by both PGE client and server instances. */
     PR00FsUltimateRenderingEngine& m_gfx;

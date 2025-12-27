@@ -1,4 +1,3 @@
-#include "WeaponManager.h"
 /*
     ###################################################################################
     WeaponManager.cpp
@@ -69,6 +68,7 @@ Bullet::Bullet(
     TPureFloat fDamageAreaSize,
     const DamageAreaEffect& eDamageAreaEffect,
     TPureFloat fDamageAreaPulse) :
+    m_bMarkForDeletion(false),
     m_id(m_globalBulletId++),
     m_gfx(gfx),
     m_obj(NULL)
@@ -118,6 +118,7 @@ Bullet::Bullet(
     const TPureFloat& fDamageAreaSize,
     const DamageAreaEffect& eDamageAreaEffect,
     const TPureFloat& fDamageAreaPulse) :
+    m_bMarkForDeletion(false),
     m_id(m_globalBulletId++),
     m_gfx(gfx),
     m_obj(NULL)
@@ -164,6 +165,16 @@ Bullet::~Bullet()
 CConsole& Bullet::getConsole() const
 {
     return CConsole::getConsoleInstance(getLoggerModuleName());
+}
+
+void Bullet::markForDeletion()
+{
+    m_bMarkForDeletion = true;
+}
+
+bool Bullet::isMarkedForDeletion() const
+{
+    return m_bMarkForDeletion;
 }
 
 Bullet::BulletId Bullet::getId() const
@@ -366,6 +377,7 @@ void Bullet::init(
     // must not do performance-extensive stuff in this function because if Bullet is pooled (PooledBullet) then the pool's create() invokes this!
 
     m_bCreateSentToClients = false;  // maintained only by server instance, always false on client
+    m_bMarkForDeletion = false;      // maintained only by server instance, always false on client
 
     m_wpnId = wpnId;
     m_gfx = gfx;

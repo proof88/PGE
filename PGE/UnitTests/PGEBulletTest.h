@@ -40,7 +40,8 @@ protected:
 
         addSubTest("test_bullet_ctor_server_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_server_good);
         addSubTest("test_bullet_ctor_client_good", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_good);
-        // TODO: add test for copy ctor and assignment operator
+        addSubTest("test_bullet_init_server", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_init_server);
+        addSubTest("test_bullet_init_client", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_init_client);
         addSubTest("test_reset_global_bullet_id", (PFNUNITSUBTEST)&PGEBulletTest::test_reset_global_bullet_id);
         addSubTest("test_bullet_ctor_client_does_not_accept_0_weapon_id", (PFNUNITSUBTEST)&PGEBulletTest::test_bullet_ctor_client_does_not_accept_0_weapon_id);
         addSubTest("test_bullet_ctor_max_bullet_speed_incompatible_with_non_zero_bullet_drag",
@@ -132,12 +133,15 @@ private:
             nDamageAp, nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
 
-        bool b = assertEquals(bullet.getId(), iLastBulletId, "bullet id");
-        b &= assertEquals(bullet.getWeaponId(), iWpnId, "weapon id");
-        b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId + 1, "global bullet id");
+        bool b = assertFalse(bullet.isMarkedForDeletion(), "marked for deletion");
+        b &= assertEquals(iLastBulletId, bullet.getId(), "bullet id");
+        b &= assertEquals(iWpnId, bullet.getWeaponId(), "weapon id");
+        b &= assertEquals(iLastBulletId + 1, Bullet::getGlobalBulletId(), "global bullet id");
         b &= assertEquals(connHandle, bullet.getOwner(), "owner");
-        b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "pos");
-        b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "angle");
+        b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "obj pos");
+        b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "obj angle");
+        b &= assertEquals(posVec, bullet.getPut().getPosVec(), "put pos");
+        b &= assertEquals(PureVector(0,1,0), bullet.getPut().getUpVec(), "put up");
         b &= assertFalse(bullet.getObject3D().isRenderingAllowed(), "visible");
         b &= assertEquals(sizeVec, bullet.getObject3D().getScaledSizeVec(), "size");
         b &= assertEquals(fSpeed, bullet.getSpeed(), "speed");
@@ -146,6 +150,7 @@ private:
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(bFragile, bullet.isFragile(), "fragile");
         b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
+        b &= assertEquals(0.f, bullet.getTravelledDistance(), "travelled dist");
         b &= assertEquals(bBouncing, bullet.canBounce(), "bBouncing");
         b &= assertEquals(bHitsPlayers, bullet.hitsPlayers(), "bHitsPlayers");
         b &= assertEquals(nTimer, bullet.getTimerConfigSeconds(), "nTimer");
@@ -197,11 +202,14 @@ private:
             nDamageHp,
             fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
 
-        bool b = assertEquals(bullet.getId(), iLastBulletId, "bullet id");
+        bool b = assertFalse(bullet.isMarkedForDeletion(), "marked for deletion");
+        b &= assertEquals(iLastBulletId, bullet.getId(), "bullet id");
         b &= assertEquals(bullet.getWeaponId(), iWpnId, "weapon id");
         b &= assertEquals(Bullet::getGlobalBulletId(), iLastBulletId + 1, "global bullet id");
-        b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "pos");
-        b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "angle");
+        b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "obj pos");
+        b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "obj angle");
+        b &= assertEquals(posVec, bullet.getPut().getPosVec(), "put pos");
+        b &= assertEquals(PureVector(0, 1, 0), bullet.getPut().getUpVec(), "put up");
         b &= assertFalse(bullet.getObject3D().isRenderingAllowed(), "visible");
         b &= assertEquals(sizeVec, bullet.getObject3D().getScaledSizeVec(), "size");
         b &= assertEquals(fSpeed, bullet.getSpeed(), "speed");
@@ -210,6 +218,7 @@ private:
         b &= assertEquals(fDrag, bullet.getDrag(), "drag");
         b &= assertEquals(false, bullet.isFragile(), "fragile");
         b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
+        b &= assertEquals(0.f, bullet.getTravelledDistance(), "travelled dist");
         b &= assertEquals(bBouncing, bullet.canBounce(), "bBouncing");
         b &= assertEquals(true, bullet.hitsPlayers(), "bHitsPlayers");
         b &= assertEquals(0, bullet.getTimerConfigSeconds(), "nTimer"); /* client is not aware about bullet timer */
@@ -223,6 +232,207 @@ private:
         b &= assertEquals(eDamageAreaEffect, bullet.getAreaDamageEffect(), "damage area effect");
         b &= assertEquals(fDamageAreaPulse, bullet.getAreaDamagePulse(), "damage area pulse");
         b &= assertFalse(bullet.isCreateSentToClients(), "isCreateSentToClients"); /* ignoredby client */
+
+        return b;
+    }
+
+    bool test_bullet_init_server()
+    {
+        const Bullet::BulletId iLastBulletId = Bullet::getGlobalBulletId();
+        constexpr WeaponId iWpnId = static_cast<WeaponId>(123u);
+        const PureVector posVec(1.f, 2.f, 3.f);
+        const PureVector angleVec(20.f, 40.f, 60.f);
+        const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
+        constexpr float fSpeed = 60.f;
+        constexpr float fGravity = 15.f;
+        constexpr float fDrag = 25.f;
+        constexpr bool bFragile = true;
+        constexpr float fDistMax = 10.f;
+        constexpr bool bDmgRelDist = true;
+        constexpr bool bBouncing = false;
+        constexpr bool bHitsPlayers = true;
+        constexpr int nTimer = 3;
+        constexpr Bullet::ParticleType particleType = Bullet::ParticleType::None;
+        constexpr int nDamageAp = 20;
+        constexpr int nDamageHp = 30;
+        constexpr float fDamageAreaSize = 5.f;
+        constexpr Bullet::DamageAreaEffect eDamageAreaEffect = Bullet::DamageAreaEffect::Constant;
+        constexpr float fDamageAreaPulse = 2.f;
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 52;
+
+        // intentionally initialize with different values
+        Bullet bullet(
+            iWpnId,
+            *engine,
+            connHandle,
+            0.f, 0.f, 0.f, /* pos xyz */
+            0.f, 0.f, 0.f, /* angle xyz */
+            true /* visible */,
+            1.f, 1.f, 1.f /* size xyz */,
+            fSpeed + 5.f, fGravity + 5.f, fDrag + 5.f, !bFragile,
+            fDistMax + 5.f, !bDmgRelDist,
+            !bBouncing,
+            !bHitsPlayers,
+            nTimer + 6,
+            Bullet::ParticleType::Smoke,
+            nDamageAp + 6, nDamageHp + 6,
+            fDamageAreaSize + 5.f, Bullet::DamageAreaEffect::Linear, fDamageAreaPulse + 5.f);
+
+        // try to alter as many values as we can
+        bullet.update(30u, 1.f, -5.f);
+        bullet.getParticleEmitPerNthPhysicsIterationCntr() = 5;
+        bullet.isCreateSentToClients() = true;
+        bullet.markForDeletion();
+
+        bullet.init(
+            iWpnId,
+            *engine,
+            connHandle,
+            posVec.getX(), posVec.getY(), posVec.getZ(),
+            angleVec.getX(), angleVec.getY(), angleVec.getZ(),
+            false /* visible */,
+            sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
+            fSpeed, fGravity, fDrag, bFragile,
+            fDistMax, bDmgRelDist,
+            bBouncing,
+            bHitsPlayers,
+            nTimer,
+            particleType,
+            nDamageAp, nDamageHp,
+            fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
+
+        bool b = assertFalse(bullet.isMarkedForDeletion(), "marked for deletion");
+        b &= assertEquals(iLastBulletId, bullet.getId(), "bullet id");
+        b &= assertEquals(iWpnId, bullet.getWeaponId(), "weapon id");
+        b &= assertEquals(iLastBulletId + 1, Bullet::getGlobalBulletId(), "global bullet id");
+        b &= assertEquals(connHandle, bullet.getOwner(), "owner");
+        b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "obj pos");
+        b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "obj angle");
+        b &= assertEquals(posVec, bullet.getPut().getPosVec(), "put pos");
+        b &= assertEquals(PureVector(0, 1, 0), bullet.getPut().getUpVec(), "put up");
+        b &= assertFalse(bullet.getObject3D().isRenderingAllowed(), "visible");
+        b &= assertEquals(sizeVec, bullet.getObject3D().getScaledSizeVec(), "size");
+        b &= assertEquals(fSpeed, bullet.getSpeed(), "speed");
+        b &= assertEquals(fGravity, bullet.getConfiguredGravity(), "configured gravity");
+        b &= assertEquals(0.f, bullet.getCurrentGravity(), "current gravity");
+        b &= assertEquals(fDrag, bullet.getDrag(), "drag");
+        b &= assertEquals(bFragile, bullet.isFragile(), "fragile");
+        b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
+        b &= assertEquals(0.f, bullet.getTravelledDistance(), "travelled dist");
+        b &= assertEquals(bBouncing, bullet.canBounce(), "bBouncing");
+        b &= assertEquals(bHitsPlayers, bullet.hitsPlayers(), "bHitsPlayers");
+        b &= assertEquals(nTimer, bullet.getTimerConfigSeconds(), "nTimer");
+        b &= assertFalse(bullet.expired(), "expired");
+        b &= assertEquals(particleType, bullet.getParticleType(), "particleType");
+        b &= assertEquals(0, bullet.getParticleEmitPerNthPhysicsIterationCntr(), "particle emit per iter cntr");
+        //b &= assertEquals(0, bullet.getParticlesEmittedTotal(), "particles emitted total cntr");
+        b &= assertEquals(nDamageAp, bullet.getDamageAp(), "damageAp");
+        b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
+        b &= assertTrue(bullet.isDamageRelativeToDistance(), "dmgRelDist");
+        b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
+        b &= assertEquals(eDamageAreaEffect, bullet.getAreaDamageEffect(), "damage area effect");
+        b &= assertEquals(fDamageAreaPulse, bullet.getAreaDamagePulse(), "damage area pulse");
+        b &= assertFalse(bullet.isCreateSentToClients(), "isCreateSentToClients");
+
+        return b;
+    }
+
+    bool test_bullet_init_client()
+    {
+        const Bullet::BulletId iLastBulletId = Bullet::getGlobalBulletId();
+        constexpr Bullet::BulletId iBulletId = static_cast<WeaponId>(256u);
+        constexpr WeaponId iWpnId = static_cast<WeaponId>(123u);
+        const PureVector posVec(1.f, 2.f, 3.f);
+        const PureVector angleVec(20.f, 40.f, 60.f);
+        const PureVector sizeVec(4.f, 5.f, 0.f /* size-Z will be 0.f anyway */);
+        constexpr float fSpeed = 60.f;
+        constexpr float fGravity = 15.f;
+        constexpr float fDrag = 25.f;
+        constexpr bool bFragile = true;
+        constexpr float fDistMax = 10.f;
+        constexpr bool bDmgRelDist = true;
+        constexpr bool bBouncing = false;
+        constexpr bool bHitsPlayers = true;
+        constexpr int nTimer = 3;
+        constexpr Bullet::ParticleType particleType = Bullet::ParticleType::None;
+        constexpr int nDamageAp = 20;
+        constexpr int nDamageHp = 30;
+        constexpr float fDamageAreaSize = 5.f;
+        constexpr Bullet::DamageAreaEffect eDamageAreaEffect = Bullet::DamageAreaEffect::Constant;
+        constexpr float fDamageAreaPulse = 2.f;
+        constexpr pge_network::PgeNetworkConnectionHandle connHandle = 52;
+
+        // intentionally initialize with different values
+        Bullet bullet(
+            iWpnId,
+            *engine,
+            connHandle,
+            0.f, 0.f, 0.f, /* pos xyz */
+            0.f, 0.f, 0.f, /* angle xyz */
+            true /* visible */,
+            1.f, 1.f, 1.f /* size xyz */,
+            fSpeed + 5.f, fGravity + 5.f, fDrag + 5.f, !bFragile,
+            fDistMax + 5.f, !bDmgRelDist,
+            !bBouncing,
+            !bHitsPlayers,
+            nTimer + 6,
+            Bullet::ParticleType::Smoke,
+            nDamageAp + 6, nDamageHp + 6,
+            fDamageAreaSize + 5.f, Bullet::DamageAreaEffect::Linear, fDamageAreaPulse + 5.f);
+
+        // try to alter as many values as we can
+        bullet.update(30u, 1.f, -5.f);
+        bullet.getParticleEmitPerNthPhysicsIterationCntr() = 5;
+        bullet.isCreateSentToClients() = true;
+        bullet.markForDeletion();
+
+        bullet.init(
+            iBulletId,
+            iWpnId,
+            *engine,
+            posVec.getX(), posVec.getY(), posVec.getZ(),
+            angleVec.getX(), angleVec.getY(), angleVec.getZ(),
+            false /* visible */,
+            sizeVec.getX(), sizeVec.getY(), sizeVec.getZ(),
+            fSpeed, fGravity, fDrag,
+            fDistMax, bDmgRelDist,
+            bBouncing,
+            particleType,
+            nDamageHp,
+            fDamageAreaSize, eDamageAreaEffect, fDamageAreaPulse);
+
+        bool b = assertFalse(bullet.isMarkedForDeletion(), "marked for deletion");
+        b &= assertEquals(iBulletId /* client-side init receives this from server */, bullet.getId(), "bullet id");
+        b &= assertEquals(iWpnId, bullet.getWeaponId(), "weapon id");
+        b &= assertEquals(iLastBulletId + 1, Bullet::getGlobalBulletId(), "global bullet id");
+        b &= assertEquals(0u /* client doesnt care */, bullet.getOwner(), "owner");
+        b &= assertEquals(posVec, bullet.getObject3D().getPosVec(), "obj pos");
+        b &= assertEquals(angleVec, bullet.getObject3D().getAngleVec(), "obj angle");
+        b &= assertEquals(posVec, bullet.getPut().getPosVec(), "put pos");
+        b &= assertEquals(PureVector(0, 1, 0), bullet.getPut().getUpVec(), "put up");
+        b &= assertFalse(bullet.getObject3D().isRenderingAllowed(), "visible");
+        b &= assertEquals(sizeVec, bullet.getObject3D().getScaledSizeVec(), "size");
+        b &= assertEquals(fSpeed, bullet.getSpeed(), "speed");
+        b &= assertEquals(fGravity, bullet.getConfiguredGravity(), "configured gravity");
+        b &= assertEquals(0.f, bullet.getCurrentGravity(), "current gravity");
+        b &= assertEquals(fDrag, bullet.getDrag(), "drag");
+        b &= assertEquals(false /* client doesnt care */, bullet.isFragile(), "fragile");
+        b &= assertEquals(fDistMax, bullet.getTravelDistanceMax(), "fDistMax");
+        b &= assertEquals(0.f, bullet.getTravelledDistance(), "travelled dist");
+        b &= assertEquals(bBouncing, bullet.canBounce(), "bBouncing");
+        b &= assertEquals(true /* client doesnt care */, bullet.hitsPlayers(), "bHitsPlayers");
+        b &= assertEquals(0 /* client doesnt care */, bullet.getTimerConfigSeconds(), "nTimer");
+        b &= assertFalse(bullet.expired(), "expired");
+        b &= assertEquals(particleType, bullet.getParticleType(), "particleType");
+        b &= assertEquals(0, bullet.getParticleEmitPerNthPhysicsIterationCntr(), "particle emit per iter cntr");
+        //b &= assertEquals(0, bullet.getParticlesEmittedTotal(), "particles emitted total cntr");
+        b &= assertEquals(0 /* client doesnt care */, bullet.getDamageAp(), "damageAp");
+        b &= assertEquals(nDamageHp, bullet.getDamageHp(), "damageHp");
+        b &= assertTrue(bullet.isDamageRelativeToDistance(), "dmgRelDist");
+        b &= assertEquals(fDamageAreaSize, bullet.getAreaDamageSize(), "damage area size");
+        b &= assertEquals(eDamageAreaEffect, bullet.getAreaDamageEffect(), "damage area effect");
+        b &= assertEquals(fDamageAreaPulse, bullet.getAreaDamagePulse(), "damage area pulse");
+        b &= assertFalse(bullet.isCreateSentToClients(), "isCreateSentToClients");
 
         return b;
     }
