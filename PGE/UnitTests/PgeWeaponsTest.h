@@ -1675,9 +1675,11 @@ private:
         {
             PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, connHandle);
+            PooledBullet* pLastCreatedBullet = nullptr;
             b = true;
 
-            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot");
+            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */, &pLastCreatedBullet), "shoot");
+            b &= assertNotNull(pLastCreatedBullet, "last created bullet ptr set");
             b &= assertFalse(wpn.isTriggerReleased(), "trigger 1");
 
             // wpn state cares about cooldown, but trigger state is controlled by input
@@ -1700,6 +1702,7 @@ private:
         {
             PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_melee.txt", bullets, m_audio, *engine, 0);
+            PooledBullet* pLastCreatedBullet = nullptr;
             b = true;
 
             const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
@@ -1708,7 +1711,8 @@ private:
             b &= assertEquals(0u, wpn.getUnmagBulletCount(), "unmag bullet count 1");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state 1");
 
-            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "attack");
+            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */, &pLastCreatedBullet), "attack");
+            b &= assertNotNull(pLastCreatedBullet, "last created bullet ptr set");
 
             b &= assertFalse(bullets.empty(), "created bullets empty");
             b &= assertEquals(nOriginalMagBulletCount, wpn.getMagBulletCount(), "mag bullet count 2");
@@ -1730,11 +1734,13 @@ private:
         {
             PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            PooledBullet* pLastCreatedBullet = nullptr;
             b = true;
 
             // by default magazine is full == 30 bullets, set it to 0
             wpn.SetMagBulletCount(0);
-            b &= assertFalse(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot");
+            b &= assertFalse(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */, &pLastCreatedBullet), "shoot");
+            b &= assertNull(pLastCreatedBullet, "last created bullet ptr");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState(), "state");
             b &= assertFalse(wpn.getState().isDirty(), "state dirty");
             b &= assertFalse(wpn.isTriggerReleased(), "trigger"); // since we didnt explicitly called releaseTrigger()
@@ -1755,6 +1761,7 @@ private:
         {
             PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            PooledBullet* pLastCreatedBullet = nullptr;
             b = true;
 
             wpn.getVars()["reload_whole_mag"].Set(false); // reload does not waste bullets
@@ -1769,7 +1776,8 @@ private:
             b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
             b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
 
-            b &= assertFalse(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot");
+            b &= assertFalse(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */, &pLastCreatedBullet), "shoot");
+            b &= assertNull(pLastCreatedBullet, "last created bullet ptr");
             b &= assertEquals(Weapon::WPN_RELOADING, wpn.getState(), "state 2");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 2");
             b &= assertTrue(wpn.getState().isDirty(), "state dirty 2");
@@ -1793,6 +1801,7 @@ private:
         {
             PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_bazooka.txt", bullets, m_audio, *engine, 0);
+            PooledBullet* pLastCreatedBullet = nullptr;
             b = true;
 
             wpn.SetUnmagBulletCount(3); // make sure we could reload
@@ -1817,7 +1826,7 @@ private:
                 if (wpn.getState() == Weapon::WPN_RELOADING)
                 {
                     // shoot to cancel reloading
-                    if (wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */))
+                    if (wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */, &pLastCreatedBullet))
                     {
                         nNumPullTriggerReturnedTrue++;
                         wpn.releaseTrigger();
@@ -1838,6 +1847,7 @@ private:
             b &= assertEquals(bullets.size(), nNumPullTriggerReturnedTrue, "pullTrigger true count");
             b &= assertEquals(2u, nNumWpnStateChangesCount, "state changes count"); /* READY -> SHOOTING -> READY */
             b &= assertFalse(bullets.empty(), "created bullets empty");
+            b &= assertNotNull(pLastCreatedBullet, "last created bullet ptr set");
             b &= assertEquals(nOriginalMagBulletCount - 1, wpn.getMagBulletCount(), "mag bullet count");
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count");
 
@@ -1858,13 +1868,15 @@ private:
         {
             PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            PooledBullet* pLastCreatedBullet = nullptr;
             b = true;
 
             const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
             const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
             // first shot allowed
-            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot 1");
+            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */, &pLastCreatedBullet), "shoot 1");
+            b &= assertNotNull(pLastCreatedBullet, "last created bullet ptr set");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 1");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
             b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
@@ -1873,7 +1885,9 @@ private:
             b &= assertEquals(nOriginalUnmagBulletCount, wpn.getUnmagBulletCount(), "unmag bullet count 1");
 
             // second shot now allowed
-            b &= assertFalse(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot 2");
+            pLastCreatedBullet = nullptr;
+            b &= assertFalse(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */, &pLastCreatedBullet), "shoot 2");
+            b &= assertNull(pLastCreatedBullet, "last created bullet ptr");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 2");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
             b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
@@ -1896,6 +1910,7 @@ private:
         {
             PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            PooledBullet* pLastCreatedBullet = nullptr;
             b = true;
 
             wpn.SetUnmagBulletCount(100); // make sure we could reload
@@ -1917,10 +1932,16 @@ private:
             {
                 iWait++;
                 // even if we call pullTrigger(), it must not shoot when conditions dont meet
-                if (wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */))
+                if (wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */, &pLastCreatedBullet))
                 {
                     nNumPullTriggerReturnedTrue++;
+                    b &= assertNotNull(pLastCreatedBullet, "last created bullet ptr set");
                 }
+                else
+                {
+                    b &= assertNull(pLastCreatedBullet, "last created bullet ptr");
+                }
+                pLastCreatedBullet = nullptr;
                 if (wpn.update())
                 {
                     nNumWpnUpdateChangedMagUnmagBulletCount++;
@@ -1965,6 +1986,7 @@ private:
         {
             PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_semi_with_burst.txt", bullets, m_audio, *engine, 0);
+            PooledBullet* pLastCreatedBullet = nullptr;
             b = true;
     
             b &= assertEquals("semi", wpn.getVars()["firing_mode_def"].getAsString(), "firing_mode_def");
@@ -1997,10 +2019,16 @@ private:
             {
                 iWait++;
                 // even if we call pullTrigger(), it must not shoot when conditions dont meet
-                if (wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */))
+                if (wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */, &pLastCreatedBullet))
                 {
                     nNumPullTriggerReturnedTrue++;
+                    b &= assertNotNull(pLastCreatedBullet, "last created bullet ptr set");
                 }
+                else
+                {
+                    b &= assertNull(pLastCreatedBullet, "last created bullet ptr");
+                }
+                pLastCreatedBullet = nullptr;
                 if (wpn.update())
                 {
                     nNumWpnUpdateChangedMagUnmagBulletCount++;
@@ -2044,10 +2072,16 @@ private:
             {
                 iWait++;
                 // even if we call pullTrigger(), it must not shoot when conditions dont meet
-                if (wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */))
+                if (wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */, &pLastCreatedBullet))
                 {
                     nNumPullTriggerReturnedTrue++;
+                    b &= assertNotNull(pLastCreatedBullet, "last created bullet ptr set");
                 }
+                else
+                {
+                    b &= assertNull(pLastCreatedBullet, "last created bullet ptr");
+                }
+                pLastCreatedBullet = nullptr;
                 wpn.releaseTrigger();
                 if (wpn.update())
                 {
@@ -2094,12 +2128,14 @@ private:
         {
             PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
+            PooledBullet* pLastCreatedBullet = nullptr;
             b = true;
 
             const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
             const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
-            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot");
+            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */, &pLastCreatedBullet), "shoot");
+            b &= assertNotNull(pLastCreatedBullet, "last created bullet ptr set");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 1");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
             b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");
@@ -2129,13 +2165,15 @@ private:
         {
             PgeObjectPool<PooledBullet> bullets("pool", nBulletPoolCap, *engine);
             Weapon wpn("gamedata/weapons/sample_good_wpn_shotgun.txt", bullets, m_audio, *engine, 0);
+            PooledBullet* pLastCreatedBullet = nullptr;
             b = true;
 
             const TPureUInt nOriginalMagBulletCount = wpn.getMagBulletCount();
             const TPureUInt nOriginalUnmagBulletCount = wpn.getUnmagBulletCount();
 
             // shall shoot multiple bullets by pulling the trigger only once
-            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */), "shoot 1");
+            b &= assertTrue(wpn.pullTrigger(false /* bMoving */, true /* bRun */, false /* bDuck */, &pLastCreatedBullet), "shoot 1");
+            b &= assertNotNull(pLastCreatedBullet, "last created bullet ptr set");
             b &= assertEquals(Weapon::WPN_SHOOTING, wpn.getState(), "state 1");
             b &= assertEquals(Weapon::WPN_READY, wpn.getState().getOld(), "state old 1");
             b &= assertTrue(wpn.getState().isDirty(), "state dirty 1");

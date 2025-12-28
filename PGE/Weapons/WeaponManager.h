@@ -388,7 +388,8 @@ public:
     TPureBool pullTrigger(
         bool bMoving,
         bool bRun,
-        bool bDuck);                   /**< Pulls the trigger of the weapon, which might result in shooting the weapon. */
+        bool bDuck,
+        PooledBullet** pLastCreatedBullet = nullptr);  /**< Pulls the trigger of the weapon, which might result in shooting the weapon. */
     void releaseTrigger();             /**< Releases the trigger of the weapon. */
     bool isTriggerReleased() const;    /**< Returns the state of the trigger. */
 

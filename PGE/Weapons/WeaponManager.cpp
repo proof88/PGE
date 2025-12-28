@@ -1576,13 +1576,16 @@ TPureBool Weapon::reload()
  * 
  * Similar to ranged weapons, for melee type weapons as well, this is the attack function.
  * 
- * @param bMoving Same as for getAccuracyByPose().
- * @param bRun    Same as for getAccuracyByPose().
- * @param bDuck   Same as for getAccuracyByPose().
+ * @param bMoving            Same as for getAccuracyByPose().
+ * @param bRun               Same as for getAccuracyByPose().
+ * @param bDuck              Same as for getAccuracyByPose().
+ * @param bLastCreatedBullet If not nullptr, the pointer to the last created bullet will be set here.
  * 
  * @return True if a shot was actually triggered, false otherwise.
+ *         Only if the returned value is true, the pointer pointed by argument pLastCreatedBullet is properly set!
  */
-TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
+TPureBool Weapon::pullTrigger(
+    bool bMoving, bool bRun, bool bDuck, PooledBullet** pLastCreatedBullet)
 {
     const bool bPrevTriggerReleased = m_bTriggerReleased;
     m_bTriggerReleased = false;
@@ -1611,6 +1614,7 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
         m_nMagBulletCount--;
     }
 
+    PooledBullet* pCreatedBullet = nullptr;
     const unsigned int nSubprojectiles = getVars()["bullet_subprojectiles"].getAsUInt();
     for (unsigned int i = 0; i < nSubprojectiles; i++)
     {
@@ -1618,7 +1622,7 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
         //getConsole().EOLn("bMoving: %b, bRun: %b, bDuck: %b, fRelativeBulletAngleZ: %f! ", bMoving, bRun, bDuck, fRelativeBulletAngleZ);
 
         // here create() invokes PooledBullet::init(), should invoke the server version!
-        if (!m_bullets.create(
+        pCreatedBullet = m_bullets.create(
             m_id,
             m_gfx,
             m_connHandle,
@@ -1646,11 +1650,18 @@ TPureBool Weapon::pullTrigger(bool bMoving, bool bRun, bool bDuck)
             (getVars()["damage_area_effect"].getAsString() == "linear" ?
                 Bullet::DamageAreaEffect::Linear :
                 Bullet::DamageAreaEffect::Constant),
-            getVars()["damage_area_pulse"].getAsFloat()))
+            getVars()["damage_area_pulse"].getAsFloat());
+        
+        if (!pCreatedBullet)
         {
             getConsole().EOLn("Weapon::pullTrigger(): pool did not create bullet!");
             return false;
         }
+    }
+
+    if (pLastCreatedBullet)
+    {
+        *pLastCreatedBullet = pCreatedBullet;
     }
 
     // momentary aim accuracy also depends on momentary recoil multiplier, which depends on time elapsed since m_timeLastShot, so
