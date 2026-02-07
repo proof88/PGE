@@ -64,7 +64,8 @@ public:
     short int getWheel();
     void ReceiveWheel(short int amount);
 
-    bool isButtonPressed(MouseButton mbtn) const;
+    bool isButtonPressed(MouseButton mbtn);
+    bool isButtonPressedOnce(MouseButton mbtn);
     void SetButtonPressed(MouseButton mbtn, bool pressed);
 
 protected:
@@ -74,7 +75,8 @@ private:
     // ---------------------------------------------------------------------------
 
     PGEcfgProfiles& m_cfgProfiles;
-    std::map<MouseButton, bool> mapButtonsPressed;
+    std::map<MouseButton, bool> m_mapButtonsPressed;
+    std::map<MouseButton, bool> m_mapButtonsReleasedSinceLastRead;
     RAWINPUTDEVICE Rid[1];
     int  mx, my;
     int  tempMovementX, tempMovementY;
@@ -117,9 +119,13 @@ bool PGEInputMouseImpl::initialize(HWND hWindow)
 {
     getConsole().OLn("PGEInputMouse::initialize()");
 
-    mapButtonsPressed[MBTN_LEFT] = false;
-    mapButtonsPressed[MBTN_MIDDLE] = false;
-    mapButtonsPressed[MBTN_RIGHT] = false;
+    m_mapButtonsPressed[MBTN_LEFT] = false;
+    m_mapButtonsPressed[MBTN_MIDDLE] = false;
+    m_mapButtonsPressed[MBTN_RIGHT] = false;
+
+    m_mapButtonsReleasedSinceLastRead[MBTN_LEFT] = true;
+    m_mapButtonsReleasedSinceLastRead[MBTN_MIDDLE] = true;
+    m_mapButtonsReleasedSinceLastRead[MBTN_RIGHT] = true;
 
     if ( hWindow != PGENULL )
     {
@@ -255,11 +261,11 @@ void PGEInputMouseImpl::ReceiveWheel(short int amount)
 }
 
 
-bool PGEInputMouseImpl::isButtonPressed(MouseButton mbtn) const
+bool PGEInputMouseImpl::isButtonPressed(MouseButton mbtn)
 {
     if (mbtn == MouseButton::MBTN_ANY)
     {
-        for (const auto& btn : mapButtonsPressed)
+        for (const auto& btn : m_mapButtonsPressed)
         {
             if (btn.second)
             {
@@ -269,7 +275,23 @@ bool PGEInputMouseImpl::isButtonPressed(MouseButton mbtn) const
         return false;
     }
 
-    return mapButtonsPressed.at(mbtn);
+    return m_mapButtonsPressed.at(mbtn);
+}
+
+
+bool PGEInputMouseImpl::isButtonPressedOnce(MouseButton mbtn)
+{
+    if (mbtn == MouseButton::MBTN_ANY)
+    {
+        return false;
+    }
+
+    const bool bPressedOnce = m_mapButtonsPressed[mbtn] && m_mapButtonsReleasedSinceLastRead[mbtn];
+    if (bPressedOnce)
+    {
+        m_mapButtonsReleasedSinceLastRead[mbtn] = false;
+    }
+    return bPressedOnce;
 }
 
 
@@ -279,7 +301,11 @@ void PGEInputMouseImpl::SetButtonPressed(MouseButton mbtn, bool pressed)
     {
         return;
     }
-    mapButtonsPressed[mbtn] = pressed;
+    m_mapButtonsPressed[mbtn] = pressed;
+    if (!pressed)
+    {
+        m_mapButtonsReleasedSinceLastRead[mbtn] = true;
+    }
 }
 
 
@@ -292,9 +318,9 @@ void PGEInputMouseImpl::SetButtonPressed(MouseButton mbtn, bool pressed)
 PGEInputMouseImpl::PGEInputMouseImpl(PGEcfgProfiles& cfgProfiles) :
     m_cfgProfiles(cfgProfiles)
 {
-    mapButtonsPressed[MBTN_LEFT] = false;
-    mapButtonsPressed[MBTN_MIDDLE] = false;
-    mapButtonsPressed[MBTN_RIGHT] = false;
+    m_mapButtonsPressed[MBTN_LEFT] = false;
+    m_mapButtonsPressed[MBTN_MIDDLE] = false;
+    m_mapButtonsPressed[MBTN_RIGHT] = false;
 
     bPreciseMovementActive = bPreciseMovementAvailable = false;
     Rid[0].usUsagePage = HID_USAGE_PAGE_GENERIC; 

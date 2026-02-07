@@ -94,7 +94,20 @@ public:
     *         If MouseButton::MBTN_ANY is specified for 'mbtn' then any mouse button press event is
     *         considered instead of a specific button.
     */
-    virtual bool isButtonPressed(MouseButton mbtn = MouseButton::MBTN_ANY) const = 0;
+    virtual bool isButtonPressed(MouseButton mbtn = MouseButton::MBTN_ANY) = 0;
+
+    /**
+    * Useful if we want to distinguish between different presses of the same mouse button.
+    * Unlike isButtonPressed(), this function also keeps track of the last released state of the button,
+    * and will return true only if the state has just changed from released to pressed.
+    * 
+    * @param mbtn The mouse button for which we are checking release-press event.
+    *             MouseButton::MBTN_ANY is ignored.
+    *
+    * @return True if the given mouse button has just changed its state to pressed, false otherwise.
+    *         Always false for MouseButton::MBTN_ANY.
+    */
+    virtual bool isButtonPressedOnce(MouseButton mbtn) = 0;
 
     /**
     * Sets the pressed state of the given mouse button to the given value.
