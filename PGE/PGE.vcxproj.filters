@@ -645,6 +645,9 @@
     <ClInclude Include="PURE\include\external\SpatialStructures\PureOctree.h">
       <Filter>Header Files\PURE\include\external\SpatialStructures</Filter>
     </ClInclude>
+    <ClInclude Include="PURE\include\external\GUI\imgui_markdown\imgui_markdown.h">
+      <Filter>Header Files\PURE\include\external\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PGE.cpp">
