@@ -887,6 +887,13 @@ namespace ImGui
         MarkdownFormatInfo formatInfo;
         formatInfo.config = &mdConfig_;
         formatInfo.type = MarkdownFormatType::LINK;
+        // ===========================================
+        // PR00F88 (West Whiskhyll) change starts here
+        // Let the formatCallback() check if the given text is a local anchor link, if so then don't render it
+        // as link because anchor navigation is not supported within this Dear ImGui-based markdown rendering.
+        formatInfo.text = text_end_;
+        // PR00F88 (West Whiskhyll) change ends here
+        // =========================================
         mdConfig_.formatCallback( formatInfo, true );
         ImGui::PushTextWrapPos( -1.0f );
         ImGui::TextUnformatted( text_, text_end_ );
