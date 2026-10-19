@@ -24,20 +24,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseTest_PRooFPS-dd|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -78,7 +78,6 @@
       <AdditionalIncludeDirectories>..\..\src\audiosource;..\..\src\backend;..\..\src\core;..\..\src\c_api;..\..\src\filter;..\..\src\tools;..\..\src\audiosource\monotone;..\..\src\audiosource\noise;..\..\src\audiosource\openmpt;..\..\src\audiosource\sfxr;..\..\src\audiosource\speech;..\..\src\audiosource\tedsid;..\..\src\audiosource\vic;..\..\src\audiosource\vizsn;..\..\src\audiosource\wav;..\..\src\backend\alsa;..\..\src\backend\coreaudio;..\..\src\backend\jack;..\..\src\backend\miniaudio;..\..\src\backend\nosound;..\..\src\backend\null;..\..\src\backend\openal;..\..\src\backend\opensles;..\..\src\backend\oss;..\..\src\backend\portaudio;..\..\src\backend\sdl;..\..\src\backend\sdl2_static;..\..\src\backend\sdl_static;..\..\src\backend\vita_homebrew;..\..\src\backend\wasapi;..\..\src\backend\winmm;..\..\src\backend\xaudio2;..\..\src\tools\codegen;..\..\src\tools\lutgen;..\..\src\tools\resamplerlab;..\..\src\tools\sanity;..\..\src\tools\tedsid2dump;..\..\include;..\..\..\..\..\..\..\..\..\libraries\openal\include;..\..\..\..\..\..\..\..\..\libraries\portaudio\include;..\..\..\..\..\..\..\..\..\libraries\sdl2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;DEBUG;WITH_MINIAUDIO;WITH_NOSOUND;WITH_NULL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -87,9 +86,11 @@
       <WarningLevel>Level3</WarningLevel>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ProgramDataBaseFileName>$(OutDir)soloud_static_x86_d.pdb</ProgramDataBaseFileName>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;DEBUG;WITH_OPENAL;WITH_MINIAUDIO;WITH_NOSOUND;WITH_PORTAUDIO;WITH_SDL2;WITH_WASAPI;WITH_WINMM;WITH_NULL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -124,6 +125,9 @@
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;WITH_OPENAL;WITH_MINIAUDIO;WITH_NOSOUND;WITH_PORTAUDIO;WITH_SDL2;WITH_WASAPI;WITH_WINMM;WITH_NULL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -131,6 +135,7 @@
     </ResourceCompile>
     <Lib>
       <OutputFile>$(OutDir)soloud_static_x86.lib</OutputFile>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,7 +152,7 @@
       <PreprocessorDefinitions>NOMINMAX;_CRT_SECURE_NO_WARNINGS;NDEBUG;WITH_MINIAUDIO;WITH_NOSOUND;WITH_NULL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PrecompiledHeader>
@@ -156,9 +161,11 @@
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
+      <DebugInformationFormat>None</DebugInformationFormat>
       <DiagnosticsFormat>Caret</DiagnosticsFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;WITH_OPENAL;WITH_MINIAUDIO;WITH_NOSOUND;WITH_PORTAUDIO;WITH_SDL2;WITH_WASAPI;WITH_WINMM;WITH_NULL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -166,6 +173,7 @@
     </ResourceCompile>
     <Lib>
       <OutputFile>$(OutDir)soloud_static_x86.lib</OutputFile>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
     <Link>
       <SubSystem>Windows</SubSystem>

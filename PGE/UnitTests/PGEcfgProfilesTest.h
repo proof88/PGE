@@ -253,7 +253,8 @@ private:
 
         for (int i = 0; i < nReadLangLines; i++)
         {
-            if ( bErrorFound = !assertEquals(std::string(saLangLinesExpected[i]), *saLangData[i]) )
+            bErrorFound = !assertEquals(std::string(saLangLinesExpected[i]), *saLangData[i]);
+            if (bErrorFound)
                 break;
         }
 
@@ -300,7 +301,8 @@ private:
 
         for (int i = 0; i < cfg.getProfilesCount() && (i < 4); i++)
         {
-            if ( bErrorFound = !assertEquals(std::string(saProfilesExpected[i]), *sProfileList[i]) )
+            bErrorFound = !assertEquals(std::string(saProfilesExpected[i]), *sProfileList[i]);
+            if (bErrorFound)
                 break;
         }
 
@@ -318,7 +320,8 @@ private:
 
         for (int i = 0; i < cfg.getProfilesCount() && (i < 4); i++)
         {
-            if ( bErrorFound = !assertEquals(std::string(saProfilePlayersExpected[i]), *sProfilePlayersList[i]) )
+            bErrorFound = !assertEquals(std::string(saProfilePlayersExpected[i]), *sProfilePlayersList[i]);
+            if (bErrorFound)
                 break;
         }
 
