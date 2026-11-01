@@ -7,6 +7,8 @@ Name = Bazooka
 
 type = ranged
 
+price = 0
+
 
 cap_max = 999
 

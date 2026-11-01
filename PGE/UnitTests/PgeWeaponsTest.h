@@ -61,6 +61,7 @@ protected:
         addSubTest("test_wpn_load_weapon_unaccepted_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_unaccepted_var);
         addSubTest("test_wpn_load_weapon_missing_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_missing_var);
         addSubTest("test_wpn_load_weapon_double_defined_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_double_defined_var);
+        addSubTest("test_wpn_load_weapon_price_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_price_cannot_be_negative);
         
         /* weapon load negative tests: reload config errors */
     
@@ -396,6 +397,13 @@ private:
             "");
     }
 
+    bool test_wpn_load_weapon_price_cannot_be_negative()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_price_cannot_be_negative.txt",
+            "price cannot be negative");
+    }
+
     bool test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag()
     {
         return test_helper_wpn_load_and_expect_exception(
@@ -663,6 +671,7 @@ private:
                 assertEquals("constant", wpn.getVars()["damage_area_effect"].getAsString(), "damage_area_effect") &
                 assertEquals(0.f, wpn.getVars()["damage_area_pulse"].getAsFloat(), "damage_area_pulse") &
                 assertTrue(bullets.empty(), "bullets") &
+                assertEquals(1000, wpn.getVars()["price"].getAsInt(), "price") &
                 assertNotNull(&(wpn.getObject3D()), "object3d") &
                 assertFalse(wpn.getObject3D().isRenderingAllowed(), "rendering allowed") &
                 assertNotNull(wpn.getObject3D().getMaterial().getTexture(), "texture") &
@@ -684,6 +693,7 @@ private:
                 assertEquals("semi", wpn_melee.getVars()["firing_mode_max"].getAsString(), "firing_mode_max 2") &
                 assertEquals("hit_wall_dummy.wav", wpn_melee.getVars()["damage_wall_snd"].getAsString(), "damage_wall_snd") &
                 assertEquals("hit_player_dummy.wav", wpn_melee.getVars()["damage_player_snd"].getAsString(), "damage_player_snd") &
+                assertEquals(0, wpn_melee.getVars()["price"].getAsInt(), "price 2") &
                 assertNotNull(&(wpn_melee.getObject3D()), "object3d 2") &
                 assertFalse(wpn_melee.getObject3D().isRenderingAllowed(), "rendering allowed 2") &
                 assertNotNull(wpn_melee.getObject3D().getMaterial().getTexture(), "texture 2") &

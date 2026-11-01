@@ -741,6 +741,7 @@ Weapon::Weapon(
     {
         m_WpnAcceptedVars.insert("name");
         m_WpnAcceptedVars.insert("type");
+        m_WpnAcceptedVars.insert("price");
         m_WpnAcceptedVars.insert("cap_max");
         m_WpnAcceptedVars.insert("reloadable");
         m_WpnAcceptedVars.insert("bullets_default");
@@ -821,6 +822,12 @@ Weapon::Weapon(
         throw std::runtime_error("unsupported weapon type in " + std::string(fname));
     }
 
+    if (getVars()["price"].getAsInt() < 0)
+    {
+        getConsole().EOLnOO("price cannot be negative in %s! ", fname);
+        throw std::runtime_error("price cannot be negative in " + std::string(fname));
+    }
+    
     if ( (getVars()["reloadable"].getAsInt() == 0) && getVars()["reload_per_mag"].getAsBool() )
     {
         getConsole().EOLnOO("reloadable is 0 but reload_per_mag is true in %s! ", fname);

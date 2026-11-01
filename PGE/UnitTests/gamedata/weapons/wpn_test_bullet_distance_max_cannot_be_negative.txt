@@ -7,6 +7,8 @@ Name = Sample Weapon 1
 
 type = ranged
 
+price = 0
+
 
 cap_max = 999
 
