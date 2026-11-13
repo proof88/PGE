@@ -630,7 +630,7 @@ private:
                 assertEquals(30u, wpn.getMagBulletCount(), "mag") &
                 assertEquals(0u, wpn.getUnmagBulletCount(), "unmag") &
                 assertTrue(wpn.isTriggerReleased(), "trigger") &
-                assertEquals("Sample Weapon 1", wpn.getVars()["name"].getAsString(), "name") &
+                assertEquals(std::string("Sample Weapon 1"), wpn.getName(), "name") &
                 assertEquals(999, wpn.getVars()["cap_max"].getAsInt(), "cap_max") &
                 assertEquals(30, wpn.getVars()["reloadable"].getAsInt(), "reloadable") &
                 assertEquals(30, wpn.getVars()["bullets_default"].getAsInt(), "bullets_default") &
@@ -682,7 +682,7 @@ private:
                 assertEquals(Weapon::FiringMode::WPN_FM_SEMI, wpn_melee.getCurrentFiringMode(), "firing mode 2") &
                 assertEquals(1u, wpn_melee.getMagBulletCount(), "mag 2") &
                 assertEquals(0u, wpn_melee.getUnmagBulletCount(), "unmag 2") &
-                assertEquals("Knife", wpn_melee.getVars()["name"].getAsString(), "name 2") &
+                assertEquals(std::string("Knife"), wpn_melee.getName(), "name 2") &
                 assertEquals(1, wpn_melee.getVars()["cap_max"].getAsInt(), "cap_max 2") &
                 assertEquals(0, wpn_melee.getVars()["reloadable"].getAsInt(), "reloadable 2") &
                 assertEquals(1, wpn_melee.getVars()["bullets_default"].getAsInt(), "bullets_default 2") &

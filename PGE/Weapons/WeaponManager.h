@@ -352,6 +352,8 @@ public:
         pge_network::PgeNetworkConnectionHandle connHandle);
     virtual ~Weapon();
 
+    const char* getName() const;
+
     CConsole&   getConsole() const;                     /**< Returns access to console preset with logger module name as this class. */
 
     const WeaponId& getUniqueId() const;

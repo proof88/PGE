@@ -1140,6 +1140,13 @@ Weapon::~Weapon()
     }
 }
 
+const char* Weapon::getName() const
+{
+    const auto it = m_vars.find("name");
+    return (it == m_vars.end()) ?
+        "unnamed" : it->second.getAsString().c_str();
+}
+
 /**
     Returns access to console preset with logger module name as this class.
 */
