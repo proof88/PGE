@@ -368,7 +368,10 @@ public:
     void UpdatePositions(
         const PureVector& playerPos, const PureVector& targetPos2D);           /**< Updates the graphical object entity associated to this weapon object. */
 
-    const FiringMode& getCurrentFiringMode() const;  /**< Returns the current firing mode of the weapon. */
+    int getPrice() const;      /**< Returns the shop price of this weapon. */
+    int getAmmoPrice() const;  /**< Returns the shop price of ammunition for this weapon. */
+    const FiringMode& getCurrentFiringMode() const;    /**< Returns the current firing mode of the weapon. */
+    const char* getCurrentFiringModeAsString() const;  /**< Returns the current firing mode of the weapon as string. */
 
     TPureUInt getUnmagBulletCount() const;      /**< Returns the "unmag" bullet count of this weapon. */
     void SetUnmagBulletCount(TPureUInt count);  /**< Sets the "unmag" bullet count of this weapon. */

@@ -53,6 +53,9 @@ protected:
         addSubTest("testPi", (PFNUNITSUBTEST) &PFLTest::testPi);
         addSubTest("testRoundf", (PFNUNITSUBTEST) &PFLTest::testRoundf);
         addSubTest("testRoundi", (PFNUNITSUBTEST) &PFLTest::testRoundi);
+        addSubTest("testPrintFloatToStringShort", (PFNUNITSUBTEST)&PFLTest::testPrintFloatToStringShort);
+        addSubTest("testPrintFloatToStreamShort", (PFNUNITSUBTEST)&PFLTest::testPrintFloatToStreamShort);
+        addSubTest("testPrintFloatToSStreamShortOperatorOutStream", (PFNUNITSUBTEST)&PFLTest::testPrintFloatToSStreamShortOperatorOutStream);
         addSubTest("testConstrain", (PFNUNITSUBTEST) &PFLTest::testConstrain);
         addSubTest("testDegToRad", (PFNUNITSUBTEST) &PFLTest::testDegToRad);
         addSubTest("testRadToDeg", (PFNUNITSUBTEST) &PFLTest::testRadToDeg);
@@ -412,6 +415,401 @@ private:
             assertEquals(4, PFL::roundi(3.5f), "3.5f") &
             assertEquals(-4, PFL::roundi(-4.49f), "-4.49f") &
             assertEquals(-4, PFL::roundi(-3.5f), "-3.5f");
+        return l;
+    }
+
+    bool testPrintFloatToStringShort()
+    {
+        bool l = true;
+        std::string tmpString;
+
+        // positive tests
+
+        PFL::printFloatToStringShort(0.00001f, tmpString, 1);
+        l &= assertEquals("~0", tmpString, "0.00001 w/ 1 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(0.00001f, tmpString, 0);
+        l &= assertEquals("~0", tmpString, "0.00001 w/ 0 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(0.00001f, tmpString, 4);
+        l &= assertEquals("~0", tmpString, "0.00001 w/ 4 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(0.00001f, tmpString, 5);
+        l &= assertEquals("0.00001", tmpString, "0.00001 w/ 5 digits");
+
+        // custom epsilon
+        tmpString.clear();
+        PFL::printFloatToStringShort(0.00001f, tmpString, 5, 0.0001f);
+        l &= assertEquals("0", tmpString, "0.00001 w/ 5 digits, small epsilon");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(-0.00001f, tmpString, 5, 0.0001f);
+        l &= assertEquals("0", tmpString, "-0.00001 w/ 5 digits, small epsilon");
+
+        // too many digits
+        tmpString.clear();
+        PFL::printFloatToStringShort(0.00001f, tmpString, 10);
+        l &= assertEquals("0.00001", tmpString, "0.00001 w/ 10 digits");
+
+        PFL::printFloatToStringShort(-0.00001f, tmpString, 1);
+        l &= assertEquals("~-0", tmpString, "-0.00001 w/ 1 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(-0.00001f, tmpString, 0);
+        l &= assertEquals("~-0", tmpString, "-0.00001 w/ 0 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(4.15f, tmpString, 1);
+        l &= assertEquals("4.2", tmpString, "4.15 w/ 1 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(4.15f, tmpString, 2);
+        l &= assertEquals("4.15", tmpString, "4.15 w/ 2 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(4.15f, tmpString, 5);
+        l &= assertEquals("4.15", tmpString, "4.15 w/ 5 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(-4.15f, tmpString, 1);
+        l &= assertEquals("-4.2", tmpString, "-4.15 w/ 1 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(-4.15f, tmpString, 2);
+        l &= assertEquals("-4.15", tmpString, "-4.15 w/ 2 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(-4.15f, tmpString, 0);
+        l &= assertEquals("-4", tmpString, "-4.15 w/ 0 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(4.15f, tmpString, 0);
+        l &= assertEquals("4", tmpString, "4.15 w/ 0 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(4.49f, tmpString, 0);
+        l &= assertEquals("4", tmpString, "4.49 w/ 0 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(4.49f, tmpString, 1);
+        l &= assertEquals("4.5", tmpString, "4.49 w/ 1 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(-4.49f, tmpString, 0);
+        l &= assertEquals("-4", tmpString, "-4.49 w/ 0 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(-4.49f, tmpString, 1);
+        l &= assertEquals("-4.5", tmpString, "-4.49 w/ 1 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(-3.5f, tmpString, 0);
+        l &= assertEquals("-4", tmpString, "-3.5 w/ 0 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(-3.5f, tmpString, 1);
+        l &= assertEquals("-3.5", tmpString, "-3.5 w/ 1 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(440.99997f, tmpString, 1);
+        l &= assertEquals("440.9", tmpString, "440.99997 w/ 1 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(440.99997f, tmpString, 5);
+        l &= assertEquals("440.99997", tmpString, "440.99997 w/ 5 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(440.99997f, tmpString, 0);
+        l &= assertEquals("441", tmpString, "440.99997 w/ 0 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(PFL::pi(), tmpString, 6);
+        l &= assertEquals("3.141593", tmpString, "Pi w/ 6 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(PFL::pi(), tmpString, 4);
+        l &= assertEquals("3.1416", tmpString, "Pi w/ 4 digits");
+
+        // negative tests
+        
+        tmpString.clear();
+        PFL::printFloatToStringShort(10, tmpString, static_cast<unsigned int>(-1));
+        l &= assertEquals("err", tmpString, "10 w/ -1 digits");
+
+        tmpString.clear();
+        PFL::printFloatToStringShort(10, tmpString, static_cast<unsigned int>(INT_MAX) + 1);
+        l &= assertEquals("err", tmpString, "10 w/ -1 digits");
+
+        return l;
+    }
+
+    void resetStringStream(std::stringstream& ss, std::string sContent)
+    {
+        ss.str(sContent);
+        ss.clear(); // just in case if there is any error flag set
+        ss.seekp(0, std::ios::end); // otherwise sContent part of the stream would be overwritten at next append
+    }
+
+    bool testPrintFloatToStreamShort()
+    {
+        bool l = true;
+        std::stringstream myStringStream;
+
+        // positive tests
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(0.00001f, myStringStream, 1);
+        l &= assertEquals("ggg ~0", myStringStream.str(), "0.00001 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(0.00001f, myStringStream, 0);
+        l &= assertEquals("ggg ~0", myStringStream.str(), "0.00001 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(0.00001f, myStringStream, 4);
+        l &= assertEquals("ggg ~0", myStringStream.str(), "0.00001 w/ 4 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(0.00001f, myStringStream, 5);
+        l &= assertEquals("ggg 0.00001", myStringStream.str(), "0.00001 w/ 5 digits");
+
+        // custom epsilon
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(0.00001f, myStringStream, 5, 0.0001f);
+        l &= assertEquals("ggg 0", myStringStream.str(), "0.00001 w/ 5 digits, small epsilon");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(-0.00001f, myStringStream, 5, 0.0001f);
+        l &= assertEquals("ggg 0", myStringStream.str(), "-0.00001 w/ 5 digits, small epsilon");
+
+        // too many digits
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(0.00001f, myStringStream, 10);
+        l &= assertEquals("ggg 0.00001", myStringStream.str(), "0.00001 w/ 10 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(-0.00001f, myStringStream, 1);
+        l &= assertEquals("ggg ~-0", myStringStream.str(), "-0.00001 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(-0.00001f, myStringStream, 0);
+        l &= assertEquals("ggg ~-0", myStringStream.str(), "-0.00001 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(4.15f, myStringStream, 1);
+        l &= assertEquals("ggg 4.2", myStringStream.str(), "4.15 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(4.15f, myStringStream, 2);
+        l &= assertEquals("ggg 4.15", myStringStream.str(), "4.15 w/ 2 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(4.15f, myStringStream, 5);
+        l &= assertEquals("ggg 4.15", myStringStream.str(), "4.15 w/ 5 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(-4.15f, myStringStream, 1);
+        l &= assertEquals("ggg -4.2", myStringStream.str(), "-4.15 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(-4.15f, myStringStream, 2);
+        l &= assertEquals("ggg -4.15", myStringStream.str(), "-4.15 w/ 2 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(-4.15f, myStringStream, 0);
+        l &= assertEquals("ggg -4", myStringStream.str(), "-4.15 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(4.15f, myStringStream, 0);
+        l &= assertEquals("ggg 4", myStringStream.str(), "4.15 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(4.49f, myStringStream, 0);
+        l &= assertEquals("ggg 4", myStringStream.str(), "4.49 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(4.49f, myStringStream, 1);
+        l &= assertEquals("ggg 4.5", myStringStream.str(), "4.49 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(-4.49f, myStringStream, 0);
+        l &= assertEquals("ggg -4", myStringStream.str(), "-4.49 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(-4.49f, myStringStream, 1);
+        l &= assertEquals("ggg -4.5", myStringStream.str(), "-4.49 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(-3.5f, myStringStream, 0);
+        l &= assertEquals("ggg -4", myStringStream.str(), "-3.5 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(-3.5f, myStringStream, 1);
+        l &= assertEquals("ggg -3.5", myStringStream.str(), "-3.5 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(440.99997f, myStringStream, 1);
+        l &= assertEquals("ggg 440.9", myStringStream.str(), "440.99997 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(440.99997f, myStringStream, 5);
+        l &= assertEquals("ggg 440.99997", myStringStream.str(), "440.99997 w/ 5 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(440.99997f, myStringStream, 0);
+        l &= assertEquals("ggg 441", myStringStream.str(), "440.99997 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(PFL::pi(), myStringStream, 6);
+        l &= assertEquals("ggg 3.141593", myStringStream.str(), "Pi w/ 6 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(PFL::pi(), myStringStream, 4);
+        l &= assertEquals("ggg 3.1416", myStringStream.str(), "Pi w/ 4 digits");
+
+        // negative tests
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(10, myStringStream, static_cast<unsigned int>(-1));
+        l &= assertEquals("ggg err", myStringStream.str(), "10 w/ -1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        PFL::printFloatToStreamShort(10, myStringStream, static_cast<unsigned int>(INT_MAX) + 1);
+        l &= assertEquals("ggg err", myStringStream.str(), "10 w/ -1 digits");
+
+        return l;
+    }
+
+    bool testPrintFloatToSStreamShortOperatorOutStream()
+    {
+        bool l = true;
+        std::stringstream myStringStream;
+
+        // positive tests
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(0.00001f,  1);
+        l &= assertEquals("ggg ~0", myStringStream.str(), "0.00001 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(0.00001f, 0);
+        l &= assertEquals("ggg ~0", myStringStream.str(), "0.00001 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(0.00001f, 4);
+        l &= assertEquals("ggg ~0", myStringStream.str(), "0.00001 w/ 4 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(0.00001f, 5);
+        l &= assertEquals("ggg 0.00001", myStringStream.str(), "0.00001 w/ 5 digits");
+
+        // custom epsilon
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(0.00001f, 5, 0.0001f);
+        l &= assertEquals("ggg 0", myStringStream.str(), "0.00001 w/ 5 digits, small epsilon");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(-0.00001f, 5, 0.0001f);
+        l &= assertEquals("ggg 0", myStringStream.str(), "-0.00001 w/ 5 digits, small epsilon");
+
+        // too many digits
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(0.00001f, 10);
+        l &= assertEquals("ggg 0.00001", myStringStream.str(), "0.00001 w/ 10 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(-0.00001f, 1);
+        l &= assertEquals("ggg ~-0", myStringStream.str(), "-0.00001 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(-0.00001f, 0);
+        l &= assertEquals("ggg ~-0", myStringStream.str(), "-0.00001 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(4.15f, 1);
+        l &= assertEquals("ggg 4.2", myStringStream.str(), "4.15 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(4.15f, 2);
+        l &= assertEquals("ggg 4.15", myStringStream.str(), "4.15 w/ 2 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(4.15f, 5);
+        l &= assertEquals("ggg 4.15", myStringStream.str(), "4.15 w/ 5 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(-4.15f, 1);
+        l &= assertEquals("ggg -4.2", myStringStream.str(), "-4.15 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(-4.15f, 2);
+        l &= assertEquals("ggg -4.15", myStringStream.str(), "-4.15 w/ 2 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(-4.15f, 0);
+        l &= assertEquals("ggg -4", myStringStream.str(), "-4.15 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(4.15f, 0);
+        l &= assertEquals("ggg 4", myStringStream.str(), "4.15 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(4.49f, 0);
+        l &= assertEquals("ggg 4", myStringStream.str(), "4.49 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(4.49f, 1);
+        l &= assertEquals("ggg 4.5", myStringStream.str(), "4.49 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(-4.49f, 0);
+        l &= assertEquals("ggg -4", myStringStream.str(), "-4.49 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(-4.49f, 1);
+        l &= assertEquals("ggg -4.5", myStringStream.str(), "-4.49 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(-3.5f, 0);
+        l &= assertEquals("ggg -4", myStringStream.str(), "-3.5 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(-3.5f, 1);
+        l &= assertEquals("ggg -3.5", myStringStream.str(), "-3.5 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(440.99997f, 1);
+        l &= assertEquals("ggg 440.9", myStringStream.str(), "440.99997 w/ 1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(440.99997f, 5);
+        l &= assertEquals("ggg 440.99997", myStringStream.str(), "440.99997 w/ 5 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(440.99997f, 0);
+        l &= assertEquals("ggg 441", myStringStream.str(), "440.99997 w/ 0 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(PFL::pi(), 6);
+        l &= assertEquals("ggg 3.141593", myStringStream.str(), "Pi w/ 6 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(PFL::pi(), 4);
+        l &= assertEquals("ggg 3.1416", myStringStream.str(), "Pi w/ 4 digits");
+
+        // negative tests
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(10, static_cast<unsigned int>(-1));
+        l &= assertEquals("ggg err", myStringStream.str(), "10 w/ -1 digits");
+
+        resetStringStream(myStringStream, "ggg ");
+        myStringStream << PFL::makePrintFloatShort(10, static_cast<unsigned int>(INT_MAX) + 1);
+        l &= assertEquals("ggg err", myStringStream.str(), "10 w/ -1 digits");
+
         return l;
     }
 

@@ -22,6 +22,11 @@ type = ranged
 # Cannot be negative. Parsed as integer (no decimal part).
 price = 0
 
+# Price of a pack of ammunition in fiat money.
+# Relevant only when server option Finance is enabled.
+# Cannot be negative. Parsed as integer (no decimal part).
+price_ammo = 0
+
 ############
 #          #
 #  RELOAD  #

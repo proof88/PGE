@@ -742,6 +742,7 @@ Weapon::Weapon(
         m_WpnAcceptedVars.insert("name");
         m_WpnAcceptedVars.insert("type");
         m_WpnAcceptedVars.insert("price");
+        m_WpnAcceptedVars.insert("price_ammo");
         m_WpnAcceptedVars.insert("cap_max");
         m_WpnAcceptedVars.insert("reloadable");
         m_WpnAcceptedVars.insert("bullets_default");
@@ -826,6 +827,12 @@ Weapon::Weapon(
     {
         getConsole().EOLnOO("price cannot be negative in %s! ", fname);
         throw std::runtime_error("price cannot be negative in " + std::string(fname));
+    }
+
+    if (getVars()["price_ammo"].getAsInt() < 0)
+    {
+        getConsole().EOLnOO("ammo price cannot be negative in %s! ", fname);
+        throw std::runtime_error("ammo price cannot be negative in " + std::string(fname));
     }
     
     if ( (getVars()["reloadable"].getAsInt() == 0) && getVars()["reload_per_mag"].getAsBool() )
@@ -1304,6 +1311,32 @@ void Weapon::UpdatePositions(const PureVector& playerPos, const PureVector& targ
 }
 
 /**
+* Returns the shop price of this weapon.
+* 
+* @return Price of the weapon.
+*         Negative number means some internal error.
+*/
+int Weapon::getPrice() const
+{
+    const auto it = m_vars.find("price");
+    return (it == m_vars.end()) ?
+        -1 : it->second.getAsInt();
+}
+
+/**
+* Returns the shop price of ammunition for this weapon.
+*
+* @return Ammo price of the weapon.
+*         Negative number means some internal error.
+*/
+int Weapon::getAmmoPrice() const
+{
+    const auto it = m_vars.find("price_ammo");
+    return (it == m_vars.end()) ?
+        -1 : it->second.getAsInt();
+}
+
+/**
  * Returns the current firing mode of the weapon.
  * This is something between getVars("firing_mode_def") and getVars("firing_mode_max").
  * 
@@ -1312,6 +1345,16 @@ void Weapon::UpdatePositions(const PureVector& playerPos, const PureVector& targ
 const Weapon::FiringMode& Weapon::getCurrentFiringMode() const
 {
     return m_firingMode;
+}
+
+const char* Weapon::getCurrentFiringModeAsString() const
+{
+    switch (m_firingMode)
+    {
+    case WPN_FM_SEMI: return "Semi-automatic";
+    case WPN_FM_BURST: return "Burst";
+    default: return "Automatic";
+    }
 }
 
 /**
@@ -1810,9 +1853,10 @@ float Weapon::getBulletRate() const
 
 /**
 * Returns a calculated rating of damage caused by a single shot fired: DPFR.
-* This is a positive number usually in range [0.01, 100], rarely even bigger.
+* This is a positive number usually in range [1, 150], rarely even bigger.
 * 
-* @return DPFR (Damage per Fire Rating) caused by a single shot fired, calculated as: damage_hp * damage_ap / 100.f.
+* @return DPFR (Damage per Fire Rating) caused by a single shot fired, calculated as:
+          (damage_hp + damage_ap * 0.7) * numSubprojectiles.
 */
 float Weapon::getDamagePerFireRating() const
 {
@@ -1829,15 +1873,15 @@ float Weapon::getDamagePerFireRating() const
     assert(nSubprojectiles > 0); // ctor throws if non-positive
 
     // later we can also add damage_area_size and bullet distance and firing_mode_def to this calculation
-    return ((getVars().at("damage_hp").getAsInt() * getVars().at("damage_ap").getAsInt()) / 100.f) * nSubprojectiles;
+    return (getVars().at("damage_hp").getAsUInt() + getVars().at("damage_ap").getAsUInt() * 0.7f) * nSubprojectiles;
 }
 
 /**
 * Returns a calculated rating of total damage per 1 second: DPSR.
-* This is used by WeaponManager to put Weapons into order based on their power.
+* This is used by WeaponManager to put Weapons into order based on their striking power.
 * Always positive.
 * 
-* @return DPSR (Damage per Second Rating), calculated as: (1000.f/firing_cooldown * DPFR)^2.
+* @return DPSR (Damage per Second Rating), calculated as: 1000.f/firing_cooldown * DPFR.
 */
 float Weapon::getDamagePerSecondRating() const
 {
@@ -1846,7 +1890,7 @@ float Weapon::getDamagePerSecondRating() const
       reload_time     -> smaller is better
       firing_cooldown -> smaller is better
     */
-    return std::powf(getFiringRate() * getDamagePerFireRating(), 2.f);
+    return getFiringRate() * getDamagePerFireRating();
 }
 
 /**

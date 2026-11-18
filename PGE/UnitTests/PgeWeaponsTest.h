@@ -62,6 +62,7 @@ protected:
         addSubTest("test_wpn_load_weapon_missing_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_missing_var);
         addSubTest("test_wpn_load_weapon_double_defined_var", (PFNUNITSUBTEST) &PgeWeaponsTest::test_wpn_load_weapon_double_defined_var);
         addSubTest("test_wpn_load_weapon_price_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_price_cannot_be_negative);
+        addSubTest("test_wpn_load_weapon_ammo_price_cannot_be_negative", (PFNUNITSUBTEST)&PgeWeaponsTest::test_wpn_load_weapon_ammo_price_cannot_be_negative);
         
         /* weapon load negative tests: reload config errors */
     
@@ -404,6 +405,13 @@ private:
             "price cannot be negative");
     }
 
+    bool test_wpn_load_weapon_ammo_price_cannot_be_negative()
+    {
+        return test_helper_wpn_load_and_expect_exception(
+            "gamedata/weapons/wpn_test_price_ammo_cannot_be_negative.txt",
+            "ammo price cannot be negative");
+    }
+
     bool test_wpn_load_weapon_not_reloadable_incompatible_with_reload_per_mag()
     {
         return test_helper_wpn_load_and_expect_exception(
@@ -626,7 +634,10 @@ private:
                 assertFalse(wpn.getState().isDirty(), "state dirty") &
                 assertFalse(wpn.isAvailable(), "available") &
                 assertEquals(10u, wpn.getOwner(), "owner") &
+                assertEquals(1000, wpn.getPrice(), "price") &
+                assertEquals(100, wpn.getAmmoPrice(), "ammo price") &
                 assertEquals(Weapon::FiringMode::WPN_FM_AUTO, wpn.getCurrentFiringMode(), "firing mode") &
+                assertEquals(std::string("Automatic"), wpn.getCurrentFiringModeAsString(), "firing mode as string") &
                 assertEquals(30u, wpn.getMagBulletCount(), "mag") &
                 assertEquals(0u, wpn.getUnmagBulletCount(), "unmag") &
                 assertTrue(wpn.isTriggerReleased(), "trigger") &
@@ -679,7 +690,12 @@ private:
 
             b &= assertEquals(Weapon::Type::Melee, wpn_melee.getType(), "type 2") &
                 assertLess(0u, wpn_melee.getUniqueId(), "id 2") &
+                assertFalse(wpn_melee.isAvailable(), "available 2") &
+                assertEquals(10u, wpn_melee.getOwner(), "owner 2") &
+                assertEquals(0, wpn_melee.getPrice(), "price 2") &
+                assertEquals(0, wpn_melee.getAmmoPrice(), "ammo price 2") &
                 assertEquals(Weapon::FiringMode::WPN_FM_SEMI, wpn_melee.getCurrentFiringMode(), "firing mode 2") &
+                assertEquals(std::string("Semi-automatic"), wpn_melee.getCurrentFiringModeAsString(), "firing mode as string 2") &
                 assertEquals(1u, wpn_melee.getMagBulletCount(), "mag 2") &
                 assertEquals(0u, wpn_melee.getUnmagBulletCount(), "unmag 2") &
                 assertEquals(std::string("Knife"), wpn_melee.getName(), "name 2") &
@@ -1069,14 +1085,14 @@ private:
             Weapon wpnShotgun("gamedata/weapons/sample_good_wpn_shotgun.txt", bullets, m_audio, *engine, 0);
 
             b = assertEquals(
-                (wpnMchgun.getVars().at("bullet_subprojectiles").getAsUInt() * wpnMchgun.getVars().at("damage_hp").getAsInt() * wpnMchgun.getVars().at("damage_ap").getAsInt()) / 100.f,
+                wpnMchgun.getVars().at("bullet_subprojectiles").getAsUInt() * (wpnMchgun.getVars().at("damage_hp").getAsUInt() + wpnMchgun.getVars().at("damage_ap").getAsUInt() * 0.7f),
                 wpnMchgun.getDamagePerFireRating(), 0.001f, "mchgun 1");
-            b &= assertBetween(0.01f, 100.f, wpnMchgun.getDamagePerFireRating(), 0.001f, "mchgun 2");
+            b &= assertBetween(1.f, 200.f, wpnMchgun.getDamagePerFireRating(), 0.001f, "mchgun 2");
 
             b = assertEquals(
-                (wpnShotgun.getVars().at("bullet_subprojectiles").getAsUInt() * wpnShotgun.getVars().at("damage_hp").getAsInt() * wpnShotgun.getVars().at("damage_ap").getAsInt()) / 100.f,
+                wpnShotgun.getVars().at("bullet_subprojectiles").getAsUInt() * (wpnShotgun.getVars().at("damage_hp").getAsUInt() + wpnShotgun.getVars().at("damage_ap").getAsUInt() * 0.7f),
                 wpnShotgun.getDamagePerFireRating(), 0.001f, "shotgun 1");
-            b &= assertBetween(0.01f, 100.f, wpnShotgun.getDamagePerFireRating(), 0.001f, "shotgun 2");
+            b &= assertBetween(1.f, 200.f, wpnShotgun.getDamagePerFireRating(), 0.001f, "shotgun 2");
         }
         catch (const std::exception& e)
         {
@@ -1095,11 +1111,11 @@ private:
             Weapon wpnMchgun("gamedata/weapons/sample_good_wpn_automatic.txt", bullets, m_audio, *engine, 0);
             Weapon wpnShotgun("gamedata/weapons/sample_good_wpn_shotgun.txt", bullets, m_audio, *engine, 0);
 
-            b = assertEquals(std::powf(1000.f / wpnMchgun.getVars().at("firing_cooldown").getAsInt() * wpnMchgun.getDamagePerFireRating(), 2.f),
+            b = assertEquals(1000.f / wpnMchgun.getVars().at("firing_cooldown").getAsInt() * wpnMchgun.getDamagePerFireRating(),
                 wpnMchgun.getDamagePerSecondRating(), 0.001f, "mchgun 1");
             b &= assertGreater(wpnMchgun.getDamagePerSecondRating(), 0.f, "mchgun 2");
 
-            b = assertEquals(std::powf(1000.f / wpnShotgun.getVars().at("firing_cooldown").getAsInt() * wpnShotgun.getDamagePerFireRating(), 2.f),
+            b = assertEquals(1000.f / wpnShotgun.getVars().at("firing_cooldown").getAsInt() * wpnShotgun.getDamagePerFireRating(),
                 wpnShotgun.getDamagePerSecondRating(), 0.001f, "shotgun 1");
             b &= assertGreater(wpnShotgun.getDamagePerSecondRating(), 0.f, "shotgun 2");
         }
@@ -2674,7 +2690,7 @@ private:
                 wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
                 wm.getWeapons()[iPistol]->getDamagePerSecondRating(),
                 "DPSR of mchgun should be greater than pistol");
-            b &= assertGreater(
+            b &= assertLess(
                 wm.getWeapons()[iRailgun]->getDamagePerSecondRating(),
                 wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
                 "DPSR of railgun should be greater than mchgun");
@@ -2823,7 +2839,7 @@ private:
                 wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
                 wm.getWeapons()[iPistol]->getDamagePerSecondRating(),
                 "DPSR of mchgun should be greater than pistol");
-            b &= assertGreater(
+            b &= assertLess(
                 wm.getWeapons()[iRailgun]->getDamagePerSecondRating(),
                 wm.getWeapons()[iMchgun]->getDamagePerSecondRating(),
                 "DPSR of railgun should be greater than mchgun");

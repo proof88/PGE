@@ -9,6 +9,8 @@ type = ranged
 
 price = -1
 
+price_ammo = 0
+
 
 cap_max = 999
 

@@ -8,6 +8,8 @@ type = ranged
 
 price = 0
 
+price_ammo = 0
+
 
 cap_max = 50
 
